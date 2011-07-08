@@ -26,17 +26,17 @@ package com.stratelia.webactiv.kmelia.model;
 
 import java.util.Comparator;
 
-import com.stratelia.webactiv.kmelia.model.UserPublication;
 
-public class PubliCreationDateComparatorAsc implements Comparator<UserPublication> {
+public class PubliCreationDateComparatorAsc implements Comparator<KmeliaPublication> {
   static public PubliCreationDateComparatorAsc comparator = new PubliCreationDateComparatorAsc();
 
-  public int compare(UserPublication p1, UserPublication p2) {
+  @Override
+  public int compare(KmeliaPublication p1, KmeliaPublication p2) {
     int compareResult =
-        p1.getPublication().getCreationDate().compareTo(p2.getPublication().getCreationDate());
+        p1.getDetail().getCreationDate().compareTo(p2.getDetail().getCreationDate());
     if (compareResult == 0) {
       // both objects have been created on the same date
-      compareResult = p1.getPublication().getId().compareTo(p2.getPublication().getId());
+      compareResult = p1.getDetail().getId().compareTo(p2.getDetail().getId());
     }
 
     return compareResult;

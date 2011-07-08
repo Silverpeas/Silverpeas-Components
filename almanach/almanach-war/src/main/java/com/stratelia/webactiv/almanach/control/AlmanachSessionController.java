@@ -25,6 +25,8 @@ package com.stratelia.webactiv.almanach.control;
 
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportException;
+import com.silverpeas.export.ical.ExportableCalendar;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -54,7 +56,6 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
@@ -378,9 +379,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       getAlmanachBm().updateEvent(eventDetail);
 
       Date startDate = eventDetail.getStartDate();
-      String startHour = eventDetail.getStartHour();
-      Date endDate = eventDetail.getEndDate();
-      String endHour = eventDetail.getEndHour();
 
       // currentDay
       if (startDate != null) {
@@ -947,10 +945,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       throw new ExportException(ex.getMessage(), ex);
     }
     ExporterFactory exporterFactory = ExporterFactory.getFactory();
-    Exporter<CalendarEvent> iCalExporter = exporterFactory.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
     FileWriter fileWriter = new FileWriter(icsFilePath);
     try {
-      iCalExporter.export(withWriter(fileWriter), eventsToExport);
+      iCalExporter.export(withWriter(fileWriter), ExportableCalendar.with(eventsToExport));
     } catch (ExportException ex) {
       File fileToDelete = new File(icsFilePath);
       if (fileToDelete.exists()) {

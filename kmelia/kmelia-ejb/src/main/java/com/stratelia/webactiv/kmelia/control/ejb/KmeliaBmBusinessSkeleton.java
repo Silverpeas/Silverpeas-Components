@@ -14,10 +14,7 @@ import java.util.Map;
 import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.webactiv.kmelia.model.FullPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.kmelia.model.UserCompletePublication;
-import com.stratelia.webactiv.kmelia.model.UserPublication;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
@@ -33,6 +30,7 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 
 /**
  * @author sfariello
@@ -336,20 +334,10 @@ public interface KmeliaBmBusinessSkeleton {
   public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links)
       throws RemoteException;
 
-  /**
-   * Return all info of a publication and add a reading statistic
-   * @param pubId the id of a publication
-   * @return a CompletePublication
-   * @see com.stratelia.webactiv.util.publication.model.CompletePublication
-   * @since 1.0
-   */
-  public UserCompletePublication getUserCompletePublication(
-      PublicationPK pubPK, String userId) throws RemoteException;
-
   public CompletePublication getCompletePublication(PublicationPK pubPK)
       throws RemoteException;
 
-  public FullPublication getFullPublication(PublicationPK pubPK)
+  public KmeliaPublication getPublication(PublicationPK pubPK)
       throws RemoteException;
 
   public TopicDetail getPublicationFather(PublicationPK pubPK,
@@ -364,15 +352,36 @@ public interface KmeliaBmBusinessSkeleton {
    * @param links list of publication defined by his id and component id
    * @param userId identifier User. allow to check if the publication is accessible for current user
    * @param isRightsOnTopicsUsed indicates if the right must be checked
-   * @return a collection of UserPublication
+   * @return a collection of Kmelia publications
    * @throws RemoteException
    * @since 1.0
    */
-  public Collection<UserPublication> getPublications(List<ForeignPK> links,
+  public Collection<KmeliaPublication> getPublications(List<ForeignPK> links,
       String userId,
       boolean isRightsOnTopicsUsed) throws RemoteException;
+  
+  /**
+   * Gets the publications linked with the specified one and for which the specified user is
+   * authorized to access.
+   * @param publication the publication from which linked publications are get.
+   * @param userId the unique identifier of a user. It allows to check if a linked publication is
+   * accessible for the specified user.
+   * @return a list of Kmelia publications.
+   * @throws RemoteException if an error occurs while communicating with the remote business service.
+   */
+  public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication,
+      String userId) throws RemoteException;
+  
+  /**
+   * Gets all the publications linked with the specified one.
+   * @param publication the publication from which linked publications are get.
+   * @return a list of Kmelia publications.
+   * @throws RemoteException if an error occurs while communicating with the remote business service.
+   */
+  public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication)
+      throws RemoteException;
 
-  public List<UserPublication> getPublicationsToValidate(String componentId)
+  public List<KmeliaPublication> getPublicationsToValidate(String componentId)
       throws RemoteException;
 
   public List<String> getAllValidators(PublicationPK pubPK, int validationType)
@@ -601,7 +610,7 @@ public interface KmeliaBmBusinessSkeleton {
    * @return Collection of publication
    * @throws RemoteException
    */
-  public List<UserPublication> search(List<String> combination, String componentId)
+  public List<KmeliaPublication> search(List<String> combination, String componentId)
       throws RemoteException;
 
   /**
@@ -611,7 +620,7 @@ public interface KmeliaBmBusinessSkeleton {
    * @return Collection of publication
    * @throws RemoteException
    */
-  public List<UserPublication> search(List<String> combination, int nbDays, String componentId)
+  public List<KmeliaPublication> search(List<String> combination, int nbDays, String componentId)
       throws RemoteException;
 
   /**
@@ -620,7 +629,7 @@ public interface KmeliaBmBusinessSkeleton {
    * @return Collection of publication
    * @throws RemoteException
    */
-  public Collection<UserPublication> getUnbalancedPublications(String componentId)
+  public Collection<KmeliaPublication> getUnbalancedPublications(String componentId)
       throws RemoteException;
 
   /**************************************************************************************/
@@ -633,18 +642,18 @@ public interface KmeliaBmBusinessSkeleton {
   /**************************************************************************************/
 
   /**
-   * Get complete publication of a user
+   * Get a publication of a user
    * @param componentId , pubId
-   * @return UserCompletePublication
+   * @return a Kmelia publication
    * @throws RemoteException
    */
-  public UserCompletePublication getKmaxCompletePublication(String pubId,
+  public KmeliaPublication getKmaxPublication(String pubId,
       String currentUserId) throws RemoteException;
 
   /**
    * Get Collection of coordinates for a publication
    * @param pubId , componentId
-   * @return UserCompletePublication
+   * @return a collection of coordinates
    * @throws RemoteException
    */
   public Collection<Coordinate> getPublicationCoordinates(String pubId, String componentId)

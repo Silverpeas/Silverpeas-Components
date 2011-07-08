@@ -102,12 +102,12 @@ function topicGoTo(id)
 <ul id="publis" style="cursor: hand; cursor: pointer;">
 <%
 Iterator publis = publications.iterator();
-UserPublication userPub = null;
+KmeliaPublication userPub = null;
 PublicationDetail pub = null;
 while(publis.hasNext())
 {
-	userPub 	= (UserPublication) publis.next();
-	pub 		= userPub.getPublication();
+	userPub 	= (KmeliaPublication) publis.next();
+	pub 		= userPub.getDetail();
 %>
 	<li id="publi_<%=pub.getPK().getId()%>">&#8226;&#160;<b><%=pub.getName(currentLang)%></b><br/>
 		<% if (StringUtil.isDefined(pub.getDescription(currentLang))) { %>
