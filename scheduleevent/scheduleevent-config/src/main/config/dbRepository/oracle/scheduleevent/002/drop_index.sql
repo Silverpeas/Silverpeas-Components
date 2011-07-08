@@ -1,0 +1,3 @@
+DROP INDEX sc_scheduleevent_contributor.ind_sc_scheduleevent_contrib1;
+DROP INDEX sc_scheduleevent_contributor.ind_sc_scheduleevent_contrib2;
+DROP INDEX sc_scheduleevent_response.ind_sc_scheduleevent_resp1; 

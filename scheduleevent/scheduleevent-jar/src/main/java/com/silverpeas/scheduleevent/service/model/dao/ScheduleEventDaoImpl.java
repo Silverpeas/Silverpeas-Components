@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -55,15 +55,14 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
       getSession().delete(resp);
       getSession().flush();
     }
-    // scheduleEvent = getScheduleEventComplete(scheduleEvent.getId());
-    // delete the scheduleEvent
     getSession().delete(scheduleEvent);
   }
 
   public ScheduleEvent getScheduleEventComplete(String scheduleEventId) {
-    Criteria criteria = getSession().createCriteria(ScheduleEvent.class);
-    criteria.add(Restrictions.eq("id", scheduleEventId));
-    return (ScheduleEvent) criteria.uniqueResult();
+	    Criteria criteria = getSession().createCriteria(ScheduleEvent.class);
+	    criteria.add(Restrictions.eq("id", scheduleEventId));
+	    return (ScheduleEvent) criteria.uniqueResult();
+//	  return (ScheduleEvent) getSession().load(ScheduleEvent.class, scheduleEventId);
   }
 
   public Set<ScheduleEvent> listScheduleEventsByCreatorId(String userId) {
@@ -79,7 +78,7 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
     criteria.add(Restrictions.eq("userId", Integer.parseInt(userId)));
     Set<Contributor> returnSet = new HashSet<Contributor>();
     returnSet.addAll(criteria.list());
-
+    
     Set<ScheduleEvent> scheduleEvents = new HashSet<ScheduleEvent>();
     if (returnSet != null && returnSet.size() > 0) {
       Iterator<Contributor> iterRes = returnSet.iterator();
@@ -108,4 +107,13 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
     }
   }
 
+  public Contributor getContributor(String contributorId) {
+    Criteria criteria = getSession().createCriteria(Contributor.class);
+    criteria.add(Restrictions.eq("id", contributorId));
+    return (Contributor) criteria.uniqueResult();
+  }
+  
+  public void deleteContributor(Contributor contributor) {
+    getSession().delete(contributor);
+  }
 }

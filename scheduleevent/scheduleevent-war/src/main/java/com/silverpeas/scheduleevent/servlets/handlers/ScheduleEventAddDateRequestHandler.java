@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,7 @@
 
 package com.silverpeas.scheduleevent.servlets.handlers;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
@@ -35,10 +36,25 @@ import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 
 public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateRequestHandler {
+  private final static DateFormat JS_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+  private ScheduleEventRequestHandler forwardRequestHandler = null;
+
+  public void setForwardRequestHandler(ScheduleEventRequestHandler forwardRequestHandler) {
+    this.forwardRequestHandler = forwardRequestHandler;
+  }
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception {
+    if (forwardRequestHandler != null) {
+      return addSelectedDateAndForwardRequestHandler(function, scheduleeventSC, request);
+    } else {
+      throw UndefinedForwardRequestHandlerException();
+    }
+  }
+
+  private String addSelectedDateAndForwardRequestHandler(String function,
+      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws Exception {
     ScheduleEvent current = scheduleeventSC.getCurrentScheduleEvent();
     Set<DateOption> dates = current.getDates();
     SimpleDateFormat formatter = getSimpleDateFormat(scheduleeventSC);
@@ -50,16 +66,20 @@ public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateR
       option.setDay(dateToAdd);
       dates.add(option);
     }
-    scheduleeventSC.setCurrentScheduleEvent(current);
-    request.setAttribute(CURRENT_SCHEDULE_EVENT, current);
-    return "form/options.jsp";
+    request.setAttribute(LAST_DATE, JS_DATE_FORMATTER.format(dateToAdd));
+    return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
   }
-  
+
   private SimpleDateFormat getSimpleDateFormat(ScheduleEventSessionController scheduleeventSC){
     String pattern = scheduleeventSC.getString("scheduleevent.form.dateformat");
     if(pattern == null){
       pattern = "dd/MM/yy";
     }
     return new SimpleDateFormat(pattern);
+  }
+
+  private Exception UndefinedForwardRequestHandlerException() {
+    return new Exception(
+        "No forward request defines for" + this.getClass());
   }
 }

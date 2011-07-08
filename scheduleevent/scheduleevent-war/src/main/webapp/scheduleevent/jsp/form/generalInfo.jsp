@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2009 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -28,7 +28,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
 	prefix="view"%>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <c:set var="sessionController">Silverpeas_ScheduleEvent</c:set>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -36,57 +37,82 @@
 <head>
 <view:looknfeel />
 <script type="text/javascript">
-    function addInfoGene(){
-    	var title = document.addInfoGene.title.value;
-        if(title != null && title.length > 0){
-        	document.addInfoGene.submit();
-    	} else {
-    	  alert('${scheduleEventNoTitle}');
-    	}
-    }
-  </script>
+	function addInfoGene() {
+		var title = document.addInfoGene.title.value;
+		if (title != null && title.length > 0) {
+			document.addInfoGene.submit();
+		} else {
+			alert('${scheduleEventNoTitle}');
+		}
+	}
+</script>
+<link rel='stylesheet' type='text/css' href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
 </head>
-<view:setBundle bundle="${requestScope.resources.iconsBundle}"
-	var="icons" />
-	
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="currentScheduleEvent" value="${requestScope.currentScheduleEvent}" />
 
-<c:set var="currentTitle" value="" />
-<c:set var="currentDescription" value="" />
+<c:set var="currentTitle" value="${currentScheduleEvent.htmlTitle}" />
+<c:set var="currentDescription" value="${currentScheduleEvent.htmlDescription}" />
 
-<c:if test="${currentScheduleEvent != null}">
-<c:set var="currentTitle" value="${currentScheduleEvent.title}" />
-<c:set var="currentDescription" value="${currentScheduleEvent.description}" />
-</c:if>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
-	marginheight="5" onload="document.getElementById('title').focus();">
+<body onload="document.getElementById('title').focus();">
 
 <fmt:message key="scheduleevent.form.title.screen1" var="scheduleEventTitle" />
-<view:browseBar>
-	<view:browseBarElt link="" label="${scheduleEventTitle}" />
+<fmt:message key="scheduleevent" var="componentName" />
+<c:url value="/Rscheduleevent/jsp/Main" var="returnMain" />
+<view:browseBar extraInformations="${scheduleEventTitle}">
+	<view:browseBarElt link="${returnMain}" label="${componentName}" />
 </view:browseBar>
 <view:window>
 	<fmt:message key="scheduleevent.form.title" var="titleLabel" />
 	<fmt:message key="scheduleevent.form.description" var="descLabel" />
-	<form id="addInfoGene" name="addInfoGene" method="POST"
-		action="<c:url value="/Rscheduleevent/jsp/AddInfoGene"/>">
-		<fmt:message key="scheduleevent.form.mandatory" var="mandatoryIconLabel" />
-		<fmt:message key="scheduleevent.icons.mandatory" var="mandatoryIcon" bundle="${icons}" />
-		${titleLabel}:<br/><input id="title" type="text" name="title" maxlength="254" size="100" value="${currentTitle}"/>
-		<img alt="${mandatoryIconLabel}" src="${mandatoryIcon}" height="5" width="5"/>
-		<br/>
-		${descLabel}:<br/><textarea id="description" rows="5" cols="100" name="description">${currentDescription}</textarea>
-		</form>
-	<center>
+
+	<table width="98%" cellspacing="0" cellpadding="5" border="0" class="tableBoard">
+		<tbody>
+			<tr>
+				<td>
+					<center>
+					<form id="addInfoGene" name="addInfoGene" method="post" action="<c:url value="/Rscheduleevent/jsp/AddInfoGene" />">
+						<fmt:message key="scheduleevent.form.mandatoryfield" var="mandatoryLabel" />
+						<fmt:message key="scheduleevent.form.mandatory" var="mandatoryIconLabel" />
+						<fmt:message key="scheduleevent.icons.mandatory" var="mandatoryIcon" bundle="${icons}" />
+						<c:set var="mandatoryImage" value="<img border='0' src='${mandatoryIcon}' width='5' height='5' />" />
+
+						<table width="100%" cellpadding="5">
+							<tbody>
+								<tr>
+									<td class="txtlibform">${titleLabel} :</td>
+									<td>
+										<input id="title" type="text" name="title" maxlength="254" size="100" value="${currentTitle}" />&nbsp;${mandatoryImage}
+									</td>
+								</tr>
+								<tr>
+									<td class="txtlibform">${descLabel} :</td>
+									<td>
+										<textarea id="description" rows="5" cols="100" name="description">${currentDescription}</textarea>
+									</td>
+								</tr>
+								<tr>
+									<td class="txtlibform" colspan="2">(${mandatoryImage}&nbsp;:${mandatoryLabel})</td>
+								</tr>
+							</tbody>
+						</table>
+					</form>
+					</center>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<br />
+	<div class="buttonBar">
 		<view:buttonPane>
-		<fmt:message key="scheduleevent.button.next" var="addInfoGeneLabel" />
-		<fmt:message key="scheduleevent.button.cancel" var="cancelLabel" />
-		<c:url var="cancelUrl" value="/Rscheduleevent/jsp/Cancel"/>
-		<view:button label="${cancelLabel}" action="${cancelUrl}" />
-		<view:button label="${addInfoGeneLabel}" action="${'javascript: addInfoGene();'}" /> 
+			<%@ include file="navigationRessource.jspf"%>
+			<c:url var="cancelUrl" value="/Rscheduleevent/jsp/Cancel" />
+			<view:button label="${nextLabel}" action="${'javascript: addInfoGene();'}" />
+			<view:button label="${cancelLabel}" action="${cancelUrl}" />
 		</view:buttonPane>
-	</center>
+	</div>
 </view:window>
 </body>
 </html>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,6 +26,7 @@ package com.silverpeas.scheduleevent.service.model.dao;
 
 import java.util.Set;
 
+import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 
 public interface ScheduleEventDao {
@@ -43,5 +44,9 @@ public interface ScheduleEventDao {
   public ScheduleEvent getScheduleEventComplete(String scheduleEventId);
 
   public void purgeResponseScheduleEvent(ScheduleEvent scheduleEvent, int userId);
+
+  public Contributor getContributor(String id);
+
+  public void deleteContributor(Contributor contrib);
 
 }
