@@ -37,11 +37,11 @@ public class OptionDateVO implements Comparable<OptionDateVO> {
   }
 
   private void setPartOfDayFromHour(int hour) {
-    if (hour > MORNING_HOUR_LIMIT) {
+    // if (hour > MORNING_HOUR_LIMIT) {
       setAfternoon(true);
-    } else {
+    // } else {
       setMorning(true);
-    }
+    // }
   }
 
   public Date getDate() {

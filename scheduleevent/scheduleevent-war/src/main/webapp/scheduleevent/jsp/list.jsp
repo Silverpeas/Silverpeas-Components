@@ -110,25 +110,22 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   		<c:if test="${not empty requestScope.scheduleEventList}">
     		<c:forEach items="${requestScope.scheduleEventList}" var="event" varStatus="eventIndex">
       		<tr align="center">
-      			<td valign="top" align="center" class="ArrayCell">${event.title}&nbsp;<a href="<c:url value="/ScheduleEvent/${event.id}"/>"><img src="${linkIcon}" border="0" align="bottom" alt="${linkIconAlt}" title="${linkIconAlt}"></a><c:if test="${event.status == 0}"><img alt="${closedIconAlt}" src="${closedIcon}" height="15" width="15"/></c:if></td>
-      			<td valign="top" align="center" class="ArrayCell"><fmt:formatDate pattern="${gmlDateFormat}" value="${event.creationDate}" /></td>
+      			<td valign="top" align="center" class="ArrayCell"><a href="javascript:getDetail('${event.id}');">${event.title}</a>&nbsp;<a href="<c:url value="/ScheduleEvent/${event.id}"/>"><img src="${linkIcon}" border="0" align="bottom" alt="${linkIconAlt}" title="${linkIconAlt}"></a><c:if test="${event.status == 0}">&nbsp;<img alt="${closedIconAlt}" title="${closedIconAlt}" src="${closedIcon}" height="15" width="15"/></c:if></td>
+      			<td valign="top" align="center" class="ArrayCell"><view:formatDate value="${event.creationDate}" /></td>
       			<%
       			ScheduleEvent currentSe = (ScheduleEvent) pageContext.getAttribute("event");
       			UserDetail creator = seScc.getUserDetail(String.valueOf(currentSe.getAuthor()));
       			%>
       			<td valign="top" align="center" class="ArrayCell"><%=creator.getDisplayedName()%></td>
       			<td valign="top" align="center" class="ArrayCell">
-        			<a href="javascript:getDetail('${event.id}');"><img alt="${seeIconAlt}" src="${seeIcon}" height="15" width="15"/></a>&nbsp;&nbsp;
         			<c:if test="${event.author == userId}">
-        			<a href="javascript:modifyState('${event.id}')">
-        			<c:if test="${event.status == 0}">
-        				<img alt="${openIconAlt}" src="${openIcon}" height="15" width="15"/>
-        			</c:if>
-        			<c:if test="${event.status != 0}">
-        				<img alt="${closeIconAlt}" src="${closeIcon}" height="15" width="15"/>
-        			</c:if>
-        			</a>
-        			&nbsp;&nbsp;<a href="javascript:deleteScheduleEvent('${event.id}')"><img alt="${deleteIconAlt}" src="${deleteIcon}" height="15" width="15"/></a>
+	        			<c:if test="${event.status == 0}">
+	        				<a href="javascript:modifyState('${event.id}')" title="${openIconAlt}"><img alt="${openIconAlt}" src="${openIcon}" height="15" width="15"/></a>
+	        			</c:if>
+	        			<c:if test="${event.status != 0}">
+	        				<a href="javascript:modifyState('${event.id}')" title="${closeIconAlt}"><img alt="${closeIconAlt}" src="${closeIcon}" height="15" width="15"/></a>
+	        			</c:if>
+	        			&nbsp;&nbsp;<a href="javascript:deleteScheduleEvent('${event.id}')" title="${deleteIconAlt}"><img alt="${deleteIconAlt}" src="${deleteIcon}" height="15" width="15"/></a>
         			</c:if>
             	</td>
       		</tr>

@@ -11,8 +11,6 @@ import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ContributorComparator;
 import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
-import static com.silverpeas.util.EncodeHelper.javaStringToHtmlString;
-import static com.silverpeas.util.EncodeHelper.javaStringToHtmlParagraphe;
 
 public class ScheduleEventVO implements ScheduleEventBean {
   private static final int MORNING_HOUR = 8;
@@ -34,14 +32,6 @@ public class ScheduleEventVO implements ScheduleEventBean {
     event.setId(id);
   }
 
-  public String getHtmlParagraphTitle() {
-    return javaStringToHtmlParagraphe(getHtmlTitle());
-  }
-
-  public String getHtmlTitle() {
-    return javaStringToHtmlString(getTitle());
-  }
-
   @Override
   public String getTitle() {
     return event.getTitle();
@@ -50,14 +40,6 @@ public class ScheduleEventVO implements ScheduleEventBean {
   @Override
   public void setTitle(String title) {
     event.setTitle(title);
-  }
-
-  public String getHtmlParagraphDescription() {
-    return javaStringToHtmlParagraphe(getHtmlDescription());
-  }
-
-  public String getHtmlDescription() {
-    return javaStringToHtmlString(getDescription());
   }
 
   @Override

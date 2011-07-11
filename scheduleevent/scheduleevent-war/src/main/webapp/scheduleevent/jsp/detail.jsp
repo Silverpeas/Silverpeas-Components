@@ -65,15 +65,14 @@
 		document.reponseForm.submit();
 	}
 </script>
-<link rel='stylesheet' type='text/css'
-	href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
+<link rel='stylesheet' type='text/css' href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
 </head>
 
 <body class="scheduleEvent" id="scheduleEvent_detail">
 
 <fmt:message key="scheduleevent" var="scheduleEventTitle" />
 <c:url value="/Rscheduleevent/jsp/Main" var="returnMain" />
-<view:browseBar extraInformations="${scheduleEventDetail.htmlParagraphTitle}">
+<view:browseBar extraInformations="${scheduleEventDetail.title}">
 	<view:browseBarElt link="${returnMain}" label="${scheduleEventTitle}" />
 </view:browseBar>
 
@@ -123,11 +122,11 @@
 				<tbody>
 					<tr>
 						<td class="txtlibform">${titleLabel}&nbsp;:</td>
-						<td colspan="3">${scheduleEventDetail.htmlParagraphTitle}</td>
+						<td colspan="3">${scheduleEventDetail.title}</td>
 					</tr>
 					<tr>
 						<td class="txtlibform">${descLabel}&nbsp;:</td>
-						<td colspan="3">${scheduleEventDetail.htmlParagraphDescription}</td>
+						<td colspan="3"><view:encodeHtmlParagraph string="${scheduleEventDetail.description}"/></td>
 					</tr>
 					<tr>
 						<td class="txtlibform"><fmt:message key="scheduleevent.form.listcontributors" />&nbsp;:</td>

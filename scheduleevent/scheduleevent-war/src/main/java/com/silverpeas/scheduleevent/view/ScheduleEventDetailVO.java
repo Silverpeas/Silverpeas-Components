@@ -1,7 +1,5 @@
 package com.silverpeas.scheduleevent.view;
 
-import static com.silverpeas.util.EncodeHelper.javaStringToHtmlParagraphe;
-import static com.silverpeas.util.EncodeHelper.javaStringToHtmlString;
 import static com.silverpeas.scheduleevent.view.ScheduleEventRessources.formatInPercent;
 
 import java.util.ArrayList;
@@ -244,20 +242,12 @@ public class ScheduleEventDetailVO {
     return id;
   }
 
-  public String getHtmlParagraphTitle() {
-    return javaStringToHtmlParagraphe(getHtmlTitle());
+  public String getTitle() {
+    return title;
   }
 
-  private String getHtmlTitle() {
-    return javaStringToHtmlString(title);
-  }
-
-  public String getHtmlParagraphDescription() {
-    return javaStringToHtmlParagraphe(getHtmlDescription());
-  }
-
-  private String getHtmlDescription() {
-    return javaStringToHtmlString(description);
+  public String getDescription() {
+    return description;
   }
 
   public ContributorVO getCurrentUser() {
