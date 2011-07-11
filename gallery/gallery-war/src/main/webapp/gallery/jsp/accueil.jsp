@@ -259,7 +259,7 @@ function sendData()
 		 %>
 		 <center>
 		 	<table border="0" cellpadding="0" cellspacing="0">
-		 		<form name="searchForm" action="SearchKeyWord" method="POST" onSubmit="javascript:sendData();">
+		 		<form name="searchForm" action="SearchKeyWord" method="post" onSubmit="javascript:sendData();">
 		 			<tr>
 		 				<td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("GML.search")%></td>
 		 				<td align="left" valign="middle">
@@ -277,105 +277,46 @@ function sendData()
 		 		</form>
 		     </table>
 		 </center>
-                                    <%
-             out.println(b.printAfter());
-             out.println("<br>");
-           }
-             
-           if ("user".equals(profile) || "privilegedUser".equals(profile) || "writer".equals(profile)) {
-             NavigationList navList = gef.getNavigationList();
-             navList.setTitle(root.getName());
-
-             // affichage des albums de niveau 1
-             // --------------------------------
-             out.println("<div id=\"subTopics\">");
-             out.println("<ul id=\"albumList\">");
-             Iterator it = root.getChildrenDetails().iterator();
-               
-             while (it.hasNext()) {
-               NodeDetail unAlbum = (NodeDetail) it.next();
-               int id = unAlbum.getId();
-               String nom = unAlbum.getName();
-               String lien = null;
-               navList.addItem(nom, "ViewAlbum?Id=" + id, -1, unAlbum.getDescription(), lien);
-             }
-             out.println(navList.print());
-           } else {
-             ArrayPane arrayPane = gef.getArrayPane("albumList", "GoToCurrentAlbum", request,
-                 session);
-             ArrayColumn columnIcon = arrayPane.addArrayColumn("&nbsp;");
-             columnIcon.setSortable(false);
-             arrayPane.addArrayColumn(resource.getString("gallery.albums"));
-             arrayPane.addArrayColumn(resource.getString("GML.description"));
-             ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("gallery.operation"));
-             columnOp.setSortable(false);
-               
-             // remplissage de l'ArrayPane avec les albums de niveau 1
-             // ------------------------------------------------------
-             Iterator it = root.getChildrenDetails().iterator();
-             while (it.hasNext()) {
-               ArrayLine ligne = arrayPane.addArrayLine();
-                 
-               IconPane icon = gef.getIconPane();
-               Icon albumIcon = icon.addIcon();
-               albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
-               icon.setSpacing("30px");
-               ligne.addArrayCellIconPane(icon);
-                 
-               NodeDetail unAlbum = (NodeDetail) it.next();
-               int id = unAlbum.getId();
-               String nom = unAlbum.getName();
-               String link = "";
-               if (unAlbum.getPermalink() != null) {
-                 link = "&nbsp;<a href=\"" + unAlbum.getPermalink() + "\"><img src=\"" + resource.
-                     getIcon("gallery.link") + "\" border=\"0\" align=\"bottom\" alt=\"" + resource.
-                     getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString(
-                     "gallery.CopyAlbumLink") + "\"></a>";
-               }
-<<<<<<< HEAD
-               //ligne.addArrayCellLink(unAlbum.getName()+link,"ViewAlbum?Id="+id);
-                 
-               ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.
-                   getName() + "</a>" + link);
-               arrayCellText0.setCompareOn(unAlbum.getName());
-                 
-               ligne.addArrayCellText(unAlbum.getDescription());
-               if ("admin".equals(profile) || ("publisher".equals(profile) && unAlbum.getCreatorId().
-                   equals(userId))) {
-                 // si publisher, possibilite de modif que sur ses albums
-                 // creation de la colonne des icenes
-                 IconPane iconPane = gef.getIconPane();
-                 // icene "modifier"
-                 Icon updateIcon = iconPane.addIcon();
-                 updateIcon.setProperties(resource.getIcon("gallery.updateAlbum"), resource.
-                     getString("gallery.updateAlbum"), "javaScript:editAlbum('" + id + "')");
-                 // icene "supprimer"
-                 Icon deleteIcon = iconPane.addIcon();
-                 deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.
-                     getString("gallery.deleteAlbum"), "javaScript:deleteConfirm('" + id + "','" + EncodeHelper.
-                     javaStringToHtmlString(EncodeHelper.javaStringToJsString(nom)) + "')");
-                 iconPane.setSpacing("30px");
-                 ligne.addArrayCellIconPane(iconPane);
-               }
-             }
-             out.println(arrayPane.print());
-           }
-             
-=======
-               out.println("<li id=\"album_" + id + "\" class=\"ui-state-default\">");
-               
-               out.println("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.getName());
-               out.println("<span>" + unAlbum.getDescription() + "</span></a>");
-               out.println("</li>");
-           }
-           out.println("</ul>");
-           out.println("</div>");
-           
->>>>>>> 02a3aa9... fixing Feature #1993 : management of order of the albums
+    <%
+    out.println(b.printAfter());
+    out.println("<br>");
+  }
+   
+//affichage des albums de niveau 1
+  // --------------------------------
+  out.println("<div id=\"subTopics\">");
+  out.println("<ul id=\"albumList\">");
+  Iterator it = root.getChildrenDetails().iterator();
+  while (it.hasNext()) {
+    IconPane icon = gef.getIconPane();
+    Icon albumIcon = icon.addIcon();
+    albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
+    icon.setSpacing("30px");
+      
+    NodeDetail unAlbum = (NodeDetail) it.next();
+    int id = unAlbum.getId();
+    String nom = unAlbum.getName();
+    String link = "";
+    if (unAlbum.getPermalink() != null) {
+      link = "&nbsp;<a href=\"" + unAlbum.getPermalink() + "\"><img src=\"" + resource.
+          getIcon("gallery.link") + "\" border=\"0\" align=\"bottom\" alt=\"" + resource.
+          getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString(
+          "gallery.CopyAlbumLink") + "\"></a>";
+    }
+    out.println("<li id=\"album_" + id + "\" class=\"ui-state-default\">");
+    
+    out.println("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.getName());
+    out.println("<span>" + unAlbum.getDescription() + "</span></a>");
+    out.println("</li>");
+}
+out.println("</ul>");
+out.println("</div>");
+  
            // afficher les dernieres photos telechargees
            // ------------------------------------------
              
            Board board = gef.getBoard();
+
 	%>
 			<br/>
 	<%

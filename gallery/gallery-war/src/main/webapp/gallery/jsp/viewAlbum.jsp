@@ -50,6 +50,7 @@
 			ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 
 			// declaration des variables :
+			String fctAddPhoto = "AddPhoto";
 			int nbAffiche = 0;
 			String albumId = "";
 			List photos = null;
