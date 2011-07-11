@@ -112,6 +112,22 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
   }
 
   @Override
+  public void unpublishClassified(String classifiedId) {
+    Connection con = initCon();
+    try {
+      ClassifiedDetail classified = getClassified(classifiedId);
+      classified.setStatus(ClassifiedDetail.UNPUBLISHED);
+      classified.setUpdateDate(new Date());
+      updateClassified(classified);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.unvalidateClassified()",
+          SilverpeasRuntimeException.ERROR, "classifieds.EX_ERR_REFUSED_CLASSIFIED", e);
+    } finally {
+      fermerCon(con);
+    }
+  }
+
+  @Override
   public void deleteAllClassifieds(String instanceId) {
     Collection<ClassifiedDetail> classifieds = getAllClassifieds(instanceId);
     for (ClassifiedDetail classified : classifieds) {
@@ -196,7 +212,20 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
   public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId) {
     Connection con = initCon();
     try {
-      return ClassifiedsDAO.getClassifiedsToValidate(con, instanceId);
+      return ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.TO_VALIDATE);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getClassifiedsToValidate()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
+    } finally {
+      fermerCon(con);
+    }
+  }
+
+  @Override
+  public Collection<ClassifiedDetail> getUnpublishedClassifieds(String instanceId, String userId) {
+    Connection con = initCon();
+    try {
+      return ClassifiedsDAO.getUnpublishedClassifieds(con, instanceId, userId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getClassifiedsToValidate()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
@@ -318,12 +347,12 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
   }
 
   @Override
-  public Collection<ClassifiedDetail> getAllClassifiedsToDelete(int nbDays) {
+  public Collection<ClassifiedDetail> getAllClassifiedsToUnpublish(int nbDays, String instanceId) {
     Connection con = initCon();
     SilverTrace.info("classifieds", "classifiedsBmEJB.getAllClassifiedsToDelete()",
         "root.MSG_GEN_ENTER_METHOD", "nbDays = " + nbDays);
     try {
-      return ClassifiedsDAO.getAllClassifiedsToDelete(con, nbDays);
+      return ClassifiedsDAO.getAllClassifiedsToUnpublish(con, nbDays, instanceId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getAllClassifiedsToDelete()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);

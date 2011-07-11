@@ -27,6 +27,7 @@ package com.stratelia.webactiv.kmelia.model;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
 public class FileDetail extends Object implements java.io.Serializable {
+  private static final long serialVersionUID = -9137458562237749139L;
   private String name;
   private String path;
   private long size;

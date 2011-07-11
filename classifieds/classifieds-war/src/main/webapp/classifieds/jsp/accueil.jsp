@@ -23,37 +23,49 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.form.Form"%>
+<%@page import="com.silverpeas.form.PagesContext"%>
+<%@page import="com.silverpeas.form.DataRecord"%>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="check.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<% 
-String 		profile			= (String) request.getAttribute("Profile");
-Collection	categories		= (Collection) request.getAttribute("Categories");
-String 		nbTotal			= (String) request.getAttribute("NbTotal");
-//Form 		formSearch 		= (Form) request.getAttribute("Form");
-//DataRecord	data 			= (DataRecord) request.getAttribute("Data"); 
-String		componentInstanceId		= (String) request.getAttribute("InstanceId");
-boolean		validation		= ((Boolean) request.getAttribute("Validation")).booleanValue();
-boolean		anonymousAccess	= ((Boolean) request.getAttribute("AnonymousAccess")).booleanValue();
+<c:set var="language" value="${requestScope.resources.language}"/>
 
-// d�claration des boutons
-Button validateButton = (Button) gef.getFormButton(resource.getString("GML.search")+" dans <b>"+nbTotal+"</b> "+resource.getString("classifieds.classifieds"), "javascript:onClick=sendData();", false);
+<fmt:setLocale value="${language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-%>
+
+<c:set var="browseContext" value="${requestScope.browseContext}" />
+<c:set var="componentLabel" value="${browseContext[1]}" />
+<c:set var="profile" value="${requestScope.Profile}" />
+<c:set var="categories" value="${requestScope.Categories}" />
+<c:set var="nbTotal" value="${requestScope.NbTotal}" />
+<c:set var="validation" value="${requestScope.Validation}" />
+<c:set var="componentInstanceId" value="${requestScope.InstanceId}" />
+
+<c:set var="formSearch" value="${requestScope.Form}" />
+<c:set var="data" value="${requestScope.Data}" />
+<c:set var="instanceId" value="${requestScope.InstanceId}" />
+<c:set var="isWysiwygHeaderEnabled" value="${requestScope.isWysiwygHeaderEnabled}"/>
+<c:set var="wysiwygHeader" value="${requestScope.wysiwygHeader}"/>
 
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel />
+<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/checkForm.js"></script>
 
 <script type="text/javascript">
 	var subscriptionWindow = window;
 
-	function openSPWindow(fonction, windowName){
-		pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
+	function openSPWindow(fonction, windowName) {
+		pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600',
+				'400', 'scrollbars=yes, resizable, alwaysRaised');
 	}
 
 	function sendData() {
@@ -64,142 +76,163 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 </head>
 
 <body id="classifieds">
-<center>
-<div id="<%=componentInstanceId%>">
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	
-	// affichage des options
-	if (!anonymousAccess) {
-		operationPane.addOperation(resource.getIcon("classifieds.addClassified"),resource.getString("classifieds.addClassified"), "NewClassified");
-		operationPane.addOperation(resource.getIcon("classifieds.myClassifieds"), resource.getString("classifieds.myClassifieds"), "ViewMyClassifieds");
-		operationPane.addLine();
-		operationPane.addOperation(resource.getIcon("classifieds.subscriptionsAdd"),resource.getString("classifieds.addSubscription"), "javaScript:addSubscription()");
-		operationPane.addOperation(resource.getIcon("classifieds.mySubscriptions"), resource.getString("classifieds.mySubscriptions"), "ViewMySubscriptions");
-	}
-	if ("admin".equals(profile) && validation) {
-	  	operationPane.addLine();
-		operationPane.addOperation(resource.getIcon("classifieds.viewClassifiedToValidate"),resource.getString("classifieds.viewClassifiedToValidate"), "ViewClassifiedToValidate");
-	}
+	<center>
+		<div id="${componentInstanceId}">
 
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
-    
-    Board	board		 = gef.getBoard();
-    
-	// afficher les crit�res de tri
-	%>
-	
-    <%@include file="subscriptionManager.jsp" %>
-    
-    <FORM Name="classifiedForm" action="SearchClassifieds" Method="POST" ENCTYPE="multipart/form-data">
-		<% if (formSearch != null) { %>
-			<center>
-			<div id="search">
-				<!-- AFFICHAGE du formulaire -->
-					<%=board.printBefore()%>
-					<%
-						PagesContext templateContext = new PagesContext("myForm", "0", resource.getLanguage(), false, instanceId, null);
-						templateContext.setBorderPrinted(false);
-						templateContext.setIgnoreDefaultValues(true);
-						templateContext.setUseMandatory(false);
-						
-						formSearch.display(out, templateContext, data);
-				    
-				    // bouton valider
-					ButtonPane buttonPane = gef.getButtonPane();
-					buttonPane.addButton(validateButton);
-					out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-			
-					out.println(board.printAfter());
-					%>
-			</div>
-			</center>
-		<% } %>	
-	</FORM>
-           
-	<%
-	// affichage des pav�s pour les petites annonces par cat�gorie
-	int nbAffiche = 0;
-	%>
-	<div id="categories">
-		<% if (categories != null) {
-			Category category;
-			Iterator itC = categories.iterator();
-			String leftOrRight = "left";
-			while (itC.hasNext()) {
-				// pour une cat�gorie
-				category = (Category) itC.next();
-				String categoryName = category.getValue();
-				out.println("<div id=\"category"+leftOrRight+"\" class=\"category"+category.getKey()+"\">");
-				//out.println(board.printBefore());				
-				nbAffiche = nbAffiche + 1;
-							
-				// affichage des annonces de cette cat�gorie
-				Collection classifieds = category.getClassifieds();
-				int nbClassifieds = 0;
-				%>
-				<div class="categoryTitle"><a href="ViewAllClassifiedsByCategory?CategoryName=<%=categoryName%>&FieldKey=<%=category.getKey()%>"><%=categoryName%></a></div>
-				<div class="categoryContent">
-				<%
-				if (classifieds == null || classifieds.size() == 0) 
-				{
-					%>
-						<span class="emptyCategory"><%=resource.getString("classifieds.CategoryEmpty")%></span>
-					<%	
-				}
-				else
-				{
-					ClassifiedDetail classified;
-					Iterator it = classifieds.iterator();
-					// on ne veut que 5 annonces par cat�gories
-					int max = 5;
-					out.println("<ul>");
-					while (it.hasNext() && nbClassifieds < max) {
-						classified = (ClassifiedDetail) it.next();
-						nbClassifieds = nbClassifieds + 1;
-						%>
-							<li><a href="ViewClassified?ClassifiedId=<%=classified.getClassifiedId()%>"><%=classified.getTitle()%></a> <span class="date"><%=resource.getOutputDateAndHour(classified.getUpdateDate(), classified.getCreationDate())%></span></li>
-						<%
-					}
-					out.println("</ul>");
-				}
-				out.print("</div>");
-				
-			  // lien pour la visualisation de toutes les annonces de la cat�gorie
-        %>
-          <div id="ViewAllClassifiedsByCategory"><a href="ViewAllClassifiedsByCategory?CategoryName=<%=categoryName%>&FieldKey=<%=category.getKey()%>"><%=resource.getString("classifieds.viewAllClassifiedsByCategory")%></a></div>
-        <%
-				// lien pour la saisie d'une nouvelle annonce
-				if (!anonymousAccess) {
-				%>
-					<div id="newClassified"><a href="NewClassified?FieldKey=<%=category.getKey()%>"><%=resource.getString("classifieds.newClassified")%></a></div>
-				<%
-				}
-				
-				out.print("</div>");
-				if ("left".equals(leftOrRight))
-				{
-				  leftOrRight = "right";
-				}
-				else
-				{
-				  leftOrRight = "left";
-				}
-			}
-		}%>
-		<!-- affichage des informations legales -->
-    <div id="infos" class="tableBoard">
-      <%=resource.getString("classifieds.infos")%>
-    </div>
-	</div>
-	
-	<%
-  	out.println(frame.printAfter());
-	 out.println(window.printAfter());
-%>
-</div>
-</center>
+			<view:browseBar />
+
+			<view:operationPane>
+				<c:if test="${profile.name != 'anonymous'}">
+					<c:if test="${(profile.name == 'admin') && (isWysiwygHeaderEnabled)}">
+						<fmt:message var="updateWysiwygLabel" key="classifieds.updateWysiwygClassified" />
+						<fmt:message var="updateWysiwygIcon" key="classifieds.updateWysiwygClassified"
+							bundle="${icons}" />
+						<view:operation action="ToWysiwygHeader" altText="${updateWysiwygLabel}"
+							icon="${updateWysiwygIcon}" />
+					</c:if>
+
+					<c:if
+						test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
+						<fmt:message var="addOp" key="classifieds.addClassified" />
+						<fmt:message var="addIcon" key="classifieds.addClassified"
+							bundle="${icons}" />
+						<view:operation action="NewClassified" altText="${addOp}"
+							icon="${addIcon}" />
+					</c:if>
+
+					<fmt:message var="myOp" key="classifieds.myClassifieds" />
+					<fmt:message var="myIcon" key="classifieds.myClassifieds"
+						bundle="${icons}" />
+					<view:operation action="ViewMyClassifieds" altText="${myOp}"
+						icon="${myIcon}" />
+
+					<view:operationSeparator />
+
+					<fmt:message var="subAddOp" key="classifieds.addSubscription" />
+					<fmt:message var="subAddIcon" key="classifieds.subscriptionsAdd"
+						bundle="${icons}" />
+					<view:operation action="javascript:addSubscription()"
+						altText="${subAddOp}" icon="${subAddIcon}" />
+
+					<fmt:message var="mySubOp" key="classifieds.mySubscriptions" />
+					<fmt:message var="mySubIcon" key="classifieds.mySubscriptions"
+						bundle="${icons}" />
+					<view:operation action="ViewMySubscriptions" altText="${mySubOp}"
+						icon="${mySubIcon}" />
+				</c:if>
+
+				<c:if test="${(profile.name == 'admin') && (validation)}">
+					<view:operationSeparator />
+					<fmt:message var="toValidateOp"
+						key="classifieds.viewClassifiedToValidate" />
+					<fmt:message var="toValidateIcon"
+						key="classifieds.viewClassifiedToValidate" bundle="${icons}" />
+					<view:operation action="ViewClassifiedToValidate"
+						altText="${toValidateOp}" icon="${toValidateIcon}" />
+				</c:if>
+			</view:operationPane>
+
+			<view:window>
+
+				<div id="header">
+				${wysiwygHeader}
+				</div>
+
+				<view:frame>
+					<jsp:include page="subscriptionManager.jsp"/>
+					<form name="classifiedForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
+						<c:if test="${not empty formSearch}">
+							<center>
+								<div id="search">
+									<!-- Search Form -->
+									<view:board>
+										<%
+											String language = (String) pageContext.getAttribute("language");
+											String instanceId = (String) pageContext.getAttribute("instanceId");
+											Form formSearch = (Form) pageContext.getAttribute("formSearch");
+											DataRecord data = (DataRecord) pageContext.getAttribute("data");
+
+											PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
+										    context.setIgnoreDefaultValues(true);
+										    context.setUseMandatory(false);
+										    context.setBorderPrinted(false);
+											formSearch.display(out, context, data);
+										%>
+										<br/>
+										<center>
+										<view:buttonPane>
+											<fmt:message var="searchLabel" key="classifieds.searchButton">
+												<fmt:param value="${nbTotal}" />
+											</fmt:message>
+											<view:button label="${searchLabel}"
+												action="javascript:onClick=sendData();" />
+										</view:buttonPane>
+										</center>
+									</view:board>
+								</div>
+							</center>
+						</c:if>
+					</form>
+
+					<div id="categories">
+						<c:if test="${not empty categories}">
+							<c:forEach items="${categories}" var="category"
+								varStatus="loopStatus">
+								<div
+									id="category${((loopStatus.index % 2) == 0) ? 'left' : 'right'}"
+									class="category${category.key}">
+									<div class="categoryTitle">
+										<a
+											href="ViewAllClassifiedsByCategory?CategoryName=${category.value}&FieldKey=${category.key}">
+											${category.value} </a>
+									</div>
+									<div class="categoryContent">
+										<c:if test="${empty category.classifieds}">
+											<span class="emptyCategory"><fmt:message
+													key="classifieds.CategoryEmpty" />
+											</span>
+										</c:if>
+										<c:if test="${not empty category.classifieds}">
+											<ul>
+												<c:forEach items="${category.classifieds}" var="classified" end="4">
+													<li><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
+														<span class="date">
+															<c:if test="${not empty classified.updateDate}">
+																<view:formatDateTime value="${classified.updateDate}" language="${language}"/>
+															</c:if>
+															<c:if test="${empty classified.updateDate}">
+																<view:formatDateTime value="${classified.creationDate}" language="${language}"/>
+															</c:if>
+														</span>
+													</li>
+												</c:forEach>
+											</ul>
+										</c:if>
+									</div>
+									<div id="ViewAllClassifiedsByCategory">
+										<a
+											href="ViewAllClassifiedsByCategory?CategoryName=${category.value}&FieldKey=${category.key}">
+											<fmt:message key="classifieds.viewAllClassifiedsByCategory" />
+										</a>
+									</div>
+									<c:if
+										test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
+										<div id="newClassified">
+											<a href="NewClassified?FieldKey=${category.key}"> <fmt:message
+													key="classifieds.newClassified" /> </a>
+										</div>
+									</c:if>
+								</div>
+							</c:forEach>
+						</c:if>
+
+						<!-- legal notice -->
+						<div id="infos" class="tableBoard">
+							<fmt:message key="classifieds.infos" />
+						</div>
+					</div>
+
+				</view:frame>
+			</view:window>
 </body>
 </html>

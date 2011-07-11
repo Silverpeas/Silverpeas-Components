@@ -205,7 +205,7 @@
         String folderName = EncodeHelper.javaStringToHtmlString(fsc.getForumName(folderId > 0 ? folderId : params));
 
         ResourceLocator settings = fsc.getSettings();
-        String configFile = SilverpeasSettings.readString(settings, "configFile",
+        String configFile = settings.getString("configFile",
             URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
 
         // Messages

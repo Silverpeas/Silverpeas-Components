@@ -94,11 +94,11 @@ public void displayAllOperations(String id, KmeliaSessionController kmeliaScc, G
       int i = 0;
       TabbedPane tabbedPane = gef.getTabbedPane(2);
 
-      PublicationDetail pubDetail = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail();
+      PublicationDetail pubDetail = kmeliaScc.getSessionPublication().getDetail();
 
       PublicationDetail cloneDetail = null;
       if (kmeliaScc.getSessionClone() != null)
-	      cloneDetail = kmeliaScc.getSessionClone().getPublication().getPublicationDetail();
+	      cloneDetail = kmeliaScc.getSessionClone().getDetail();
 
       String decoration = "";
       String cloneId = id;
@@ -138,7 +138,7 @@ public void displayAllOperations(String id, KmeliaSessionController kmeliaScc, G
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_SEE_ALSO) == -1 && !kmaxMode) {
           i++;
-		  List seeAlsoList = kmeliaScc.getSessionPublication().getPublication().getLinkList();
+		  List seeAlsoList = kmeliaScc.getSessionPublication().getCompleteDetail().getLinkList();
 		  List authorizedSeeAlsoList = new ArrayList();
             ForeignPK curFPK = null;
             String curComponentId = null;
@@ -214,7 +214,7 @@ void displayUserOperations(String id, KmeliaSessionController kmeliaScc, Graphic
       TabbedPane tabbedPane = gef.getTabbedPane();
       tabbedPane.addTab(resources.getString("GML.publication"), routerUrl+"ViewPublication?PubId="+id, action.equals("View") || action.equals("ViewPublication"), enabled);
       if (invisibleTabs.indexOf(kmeliaScc.TAB_SEE_ALSO) == -1 && !kmaxMode) {
-    	  List seeAlsoList = kmeliaScc.getSessionPublication().getPublication().getLinkList();
+    	  List seeAlsoList = kmeliaScc.getSessionPublication().getCompleteDetail().getLinkList();
     	  List authorizedSeeAlsoList = new ArrayList();
                 ForeignPK curFPK = null;
                 String curComponentId = null;

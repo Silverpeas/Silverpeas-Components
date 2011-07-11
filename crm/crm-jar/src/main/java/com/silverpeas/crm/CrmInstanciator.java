@@ -1,16 +1,35 @@
-package com.silverpeas.crm;
+/**
+ * Copyright (C) 2000 - 2011 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
+package com.silverpeas.crm;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.crm.control.CrmDataManager;
 import com.silverpeas.crm.control.ServiceFactory;
 import com.silverpeas.crm.model.Crm;
 import com.silverpeas.crm.model.CrmContact;
-import com.silverpeas.crm.model.CrmDataInterface;
 import com.silverpeas.crm.model.CrmDelivery;
 import com.silverpeas.crm.model.CrmEvent;
 import com.silverpeas.crm.model.CrmParticipant;
@@ -21,74 +40,78 @@ import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
 /**
  * @author nesseric updated by Sébastien Antonio
  */
-public class CrmInstanciator extends SQLRequest implements
-    ComponentsInstanciatorIntf {
+public class CrmInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
   public CrmInstanciator() {
     super("com.silverpeas.crm");
   }
 
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("crm", "CrmInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD");
-    SilverTrace.info("crm", "CrmInstanciator.create()",
-        "root.MSG_GEN_PARAM_VALUE", "space = " + spaceId);
-
-    CrmDataInterface dataInterface = ServiceFactory.getCrmData();
-    Crm crm = dataInterface.createDefaultCrm(spaceId, componentId);
+  @Override
+  public void create(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
+    SilverTrace.info("crm", "CrmInstanciator.create()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("crm", "CrmInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
+        "space = " + spaceId);
+    CrmDataManager dataManager = ServiceFactory.getCrmData();
+    Crm crm = dataManager.createDefaultCrm(spaceId, componentId);
     FullIndexEntry indexEntry = new FullIndexEntry(componentId, "crm", crm.getPK().getId());
     indexEntry.setTitle(crm.getClientName());
     IndexEngineProxy.addIndexEntry(indexEntry);
 
-    SilverTrace.info("crm", "CrmInstanciator.create()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("crm", "CrmInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("crm", "CrmInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD");
-    SilverTrace.info("crm", "CrmInstanciator.delete()",
-        "root.MSG_GEN_PARAM_VALUE", "space = " + spaceId);
+  @Override
+  public void delete(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
+    SilverTrace.info("crm", "CrmInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("crm", "CrmInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
+        "space = " + spaceId);
 
-    CrmDataInterface dataInterface = ServiceFactory.getCrmData();
-    ArrayList<Crm> listCrms = dataInterface.getCrms(componentId);
+    CrmDataManager dataManager = ServiceFactory.getCrmData();
+    List<Crm> listCrms = dataManager.listAllCrms(componentId);
     Crm defaultCrm = listCrms.get(0);
-    IndexEntryPK indexEntry;
 
     // Remove contacts attachments and indexes
-    ArrayList<CrmContact> crmContacts = dataInterface.getCrmContacts(defaultCrm.getPK());
+    List<CrmContact> crmContacts = dataManager.listContactsOfCrm(defaultCrm.getPK());
     for (CrmContact crmContact : crmContacts) {
       crmContact.deleteAttachments();
-      indexEntry = new IndexEntryPK(componentId, "Contact", crmContact.getPK().getId());
+      IndexEntryPK indexEntry =
+          new IndexEntryPK(componentId, "Contact", crmContact.getPK().getId());
       IndexEngineProxy.removeIndexEntry(indexEntry);
     }
 
     // Remove participants attachments and indexes
-    ArrayList<CrmParticipant> crmParticipants = dataInterface.getCrmParticipants(defaultCrm.getPK());
+    List<CrmParticipant> crmParticipants = dataManager.listCrmParticipantsOfCrm(defaultCrm.getPK());
     for (CrmParticipant crmParticipant : crmParticipants) {
       crmParticipant.deleteAttachments();
-      indexEntry = new IndexEntryPK(componentId, "Participant", crmParticipant.getPK().getId());
+      IndexEntryPK indexEntry =
+          new IndexEntryPK(componentId, "Participant", crmParticipant.getPK().getId());
       IndexEngineProxy.removeIndexEntry(indexEntry);
     }
 
     // Remove events attachments and indexes
-    ArrayList<CrmEvent> crmEvents = dataInterface.getCrmEvents(defaultCrm.getPK());
+    List<CrmEvent> crmEvents = dataManager.listEventsOfCrm(defaultCrm.getPK());
     for (CrmEvent crmEvent : crmEvents) {
       crmEvent.deleteAttachments();
-      indexEntry = new IndexEntryPK(componentId, "Event", crmEvent.getPK().getId());
+      IndexEntryPK indexEntry = new IndexEntryPK(componentId, "Event", crmEvent.getPK().getId());
       IndexEngineProxy.removeIndexEntry(indexEntry);
     }
 
     // Remove Deliverys attachments and indexes
-    ArrayList<CrmDelivery> crmDeliveries = dataInterface.getCrmDeliverys(defaultCrm.getPK());
+    List<CrmDelivery> crmDeliveries = dataManager.listDeliveriesOfCrm(defaultCrm.getPK());
     for (CrmDelivery crmDelivery : crmDeliveries) {
       crmDelivery.deleteAttachments();
-      indexEntry = new IndexEntryPK(componentId, "Delivery", crmDelivery.getPK().getId());
+      IndexEntryPK indexEntry =
+          new IndexEntryPK(componentId, "Delivery", crmDelivery.getPK().getId());
       IndexEngineProxy.removeIndexEntry(indexEntry);
     }
 
@@ -109,11 +132,11 @@ public class CrmInstanciator extends SQLRequest implements
    * @param suffixName (String) the suffix of a crm table
    */
   private void deleteDataOfInstance(Connection con, String componentId, String suffixName)
-  throws InstanciationException {
+      throws InstanciationException {
     // get the delete query from the external file
     String deleteQuery = getDeleteQuery(componentId, suffixName);
     SilverTrace.info("crm", "CrmInstanciator.deleteDataOfInstance()", "root.MSG_GEN_PARAM_VALUE",
-      "deleteQuery = " + deleteQuery);
+        "deleteQuery = " + deleteQuery);
 
     // execute the delete query
     Statement stmt = null;
@@ -123,15 +146,14 @@ public class CrmInstanciator extends SQLRequest implements
       stmt.close();
     } catch (SQLException se) {
       throw new InstanciationException("CrmInstanciator.deleteDataOfInstance()",
-        SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", se);
+          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", se);
     } finally {
       try {
         stmt.close();
       } catch (SQLException e) {
         SilverTrace.error("crm", "CrmInstanciator.deleteDataOfInstance()",
-          "root.EX_RESOURCE_CLOSE_FAILED", "", e);
+            "root.EX_RESOURCE_CLOSE_FAILED", "", e);
       }
     }
   }
-
 }

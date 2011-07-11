@@ -69,7 +69,7 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 
 	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
 	
-	UserCompletePublication userPubComplete = null;
+	KmeliaPublication kmeliaPublication = null;
 	UserDetail ownerDetail = null;
 	boolean isOwner = false;
 	
@@ -143,9 +143,9 @@ out.println(gef.getLookStyleSheet());
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setDomainName(kmeliaScc.getSpaceLabel());
 	browseBar.setComponentName(kmeliaScc.getComponentLabel(), "KmaxMain");
-	String pubName = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getName(currentLang);
+	String pubName = kmeliaScc.getSessionPublication().getDetail().getName(currentLang);
 	browseBar.setExtraInformation(Encode.encodeSpecialChar(pubName));
-	String id = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getId();
+	String id = kmeliaScc.getSessionPublication().getDetail().getId();
 	browseBar.setI18N(action, currentLang);
 	
     out.println(window.printBefore());

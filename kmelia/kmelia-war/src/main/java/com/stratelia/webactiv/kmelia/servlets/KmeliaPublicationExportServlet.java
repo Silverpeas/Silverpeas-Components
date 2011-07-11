@@ -4,6 +4,7 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
+import com.silverpeas.converter.DocumentFormat;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.silverpeas.util.MimeTypes;
@@ -14,35 +15,66 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import static com.silverpeas.util.StringUtil.*;
+import static com.silverpeas.converter.DocumentFormat.*;
 
 /**
- *
- * @author ehugonnet
+ * An HTTP servlet dedicated to the export of Kmelia publications.
  */
 public class KmeliaPublicationExportServlet extends HttpServlet {
+
   private static final long serialVersionUID = 5790958079143913041L;
+  private static final String PUBLICATION_ID_PARAMETER = "PubId";
+  private static final String COMPONENT_INSTANCE_ID_PARAMETER = "ComponentId";
+  private static final String DOCUMENT_FORMAT_PARAMETER = "Format";
+  private static final String ZIP_EXPORT = "zip";
 
   /**
-   * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-   * @param request servlet request
-   * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
+   * Listens for HTTP requests querying the export of a publication into a given format.
+   * Sends back the content of the export result.
+   * @param request the HTTP requests with the export parameters.
+   * @param response the HTTP responses with the export content.
+   * @throws ServletException if an error occurs while processing the export.
+   * @throws IOException if an error occurs while generating export files or when communicating
+   * with the requester.
    */
-  protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
+          throws ServletException, IOException {
+    String format = request.getParameter(DOCUMENT_FORMAT_PARAMETER);
+    if (!isDefined(format)) {
+      format = ZIP_EXPORT;
+    }
+    try {
+      if (ZIP_EXPORT.equals(format)) {
+        exportInArchive(request, response);
+      } else {
+        exportInDocument(request, response);
+      }
+    } catch (Exception ex) {
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
+      request.setAttribute("javax.servlet.jsp.jspException", ex);
+      getServletConfig().getServletContext().getRequestDispatcher(
+              "/admin/jsp/errorpageMain.jsp").forward(request, response);
+    }
+  }
+
+  private void exportInArchive(final HttpServletRequest request,
+          final HttpServletResponse response) throws IOException {
     response.setContentType(MimeTypes.ARCHIVE_MIME_TYPE);
     String componentId = request.getParameter("ComponentId");
     KmeliaSessionController kmelia = (KmeliaSessionController) request.getSession().getAttribute(
-        "Silverpeas_kmelia_" + componentId);
-    OutputStream out = response.getOutputStream();
-    File exportFile = kmelia.exportPublication();    
-    String fileName = ClientBrowserUtil.rfc2047EncodeFilename(request,exportFile.getName());
+            "Silverpeas_kmelia_" + componentId);
+    File exportFile = kmelia.exportPublication();
+    String fileName = ClientBrowserUtil.rfc2047EncodeFilename(request, exportFile.getName());
     InputStream in = new FileInputStream(exportFile);
+    OutputStream out = response.getOutputStream();
     try {
       response.setContentLength(Long.valueOf(exportFile.length()).intValue());
       response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
@@ -53,39 +85,29 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
     }
   }
 
-  // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-  /**
-   * Handles the HTTP <code>GET</code> method.
-   * @param request servlet request
-   * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
-   */
-  @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    processRequest(request, response);
+  private void exportInDocument(final HttpServletRequest request,
+          final HttpServletResponse response) throws IOException {
+    String fromPublicationId = request.getParameter(PUBLICATION_ID_PARAMETER);
+    DocumentFormat format = inFormat(request.getParameter(DOCUMENT_FORMAT_PARAMETER));
+    String componentId = request.getParameter(COMPONENT_INSTANCE_ID_PARAMETER);
+    KmeliaSessionController kmelia = (KmeliaSessionController) request.getSession().getAttribute(
+            "Silverpeas_kmelia_" + componentId);
+    File generatedDocument = kmelia.generateDocument(inFormat(format), fromPublicationId);
+    InputStream in = new FileInputStream(generatedDocument);
+    OutputStream out = response.getOutputStream();
+    try {
+      String documentName = ClientBrowserUtil.rfc2047EncodeFilename(request, generatedDocument.
+              getName());
+      response.setHeader("Content-Disposition", "inline; filename=\"" + documentName + "\"");
+      response.setContentType(format.getMimeType());
+      response.setContentLength(Long.valueOf(generatedDocument.length()).intValue());
+      ByteStreams.copy(in, out);
+    } finally {
+      if (generatedDocument != null) {
+        generatedDocument.delete();
+      }
+      Closeables.closeQuietly(in);
+      Closeables.closeQuietly(out);
+    }
   }
-
-  /**
-   * Handles the HTTP <code>POST</code> method.
-   * @param request servlet request
-   * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
-   */
-  @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    processRequest(request, response);
-  }
-
-  /**
-   * Returns a short description of the servlet.
-   * @return a String containing servlet description
-   */
-  @Override
-  public String getServletInfo() {
-    return "Short description";
-  }// </editor-fold>
 }

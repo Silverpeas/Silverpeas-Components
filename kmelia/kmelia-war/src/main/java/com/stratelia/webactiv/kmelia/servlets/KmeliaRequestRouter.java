@@ -78,9 +78,8 @@ import com.stratelia.webactiv.kmelia.KmeliaSecurity;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.FileFolder;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.kmelia.model.UserCompletePublication;
-import com.stratelia.webactiv.kmelia.model.UserPublication;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.util.DateUtil;
@@ -98,6 +97,8 @@ import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KmeliaRequestRouter extends ComponentRequestRouter {
 
@@ -222,7 +223,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
         request.setAttribute("Treeview", kmelia.getTreeview());
         request.setAttribute("DisplayNBPublis", Boolean.valueOf(kmelia.displayNbPublis()));
-        request.setAttribute("DisplaySearch", new Boolean(kmelia.isSearchOnTopicsEnabled()));
+        request.setAttribute("DisplaySearch", kmelia.isSearchOnTopicsEnabled());
 
         // rechercher si le theme a un descripteur
         request.setAttribute("HaveDescriptor", Boolean.valueOf(kmelia.
@@ -286,14 +287,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
                   destination = getDestination("ViewPublication", kmelia, request);
                 } else if (toolboxMode) {                  
                   // we have to find which page contains the right publication
-                  List<UserPublication> publications =
-                      new ArrayList<UserPublication>(
-                      kmelia.getSessionTopic().getPublicationDetails());
-                  UserPublication publication = null;
+                  List<KmeliaPublication> publications =
+                      new ArrayList<KmeliaPublication>(
+                      kmelia.getSessionTopic().getKmeliaPublications());
+                  KmeliaPublication publication = null;
                   int pubIndex = -1;
                   for (int p = 0; p < publications.size() && pubIndex == -1; p++) {
                     publication = publications.get(p);
-                    if (id.equals(publication.getPublication().getPK().getId())) {
+                    if (id.equals(publication.getDetail().getPK().getId())) {
                       pubIndex = p;
                     }
                   }
@@ -357,8 +358,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         try {
           processPath(kmelia, id);
           if (toolboxMode) {
-            UserCompletePublication userPubComplete = kmelia.getUserCompletePublication(id);
-            kmelia.setSessionPublication(userPubComplete);
+            KmeliaPublication kmeliaPublication = kmelia.getPublication(id);
+            kmelia.setSessionPublication(kmeliaPublication);
             kmelia.setSessionOwner(true);
             destination = getDestination("ViewAttachments", kmelia, request);
           } else {
@@ -522,18 +523,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if (function.equals("ViewClone")) {
         PublicationDetail pubDetail =
-            kmelia.getSessionPublication().getPublication().getPublicationDetail();
+            kmelia.getSessionPublication().getDetail();
 
         // Reload clone and put it into session
         String cloneId = pubDetail.getCloneId();
-        UserCompletePublication userPubComplete = kmelia.getUserCompletePublication(cloneId);
-        kmelia.setSessionClone(userPubComplete);
+        KmeliaPublication kmeliaPublication = kmelia.getPublication(cloneId);
+        kmelia.setSessionClone(kmeliaPublication);
 
-        request.setAttribute("Publication", userPubComplete);
+        request.setAttribute("Publication", kmeliaPublication);
         request.setAttribute("Profile", kmelia.getProfile());
         request.setAttribute("VisiblePublicationId", pubDetail.getPK().getId());
 
-        putXMLDisplayerIntoRequest(userPubComplete.getPublication().getPublicationDetail(), kmelia,
+        putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(), kmelia,
             request);
         
         // Attachments area must be displayed or not ?
@@ -558,20 +559,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           }
         }
 
-        UserCompletePublication userPubComplete = null;
+        KmeliaPublication kmeliaPublication = null;
         if (StringUtil.isDefined(id)) {
-          userPubComplete = kmelia.getUserCompletePublication(id, true);
-          kmelia.setSessionPublication(userPubComplete);
+          kmeliaPublication = kmelia.getPublication(id, true);
+          kmelia.setSessionPublication(kmeliaPublication);
 
-          PublicationDetail pubDetail = userPubComplete.getPublication().getPublicationDetail();
+          PublicationDetail pubDetail = kmeliaPublication.getDetail();
           if (pubDetail.haveGotClone()) {
-            UserCompletePublication clone =
-                kmelia.getUserCompletePublication(pubDetail.getCloneId());
+            KmeliaPublication clone =
+                kmelia.getPublication(pubDetail.getCloneId());
             kmelia.setSessionClone(clone);
           }
         } else {
-          userPubComplete = kmelia.getSessionPublication();
-          id = userPubComplete.getPublication().getPublicationDetail().getPK().getId();
+          kmeliaPublication = kmelia.getSessionPublication();
+          id = kmeliaPublication.getDetail().getPK().getId();
         }
         if (toolboxMode) {
           destination =
@@ -584,13 +585,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           if (publicationLanguages.contains(kmelia.getCurrentLanguage())) {
             request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
           } else {
-            request.setAttribute("ContentLanguage", checkLanguage(kmelia, userPubComplete.
-                getPublication().getPublicationDetail()));
+            request.setAttribute("ContentLanguage", checkLanguage(kmelia, kmeliaPublication.
+                getDetail()));
           }
           request.setAttribute("Languages", publicationLanguages);
 
           // see also management
-          Collection<ForeignPK> links = userPubComplete.getPublication().getLinkList();
+          Collection<ForeignPK> links = kmeliaPublication.getCompleteDetail().getLinkList();
           HashSet<String> linkedList = new HashSet<String>();
           for (ForeignPK link : links) {
             linkedList.add(link.getId() + "/" + link.getInstanceId());
@@ -598,7 +599,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           // put into session the current list of selected publications (see also)
           request.getSession().setAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY, linkedList);
 
-          request.setAttribute("Publication", userPubComplete);
+          request.setAttribute("Publication", kmeliaPublication);
           request.setAttribute("PubId", id);
           request.setAttribute("ValidationStep", kmelia.getValidationStep());
           request.setAttribute("ValidationType", new Integer(kmelia.getValidationType()));
@@ -609,9 +610,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
               Boolean.valueOf(kmelia.isNotificationAllowed()));
 
           // check is requested publication is an alias
-          checkAlias(kmelia, userPubComplete);
+          checkAlias(kmelia, kmeliaPublication);
 
-          if (userPubComplete.isAlias()) {
+          if (kmeliaPublication.isAlias()) {
             request.setAttribute("Profile", "user");
             request.setAttribute("IsAlias", "1");
           } else {
@@ -628,7 +629,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
             request.setAttribute("NbPublis", new Integer(1));
           }
 
-          putXMLDisplayerIntoRequest(userPubComplete.getPublication().getPublicationDetail(),
+          putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(),
               kmelia, request);
 
           String fileAlreadyOpened = (String) request.getAttribute("FileAlreadyOpened");
@@ -650,8 +651,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           
           //option Actualités décentralisées
           request.setAttribute("NewsManage", kmelia.isNewsManage());
-          request.setAttribute("DelegatedNews", kmelia.getDelegatedNews(id));
-          request.setAttribute("IsBasket", NodePK.BIN_NODE_ID.equals(kmelia.getSessionTopic().getNodePK().getId()));
+          if (kmelia.isNewsManage()) {
+            request.setAttribute("DelegatedNews", kmelia.getDelegatedNews(id));
+            request.setAttribute("IsBasket", NodePK.BIN_NODE_ID.equals(kmelia.getSessionTopic().getNodePK().getId()));
+          }
 
           destination = rootDestination + "publication.jsp";
         }
@@ -731,7 +734,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
             + destination);
       } else if (function.equals("ReadingControl")) {
         PublicationDetail publication =
-            kmelia.getSessionPublication().getPublication().getPublicationDetail();
+            kmelia.getSessionPublication().getDetail();
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
         request.setAttribute("Publication", publication);
         request.setAttribute("UserIds", kmelia.getUserIdsOfTopic());
@@ -751,10 +754,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         // put current publication
         if (!kmelia.isVersionControlled()) {
           request.setAttribute("CurrentPublicationDetail", kmelia.getSessionPubliOrClone().
-              getPublication().getPublicationDetail());
+              getDetail());
         } else {
           request.setAttribute("CurrentPublicationDetail", kmelia.getSessionPublication().
-              getPublication().getPublicationDetail());
+              getDetail());
         }
         // Paramètres du wizard
         setWizardParams(request, kmelia);
@@ -786,8 +789,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         destination = getDestination("ViewPublication", kmelia, request);
       } else if (function.equals("ViewValidationSteps")) {
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
-        request.setAttribute("Publication", kmelia.getSessionPubliOrClone().getPublication().
-            getPublicationDetail());
+        request.setAttribute("Publication", kmelia.getSessionPubliOrClone().getDetail());
         request.setAttribute("ValidationSteps", kmelia.getValidationSteps());
 
         request.setAttribute("Role", kmelia.getProfile());
@@ -795,7 +797,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         destination = rootDestination + "validationSteps.jsp";
       } else if (function.equals("ValidatePublication")) {
         String pubId =
-            kmelia.getSessionPublication().getPublication().getPublicationDetail().getPK().getId();
+            kmelia.getSessionPublication().getDetail().getPK().getId();
         SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "function = " + function + " pubId=" + pubId);
 
@@ -811,7 +813,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         destination = getDestination("ViewPublication", kmelia, request);
       } else if (function.equals("ForceValidatePublication")) {
         String pubId =
-            kmelia.getSessionPublication().getPublication().getPublicationDetail().getPK().getId();
+            kmelia.getSessionPublication().getDetail().getPK().getId();
 
         kmelia.forcePublicationValidation(pubId);
 
@@ -821,7 +823,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         destination = getDestination("ViewPublication", kmelia, request);
       } else if (function.equals("WantToRefusePubli")) {
         PublicationDetail pubDetail =
-            kmelia.getSessionPubliOrClone().getPublication().getPublicationDetail();
+            kmelia.getSessionPubliOrClone().getDetail();
 
         request.setAttribute("PublicationToRefuse", pubDetail);
 
@@ -830,7 +832,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         String motive = request.getParameter("Motive");
 
         String pubId =
-            kmelia.getSessionPublication().getPublication().getPublicationDetail().getPK().getId();
+            kmelia.getSessionPublication().getDetail().getPK().getId();
         SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "function = " + function + " pubId=" + pubId);
 
@@ -867,7 +869,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           destination = getDestination("ViewClone", componentSC, request);
         } else {
           String pubId =
-              kmelia.getSessionPubliOrClone().getPublication().getPublicationDetail().getPK().getId();
+              kmelia.getSessionPubliOrClone().getDetail().getPK().getId();
           String flag = kmelia.getProfile();
           String from = request.getParameter("From");
           if (StringUtil.isDefined(from)) {
@@ -951,10 +953,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Action", action);
 
         // check if requested publication is an alias
-        UserCompletePublication userPubComplete = kmelia.getSessionPublication();
-        checkAlias(kmelia, userPubComplete);
+        KmeliaPublication kmeliaPublication = kmelia.getSessionPublication();
+        checkAlias(kmelia, kmeliaPublication);
 
-        if (userPubComplete.isAlias()) {
+        if (kmeliaPublication.isAlias()) {
           request.setAttribute("Profile", "user");
           request.setAttribute("IsAlias", "1");
         } else {
@@ -1011,12 +1013,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         processPath(kmelia, newPubId);
         String wizard = kmelia.getWizard();
         if ("progress".equals(wizard)) {
-          UserCompletePublication userPubComplete = kmelia.getUserCompletePublication(newPubId);
-          kmelia.setSessionPublication(userPubComplete);
+          KmeliaPublication kmeliaPublication = kmelia.getPublication(newPubId);
+          kmelia.setSessionPublication(kmeliaPublication);
           String position = FileUploadUtil.getParameter(parameters, "Position");
           setWizardParams(request, kmelia);
           request.setAttribute("Position", position);
-          request.setAttribute("Publication", userPubComplete);
+          request.setAttribute("Publication", kmeliaPublication);
           request.setAttribute("Profile", kmelia.getProfile());
           destination = getDestination("WizardNext", kmelia, request);
         } else {
@@ -1035,11 +1037,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         String wizard = kmelia.getWizard();
         if (wizard.equals("progress")) {
-          UserCompletePublication userPubComplete = kmelia.getUserCompletePublication(id);
+          KmeliaPublication kmeliaPublication = kmelia.getPublication(id);
           String position = FileUploadUtil.getParameter(parameters, "Position");
           setWizardParams(request, kmelia);
           request.setAttribute("Position", position);
-          request.setAttribute("Publication", userPubComplete);
+          request.setAttribute("Publication", kmeliaPublication);
           request.setAttribute("Profile", kmelia.getProfile());
           destination = getDestination("WizardNext", kmelia, request);
         } else {
@@ -1067,7 +1069,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Wizard", kmelia.getWizard());
 
         PublicationDetail publication =
-            kmelia.getSessionPublication().getPublication().getPublicationDetail();
+            kmelia.getSessionPublication().getDetail();
         String pubId = publication.getPK().getId();
         request.setAttribute("Publication", publication);
         request.setAttribute("PathList", kmelia.getPublicationFathers(pubId));
@@ -1160,7 +1162,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           destination = "/RimportExportPeas/jsp/ExportItems";
         }
       } else if (function.equals("ToPubliContent")) {
-        CompletePublication completePublication = kmelia.getSessionPubliOrClone().getPublication();
+        CompletePublication completePublication = kmelia.getSessionPubliOrClone().getCompleteDetail();
 
         if (completePublication.getModelDetail() != null) {
           destination = getDestination("ToDBModel", kmelia, request);
@@ -1184,7 +1186,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
               } else {
                 // XML template
                 request.setAttribute("Name", modelId);
-
                 destination = getDestination("GoToXMLForm", kmelia, request);
               }
             } else {
@@ -1248,7 +1249,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         }
         // put current publication
         request.setAttribute("CurrentPublicationDetail", kmelia.getSessionPublication().
-            getPublication().getPublicationDetail());
+            getDetail());
 
         // Paramètres du wizard
         setWizardParams(request, kmelia);
@@ -1286,7 +1287,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         }
         // put current publication
         request.setAttribute("CurrentPublicationDetail", kmelia.getSessionPubliOrClone().
-            getPublication().getPublicationDetail());
+            getDetail());
 
         // Parametres du Wizard
         setWizardParams(request, kmelia);
@@ -1306,7 +1307,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           destination = getDestination("WizardNext", kmelia, request);
         } else {
           if (kmelia.getSessionClone() != null
-              && id.equals(kmelia.getSessionClone().getPublication().getPublicationDetail().getPK().
+              && id.equals(kmelia.getSessionClone().getDetail().getPK().
               getId())) {
             destination = getDestination("ViewClone", componentSC, request);
           } else {
@@ -1321,7 +1322,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         }
 
         // put current publication
-        request.setAttribute("CompletePublication", kmelia.getSessionPubliOrClone().getPublication());
+        request.setAttribute("CompletePublication", kmelia.getSessionPubliOrClone().getCompleteDetail());
         request.setAttribute("NotificationAllowed", Boolean.valueOf(kmelia.isNotificationAllowed()));
 
         // Paramètres du wizard
@@ -1405,7 +1406,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         infos = new InfoDetail(null, textDetails, imageDetails, null, "");
 
-        CompletePublication completePub = kmelia.getSessionPubliOrClone().getPublication();
+        CompletePublication completePub = kmelia.getSessionPubliOrClone().getCompleteDetail();
 
         if (completePub.getModelDetail() == null) {
           kmelia.createInfoModelDetail("useless", modelId, infos);
@@ -1434,7 +1435,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         // put current publication
         request.setAttribute("CurrentPublicationDetail", kmelia.getSessionPubliOrClone().
-            getPublication().getPublicationDetail());
+            getDetail());
 
         // Parametres du Wizard
         setWizardParams(request, kmelia);
@@ -1456,7 +1457,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         List<FileItem> items = FileUploadUtil.parseRequest(request);
 
         PublicationDetail pubDetail =
-            kmelia.getSessionPubliOrClone().getPublication().getPublicationDetail();
+            kmelia.getSessionPubliOrClone().getDetail();
 
         String xmlFormShortName = null;
 
@@ -1526,7 +1527,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           }
         }
       } else if (function.startsWith("ToOrderPublications")) {
-        List<UserPublication> publications = kmelia.getSessionPublicationsList();
+        List<KmeliaPublication> publications = kmelia.getSessionPublicationsList();
 
         request.setAttribute("Publications", publications);
         request.setAttribute("Path", kmelia.getSessionPath());
@@ -1708,7 +1709,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         kmelia.deletePosition(positionId);
         destination = getDestination("KmaxAxisManager", componentSC, request);
       } else if (function.equals("KmaxViewUnbalanced")) {
-        List<UserPublication> publications = kmelia.getUnbalancedPublications();
+        List<KmeliaPublication> publications = kmelia.getUnbalancedPublications();
         kmelia.setSessionPublicationsList(publications);
         kmelia.orderPubs();
 
@@ -1716,7 +1717,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
             rootDestination + "kmax.jsp?Action=KmaxViewUnbalanced&Profile=" + kmelia.getProfile();
       } else if (function.equals("KmaxViewBasket")) {
         TopicDetail basket = kmelia.getTopic("1");
-        List<UserPublication> publications = (List<UserPublication>) basket.getPublicationDetails();
+        List<KmeliaPublication> publications = (List<KmeliaPublication>) basket.getKmeliaPublications();
         kmelia.setSessionPublicationsList(publications);
         kmelia.orderPubs();
 
@@ -1737,7 +1738,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
             "root.MSG_GEN_PARAM_VALUE", "axisValuesStr = " + axisValuesStr + " timeCriteria="
             + timeCriteria);
         List<String> combination = kmelia.getCombination(axisValuesStr);
-        List<UserPublication> publications = null;
+        List<KmeliaPublication> publications = null;
         if (StringUtil.isDefined(timeCriteria) && !timeCriteria.equals("X")) {
           publications = kmelia.search(combination, new Integer(timeCriteria).intValue());
         } else {
@@ -2393,7 +2394,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       KmeliaSessionController kmelia, String xmlFormName)
       throws PublicationTemplateException, FormException {
     PublicationDetail pubDetail =
-        kmelia.getSessionPubliOrClone().getPublication().getPublicationDetail();
+        kmelia.getSessionPubliOrClone().getDetail();
     String pubId = pubDetail.getPK().getId();
 
     String xmlFormShortName = null;
@@ -2444,8 +2445,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
   }
 
   private String checkLanguage(KmeliaSessionController kmelia) {
-    return checkLanguage(kmelia, kmelia.getSessionPublication().getPublication().
-        getPublicationDetail());
+    return checkLanguage(kmelia, kmelia.getSessionPublication().getDetail());
   }
 
   private String checkLanguage(KmeliaSessionController kmelia,
@@ -2454,10 +2454,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
   }
 
   private void checkAlias(KmeliaSessionController kmelia,
-      UserCompletePublication publication) {
+      KmeliaPublication publication) {
     if (!kmelia.getComponentId().equals(
-        publication.getPublication().getPublicationDetail().getPK().getInstanceId())) {
-      publication.setAlias(true);
+        publication.getDetail().getPK().getInstanceId())) {
+      publication.asAlias();
     }
   }
 
@@ -2524,8 +2524,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         topics = calculedTopics;
       }
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
     }
     kmelia.updatePublication(pubDetail);
 
@@ -2583,8 +2582,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Topics", kmelia.getUpdateChainTopics());
 
         // mise à jour de la publication en session pour récupérer les alias
-        UserCompletePublication userPubComplete = kmelia.getUserCompletePublication(id);
-        kmelia.setSessionPublication(userPubComplete);
+        KmeliaPublication kmeliaPublication = kmelia.getPublication(id);
+        kmelia.setSessionPublication(kmeliaPublication);
 
         List<Alias> aliases = kmelia.getAliases();
         request.setAttribute("Aliases", aliases);
