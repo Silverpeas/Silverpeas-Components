@@ -54,6 +54,10 @@ import java.util.Map;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 
+/**
+ * Kmelia security provides a way to check the rights of a user to access the content of a Kmelia
+ * instance (publications, ...).
+ */
 public class KmeliaSecurity implements ComponentSecurity {
 
   private static final String CO_WRITING_PARAM = "coWriting";

@@ -146,7 +146,7 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
   ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", kmeliaScc.getLanguage());
   ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
 
-  UserCompletePublication userPubComplete = null;
+  KmeliaPublication kmeliaPublication = null;
   UserDetail ownerDetail = null;
 
   CompletePublication pubComplete = null;
@@ -176,11 +176,11 @@ String user_id = kmeliaScc.getUserId();
 	  pathString = displayPath(pathColl, false, 3);
 
       //Recuperation des parametres de la publication
-	  userPubComplete = kmeliaScc.getUserCompletePublication(id);
- 	  kmeliaScc.setSessionPublication(userPubComplete);
-	  pubName = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getName(currentLang);
-      pubComplete = userPubComplete.getPublication();
-      ownerDetail = userPubComplete.getOwner();
+	  kmeliaPublication = kmeliaScc.getPublication(id);
+ 	  kmeliaScc.setSessionPublication(kmeliaPublication);
+	  pubName = kmeliaScc.getSessionPublication().getDetail().getName(currentLang);
+      pubComplete = kmeliaPublication.getCompleteDetail();
+      ownerDetail = kmeliaPublication.getCreator();
 %>
 <HTML>
 <HEAD>

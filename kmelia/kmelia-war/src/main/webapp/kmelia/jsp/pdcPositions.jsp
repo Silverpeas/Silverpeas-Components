@@ -42,9 +42,9 @@ if (wizardRow == null)
 
 boolean isEnd = true;
 
-String pubName			= kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getName(currentLang);
+String pubName			= kmeliaScc.getSessionPublication().getDetail().getName(currentLang);
 String linkedPathString = kmeliaScc.getSessionPath();
-String pubId			= kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getPK().getId();
+String pubId			= kmeliaScc.getSessionPublication().getDetail().getPK().getId();
 String url				= kmeliaScc.getComponentUrl()+"ViewPdcPositions";
 
 %>
@@ -121,7 +121,7 @@ function validate() {
 
 	// si la publication est valide, envoyer la notification pour l'abonnement pdc
 	String sendSubscription = "0";
-	if (kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getStatus().equals("Valid"))
+	if (kmeliaScc.getSessionPublication().getDetail().getStatus().equals("Valid"))
 		sendSubscription = "1";
 	
 	getServletConfig().getServletContext().getRequestDispatcher("/pdcPeas/jsp/positionsInComponent.jsp?SilverObjectId="+kmeliaScc.getSilverObjectId(pubId)+"&ComponentId="+componentId+"&ReturnURL="+URLEncoder.encode(url)+"&SendSubscriptions="+sendSubscription+"").include(request, response);

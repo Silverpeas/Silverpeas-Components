@@ -27,6 +27,7 @@ package com.stratelia.webactiv.kmelia.model;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class KmeliaRuntimeException extends SilverpeasRuntimeException {
+  private static final long serialVersionUID = 3262113459027359252L;
 
   /**
    * -------------------------------------------------------------------------- constructors
@@ -82,6 +83,7 @@ public class KmeliaRuntimeException extends SilverpeasRuntimeException {
    * @return
    * @see
    */
+  @Override
   public String getModule() {
     return "kmelia";
   }
