@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2009 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -34,8 +34,17 @@
     <description>no description</description>
     <servlet-class>com.silverpeas.scheduleevent.servlets.ScheduleEventRequestRouter</servlet-class>
   </servlet>
+  <servlet>
+    <display-name>GoToScheduleEvent</display-name>
+    <servlet-name>GoToScheduleEvent</servlet-name>
+    <servlet-class>com.silverpeas.scheduleevent.servlets.GoToScheduleEvent</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>ScheduleEventRequestRouter</servlet-name>
     <url-pattern>/Rscheduleevent/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToScheduleEvent</servlet-name>
+    <url-pattern>/ScheduleEvent/*</url-pattern>
   </servlet-mapping>
 </web-app>
