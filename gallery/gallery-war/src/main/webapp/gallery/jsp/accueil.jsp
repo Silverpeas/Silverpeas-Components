@@ -55,13 +55,13 @@ session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
   
 	  $(document).ready(function(){
 		  <%if ( "admin".equals(profile)) { %>
 		    showAlbumsHelp();
 		    
-		    $("#albumList").sortable({opacity: 0.4, cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
+		    $("#albumList").sortable({opacity: 0.4, cursor: 'move'});
 			  
 			  $('#albumList').bind('sortupdate', function(event, ui) {
 				     var reg=new RegExp("album", "g");

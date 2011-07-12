@@ -110,15 +110,15 @@
 <%
   out.println(gef.getLookStyleSheet());
 %>
-<script src="<%=m_context%>/gallery/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
+<script type="text/javascript" src="<%=m_context%>/gallery/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 
 	$(document).ready(function(){
 		<%if ( "admin".equals(profile)) { %>
-        $("#albumList").sortable({opacity: 0.4, cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
+        $("#albumList").sortable({opacity: 0.4, cursor: 'move'});
       
         $('#albumList').bind('sortupdate', function(event, ui) {
              var reg=new RegExp("album", "g");
