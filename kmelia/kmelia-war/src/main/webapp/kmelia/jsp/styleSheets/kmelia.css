@@ -83,6 +83,16 @@
 	vertical-align:bottom;
 }
 
+#infoPublication{
+	padding-bottom:11px;
+}
+
+#permalinkInfo input {
+	width:90%;
+	border:1px solid #cacaca;
+	color:#333;
+}
+
 #preview .publiDesc {
 	font-weight: bold;
 	color:#666666;
@@ -259,11 +269,6 @@
 }
 
 #preview .txtBaseline {
-	color: #666666;
-    font-size: 10px;
-    display: block;
-    text-align: center;
- 	padding-top: 10px;   
 }
 
 #rightClick-message p {

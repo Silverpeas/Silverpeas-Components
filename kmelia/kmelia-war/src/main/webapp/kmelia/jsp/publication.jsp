@@ -635,18 +635,28 @@
 			          /** Affichage des fichiers joints																					**/
 			          /*********************************************************************************************************************/
 			        %>
-			         <div class="txtBaseline footerPublication clearAll">
+			         <div id="infoPublication" class="bgDegradeGris">
+			         			
 			         	
+			         			<% if (updaterId != null) {%>
+								  	<p id="lastModificationInfo">
+								  		<%=resources.getString("kmelia.LastModification")%>  <br />
+								  		<b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> par <%= updaterName%> 								  		
+							  		</p>
+							  	 <% }	%>
+							  	 
 								<% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) {%>
-									<span id="authorInfo"><%=resources.getString("GML.author")%> : <%=pubDetail.getAuthor()%></span><br/>
+									<span id="authorInfo"><%=resources.getString("GML.author")%>  :  <%=pubDetail.getAuthor()%></span>
 								<% }%>
 								
-								 <span id="creationInfo"><%= creatorName%> - <%=resources.getOutputDate(pubDetail.getCreationDate())%></span>
+								 <p id="creationInfo">
+								 	Crée le <br/>
+								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b>  par <%= creatorName%> 						 	
+							 	</p>
 								 
-								  <% if (updaterId != null) {%>
-								  	<span id="lastModificationInfo"> | <%=resources.getString("kmelia.LastModification")%> : <%= updaterName%> - <%=resources.getOutputDate(pubDetail.getUpdateDate())%></span>
-							  	 <% }
-							  	 	
+								  
+							  	 
+							  	  <%
 						          // Displaying all validator's name and final validation date 
 						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.
 						              getValidateDate() != null) {
@@ -667,11 +677,15 @@
 						              validators = kmeliaScc.getUserDetail(pubDetail.getValidatorId()).getDisplayedName();
 						            }
 						        %>					        
-       								 <span id="validationInfo"> | <%=resources.getString("kmelia.validation")%> : <%= validators%> - <%=resources.getOutputDate(pubDetail.getValidateDate())%></span>
+       								 <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/> 
+       								 	<%= validators%> - <%=resources.getOutputDate(pubDetail.getValidateDate())%>       								 	
+   								 	</p>
 							    <%
 							      }
 							    %>
-        					<span id="statInfo"> | <%=resources.getString("kmelia.consulted")%> <%= pubDetail.getNbAccess()%> <%=resources.getString("kmelia.time")%></span>
+        					<p id="statInfo"> 
+        						<%=resources.getString("kmelia.consulted")%><br/> 
+        						<b><%= pubDetail.getNbAccess()%><%=resources.getString("kmelia.time")%></b></p>
         					
 					        <% if (URLManager.displayUniversalLinks()) {
 					            String link = null;
@@ -681,9 +695,11 @@
 					            } else {
 					              link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
 					            }%>
-					        <span id="permalinkInfo"> | <a href="<%=link%>"><img src="<%=resources.getIcon("kmelia.link")%>" align="absmiddle" alt="<%=Encode.convertHTMLEntities(resources.getString(
-					                                                                 "kmelia.CopyPublicationLink"))%>" title="<%=Encode.convertHTMLEntities(resources.getString(
-					                                                                     "kmelia.CopyPublicationLink"))%>"/></a>
+					        <p id="permalinkInfo">
+					        	<a href="<%=link%>"title="<%=Encode.convertHTMLEntities(resources.getString(
+					                                                                     "kmelia.CopyPublicationLink"))%>"><img src="<%=resources.getIcon("kmelia.link")%>" alt="<%=Encode.convertHTMLEntities(resources.getString(
+					                                                                 "kmelia.CopyPublicationLink"))%>" /></a> Permalien <br />
+					            <input type="text" onFocus="select();" value="<%=link%>" />
 					        </span>
 				            <% }%>
       </div>
