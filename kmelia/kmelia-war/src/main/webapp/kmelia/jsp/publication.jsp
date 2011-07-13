@@ -643,7 +643,7 @@
 			         			<% if (updaterId != null) {%>
 								  	<p id="lastModificationInfo">
 								  		<%=resources.getString("PubDateUpdate")%>  <br />
-								  		<b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> -  <%= updaterName%> 								  		
+								  		<b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%>  <%= updaterName%> 								  		
 							  		</p>
 							  	 <% }	%>
 							  	 
@@ -653,7 +653,7 @@
 								
 								 <p id="creationInfo">
 								 	<%=resources.getString("PubDateCreation")%> <br/>
-								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b>  -  <%= creatorName%> 						 	
+								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%>  <%= creatorName%> 						 	
 							 	</p>
 								 
 								  
@@ -680,7 +680,7 @@
 						            }
 						        %>					        
        								 <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/> 
-       								 	<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> -  <%= validators%> 						 	
+       								 	<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <%=resources.getString("GML.by")%>  <%= validators%> 						 	
    								 	</p>
 							    <%
 							      }
@@ -700,7 +700,7 @@
 					        <p id="permalinkInfo">
 					        	<a href="<%=link%>"title="<%=Encode.convertHTMLEntities(resources.getString(
 					                                                                     "kmelia.CopyPublicationLink"))%>"><img src="<%=resources.getIcon("kmelia.link")%>" alt="<%=Encode.convertHTMLEntities(resources.getString(
-					                                                                 "kmelia.CopyPublicationLink"))%>" /></a> Permalien <br />
+					                                                                 "kmelia.CopyPublicationLink"))%>" /></a> <%=resources.getString("GML.permalink")%> <br />
 					            <input type="text" onFocus="select();" value="<%=link%>" />
 					        </span>
 				            <% }%>
