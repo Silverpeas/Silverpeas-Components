@@ -188,26 +188,26 @@ function clipboardPaste() {
 		 out.println(b.printBefore());
 		 Button validateButton 	= (Button) gef.getFormButton("OK", "javascript:onClick=sendData();", false);
 		 %>
-		 <center>
+        <center>
+          <form name="searchForm" action="SearchKeyWord" method="POST" onSubmit="javascript:sendData();">
 		 	<table border="0" cellpadding="0" cellspacing="0">
-		 		<form name="searchForm" action="SearchKeyWord" method="POST" onSubmit="javascript:sendData();">
-		 			<tr>
-		 				<td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("GML.search")%></td>
-		 				<td align="left" valign="middle">
-		 					<table border="0" cellspacing="0" cellpadding="0">
-		 						<tr valign="middle">
-		 							<td valign="middle"><input type="text" name="SearchKeyWord" size="36"></td>
-		 							<td valign="middle">&nbsp;</td>
-		 							<td valign="middle" align="left" width="100%"><% out.println(validateButton.print());%></td>
-		 							<td valign="middle">&nbsp;</td>
-		 							<td valign="middle"><a href="SearchAdvanced"><%=resource.getString("gallery.searchAdvanced")%></a>
-		 						</tr>
-		 					</table>
-		 				</td>
-		 			</tr>
-		 		</form>
-		     </table>
-		 </center>
+              <tr>
+                <td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("GML.search")%></td>
+                <td align="left" valign="middle">
+                	<table border="0" cellspacing="0" cellpadding="0">
+                      <tr valign="middle">
+                      <td valign="middle"><input type="text" name="SearchKeyWord" size="36"></td>
+                      <td valign="middle">&nbsp;</td>
+                      <td valign="middle" align="left" width="100%"><% out.println(validateButton.print());%></td>
+                      <td valign="middle">&nbsp;</td>
+                      <td valign="middle"><a href="SearchAdvanced"><%=resource.getString("gallery.searchAdvanced")%></a>
+                      </tr>
+                	</table>
+                </td>
+              </tr>
+		    </table>
+          </form>
+        </center>
                                     <%
              out.println(b.printAfter());
              out.println("<br>");

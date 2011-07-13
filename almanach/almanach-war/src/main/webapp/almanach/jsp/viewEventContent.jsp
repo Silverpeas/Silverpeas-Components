@@ -35,7 +35,7 @@
 
 	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(almanach.getLanguage());
 
-	// récupération du user
+	// rï¿½cupï¿½ration du user
 	String user = request.getParameter("flag");
 	
 	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");
@@ -72,8 +72,8 @@
 	 }
 %>
 
-<HTML>
-<HEAD>
+<html>
+<head>
 <% out.println(graphicFactory.getLookStyleSheet());%>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">
@@ -122,9 +122,9 @@ $(document).ready(function(){
         width: 650});
 });
 </script>
-</HEAD>
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
-<BODY>
+</head>
+<title><%=generalMessage.getString("GML.popupTitle")%></title>
+<body>
   <% 
     Window 	window 	= graphicFactory.getWindow();
     Frame 	frame	= graphicFactory.getFrame();
@@ -170,7 +170,7 @@ $(document).ready(function(){
 <%
         out.println(board.printBefore());
 %>
-<table CELLPADDING=5 width="100%">
+<table cellpadding=5 width="100%">
 		<tr> 
       <td nowrap class="txtlibform" width="20%"><%=resources.getString("GML.name")%> :</td>
       <td><%=EncodeHelper.javaStringToHtmlString(event.getTitle())%></td>
@@ -338,13 +338,13 @@ $(document).ready(function(){
 				} 
 			%>
 			<tr> 
-	          <td nowrap align=right class="txtlibform"><span><%=resources.getString("beginDatePeriodicity")%>&nbsp;:&nbsp;</td>
+	          <td nowrap align=right class="txtlibform"><span><%=resources.getString("beginDatePeriodicity")%>&nbsp;:&nbsp;</span></td>
 	          <td valign="baseline">  
 				<% if (event.getStartDate() != null) out.print(resources.getInputDate(event.getStartDate()));%>
 	          </td>
 	        </tr>
 			<tr> 
-	          <td nowrap align=right class="txtlibform"><span><%=resources.getString("endDatePeriodicity")%>&nbsp;:&nbsp;</td>
+	          <td nowrap align=right class="txtlibform"><span><%=resources.getString("endDatePeriodicity")%>&nbsp;:&nbsp;</span></td>
 	          <td valign="baseline"> 
 	           <% if (periodicity.getUntilDatePeriod() != null) out.print(resources.getInputDate(periodicity.getUntilDatePeriod()));%>
 	          </td>
@@ -386,7 +386,7 @@ $(document).ready(function(){
    		<% } %>
 	</form>
 <div id="modalDialogOnDelete" style="display: none">
-	<% 
+	<%
 	ButtonPane buttonPaneOnDelete = graphicFactory.getButtonPane();
 	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("occurenceOnly"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDeleteOccurence')", false));
 	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("allEvents"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDelete')", false));
@@ -397,5 +397,5 @@ $(document).ready(function(){
 	<center><%=buttonPaneOnDelete.print()%></center>
 	</td></tr></table>
 </div>	
-</BODY>
-</HTML>
+</body>
+</html>
