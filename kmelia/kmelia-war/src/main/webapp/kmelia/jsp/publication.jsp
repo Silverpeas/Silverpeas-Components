@@ -549,14 +549,16 @@
      
             <% if (!debut) {%>
             <a href="PreviousPublication" title="<%=resources.getString("kmelia.previous")%>"><img src="<%=resources.getIcon("kmelia.previous")%>" alt="<%=resources.getString("kmelia.previous")%>" /></a>
-            <% } else {%>&nbsp;<% }%>
+            <% } else {%>
+            		<img src="<%=resources.getIcon("kmelia.previousOff")%>" alt="" /><%
+            	 }%>
         
           <span class="txtnav"><span class="currentPage"><%=rang.intValue() + 1%></span> / <%=nbPublis.intValue()%></span>
       
           <% if (!fin) {%>
           <a href="NextPublication" title="<%=resources.getString("kmelia.next")%>"><img src="<%=resources.getIcon("kmelia.next")%>"  alt="<%=resources.getString("kmelia.next")%>" /></a>
             <% } else {%>
-          &nbsp;
+         			<img src="<%=resources.getIcon("kmelia.nextOff")%>"  alt="" />
           <% }%>
        
       </div>
@@ -609,12 +611,12 @@
 			                  "useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
 			                  include(request, response);
 			            } else {
-			              if (!isOwner || pubDetail.haveGotClone()) {
-			                // Attachments can be updated in both cases only : 
-			                //  - on clone (if "publication always visible" is used)
-			                //  - if current user can modified publication
-			                attProfile = "user";
-			              }
+				              if (!isOwner || pubDetail.haveGotClone()) {
+				                // Attachments can be updated in both cases only : 
+				                //  - on clone (if "publication always visible" is used)
+				                //  - if current user can modified publication
+				                attProfile = "user";
+				              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
 			                  "/attachment/jsp/displayAttachments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
 			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo + "&UpdateOfficeMode=" + kmeliaScc.
@@ -632,7 +634,7 @@
 			        
 			        
 			           /*********************************************************************************************************************/
-			          /** Affichage des fichiers joints																					**/
+			          /** Affichage des Info de publication																		**/
 			          /*********************************************************************************************************************/
 			        %>
 			         <div id="infoPublication" class="bgDegradeGris">
@@ -640,8 +642,8 @@
 			         	
 			         			<% if (updaterId != null) {%>
 								  	<p id="lastModificationInfo">
-								  		<%=resources.getString("kmelia.LastModification")%>  <br />
-								  		<b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> par <%= updaterName%> 								  		
+								  		<%=resources.getString("PubDateUpdate")%>  <br />
+								  		<b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> -  <%= updaterName%> 								  		
 							  		</p>
 							  	 <% }	%>
 							  	 
@@ -650,8 +652,8 @@
 								<% }%>
 								
 								 <p id="creationInfo">
-								 	Crée le <br/>
-								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b>  par <%= creatorName%> 						 	
+								 	<%=resources.getString("PubDateCreation")%> <br/>
+								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b>  -  <%= creatorName%> 						 	
 							 	</p>
 								 
 								  
@@ -678,14 +680,14 @@
 						            }
 						        %>					        
        								 <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/> 
-       								 	<%= validators%> - <%=resources.getOutputDate(pubDetail.getValidateDate())%>       								 	
+       								 	<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> -  <%= validators%> 						 	
    								 	</p>
 							    <%
 							      }
 							    %>
         					<p id="statInfo"> 
         						<%=resources.getString("kmelia.consulted")%><br/> 
-        						<b><%= pubDetail.getNbAccess()%><%=resources.getString("kmelia.time")%></b></p>
+        						<b><%= pubDetail.getNbAccess()%> <%=resources.getString("kmelia.time")%></b></p>
         					
 					        <% if (URLManager.displayUniversalLinks()) {
 					            String link = null;
@@ -702,10 +704,10 @@
 					            <input type="text" onFocus="select();" value="<%=link%>" />
 					        </span>
 				            <% }%>
-      </div>
+					</div>
       
       <%
-           out.println("</div>");
+           out.println("</div><!-- /rightContent-->");
            
            
         /*********************************************************************************************************************/
@@ -745,7 +747,7 @@
 				        String description = EncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language));
 				        description = EncodeHelper.javaStringToHtmlParagraphe(description);
 				
-				        out.println("<p class=\"publiDesc text2 \">" + description + "</p>");
+				       out.println("<p class=\"publiDesc text2 \">" + description + "</p>");
 				
 				
 				        /*********************************************************************************************************************/

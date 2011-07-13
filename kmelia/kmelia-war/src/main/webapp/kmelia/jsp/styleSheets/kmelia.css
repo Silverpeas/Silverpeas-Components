@@ -112,6 +112,14 @@
 #preview #pagination {
 	display: block;
 	float: right;
+	margin:5px 0;
+}
+#preview .currentPage {
+	opacity:0.6;
+}
+#preview #pagination img {
+	border:0;
+	vertical-align:top;
 }
 
 #sortingList {
