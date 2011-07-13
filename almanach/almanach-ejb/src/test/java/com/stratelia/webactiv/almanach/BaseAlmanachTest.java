@@ -71,7 +71,7 @@ public abstract class BaseAlmanachTest extends AbstractJndiCase {
   public void bootstrapDatabase() throws Exception {
     dbConnection = baseTest.getConnection();
     connection = dbConnection.getConnection();
-    DBUtil.getInstance(connection);
+    DBUtil.getInstanceForTest(connection);
   }
 
   @After
