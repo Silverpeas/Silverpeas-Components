@@ -1005,4 +1005,5 @@
       </help>
     </parameter>
   </parameters>
+  <searchTemplating>false</searchTemplating>  
 </WAComponent>
