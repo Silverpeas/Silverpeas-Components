@@ -23,15 +23,11 @@
  */
 package com.silverpeas.kmelia.export;
 
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.Iterator;
 import java.util.List;
-import org.odftoolkit.odfdom.dom.element.table.TableTableCellElement;
-import org.odftoolkit.odfdom.dom.element.table.TableTableCellElementBase;
-import org.odftoolkit.odfdom.dom.element.table.TableTableColumnElement;
+
 import org.odftoolkit.odfdom.dom.element.table.TableTableElement;
 import org.odftoolkit.simple.TextDocument;
-import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Column;
 import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.text.Footer;
@@ -40,6 +36,8 @@ import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Section;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * It is a translator of text containing in some parts of an ODT documents.
