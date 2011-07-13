@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,16 +28,47 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 
-public class ScheduleEventConfirmUsersRequestHandler implements ScheduleEventRequestHandler {
+public class ScheduleEventConfirmUsersRequestHandler implements
+		ScheduleEventRequestHandler {
 
-  @Override
-  public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) {
+	private ScheduleEventRequestHandler forwardRequestHandler = null;
+	private boolean creationMode;
 
-    scheduleeventSC.setIdUsersAndGroups();
+	public void setForwardRequestHandler(
+			ScheduleEventRequestHandler forwardRequestHandler) {
+		this.forwardRequestHandler = forwardRequestHandler;
+	}
 
-    request.setAttribute(CURRENT_SCHEDULE_EVENT, scheduleeventSC.getCurrentScheduleEvent());
-    return "form/notify.jsp";
-  }
+	public ScheduleEventConfirmUsersRequestHandler(boolean creationMode) {
+		this.creationMode = creationMode;
+	}
+
+	@Override
+	public String getDestination(String function,
+			ScheduleEventSessionController scheduleeventSC,
+			HttpServletRequest request) throws Exception {
+		if (forwardRequestHandler != null) {
+			return addUsersToCurrentScheduleEventAndForwardRequestHandler(
+					function, scheduleeventSC, request);
+		} else {
+			throw UndefinedForwardRequestHandlerException();
+		}
+	}
+
+	private String addUsersToCurrentScheduleEventAndForwardRequestHandler(
+			String function, ScheduleEventSessionController scheduleeventSC,
+			HttpServletRequest request) throws Exception {
+	  if (creationMode) {
+	    scheduleeventSC.setIdUsersAndGroups();
+	  } else {
+	    scheduleeventSC.updateIdUsersAndGroups();
+	  }
+		return forwardRequestHandler.getDestination(function, scheduleeventSC,
+				request);
+	}
+
+	private Exception UndefinedForwardRequestHandlerException() {
+		return new Exception("No forward request defines for" + this.getClass());
+	}
 
 }

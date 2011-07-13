@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,18 +27,38 @@ package com.silverpeas.scheduleevent.servlets.handlers;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
-import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
+import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
 
-public class ScheduleEventAddRequestHandler implements ScheduleEventRequestHandler {
+public class ScheduleEventAddRequestHandler implements ScheduleEventBackableRequestHandler {
+  private String jspDestination;
 
+  public ScheduleEventAddRequestHandler(String jspDestination) {
+    this.jspDestination = jspDestination;
+  }
+  
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) {
-    ScheduleEvent current = scheduleeventSC.getCurrentScheduleEvent();
-    if (current != null) {
-      scheduleeventSC.setCurrentScheduleEvent(null);
-    }
-    return "form/generalInfo.jsp";
+    ScheduleEventBean current = createCurrentScheduleEvent(scheduleeventSC);
+    return getGeneralInformationDestination(request, current);
+  }
+
+  private ScheduleEventBean createCurrentScheduleEvent(ScheduleEventSessionController scheduleeventSC) {
+    scheduleeventSC.createCurrentScheduleEvent();
+    scheduleeventSC.getCurrentScheduleEvent();
+    return scheduleeventSC.getCurrentScheduleEventVO();
+  }
+
+  private String getGeneralInformationDestination(HttpServletRequest request, ScheduleEventBean current) {
+    request.setAttribute(CURRENT_SCHEDULE_EVENT, current);
+    return jspDestination;
+  }
+
+  @Override
+  public String getBackDestination(String function, ScheduleEventSessionController scheduleeventSC,
+      HttpServletRequest request) {
+    ScheduleEventBean current = scheduleeventSC.getCurrentScheduleEventVO();
+    return getGeneralInformationDestination(request, current);
   }
 
 }

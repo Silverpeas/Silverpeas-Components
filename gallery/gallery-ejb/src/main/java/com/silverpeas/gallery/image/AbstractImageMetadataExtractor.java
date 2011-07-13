@@ -60,13 +60,15 @@ public abstract class AbstractImageMetadataExtractor implements ImageMetadataExt
     for (String value : propertyNames) {
       if (value.startsWith("METADATA_")) {
         String property = settings.getProperty(value + "_TAG");
-        String labelKey = settings.getProperty(value + "_LABEL");
-        ExifProperty exifProperty = new ExifProperty(Integer.valueOf(property));
-        for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
-          String label = labels.getValue().getString(labelKey);
-          exifProperty.setLabel(labels.getKey(), label);
+        if (property != null) {
+          String labelKey = settings.getProperty(value + "_LABEL");
+          ExifProperty exifProperty = new ExifProperty(Integer.valueOf(property));
+          for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
+            String label = labels.getValue().getString(labelKey);
+            exifProperty.setLabel(labels.getKey(), label);
+          }
+          properties.add(exifProperty);
         }
-        properties.add(exifProperty);
       }
     }
     return properties;
@@ -78,15 +80,17 @@ public abstract class AbstractImageMetadataExtractor implements ImageMetadataExt
     for (String value : propertyNames) {
       if (value.startsWith("IPTC_")) {
         String property = settings.getProperty(value + "_TAG");
-        String labelKey = settings.getProperty(value + "_LABEL");
-        boolean isDate = StringUtil.getBooleanValue(settings.getProperty(value + "_DATE"));
-        IptcProperty iptcProperty = new IptcProperty(Integer.valueOf(property));
-        for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
-          String label = labels.getValue().getString(labelKey);
-          iptcProperty.setLabel(labels.getKey(), label);
+        if (property != null) {
+          String labelKey = settings.getProperty(value + "_LABEL");
+          boolean isDate = StringUtil.getBooleanValue(settings.getProperty(value + "_DATE"));
+          IptcProperty iptcProperty = new IptcProperty(Integer.valueOf(property));
+          for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
+            String label = labels.getValue().getString(labelKey);
+            iptcProperty.setLabel(labels.getKey(), label);
+          }
+          iptcProperty.setDate(isDate);
+          properties.add(iptcProperty);
         }
-        iptcProperty.setDate(isDate);
-        properties.add(iptcProperty);
       }
     }
     return properties;
