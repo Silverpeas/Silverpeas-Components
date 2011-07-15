@@ -218,8 +218,7 @@ $(document).ready(function() {
     answerContentDiv = $('<div>').addClass('answerContent');
     answerAttachmentDiv = $('<div>').addClass('answerAttachment');
     if(answer.attachments != null && answer.attachments.length > 0) {
-      attachementDivUrl = '<c:url value="/attachment/jsp/displayAttachments.jsp?Context=Images&ComponentId=${pageScope.componentId}" />&Id=' + answer.id;
-      $.get(attachementDivUrl, function(data){answerAttachmentDiv.append(data);}, 'html');
+      answerAttachmentDiv.append($load('<c:url value="/attachment/jsp/displayAttachments.jsp?Context=Images&ComponentId=${pageScope.componentId}" />&Id=' + answer.id));
       answerContentDiv.append(answerAttachmentDiv);
     }
     answerContentDiv.append(answer.content);
@@ -482,10 +481,12 @@ function subscribe() {
         <div class="categoryTitle" id="c<c:out value='${category.id}'/>">
           <h3><a class="categoryTitle"  id="lc<c:out value='${category.id}'/>" title="<fmt:message key="questionReply.openCategory"/>" href="#"><c:out value='${category.name}'/></a></h3>
           <div class="action">
+            <c:if test="${'admin' eq requestScope.Flag}">
             <a title="<fmt:message key="questionReply.updateCategory"/>" href="EditCategory?CategoryId=<c:out value='${category.id}'/>"> 
               <img src="<c:url value="${updateCategoryIcon}"/>" alt="<fmt:message key="questionReply.updateCategory"/>"/></a>
             <a title="<fmt:message key="questionReply.deleteCategory"/>" href="javascript:confirmDeleteCategory('<c:out value='${category.id}'/>');">
               <img src="<c:url value="${deleteCategoryIcon}"/>" alt="<fmt:message key="questionReply.deleteCategory"/>"/></a>
+            </c:if>
           </div>
         </div>
         <ul class="questions" id="qc<c:out value='${category.id}'/>" ></ul>
