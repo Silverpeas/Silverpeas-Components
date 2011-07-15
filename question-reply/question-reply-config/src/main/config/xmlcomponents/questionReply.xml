@@ -52,42 +52,42 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Animateur</message>
-        <message lang="en">Quiz master</message>
+        <message lang="fr">Animateurs</message>
+        <message lang="en">Quiz masters</message>
       </label>
       <help>
-        <message lang="fr">Animateur</message>
-        <message lang="en">Quiz master</message>
+        <message lang="fr">Animateurs</message>
+        <message lang="en">Quiz masters</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Demandeur</message>
-        <message lang="en">Applicant</message>
+        <message lang="fr">Demandeurs</message>
+        <message lang="en">Applicants</message>
       </label>
       <help>
-        <message lang="fr">Demandeur</message>
-        <message lang="en">Applicant</message>
+        <message lang="fr">Demandeurs</message>
+        <message lang="en">Applicants</message>
       </help>
     </profile>
     <profile name="writer">
       <label>
-        <message lang="fr">Expert</message>
-        <message lang="en">Expert</message>
+        <message lang="fr">Experts</message>
+        <message lang="en">Experts</message>
       </label>
       <help>
-        <message lang="fr">Expert</message>
-        <message lang="en">Expert</message>
+        <message lang="fr">Experts</message>
+        <message lang="en">Experts</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
       </help>
     </profile>
   </profiles>
@@ -95,7 +95,7 @@
     <parameter>
       <name>privateRepliesUsed</name>
       <label>
-        <message lang="fr">Utilisation des réponses privées</message>
+        <message lang="fr">Réponses privées</message>
         <message lang="en">Private answers</message>
       </label>
       <order>1</order>
@@ -111,8 +111,8 @@
     <parameter>
       <name>sortable</name>
       <label>
-        <message lang="fr">Questions triées par ordre</message>
-        <message lang="en">Sort by questions</message>
+        <message lang="fr">Ordre alphabétique des questions</message>
+        <message lang="en">Alphabetical order of the questions</message>
       </label>
       <order>2</order>
       <mandatory>false</mandatory>
@@ -120,8 +120,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Possibilité de trier les questions.</message>
-        <message lang="en">Questions are sortable.</message>
+        <message lang="fr">Les questions sont automatiquement triées par ordre alphabétique.</message>
+        <message lang="en">Questions are automatically sorted alphabetically.</message>
       </help>
     </parameter>
   </parameters>

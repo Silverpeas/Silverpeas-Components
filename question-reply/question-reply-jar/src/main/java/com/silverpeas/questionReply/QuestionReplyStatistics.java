@@ -24,10 +24,12 @@
 
 package com.silverpeas.questionReply;
 
-import com.silverpeas.questionReply.control.QuestionManager;
+import com.silverpeas.questionReply.control.QuestionManagerFactory;
+import com.silverpeas.questionReply.control.SilverpeasQuestionManager;
 import com.silverpeas.questionReply.model.Question;
 import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
 import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+import com.stratelia.webactiv.persistence.PersistenceException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,8 +41,8 @@ import java.util.List;
  */
 public class QuestionReplyStatistics implements ComponentStatisticsInterface {
 
-  public Collection getVolume(String spaceId, String componentId)
-      throws Exception {
+  @Override
+  public Collection getVolume(String spaceId, String componentId) throws Exception {
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
     Collection<Question> c = getQuestionReplies(componentId);
     for (Question detail : c) {
@@ -54,8 +56,8 @@ public class QuestionReplyStatistics implements ComponentStatisticsInterface {
   }
 
   public Collection<Question> getQuestionReplies(String componentId)
-      throws QuestionReplyException {
-    return QuestionManager.getInstance().getQuestions(componentId);
+      throws QuestionReplyException, PersistenceException {
+    return QuestionManagerFactory.getQuestionManager().getQuestions(componentId);
   }
 
 }

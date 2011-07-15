@@ -48,7 +48,7 @@
     <property name="attachmentsSize" column="attachmentsSize" type="long" />
     <property name="year" column="messageYear" type="integer" />
     <property name="month" column="messageMonth" type="integer" />
-    <property name="body" column="body" type="com.silverpeas.mailinglist.service.util.StringClobType" />
+    <property name="body" column="body" type="org.hibernate.type.StringClobType" />
     <!-- unidirectional relation -->
     <set name="attachments" lazy="false" inverse="false" cascade="save-update,delete,all-delete-orphan">
       <key column="messageId" />

@@ -33,9 +33,11 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -55,9 +57,12 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
   public static final String MESSAGE_TEMPLATE_FILE = "notificationMailinglistMessage";
 
   static {
-    ResourceLocator settings = new ResourceLocator("com.silverpeas.mailinglist.settings.mailinglistSettings", "");
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings.getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, settings.getString("customersTemplatePath"));
+    ResourceLocator settings = new ResourceLocator(
+            "com.silverpeas.mailinglist.settings.mailinglistSettings", "");
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings.getString(
+            "templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, settings.getString(
+            "customersTemplatePath"));
   }
 
   public SilverpeasTemplate getTemplate(Message message, String mailingListName, boolean moderate) {
@@ -70,22 +75,23 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
     template.setAttribute("sender", message.getSender());
     template.setAttribute("fullContent", message.getBody());
     if (moderate) {
-      template.setAttribute("messageUrl", "/Rmailinglist/" + message.getComponentId() + "/moderationList/"
-          + message.getComponentId());
+      template.setAttribute("messageUrl",
+              "/Rmailinglist/" + message.getComponentId() + "/moderationList/"
+              + message.getComponentId());
     } else {
       template.setAttribute("messageUrl", "/Rmailinglist/" + message.getComponentId() + "/message/"
-          + message.getId());
+              + message.getId());
     }
     return template;
   }
 
   @Override
   public void notifyInternals(Message message, MailingList list,
-      Collection<String> userIds, Collection<String> groupIds, boolean moderate)
-      throws NotificationManagerException {
+          Collection<String> userIds, Collection<String> groupIds, boolean moderate)
+          throws NotificationManagerException {
     Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
     String subject = getNotificationFormatter().formatTitle(message, list.getName(),
-        I18NHelper.defaultLanguage, moderate);
+            I18NHelper.defaultLanguage, moderate);
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       templates.put(lang, getTemplate(message, lang, moderate));
     }
@@ -94,16 +100,20 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
       templateFileName = MODERATION_TEMPLATE_FILE;
     }
     NotificationMetaData metadata = new NotificationMetaData(NotificationParameters.NORMAL, subject,
-        templates, templateFileName);
+            templates, templateFileName);
     metadata.setAnswerAllowed(false);
     metadata.setDate(message.getSentDate());
     metadata.setSource(list.getSubscribedAddress());
     metadata.setSender(list.getSubscribedAddress());
     metadata.setComponentId(message.getComponentId());
     metadata.setLink(getNotificationFormatter().prepareUrl(message, moderate));
-    metadata.setUserRecipients(userIds);
+    for (String userId : userIds) {
+      metadata.addUserRecipient(new UserRecipient(userId));
+    }
     if (groupIds != null && !groupIds.isEmpty()) {
-      metadata.setGroupRecipients(groupIds);
+      for (String groupId : groupIds) {
+        metadata.addGroupRecipient(new GroupRecipient(groupId));
+      }
     }
     getNotificationSender().notifyUser(metadata);
     try {
@@ -112,13 +122,13 @@ public class AdvancedNotificationHelper extends SimpleNotificationHelper {
       }
     } catch (CalendarRuntimeException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
+              SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     } catch (RemoteException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
+              SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     } catch (UnsupportedEncodingException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
+              SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     }
   }
 }

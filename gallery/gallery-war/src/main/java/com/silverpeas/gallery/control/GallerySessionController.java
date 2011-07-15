@@ -23,6 +23,17 @@
  */
 package com.silverpeas.gallery.control;
 
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
 import com.google.common.base.Splitter;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
@@ -60,6 +71,7 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
@@ -71,7 +83,6 @@ import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -82,8 +93,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
@@ -92,19 +101,6 @@ import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeSelection;
-
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
-import static com.silverpeas.util.StringUtil.isDefined;
 
 public final class GallerySessionController extends AbstractComponentSessionController {
   // déclaration des variables
@@ -133,7 +129,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private CommentService commentService = null;
   // pagination de la liste des résultats (PDC via DomainsBar)
   private int indexOfFirstItemToDisplay = 0;
-  private AdminController m_AdminCtrl = null;
   // panier en cours
   private List<String> basket = new ArrayList<String>(); // liste des photos mise dans le panier
   static final Properties defaultSettings = new Properties();
@@ -899,7 +894,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
             subject, messageBody.toString());
     notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
 
-    notifMetaData.addUserRecipients(admins);
+    for (UserDetail admin : admins) {
+      notifMetaData.addUserRecipient(new UserRecipient(admin));
+    }
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "Main");
     notifMetaData.setComponentId(getComponentId());
 
@@ -1482,7 +1479,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
             subject, messageBody.toString());
     notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
 
-    notifMetaData.addUserRecipients(admins);
+    for (UserDetail admin : admins) {
+      notifMetaData.addUserRecipient(new UserRecipient(admin));
+    }
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
             + orderId);
     notifMetaData.setComponentId(getComponentId());
@@ -1502,9 +1501,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // 1. création du message
 
     OrganizationController orga = new OrganizationController();
-    UserDetail[] users = new UserDetail[1];
+
     Order order = getOrder(orderId);
-    users[0] = orga.getUserDetail(Integer.toString(order.getUserId()));
     String user = orga.getUserDetail(Integer.toString(order.getProcessUserId())).getDisplayedName();
 
     ResourceLocator message = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle",
@@ -1529,7 +1527,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
             subject, messageBody.toString());
     notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
 
-    notifMetaData.addUserRecipients(users);
+    notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(order.getUserId())));
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
             + orderId);
     notifMetaData.setComponentId(getComponentId());
@@ -1670,7 +1668,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return Integer.toString(getOrder(orderId).getUserId()).equals(getUserId());
   }
 
-  @SuppressWarnings("AssignmentReplaceableWithOperatorAssignment")
   public List<MetaData> getMetaDataKeys() {
     List<MetaData> metaDatas = new ArrayList<MetaData>();
     try {

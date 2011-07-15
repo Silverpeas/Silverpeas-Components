@@ -23,7 +23,7 @@
  */
 package com.silverpeas.questionReply;
 
-import com.silverpeas.questionReply.control.QuestionManager;
+import com.silverpeas.questionReply.control.QuestionManagerFactory;
 import com.silverpeas.questionReply.index.QuestionIndexer;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
@@ -46,11 +46,11 @@ public class QuestionReplyIndexer implements ComponentIndexerInterface {
   @Override
   public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
       Exception {
-    Collection<Question> questions = QuestionManager.getInstance().getAllQuestions(context.
+    Collection<Question> questions = QuestionManagerFactory.getQuestionManager().getAllQuestions(context.
         getCurrentComponentId());
     for (Question question : questions) {
-      Collection<Reply> replies = QuestionManager.getInstance().getAllReplies(Long.parseLong(question.
-          getPK().getId()));
+      Collection<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(
+          Long.parseLong(question.getPK().getId()), question.getInstanceId());
       questionIndexer.updateIndex(question, replies);
     }
   }
