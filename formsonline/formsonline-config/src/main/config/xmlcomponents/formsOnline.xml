@@ -31,14 +31,17 @@
   <label>
     <message lang="fr">Formulaires en ligne</message>
     <message lang="en">Online Forms</message>
+    <message lang="de">Online Formulare</message>
   </label>
   <description>
     <message lang="fr">Mise en ligne de formulaires</message>
     <message lang="en">Online forms</message>
+    <message lang="de">Online Formulare</message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 Collaborative Verwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
@@ -48,20 +51,24 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="SenderReceiver">
       <label>
         <message lang="fr">Emetteur et Récepteur</message>
         <message lang="en">Sender and Recipient</message>
+        <message lang="de">Sender und Empfänger</message>
       </label>
       <help>
         <message lang="fr">Emetteur et Récepteur</message>
         <message lang="en">Sender and Recipient</message>
+        <message lang="de">Sender und Empfänger</message>
       </help>
     </profile>
   </profiles>
