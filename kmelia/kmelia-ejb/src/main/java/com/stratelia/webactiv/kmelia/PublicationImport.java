@@ -228,11 +228,11 @@ public class PublicationImport {
     return resultStatus;
   }
 
-  public List getPublicationXmlFields(String publicationId) {
+  public List<XMLField> getPublicationXmlFields(String publicationId) {
     return getPublicationXmlFields(publicationId, null);
   }
   
-  public List getPublicationXmlFields(String publicationId, String language) {
+  public List<XMLField> getPublicationXmlFields(String publicationId, String language) {
     PublicationPK pubPK = new PublicationPK(publicationId, spaceId, componentId);
     PublicationDetail pubDetail = kmeliaBm.getPublicationDetail(pubPK);
     return pubDetail.getXmlFields(language);

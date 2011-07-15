@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2009 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -41,20 +41,19 @@
     <set name="dates" lazy="false" inverse="false" sort="com.silverpeas.scheduleevent.service.model.beans.DateOptionsComparator"
       cascade="all" table="sc_scheduleevent_options">
       <key column="scheduleeventid" not-null="true"/>
-      <one-to-many
-        class="com.silverpeas.scheduleevent.service.model.beans.DateOption" />
+      <one-to-many class="com.silverpeas.scheduleevent.service.model.beans.DateOption" />
     </set>
-    <set name="contributors" lazy="false" inverse="true" sort="com.silverpeas.scheduleevent.service.model.beans.ContributorComparator"
+    <!-- set name="contributors" lazy="false" inverse="true" sort="com.silverpeas.scheduleevent.service.model.beans.ContributorComparator"
+      cascade="save-update,delete,all-delete-orphan" table="sc_scheduleevent_contributor" -->
+    <set name="contributors" lazy="false" inverse="true"
       cascade="save-update,delete,all-delete-orphan" table="sc_scheduleevent_contributor">
       <key column="scheduleeventid"/>
-      <one-to-many
-        class="com.silverpeas.scheduleevent.service.model.beans.Contributor" />
+      <one-to-many class="com.silverpeas.scheduleevent.service.model.beans.Contributor" />
     </set>
     <set name="responses" lazy="false" inverse="true"
       cascade="save-update,delete,all-delete-orphan" table="sc_scheduleevent_response">
       <key column="scheduleeventid"/>
-      <one-to-many
-        class="com.silverpeas.scheduleevent.service.model.beans.Response" />
+      <one-to-many class="com.silverpeas.scheduleevent.service.model.beans.Response" />
     </set>
   </class>
 </hibernate-mapping>

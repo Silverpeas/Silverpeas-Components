@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2009 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -35,6 +35,7 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   
 <html>
   <fmt:setLocale value="${sessionScope[sessionController].language}" />
+  <%@ include file="form/dateFormat.jspf"%>
   <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
   <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
   <head>
@@ -90,11 +91,13 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   <fmt:message key="scheduleevent.icons.delete.alt" var="deleteIconAlt" />
   <fmt:message key="scheduleevent.icons.closed" var="closedIcon" bundle="${icons}" />
   <fmt:message key="scheduleevent.icons.closed.alt" var="closedIconAlt" />
+  <fmt:message key="scheduleevent.icons.link" var="linkIcon" bundle="${icons}" />
+  <fmt:message key="scheduleevent.icons.link.alt" var="linkIconAlt" />
   			
   <view:window>
-  	<form id="add" name="add" method="POST" action="<c:url value="/Rscheduleevent/jsp/Add"/>">
+  	<form id="add" name="add" method="post" action="<c:url value="/Rscheduleevent/jsp/Add"/>">
   	</form>
-  	<form id="utilForm" name="utilForm" method="POST">
+  	<form id="utilForm" name="utilForm" method="post">
   		<input type="hidden" name="scheduleEventId"/>
   	</form>
   	<table id="scheduleEvents" class="tableArrayPane" width="98%" cellspacing="2" cellpadding="2" border="0">
@@ -107,32 +110,30 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   		<c:if test="${not empty requestScope.scheduleEventList}">
     		<c:forEach items="${requestScope.scheduleEventList}" var="event" varStatus="eventIndex">
       		<tr align="center">
-      			<td valign="top" align="center" class="ArrayCell">${event.title}&nbsp;<c:if test="${event.status == 0}"><img alt="${closedIconAlt}" src="${closedIcon}" height="15" width="15"/></c:if></td>
-      			<td valign="top" align="center" class="ArrayCell"><fmt:formatDate pattern="dd MMM yy" value="${event.creationDate}"/></td>
+      			<td valign="top" align="center" class="ArrayCell"><a href="javascript:getDetail('${event.id}');">${event.title}</a>&nbsp;<a href="<c:url value="/ScheduleEvent/${event.id}"/>"><img src="${linkIcon}" border="0" align="bottom" alt="${linkIconAlt}" title="${linkIconAlt}"></a><c:if test="${event.status == 0}">&nbsp;<img alt="${closedIconAlt}" title="${closedIconAlt}" src="${closedIcon}" height="15" width="15"/></c:if></td>
+      			<td valign="top" align="center" class="ArrayCell"><view:formatDate value="${event.creationDate}" /></td>
       			<%
       			ScheduleEvent currentSe = (ScheduleEvent) pageContext.getAttribute("event");
       			UserDetail creator = seScc.getUserDetail(String.valueOf(currentSe.getAuthor()));
       			%>
       			<td valign="top" align="center" class="ArrayCell"><%=creator.getDisplayedName()%></td>
       			<td valign="top" align="center" class="ArrayCell">
-        			<a href="javascript:getDetail('${event.id}');"><img alt="${seeIconAlt}" src="${seeIcon}" height="15" width="15"/></a>&nbsp;&nbsp;
         			<c:if test="${event.author == userId}">
-        			<a href="javascript:modifyState('${event.id}')">
-        			<c:if test="${event.status == 0}">
-        				<img alt="${openIconAlt}" src="${openIcon}" height="15" width="15"/>
-        			</c:if>
-        			<c:if test="${event.status != 0}">
-        				<img alt="${closeIconAlt}" src="${closeIcon}" height="15" width="15"/>
-        			</c:if>
-        			</a>
-        			&nbsp;&nbsp;<a href="javascript:deleteScheduleEvent('${event.id}')"><img alt="${deleteIconAlt}" src="${deleteIcon}" height="15" width="15"/></a>
+	        			<c:if test="${event.status == 0}">
+	        				<a href="javascript:modifyState('${event.id}')" title="${openIconAlt}"><img alt="${openIconAlt}" src="${openIcon}" height="15" width="15"/></a>
+	        			</c:if>
+	        			<c:if test="${event.status != 0}">
+	        				<a href="javascript:modifyState('${event.id}')" title="${closeIconAlt}"><img alt="${closeIconAlt}" src="${closeIcon}" height="15" width="15"/></a>
+	        			</c:if>
+	        			&nbsp;&nbsp;<a href="javascript:deleteScheduleEvent('${event.id}')" title="${deleteIconAlt}"><img alt="${deleteIconAlt}" src="${deleteIcon}" height="15" width="15"/></a>
         			</c:if>
             	</td>
       		</tr>
     		</c:forEach>
   		</c:if>
-  		
+  	
   	</table>
+  	
   </view:window>
   </body>
 </html>

@@ -62,13 +62,6 @@
         <ejb-link>ejb/StatisticBm</ejb-link>
       </ejb-ref>
       <ejb-ref>
-        <ejb-ref-name>ejb/SubscribeBm</ejb-ref-name>
-        <ejb-ref-type>Session</ejb-ref-type>
-        <home>com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome</home>
-        <remote>com.stratelia.webactiv.util.subscribe.control.SubscribeBm</remote>
-        <ejb-link>ejb/SubscribeBm</ejb-link>
-      </ejb-ref>
-      <ejb-ref>
         <ejb-ref-name>ejb/FavoritBm</ejb-ref-name>
         <ejb-ref-type>Session</ejb-ref-type>
         <home>com.stratelia.webactiv.util.favorit.control.FavoritBmHome</home>

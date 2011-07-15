@@ -23,46 +23,50 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="java.util.*"%>
 
 <%@ include file="checkQuestionReply.jsp" %>
 <%
 	Reply reply = (Reply) request.getAttribute("reply");
-	String title = Encode.javaStringToHtmlString(reply.getTitle());
-	String content = Encode.javaStringToHtmlString(reply.getContent());
+	String title = EncodeHelper.javaStringToHtmlString(reply.getTitle());
+	String content = EncodeHelper.javaStringToHtmlString(reply.loadWysiwygContent());
 	String date = resource.getOutputDate(reply.getCreationDate());
 	String id = reply.getPK().getId();
-	String creator = Encode.javaStringToHtmlString(reply.readCreatorName());
+	String creator = EncodeHelper.javaStringToHtmlString(reply.readCreatorName());
 	int status = reply.getPublicReply();
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<SCRIPT LANGUAGE="JavaScript">
+<html>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel />
+<script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
+<script language="JavaScript">
 <!--
 function isCorrectForm() {
      	var errorMsg = "";
      	var errorNb = 0;
-     	
+
 	var title = document.forms[0].title.value;
 	var content = document.forms[0].content;
-        
+
 	if (isWhitespace(title)) {
            errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-           errorNb++; 
-        }              
-	
+           errorNb++;
+        }
+
      	if (!isValidTextArea(content)) {
      		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("questionReply.containsTooLargeText")+resource.getString("questionReply.nbMaxTextArea")+resource.getString("questionReply.characters")%>\n";
-           	errorNb++; 
-		}  	  	
-		
+           	errorNb++;
+		}
+
      switch(errorNb)
      {
         case 0 :
@@ -79,8 +83,8 @@ function isCorrectForm() {
             result = false;
             break;
      }
-     return result;	
-     
+     return result;
+
 }
 function save()
 {
@@ -97,8 +101,8 @@ function save()
 	browseBar.setPath(resource.getString("questionReply.modif"));
 
 	tabbedPane.addTab(resource.getString("GML.head"), "#", true, false);
-    tabbedPane.addTab(resource.getString("GML.attachments"), "ViewAttachments", false);
-	
+  tabbedPane.addTab(resource.getString("GML.attachments"), "ViewAttachments", false);
+
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
@@ -108,23 +112,23 @@ function save()
 <center>
 <table CELLPADDING=5 width="100%">
 	<FORM METHOD=POST NAME="myForm" ACTION="EffectiveUpdateR">
-	<tr> 
+	<tr>
 		<td class="txtlibform"><%=resource.getString("questionReply.reponse")%> :</td>
 		<td><input type="text" name="title" size="120" maxlength="100" value="<%=title%>"><img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"></td>
 	</tr>
-	<tr valign="top"> 
+	<tr valign="top">
 		<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
-		<td><textarea cols="120" rows="5" name="content"><%=content%></textarea></td>
+		<td><textarea cols="120" rows="5" name="content" id="content"><%=content%></textarea></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.date")%> :</td>
 		<td><%=date%></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.publisher")%> :</td>
 		<td><%=creator%></td>
 	</tr>
-	<tr>				 
+	<tr>
 		<td colspan=2><span class="txt">(<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</span></td>
 	</tr>
 	</FORM>
@@ -134,8 +138,8 @@ function save()
 <CENTER>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "ConsultQuestionQuery", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "ConsultQuestionQuery", false));
     out.println(buttonPane.print());
 %>
 </CENTER>
@@ -144,6 +148,22 @@ function save()
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-
-</BODY>
-</HTML>
+<script type="text/javascript">
+  <fmt:message key='configFile' var='configFile'/>
+  <c:if test="${configFile eq '???configFile???'}">
+  <c:url value="/wysiwyg/jsp/javaScript/myconfig.js" var="configFile"/>
+  </c:if>
+  var oFCKeditor = new FCKeditor('content');
+  oFCKeditor.Width = "500";
+  oFCKeditor.Height = "300";
+  oFCKeditor.BasePath = "<c:url value='/wysiwyg/jsp/FCKeditor/'/>";
+  oFCKeditor.DisplayErrors = true;
+  oFCKeditor.Config["AutoDetectLanguage"] = false;
+  oFCKeditor.Config["DefaultLanguage"] = "<c:out value='${language}'/>";
+  oFCKeditor.Config["CustomConfigurationsPath"] = "<c:out value='${configFile}'/>"
+  oFCKeditor.ToolbarSet = 'questionreply';
+  oFCKeditor.Config["ToolbarStartExpanded"] = true;
+  oFCKeditor.ReplaceTextarea();
+</script>
+</body>
+</html>
