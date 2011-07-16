@@ -1,25 +1,22 @@
 /*
  * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * <p/>
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ * <p/>
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection withWriter Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of
+ * the text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
+ * <p/>
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details.
+ * <p/>
+ * You should have received a copy of the GNU Affero General Public License along withWriter this
+ * program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.web;
 
@@ -51,8 +48,8 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
  * @author emmanuel.hugonnet@silverpeas.org
  */
 /**
- * A REST Web resource representing a given reply to a question.
- * It is a web service that provides an access to a reply referenced by its URL.
+ * A REST Web resource representing a given reply to a question. It is a web service that provides
+ * an access to a reply referenced by its URL.
  */
 @Service
 @Scope("request")
@@ -133,8 +130,10 @@ public class ReplyResource extends QuestionRelyBaseWebService {
    * @return the corresponding reply entity.
    */
   protected ReplyEntity asWebEntity(final Reply reply, URI replyURI, SilverpeasRole profile) {
-    ReplyEntity entity = ReplyEntity.fromReply(reply).withURI(replyURI).withProfile(profile);
-    Collection<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(reply.getPK(), "Images");
+    ReplyEntity entity = ReplyEntity.fromReply(reply, getUserPreferences().getLanguage()).withURI(
+            replyURI).withProfile(profile);
+    Collection<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(reply.
+            getPK(), "Images");
     entity.withAttachments(attachments);
     AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(controller));
     author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
