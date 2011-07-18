@@ -31,14 +31,17 @@
   <label>
     <message lang="fr">My DB</message>
     <message lang="en">My DB</message>
+    <message lang="de">My DB</message>
   </label>
   <description>
     <message lang="fr">Permet de consulter, modifier ou supprimer le contenu de données en base et de créer de nouvelles tables.</message>
     <message lang="en">An easy way to create tables, consult, modify or delete data stored in a database.</message>
+    <message lang="de">Ein einfacher Weg Tabellen zu erstellen, einsehen, ändern oder Löschen von Daten die in einer Datenbank gespeichert sind.</message>
   </description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
     <message lang="en">06 Connectors</message>
+    <message lang="de">06 Verbinder</message>
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
@@ -48,30 +51,36 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>

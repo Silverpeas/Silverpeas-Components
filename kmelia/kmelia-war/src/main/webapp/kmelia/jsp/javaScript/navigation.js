@@ -141,7 +141,7 @@ function sortGoTo(selectedIndex) {
 }
 
 function displayPath(id) {
-    var sUrl = getWebContext()+"/KmeliaJSONServlet?Action=GetPath&ComponentId="+getComponentId()+"&Language="+getLanguage()+"&Id="+id+"&IEFix="+new Date().getTime();
+    var sUrl = getWebContext()+"/KmeliaJSONServlet?Action=GetPath&ComponentId="+getComponentId()+"&Id="+id+"&IEFix="+new Date().getTime();
     $.getJSON(sUrl, function(data){
     	//remove topic breadcrumb
         removeBreadCrumbElements();
@@ -375,7 +375,7 @@ function setCurrentTopicDescription(desc) {
 function displayTopicInformation(id) {
 	if (id != "0" && id != "1" && id != "tovalidate") {
 		$("#footer").css({'visibility':'visible'});
-		var url = getWebContext()+"/KmeliaJSONServlet?Id="+id+"&Action=GetTopic&ComponentId="+getComponentId()+"&Language="+getLanguage()+"&IEFix="+new Date().getTime();
+		var url = getWebContext()+"/KmeliaJSONServlet?Id="+id+"&Action=GetTopic&ComponentId="+getComponentId()+"&IEFix="+new Date().getTime();
 		$.getJSON(url, function(topic){
 					$("#footer").html(labels["topic.info"]+topic[0].creatorName+' - '+topic[0].date+' - <a id="topicPermalink" href="#"><img src="'+icons["permalink"]+'"/></a>');
 					$("#footer #topicPermalink").attr("href", getWebContext()+"/Topic/"+id+"?ComponentId="+getComponentId());
@@ -509,7 +509,7 @@ function pasteNode(id) {
 	$.progressMessage();
 
 	//alert("pasteNode : id = "+id);
-	var url = getWebContext()+"/KmeliaJSONServlet?Action=Paste&ComponentId="+getComponentId()+"&Language="+getLanguage()+"&Id="+id+"&IEFix="+new Date().getTime();
+	var url = getWebContext()+"/KmeliaJSONServlet?Action=Paste&ComponentId="+getComponentId()+"&Id="+id+"&IEFix="+new Date().getTime();
 	
 	$.getJSON(url, function(nodes){
 		reloadPage(id);

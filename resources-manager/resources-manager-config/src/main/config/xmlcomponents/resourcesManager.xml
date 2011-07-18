@@ -31,14 +31,17 @@
   <label>
     <message lang="fr">Gestion de ressources</message>
     <message lang="en">Resources manager</message>
+    <message lang="de">Ressourcen-Manager</message>
   </label>
   <description>
     <message lang="fr">Ce composant permet de gérer ses ressources matérielles et de les réserver.</message>
-    <message lang="en">This comonents manages physical resources and how tobook them.</message>
+    <message lang="en">This component manages physical resources and how to book them.</message>
+    <message lang="de">Diese Komponente verwaltet physische Ressourcen und wie man diese buchen kann.</message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
@@ -48,30 +51,36 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="responsable">
       <label>
         <message lang="fr">Responsable</message>
         <message lang="en">Manager</message>
+        <message lang="de">Verwalter</message>
       </label>
       <help>
         <message lang="fr">Responsable</message>
-        <message lang="en">Person in charge</message>
+        <message lang="en">Manager</message>
+        <message lang="de">Verwalter</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -81,6 +90,7 @@
       <label>
         <message lang="fr">Commentaires</message>
         <message lang="en">Comments</message>
+        <message lang="de">Kommentare</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -90,6 +100,7 @@
       <help>
         <message lang="fr">Les lecteurs peuvent laisser des commentaires sur les ressources.</message>
         <message lang="en">Readers are able to post comments on resource.</message>
+        <message lang="de">Leser können Kommentare zu Ressourcen posten.</message>
       </help>
     </parameter>
     <parameter>
@@ -97,6 +108,7 @@
       <label>
         <message lang="fr">Masquer les week-ends</message>
         <message lang="en">Hide week-ends</message>
+        <message lang="de">Wochenenden Verstecken</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -106,6 +118,7 @@
       <help>
         <message lang="fr">Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine.</message>
         <message lang="en">Optimize the GUI by not displaying week-ends.</message>
+        <message lang="de">Erlaubt es, das Interface leichter zu machen und das Anzeigen des Restes der Woche zu optimieren</message>
       </help>
     </parameter>
   </parameters>
