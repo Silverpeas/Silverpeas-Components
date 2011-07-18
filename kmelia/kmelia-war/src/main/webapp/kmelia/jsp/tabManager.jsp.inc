@@ -139,34 +139,9 @@ public void displayAllOperations(String id, KmeliaSessionController kmeliaScc, G
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_SEE_ALSO) == -1 && !kmaxMode) {
           i++;
-		  List seeAlsoList = kmeliaScc.getSessionPublication().getCompleteDetail().getLinkList();
-		  List authorizedSeeAlsoList = new ArrayList();
-		  List authorizedAndValidSeeAlsoList = new ArrayList();
-	      ForeignPK curFPK = null;
-	      String curComponentId = null;
-	      for (int cpt=0; cpt < seeAlsoList.size(); cpt++) {
-	        curFPK = (ForeignPK) seeAlsoList.get(cpt);
-	        curComponentId = curFPK.getComponentName();
-	        if (curComponentId != null && kmeliaScc.getOrganizationController().isComponentAvailable(curComponentId, kmeliaScc.getUserId())) {
-	          authorizedSeeAlsoList.add(curFPK);
-	        }
-	      }
-	      
-	      UserPublication 	userPub;
-	      PublicationDetail 	pub;
-		  Collection linkedPublications = kmeliaScc.getPublications(authorizedSeeAlsoList);
-	      Iterator iterator = linkedPublications.iterator();
-	      if (iterator.hasNext()) {
-	        while (iterator.hasNext()) {
-	          userPub = (UserPublication) iterator.next();
-	          pub = userPub.getPublication();
-	          if (pub.getStatus() != null && pub.getStatus().equals("Valid")) {
-	            authorizedAndValidSeeAlsoList.add(pub);
-	          }
-	        }
-	      }
+		  List authorizedAndValidSeeAlsoList = kmeliaScc.getLinkedVisiblePublications();
           String nbSeeAlso = Integer.toString(authorizedAndValidSeeAlsoList.size());
-          tabbedPane.addTab(resources.getString("PubReferenceeParAuteur")+" ("+nbSeeAlso+")", routerUrl+"SeeAlso?PubId="+id, action.equals("LinkAuthorView") || action.equals("SameSubjectView") || action.equals("SameTopicView"), enabled, row);
+          tabbedPane.addTab(resources.getString("PubReferenceeParAuteur")+" ("+nbSeeAlso+")", routerUrl+"SeeAlso", action.equals("LinkAuthorView") || action.equals("SameSubjectView") || action.equals("SameTopicView"), enabled, row);
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_COMMENT) == -1) {
           i++;
