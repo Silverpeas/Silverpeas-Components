@@ -90,6 +90,10 @@ $(document).ready(function() {
       if (typeLien!="l") {
         $('.category').removeClass('select');
         $('.questions').hide();
+        $('#qc' + id + ' .answers').hide();
+        $.each(etat, function(index) { 
+          etat[index] = 'close';
+        });
         var found = $('#qc'+id + '>li');
         if (found.length == 0) {  
           $.getJSON(questionUrl,function(data) {
