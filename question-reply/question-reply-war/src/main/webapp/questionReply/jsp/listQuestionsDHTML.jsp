@@ -61,7 +61,7 @@ $(document).ready(function() {
       answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
       typeLien = question.substring(0,1);
       if (typeLien!="l" && !$(objectEvent.target).hasClass('actionQuestion')) {
-        $('.answers').hide();
+        $('#' + this.id + ' .answers').hide();
         if(etat[id] != "open"){
           $('#a'+id).show();
           etat[id] = "open";
