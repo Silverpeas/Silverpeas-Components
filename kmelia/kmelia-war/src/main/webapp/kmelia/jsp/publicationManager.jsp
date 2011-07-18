@@ -330,7 +330,7 @@
       }
       nextAction = "AddPublication";
       isThumbnailField = true;
-} 
+    } 
 
     validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');", false);
 
@@ -403,10 +403,12 @@
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-    <!-- <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.thickbox.js"></script>
-    <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery-thickbox.css"> -->
-    <script language="javascript">
+    <script language="javascript" type="text/javascript">
       var favoriteWindow = window;
+
+      function topicGoTo(id) {
+        location.href="GoToTopic?Id="+id;
+      }
 
       <% if (action.equals("UpdateView")) {%>
 
@@ -468,10 +470,6 @@
 
       <% }%>
 
-      function topicGoTo(id) {
-        location.href="GoToTopic?Id="+id;
-      }
-
       function publicationGoTo(id, action){
         document.pubForm.Action.value = "ViewPublication";
         document.pubForm.CheckPath.value = "1";
@@ -493,6 +491,10 @@
 
       function sendPublicationDataToRouter(func) {
         if (isCorrectForm()) {
+        <% if("New".equals(action)) { %>
+          var positions = $('#classification-creation').pdc('positions');
+          document.pubForm.Positions.value = $.toJSON(positions);
+        <% } %>
           document.pubForm.action = func;
           document.pubForm.submit();
         }
@@ -596,6 +598,16 @@
                  }
                  
              }
+             
+             <% if("New".equals(action)) {
+              ResourceLocator pdcResources = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
+             %>
+              if (!$('#classification-creation').pdc('isClassificationValid')) {
+                errorMsg+=" - <%=resources.getString("kmelia.thePublication")%> <%=pdcResources.getString("pdcPeas.MustContainsMandatoryAxis")%>\n";
+                errorNb++;
+              }
+            <% } %>
+             
              switch(errorNb) {
                case 0 :
                  result = true;
@@ -612,10 +624,6 @@
                  break;
                }
                return result;
-             }
-
-             function init() {
-               document.pubForm.Name.focus();
              }
 
       <%
@@ -730,8 +738,9 @@
         }
                 
     </script>
+    <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"/>
   </head>
-  <body id="<%=componentId%>" onload="init()" onunload="closeWindows()">
+  <body id="<%=componentId%>">
 <%
         Window window = gef.getWindow();
         OperationPane operationPane = window.getOperationPane();
@@ -855,7 +864,7 @@
       <tr id="keywordsArea"><td class="txtlibform"><%=resources.getString("PubMotsCles")%></td>
         <td><input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="1000"></td></tr>
       <% }
-        if (!kmaxMode) { %>
+        if (!kmaxMode && !"New".equals(action)) { %>
       <tr id="classificationArea">
         <td colspan="2" width="100%">
           <view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
@@ -987,6 +996,26 @@
 	       </td>
       </tr> <%
      }%>
+     <tr>
+       <td colspan="3">
+      <%
+      if ("New".equals(action)) {
+      %>
+      <input type="hidden" name="Positions"/>
+      <div id="classification-creation"></div>
+      <script type="text/javascript">
+              $('#classification-creation').pdc('create', {
+                resource: {
+                  context: '<%= m_context %>',
+                  component: '<%= componentId %>'
+                }
+              });
+      </script>
+      <%
+      }
+      %>  
+       </td>
+     </tr>
       <tr><td><input type="hidden" name="Action"><input type="hidden" name="PubId" value="<%=id%>"><input type="hidden" name="Status" value="<%=status%>"><input type="hidden" name="TempId" value="<%=tempId%>"><input type="hidden" name="InfoId" value="<%=infoId%>"></TD></TR>
       <tr><td colspan="2">( <img border="0" src="<%=mandatorySrc%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%> )</td></tr>
     </table>
@@ -1009,6 +1038,10 @@
   <form name="toRouterForm">
     <input type="hidden" name="PubId" value="<%=id%>">
   </form>
-
+  <script type="text/javascript">
+     $(document).ready(function() {
+      document.pubForm.Name.focus();
+     });
+  </script>
 </body>
 </html>
