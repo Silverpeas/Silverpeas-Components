@@ -33,13 +33,17 @@ import com.silverpeas.search.AbstractResultDisplayer;
 import com.silverpeas.search.ResultDisplayer;
 import com.silverpeas.search.SearchResultContentVO;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
+import com.stratelia.webactiv.almanach.model.Periodicity;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
@@ -90,17 +94,74 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
     }
     // Create a SilverpeasTemplate
     SilverpeasTemplate template = getNewTemplate();
-    this.setCommonAttribute(searchResult, template);
+    this.setCommonAttributes(searchResult, template);
 
     if (event != null) {
-      template.setAttribute("eventDetail", event);
-      if (template != null) {
-        result =
-            template.applyFileTemplate(TEMPLATE_FILENAME + '_' +
-                DisplayI18NHelper.getDefaultLanguage());
-      }
+      ResourcesWrapper settings = searchResult.getSettings();
+      setEventAttributes(event, template, settings);
+
+      result =
+          template.applyFileTemplate(TEMPLATE_FILENAME + '_' +
+              DisplayI18NHelper.getDefaultLanguage());
     }
     return result;
+  }
+
+  /**
+   * Add event attributes to template given in parameter
+   * @param event the current event
+   * @param template the template object where we add data
+   * @param settings the specific almanach resources wrapper object
+   */
+  private void setEventAttributes(EventDetail event, SilverpeasTemplate template,
+      ResourcesWrapper settings) {
+    template.setAttribute("eventDetail", event);
+    template.setAttribute("evtStartDate", event.getStartDate());
+    String location = event.getPlace();
+    if (StringUtil.isDefined(location)) {
+      template.setAttribute("evtLocation", location);
+    }
+    if (event.getEndDate() != null) {
+      template.setAttribute("evtEndDate", event.getEndDate());
+    }
+    if (StringUtil.isDefined(event.getStartHour())) {
+      template.setAttribute("evtStartHour", event.getStartHour());
+    }
+    if (StringUtil.isDefined(event.getEndHour())) {
+      template.setAttribute("evtEndHour", event.getEndHour());
+    }
+
+    if (event.getPriority() != 0) {
+      template.setAttribute("evtPriority", settings.getString("prioriteImportante"));
+    } else {
+      template.setAttribute("evtPriority", settings.getString("prioriteNormale"));
+    }
+    Periodicity periodicity = event.getPeriodicity();
+    String strPeriod = null;
+    if (periodicity == null) {
+      strPeriod = settings.getString("noPeriodicity");
+    } else {
+      if (periodicity.getUnity() == Periodicity.UNIT_DAY) {
+        strPeriod = settings.getString("allDays");
+      } else if (periodicity.getUnity() == Periodicity.UNIT_WEEK) {
+        strPeriod = settings.getString("allWeeks");
+      } else if (periodicity.getUnity() == Periodicity.UNIT_MONTH) {
+        strPeriod = settings.getString("allMonths");
+      } else if (periodicity.getUnity() == Periodicity.UNIT_YEAR) {
+        strPeriod = settings.getString("allYears");
+      }
+    }
+    if (StringUtil.isDefined(strPeriod)) {
+      template.setAttribute("evtPeriodicity", strPeriod);
+    }
+
+    String eventURL = event.getEventUrl();
+    if (StringUtil.isDefined(eventURL)) {
+      if (eventURL.indexOf("://") == -1) {
+        eventURL = "http://" + eventURL;
+      }
+      template.setAttribute("evtURL", EncodeHelper.javaStringToHtmlString(eventURL));
+    }
   }
 
   /**

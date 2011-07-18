@@ -18,7 +18,14 @@ $!  "pertinence"  HTML representation full and empty stars !$
 $!  "activeSelection"  is active selection !$
 $!  "exportEnabled"  is export enabled !$
 $!  "type"  type of publication !$
-<div class="almanach_result">
-Date de l'événement : $eventDetail.startDate; format="dd/MM/yyyy"$<br/>
-Lieu de l'événement : $eventDetail.place$
+$!  "evtStartDate"  event start date !$
+$!  "evtLocation"  location where the event occurs  (IF DEFINED) !$
+$!  "evtEndDate"  event end date (IF DEFINED) !$
+$!  "evtStartHour"  event start hour (IF DEFINED) !$
+$!  "evtEndHour"  event end hour (IF DEFINED) !$
+$!  "evtPriority"  event priority !$
+$!  "evtPeriodicity"  event periodicity (IF DEFINED) !$
+$!  "evtURL"  event URL (IF DEFINED) !$
+<div class="template">
+$if(evtLocation)$A $evtLocation$ le $else$Le $endif$$eventDetail.startDate; format="dd/MM/yyyy"$<br/>
 </div>

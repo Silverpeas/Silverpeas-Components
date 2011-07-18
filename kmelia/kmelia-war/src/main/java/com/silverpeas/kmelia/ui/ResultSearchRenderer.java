@@ -29,14 +29,22 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.search.AbstractResultDisplayer;
 import com.silverpeas.search.ResultDisplayer;
 import com.silverpeas.search.SearchResultContentVO;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -91,15 +99,79 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
     }
     // Create a SilverpeasTemplate
     SilverpeasTemplate template = getNewTemplate();
-    this.setCommonAttribute(searchResult, template);
+    this.setCommonAttributes(searchResult, template);
 
     if (pubDetail != null) {
       template.setAttribute("pubDetail", pubDetail);
-      if (template != null) {
-        result =
-            template.applyFileTemplate(TEMPLATE_FILENAME + '_' +
-                DisplayI18NHelper.getDefaultLanguage());
+
+      if (StringUtil.isDefined(pubDetail.getAuthor())) {
+        template.setAttribute("pubAuthor", pubDetail.getAuthor());
       }
+      
+      if (StringUtil.isDefined(pubDetail.getCreatorName())) {
+        template.setAttribute("pubCreatorName", pubDetail.getCreatorName());
+      }
+      
+      if (StringUtil.isDefined(pubDetail.getKeywords())) {
+        template.setAttribute("pubKeywords", pubDetail.getKeywords());
+      }
+
+      if (StringUtil.isDefined(pubDetail.getContent())) {
+        template.setAttribute("pubContent", pubDetail.getContent());
+      }
+      
+      String spaceId = silverResult.getSpaceId();
+      String componentId = silverResult.getInstanceId();
+      String id = silverResult.getId();
+
+//      if (WysiwygController.haveGotWysiwyg(spaceId, componentId, id)) {
+//        // See also how to retrieve data from WYSIWYG in /wysiwyg/jsp/htmlDisplayer.jsp?ObjectId=&SpaceId=&ComponentId=&Language=&axisId=
+//      } else if (infos != null && model != null) {
+//        
+//        displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
+//      } else {
+//
+//        String infoId = pubDetail.getInfoId();
+//        String pubId = pubDetail.getPK().getId();
+//        if (!StringUtil.isInteger(infoId)) {
+//          PublicationTemplateImpl pubTemplate =
+//              (PublicationTemplateImpl) PublicationTemplateManager.getInstance().getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + infoId);
+//
+//          // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
+//          Form xmlForm = pubTemplate.getViewForm();
+//
+//          // get user language
+//          String language = getUserPreferences(searchResult.getUserId()).getLanguage();
+//
+//          RecordSet recordSet = pubTemplate.getRecordSet();
+//          DataRecord data = recordSet.getRecord(pubId, language);
+//          if (data == null) {
+//            data = recordSet.getEmptyRecord();
+//            data.setId(pubId);
+//          }
+//          
+//          if (xmlForm != null) {
+//            PagesContext xmlContext = new PagesContext("myForm", "0", language,
+//                false, componentId, searchResult.getUserId());
+//            xmlContext.setObjectId(id);
+//            if (kmeliaMode) {
+//              xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
+//            }
+//            xmlContext.setBorderPrinted(false);
+//            xmlContext.setContentLanguage(language);
+//          }
+//          
+//        }
+//
+//        
+//        
+//      }
+
+      
+      
+      result =
+          template.applyFileTemplate(TEMPLATE_FILENAME + '_' +
+              DisplayI18NHelper.getDefaultLanguage());
     }
     return result;
   }

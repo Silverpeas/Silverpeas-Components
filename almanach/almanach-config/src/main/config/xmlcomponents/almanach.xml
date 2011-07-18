@@ -46,6 +46,7 @@
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
+  <searchTemplating>false</searchTemplating>
   <instanceClassName>com.stratelia.webactiv.almanach.AlmanachInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
@@ -199,5 +200,4 @@
       </help>
     </parameter>
   </parameters>
-  <searchTemplating>false</searchTemplating>
 </WAComponent>
