@@ -19,18 +19,12 @@ ul, li, h4, h3, h5{
   background:#EAEAEA url("<c:url value="/util/icons/arrow/open.gif" />") 5px center no-repeat;
   border:1px solid #EAEAEA;
   border-radius:10px;
-  -moz-border-radius:10px;
-  -webkit-border-radius:10px;
-  behavior: url("<c:url value="/util/styleSheets/PIE.htc" />");
 }
 
 .select .categoryTitle {
   background:#DDDDDD url() 5px  center no-repeat;
   border:1px solid #DDDDDD;
   border-radius:10px;
-  -moz-border-radius:10px;
-  -webkit-border-radius:10px;
-  behavior: url("<c:url value="/util/styleSheets/PIE.htc" />");
   padding-left:10px;
   cursor:default;
 }
@@ -39,9 +33,6 @@ ul, li, h4, h3, h5{
   background-color:#DDDDDD;
   border:1px solid #DDDDDD;
   border-radius:10px;
-  -moz-border-radius:10px;
-  -webkit-border-radius:10px;
-  behavior: url("<c:url value="/util/styleSheets/PIE.htc" />");
 }
 
 .categoryTitle .categoryTitle {
