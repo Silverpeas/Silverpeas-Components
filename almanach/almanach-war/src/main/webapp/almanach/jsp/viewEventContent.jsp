@@ -378,34 +378,38 @@ $(document).ready(function(){
 		
 		<% if (event.getPlace() != null ) { %>
 			<div class="eventPlace">
-				 <span><%=EncodeHelper.javaStringToHtmlString(event.getPlace())%></span>
+				<div class="bloc">
+					 <span><%=EncodeHelper.javaStringToHtmlString(event.getPlace())%></span>
+			 	</div>
 			</div>
 		<%}%>
 		<div class="eventDate">
-			<span class="eventBeginDate">
-				<%=resources.getString("GML.fromDate")%> 
-				<%=resources.getOutputDate(dateDebutIteration)%>
-				<%if (event.getStartHour() != null && event.getStartHour().length() != 0) {%>
-					<%=almanach.getString("ToHour")%> 
-					<%=EncodeHelper.javaStringToHtmlString(event.getStartHour())%>
-				<%}%>
-				</span>
-				
-				<span class="eventEndDate">  
-				<%
-					out.println(resources.getString("GML.toDate"));
-					out.println(resources.getOutputDate(dateFinIteration));
-					if (event.getEndHour() != null && event.getEndHour().length() != 0) {
-						out.println(almanach.getString("ToHour"));
-						out.println(EncodeHelper.javaStringToHtmlString(event.getEndHour()));
-					}%>
-				</span>
+			<div class="bloc">
+				<span class="eventBeginDate">
+					<%=resources.getString("GML.fromDate")%> 
+					<%=resources.getOutputDate(dateDebutIteration)%>
+					<%if (event.getStartHour() != null && event.getStartHour().length() != 0) {%>
+						<%=almanach.getString("ToHour")%> 
+						<%=EncodeHelper.javaStringToHtmlString(event.getStartHour())%>
+					<%}%>
+					</span>
+					
+					<span class="eventEndDate">  
+					<%
+						out.println(resources.getString("GML.toDate"));
+						out.println(resources.getOutputDate(dateFinIteration));
+						if (event.getEndHour() != null && event.getEndHour().length() != 0) {
+							out.println(almanach.getString("ToHour"));
+							out.println(EncodeHelper.javaStringToHtmlString(event.getEndHour()));
+						}%>
+					</span>
+				</div>
 		</div>
 		
 		
 			
     	<% if (StringUtil.isDefined(event.getEventUrl())) {
-	    		out.println("<div class=\"eventURL\">");
+	    		out.println("<div class=\"eventURL\"><div class=\"bloc\">");
 	    		
 	    		String eventURL = event.getEventUrl();
 	    		if (eventURL.indexOf("://") == -1){
@@ -413,14 +417,15 @@ $(document).ready(function(){
 	    		}
 	    			
 	    		%>
-	    		<span>
-	    			<a href="<%=EncodeHelper.javaStringToHtmlString(eventURL)%>" target="_blank"><%=resources.getString("linkToVisit")%></a>
+		    		<span>
+		    			<a href="<%=EncodeHelper.javaStringToHtmlString(eventURL)%>" target="_blank"><%=resources.getString("linkToVisit")%></a>
 					</span>
+					</div>
 				</div>
     		<%    			
     		}
     		%>
-    <br clear="left"/>
+    <br clear="left"/>&nbsp;
 	</div>
 	
 	
