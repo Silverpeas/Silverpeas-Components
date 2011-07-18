@@ -48,7 +48,6 @@ import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
@@ -75,12 +74,13 @@ public class JSONServlet extends HttpServlet {
 
     String id = req.getParameter("Id");
     String componentId = req.getParameter("ComponentId");
-    String language = req.getParameter("Language");
     String action = req.getParameter("Action");
 
     KmeliaSessionController kmeliaSC =
         (KmeliaSessionController) req.getSession().getAttribute(
             "Silverpeas_" + "kmelia" + "_" + componentId);
+    
+    String language = kmeliaSC.getCurrentLanguage(); // takes care of i18n
     
     NodePK nodePK = new NodePK(id, componentId);
 
