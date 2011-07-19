@@ -27,6 +27,6 @@ $!  "xmlFormContent"  publication XML Form content  (IF DEFINED)!$
 <div class="template">
 Date de création : $pubDetail.creationDate; format="dd/MM/yyyy"$
 $if(pubKeywords)$<br/>Mots clés: $pubKeywords$$endif$
-$if(wysiwygContent)$<div id="publicationContent"><br/>Contenu WYSIWYG = $wysiwygContent$</div>$endif$
-$if(xmlFormContent)$<div id="publicationContent"><br/>Contenu WYSIWYG = $xmlFormContent$</div>$endif$
+$if(wysiwygContent)$<div id="publicationContent"><br/><b>Contenu WYSIWYG</b> = $wysiwygContent$</div>$endif$
+$if(xmlFormContent)$<div id="publicationContent"><br/><b>Contenu XML</b> = $xmlFormContent$</div>$endif$
 </div>
