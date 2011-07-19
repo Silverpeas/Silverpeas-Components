@@ -188,7 +188,6 @@ public class ReplyEntity implements Exposable {
   @Override
   public int hashCode() {
     int hash = 7;
-    Long longe = new Long(this.questionId);
     hash = 79 * hash + (this.id != null ? this.id.hashCode() : 0);
     hash = 79 * hash + (Long.valueOf(this.questionId)).intValue();
     hash = 79 * hash + (this.title != null ? this.title.hashCode() : 0);
