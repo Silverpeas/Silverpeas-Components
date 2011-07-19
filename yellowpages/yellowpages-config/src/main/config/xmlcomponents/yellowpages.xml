@@ -31,16 +31,19 @@
   <label>
     <message lang="fr">Contacts</message>
     <message lang="en">Yellow pages directory</message>
+    <message lang="de">Gelbe Seiten Verzeichnis</message>
   </label>
   <description>
     <message lang="fr">Permet de créer un annuaire de contact. Un formulaire XML associé décrit l'identité
   de chaque membre de l'annuaire, ainsi que tout autre caractéristique.
     </message>
     <message lang="en">Create a contact directory whith an XML form describing all the inos on every member of the directory.</message>
+    <message lang="de">Erstellt ein Kontakt Verzeichnis mit der Hilfe eines XML-Formulars dass alle Infos über jedes Mitglied des Verzeichnisses beschreibt </message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
   </suite>
   <visible>true</visible>
   <visibleInPersonalSpace>true</visibleInPersonalSpace>
@@ -51,30 +54,36 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>

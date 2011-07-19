@@ -30,14 +30,19 @@
   <label>
     <message lang="fr">Discussion en ligne</message>
     <message lang="en">Online chat</message>
+    <message lang="de">Online-Chat</message>
   </label>
   <description>
     <message lang="fr">Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</message>
     <message lang="en">Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</message>
+    <message lang="de">Unterstützt synchrone Kommunikation Prozess-typen der Art Chats. 
+	Chaträume können zu verschiedenen Themen geöffnez werden. 
+	'Privat-Modus ' ist in einem multi-Teilnehmer-Chat möglich</message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
@@ -47,30 +52,36 @@
       <label>
         <message lang="fr">Administrateurs</message>
         <message lang="en">Administrators</message>
+        <message lang="de">Administratoren</message>
       </label>
       <help>
         <message lang="fr">Administrateurs</message>
         <message lang="en">Administrators</message>
+        <message lang="de">Administratoren</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Animateurs</message>
         <message lang="en">Animators</message>
+        <message lang="de">Animatoren</message>
       </label>
       <help>
         <message lang="fr">Animateurs</message>
         <message lang="en">Animators</message>
+        <message lang="de">Animatoren</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Chatteurs</message>
         <message lang="en">Chaters</message>
+        <message lang="de">Chaters</message>
       </label>
       <help>
         <message lang="fr">Chatteurs</message>
         <message lang="en">Chaters</message>
+        <message lang="de">Chaters</message>
       </help>
     </profile>
   </profiles>
@@ -80,6 +91,7 @@
       <label>
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
+        <message lang="de">Klassierungsplan</message>
       </label>
       <order>0</order>     
       <mandatory>true</mandatory>
@@ -89,6 +101,7 @@
       <help>
         <message lang="fr">Les salons créés au sein de cette instance pourront être classés sur le Plan de Classement</message>
         <message lang="en">The chats will be classified on the classification scheme.</message>
+        <message lang="de">Chats können auf dem KP klassifiziert werden</message>
       </help>
     </parameter>
   </parameters>

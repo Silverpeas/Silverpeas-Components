@@ -72,7 +72,7 @@ void displaySubscriptionsList(KmeliaSessionController kmeliaScc, String deleteIc
 		  link = "<A class=\""+cssClass+"\" HREF=\"javascript:onClick=goToSubscription('" + 
                  header.getNodePK().getId() + 
                  "')\">" +
-                 Encode.javaStringToHtmlString(nodeName) + "</A>";
+                 EncodeHelper.javaStringToHtmlString(nodeName) + "</A>";
 		  if (links.length() == 0) {
 			  links = link;
 		  } else {
@@ -92,17 +92,17 @@ void displaySubscriptionsList(KmeliaSessionController kmeliaScc, String deleteIc
 %>
 
 <%
-//R�cup�ration des param�tres
-String topicId = (String) request.getParameter("Id");
-String action = (String) request.getParameter("Action");
+//Recuperation des parametres
+String topicId = request.getParameter("Id");
+String action = request.getParameter("Action");
 
 //Icons
 String deleteSrc = m_context + "/util/icons/delete.gif";
 String hLineSrc = m_context + "/util/icons/colorPix/1px.gif";
 
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.close"), "javascript:onClick=window.close();", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.close"), "javascript:onClick=window.close();", false);
 
-if (action.equals("AddSubscription")) {
+if ("AddSubscription".equals(action)) {
         try {
             kmeliaScc.addSubscription(topicId);
         } catch (Exception e) {
@@ -110,11 +110,11 @@ if (action.equals("AddSubscription")) {
         } finally {
             action = "View";
         }
-} else if (action.equals("Remove")) {
+} else if ("Remove".equals(action)) {
         kmeliaScc.removeSubscription(topicId);
         action = "View";
 }
-if (action.equals("View")) {
+if ("View".equals(action)) {
 %>
 <html>
 <head><title><%=resources.getString("GML.popupTitle")%></title>
@@ -151,12 +151,12 @@ out.println(gef.getLookStyleSheet());
     Frame frame = gef.getFrame();
     Board board = gef.getBoard();
 
-    //D�but code
+    //Debut code
     out.println(window.printBefore());
     out.println(frame.printBefore());
     out.println(board.printBefore());
 %>
-<!-- Cadre ext�rieur -->
+<!-- Cadre exterieur -->
   <TABLE CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%" align="center">
     <tr>
     <td>

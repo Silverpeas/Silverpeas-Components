@@ -31,6 +31,7 @@
   <label>
     <message lang="fr">Designer de site web</message>
     <message lang="en">WebSite Designer</message>
+    <message lang="de">Website-Designer</message>
   </label>
   <description>
     <message lang="fr">Idem à l'annuaire de sites. Propose également des services pour créer un site Web,
@@ -39,10 +40,12 @@
     <message lang="en">A bit like the bookmaks component, but it also allow you to create web pages with a WYSIWYG editor.
     Those pages can be downloaded to create a static web site.
     </message>
+    <message lang="de">Ermöglicht es Ihnen, Webseiten mit einem WYSIWYG-Editor zu erstellen. Diese Seiten können heruntergeladen werden, um eine statische Website zu erstellen.</message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
+    <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -52,30 +55,36 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="Publisher">
       <label>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher></message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher></message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="Reader">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -85,6 +94,7 @@
       <label>
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
+        <message lang="de">Klassierungsplan</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -93,14 +103,16 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Les bookmarks et/ou sites saisis au sein de cette instance pourront être classés sur le Plan de Classement.</message>
-        <message lang="en">The bookmarks ansdd websites will be classified on the classification scheme.</message>
+        <message lang="en">The bookmarks and websites will be classified on the classification scheme.</message>
+        <message lang="de">Die Bookmarks und Webseiten können auf dem KP klassifiziert werden</message>
       </help>
     </parameter>
     <parameter>
       <name>sortedTopics</name>
       <label>
         <message lang="fr">Thèmes / liens ordonés</message>
-        <message lang="en">Topics/Links sorted</message>
+        <message lang="en">Topics / Links sorted</message>
+        <message lang="de">Sortierte Themen / Links</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -110,6 +122,7 @@
       <help>
         <message lang="fr">Ce paramètre permet d'ordonner les thèmes et les liens</message>
         <message lang="en">This parameter allows to order topics and links.</message>
+        <message lang="de">Dieser Parameter ermöglicht es Ihnen, Themen und Links zu Sortieren.</message>
       </help>
     </parameter>
   </parameters>

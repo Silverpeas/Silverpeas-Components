@@ -30,6 +30,7 @@
   <label>
     <message lang="fr">Almanach</message>
     <message lang="en">Almanach</message>
+    <message lang="de">Almanach</message>
   </label>
   <description>
     <message lang="fr">Permet de créer et de visualiser les différents agendas d'événements définis dans les
@@ -37,12 +38,17 @@
       joints. La visualisation s'effectue sur plusieurs échelles de temps.
     </message>
     <message lang="en">Enable to create and aggregate agendas from collaborative spaces or subspaces. Events can
-      have attachments. You can viw events using different time scales.
+      have attachments. You can view events using different time scales.
+    </message>
+    <message lang="de">Ermöglicht Ihnen das Erstellen und Anzeigen der verschiedenen Agenden von Veranstaltungen in den definierten
+      Räume und Unterräume der kollaborativen Räumen. Jedes Ereignis kann mit Dateien verknüpft werden.
+      Die Visualisierung wurd auf mehreren Zeitskalen durchgeführt.
     </message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -53,30 +59,36 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Les gestionnaires paramêtrent l'usage du Plan de Classement utilisé pour classer les événements.</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Les publieurs peuvent créer, modifier et supprimer des événements. Ces événements peuvent être périodiques et être classés sur le Plan de Classement.</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message> 
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Les lecteurs consultent les événements aux travers des différentes vues offertes.</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -86,6 +98,7 @@
       <label>
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
+        <message lang="de">Klassierungsplan</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -97,6 +110,7 @@
           Classement
         </message>
         <message lang="en">The events will be classified on the classification scheme.</message>
+        <message lang="de">Die Ereignisse werden auf dem KP klassifiziert werden</message>
       </help>
     </parameter>
     <parameter>
@@ -104,6 +118,7 @@
       <label>
         <message lang="fr">Agrégation d'Almanachs</message>
         <message lang="en">Almanach Aggregation</message>
+        <message lang="de">Almanach Aggregierung</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -117,6 +132,8 @@
         <message lang="en">This almanach can aggregate events from other almanachs in subspaces of the space
           containing this almanach.
         </message>
+        <message lang="de">Dieser Almanach Kann Ereignisse von anderen Kalendern in Unterräume des Raumes mit
+          diesem Almanach aggregierten.</message>
       </help>
     </parameter>
     <parameter>
@@ -124,6 +141,7 @@
       <label>
         <message lang="fr">Masquer les week-ends</message>
         <message lang="en">Hide week-ends</message>
+        <message lang="de">Wochenenden Verstecken</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -133,6 +151,7 @@
       <help>
         <message lang="fr">Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine</message>
         <message lang="en">Hide week-ends, thus lightening the GUI.</message>
+        <message lang="de">Erlaubt es, das Interface leichter zu machen und das Anzeigen des Restes der Woche zu optimieren</message>
       </help>
     </parameter>
     <parameter>
@@ -140,6 +159,7 @@
       <label>
         <message lang="fr">Flux RSS</message>
         <message lang="en">RSS</message>
+        <message lang="de">RSS</message>
       </label>
       <order>4</order>
       <mandatory>false</mandatory>
@@ -149,6 +169,7 @@
       <help>
         <message lang="fr">Permet de générer un flux RSS des événements de cet Almanach.</message>
         <message lang="en">Produce a RSS stream for the events of this almanach.</message>
+        <message lang="de">Erzeugt einen Stream-Feed für die Veranstaltungen dieser Almanach.</message>
       </help>
     </parameter>
     <parameter>
@@ -156,6 +177,7 @@
       <label>
         <message lang="fr">Accès transversal</message>
         <message lang="en">Aggregation type</message>
+        <message lang="de">Aggregierung-Typ</message>
       </label>
       <order>5</order>
       <mandatory>false</mandatory>
@@ -165,6 +187,7 @@
           <name>
             <message lang="fr">Tous</message>
             <message lang="en">All</message>
+            <message lang="de">Alle</message>
           </name>
           <value>0</value>
         </option>
@@ -172,6 +195,7 @@
           <name>
             <message lang="fr">Ceux de l'espace</message>
             <message lang="en">Those from the same space</message>
+            <message lang="de">Die aus den gleichen Raum</message>
           </name>
           <value>1</value>
         </option>
@@ -179,6 +203,7 @@
           <name>
             <message lang="fr">Ceux de l'espace et sous espaces</message>
             <message lang="en">Those from the same space and its subspaces.</message>
+            <message lang="de">Die aus den gleichen Raum und seine Unterräume</message>
           </name>
           <value>2</value>
         </option>
@@ -186,6 +211,7 @@
           <name>
             <message lang="fr">Aucun</message>
             <message lang="en">None</message>
+            <message lang="de">Keine</message>
           </name>
           <value>3</value>
         </option>
@@ -197,6 +223,7 @@
           la liste déroulante.
         </message>
         <message lang="en">Choose which almanachs can be aggregated into this almanach.</message>
+        <message lang="de">Wählen Sie die Almanache, die in diesem Almanach aggregiert werden können.</message>
       </help>
     </parameter>
   </parameters>

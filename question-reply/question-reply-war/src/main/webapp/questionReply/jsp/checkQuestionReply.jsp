@@ -97,6 +97,7 @@ String spaceLabel = browseContext[0];
 String componentLabel = browseContext[1];
 String spaceId = browseContext[2];
 String componentId = browseContext[3];
+pageContext.setAttribute("componentId", componentId);
 
 String language = scc.getLanguage();
 

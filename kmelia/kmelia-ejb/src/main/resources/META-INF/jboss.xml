@@ -45,10 +45,6 @@
         <jndi-name>ejb/StatisticBm</jndi-name>
       </ejb-ref>
       <ejb-ref>
-        <ejb-ref-name>ejb/SubscribeBm</ejb-ref-name>
-        <jndi-name>ejb/SubscribeBm</jndi-name>
-      </ejb-ref>
-      <ejb-ref>
         <ejb-ref-name>ejb/FavoritBm</ejb-ref-name>
         <jndi-name>ejb/FavoritBm</jndi-name>
       </ejb-ref>
