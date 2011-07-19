@@ -36,8 +36,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 public class UserPublication extends Object implements java.io.Serializable {
   private static final long serialVersionUID = -1706351702013064074L;
 
-  private static final long serialVersionUID = -1706351702013064074L;
-
   /**  */
   private UserDetail owner;
 
