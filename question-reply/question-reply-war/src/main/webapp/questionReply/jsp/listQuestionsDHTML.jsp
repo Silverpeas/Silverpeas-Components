@@ -191,9 +191,9 @@ $(document).ready(function() {
     }
     <c:if test="${'user' != requestScope.Flag}">
       actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox'));
+      actionDiv.append($('<input>').attr('name', 'status').attr('value', questionToBeDisplayed.status).attr('type', 'hidden'));
+      questionDiv.append(actionDiv);
     </c:if>
-    actionDiv.append($('<input>').attr('name', 'status').attr('value', questionToBeDisplayed.status).attr('type', 'hidden'));
-    questionDiv.append(actionDiv);
     return questionDiv;
   }
   <fmt:message key="questionReply.minicone" bundle="${icons}" var="publicAnswerIcon"/>
@@ -505,7 +505,7 @@ function subscribe() {
         </div>
         <ul class="questions" id="qcnull" ></ul>
     </li>
-
+</ul>
 </form>
   
 <form name="QForm" action="" method="post">
