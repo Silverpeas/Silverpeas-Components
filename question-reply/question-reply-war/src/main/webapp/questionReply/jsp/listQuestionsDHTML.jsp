@@ -189,8 +189,9 @@ $(document).ready(function() {
       deleteQuestionLink.append(deleteQuestionImg);
       actionDiv.append(deleteQuestionLink);
     }
-    
-    actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox'));
+    <c:if test="${'user' != requestScope.Flag}">
+      actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox'));
+    </c:if>
     actionDiv.append($('<input>').attr('name', 'status').attr('value', questionToBeDisplayed.status).attr('type', 'hidden'));
     questionDiv.append(actionDiv);
     return questionDiv;
@@ -206,7 +207,7 @@ $(document).ready(function() {
       answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rprivee" />').attr('title','<fmt:message key="questionReply.Rprivee" />').attr('src', '<c:url value="${privateAnswerIcon}" />'));
     }
     actionDiv = $('<div>').addClass('action');    
-    if(!answer.readonly){
+    if(!answer.readOnly){
       updateAnswerLink = $('<a>').attr('title', '<fmt:message key="questionReply.modifR" />').attr('href', 'UpdateR?replyId=' + answer.id + '&QuestionId=' + answer.questionId);
       updateAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.modifR" />').attr('src', '<c:url value="${updateIcon}" />');
       updateAnswerLink.append(updateAnswerImg);
