@@ -298,7 +298,7 @@ $(document).ready(function(){
 						<span class="eventPeriodicityDate"> 
 						<% if (event.getStartDate() != null) { 
 							out.println(resources.getString("GML.fromDate"));
-							out.println("&nbsp;<b>");
+							out.println("<b>");
 							out.print(resources.getInputDate(event.getStartDate()));
 						    out.println("</b> ");
 						}
@@ -306,7 +306,7 @@ $(document).ready(function(){
 						
 						<% if (periodicity.getUntilDatePeriod() != null) {
 							out.println(resources.getString("GML.toDate"));
-							out.println("&nbsp;<b>");
+							out.println("<b>");
 							out.print(resources.getInputDate(periodicity.getUntilDatePeriod()));
 							out.println("</b> ");
 						}

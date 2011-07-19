@@ -213,6 +213,7 @@ div.description p {padding:0; margin:0;}
 	padding:15px 0;
 	display:table;
 	width:98%;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 .eventInfo div {
@@ -281,7 +282,8 @@ div.description p {padding:0; margin:0;}
 	line-height:9px;
 	letter-spacing:0.11em;
 	display:inline;
-	padding:2px 4px;
+	padding:1px 4px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 .eventDesc {
