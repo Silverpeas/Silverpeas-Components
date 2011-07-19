@@ -18,7 +18,15 @@ $!  "pertinence"  HTML representation full and empty stars !$
 $!  "activeSelection"  is active selection !$
 $!  "exportEnabled"  is export enabled !$
 $!  "type"  type of publication !$
-<div class="publication_result">
-Date de création : $pubDetail.creationDate; format="dd/MM/yyyy"$<br/>
-Mots clés : $pubDetail.keywords$
+$!  "pubAuthor"  publication author  (IF DEFINED)!$
+$!  "pubCreatorName"  publication creator name (IF DEFINED)!$
+$!  "pubKeywords"  publication keywords (IF DEFINED)!$
+$!  "pubContent"  publication content  (IF DEFINED)!$
+$!  "wysiwygContent"  publication wysiwyg content  (IF DEFINED)!$
+$!  "xmlFormContent"  publication XML Form content  (IF DEFINED)!$
+<div class="template">
+Date de création : $pubDetail.creationDate; format="dd/MM/yyyy"$
+$if(pubKeywords)$<br/>Mots clés: $pubKeywords$$endif$
+$if(wysiwygContent)$<div id="publicationContent"><br/>Contenu WYSIWYG = $wysiwygContent$</div>$endif$
+$if(xmlFormContent)$<div id="publicationContent"><br/>Contenu WYSIWYG = $xmlFormContent$</div>$endif$
 </div>

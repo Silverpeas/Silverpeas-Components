@@ -24,6 +24,7 @@
 package com.silverpeas.kmelia.ui;
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -31,8 +32,10 @@ import javax.inject.Named;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.search.AbstractResultDisplayer;
@@ -40,10 +43,13 @@ import com.silverpeas.search.ResultDisplayer;
 import com.silverpeas.search.SearchResultContentVO;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
@@ -102,78 +108,125 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
     this.setCommonAttributes(searchResult, template);
 
     if (pubDetail != null) {
-      template.setAttribute("pubDetail", pubDetail);
-
-      if (StringUtil.isDefined(pubDetail.getAuthor())) {
-        template.setAttribute("pubAuthor", pubDetail.getAuthor());
-      }
-      
-      if (StringUtil.isDefined(pubDetail.getCreatorName())) {
-        template.setAttribute("pubCreatorName", pubDetail.getCreatorName());
-      }
-      
-      if (StringUtil.isDefined(pubDetail.getKeywords())) {
-        template.setAttribute("pubKeywords", pubDetail.getKeywords());
-      }
-
-      if (StringUtil.isDefined(pubDetail.getContent())) {
-        template.setAttribute("pubContent", pubDetail.getContent());
-      }
-      
-      String spaceId = silverResult.getSpaceId();
-      String componentId = silverResult.getInstanceId();
-      String id = silverResult.getId();
-
-//      if (WysiwygController.haveGotWysiwyg(spaceId, componentId, id)) {
-//        // See also how to retrieve data from WYSIWYG in /wysiwyg/jsp/htmlDisplayer.jsp?ObjectId=&SpaceId=&ComponentId=&Language=&axisId=
-//      } else if (infos != null && model != null) {
-//        
-//        displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
-//      } else {
-//
-//        String infoId = pubDetail.getInfoId();
-//        String pubId = pubDetail.getPK().getId();
-//        if (!StringUtil.isInteger(infoId)) {
-//          PublicationTemplateImpl pubTemplate =
-//              (PublicationTemplateImpl) PublicationTemplateManager.getInstance().getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + infoId);
-//
-//          // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
-//          Form xmlForm = pubTemplate.getViewForm();
-//
-//          // get user language
-//          String language = getUserPreferences(searchResult.getUserId()).getLanguage();
-//
-//          RecordSet recordSet = pubTemplate.getRecordSet();
-//          DataRecord data = recordSet.getRecord(pubId, language);
-//          if (data == null) {
-//            data = recordSet.getEmptyRecord();
-//            data.setId(pubId);
-//          }
-//          
-//          if (xmlForm != null) {
-//            PagesContext xmlContext = new PagesContext("myForm", "0", language,
-//                false, componentId, searchResult.getUserId());
-//            xmlContext.setObjectId(id);
-//            if (kmeliaMode) {
-//              xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
-//            }
-//            xmlContext.setBorderPrinted(false);
-//            xmlContext.setContentLanguage(language);
-//          }
-//          
-//        }
-//
-//        
-//        
-//      }
-
-      
-      
+      setSpecificAttributes(searchResult, silverResult, pubDetail, template);
       result =
           template.applyFileTemplate(TEMPLATE_FILENAME + '_' +
               DisplayI18NHelper.getDefaultLanguage());
     }
     return result;
+  }
+
+  /**
+   * 
+   * @param searchResult the SearchResultContentVO data from search engine
+   * @param silverResult the current GlobalSilverResult object
+   * @param pubDetail the current PublicationDetail object
+   * @param template the current SilverpeasTemplate to set
+   */
+  private void setSpecificAttributes(SearchResultContentVO searchResult,
+      GlobalSilverResult silverResult, PublicationDetail pubDetail, SilverpeasTemplate template) {
+    template.setAttribute("pubDetail", pubDetail);
+
+    if (StringUtil.isDefined(pubDetail.getAuthor())) {
+      template.setAttribute("pubAuthor", pubDetail.getAuthor());
+    }
+
+    if (StringUtil.isDefined(pubDetail.getCreatorName())) {
+      template.setAttribute("pubCreatorName", pubDetail.getCreatorName());
+    }
+
+    if (StringUtil.isDefined(pubDetail.getKeywords())) {
+      template.setAttribute("pubKeywords", pubDetail.getKeywords());
+    }
+
+    if (StringUtil.isDefined(pubDetail.getContent())) {
+      template.setAttribute("pubContent", pubDetail.getContent());
+    }
+
+    String spaceId = silverResult.getSpaceId();
+    String componentId = silverResult.getInstanceId();
+    String id = silverResult.getId();
+    // get user language
+    String language = getUserPreferences(searchResult.getUserId()).getLanguage();
+
+    if (WysiwygController.haveGotWysiwyg(spaceId, componentId, id)) {
+      // WYSIWYG content to add inside template
+
+      String content = "";
+      try {
+        content = WysiwygController.load(componentId, id, language);
+
+        // if content not found in specified language, check other ones
+        if (!StringUtil.isDefined(content)) {
+          Iterator<String> languages = I18NHelper.getLanguages();
+          if (languages != null) {
+            while (languages.hasNext() && !StringUtil.isDefined(content)) {
+              language = (String) languages.next();
+              content = WysiwygController.load(componentId, id, language);
+            }
+          }
+        }
+      } catch (WysiwygException e) {
+        SilverTrace.error("kmelia", ResultSearchRenderer.class.getName() + ".getResultContent()",
+            "Impossible to load WYSIWYG content", e);
+      }
+      // dynamic value functionnality : check if active and try to replace the keys by their
+      // values
+      if (DynamicValueReplacement.isActivate()) {
+        DynamicValueReplacement replacement = new DynamicValueReplacement();
+        content = replacement.replaceKeyByValue(content);
+      }
+
+      // Add to template only if defined
+      if (StringUtil.isDefined(content)) {
+        template.setAttribute("wysiwygContent", content);
+      }
+    } else {
+      // 
+
+      String infoId = pubDetail.getInfoId();
+      String pubId = pubDetail.getPK().getId();
+      if (!StringUtil.isInteger(infoId)) {
+        try {
+          PublicationTemplateImpl pubTemplate =
+              (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
+                  .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + infoId);
+
+          // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
+          Form xmlForm = pubTemplate.getViewForm();
+
+          RecordSet recordSet = pubTemplate.getRecordSet();
+          DataRecord data = recordSet.getRecord(pubId, language);
+          if (data == null) {
+            data = recordSet.getEmptyRecord();
+            data.setId(pubId);
+          }
+
+          if (xmlForm != null) {
+            PagesContext xmlContext = new PagesContext("myForm", "0", language,
+                false, componentId, searchResult.getUserId());
+            xmlContext.setObjectId(id);
+            // if (kmeliaMode) {
+            // xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
+            // }
+            xmlContext.setBorderPrinted(false);
+            xmlContext.setContentLanguage(language);
+            
+            String content = xmlForm.toString(xmlContext, data);
+            // Add to template only if defined
+            if (StringUtil.isDefined(content)) {
+              template.setAttribute("xmlFormContent", content);
+            }
+          }
+        } catch (PublicationTemplateException e) {
+          SilverTrace.error("kmelia", ResultSearchRenderer.class.getName() +
+              ".getResultContent()", "Impossible to load Publication Template", e);
+        } catch (FormException e) {
+          SilverTrace.error("kmelia", ResultSearchRenderer.class.getName() +
+              ".getResultContent()", "Impossible to load publication form", e);
+        }
+      }
+    }
   }
 
   /**
