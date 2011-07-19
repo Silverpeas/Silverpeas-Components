@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.notification;
 
 import java.io.UnsupportedEncodingException;
@@ -53,9 +52,11 @@ import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.MailSender;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.calendar.control.CalendarBm;
@@ -71,34 +72,28 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class SimpleNotificationHelper implements NotificationHelper {
 
   private NotificationSender notificationSender;
-
   private NotificationFormatter notificationFormatter;
-
   private Session session;
-
   private SmtpConfiguration smtpConfig;
-
   private boolean externalThread = true;
-
   private CalendarBm calendarBm;
-
   private OrganizationController controller;
 
   public void notifyModerators(Message message, MailingList list)
-      throws NotificationManagerException {
+          throws NotificationManagerException {
     Set<String> userIds = getModeratorsIds(list);
     notifyInternals(message, list, userIds, null, true);
   }
 
   public void notifyUsers(Message message, MailingList list)
-      throws NotificationManagerException {
+          throws NotificationManagerException {
     Set<String> userIds = getUsersIds(list);
     Set<String> groupIds = getGroupIds(list);
     notifyInternals(message, list, userIds, groupIds, false);
   }
 
   public void notifyUsersAndModerators(Message message, MailingList list)
-      throws NotificationManagerException {
+          throws NotificationManagerException {
     Set<String> userIds = getUsersIds(list);
     Set<String> moderatorIds = getModeratorsIds(list);
     userIds.addAll(moderatorIds);
@@ -107,9 +102,10 @@ public class SimpleNotificationHelper implements NotificationHelper {
   }
 
   public void notifyInternals(Message message, MailingList list,
-      Collection<String> userIds, Collection<String> groupIds, boolean moderate)
-      throws NotificationManagerException {
-      String defaultTitle = notificationFormatter.formatTitle(message, list.getName(), I18NHelper.defaultLanguage, moderate);
+          Collection<String> userIds, Collection<String> groupIds, boolean moderate)
+          throws NotificationManagerException {
+    String defaultTitle = notificationFormatter.formatTitle(message, list.getName(),
+            I18NHelper.defaultLanguage, moderate);
     NotificationMetaData metadata = new NotificationMetaData();
     metadata.setAnswerAllowed(false);
     metadata.setDate(message.getSentDate());
@@ -120,7 +116,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       String title = notificationFormatter.formatTitle(message, list.getName(), lang, moderate);
       String content = notificationFormatter.formatMessage(message, lang, moderate);
-      metadata.addLanguage(lang,title, content );
+      metadata.addLanguage(lang, title, content);
     }
     metadata.setTitle(defaultTitle);
     if (message.getSummary() != null) {
@@ -129,9 +125,13 @@ public class SimpleNotificationHelper implements NotificationHelper {
       metadata.setContent("");
     }
     metadata.setLink(link);
-    metadata.setUserRecipients(userIds);
+    for (String userId : userIds) {
+      metadata.addUserRecipient(new UserRecipient(userId));
+    }
     if (groupIds != null && !groupIds.isEmpty()) {
-      metadata.setGroupRecipients(groupIds);
+      for (String groupId : groupIds) {
+        metadata.addGroupRecipient(new GroupRecipient(groupId));
+      }
     }
     notificationSender.notifyUser(metadata);
     try {
@@ -140,13 +140,13 @@ public class SimpleNotificationHelper implements NotificationHelper {
       }
     } catch (CalendarRuntimeException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
+              SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     } catch (RemoteException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
+              SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     } catch (UnsupportedEncodingException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
+              SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     }
   }
 
@@ -157,12 +157,13 @@ public class SimpleNotificationHelper implements NotificationHelper {
    * @throws MessagingException
    */
   public void notifyExternals(Message message, MailingList list)
-      throws AddressException, MessagingException {
+          throws AddressException, MessagingException {
     SilverTrace.debug("mailingList", this.getClass().getName(),
-        "mailinglist.notification.external.start");
+            "mailinglist.notification.external.start");
     MimeMessage mail = new MimeMessage(session);
     mail.setFrom(new InternetAddress(list.getSubscribedAddress()));
-    mail.setSubject(notificationFormatter.formatTitle(message, list.getName(), I18NHelper.defaultLanguage, false));
+    mail.setSubject(notificationFormatter.formatTitle(message, list.getName(),
+            I18NHelper.defaultLanguage, false));
     mail.setHeader("Precedence", "list");
     mail.setHeader("List-ID", list.getSubscribedAddress());
     if (!message.getAttachments().isEmpty()) {
@@ -182,12 +183,12 @@ public class SimpleNotificationHelper implements NotificationHelper {
       mail.setContent(message.getBody(), message.getContentType());
     }
     SilverTrace.debug("mailingList", this.getClass().getName(),
-        "mailinglist.notification.external.mail", mail.getSubject());
+            "mailinglist.notification.external.mail", mail.getSubject());
     sendMail(mail, list.getExternalSubscribers());
   }
 
   protected void sendMail(MimeMessage mail,
-      Collection<ExternalUser> externalUsers) throws MessagingException {
+          Collection<ExternalUser> externalUsers) throws MessagingException {
     MailSender sender = new MailSender(session, mail, smtpConfig, externalUsers);
     if (isExternalThread()) {
       new Thread(sender).start();
@@ -209,7 +210,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
   }
 
   public void setNotificationFormatter(
-      NotificationFormatter notificationFormatter) {
+          NotificationFormatter notificationFormatter) {
     this.notificationFormatter = notificationFormatter;
   }
 
@@ -250,8 +251,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
   public Set<String> getGroupIds(MailingList list) {
     int size = list.getGroupSubscribers().size();
     Set<String> result = new HashSet<String>(size);
-    Iterator<InternalGroupSubscriber> iter = list.getGroupSubscribers()
-        .iterator();
+    Iterator<InternalGroupSubscriber> iter = list.getGroupSubscribers().iterator();
     while (iter.hasNext()) {
       result.add((iter.next()).getExternalId());
     }
@@ -283,8 +283,8 @@ public class SimpleNotificationHelper implements NotificationHelper {
   }
 
   protected void createTask(Message message, String title,
-      Collection<String> userIds) throws RemoteException, CalendarRuntimeException,
-      UnsupportedEncodingException {
+          Collection<String> userIds) throws RemoteException, CalendarRuntimeException,
+          UnsupportedEncodingException {
     ToDoHeader todo = new ToDoHeader();
     todo.setDelegatorId(message.getComponentId());
     todo.setComponentId(message.getComponentId());
@@ -293,14 +293,15 @@ public class SimpleNotificationHelper implements NotificationHelper {
     todo.setDescription(message.getId());
     String todoId = getCalendarBm().addToDo(todo);
     todo.setId(todoId);
-    todo.setExternalId("message/" + message.getId() + "?todoId=" + URLEncoder.encode(todoId, "UTF-8"));
+    todo.setExternalId(
+            "message/" + message.getId() + "?todoId=" + URLEncoder.encode(todoId, "UTF-8"));
     getCalendarBm().updateToDo(todo);
     getCalendarBm().setToDoAttendees(todoId, userIds.toArray(new String[userIds.size()]));
   }
 
   @Override
   public void notify(Message message, MailingList list)
-      throws NotificationManagerException, AddressException, MessagingException {
+          throws NotificationManagerException, AddressException, MessagingException {
     if (list.isNotify() || list.isModerated()) {
       if (message.isModerated()) {
         if (list.isModerated() && !list.isNotify()) {

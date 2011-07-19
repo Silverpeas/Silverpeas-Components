@@ -318,7 +318,7 @@ function displayTopicContent(id) {
 }
 	
 function displaySubTopics(id) {
-	var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=GetSubTopics&ComponentId=<%=componentId%>&Language=<%=language%>&IEFix="+new Date().getTime()+"&Id="+id;
+	var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=GetSubTopics&ComponentId=<%=componentId%>&IEFix="+new Date().getTime()+"&Id="+id;
 	$.getJSON(sUrl, function(data){
 		$("#subTopics").empty();
 		$("#subTopics").append("<ul>");

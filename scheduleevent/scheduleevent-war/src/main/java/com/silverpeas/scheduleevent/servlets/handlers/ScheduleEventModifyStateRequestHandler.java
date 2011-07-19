@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,30 +24,39 @@
 
 package com.silverpeas.scheduleevent.servlets.handlers;
 
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
-import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 
 public class ScheduleEventModifyStateRequestHandler implements ScheduleEventRequestHandler {
+
+  private ScheduleEventRequestHandler forwardRequestHandler = null;
+
+  public void setForwardRequestHandler(ScheduleEventRequestHandler forwardRequestHandler) {
+    this.forwardRequestHandler = forwardRequestHandler;
+  }
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception {
-
-    String scheduleEventId = request.getParameter("scheduleEventId");
-    if (scheduleEventId != null) {
-      // make the inversion of state
-      scheduleeventSC.modifyState(scheduleEventId);
-      // go back to list
-      Set<ScheduleEvent> events = scheduleeventSC.getScheduleEventsByUserId();
-      request.setAttribute(LIST_SCHEDULE_EVENT, events);
-      return "list.jsp";
+    if (forwardRequestHandler != null) {
+      return deleteScheduleEventAndForwardRequestHandler(function, scheduleeventSC, request);
+    } else {
+      throw UndefinedForwardRequestHandlerException();
     }
-    // error page
-    throw new Exception("No event for the id " + scheduleEventId);
   }
 
+  private String deleteScheduleEventAndForwardRequestHandler(String function,
+      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws Exception {
+    String scheduleEventId = request.getParameter("scheduleEventId");
+    if (scheduleEventId != null) {
+      scheduleeventSC.switchState(scheduleEventId);
+    }
+    return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
+  }
+
+  private Exception UndefinedForwardRequestHandlerException() {
+    return new Exception(
+        "No forward request defines for" + this.getClass());
+  }
 }

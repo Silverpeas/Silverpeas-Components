@@ -41,17 +41,90 @@ boolean 	isGuest		 	= ((Boolean) request.getAttribute("IsGuest")).booleanValue()
 int nbAffiche 	= 0;
 int nbParLigne 	= 5;
 int nbTotal 	= 15;
-%>
 
+session.setAttribute("Silverpeas_Album_ComponentId", componentId);
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
+
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
 
-<script language="javascript">
+<script type="text/javascript">
+  
+	  $(document).ready(function(){
+		  <%if ( "admin".equals(profile)) { %>
+		    showAlbumsHelp();
+		    
+		    $("#albumList").sortable({opacity: 0.4, cursor: 'move'});
+			  
+			  $('#albumList').bind('sortupdate', function(event, ui) {
+				     var reg=new RegExp("album", "g");
+				     var data = $('#albumList').sortable('serialize');
+				     data += "&";  // pour que le dernier élément soit de la même longueur que les autres
+				     var tableau=data.split(reg);
+				     var param = "";
+				     for (var i=0; i<tableau.length; i++) {
+				        if (i > 0) {
+				          param += ",";
+				        }
+				        param += tableau[i].substring(3, tableau[i].length-1);
+				     }
+				     sortAlbums(param);
+				    });
+		  <%} %>
+	  });
+  
+	  var albumsHelpAlreadyShown = false;
+
+	  function showAlbumsHelp() {
+		  var albumsCookieName = "Silverpeas_GALLERY_AlbumsHelp";
+		  var albumsCookieValue = $.cookie(albumsCookieName);
+		  if (!albumsHelpAlreadyShown && "IKnowIt" != albumsCookieValue) {
+		    albumsHelpAlreadyShown = true;
+		    $( "#albums-message" ).dialog({
+		      modal: true,
+		      resizable: false,
+		      width: 400,
+		      dialogClass: 'help-modal-message',
+		      buttons: {
+		        "<%=resource.getString("gallery.help.albums.buttons.ok") %>": function() {
+		          $.cookie(albumsCookieName, "IKnowIt", { expires: 3650, path: '/' });
+		          $( this ).dialog( "close" );
+		        },
+		        "<%=resource.getString("gallery.help.albums.buttons.remind") %>": function() {
+		          $( this ).dialog( "close" );
+		        }
+		      }
+		    });
+		  }
+		}
+	  
+  function sortAlbums(orderedList)
+  {
+    $.get('<%=m_context%>/Album', { orderedList:orderedList,Action:'Sort'},
+    function(data){
+      data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
+      if (data == "error")
+      {
+        alert("Une erreur s'est produite !");
+      }
+    }, 'text');
+    if (pageMustBeReloadingAfterSorting) {
+      //force page reloading to reinit menus
+      reloadIncludingPage();
+    }
+  }
+  
+  function clipboardPaste() {     
+	  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RGallery&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("GoToCurrentAlbum"))%>&TargetFrame=MyMain&message=REFRESH');
+	}
+
 var albumWindow = window;
 var askWindow = window;
 
@@ -110,15 +183,11 @@ function sendData()
     }
 }
 
-function clipboardPaste() {    	
-	top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RGallery&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("GoToCurrentAlbum"))%>&TargetFrame=MyMain&message=REFRESH');
-}
-
 </script>
 </head>
 
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-
+<body>
+<div id="<%=componentId %>">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
@@ -190,7 +259,7 @@ function clipboardPaste() {
 		 %>
 		 <center>
 		 	<table border="0" cellpadding="0" cellspacing="0">
-		 		<form name="searchForm" action="SearchKeyWord" method="POST" onSubmit="javascript:sendData();">
+		 		<form name="searchForm" action="SearchKeyWord" method="post" onSubmit="javascript:sendData();">
 		 			<tr>
 		 				<td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("GML.search")%></td>
 		 				<td align="left" valign="middle">
@@ -208,88 +277,46 @@ function clipboardPaste() {
 		 		</form>
 		     </table>
 		 </center>
-                                    <%
-             out.println(b.printAfter());
-             out.println("<br>");
-           }
-             
-           if ("user".equals(profile) || "privilegedUser".equals(profile) || "writer".equals(profile)) {
-             NavigationList navList = gef.getNavigationList();
-             navList.setTitle(root.getName());
-             Iterator it = root.getChildrenDetails().iterator();
-               
-             while (it.hasNext()) {
-               NodeDetail unAlbum = (NodeDetail) it.next();
-               int id = unAlbum.getId();
-               String nom = unAlbum.getName();
-               String lien = null;
-               navList.addItem(nom, "ViewAlbum?Id=" + id, -1, unAlbum.getDescription(), lien);
-             }
-             out.println(navList.print());
-           } else {
-             ArrayPane arrayPane = gef.getArrayPane("albumList", "GoToCurrentAlbum", request,
-                 session);
-             ArrayColumn columnIcon = arrayPane.addArrayColumn("&nbsp;");
-             columnIcon.setSortable(false);
-             arrayPane.addArrayColumn(resource.getString("gallery.albums"));
-             arrayPane.addArrayColumn(resource.getString("GML.description"));
-             ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("gallery.operation"));
-             columnOp.setSortable(false);
-               
-             // remplissage de l'ArrayPane avec les albums de niveau 1
-             // ------------------------------------------------------
-             Iterator it = root.getChildrenDetails().iterator();
-             while (it.hasNext()) {
-               ArrayLine ligne = arrayPane.addArrayLine();
-                 
-               IconPane icon = gef.getIconPane();
-               Icon albumIcon = icon.addIcon();
-               albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
-               icon.setSpacing("30px");
-               ligne.addArrayCellIconPane(icon);
-                 
-               NodeDetail unAlbum = (NodeDetail) it.next();
-               int id = unAlbum.getId();
-               String nom = unAlbum.getName();
-               String link = "";
-               if (unAlbum.getPermalink() != null) {
-                 link = "&nbsp;<a href=\"" + unAlbum.getPermalink() + "\"><img src=\"" + resource.
-                     getIcon("gallery.link") + "\" border=\"0\" align=\"bottom\" alt=\"" + resource.
-                     getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString(
-                     "gallery.CopyAlbumLink") + "\"></a>";
-               }
-               //ligne.addArrayCellLink(unAlbum.getName()+link,"ViewAlbum?Id="+id);
-                 
-               ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.
-                   getName() + "</a>" + link);
-               arrayCellText0.setCompareOn(unAlbum.getName());
-                 
-               ligne.addArrayCellText(unAlbum.getDescription());
-               if ("admin".equals(profile) || ("publisher".equals(profile) && unAlbum.getCreatorId().
-                   equals(userId))) {
-                 // si publisher, possibilite de modif que sur ses albums
-                 // creation de la colonne des icenes
-                 IconPane iconPane = gef.getIconPane();
-                 // icene "modifier"
-                 Icon updateIcon = iconPane.addIcon();
-                 updateIcon.setProperties(resource.getIcon("gallery.updateAlbum"), resource.
-                     getString("gallery.updateAlbum"), "javaScript:editAlbum('" + id + "')");
-                 // icene "supprimer"
-                 Icon deleteIcon = iconPane.addIcon();
-                 deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.
-                     getString("gallery.deleteAlbum"), "javaScript:deleteConfirm('" + id + "','" + EncodeHelper.
-                     javaStringToHtmlString(EncodeHelper.javaStringToJsString(nom)) + "')");
-                 iconPane.setSpacing("30px");
-                 ligne.addArrayCellIconPane(iconPane);
-               }
-             }
-             out.println(arrayPane.print());
-           }
-             
+    <%
+    out.println(b.printAfter());
+    out.println("<br>");
+  }
+   
+//affichage des albums de niveau 1
+  // --------------------------------
+  out.println("<div id=\"subTopics\">");
+  out.println("<ul id=\"albumList\">");
+  Iterator it = root.getChildrenDetails().iterator();
+  while (it.hasNext()) {
+    IconPane icon = gef.getIconPane();
+    Icon albumIcon = icon.addIcon();
+    albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
+    icon.setSpacing("30px");
+      
+    NodeDetail unAlbum = (NodeDetail) it.next();
+    int id = unAlbum.getId();
+    String nom = unAlbum.getName();
+    String link = "";
+    if (unAlbum.getPermalink() != null) {
+      link = "&nbsp;<a href=\"" + unAlbum.getPermalink() + "\"><img src=\"" + resource.
+          getIcon("gallery.link") + "\" border=\"0\" align=\"bottom\" alt=\"" + resource.
+          getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString(
+          "gallery.CopyAlbumLink") + "\"></a>";
+    }
+    out.println("<li id=\"album_" + id + "\" class=\"ui-state-default\">");
+    
+    out.println("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.getName());
+    out.println("<span>" + unAlbum.getDescription() + "</span></a>");
+    out.println("</li>");
+}
+out.println("</ul>");
+out.println("</div>");
+  
            // afficher les dernieres photos telechargees
            // ------------------------------------------
              
            Board board = gef.getBoard();
+
 	%>
 			<br/>
 	<%
@@ -399,5 +426,12 @@ function clipboardPaste() {
 	<input type="hidden" name="Name">
 	<input type="hidden" name="Description">
 </form>
+</div>
+<div id="albums-message" title="<%=resource.getString("gallery.help.albums.title") %>" style="display: none;">
+  <p>
+    <%=resource.getStringWithParam("gallery.help.albums.content", componentLabel) %>
+  </p>
+</div>
+<view:progressMessage/>
 </body>
 </html>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,9 +28,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
+import com.silverpeas.scheduleevent.view.ScheduleEventDetailVO;
 
 public class ScheduleEventDetailRequestHandler implements ScheduleEventRequestHandler {
+  private String jspDestination;
 
+  public ScheduleEventDetailRequestHandler(String jspDestination) {
+    this.jspDestination = jspDestination;
+  }
+  
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception {
@@ -39,8 +45,10 @@ public class ScheduleEventDetailRequestHandler implements ScheduleEventRequestHa
     if (scheduleEventId != null) {
       ScheduleEvent event = scheduleeventSC.getDetail(scheduleEventId);
       if (event != null) {
-        request.setAttribute(SCHEDULE_EVENT_DETAIL, event);
-        return "detail.jsp";
+        request.setAttribute(SCHEDULE_EVENT_DETAIL, new ScheduleEventDetailVO(scheduleeventSC,
+            event));
+        scheduleeventSC.setCurrentScheduleEvent(event);
+        return jspDestination;
       }
     }
 

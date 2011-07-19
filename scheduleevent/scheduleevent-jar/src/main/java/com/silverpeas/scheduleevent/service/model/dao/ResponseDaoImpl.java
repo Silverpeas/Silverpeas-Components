@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,12 +24,6 @@
 
 package com.silverpeas.scheduleevent.service.model.dao;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.silverpeas.scheduleevent.service.model.beans.Response;

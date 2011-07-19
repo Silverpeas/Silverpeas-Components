@@ -3,6 +3,7 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
 <%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
+<%@ page import="java.util.Iterator"%>
 <%!
 
 void displayJavascriptAndFormToOperations(KmeliaSessionController kmeliaScc, JspWriter out) throws IOException {
@@ -138,20 +139,9 @@ public void displayAllOperations(String id, KmeliaSessionController kmeliaScc, G
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_SEE_ALSO) == -1 && !kmaxMode) {
           i++;
-		  List seeAlsoList = kmeliaScc.getSessionPublication().getCompleteDetail().getLinkList();
-		  List authorizedSeeAlsoList = new ArrayList();
-            ForeignPK curFPK = null;
-            String curComponentId = null;
-            for (int cpt=0; cpt < seeAlsoList.size(); cpt++) {
-              curFPK = (ForeignPK) seeAlsoList.get(cpt);
-              curComponentId = curFPK.getComponentName();
-              if (curComponentId != null && kmeliaScc.getOrganizationController().isComponentAvailable(curComponentId, kmeliaScc.getUserId())) {
-                authorizedSeeAlsoList.add(curFPK);
-              }
-            }
-
-          String nbSeeAlso = Integer.toString(authorizedSeeAlsoList.size());
-          tabbedPane.addTab(resources.getString("PubReferenceeParAuteur")+" ("+nbSeeAlso+")", routerUrl+"SeeAlso?PubId="+id, action.equals("LinkAuthorView") || action.equals("SameSubjectView") || action.equals("SameTopicView"), enabled, row);
+		  List authorizedAndValidSeeAlsoList = kmeliaScc.getLinkedVisiblePublications();
+          String nbSeeAlso = Integer.toString(authorizedAndValidSeeAlsoList.size());
+          tabbedPane.addTab(resources.getString("PubReferenceeParAuteur")+" ("+nbSeeAlso+")", routerUrl+"SeeAlso", action.equals("LinkAuthorView") || action.equals("SameSubjectView") || action.equals("SameTopicView"), enabled, row);
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_COMMENT) == -1) {
           i++;

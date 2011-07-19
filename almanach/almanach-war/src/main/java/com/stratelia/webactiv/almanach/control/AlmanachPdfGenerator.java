@@ -31,6 +31,12 @@
 
 package com.stratelia.webactiv.almanach.control;
 
+import java.awt.Color;
+import java.io.FileOutputStream;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import com.lowagie.text.Chapter;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -50,12 +56,6 @@ import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import java.awt.*;
-import java.io.FileOutputStream;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author squere

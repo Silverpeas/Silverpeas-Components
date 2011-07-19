@@ -31,6 +31,7 @@
   <label>
     <message lang="fr">Gestion Documentaire II</message>
     <message lang="en">Filebox</message>
+    <message lang="de">Filebox</message>
   </label>
   <description>
     <message lang="fr">Permet de fédérer et structurer une simple base de fichiers en indiquant des
@@ -40,14 +41,16 @@
   de fichiers stockés sur un serveur Windows©, ou création d'une base de fichiers sous Silverpeas.
     </message>
     <message lang="en">Structure and federate a simple group of files using metadata 'author, title, date). Files
-  can be classfied on the classification scheme, and users cans subscribe to them.
+  can be classfied on the classification scheme, and users can subscribe to them.
   Thre two ways of using this component  : a view through Silverpeas of a tree of files and directories
   stored on a Windows© server, or the creation of a database of files on Silverpeas.
     </message>
+    <message lang="de">Strukturiert und föderiert eine einfache Gruppe von Dateien anhand von Metadaten "Autor, Titel, Datum". Dateien können auf dem KP klassifiziert werden, Benutzer können sich auch abonnieren. Die zwei Möglichkeiten diese Komponente zu benützen sind: Zugang durch Silverpeas auf Dateien und Verzeichnissen die auf einem Windows © Server gespeichert sind, oder die Schaffung einer Datenbank von Dateien auf Silverpeas.</message>
   </description>
   <suite>
     <message lang="fr">01 Gestion Documentaire</message>
     <message lang="en">01 Document Management</message>
+    <message lang="de">01 Dokumentenverwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -57,30 +60,36 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">
       <label>      
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>      
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -90,6 +99,7 @@
       <label>
         <message lang="fr">Nb Publi / Page</message>
         <message lang="en">Number of publications per page.</message>
+        <message lang="de">Anzahl der Veröffentlichungen pro Seite.</message>
       </label>
       <order>2</order>
       <mandatory>false</mandatory>
@@ -100,6 +110,7 @@
       <help>
         <message lang="fr">Permet de définir le nombre de publications affichées par page.</message>
         <message lang="en">Defines the number of publications displyed on a page.</message>
+        <message lang="de">Definiert die Anzahl der Veröffentlichungen die auf einer Seite angezeigt werden.</message>
       </help>
     </parameter>
     <parameter>
@@ -107,6 +118,7 @@
       <label>
         <message lang="fr">Gestion arborescente</message>
         <message lang="en">Tree view</message>
+        <message lang="de">Baumansicht</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -116,6 +128,7 @@
           <name>
             <message lang="fr">Oui avec explorateur de thèmes</message>
             <message lang="en">Yes with explorer</message>
+            <message lang="de">Ja, mit Explorer</message>
           </name>
           <value>0</value>
         </option>
@@ -123,6 +136,7 @@
           <name>
             <message lang="fr">Oui sans explorateur de thèmes</message>
             <message lang="en">Yes without explorer</message>
+            <message lang="de">Ja, ohne Explorer</message>
           </name>
           <value>1</value>
         </option>
@@ -130,6 +144,7 @@
           <name>
             <message lang="fr">Non</message>
             <message lang="en">No</message>
+            <message lang="de">Nein</message>
           </name>
           <value>2</value>
         </option>
@@ -139,6 +154,7 @@
       <help>
         <message lang="fr">Active l'organisation arborescente de thèmes.</message>
         <message lang="en">Activates the tree organization of themes.</message>
+        <message lang="de">Aktiviert den Baum Organisation von Themen</message>
       </help>
     </parameter>
     <parameter>
@@ -146,6 +162,7 @@
       <label>
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
+        <message lang="de">klassierungsplan</message>
       </label>
       <order>4</order>
       <mandatory>true</mandatory>
@@ -155,6 +172,7 @@
       <help>
         <message lang="fr">Les publications créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
         <message lang="en">Publications would be classified on PDC</message>
+        <message lang="de">Veröffentlichungen werden auf dem KP Klassifiziert</message>
       </help>
     </parameter>
     <parameter>
@@ -162,6 +180,7 @@
       <label>
         <message lang="fr">Contenu</message>
         <message lang="en">Content</message>
+        <message lang="de">Inhalt</message>
       </label>
       <order>5</order>
       <mandatory>true</mandatory>
@@ -171,6 +190,7 @@
       <help>
         <message lang="fr">Pour pouvoir ajouter un contenu aux publication</message>
         <message lang="en">Add some content to a publication</message>
+        <message lang="de">Um einen Inhalt in Veröffentlichungen hinzufügen zu können</message>
       </help>
     </parameter>
     <parameter>
@@ -178,6 +198,7 @@
       <label>
         <message lang="fr">Fichiers Joints</message>
         <message lang="en">Attachments</message>
+        <message lang="de">Anhang</message>
       </label>
       <order>6</order>
       <mandatory>true</mandatory>
@@ -187,6 +208,7 @@
       <help>
         <message lang="fr">Pour pouvoir joindre des fichiers à une publication</message>
         <message lang="en">Add attachments to a publication</message>
+        <message lang="de">Hinzufügen von Anhänge zu einer Veröffentlichung</message>
       </help>
     </parameter>
     <parameter>
@@ -194,6 +216,7 @@
       <label>
         <message lang="fr">Voir Aussi</message>
         <message lang="en">See also</message>
+        <message lang="de">Siehe auch</message>
       </label>
       <order>7</order>
       <mandatory>true</mandatory>
@@ -203,6 +226,7 @@
       <help>
         <message lang="fr">Pour indiquer d'autres publicatins en rapport avec la publication courante.</message>
         <message lang="en">Indicates publications you might want to see after looking at the current publication.</message>
+        <message lang="de">Um anderen Veröffentlichungen in Zusammenhang mit der aktuellen Veröffentlichung zu zeigen</message>
       </help>
     </parameter>
     <parameter>
@@ -210,6 +234,7 @@
       <label>
         <message lang="fr">Emplacements Multiples</message>
         <message lang="en">Multiple locations</message>
+        <message lang="de">Mehrere Standorte</message>
       </label>
       <order>8</order>
       <mandatory>true</mandatory>
@@ -219,6 +244,7 @@
       <help>
         <message lang="fr">Pour mettre une même publication à plusieurs endroits dans la hiérachie de ce composant ou d'autres.</message>
         <message lang="en">Indicates that publications can be in many places in the component's hierarchy or in other components.</message>
+        <message lang="de">Um eine Veröffentlichungen an mehreren Orten in der Komponente Hierarchie anzeigen oder in einer anderen Komponente verwenden</message>
       </help>
     </parameter>
     <parameter>
@@ -226,6 +252,7 @@
       <label>
         <message lang="fr">Contrôles de Lecture</message>
         <message lang="en">Readers list</message>
+        <message lang="de">Leser-Liste</message>
       </label>
       <order>9</order>
       <mandatory>true</mandatory>
@@ -235,6 +262,7 @@
       <help>
         <message lang="fr">Affiche la liste des personnes ayant lu une publication</message>
         <message lang="en">Display the list of people having read a publication</message>
+        <message lang="de">Zeigt eine Liste der Personen an, Die eine Veröffentlichung gelesen haben</message>
       </help>
     </parameter>
     <parameter>
@@ -242,6 +270,7 @@
       <label>
         <message lang="fr">Commentaires</message>
         <message lang="en">Comments</message>
+        <message lang="de">Kommentare</message>
       </label>
       <order>10</order>
       <mandatory>true</mandatory>
@@ -251,6 +280,7 @@
       <help>
         <message lang="fr">Pour commenter une publication</message>
         <message lang="en">To comment a publication</message>
+        <message lang="de">Um eine Veröffentlichung zu kommentieren</message>
       </help>
     </parameter>
     <parameter>
@@ -258,6 +288,7 @@
       <label>
         <message lang="fr">Pièces jointes versionnées</message>
         <message lang="en">Versioned attachments</message>
+        <message lang="de">Versionierte Anhänge</message>
       </label>
       <order>11</order>
       <mandatory>true</mandatory>
@@ -267,6 +298,7 @@
       <help>
         <message lang="fr">Permet de gérer les versions des fichiers joints. Ce paramêtre n'est modifiable qu'à la création de l'instance.</message>
         <message lang="en">Attachments are versioned. This parameter isdefined on the creation of the component and can't be updated.</message>
+        <message lang="de">Anhänge werden versioniert. Dieser Parameter wird bei der Erschaffung der Komponente definiert und kann nicht mehr geändert werden.</message>
       </help>
     </parameter>
     <parameter>
@@ -274,6 +306,7 @@
       <label>
         <message lang="fr">Mode brouillon</message>
         <message lang="en">Draf</message>
+        <message lang="de">Entwurf</message>
       </label>
       <order>12</order>
       <mandatory>true</mandatory>
@@ -285,6 +318,7 @@
           puisse la voir.
         </message>
         <message lang="en">A publication in draft mode is visible only to the author, so he can work on it.</message>
+        <message lang="de">Eine Veröffentlichung im Entwurfs-Modus ist nur für den Autor sichtbar, so kann er daran arbeiten.</message>
       </help>
     </parameter>
     <parameter>
@@ -292,6 +326,7 @@
       <label>
         <message lang="fr">Orienté contenu Web</message>
         <message lang="en">Content for web</message>
+        <message lang="de">Inhalt für das Web</message>
       </label>
       <order>13</order>
       <mandatory>true</mandatory>
@@ -301,6 +336,7 @@
       <help>
         <message lang="fr">Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au thème, visibilité des thèmes).</message>
         <message lang="en">Activate functionalities for managing web content (wysiwyg for themes, and themes visibility).</message>
+        <message lang="de">Funktionalitäten für die Verwaltung von Web-Inhalten Aktivieren (WYSIWYG für Themen und Themen Sichtbarkeit).</message>
       </help>
     </parameter>
     <parameter>
@@ -308,6 +344,7 @@
       <label>
         <message lang="fr">Gestion déléguée des thèmes</message>
         <message lang="en">Theme management delegation</message>
+        <message lang="de">A_TRADUIRE</message>
       </label>
       <order>15</order>
       <mandatory>true</mandatory>
@@ -317,6 +354,7 @@
       <help>
         <message lang="fr">La gestion des thèmes est déléguée aux publieurs et rédacteurs.</message>
         <message lang="en">Publishers and writers can manage the themes.</message>
+        <message lang="de">Veröffentlicher und Schreiber können die Themen verwalten.</message>
       </help>
     </parameter>
     <parameter>
@@ -324,6 +362,7 @@
       <label>
         <message lang="fr">Champ Auteur</message>
         <message lang="en">Author field</message>
+        <message lang="de">Autor Feld</message>
       </label>
       <order>16</order>
       <mandatory>true</mandatory>
@@ -333,6 +372,7 @@
       <help>
         <message lang="fr">Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Auteur'.</message>
         <message lang="en">Publication have a field to enter the name of the author.</message>
+        <message lang="de">Veröffentlichung verfügen über ein Feld, um den Namen des Autors anzugeben.</message>
       </help>
     </parameter>
     <parameter>
@@ -340,6 +380,7 @@
       <label>
         <message lang="fr">Ouverture directe fichier joint</message>
         <message lang="en">Directly open attachments</message>
+        <message lang="de">Anhänge direkt öffnen</message>
       </label>
       <order>17</order>
       <mandatory>true</mandatory>
@@ -349,6 +390,7 @@
       <help>
         <message lang="fr">Si une publication contient un seul fichier joint alors l'ouverture de la publication déclenche automatiquement l'ouverture du fichier joint.</message>
         <message lang="en">Opening a publication with only one attachment will open this attachment automatically.</message>
+        <message lang="de">Öffnen einer Veröffentlichung mit nur einem Anhang wird diesen Anhang automatisch öffnen.</message>
       </help>
     </parameter>
     <parameter>
@@ -356,6 +398,7 @@
       <label>
         <message lang="fr">Importation de document(s)</message>
         <message lang="en">Importing document(s)</message>
+        <message lang="de">Dokument(e) importieren</message>
       </label>
       <order>18</order>
       <mandatory>true</mandatory>
@@ -365,6 +408,7 @@
           <name>
             <message lang="fr">Non</message>
             <message lang="en">No</message>
+            <message lang="de">Nein</message>
           </name>
           <value>0</value>
         </option>
@@ -372,6 +416,7 @@
           <name>
             <message lang="fr">Import unitaire</message>
             <message lang="en">Unit import</message>
+            <message lang="de">Einzelimport</message>
           </name>
           <value>1</value>
         </option>
@@ -379,6 +424,7 @@
           <name>
             <message lang="fr">Import massif</message>
             <message lang="en">Massive import</message>
+            <message lang="de">Massiven Import</message>
           </name>
           <value>2</value>
         </option>
@@ -386,6 +432,7 @@
           <name>
             <message lang="fr">Tous</message>
             <message lang="en">All</message>
+            <message lang="de">Alle</message>
           </name>
           <value>3</value>
         </option>
@@ -395,6 +442,7 @@
       <help>
         <message lang="fr">Valeurs possibles:Non, Import unitaire, Import massif, Importunitaire et massif.</message>
         <message lang="en">Available values : No, Unit import, Massive import, Unit and massive import.</message>
+        <message lang="de">Verfügbare Werte: Nein, Einzelimport, Massiven Import, Einzel und massiven Import</message>
       </help>
     </parameter>
     <parameter>
@@ -402,6 +450,7 @@
       <label>
         <message lang="fr">Validation de publication</message>
         <message lang="en">Publication validation</message>
+        <message lang="de">Veröffentlichungsbestätigung</message>
       </label>
       <order>19</order>
       <mandatory>true</mandatory>
@@ -415,6 +464,7 @@
         <message lang="en">The targeted validation option allows writers to choose which publisher
         have to validate theirs publications. This avoid spam behaviour.
         </message>
+        <message lang="de">Gezielte Validierung erlaubt es dem Schreiber einen Validator auszuwählen. Dieses Verhalten Vermeidet Spam.</message>
       </help>
     </parameter>
     <parameter>
@@ -422,6 +472,7 @@
       <label>
         <message lang="fr">Exportation du composant</message>
         <message lang="en">Export component</message>
+        <message lang="de">Komponente Export</message>
       </label>
       <order>20</order>
       <mandatory>true</mandatory>
@@ -431,6 +482,7 @@
           <name>
             <message lang="fr">Non</message>
             <message lang="en">No</message>
+            <message lang="de">Nein</message>
           </name>
           <value>no</value>
         </option>
@@ -438,6 +490,7 @@
           <name>
             <message lang="fr">Au format ZIP</message>
             <message lang="en">In a zip file</message>
+            <message lang="de">In einer ZIP-Datei</message>
           </name>
           <value>yes</value>
         </option>
@@ -445,6 +498,7 @@
           <name>
             <message lang="fr">Des fichiers PDF</message>
             <message lang="en">In pdf files</message>
+            <message lang="de">In einer PDF-Datei</message>
           </name>
           <value>pdf</value>
         </option>
@@ -452,6 +506,7 @@
           <name>
             <message lang="fr">Tous</message>
             <message lang="en">All</message>
+            <message lang="de">Alle</message>
           </name>
           <value>both</value>
         </option>
@@ -461,6 +516,7 @@
       <help>
         <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles du composant.</message>
         <message lang="en">This function allow the user to export all the visible publications in the component</message>
+        <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
       </help>
     </parameter>
     <parameter>
@@ -468,6 +524,7 @@
       <label>
         <message lang="fr">Glisser / Déposer</message>
         <message lang="en">Drag And Drop</message>
+        <message lang="de">Drag And Drop</message>
       </label>
       <order>21</order>
       <mandatory>true</mandatory>
@@ -477,6 +534,7 @@
       <help>
         <message lang="fr">Cette fonction permet de créer des thèmes et des publications par glisser/déposer dans une zone de l'écran.</message>
         <message lang="en">This function allow to the manager to create topics and publications using drag and drop.</message>
+        <message lang="de">Diese Funktion ermöglicht es dem Manager Themen und Publikationen mit Hilfe von Drag and Drop zu erstellen.</message>
       </help>
     </parameter>
     <parameter>
@@ -484,6 +542,7 @@
       <label>
         <message lang="fr">Co Rédaction</message>
         <message lang="en">Co-writing</message>
+        <message lang="de">Co-Schreibung</message>
       </label>
       <order>22</order>
       <mandatory>true</mandatory>
@@ -493,6 +552,7 @@
       <help>
         <message lang="fr">Cette fonction permet à un rédacteur de pouvoir modifier n'importe quelle publication.</message>
         <message lang="en">This function makes it possible to a writer to modify any publications.</message>
+        <message lang="de">Diese Funktion macht es einem Schreiber möglich, jede Veröffentlichung zu ändern.</message>
       </help>
     </parameter>
     <parameter>
@@ -500,6 +560,7 @@
       <label>
         <message lang="fr">Publication toujours visible</message>
         <message lang="en">Publication always visible</message>
+        <message lang="de">Veröffentlichung immer sichtbar</message>
       </label>
       <order>23</order>
       <mandatory>true</mandatory>
@@ -509,6 +570,7 @@
       <help>
         <message lang="fr">La dernière version validée d'une publication est toujours visible même lorsqu'elle est en attente de validation.</message>
         <message lang="en">The latest valid version of a publication is always visible even if it is waiting approval.</message>
+        <message lang="de">Die letztgültigen Fassung einer Veröffentlichung ist immer sichtbar, auch wenn es auf einer Genehmigung wartet.</message>
       </help>
     </parameter>
     <parameter>
@@ -516,6 +578,7 @@
       <label>
         <message lang="fr">Assistant de publication</message>
         <message lang="en">Wizard for creating a publication</message>
+        <message lang="de">Assistent für die Erstellung einer Veröffentlichung</message>
       </label>
       <order>24</order>
       <mandatory>true</mandatory>
@@ -525,6 +588,7 @@
       <help>
         <message lang="fr">Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas.</message>
         <message lang="en">For beginners only. This wizard allows the user to create a publication step by step.</message>
+        <message lang="de">Nur für Anfänger. Dieser Assistent ermöglicht es dem Benutzer, eine Veröffentlichung Schritt für Schritt zu erstellen.</message>
       </help>
     </parameter>
     <parameter>
@@ -532,6 +596,7 @@
       <label>
         <message lang="fr">Affichage nombre de publications</message>
         <message lang="en">Display the number of publications</message>
+        <message lang="de">Anzahl der Veröffentlichungen zeigen</message>
       </label>
       <order>26</order>
       <mandatory>true</mandatory>
@@ -541,6 +606,7 @@
       <help>
         <message lang="fr">Affiche le nombre de publications par thème.</message>
         <message lang="en">Display the number of publications per theme.</message>
+        <message lang="de">Anzahl der Veröffentlichungen per Thema zeigen</message>
       </help>
     </parameter>
     <parameter>
@@ -548,6 +614,7 @@
       <label>
         <message lang="fr">Droits sur les thèmes</message>
         <message lang="en">Rigths on themes</message>
+        <message lang="de">Rechte auf die Themen</message>
       </label>
       <order>27</order>
       <mandatory>true</mandatory>
@@ -557,6 +624,7 @@
       <help>
         <message lang="fr">Permet de définir des droits d'accès au niveau des thèmes.</message>
         <message lang="en">Allow to define rights on themes.</message>
+        <message lang="de">A_TRADUIRE</message>
       </help>
     </parameter>
     <parameter>
@@ -564,6 +632,7 @@
       <label>
         <message lang="fr">Gestion des retards</message>
         <message lang="en">Backlog management</message>
+        <message lang="de">Erlaubt es, Zugangsrechte auf die Themen zu bestimmen.</message>
       </label>
       <order>28</order>
       <mandatory>false</mandatory>
@@ -578,6 +647,8 @@
         <message lang="en">This option defines a maximum duration for booking a file and managing the backlog.
         This duration is expressed in days, and week-ends are not taken into account.
         </message>
+        <message lang="de">Diese Option erlaubt, ein Buchungsfristen der verbundenen Dateien zu wählen und die Verspätungen zu verwalten.
+        Die Frist ist in den Tagen ausgedrückt und berücksichtige keine Samstage und Sonntage.</message>
       </help>
     </parameter>
     <parameter>
@@ -585,6 +656,7 @@
       <label>
         <message lang="fr">Description riche</message>
         <message lang="en">Rich description</message>
+        <message lang="de">Reiche Beschreibung</message>
       </label>
       <order>29</order>
       <mandatory>true</mandatory>
@@ -594,6 +666,7 @@
       <help>
         <message lang="fr">Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème.</message>
         <message lang="en">This feature allows to make a rich description of a theme.</message>
+        <message lang="de">Diese Funktion ermöglicht es, einen reichen Beschreibung eines Themas zu machen.</message>
       </help>
     </parameter>
     <parameter>
@@ -601,6 +674,7 @@
       <label>
         <message lang="fr">Fichiers partageables</message>
         <message lang="en">Share attachments</message>
+        <message lang="de">Anhänge freigeben</message>
       </label>
       <order>30</order>
       <mandatory>true</mandatory>
@@ -610,6 +684,7 @@
       <help>
         <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail.</message>
         <message lang="en">This feature allows to activate file sharing with persons who have no access to the portal.</message>
+        <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
       </help>
     </parameter>
   </parameters>

@@ -530,7 +530,7 @@ function loadNodeData(node, fnLoadComplete)  {
     //and then return fnLoadComplete back to the tree.
 
     //prepare URL for XHR request:
-    var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=GetSubTopics&ComponentId=<%=componentId%>&Language=<%=language%>&IEFix="+new Date().getTime()+"&Id="+node.labelElId;
+    var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=GetSubTopics&ComponentId=<%=componentId%>&IEFix="+new Date().getTime()+"&Id="+node.labelElId;
 
     //prepare our callback object
     var callback = {
@@ -880,7 +880,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		    if (oCurrentTextNode)
 		    {
 			    //get profile to display more or less context actions
-				$.getJSON("<%=m_context%>/KmeliaJSONServlet?Id="+oCurrentTextNode.labelElId+"&Action=GetTopic&ComponentId=<%=componentId%>&Language=<%=language%>&IEFix="+new Date().getTime(),
+				$.getJSON("<%=m_context%>/KmeliaJSONServlet?Id="+oCurrentTextNode.labelElId+"&Action=GetTopic&ComponentId=<%=componentId%>&IEFix="+new Date().getTime(),
 						function(data){
 							try
 							{

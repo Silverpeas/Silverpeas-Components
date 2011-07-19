@@ -1269,8 +1269,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     getKmeliaBm().deleteInfoLinks(getPublicationPK(pubId), links);
 
     // reset current publication
-    KmeliaPublication completPub =
-            getKmeliaBm().getPublication(getPublicationPK(pubId));
+    KmeliaPublication completPub = getKmeliaBm().getPublication(getPublicationPK(pubId));
     setSessionPublication(completPub);
   }
 
@@ -1285,13 +1284,33 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     getKmeliaBm().addInfoLinks(getPublicationPK(pubId), links);
 
     // reset current publication
-    KmeliaPublication completPub =
-            getKmeliaBm().getPublication(getPublicationPK(pubId));
+    KmeliaPublication completPub = getKmeliaBm().getPublication(getPublicationPK(pubId));
     setSessionPublication(completPub);
   }
+  
+  public List<KmeliaPublication> getLinkedVisiblePublications() throws RemoteException {
+    List<ForeignPK> seeAlsoList = getSessionPublication().getCompleteDetail().getLinkList();
+    List<ForeignPK> authorizedSeeAlsoList = new ArrayList<ForeignPK>();
+    List<KmeliaPublication> authorizedAndValidSeeAlsoList = new ArrayList<KmeliaPublication>();
+    String curComponentId = null;
+    for (ForeignPK curFPK : seeAlsoList) {
+      curComponentId = curFPK.getComponentName();
+      if (curComponentId != null &&
+          getOrganizationController().isComponentAvailable(curComponentId, getUserId())) {
+        authorizedSeeAlsoList.add(curFPK);
+      }
+    }
 
-  public synchronized KmeliaPublication getPublication(String pubId)
-          throws RemoteException {
+    Collection<KmeliaPublication> linkedPublications = getPublications(authorizedSeeAlsoList);
+    for (KmeliaPublication pub : linkedPublications) {
+      if (pub.getDetail().isValid()) {
+        authorizedAndValidSeeAlsoList.add(pub);
+      }
+    }
+    return authorizedAndValidSeeAlsoList;
+  }
+
+  public synchronized KmeliaPublication getPublication(String pubId) throws RemoteException {
     return getPublication(pubId, false);
   }
 
@@ -1299,8 +1318,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           boolean processIndex) throws RemoteException {
     PublicationPK pubPK = getPublicationPK(pubId);
     // get publication
-    KmeliaPublication publication =
-            getKmeliaBm().getPublication(pubPK);
+    KmeliaPublication publication = getKmeliaBm().getPublication(pubPK);
     PublicationDetail publicationDetail = publication.getDetail();
 
     ForeignPK foreignPK = new ForeignPK(pubId, getComponentId());
@@ -1538,10 +1556,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             new PublicationPK("useless", getComponentId()), publication_default_sorting);
   }
 
-  public Collection<PublicationDetail> getAllPublicationsByTopic(PublicationPK pubPK, List fatherIds)
+  public Collection<PublicationDetail> getAllPublicationsByTopic(PublicationPK pubPK, List<String> fatherIds)
           throws RemoteException {
     Collection<PublicationDetail> result = getKmeliaBm().getPublicationBm().
-            getDetailsByFatherIdsAndStatus((ArrayList) fatherIds, pubPK,
+            getDetailsByFatherIdsAndStatus((ArrayList<String>) fatherIds, pubPK,
             "P.pubUpdateDate desc, P.pubId desc", PublicationDetail.VALID);
     SilverTrace.info("kmelia", "KmeliaSessionController.getAllPublicationsByTopic()",
             "root.MSG_PARAM_VALUE", "publis=" + result.toString());
@@ -2191,8 +2209,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     StringTokenizer tokens = null;
 
     List<ForeignPK> infoLinks = new ArrayList<ForeignPK>();
-    for (String link :
-            links) {
+    for (String link : links) {
       tokens = new StringTokenizer(link, "/");
       infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
     }

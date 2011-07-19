@@ -28,13 +28,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import java.util.Map;
 
-public class TopicComparator implements Comparator {
+public class TopicComparator implements Comparator<NodeDetail> {
 
   private static final String DEFAULT_NAME = "*";
 
   private boolean useCriteria;
-  private HashMap namesWeights;
+  private Map<String, Integer> namesWeights;
 
   public TopicComparator() {
     useCriteria = false;
@@ -42,21 +43,25 @@ public class TopicComparator implements Comparator {
 
   public TopicComparator(String[] criteria) {
     if (criteria != null) {
-      namesWeights = new HashMap();
+      namesWeights = new HashMap<String, Integer>();
       int i = 0;
       for (i = 0; i < criteria.length; i++) {
-        namesWeights.put(criteria[i].toLowerCase(), new Integer(i));
+        namesWeights.put(criteria[i].toLowerCase(), Integer.valueOf(i));
       }
       if (i > 0 && !namesWeights.containsKey(DEFAULT_NAME)) {
-        namesWeights.put(DEFAULT_NAME, new Integer(i));
+        namesWeights.put(DEFAULT_NAME, Integer.valueOf(i));
       }
     }
     useCriteria = (namesWeights != null && !namesWeights.isEmpty());
   }
 
-  public int compare(Object o1, Object o2) {
-    NodeDetail node1 = (NodeDetail) o1;
-    NodeDetail node2 = (NodeDetail) o2;
+
+  private Integer getNameWeight(String name) {
+    return (namesWeights.containsKey(name) ? namesWeights.get(name) : namesWeights.get(DEFAULT_NAME));
+  }
+
+  @Override
+  public int compare(NodeDetail node1, NodeDetail node2) {
     int result = 0;
     if (node1.getId() > 2 && node2.getId() > 2) {
       String name1 = node1.getName().toLowerCase();
@@ -69,11 +74,6 @@ public class TopicComparator implements Comparator {
       }
     }
     return result;
-  }
-
-  private Integer getNameWeight(String name) {
-    return (namesWeights.containsKey(name)
-        ? (Integer) namesWeights.get(name) : (Integer) namesWeights.get(DEFAULT_NAME));
   }
 
 }

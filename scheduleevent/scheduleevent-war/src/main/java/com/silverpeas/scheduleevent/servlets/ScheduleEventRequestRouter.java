@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,16 +30,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddDateRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddInfosGeneRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddOptionsHourRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddOptionsNextRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDescriptionNextRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventSimpleFormRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventTimeNextRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDateNextRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventBackDateRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventBackHourRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventBackInfosGeneRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventBackwardRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventCancelRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventConfirmRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventConfirmScreenRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventConfirmUsersRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDeleteDateRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDeleteRequestHandler;
@@ -62,25 +60,87 @@ public class ScheduleEventRequestRouter extends ComponentRequestRouter {
   private static final HashMap<String, ScheduleEventRequestHandler> actions =
       new HashMap<String, ScheduleEventRequestHandler>();
   static {
-    actions.put("Main", new ScheduleEventMainRequestHandler());
-    actions.put("Detail", new ScheduleEventDetailRequestHandler());
-    actions.put("Add", new ScheduleEventAddRequestHandler());
-    actions.put("Delete", new ScheduleEventDeleteRequestHandler());
-    actions.put("Cancel", new ScheduleEventCancelRequestHandler());
-    actions.put("AddInfoGene", new ScheduleEventAddInfosGeneRequestHandler());
-    actions.put("BackInfoGene", new ScheduleEventBackInfosGeneRequestHandler());
-    actions.put("AddDate", new ScheduleEventAddDateRequestHandler());
-    actions.put("DeleteDate", new ScheduleEventDeleteDateRequestHandler());
-    actions.put("AddOptionsNext", new ScheduleEventAddOptionsNextRequestHandler());
-    actions.put("AddOptionsHour", new ScheduleEventAddOptionsHourRequestHandler());
-    actions.put("BackDate", new ScheduleEventBackDateRequestHandler());
-    actions.put("BackHour", new ScheduleEventBackHourRequestHandler());
+    ScheduleEventMainRequestHandler mainRequestHandler = new ScheduleEventMainRequestHandler("list.jsp");
+    ScheduleEventDeleteRequestHandler deleteRequestHandler = new ScheduleEventDeleteRequestHandler();
+    ScheduleEventModifyStateRequestHandler modifyStateRequestHandler = new ScheduleEventModifyStateRequestHandler();
+    ScheduleEventDetailRequestHandler detailRequestHandler = new ScheduleEventDetailRequestHandler("detail.jsp");
+    ScheduleEventValidResponseRequestHandler validResponseRequestHandler = new ScheduleEventValidResponseRequestHandler();
+    ScheduleEventCancelRequestHandler cancelRequestHandler =
+        new ScheduleEventCancelRequestHandler();
+    ScheduleEventAddRequestHandler addRequestHandler = new ScheduleEventAddRequestHandler("form/generalInfo.jsp");
+    ScheduleEventDescriptionNextRequestHandler infoNextRequestHandler =
+        new ScheduleEventDescriptionNextRequestHandler();
+    ScheduleEventBackwardRequestHandler infoBackRequestHandler =
+        new ScheduleEventBackwardRequestHandler();
+    ScheduleEventSimpleFormRequestHandler dateRequestHandler = new ScheduleEventSimpleFormRequestHandler("form/options.jsp");
+    ScheduleEventDeleteDateRequestHandler dateDeleteRequestHandler =
+        new ScheduleEventDeleteDateRequestHandler();
+    ScheduleEventAddDateRequestHandler dateAddRequestHandler =
+        new ScheduleEventAddDateRequestHandler();
+    ScheduleEventDateNextRequestHandler dateNextRequestHandler =
+        new ScheduleEventDateNextRequestHandler();
+    ScheduleEventSimpleFormRequestHandler timeRequestHandler = new ScheduleEventSimpleFormRequestHandler("form/optionshour.jsp");
+    ScheduleEventBackwardRequestHandler dateBackRequestHandler =
+        new ScheduleEventBackwardRequestHandler();
+    ScheduleEventTimeNextRequestHandler timeNextRequestHandler =
+        new ScheduleEventTimeNextRequestHandler();
+    ScheduleEventBackwardRequestHandler timeBackRequestHandler =
+        new ScheduleEventBackwardRequestHandler();
+    ScheduleEventSimpleFormRequestHandler notifyRequestHandler = new ScheduleEventSimpleFormRequestHandler("form/notify.jsp");
+    ScheduleEventConfirmRequestHandler confirmRequestHandler = new ScheduleEventConfirmRequestHandler();
+    ScheduleEventConfirmUsersRequestHandler confirmUsersRequestHandler = new ScheduleEventConfirmUsersRequestHandler(true);
+    ScheduleEventConfirmUsersRequestHandler modifyUsersRequestHandler = new ScheduleEventConfirmUsersRequestHandler(false);
+
+    deleteRequestHandler.setForwardRequestHandler(mainRequestHandler);
+    modifyStateRequestHandler.setForwardRequestHandler(mainRequestHandler);
+
+    cancelRequestHandler.setForwardRequestHandler(mainRequestHandler);
+    
+    infoBackRequestHandler.setBackRequestHandler(addRequestHandler);
+    infoNextRequestHandler.setFirstStepRequestHandler(addRequestHandler);
+    infoNextRequestHandler.setForwardRequestHandler(dateRequestHandler);
+
+    dateBackRequestHandler.setBackRequestHandler(dateRequestHandler);
+    dateAddRequestHandler.setForwardRequestHandler(dateRequestHandler);
+    dateDeleteRequestHandler.setForwardRequestHandler(dateRequestHandler);
+    dateNextRequestHandler.setFirstStepRequestHandler(addRequestHandler);
+    dateNextRequestHandler.setForwardRequestHandler(timeRequestHandler);
+
+    timeBackRequestHandler.setBackRequestHandler(timeRequestHandler);
+    timeNextRequestHandler.setFirstStepRequestHandler(addRequestHandler);
+    timeNextRequestHandler.setForwardRequestHandler(notifyRequestHandler);
+
+    confirmUsersRequestHandler.setForwardRequestHandler(notifyRequestHandler);
+    modifyUsersRequestHandler.setForwardRequestHandler(detailRequestHandler);
+    confirmRequestHandler.setForwardRequestHandler(mainRequestHandler);
+
+    validResponseRequestHandler.setForwardRequestHandler(detailRequestHandler);
+    
+    actions.put("Main", mainRequestHandler);
+    actions.put("Detail", detailRequestHandler);
+    actions.put("ValidResponse", validResponseRequestHandler);
+    actions.put("Add", addRequestHandler);
+    actions.put("Delete", deleteRequestHandler);
+    actions.put("ModifyState", modifyStateRequestHandler);
+    
+    actions.put("Cancel", cancelRequestHandler);
+    
+    actions.put("BackInfoGene", infoBackRequestHandler);
+    actions.put("AddInfoGene", infoNextRequestHandler);
+    
+    actions.put("BackDate", dateBackRequestHandler);
+    actions.put("AddDate", dateAddRequestHandler);
+    actions.put("DeleteDate", dateDeleteRequestHandler);
+    actions.put("AddOptionsNext", dateNextRequestHandler);
+    
+    actions.put("BackHour", timeBackRequestHandler);
+    actions.put("AddOptionsHour", timeNextRequestHandler);
+    
     actions.put("OpenUserPopup", new ScheduleEventOpenUserRequestHandler());
-    actions.put("ConfirmScreen", new ScheduleEventConfirmScreenRequestHandler());
-    actions.put("ConfirmUsers", new ScheduleEventConfirmUsersRequestHandler());
-    actions.put("Confirm", new ScheduleEventConfirmRequestHandler());
-    actions.put("ModifyState", new ScheduleEventModifyStateRequestHandler());
-    actions.put("ValidResponse", new ScheduleEventValidResponseRequestHandler());
+    actions.put("ConfirmScreen", notifyRequestHandler);
+    actions.put("ConfirmUsers", confirmUsersRequestHandler);
+    actions.put("ConfirmModifyUsers", modifyUsersRequestHandler);
+    actions.put("Confirm", confirmRequestHandler);
   };
 
   /**

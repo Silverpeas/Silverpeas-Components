@@ -31,14 +31,17 @@
   <label>
     <message lang="fr">Blog</message>
     <message lang="en">Blog</message>
+    <message lang="de">Blog</message>
   </label>
   <description>
     <message lang="fr">Permet de réunir des billets affichés par ordre antéchronologique et éventuellement classés par catégorie.</message>
     <message lang="en">A blog component, displaying posts by categories or by time.</message>
+    <message lang="de">Eine Blog-Komponente die Beiträge per Kategorien oder nach Zeit Anzeiget.</message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
+    <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -48,20 +51,24 @@
       <label>
         <message lang="fr">Bloggeur</message>
         <message lang="en">Author</message>
+        <message lang="de">Autor</message>
       </label>
       <help>
         <message lang="fr">Bloggeur</message>
         <message lang="en">Author</message>
+        <message lang="de">Autor</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -71,6 +78,7 @@
       <label>
         <message lang="fr">Flux RSS</message>
         <message lang="en">RSS</message>
+        <message lang="de">RSS</message>
       </label>
       <order>1</order>
       <mandatory>false</mandatory>
@@ -79,7 +87,8 @@
       <updatable>always</updatable>      
       <help>
         <message lang="fr">Permet de générer un flux RSS de ce blog.</message>
-        <message lang="en">Produce a RSS stream for the events of this almanah.</message>
+        <message lang="en">Produce a RSS stream for the events of this Blog.</message>
+        <message lang="de">Erlaubt, eine RSS-Stream des Blogs zu erzeugen</message>
       </help>
     </parameter>
     <parameter>
@@ -87,6 +96,7 @@
       <label>
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
+        <message lang="de">Klassierungsplan</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -96,6 +106,7 @@
       <help>
         <message lang="fr">Les billets créés au sein de cette instance pourront être classées sur le Plan de Classement</message>
         <message lang="en">Post will be classified on the classification scheme.</message>
+        <message lang="de">Posts können auf dem KP klassifiziert werden</message>
       </help>
     </parameter>
     <parameter>
@@ -103,6 +114,7 @@
       <label>
         <message lang="fr">Brouillon visible</message>
         <message lang="en">Display drafts</message>
+        <message lang="de">Entwürfe anzeigen</message>
       </label>
       <order>3</order>      
       <mandatory>true</mandatory>
@@ -111,7 +123,8 @@
       <updatable>always</updatable>      
       <help>
         <message lang="fr">Le brouillon sera visible entre bloggeurs.</message>
-        <message lang="en">Authors will be able to see ddraft posts.</message>
+        <message lang="en">Authors will be able to see draft posts.</message>
+        <message lang="de">Die Autoren werden in der Lage sein Entwurf Beiträge zu sehen.</message>
       </help>
     </parameter>
   </parameters>
