@@ -37,15 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.silverpeas.gallery.control.GallerySessionController;
-import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class AjaxServlet extends HttpServlet {
