@@ -84,7 +84,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
@@ -199,6 +198,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
                 SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
+    
+    viewAllPhoto = SilverpeasRole.admin.isInRole(getRole());
   }
 
   public Collection<PhotoDetail> getDernieres() {
@@ -257,6 +258,18 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.getAlbum()",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return album;
+  }
+  
+  public AlbumDetail getAlbumLight(String albumId) {
+    NodePK nodePK = new NodePK(albumId, getComponentId());
+    AlbumDetail album = null;
+    try {
+      album = getGalleryBm().getAlbum(nodePK, viewAllPhoto);
+    } catch (Exception e) {
+      throw new GalleryRuntimeException("GallerySessionController.getAlbumLight()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return album;
   }
@@ -967,10 +980,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return viewAllPhoto;
   }
 
-  public void setViewAllPhoto(boolean viewAllPhoto) {
-    this.viewAllPhoto = viewAllPhoto;
-  }
-
   public Collection<String> getListSelected() {
     // restitution de la collection des photos selectionnées
     SilverTrace.info("gallery", "GallerySessionControler.getListSelected()", "",
@@ -1201,21 +1210,13 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       }
     }
   }
-
-  public ProfileInst getAlbumProfile(String role, String topicId) {
-    List<ProfileInst> profiles = new ArrayList<ProfileInst>();
-    // List profiles = getAdmin().getProfilesByObject(topicId,
-    // getComponentId());
-    for (int p = 0; profiles != null && p < profiles.size(); p++) {
-      ProfileInst profile = profiles.get(p);
-      if (profile.getName().equals(role)) {
-        return profile;
-      }
+  
+  public Collection<PhotoDetail> getAllPhotos(AlbumDetail album) {
+    try {
+      return getGalleryBm().getAllPhoto(album.getNodePK(), viewAllPhoto);
+    } catch (RemoteException e) {
+      return null;
     }
-
-    ProfileInst profile = new ProfileInst();
-    profile.setName(role);
-    return profile;
   }
 
   private void pasteImagesOfAlbum(NodePK fromPK, NodePK toPK, boolean isCutted,
@@ -1233,7 +1234,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   private void pastePhoto(PhotoDetail photo, boolean isCutted) {
     pastePhoto(photo, isCutted, null, null);
-
   }
 
   private void pastePhoto(PhotoDetail photo, boolean isCutted, NodePK nodePK,
@@ -1852,5 +1852,44 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       throw new GalleryRuntimeException("GallerySessionController.sortAlbums()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
+  }
+  
+  //recherche du profile de l'utilisateur
+  public String getRole() {
+    String[] profiles = getUserRoles();
+    String flag = "user";
+    for (int i = 0; i < profiles.length; i++) {
+      if (profiles[i].equals("admin")) {
+        return profiles[i];
+      }
+      if (profiles[i].equals("publisher")) {
+        flag = profiles[i];
+      } else if (profiles[i].equals("writer")) {
+        if (!flag.equals("publisher")) {
+          flag = profiles[i];
+        }
+      } else if (profiles[i].equals("privilegedUser")) {
+        flag = profiles[i];
+      }
+    }
+    return flag;
+  }
+  
+  public Collection<AlbumDetail> addNbPhotos(Collection<AlbumDetail> albums) {
+    // retourne la liste des albums avec leurs nombre de photos
+    for (AlbumDetail album : albums) {
+      // pour chaque sous album, rechercher le nombre de photos
+      int nbPhotos = 0;
+      Collection<PhotoDetail> allPhotos = getAllPhotos(album);
+      nbPhotos = allPhotos.size();
+      // parcourir ses sous albums pour comptabiliser aussi ses photos
+      AlbumDetail thisAlbum = getAlbumLight(Integer.toString(album.getId()));
+      Collection<AlbumDetail> subAlbums = addNbPhotos(thisAlbum.getChildrenAlbumsDetails());
+      for (AlbumDetail oneSubAlbum : subAlbums) {
+        nbPhotos = nbPhotos + oneSubAlbum.getNbPhotos();
+      }
+      album.setNbPhotos(nbPhotos);
+    }
+    return albums;
   }
 }

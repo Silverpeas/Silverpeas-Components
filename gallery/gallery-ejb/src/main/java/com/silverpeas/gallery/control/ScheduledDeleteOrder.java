@@ -24,7 +24,6 @@
 package com.silverpeas.gallery.control;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
@@ -74,16 +73,14 @@ public class ScheduledDeleteOrder
       int nbDays = Integer.parseInt(resources.getString("nbDaysForDeleteOrder"));
 
       // rechercher toutes les demandes arrivant à échéance
-      Collection orders = getGalleryBm().getAllOrderToDelete(nbDays);
+      Collection<Order> orders = getGalleryBm().getAllOrderToDelete(nbDays);
       SilverTrace.info("gallery",
           "ScheduledAlertUser.doScheduledDeleteOrder()",
           "root.MSG_GEN_PARAM_VALUE", "Demandes = " + orders.toString());
 
       if (orders != null) {
-        Iterator it = orders.iterator();
-        while (it.hasNext()) {
+        for (Order order : orders) {
           // pour chaque demande, la supprimer
-          Order order = (Order) it.next();
           int orderId = order.getOrderId();
           getGalleryBm().deleteOrder(Integer.toString(orderId));
         }
