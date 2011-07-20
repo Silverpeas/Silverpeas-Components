@@ -61,7 +61,7 @@ $(document).ready(function() {
       answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
       typeLien = question.substring(0,1);
       if (typeLien!="l" && !$(objectEvent.target).hasClass('actionQuestion')) {
-        $('.answers').hide();
+        $('#' + this.id + ' .answers').hide();
         if(etat[id] != "open"){
           $('#a'+id).show();
           etat[id] = "open";
@@ -90,6 +90,10 @@ $(document).ready(function() {
       if (typeLien!="l") {
         $('.category').removeClass('select');
         $('.questions').hide();
+        $('#qc' + id + ' .answers').hide();
+        $.each(etat, function(index) { 
+          etat[index] = 'close';
+        });
         var found = $('#qc'+id + '>li');
         if (found.length == 0) {  
           $.getJSON(questionUrl,function(data) {
@@ -185,10 +189,11 @@ $(document).ready(function() {
       deleteQuestionLink.append(deleteQuestionImg);
       actionDiv.append(deleteQuestionLink);
     }
-    
-    actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox'));
-    actionDiv.append($('<input>').attr('name', 'status').attr('value', questionToBeDisplayed.status).attr('type', 'hidden'));
-    questionDiv.append(actionDiv);
+    <c:if test="${'user' != requestScope.Flag}">
+      actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox'));
+      actionDiv.append($('<input>').attr('name', 'status').attr('value', questionToBeDisplayed.status).attr('type', 'hidden'));
+      questionDiv.append(actionDiv);
+    </c:if>
     return questionDiv;
   }
   <fmt:message key="questionReply.minicone" bundle="${icons}" var="publicAnswerIcon"/>
@@ -202,7 +207,7 @@ $(document).ready(function() {
       answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rprivee" />').attr('title','<fmt:message key="questionReply.Rprivee" />').attr('src', '<c:url value="${privateAnswerIcon}" />'));
     }
     actionDiv = $('<div>').addClass('action');    
-    if(!answer.readonly){
+    if(!answer.readOnly){
       updateAnswerLink = $('<a>').attr('title', '<fmt:message key="questionReply.modifR" />').attr('href', 'UpdateR?replyId=' + answer.id + '&QuestionId=' + answer.questionId);
       updateAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.modifR" />').attr('src', '<c:url value="${updateIcon}" />');
       updateAnswerLink.append(updateAnswerImg);
@@ -218,8 +223,7 @@ $(document).ready(function() {
     answerContentDiv = $('<div>').addClass('answerContent');
     answerAttachmentDiv = $('<div>').addClass('answerAttachment');
     if(answer.attachments != null && answer.attachments.length > 0) {
-      attachementDivUrl = '<c:url value="/attachment/jsp/displayAttachments.jsp?Context=Images&ComponentId=${pageScope.componentId}" />&Id=' + answer.id;
-      $.get(attachementDivUrl, function(data){answerAttachmentDiv.append(data);}, 'html');
+      answerAttachmentDiv.load('<c:url value="/attachment/jsp/displayAttachments.jsp?Context=Images&ComponentId=${pageScope.componentId}" />&Id=' + answer.id);
       answerContentDiv.append(answerAttachmentDiv);
     }
     answerContentDiv.append(answer.content);
@@ -482,10 +486,12 @@ function subscribe() {
         <div class="categoryTitle" id="c<c:out value='${category.id}'/>">
           <h3><a class="categoryTitle"  id="lc<c:out value='${category.id}'/>" title="<fmt:message key="questionReply.openCategory"/>" href="#"><c:out value='${category.name}'/></a></h3>
           <div class="action">
+            <c:if test="${'admin' eq requestScope.Flag}">
             <a title="<fmt:message key="questionReply.updateCategory"/>" href="EditCategory?CategoryId=<c:out value='${category.id}'/>"> 
               <img src="<c:url value="${updateCategoryIcon}"/>" alt="<fmt:message key="questionReply.updateCategory"/>"/></a>
             <a title="<fmt:message key="questionReply.deleteCategory"/>" href="javascript:confirmDeleteCategory('<c:out value='${category.id}'/>');">
               <img src="<c:url value="${deleteCategoryIcon}"/>" alt="<fmt:message key="questionReply.deleteCategory"/>"/></a>
+            </c:if>
           </div>
         </div>
         <ul class="questions" id="qc<c:out value='${category.id}'/>" ></ul>
@@ -499,7 +505,7 @@ function subscribe() {
         </div>
         <ul class="questions" id="qcnull" ></ul>
     </li>
-
+</ul>
 </form>
   
 <form name="QForm" action="" method="post">

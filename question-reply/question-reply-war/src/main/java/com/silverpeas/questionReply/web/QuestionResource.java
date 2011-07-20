@@ -118,7 +118,7 @@ public class QuestionResource extends QuestionRelyBaseWebService {
     if (profile == SilverpeasRole.user) {
       visibleQuestions = new ArrayList<Question>(questions.size());
       for (Question question : questions) {
-        if (!question.hasWaitingStatus()) {
+        if (question.getPublicReplyNumber() > 0) {
           visibleQuestions.add(question);
         }
       }
@@ -155,8 +155,9 @@ public class QuestionResource extends QuestionRelyBaseWebService {
    * @return the corresponding question entity.
    */
   protected QuestionEntity asWebEntity(final Question question, URI questionURI) {
-    QuestionEntity entity = QuestionEntity.fromQuestion(question).withURI(questionURI).withUser(
-        getUserDetail(), getUserProfile());
+    QuestionEntity entity = QuestionEntity.fromQuestion(question, 
+            getUserPreferences().getLanguage()).withURI(questionURI).withUser(getUserDetail(), 
+            getUserProfile());
     AuthorEntity author = AuthorEntity.fromUser(question.readAuthor(controller));
     author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
     entity.setCreator(author);
