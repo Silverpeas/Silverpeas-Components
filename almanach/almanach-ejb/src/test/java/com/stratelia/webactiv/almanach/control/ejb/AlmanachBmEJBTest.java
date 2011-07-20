@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
+import com.silverpeas.calendar.Date;
 import org.junit.Before;
 import com.stratelia.webactiv.almanach.BaseAlmanachTest;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
@@ -49,7 +50,7 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
 
   @Before
   public void prepareAlmanachBmEJB() {
-    almanachBmEJB = new AlmanachBmEJB();
+    almanachBmEJB = new AlmanachBmEJBForTest();
   }
 
   /**
@@ -127,6 +128,12 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
         endingAt("2011-04-15"))));
   }
   
+  @Test
+  public void theNextEventOccurrencesShouldBeCorrectlyObtained() throws Exception {
+    List<EventOccurrence> occurrences = almanachBmEJB.getNextEventOccurrences(almanachIds);
+    assertThat(occurrences.size(), is(13));
+  }
+  
   private Calendar year2011() {
     Calendar year2011 = Calendar.getInstance();
     year2011.setTime(dateToUseInTests());
@@ -143,5 +150,20 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
     Calendar week15 = Calendar.getInstance();
     week15.setTime(dateToUseInTests());
     return week15;
+  }
+  
+  /**
+   * An AlmanachBmEJB instance dedicated to tests. It overrides some methods in order to set a
+   * context adapted to the tests.
+   */
+  private static class AlmanachBmEJBForTest extends AlmanachBmEJB {
+    private static final long serialVersionUID = 3216349856012963787L;
+
+    @Override
+    protected Date today() {
+      Calendar today = Calendar.getInstance();
+      today.setTime(dateToUseInTests());
+      return new Date(today.getTime());
+    }
   }
 }

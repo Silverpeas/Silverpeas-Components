@@ -137,6 +137,21 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
 
     return generateOccurrencesOf(events, occuringIn(theWeek));
   }
+  
+  @Override
+  public List<EventOccurrence> generateOccurrencesInRange(Date startDate, Date endDate,
+          List<EventDetail> events) {
+    java.util.Calendar rangeEndDate = java.util.Calendar.getInstance();
+    if (endDate == null) {
+      // a hack as the iCal4J Period objects don't support null end date or infinite end date.
+      rangeEndDate.setTime(startDate);
+      rangeEndDate.add(java.util.Calendar.YEAR, 100);
+    } else {
+      rangeEndDate.setTime(endDate);
+    }
+    Period range = new Period(new DateTime(startDate), new DateTime(rangeEndDate.getTime()));
+    return generateOccurrencesOf(events, occuringIn(range));
+  }
 
   /**
    * Generates the occurrences of the specified events that occur in the specified period.
