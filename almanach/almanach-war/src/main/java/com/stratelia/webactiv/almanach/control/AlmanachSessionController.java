@@ -110,8 +110,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   private static final String ACCESS_SPACE = "1";
   private static final String ACCESS_NONE = "3";
   private static final String ICS_PREFIX = "almanach";
+  private static final String DEFAULT_VIEW_PARAMETER = "defaultView";
   private Map<String, String> colors = null;
-  private CalendarViewType viewMode = MONTHLY;
+  private CalendarViewType viewMode;
   private OrganizationController organizationController = new OrganizationController();
 
   /**
@@ -125,6 +126,12 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         "com.stratelia.webactiv.almanach.multilang.almanach",
         "com.stratelia.webactiv.almanach.settings.almanachIcons",
         "com.stratelia.webactiv.almanach.settings.almanachSettings");
+    String defaultView = getComponentParameterValue(DEFAULT_VIEW_PARAMETER);
+    if (defaultView.isEmpty()) {
+      viewMode = MONTHLY; // backward compatibility with previous versions of the Almanach
+    } else {
+      viewMode = CalendarViewType.valueOf(defaultView);
+    }
   }
 
   /**
