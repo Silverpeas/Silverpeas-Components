@@ -1009,8 +1009,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
               almanachIds);
       EventOccurrenceGenerator occurrenceGenerator = EventOccurrenceGeneratorFactory.getFactory().
               getEventOccurrenceGenerator();
-      return occurrenceGenerator.generateOccurrencesInRange(today, null, new ArrayList<EventDetail>(
-              events));
+      return occurrenceGenerator.generateOccurrencesFrom(today, new ArrayList<EventDetail>(events));
     } catch (Exception ex) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInWeek()",
               SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",

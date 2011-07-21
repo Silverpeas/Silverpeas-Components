@@ -35,6 +35,10 @@
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.stratelia.webactiv.almanach"/>
+  <ctx:component-scan base-package="com.silverpeas.rest"/>
+  <ctx:component-scan base-package="com.silverpeas.almanach"/>
+  <import resource="spring-personalization.xml" />
+  <import resource="spring-jdbc-datasource.xml" />
 
 </beans>
 

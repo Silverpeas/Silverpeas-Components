@@ -529,6 +529,11 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         request.setAttribute("calendarView", calendar);
         request.setAttribute("Function", function);
         destination = "/almanach/jsp/viewEvents.jsp";
+      } else if ("ViewNextEvents".equals(function)) {
+        AlmanachCalendarView calendar = almanach.getAlmanachCalendarViewOnTheNextEvents();
+        request.setAttribute("calendarView", calendar);
+        request.setAttribute("Function", function);
+        destination = "/almanach/jsp/nextEvents.jsp";
       } else if ("ViewYearEventsPOPUP".equals(function)) {
         AlmanachCalendarView calendarView = almanach.getYearlyAlmanachCalendarView();
         request.setAttribute("calendarView", calendarView);

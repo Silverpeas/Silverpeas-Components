@@ -72,6 +72,17 @@
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>ws-test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

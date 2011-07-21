@@ -23,11 +23,13 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * An occurrence of an event in the time and that can be rendered in a calendar view.
@@ -100,16 +102,22 @@ public class DisplayableEventOccurrence extends EventOccurrence {
    * @return a JSON object of this event DTO.
    */
   protected JSONObject toJSONObject() {
+    EventDetail event = getEventDetail();
     String startDate = getStartDateTimeInISO();
     String endDate = getEndDateTimeInISO();
     JSONObject jsonObject = new JSONObject();
-    jsonObject.put("id", getEventDetail().getId());
-    jsonObject.put("instanceId", getEventDetail().getInstanceId());
-    jsonObject.put("title", getEventDetail().getTitle());
+    jsonObject.put("id", event.getId());
+    jsonObject.put("instanceId", event.getInstanceId());
+    jsonObject.put("title", event.getTitle());
+    jsonObject.put("description", event.getDescription());
+    jsonObject.put("location", event.getPlace());
     jsonObject.put("start", startDate);
     jsonObject.put("end", endDate);
     jsonObject.put("className", new JSONArray(getCSSClasses()));
     jsonObject.put("allDay", isAllDay());
+    if (isDefined(event.getEventUrl())) {
+      jsonObject.put("url", event.getEventUrl());
+    }
     return jsonObject;
   }
 

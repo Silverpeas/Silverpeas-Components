@@ -35,18 +35,8 @@
     <c:if test="${rssUrl ne null and not empty rssUrl}">
       <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel}'/> : <fmt:message key='almanach.rssNext'/>" href="<c:url value='${rssUrl}'/>"/>
     </c:if>
-    <link rel='stylesheet' type='text/css' href="<c:url value='/util/styleSheets/jquery/fullcalendar.css'/>" />
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
-    <style type="text/css">
-      <c:out value=".${instanceId} { border-color: ${calendarView.almanach.color}; color: ${calendarView.almanach.color}; }"/>
-      <c:out value=".${instanceId} .fc-event-skin { background-color: ${calendarView.almanach.color}; border-color: ${calendarView.almanach.color}; color: white; }"/>
-      <c:forEach var="almanach" items="${othersAlmanachs}">
-        <c:out value=".${almanach.instanceId} { border-color: ${almanach.color}; color: ${almanach.color}; }"/>
-        <c:out value=".${almanach.instanceId} .fc-event-skin { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
-      </c:forEach>
-    </style>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
     <script type="text/javascript">
 
       function viewByMonth()
@@ -70,44 +60,8 @@
         document.almanachForm.submit();
       }
 
-      function nextView()
-      {
-        document.almanachForm.Action.value = "NextView";
-        $.progressMessage();
-        document.almanachForm.submit();
-      }
-
-      function previousView()
-      {
-        document.almanachForm.Action.value = "PreviousView";
-        $.progressMessage();
-        document.almanachForm.submit();
-      }
-      function goToDay()
-      {
-        document.almanachForm.Action.value = "GoToday";
-        $.progressMessage();
-        document.almanachForm.submit();
-      }
-
-      function clickEvent(idEvent, date, componentId){
-        viewEvent(idEvent, date, componentId);
-      }
-
-      function clickDay(day){
-        flag = "<c:out value='${flag}'/>";
-        if(flag == "publisher" || flag == "admin")
-          addEvent(day);
-      }
-
       function openSPWindow(fonction, windowName){
         pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '450','scrollbars=yes, resizable, alwaysRaised');
-      }
-
-      function viewEvent(id, date, componentId)
-      {
-        url = "<c:url value='/Ralmanach/'/>"+componentId+"/viewEventContent.jsp?Id="+id+"&Date="+date;
-        window.open(url,'_self');
       }
 
       function addEvent(day)
@@ -182,56 +136,52 @@
           document.agregateAlmanachs.submit();
         }
       </c:if>
-
+        
+        var monthNames = ['<fmt:message key="GML.mois0"/>', '<fmt:message key="GML.mois1"/>', '<fmt:message key="GML.mois2"/>', '<fmt:message key="GML.mois3"/>',
+              '<fmt:message key="GML.mois4"/>', '<fmt:message key="GML.mois5"/>', '<fmt:message key="GML.mois6"/>', '<fmt:message key="GML.mois7"/>',
+              '<fmt:message key="GML.mois8"/>', '<fmt:message key="GML.mois9"/>', '<fmt:message key="GML.mois10"/>', '<fmt:message key="GML.mois11"/>'];
+        var dayNames = ['<fmt:message key="GML.jour1"/>', '<fmt:message key="GML.jour2"/>', '<fmt:message key="GML.jour3"/>', '<fmt:message key="GML.jour4"/>',
+              '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'];
+                
         $(document).ready(function() {
 
           // page is now ready, initialize the calendar...
 
-          $('#calendar').fullCalendar({
-            header: false,
-            // put your options and callbacks here
-            monthNames: ['<fmt:message key="GML.mois0"/>', '<fmt:message key="GML.mois1"/>', '<fmt:message key="GML.mois2"/>', '<fmt:message key="GML.mois3"/>',
-              '<fmt:message key="GML.mois4"/>', '<fmt:message key="GML.mois5"/>', '<fmt:message key="GML.mois6"/>', '<fmt:message key="GML.mois7"/>',
-              '<fmt:message key="GML.mois8"/>', '<fmt:message key="GML.mois9"/>', '<fmt:message key="GML.mois10"/>', '<fmt:message key="GML.mois11"/>'],
-            dayNames: ['<fmt:message key="GML.jour1"/>', '<fmt:message key="GML.jour2"/>', '<fmt:message key="GML.jour3"/>', '<fmt:message key="GML.jour4"/>',
-              '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'],
-            dayNamesShort: ['<fmt:message key="GML.shortJour1"/>', '<fmt:message key="GML.shortJour2"/>', '<fmt:message key="GML.shortJour3"/>',
-              '<fmt:message key="GML.shortJour4"/>', '<fmt:message key="GML.shortJour5"/>', '<fmt:message key="GML.shortJour6"/>', '<fmt:message key="GML.shortJour7"/>'],
-            buttonText: {
-              prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
-              next:     '&nbsp;&#9658;&nbsp;',  // right triangle
-              prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
-              nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
-              today:    "${today}",
-              month:    '<fmt:message key="GML.month"/>',
-              week:     '<fmt:message key="GML.week"/>',
-              day:      '<fmt:message key="GML.day"/>'
-            },
-            minHour: 8,
-            allDayText: '',
-            allDayDefault: false,
-            ignoreTimezone: false,
-            timeFormat: 'HH:mm{ - HH:mm}',
-            axisFormat: 'HH:mm',
-            columnFormat: { agendaWeek: 'ddd d' },
-            firstDay: <c:out value='${calendarView.firstDayOfWeek - 1}' />,
-            defaultView: "<c:out value='${calendarView.viewType}'/>",
-            dayClick: function(date, allDay, jsEvent, view) {
-              var dayDate = $.fullCalendar.formatDate(date, "yyyy-MM-dd'T'HH:mm");
-              clickDay(dayDate);
-            },
-            eventClick: function(calEvent, jsEvent, view) {
-              var eventDate = $.fullCalendar.formatDate(calEvent.start, "yyyy/MM/dd");
-              clickEvent(calEvent.id, eventDate, calEvent.instanceId);
-            },
-            events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>
-      <c:if test='${not calendarView.weekendVisible}'>
-            , weekends: false
-      </c:if>
+          var events = <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>;
+          var currentMonth = -1;
+          var monthSection = null;
+          $.each(events, function(index, event) {
+            // the Date object doesn't support currently the ISO-8661 date format with timezone,
+            // so remove the timezone part of the date before converting it to a Date object
+            var startDate = new Date(event.start.replace(/\+\d+/g, ""));
+            var endDate = new Date(event.end.replace(/\+\d+/g, ""));
+            if (startDate.getMonth() != currentMonth) {
+              var currentYear = startDate.getYear();
+              currentMonth = startDate.getMonth();
+              monthSection = $("<div id='eventsInMonth" + (currentMonth + 1) + "InYear" + currentYear + "' class='monthInYear'")
+                .append($("<span class='title'>").html(monthNames[currentMonth] + ' ' + currentYear)).appendTo($('#calendar'));
+            }
+            var time = "<fmt:message key='GML.From'/> " + startDate.getHours() + ":" + startDate.getMinutes();
+            if (endDate.getFullYear() > startDate.getFullYear() || endDate.getMonth() > startDate.getMonth() ||
+              endDate.getDate() > startDate.getDate()) {
+              time = time + " <fmt:message key='GML.to'/> " + endDate.toLocaleString(); 
+            }
+            time = time + " <fmt:message key='GML.at'/> " + endDate.getHours() + ":" + startDate.getMinutes();
+            var url = "";
+            if (event.url != null) {
+              url = "<a href='" + event.url + "' alt='URL of the event'/>";
+            }
+            $("<div id='event" + event.id + "'").addClass("event").addClass(event.className)
+              .append($("<div class='date'>")
+                .append($("<span class='month'>").html(monthNames[currentMonth]))
+                .append($("<span class='date'>").html(startDate.getDate()))
+                .append($("<span class='day'>").html(dayNames[startDate.getDay()])))
+              .append($("<span class='time'>").html(time))
+              .append($("<span class='location'>").html(event.location))
+              .append($("<span class='title'>").html(event.title))
+              .append($("<span class='description'").html(event.description))
+              .append($("<span class='url'>").html(event.url)).appendTo(monthSection);
           });
-
-          $('#calendar').fullCalendar('gotoDate', <c:out value="${currentDay.year}"/>, <c:out value="${currentDay.month}"/>, <c:out value="${currentDay.dayOfMonth}"/>)
-
         });
     </script>
   </head>
@@ -304,30 +254,7 @@
 
       <view:frame>
         <div id="navigation">
-          <fmt:message key="almanach.icons.leftArrow" var="leftArrow" bundle="${icons}"/>
-          <fmt:message key="almanach.icons.rightArrow" var="rightArrow" bundle="${icons}"/>
-          <div id="currentScope">
-            <a href="javascript:onClick=previousView()"><img src="<c:url value='${leftArrow}'/>" border="0" alt="" align="top"/></a>
-            <span class="txtnav"><c:out value="${calendarView.label}" /></span>
-            <a href="javascript:onClick=nextView()"><img src="<c:url value='${rightArrow}'/>" border="0" alt="" align="top"/></a>
-          </div>
-          <div id="today">
-            <a href="javascript:onClick=goToDay()"><c:out value="${today}" /></a>
-          </div>
-          <c:if test="${accessibleInstances ne null}">
-            <div id="others">
-              <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
-                <c:forEach var="instance" items="${accessibleInstances}">
-                  <c:set var="componentId" value="${instance.instanceId}"/>
-                  <c:set var="selected" value=""/>
-                  <c:if test="${componentId eq instanceId}">
-                    <c:set var="selected" value="selected='selected'"/>
-                  </c:if>
-                  <option value="<c:out value='${instance.url}'/>Main" <c:out value="${selected}" escapeXml="false"/>><c:out value="${instance.spaceId} - ${instance.label}"/></option>
-                </c:forEach>
-              </select>
-            </div>
-          </c:if>
+
         </div>
 
         <c:if test="${almanach.agregationUsed and not empty othersAlmanachs}">

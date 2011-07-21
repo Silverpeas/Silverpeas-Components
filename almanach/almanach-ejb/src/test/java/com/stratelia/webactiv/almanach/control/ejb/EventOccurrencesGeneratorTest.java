@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
+import com.silverpeas.calendar.Date;
 import com.stratelia.webactiv.almanach.BaseAlmanachTest;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
@@ -214,10 +215,53 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
         startingAt("2011-04-15"),
         endingAt("2011-04-15"))));
   }
+  
+  @Test
+  public void generateOccurrencesFromAGivenDateWithNoEvents() throws Exception {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    List<EventOccurrence> occurrences = generator.generateOccurrencesFrom(aDate(), events);
+    assertThat(occurrences.isEmpty(),  is(true));
+  }
+  
+  @Test
+  public void generateOccurrencesFromAGivenDateWithNonPeriodicEvents() throws Exception {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build()); // it has no occurrences from the given date
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
+    List<EventOccurrence> occurrences = generator.generateOccurrencesFrom(aDate(), events);
+    assertThat(occurrences.size(), is(1));
+    assertThat(occurrences.get(0), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[1],
+        startingAt("2011-04-15"),
+        endingAt("2011-04-15"))));
+  }
+  
+  @Test
+  public void generateOccurrencesFromAGivenDateWithPeriodicEvents() throws Exception {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[0]).build()); // it has 5 occurrences from the given date
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has 5 occurrences from the given date
+    List<EventOccurrence> occurrences = generator.generateOccurrencesFrom(aDate(), events);
+    assertThat(occurrences.size(), is(10));
+  }
+  
+  @Test
+  public void generateOccurrencesFromAGivenDateWithPeriodicAndNonPeriodicEvents() throws Exception {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[0]).build()); // it has 5 occurrences from the given date
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build()); // it has no occurrences from the given date
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has 5 occurrences from the given date
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
+    List<EventOccurrence> occurrences = generator.generateOccurrencesFrom(aDate(), events);
+    assertThat(occurrences.size(), is(11));
+  }
 
   private Calendar aPeriod() {
     Calendar date = Calendar.getInstance();
     date.setTime(dateToUseInTests());
     return date;
+  }
+  
+  private Date aDate() {
+    return new Date(dateToUseInTests());
   }
 }

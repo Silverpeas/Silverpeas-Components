@@ -39,7 +39,11 @@ public enum CalendarViewType {
   /**
    * The calendar view is weekly.
    */
-  WEEKLY("agendaWeek");
+  WEEKLY("agendaWeek"),
+  /**
+   * The calendar view is on the next events.
+   */
+  NEXT_EVENTS("nextevents");
 
   /**
    * Converts this view type in a string representation.
@@ -74,6 +78,14 @@ public enum CalendarViewType {
    */
   public boolean isWeeklyView() {
     return this == WEEKLY;
+  }
+  
+  /**
+   * Is this view type is a on the next events.
+   * @return true if this view type is on the next events one, false otherwise.
+   */
+  public boolean isNextEventsView() {
+    return this == NEXT_EVENTS;
   }
 
   /**

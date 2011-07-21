@@ -25,8 +25,7 @@ package com.stratelia.webactiv.almanach.control;
 
 import static com.silverpeas.export.ExportDescriptor.withWriter;
 import static com.silverpeas.util.StringUtil.isDefined;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.MONTHLY;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.YEARLY;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 import static com.stratelia.webactiv.util.DateUtil.parse;
 
 import java.io.File;
@@ -920,6 +919,31 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     view.setLabel(label);
     return view;
   }
+  
+  /**
+   * Gets a view on the next events that will occur and that are defined in the current underlying
+   * almanach.
+   * @return an AlmanachCalendarView instance.
+   * @throws AlmanachException if an error occurs while getting the calendar view.
+   * @throws AlmanachNoSuchFindEventException if a detail about an event in the almanach cannot be
+   * found.
+   * @throws RemoteException if the communication with the remote business object fails.
+   */
+  public AlmanachCalendarView getAlmanachCalendarViewOnTheNextEvents() throws AlmanachException,
+      AlmanachNoSuchFindEventException, RemoteException {
+    AlmanachDTO almanachDTO = new AlmanachDTO().setColor(getAlmanachColor(getComponentId())).
+        setInstanceId(getComponentId()).setLabel(getComponentLabel()).setAgregated(
+        isAgregationUsed()).setUrl(getComponentUrl());
+    AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
+    AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, NEXT_EVENTS);
+    view.setLocale(getLanguage());
+    if (isWeekendNotVisible()) {
+      view.unsetWeekendVisible();
+    }
+    view.setEvents(listNextEvents());
+    view.setLabel(getString("almanach.nextEvents"));
+    return view;
+  }
 
   /**
    * Gets the URL of the ICS representation of the current almamach.
@@ -1021,6 +1045,22 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     List<EventOccurrence> occurrencesInWeek = getAlmanachBm().getEventOccurrencesInWeek(currentDay,
         almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInWeek);
+  }
+  
+  /**
+   * Gets the occurrences of the next events defined in the underlying calendar.
+   * @return a list of event occurrences decorated with rendering features.
+   * @throws AlmanachException if an error occurs while getting the list of event occurrences.
+   * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
+   * @throws RemoteException if the communication with the remote business object fails.
+   */
+  protected List<DisplayableEventOccurrence> listNextEvents() throws AlmanachException,
+      AlmanachNoSuchFindEventException, RemoteException {
+    String[] almanachIds = new String[getAgregateAlmanachIds().size() + 1];
+    almanachIds = getAgregateAlmanachIds().toArray(almanachIds);
+    almanachIds[almanachIds.length - 1] = getComponentId();
+    List<EventOccurrence> nextOccurrences = getAlmanachBm().getNextEventOccurrences(almanachIds);
+    return DisplayableEventOccurrence.decorate(nextOccurrences);
   }
 
   /**

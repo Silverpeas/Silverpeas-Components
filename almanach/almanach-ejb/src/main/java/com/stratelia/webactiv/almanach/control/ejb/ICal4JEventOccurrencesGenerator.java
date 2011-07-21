@@ -61,10 +61,10 @@ import static com.stratelia.webactiv.util.DateUtil.*;
  * A generator of event occurrences built on the iCal4J library.
  */
 public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator {
-  
+
   @Override
   public List<EventOccurrence> generateOccurrencesInYear(java.util.Calendar year,
-      List<EventDetail> events) {
+          List<EventDetail> events) {
     java.util.Calendar firstDayYear = java.util.Calendar.getInstance();
     firstDayYear.set(java.util.Calendar.YEAR, year.get(java.util.Calendar.YEAR));
     firstDayYear.set(java.util.Calendar.DAY_OF_MONTH, 1);
@@ -83,14 +83,14 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
     lastDayYear.set(java.util.Calendar.MILLISECOND, 0);
     lastDayYear.add(java.util.Calendar.YEAR, 1);
     Period theYear = new Period(new DateTime(firstDayYear.getTime()),
-        new DateTime(lastDayYear.getTime()));
+            new DateTime(lastDayYear.getTime()));
 
     return generateOccurrencesOf(events, occuringIn(theYear));
   }
 
   @Override
   public List<EventOccurrence> generateOccurrencesInMonth(java.util.Calendar month,
-      List<EventDetail> events) {
+          List<EventDetail> events) {
     java.util.Calendar firstDayMonth = java.util.Calendar.getInstance();
     firstDayMonth.set(java.util.Calendar.YEAR, month.get(java.util.Calendar.YEAR));
     firstDayMonth.set(java.util.Calendar.DAY_OF_MONTH, 1);
@@ -109,14 +109,14 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
     lastDayMonth.set(java.util.Calendar.MILLISECOND, 0);
     lastDayMonth.add(java.util.Calendar.MONTH, 1);
     Period theMonth = new Period(new DateTime(firstDayMonth.getTime()),
-        new DateTime(lastDayMonth.getTime()));
+            new DateTime(lastDayMonth.getTime()));
 
     return generateOccurrencesOf(events, occuringIn(theMonth));
   }
 
   @Override
   public List<EventOccurrence> generateOccurrencesInWeek(java.util.Calendar week,
-      List<EventDetail> events) {
+          List<EventDetail> events) {
     java.util.Calendar firstDayWeek = java.util.Calendar.getInstance();
     firstDayWeek.setTime(week.getTime());
     firstDayWeek.set(java.util.Calendar.DAY_OF_WEEK, week.getFirstDayOfWeek());
@@ -133,24 +133,19 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
     lastDayWeek.set(java.util.Calendar.DAY_OF_WEEK, week.getFirstDayOfWeek());
     lastDayWeek.add(java.util.Calendar.WEEK_OF_YEAR, 1);
     Period theWeek = new Period(new DateTime(firstDayWeek.getTime()),
-        new DateTime(lastDayWeek.getTime()));
+            new DateTime(lastDayWeek.getTime()));
 
     return generateOccurrencesOf(events, occuringIn(theWeek));
   }
-  
+
   @Override
-  public List<EventOccurrence> generateOccurrencesInRange(Date startDate, Date endDate,
-          List<EventDetail> events) {
+  public List<EventOccurrence> generateOccurrencesFrom(Date date,  List<EventDetail> events) {
+    // a hack as the iCal4J Period objects don't support null end date or infinite end date.
     java.util.Calendar rangeEndDate = java.util.Calendar.getInstance();
-    if (endDate == null) {
-      // a hack as the iCal4J Period objects don't support null end date or infinite end date.
-      rangeEndDate.setTime(startDate);
-      rangeEndDate.add(java.util.Calendar.YEAR, 100);
-    } else {
-      rangeEndDate.setTime(endDate);
-    }
-    Period range = new Period(new DateTime(startDate), new DateTime(rangeEndDate.getTime()));
-    return generateOccurrencesOf(events, occuringIn(range));
+    rangeEndDate.setTime(date);
+    rangeEndDate.add(java.util.Calendar.YEAR, 100);
+    Period period = new Period(new DateTime(date), new DateTime(rangeEndDate.getTime()));
+    return generateOccurrencesOf(events, occuringIn(period));
   }
 
   /**
@@ -160,14 +155,14 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
    * @return a list of event occurrences that occur in the specified period.
    */
   private List<EventOccurrence> generateOccurrencesOf(final List<EventDetail> events,
-      final Period inPeriod) {
+          final Period inPeriod) {
     List<EventOccurrence> occurrences = new ArrayList<EventOccurrence>();
     Calendar iCal4JCalendar = anICalCalendarWith(events);
     ComponentList componentList = iCal4JCalendar.getComponents(Component.VEVENT);
     for (Object eventObject : componentList) {
       VEvent iCalEvent = (VEvent) eventObject;
       int index = Integer.parseInt(iCalEvent.getProperties().getProperty(Property.CATEGORIES).
-          getValue());
+              getValue());
       EventDetail event = events.get(index);
       PeriodList periodList = iCalEvent.calculateRecurrenceSet(inPeriod);
       for (Object recurrencePeriodObject : periodList) {
@@ -175,7 +170,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
         Datable<?> startDate = toDatable(recurrencePeriod.getStart(), event.getStartHour());
         Datable<?> endDate = toDatable(recurrencePeriod.getEnd(), event.getEndHour());
         EventOccurrence occurrence = anOccurrenceOf(event, startingAt(startDate), endingAt(endDate)).
-            withPriority(event.isPriority());
+                withPriority(event.isPriority());
         occurrences.add(occurrence);
       }
     }
@@ -211,13 +206,13 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
    */
   private ExDate generateExceptionDates(final EventDetail event) {
     Collection<PeriodicityException> periodicityExceptions =
-        getPeriodicityExceptions(event.getPeriodicity());
+            getPeriodicityExceptions(event.getPeriodicity());
     DateList exceptionDates = new DateList();
     java.util.Calendar exceptionsStartDate = java.util.Calendar.getInstance();
     java.util.Calendar exceptionsEndDate = java.util.Calendar.getInstance();
     for (PeriodicityException periodicityException : periodicityExceptions) {
       Datable<?> datable = toDatable(periodicityException.getBeginDateException(), event.
-          getStartHour());
+              getStartHour());
       exceptionsStartDate.setTime(datable.asDate());
       if (!isDefined(event.getEndHour()) && isDefined(event.getStartHour())) {
         datable = toDatable(periodicityException.getEndDateException(), event.getStartHour());
@@ -226,7 +221,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
       }
       exceptionsEndDate.setTime(datable.asDate());
       while (exceptionsStartDate.before(exceptionsEndDate)
-          || exceptionsStartDate.equals(exceptionsEndDate)) {
+              || exceptionsStartDate.equals(exceptionsEndDate)) {
         exceptionDates.add(new DateTime(exceptionsStartDate.getTime()));
         exceptionsStartDate.add(java.util.Calendar.DATE, 1);
       }
@@ -243,25 +238,25 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
     try {
       IdPK pk = new IdPK();
       return getPeriodicityExceptionDAO().findByWhereClause(pk, "periodicityId = " + periodicity.
-          getPK().getId());
+              getPK().getId());
     } catch (PersistenceException e) {
       throw new AlmanachRuntimeException(
-          "AlmanachBmEJB.getListPeriodicityException()",
-          SilverpeasRuntimeException.ERROR,
-          "almanach.EX_GET_PERIODICITY_EXCEPTION", e);
+              "AlmanachBmEJB.getListPeriodicityException()",
+              SilverpeasRuntimeException.ERROR,
+              "almanach.EX_GET_PERIODICITY_EXCEPTION", e);
     }
   }
 
   private SilverpeasBeanDAO getPeriodicityExceptionDAO() {
     try {
       SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory.getDAO(
-          "com.stratelia.webactiv.almanach.model.PeriodicityException");
+              "com.stratelia.webactiv.almanach.model.PeriodicityException");
       return dao;
     } catch (PersistenceException pe) {
       throw new AlmanachRuntimeException(
-          "AlmanachBmEJB.getPeriodicityExceptionDAO()",
-          SilverpeasRuntimeException.ERROR,
-          "almanach.EX_PERSISTENCE_PERIODICITY_EXCEPTION", pe);
+              "AlmanachBmEJB.getPeriodicityExceptionDAO()",
+              SilverpeasRuntimeException.ERROR,
+              "almanach.EX_PERSISTENCE_PERIODICITY_EXCEPTION", pe);
     }
   }
 
@@ -269,7 +264,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
     Datable<?> datable;
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
     ResourceLocator almanachSettings =
-        new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
+            new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
     TimeZone timeZone = registry.getTimeZone(almanachSettings.getString("almanach.timezone"));
     if (isDefined(time)) {
       java.util.Calendar calendarDate = java.util.Calendar.getInstance();
