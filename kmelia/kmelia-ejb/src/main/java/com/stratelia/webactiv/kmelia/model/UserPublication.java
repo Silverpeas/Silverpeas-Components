@@ -34,8 +34,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
  * @deprecated this class is now deprecated. Please use instead the KmeliaPublication objects.
  */
 public class UserPublication extends Object implements java.io.Serializable {
-  private static final long serialVersionUID = -1706351702013064074L;
-
+  
   private static final long serialVersionUID = -1706351702013064074L;
 
   /**  */

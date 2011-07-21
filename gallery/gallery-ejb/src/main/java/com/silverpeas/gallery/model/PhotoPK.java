@@ -35,6 +35,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class PhotoPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = -7700365133735243226L;
   // to apply the fat key pattern
   transient public PhotoDetail photoDetail = null;
 

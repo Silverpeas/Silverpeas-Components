@@ -888,7 +888,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
     try {
       IdPK pk = new IdPK();
       return new ArrayList<Question>(questionDao.findByWhereClause(pk,
-              " instanceId = '" + instanceId + "' and publicReplyNumber > 0 "));
+              " instanceId = '" + instanceId + "' AND publicReplyNumber > 0 ORDER BY id"));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getPublicQuestions",
               SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTIONS", "", e);

@@ -57,10 +57,11 @@ public class GalleryContentManager implements ContentInterface, java.io.Serializ
    * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
-  public List<PhotoDetail> getSilverContentById(List ids, String peasId, String userId,
-      List userRoles) {
-    if (getContentManager() == null)
+  public List getSilverContentById(List<Integer> ids, String peasId, String userId,
+      List<String> userRoles) {
+    if (getContentManager() == null) {
       return new ArrayList<PhotoDetail>();
+    }
 
     return getHeaders(makePKArray(ids, peasId));
   }

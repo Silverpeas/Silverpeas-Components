@@ -43,6 +43,7 @@
 			boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
 			boolean isGuest = ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 			boolean isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
+			List      albums      = (List) request.getAttribute("Albums");
 
 			session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 			
@@ -73,6 +74,9 @@
 				albumDescription = currentAlbum.getDescription();
 				albumUrl = currentAlbum.getLink();
 			}
+			
+			boolean somePhotos = photos != null && !photos.isEmpty();
+			boolean someAlbums = currentAlbum.getChildrenDetails() != null && !currentAlbum.getChildrenDetails().isEmpty();
 
 			// initialisation de la pagination
 			Pagination pagination = gef.getPagination(photos.size(), nbPhotosPerPage, firstPhotoIndex);
@@ -431,9 +435,9 @@ function uploadCompleted(s)  {
 	    out.println("<tr><td>");
 	    out.println("<div id=\"subTopics\">");
 	    out.println("<ul id=\"albumList\" >");
-	    Iterator it = currentAlbum.getChildrenDetails().iterator();
+	    Iterator it = albums.iterator();
 	    while (it.hasNext()) {
-	      NodeDetail unAlbum = (NodeDetail) it.next();
+	      AlbumDetail unAlbum = (AlbumDetail) it.next();
 	      id = unAlbum.getId();
 	      String nom = unAlbum.getName();
 	      String link = "";
@@ -441,9 +445,16 @@ function uploadCompleted(s)  {
 	        link = "&nbsp;<a href=\"" + unAlbum.getPermalink() + "\"><img src=\"" + resource.getIcon("gallery.link") + "\" border=\"0\" align=\"bottom\" alt=\"" +
 	                resource.getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString("gallery.CopyAlbumLink") + "\"></a>";
 	      }
-	      out.println("<li id=\"album_" + id + "\" class=\"ui-state-default\">");
-	      out.println("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.getName());
-	      out.println("<span>" + unAlbum.getDescription() + "</span></a>");
+	      %>
+	      <li id="album_<%=id%>" class="ui-state-default">
+	  	    <a href="ViewAlbum?Id=<%=id%>">
+	  	 		<strong><%=unAlbum.getName()%>
+	  	 		<span><%=unAlbum.getNbPhotos() %></span>
+	  	 		</strong>
+	  	 		<span><%=unAlbum.getDescription()%></span>
+	  	 	</a>
+	      </li>
+	      <%
 	    }
 	    out.println("</ul>");
 	    out.println("</div>");
@@ -470,7 +481,7 @@ function uploadCompleted(s)  {
 			// -------------------
 			// affichage des photos sous forme de vignettes	
 			if (photos != null) {%>
-	<br>
+	<br/>
 	<%String vignette_url = null;
 				int nbPhotos = photos.size();
 				Board board = gef.getBoard();
@@ -481,9 +492,9 @@ function uploadCompleted(s)  {
 	<table width="98%" border="0" cellspacing="0" cellpadding="0"
 		align="center">
 		<form name="photoForm" action="EditSelectedPhoto">
-			<input type="hidden" name="AlbumId" value="<%=albumId%>"> 
-			<input type="hidden" name="Index"> 
-			<input type="hidden" name="SelectedIds"> <input type="hidden" name="NotSelectedIds">
+			<input type="hidden" name="AlbumId" value="<%=albumId%>"/> 
+			<input type="hidden" name="Index"/> 
+			<input type="hidden" name="SelectedIds"/> <input type="hidden" name="NotSelectedIds"/>
 			<tr>
 				<%int textColonne = 0;
 					if (typeAff.equals("3"))
@@ -746,47 +757,49 @@ function uploadCompleted(s)  {
 		</form>
 	</table>
 	<%out.println(board.printAfter());
-				} else {
+				}
 		  %>
-		    <div class="inlineMessage">
+		    
 		    <%
-		    if ("user".equals(profile) || "privilegedUser".equals(profile)) {
-		      out.println(resource.getString("gallery.album.emptyForUser"));
-		    } else if ("writer".equals(profile)) {
+		    String inlineMessage = null;
+		    if (!somePhotos && ("user".equals(profile) || "privilegedUser".equals(profile))) {
+		    	inlineMessage = resource.getString("gallery.album.emptyForUser");
+		    } else if (!somePhotos && "writer".equals(profile)) {
 		        String[] params = new String[2]; 
-            params[0] = resource.getString("gallery.ajoutPhoto");
-            params[1] = fctAddPhoto;
-		        out.println(resource.getStringWithParams("gallery.album.emptyForWriter",params));
-		      } else {
+            	params[0] = resource.getString("gallery.ajoutPhoto");
+            	params[1] = fctAddPhoto;
+		        inlineMessage = resource.getStringWithParams("gallery.album.emptyForWriter",params);
+		    } else if (!somePhotos && !someAlbums && ("publisher".equals(profile) || "admin".equals(profile))) {
 		        // profile publisher et admin
 		        String[] params = new String[4]; 
-            params[0] = resource.getString("gallery.ajoutAlbum");
-            params[1] = "javaScript:addAlbum()";
-            params[2] = resource.getString("gallery.ajoutPhoto");
-            params[3] = fctAddPhoto;
-            out.println(resource.getStringWithParams("gallery.album.emptyForAdmin",params));
-		      }
+            	params[0] = resource.getString("gallery.ajoutAlbum");
+            	params[1] = "javaScript:addAlbum()";
+            	params[2] = resource.getString("gallery.ajoutPhoto");
+            	params[3] = fctAddPhoto;
+            	inlineMessage = resource.getStringWithParams("gallery.album.emptyForAdmin",params);
+		    }
 		    %>
-		    </div>
+		    <% if (StringUtil.isDefined(inlineMessage)) { %>
+		    	<div class="inlineMessage"><%=inlineMessage%></div>
+		    <% } %>
 		    <%
-      }
 		}
 
 			out.println(frame.printAfter());
 			out.println(window.printAfter());%>
-	<form name="albumForm" action="" Method="POST">
-		<input type="hidden" name="Id"> 
-		<input type="hidden" name="Name"> 
-		<input type="hidden" name="Description">
+	<form name="albumForm" action="" method="post">
+		<input type="hidden" name="Id"/> 
+		<input type="hidden" name="Name"/> 
+		<input type="hidden" name="Description"/>
 	</form>
-	<form name="ChoiceSelectForm" action="ChoiceSize" Method="POST">
-		<input type="hidden" name="Choice">
+	<form name="ChoiceSelectForm" action="ChoiceSize" method="post">
+		<input type="hidden" name="Choice"/>
 	</form>
-	<form name="OrderBySelectForm" action="SortBy" Method="POST">
-		<input type="hidden" name="Tri">
+	<form name="OrderBySelectForm" action="SortBy" method="post">
+		<input type="hidden" name="Tri"/>
 	</form>
-	<form name="favorite" action="" Method="POST">
-		<input type="hidden" name="Id">
+	<form name="favorite" action="" method="post">
+		<input type="hidden" name="Id"/>
 	</form>
 
 </body>
