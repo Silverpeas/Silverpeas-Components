@@ -31,14 +31,18 @@
   <label>
     <message lang="fr">Forum</message>
     <message lang="en">Forum</message>
+    <message lang="de">Forum</message>
   </label>
   <description>
     <message lang="fr">Supporte les processus de communication asynchrone de type forum. Des salons peuvent être ouverts, sur des thèmes variés. L'escalade à plusieurs niveaux est possible sur chaque intervention d'un participant. Chaque salon est classable sur le plan de classement.</message>
     <message lang="en">Forums can be created on diverse themes. You can answer on every point in the thread. Froums can be classified on the classification scheme.</message>
+    <message lang="de">Foren können für verschiedene Themen erstellt werden. Sie können auf jedem Punkt in den Faden beantworten. 
+	Foren können Sie auf dem KP klassifizieren.</message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -48,30 +52,36 @@
       <label>      
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>      
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Participant</message>
         <message lang="en">Participant</message>
+        <message lang="de">Teilnehmer</message>
       </label>
       <help>
         <message lang="fr">Participant</message>
         <message lang="en">Participant</message>
+        <message lang="de">Teilnehmer</message>
       </help>
     </profile>
     <profile name="reader">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -81,6 +91,7 @@
       <label>
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
+        <message lang="de">Klassierungsplan</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -90,6 +101,7 @@
       <help>
         <message lang="fr">Les forums créés au sein de cette instance pourront être classés sur le Plan de Classement</message>
         <message lang="en">The forums will be classified on the classification scheme.</message>
+        <message lang="de">Foren werden auf dem KP klassifiziert werden</message>
       </help>
     </parameter>
     <parameter>
@@ -97,6 +109,7 @@
       <label>
         <message lang="fr">Arborescence de forums</message>
         <message lang="en">Tree of forums</message>
+        <message lang="de">Baum der Foren</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -106,6 +119,7 @@
       <help>
         <message lang="fr">Un forum peut contenir d'autres forums</message>
         <message lang="en">A forum can be created inside another forum.</message>
+        <message lang="de">Ein Forum kann in einem anderen Forum erstellt werden.</message>
       </help>
     </parameter>
     <parameter>
@@ -113,6 +127,7 @@
       <label>
         <message lang="fr">Flux RSS</message>
         <message lang="en">RSS</message>
+        <message lang="de">RSS</message>
       </label>
       <order>4</order>
       <mandatory>false</mandatory>
@@ -122,6 +137,7 @@
       <help>
         <message lang="fr">Permet de générer un flux RSS de ces forums.</message>
         <message lang="en">Produce a RSS stream for the forums.</message>
+        <message lang="de">Erlaubt, eine RSS-Stream des Forums zu erzeugen</message>
       </help>
     </parameter>
     <parameter>
@@ -129,6 +145,7 @@
       <label>
         <message lang="fr">Validation</message>
         <message lang="en">Validation</message>
+        <message lang="de">Validierung</message>
       </label>
       <order>5</order>
       <mandatory>true</mandatory>
@@ -138,6 +155,7 @@
       <help>
         <message lang="fr">Si ce paramètre est activé, les messages seront soumis à validation par les modérateurs.</message>
         <message lang="en">Posts will be moderated.</message>
+        <message lang="de">Beiträge werden moderiert.</message>
       </help>
     </parameter>
   </parameters>

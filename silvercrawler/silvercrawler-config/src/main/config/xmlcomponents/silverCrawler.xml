@@ -31,6 +31,7 @@
   <label>
     <message lang="fr">Silvercrawler</message>
     <message lang="en">Silvercrawler</message>
+    <message lang="de">Silvercrawler</message>
   </label>
   <description>
     <message lang="fr">Le composant SilverCrawler permet aux utilisateurs de naviguer et/ou rechercher des
@@ -39,10 +40,13 @@
     <message lang="en">This component crawls files and directories on a server filesystem indexing them so 
     that users can browse thoses files and search for them with the search engine.
     </message>
+    <message lang="de">Die Komponente SilverCrawler erlaubt es den Benutzern, Dateien direkt auf 
+    einem Datenserver zu suchen und / oder zu erforschen.</message>
   </description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
     <message lang="en">06 Connectors</message>
+    <message lang="de">06 Verbinder</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -52,20 +56,24 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -75,6 +83,7 @@
       <label>
         <message lang="fr">Répertoire de base</message>
         <message lang="en">Root directory</message>
+        <message lang="de">Wurzel-Verzeichnis</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -84,7 +93,8 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Chemin du répertoire sur le serveur de fichiers.</message>
-        <message lang="en">Path to the root directory fot the Silvercrawler.</message>
+        <message lang="en">Path to the root directory for the Silvercrawler.</message>
+        <message lang="de">Pfad zum Wurzelverzeichnis für den Silvercrawler</message>
       </help>
     </parameter>
     <parameter>
@@ -92,6 +102,7 @@
       <label>
         <message lang="fr">Taille maximale (Mo)</message>
         <message lang="en">Maximum size (in Mo)</message>
+        <message lang="de">Maximale Größe (in Mo)</message>
       </label>
       <order>3</order>
       <mandatory>false</mandatory>
@@ -106,6 +117,8 @@
         <message lang="en">Maximum size (in Mo) allowed during directory download. Enter 0 if you want
         to forbid the download of directories.
         </message>
+        <message lang="de">Maximale Größe (in Mo) die Sie herunterladen dürfen. Geben Sie 0, wenn Sie
+        den Download von Verzeichnissen oder Dateien verbieten wollen.</message>
       </help>
     </parameter>
     <parameter>
@@ -113,6 +126,7 @@
       <label>
         <message lang="fr">Moteur de recherche dédié (O/N)</message>
         <message lang="en">Use a dedicated serarch engine (Y/N)</message>
+        <message lang="de">Verwenden Sie eine dedizierte Suchmaschine (Y/N)</message>
       </label>
       <order>4</order>
       <mandatory>false</mandatory>
@@ -127,6 +141,8 @@
         <message lang="en">If this parameter is enabled, indexed files will not be findable by global
         search engine but only by the dedicated search engine of this component.
         </message>
+        <message lang="de">Falls dieser Parameter aktiviert ist, werden indexiert Informationen
+        nicht durch die globale Suchmaschine auffindbar sein.</message>
       </help>
     </parameter>
     <parameter>
@@ -134,6 +150,7 @@
       <label>
         <message lang="fr">Navigation autorisée (O/N)</message>
         <message lang="en">Allow browsing of files and directories (Y/N)</message>
+        <message lang="de">Durchsuchen von Dateien und Verzeichnissen Zulassen(Y / N)</message>
       </label>
       <order>5</order>
       <mandatory>false</mandatory>
@@ -143,6 +160,7 @@
       <help>
         <message lang="fr">Permet d'autoriser la navigation pour les lecteurs.</message>
         <message lang="en">Allows readers to browse directories.</message>
+        <message lang="de">Leser erlauben, Verzeichnisse zu durchsuchen.</message>
       </help>
     </parameter>
     <parameter>
@@ -150,6 +168,7 @@
       <label>
         <message lang="fr">Indexation périodique (O/N)</message>
         <message lang="en">Periodic indexing (Y/N)</message>
+        <message lang="de">Periodische Indizierung (Y / N)</message>
       </label>
       <order>6</order>
       <mandatory>false</mandatory>
@@ -159,6 +178,7 @@
       <help>
         <message lang="fr">Permet une indexation périodique des fichiers et répertoires</message>
         <message lang="en">Allows to index files and directories periodically</message>
+        <message lang="de">Ermöglicht es Dateien und Verzeichnisse in regelmäßigen Abständen zu Indexieren</message>
       </help>
     </parameter>
     <parameter>
@@ -166,6 +186,7 @@
       <label>
         <message lang="fr">Nombre maxi de répertoires affichés</message>
         <message lang="en">Maximum number of directories displayed per page</message>
+        <message lang="de">Maximale Anzahl der Verzeichnisse die pro Seite angezeigt werden</message>
       </label>
       <order>7</order>      
       <mandatory>false</mandatory>
@@ -176,6 +197,7 @@
       <help>
         <message lang="fr">Nombre maximum de répertoires qui seront affichés par page.</message>
         <message lang="en">Maximum number of directories displayed per page.</message>
+        <message lang="de">Maximale Anzahl der Verzeichnisse die pro Seite angezeigt werden</message>
       </help>
     </parameter>
     <parameter>
@@ -183,6 +205,7 @@
       <label>
         <message lang="fr">Nombre maxi de fichiers affichés</message>
         <message lang="en">Maximum number of files displayed per page</message>
+        <message lang="de">Maximale Anzahl der Dateien die pro Seite angezeigt werden</message>
       </label>
       <order>8</order>
       <mandatory>false</mandatory>
@@ -193,6 +216,7 @@
       <help>
         <message lang="fr">Nombre maximum de fichiers qui seront affichés par page.</message>
         <message lang="en">Maximum number of files displayed per page.</message>
+        <message lang="de">Maximale Anzahl der Dateien die pro Seite angezeigt werden</message>
       </help>
     </parameter>
   </parameters>

@@ -31,14 +31,17 @@
   <label>
     <message lang="fr">Galerie d'images</message>
     <message lang="en">Image Gallery</message>
+    <message lang="de">Bildergalerie</message>
   </label>
   <description>
     <message lang="fr">Les images sont classées dans des albums. La création des albums est facilitée par la fonction de glisser/déposer.</message>
     <message lang="en">Images are stored into albums. Creating albums and uploading images is easy with the drag and drop.</message>
+    <message lang="de">Die Bilder werden in Alben abgelegt. Erstellen von Alben und das Hochladen von Bildern geht einfach durch der Drag and Drop.</message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
+    <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
   <visibleInPersonalSpace>true</visibleInPersonalSpace>
@@ -49,50 +52,60 @@
       <label>     
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>     
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="writer">
       <label>
         <message lang="fr">Contributeur</message>
         <message lang="en">Contributor</message>
+        <message lang="de">Beiträger</message>
       </label>
       <help>
         <message lang="fr">Contributeur</message>
         <message lang="en">Contributor</message>
+        <message lang="de">Beiträger</message>
       </help>
     </profile>
     <profile name="privilegedUser">
       <label>
         <message lang="fr">Lecteur privilégié</message>
         <message lang="en">Reader with priviledge</message>
+        <message lang="de">Leser mit Privileg</message>
       </label>
       <help>
         <message lang="fr">Lecteur privilégié</message>
         <message lang="en">Reader with priviledge</message>
+        <message lang="de">Leser mit Privileg</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -102,6 +115,7 @@
       <label>
         <message lang="fr">Diaporama</message>
         <message lang="en">Slideshow</message>
+        <message lang="de">Slideshow</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -112,6 +126,7 @@
       <help>
         <message lang="fr">Temps d'attente entre deux images (en secondes)</message>
         <message lang="en">Time wait between two images (in seconds)</message>
+        <message lang="de">Zeit zwischen zwei Bildern (in Sekunden)</message>
       </help>
     </parameter>
     <parameter>
@@ -119,6 +134,7 @@
       <label>
         <message lang="fr">Glisser/déposer</message>
         <message lang="en">Drag and Drop</message>
+        <message lang="de">Drag and Drop</message>
       </label>
       <order>2</order>
       <mandatory>false</mandatory>
@@ -128,6 +144,7 @@
       <help>
         <message lang="fr">Permet de publier très rapidement des images par glisser/déposer. Les fichiers zip sont également pris en charge.</message>
         <message lang="en">Allow you to quickly publish some images by drag and drop. Zip files are also allowed.</message>
+        <message lang="de">Damit können Sie schnell einige Bilder per Drag and Drop veröffentlichen . Zip-Dateien sind ebenfalls erlaubt.</message>
       </help>
     </parameter>
     <parameter>
@@ -135,6 +152,7 @@
       <label>
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
+        <message lang="de">klassierungsplan</message>
       </label>
       <order>4</order>      
       <mandatory>true</mandatory>
@@ -144,6 +162,7 @@
       <help>
         <message lang="fr">Les images créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
         <message lang="en">Images would be classified on PDC</message>
+        <message lang="de">Bilder werden auf dem KP Klassifiziert</message>
       </help>
     </parameter>
     <parameter>
@@ -151,6 +170,7 @@
       <label>
         <message lang="fr">Méta-données</message>
         <message lang="en">Metadata</message>
+        <message lang="de">Metadaten</message>
       </label>
       <order>5</order>
       <mandatory>true</mandatory>
@@ -160,6 +180,7 @@
       <help>
         <message lang="fr">Permet d'afficher les Méta données (EXIF, IPTC, Windows) de chaque photo</message>
         <message lang="en">Display image meta data (EXIF, IPTC, Windows)</message>
+        <message lang="de">Bilder Metadaten anzeigen (EXIF, IPTC, Windows)</message>
       </help>
     </parameter>
     <parameter>
@@ -167,6 +188,7 @@
       <label>
         <message lang="fr">Albums sous forme de liste</message>
         <message lang="en">View albums as list</message>
+        <message lang="de">Alben als Liste zeigen</message>
       </label>
       <order>6</order>
       <mandatory>true</mandatory>
@@ -176,6 +198,7 @@
       <help>
         <message lang="fr">Permet de visualiser les images détaillées pour le format 266x150</message>
         <message lang="en">Display a detailed list of image (size 266x150 only)</message>
+        <message lang="de">Zeigt eine detaillierte Liste der Bild (Größe nur 266x150)</message>
       </help>
     </parameter>
     <parameter>
@@ -183,6 +206,7 @@
       <label>
         <message lang="fr">Watermark</message>
         <message lang="en">Watermark</message>
+        <message lang="de">Watermark</message>
       </label>
       <order>7</order>
       <mandatory>true</mandatory>
@@ -192,6 +216,7 @@
       <help>
         <message lang="fr">Permet d'insérer le nom du photographe sous forme de watermark sur les images</message>
         <message lang="en">Insert photographer's name into image as watermark</message>
+        <message lang="de">Name des Fotografen ins Bild als Wasserzeichen einfügen</message>
       </help>
     </parameter>
     <parameter>
@@ -199,6 +224,7 @@
       <label>
         <message lang="fr">Nb de jours avant fin de visibilité</message>
         <message lang="en">Number of days before the images are no longer visible.</message>
+        <message lang="de">Anzahl der Tage, bevor die Bilder nicht mehr sichtbar sind.</message>
       </label>      
       <order>8</order>
       <mandatory>true</mandatory>
@@ -209,6 +235,7 @@
       <help>
         <message lang="fr">Nombre de jours avant l'envoi du message au gestionnaire quand une photo arrive en fin de visibilité</message>
         <message lang="en">Number of days before sending an alert when an image will expired</message>
+        <message lang="de">Anzahl der Tage bevor ein Bild abgelaufen ist und dass einer Warnung deswegen gesendet werden muss</message>
       </help>
     </parameter>
     <parameter>
@@ -216,6 +243,7 @@
       <label>
         <message lang="fr">Formulaire XML</message>
         <message lang="en">XML Form</message>
+        <message lang="de">XML Formular</message>
       </label>
       <order>9</order>
       <mandatory>false</mandatory>
@@ -225,6 +253,7 @@
       <help>
         <message lang="fr">Nom du formulaire XML associé à la photothèque</message>
         <message lang="en">Form XML name attached to this gallery</message>
+        <message lang="de">Name des XML Formulars, der an der Fotothek gebunden ist</message>
       </help>
     </parameter>
     <parameter>
@@ -232,6 +261,7 @@
       <label>
         <message lang="fr">Images réutilisables</message>
         <message lang="en">Reusable images</message>
+        <message lang="de">Wiederverwendbare Bilder</message>
       </label>
       <order>10</order>
       <mandatory>true</mandatory>
@@ -241,6 +271,7 @@
       <help>
         <message lang="fr">Permet d'utiliser les images de ce composant depuis l'éditeur Wysiwyg et les composants Vote et Enquête</message>
         <message lang="en">Images will be available from Wysiwyg editor and Vote and Survey components</message>
+        <message lang="de">Bilder werden von WYSIWYG-Editor, Abstimmung und Umfrage Komponent verfügbar sein</message>
       </help>
     </parameter>
     <parameter>
@@ -248,6 +279,7 @@
       <label>
         <message lang="fr">Commentaires</message>
         <message lang="en">Comments</message>
+        <message lang="de">Kommentare</message>
       </label>
       <order>11</order>
       <mandatory>true</mandatory>
@@ -257,6 +289,7 @@
       <help>
         <message lang="fr">Les lecteurs peuvent laisser des commentaires sur chaque image</message>
         <message lang="en">Readers are able to post comments on an image</message>
+        <message lang="de">Leser können Kommentare auf ein Bild lassen</message>
       </help>
       <personalSpaceValue>no</personalSpaceValue>
     </parameter>
@@ -265,6 +298,7 @@
       <label>
         <message lang="fr">Moteur de recherche dédié</message>
         <message lang="en">Dedicated search engine</message>
+        <message lang="de">Gewidmete Suchmaschinen</message>
       </label>
       <order>12</order>
       <mandatory>false</mandatory>
@@ -274,6 +308,7 @@
       <help>
         <message lang="fr">Si ce paramètre est activé, les images indexées ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à ce composant.</message>
         <message lang="en">If this parameter is enabled, indexed images will not be findable by global search engine but only by the dedicated search engine of this component.</message>
+        <message lang="de">Wenn dieser Parameter aktiviert ist, werden indexierte Bilder von der globalen Suchmaschinen nicht auffindbaren sein, sondern nur durch die spezielle Suchmaschinen dieser Komponente.</message>
       </help>
       <personalSpaceValue>yes</personalSpaceValue>
     </parameter>
@@ -282,6 +317,7 @@
       <label>
         <message lang="fr">Image originale téléchargeable</message>
         <message lang="en">Enable the download of the original image</message>
+        <message lang="de">Aktivieren Sie des Download der Original-Bildes</message>
       </label>
       <order>13</order>
       <mandatory>false</mandatory>
@@ -291,6 +327,7 @@
       <help>
         <message lang="fr">Si ce paramètre est activé, les images seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque photo.</message>
         <message lang="en">If this parameter is enabled, original pictures will be downloadable.</message>
+        <message lang="de">Wenn dieser Parameter aktiviert ist, können Original-Bilder herunter geladen werden</message>
       </help>
     </parameter>
     <parameter>
@@ -298,6 +335,7 @@
       <label>
         <message lang="fr">Format de prévisualisation</message>
         <message lang="en">Preview format</message>
+        <message lang="de">Vorschau Format</message>
       </label>
       <order>14</order>
       <mandatory>true</mandatory>
@@ -307,6 +345,7 @@
           <name>
             <message lang="fr">600x400</message>
             <message lang="en">600x400</message>
+            <message lang="de">600x400</message>
           </name>
           <value>preview</value>
         </option>
@@ -314,6 +353,7 @@
           <name>
             <message lang="fr">266x150</message>
             <message lang="en">266x150</message>
+            <message lang="de">266x150</message>
           </name>
           <value>266x150</value>
         </option>
@@ -321,6 +361,7 @@
           <name>
             <message lang="fr">133x100</message>
             <message lang="en">133x100</message>
+            <message lang="de">133x100</message>
           </name>
           <value>133x100</value>
         </option>
@@ -329,7 +370,8 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Choix de la taille du format de la preview</message>
-        <message lang="en">Choice ofthe preview size</message>
+        <message lang="en">Choice off the preview size</message>
+        <message lang="de">Wahl der Vorschau Größe</message>
       </help>
     </parameter>
     <parameter>
@@ -337,6 +379,7 @@
       <label>
         <message lang="fr">Watermark image originale</message>
         <message lang="en">Put a watermark on the original picture</message>
+        <message lang="de">Setzen Sie ein Wasserzeichen auf dem Original Bild</message>
       </label>
       <order>15</order>
       <mandatory>false</mandatory>
@@ -347,6 +390,7 @@
       <help>
         <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les images haute définition</message>
         <message lang="en">IPTC number to be used for watermarking on High definition picture</message>
+        <message lang="de">IPTC Nummer verwenden für Wasserzeichen auf High-Definition-Bild</message>
       </help>
     </parameter>
     <parameter>
@@ -354,6 +398,7 @@
       <label>
         <message lang="fr">Watermark autres</message>
         <message lang="en">Use iptc data for Watermark</message>
+        <message lang="de">Verwenden Sie IPTC-Daten für Wasserzeichen</message>
       </label>
       <order>16</order>
       <mandatory>false</mandatory>
@@ -364,13 +409,15 @@
       <help>
         <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les vignettes</message>
         <message lang="en">IPTC number to be used for watermarking.</message>
+        <message lang="de">IPTC Nummer verwenden für Wasserzeichen</message>
       </help>
     </parameter>
     <parameter>
       <name>basket</name>
       <label>
         <message lang="fr">Panier</message>
-        <message lang="en">Baket</message>
+        <message lang="en">Basket</message>
+        <message lang="de">Korb</message>
       </label>
       <order>17</order>
       <mandatory>false</mandatory>
@@ -380,6 +427,7 @@
       <help>
         <message lang="fr">Si ce paramètre est activé, les lecteurs aurons la possibilité de mettre des photos dans leur panier</message>
         <message lang="en">Readers can put images into their basket.</message>
+        <message lang="de">Leser können ihre Bilder in den Warenkorb legen.</message>
       </help>
     </parameter>
     <parameter>
@@ -387,6 +435,7 @@
       <label>
         <message lang="fr">Demandes de photos</message>
         <message lang="en">Ask for an image</message>
+        <message lang="de">Fordern Sie ein Bildes</message>
       </label>
       <order>18</order>
       <mandatory>false</mandatory>
@@ -396,6 +445,7 @@
       <help>
         <message lang="fr">Si ce paramètre est activé, les lecteurs aurons la possibilité de faire des demandes de photos</message>
         <message lang="en">Readers can ask for the HD image.</message>
+        <message lang="de">Leser können das HD-Bildes anfordern</message>
       </help>
     </parameter>
     <parameter>
@@ -403,6 +453,7 @@
       <label>
         <message lang="fr">Formulaire XML associé aux demandes</message>
         <message lang="en">XML Form to ask for pictures.</message>
+        <message lang="de">XML-Formular für Bilder anforderung</message>
       </label>
       <order>19</order>
       <mandatory>false</mandatory>
@@ -412,6 +463,7 @@
       <help>
         <message lang="fr">Nom du formulaire XML associé aux demandes de photos</message>
         <message lang="en">Form XML name attached to the order</message>
+        <message lang="de">Name des XML Formulars, der an den Bilderanfordeung gebunden ist</message>
       </help>
     </parameter>
     <parameter>
@@ -419,6 +471,7 @@
       <label>
         <message lang="fr">Url de la charte</message>
         <message lang="en">URL to the charter</message>
+        <message lang="de">URL der Charta</message>
       </label>
       <order>20</order>
       <mandatory>false</mandatory>
@@ -429,6 +482,7 @@
       <help>
         <message lang="fr">Url de la charte associée aux demandes des photos</message>
         <message lang="en">URL to the charter defining the usage of the images.</message>
+        <message lang="de">URL der an den Anforderung der Bilder gebundenen Charta</message>
       </help>
     </parameter>
   </parameters>

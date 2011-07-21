@@ -31,14 +31,17 @@
   <label>
     <message lang="fr">Lettre informative</message>
     <message lang="en">Information letter</message>
+    <message lang="de">Informations Brief</message>
   </label>
   <description>
     <message lang="fr">Permet de créer une lettre d'information périodique, suivant un modèle de publication ré-utilisable. Gère les abonnements à la lettre.</message>
     <message lang="en">Create a periodic information according to a publication template re-usable. The subscritpions to thee letter are managed here also.</message>
+    <message lang="de">Erstellet ein periodischer Informations Brief gemäß einer wieder verwendbarer Veröffentlichung Vorlage. Die Abonnements für den Informations Brief werden auch hier verwaltet.</message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
+    <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -48,30 +51,36 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>  
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -81,6 +90,7 @@
       <label>
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
+        <message lang="de">Klassierungsplan</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -90,6 +100,7 @@
       <help>
         <message lang="fr">Les newsletter créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
         <message lang="en">Newsletters created here are classified on the classification scheme.</message>
+        <message lang="de">Informations Briefe können auf dem KP klassifiziert werden</message>
       </help>
     </parameter>
   </parameters>

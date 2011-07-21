@@ -21,9 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.questionReply.model;
 
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import java.util.Date;
 
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -33,22 +35,24 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.DateUtil;
 
 public class Reply extends SilverpeasBean {
+
   private static final long serialVersionUID = 5638699228049557540L;
   private long questionId;
   private String title;
   private String content;
+  private String wysiwygContent;
   private String creatorId;
   private String creationDate;
   private int publicReply = 0;
   private int privateReply = 1;
-  private static OrganizationController organizationController = new OrganizationController();
+
 
   public Reply() {
   }
 
   public Reply(String creatorId) {
     this.creatorId = creatorId;
-     this.creationDate = DateUtil.date2SQLDate(new Date());
+    this.creationDate = DateUtil.date2SQLDate(new Date());
   }
 
   public Reply(long questionId, String creatorId) {
@@ -117,12 +121,39 @@ public class Reply extends SilverpeasBean {
   }
 
   public String readCreatorName() {
+    OrganizationController organizationController = new OrganizationController();
+    return readCreatorName(organizationController);
+  }
+
+  public String readCreatorName(OrganizationController organizationController) {
     String creatorName = null;
-    UserDetail userDetail = organizationController.getUserDetail(String.valueOf(this.creatorId));
+    UserDetail userDetail = readAuthor(organizationController);
     if (userDetail != null) {
       creatorName = userDetail.getDisplayedName();
     }
     return creatorName;
+  }
+
+  public UserDetail readAuthor(OrganizationController organizationController) {
+    return organizationController.getUserDetail(String.valueOf(getCreatorId()));
+  }
+
+  public String loadWysiwygContent() {
+    try {
+       this.wysiwygContent = WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
+          I18NHelper.defaultLanguage);
+       return  this.wysiwygContent;
+    } catch (WysiwygException e) {
+      return this.wysiwygContent;
+    }
+  }
+
+  public String readCurrentWysiwygContent() {
+    return this.wysiwygContent;
+  }
+
+  public void writeWysiwygContent(String wysiwygContent) {
+    this.wysiwygContent = wysiwygContent;
   }
 
   @Override
@@ -135,4 +166,8 @@ public class Reply extends SilverpeasBean {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
+  @Override
+  public String toString() {
+    return "Reply{" + "questionId=" + questionId + ", title=" + title + ", content=" + content + ", creatorId=" + creatorId + ", creationDate=" + creationDate + ", publicReply=" + publicReply + ", privateReply=" + privateReply + '}';
+  }
 }

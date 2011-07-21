@@ -39,6 +39,9 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 
 public class GoToImage extends GoTo {
+  
+  private static final long serialVersionUID = 1L;
+
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     PhotoPK photoPK = new PhotoPK(objectId);

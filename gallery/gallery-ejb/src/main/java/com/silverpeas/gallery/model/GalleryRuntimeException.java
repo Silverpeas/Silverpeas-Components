@@ -26,6 +26,9 @@ package com.silverpeas.gallery.model;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class GalleryRuntimeException extends SilverpeasRuntimeException {
+
+  private static final long serialVersionUID = 5883315937571253060L;
+
   /**
    * --------------------------------------------------------------------------
    * constructors constructors

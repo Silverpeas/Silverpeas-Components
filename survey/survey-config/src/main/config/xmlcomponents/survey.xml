@@ -31,16 +31,20 @@
   <label>
     <message lang="fr">Enquête</message>
     <message lang="en">QuickSurvey</message>
+    <message lang="de">Umfrage</message>
   </label>
   <description>
     <message lang="fr">Permet d'organiser des enquêtes d'opinion sur des questions ouvertes ou fermées, à
-  choix multiples.. Une surveillance du niveau de participation et du résultat en cours est possible.
+    choix multiples.. Une surveillance du niveau de participation et du résultat en cours est possible.
     </message>
     <message lang="en">Create a survey with closed or open questions. You have feedback on the participation level or the current trend.</message>
+    <message lang="de">Erstellen einer Umfrage mit geschlossenen oder offenen Fragen. 
+	Sie erhalten ein Feedback über die Beteiligung oder den aktuellen Trend.</message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -50,40 +54,48 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="userMultiple">
       <label>
         <message lang="fr">Participants multiples</message>
         <message lang="en">Multiple participants</message>
+        <message lang="de">Mehrere Teilnehmer</message>
       </label>
       <help>
         <message lang="fr">Participants multiples</message>
         <message lang="en">Multiple participants</message>
+        <message lang="de">Mehrere Teilnehmer</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Participant</message>
         <message lang="en">Participant</message>
+        <message lang="de">Teilnehmer</message>
       </label>
       <help>
         <message lang="fr">Participant</message>
         <message lang="en">Participant</message>
+        <message lang="de">Teilnehmer</message>
       </help>
     </profile>
   </profiles>
@@ -93,6 +105,7 @@
       <label>
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
+        <message lang="de">Klassierungsplan</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -102,6 +115,7 @@
       <help>
         <message lang="fr">Les enquêtes créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
         <message lang="en">The surveys created in this instance may be classified on the classification scheme.</message>
+        <message lang="de">Umfragen können auf dem KP klassifiziert werden</message>
       </help>
     </parameter>
     <parameter>
@@ -109,6 +123,7 @@
       <label>
         <message lang="fr">Mode anonyme</message>
         <message lang="en">Anonymous mode</message>
+        <message lang="de">Anonym-Modus</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -118,6 +133,7 @@
       <help>
         <message lang="fr">Les participations à toutes les enquêtes créées au sein de cette instance seront anonymes.</message>
         <message lang="en">Entries in all surveys created in this instance will be anonymous.</message>
+        <message lang="de">Einträge in allen Umfragen dieser Instanz, bleiben anonym.</message>
       </help>
     </parameter>
   </parameters>
