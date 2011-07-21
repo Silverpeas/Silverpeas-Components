@@ -23,20 +23,19 @@
  */
 package com.silverpeas.gallery.model;
 
-import com.silverpeas.util.clipboard.ClipboardSelection;
-import com.silverpeas.util.clipboard.SKDException;
-import com.silverpeas.util.clipboard.SilverpeasKeyData;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
 
+import com.silverpeas.util.clipboard.ClipboardSelection;
+import com.silverpeas.util.clipboard.SKDException;
+import com.silverpeas.util.clipboard.SilverpeasKeyData;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 
 public class PhotoSelection extends ClipboardSelection implements Serializable {
 
+  private static final long serialVersionUID = -4373774805830276786L;
   static public DataFlavor PhotoDetailFlavor;
 
   static {
@@ -49,8 +48,6 @@ public class PhotoSelection extends ClipboardSelection implements Serializable {
   }
 
   private PhotoDetail m_photo;
-  private ModelDetail m_modelDetail;
-  private InfoDetail m_infoDetail;
 
   /**
    * --------------------------------------------------------------------------

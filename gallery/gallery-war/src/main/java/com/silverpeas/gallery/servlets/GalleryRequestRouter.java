@@ -113,26 +113,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
     return new GallerySessionController(mainSessionCtrl, componentContext);
   }
 
-  // recherche du profile de l'utilisateur
-  public String getFlag(String[] profiles) {
-    String flag = "user";
-    for (int i = 0; i < profiles.length; i++) {
-      if (profiles[i].equals("admin")) {
-        return profiles[i];
-      }
-      if (profiles[i].equals("publisher")) {
-        flag = profiles[i];
-      } else if (profiles[i].equals("writer")) {
-        if (!flag.equals("publisher")) {
-          flag = profiles[i];
-        }
-      } else if (profiles[i].equals("privilegedUser")) {
-        flag = profiles[i];
-      }
-    }
-    return flag;
-  }
-
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
@@ -154,7 +134,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
             "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
 
     // création des paramètres généraux
-    String flag = getFlag(gallerySC.getUserRoles());
+    String flag = gallerySC.getRole();
     String userId = gallerySC.getUserId();
 
     request.setAttribute("Profile", flag);
@@ -168,13 +148,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
       if (function.startsWith("Main")) {
         // récupération des albums de 1er niveau
         gallerySC.setIndexOfFirstItemToDisplay("0");
-        request.setAttribute("root", gallerySC.goToAlbum("0"));
+        
+        AlbumDetail root = gallerySC.goToAlbum("0");
+        request.setAttribute("root", root);
+        request.setAttribute("Albums", gallerySC.addNbPhotos(root.getChildrenAlbumsDetails())); 
         // chercher les dernières photos
-        boolean viewAllPhoto = false;
-        if (flag.equals("admin")) {
-          viewAllPhoto = true;
-        }
-        gallerySC.setViewAllPhoto(viewAllPhoto);
         Collection<PhotoDetail> photos = gallerySC.getDernieres();
         request.setAttribute("Photos", photos);
         request.setAttribute("IsUsePdc", gallerySC.isUsePdc());
@@ -217,16 +195,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           destination = getDestination("Main", gallerySC, request);
         } else {
           // on est dans un album, on y retourne
-          boolean viewAllPhoto = false;
-          if (flag.equals("admin")) {
-            viewAllPhoto = true;
-          }
-          gallerySC.setViewAllPhoto(viewAllPhoto);
           AlbumDetail currentAlbum = gallerySC.goToAlbum();
           request.setAttribute("NbPhotosPerPage", new Integer(gallerySC.getNbPhotosPerPage()));
           request.setAttribute("FirstPhotoIndex",
               new Integer(gallerySC.getIndexOfFirstItemToDisplay()));
           request.setAttribute("CurrentAlbum", currentAlbum);
+          request.setAttribute("Albums", gallerySC.addNbPhotos(currentAlbum.getChildrenAlbumsDetails()));
           request.setAttribute("Path", gallerySC.getPath(currentAlbum.getNodePK()));
           request.setAttribute("Taille", gallerySC.getTaille());
           request.setAttribute("DragAndDropEnable", gallerySC.isDragAndDropEnabled());
@@ -1236,8 +1210,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         gallerySC.setIndexOfFirstItemToDisplay("0");
         request.setAttribute("root", gallerySC.goToAlbum("0"));
         // chercher les dernières photos
-        boolean viewAllPhoto = false;
-        gallerySC.setViewAllPhoto(viewAllPhoto);
         Collection<PhotoDetail> photos = gallerySC.getDernieres();
         request.setAttribute("Photos", photos);
         // appel jsp
