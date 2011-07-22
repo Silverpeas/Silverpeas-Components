@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 	<%
 	response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 	response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -35,13 +36,14 @@
 
 	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(almanach.getLanguage());
 
-	// récupération du user
+	// rï¿½cupï¿½ration du user
 	String user = request.getParameter("flag");
 	
 	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");
 	Date dateDebutIteration = (Date) request.getAttribute("DateDebutIteration");
 	Date dateFinIteration = (Date) request.getAttribute("DateFinIteration");
 	String from = (String) request.getAttribute("From");
+	UserDetail contributor = (UserDetail) request.getAttribute("Contributor");
 
 	String dateDebutIterationString = DateUtil.date2SQLDate(dateDebutIteration);
 
@@ -75,9 +77,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title><%=generalMessage.getString("GML.popupTitle")%></title>
 <% out.println(graphicFactory.getLookStyleSheet());%>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 
 var notifyWindow = window;
 
@@ -95,7 +98,7 @@ function goToNotify(url)
 function eventDeleteConfirm(t)
 {
     if (window.confirm("<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> '" + t + "' ?")){
-    	<% if (periodicity != null ) { %>
+    	<% if (event.isPeriodic()) { %>
     		$("#modalDialogOnDelete").dialog("open");
     	<% } else { %>
     		sendEvent('RemoveEvent', 'ReallyDelete');
@@ -124,7 +127,6 @@ $(document).ready(function(){
 });
 </script>
 </head>
-<title><%=generalMessage.getString("GML.popupTitle")%></title>
 <body class="viewEvent" id="<%=instanceId%>">
   <% 
     Window 	window 	= graphicFactory.getWindow();
@@ -167,36 +169,14 @@ $(document).ready(function(){
     out.println(frame.printBefore());
 %>
 
-
-<!-- ne sert plus 
-<%=resources.getString("GML.name")%> 
-    <%=resources.getString("GML.description")%> 
-     <%=resources.getString("GML.dateBegin")%>
-	  <%=resources.getString("GML.dateEnd")%>
-	  <%=almanach.getString("lieuEvenement")%> 
-	  <%=almanach.getString("urlEvenement")%> 
-	  <%=resources.getString("GML.priority")%>
-	  <%=almanach.getString("prioriteNormale")%>
-	  <%=resources.getString("frequency")%>
-	  <%=resources.getString("beginDatePeriodicity")%>
--->
-
 <div class="rightContent">
-	
-	  
-<%
+	<!--  Attachments -->  
+	<%
   		out.flush();
   		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+event.getId()+"&ComponentId="+instanceId+"&Context=Images").include(request, response);
-  %>
-	
-	
-	
-	
-	
-	
-	<%
-			if(periodicity != null) {
-		%>
+  	%>
+  	<!-- Periodicity -->
+	<% if(event.isPeriodic()) { %>
 	<div id="eventPeriodicity" class="bgDegradeGris">
 		<div class="bgDegradeGris header">
 			<h4 class="clean"><%=resources.getString("periodicity")%></h4>
@@ -213,16 +193,11 @@ $(document).ready(function(){
 				} else if (periodicity.getUnity() == Periodicity.UNIT_YEAR) {
 					out.print(resources.getString("allYears"));
 				}
-		
 			%>
 			</b>
 			
-			
-			<%
-				if (periodicity.getUnity() == Periodicity.UNIT_WEEK) {
-			%>
-			<br /><span class="eventPeriodicityDaysWeek"><%=resources.getString("choiceDaysWeek")%>&nbsp;:&nbsp;<b>
-			 
+			<% if (periodicity.getUnity() == Periodicity.UNIT_WEEK) { %>
+				<br /><span class="eventPeriodicityDaysWeek"><%=resources.getString("choiceDaysWeek")%>&nbsp;:&nbsp;<b>		 
 			<%
 					String days = "";
 					if(periodicity.getDaysWeekBinary().charAt(0) == '1') { 
@@ -290,8 +265,7 @@ $(document).ready(function(){
 			<%
 					}
 				} 
-			
-			
+						
 			 if (event.getStartDate() != null && periodicity.getUntilDatePeriod() != null) {
 						%>
 						<br />
@@ -322,14 +296,6 @@ $(document).ready(function(){
 			<%	
 			}
 			%>
-			
-			
-			
-			
-			
-	          
-	          
-	          
 		</p>
 	</div>
 <%	}   %>
@@ -338,30 +304,19 @@ $(document).ready(function(){
 		
 		   <div id="eventInfoPublication" class="bgDegradeGris">
 		   	<div class="paragraphe">
-		   		<b><%=resources.getString("GML.create")%> <%=resources.getString("GML.by")%></b> <a href="#" class="linkUser">Author</a>
-		   		<div class="profilPhoto"><a href="/silverpeas/Rprofil/jsp/Main?userId=449"><img src="http://intranoo.oevo.com/silverpeas/display/avatar/sophie.delord@silverpeas.com.jpg" alt="" class="defaultAvatar"></a></div>
+		   		<b><%=resources.getString("almanach.createdBy")%></b> <%=contributor.getDisplayedName() %>
+		   		<div class="profilPhoto"><img src="<%=m_context %><%=contributor.getAvatar() %>" alt="" class="defaultAvatar"/></div>
 	   		</div>
 		   		
 		   	</p>
 			<%	if (StringUtil.isDefined(link)) {	%>
 				<p id="permalinkInfo">
-					<a href="<%=link%>" title='<%=resources.getString("CopyEventLink")%>'><img  src="<%=m_context%>/util/icons/link.gif" border="0" alt='<%=resources.getString("CopyEventLink")%>'  ></a>
+					<a href="<%=link%>" title='<%=resources.getString("CopyEventLink")%>'><img src="<%=m_context%>/util/icons/link.gif" border="0" alt='<%=resources.getString("CopyEventLink")%>'/></a>
 					<%=resources.getString("GML.permalink")%> <br />
-					<input class="inputPermalink" type="text" onFocus="select();" value="<%=link%>" />
+					<input class="inputPermalink" type="text" onfocus="select();" value="<%=URLManager.getServerURL(request)+link %>" />
 				</p>
 			<% } %>
 		   </div>	
-	     
-			
-		
-
-		
-		
-		
-		
-		
-	
-	
 </div>
 
 
@@ -373,10 +328,8 @@ $(document).ready(function(){
 			<% } %>
 	</h2>
 	
-	
-	<div class="eventInfo">
-		
-		<% if (event.getPlace() != null ) { %>
+	<div class="eventInfo">	
+		<% if (StringUtil.isDefined(event.getPlace())) { %>
 			<div class="eventPlace">
 				<div class="bloc">
 					 <span><%=EncodeHelper.javaStringToHtmlString(event.getPlace())%></span>
@@ -405,21 +358,19 @@ $(document).ready(function(){
 					</span>
 				</div>
 		</div>
-		
-		
 			
     	<% if (StringUtil.isDefined(event.getEventUrl())) {
-	    		out.println("<div class=\"eventURL\"><div class=\"bloc\">");
-	    		
 	    		String eventURL = event.getEventUrl();
 	    		if (eventURL.indexOf("://") == -1){
 	    			eventURL = "http://"+eventURL;
 	    		}
 	    			
 	    		%>
-		    		<span>
-		    			<a href="<%=EncodeHelper.javaStringToHtmlString(eventURL)%>" target="_blank"><%=resources.getString("linkToVisit")%></a>
-					</span>
+	    		<div class="eventURL">
+	    			<div class="bloc">
+			    		<span>
+			    			<a href="<%=EncodeHelper.javaStringToHtmlString(eventURL)%>" target="_blank"><%=resources.getString("linkToVisit")%></a>
+						</span>
 					</div>
 				</div>
     		<%    			
@@ -441,7 +392,7 @@ $(document).ready(function(){
  		 	backURL = from;
  		}
 		buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.back"), backURL, false));
-		out.println(buttonPane.print());
+		out.println("<center>"+buttonPane.print()+"</center>");
 		out.println("<br/>");
 		out.println(frame.printAfter());				
 		out.println(window.printAfter());
