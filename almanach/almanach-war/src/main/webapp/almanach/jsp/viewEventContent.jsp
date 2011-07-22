@@ -72,8 +72,9 @@
 	 }
 %>
 
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <% out.println(graphicFactory.getLookStyleSheet());%>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">
@@ -122,9 +123,9 @@ $(document).ready(function(){
         width: 650});
 });
 </script>
-</HEAD>
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
-<BODY>
+</head>
+<title><%=generalMessage.getString("GML.popupTitle")%></title>
+<body class="viewEvent" id="<%=instanceId%>">
   <% 
     Window 	window 	= graphicFactory.getWindow();
     Frame 	frame	= graphicFactory.getFrame();
@@ -165,79 +166,44 @@ $(document).ready(function(){
     
     out.println(frame.printBefore());
 %>
-<center>
-<table border="0"><tr><td width="100%">
-<%
-        out.println(board.printBefore());
-%>
-<table CELLPADDING=5 width="100%">
-		<tr> 
-      <td nowrap class="txtlibform" width="20%"><%=resources.getString("GML.name")%> :</td>
-      <td><%=EncodeHelper.javaStringToHtmlString(event.getTitle())%></td>
-    </tr>
-    <tr> 
-      <td nowrap class="txtlibform" valign="top"><%=resources.getString("GML.description")%> :</td>
-      <td><%=description%></td>
-    </tr>
-    <tr> 
-      <td nowrap class="txtlibform"><%=resources.getString("GML.dateBegin")%> :</td>
-      <td><%=resources.getOutputDate(dateDebutIteration)%>
-	  <%if (event.getStartHour() != null && event.getStartHour().length() != 0) {%>
-	  	<%=almanach.getString("ToHour")%> 
-		<%=EncodeHelper.javaStringToHtmlString(event.getStartHour())%>
-	  <%}%>
-	  </td>
-    </tr>
-    <tr> 
-      <td nowrap class="txtlibform"><%=resources.getString("GML.dateEnd")%> :</td>
-      <td><%=resources.getOutputDate(dateFinIteration)%>
-	  <%if (event.getEndHour() != null && event.getEndHour().length() != 0) {%>
-		   	<%=almanach.getString("ToHour")%> 
-			<%=EncodeHelper.javaStringToHtmlString(event.getEndHour())%>
-		  <%}%>
-	  </td>
-    </tr>   
-    <tr> 
-    	<td nowrap class="txtlibform"><%=almanach.getString("lieuEvenement")%> :</td>
-      	<td><%=EncodeHelper.javaStringToHtmlString(event.getPlace())%></td>
-    </tr>
-    <tr> 
-    	<td nowrap class="txtlibform"><%=almanach.getString("urlEvenement")%> :</td>
-    	<% if (StringUtil.isDefined(event.getEventUrl())) {
-    		String eventURL = event.getEventUrl();
-    		if (eventURL.indexOf("://") == -1)
-    			eventURL = "http://"+eventURL;
-    		%>
-    		<td>
-    		<a href="<%=EncodeHelper.javaStringToHtmlString(eventURL)%>" target="_blank"><%=EncodeHelper.javaStringToHtmlString(event.getEventUrl())%></a>
-			</td>
-		<%}%>
-    </tr>
-    <tr> 
-      <td nowrap class="txtlibform"><%=resources.getString("GML.priority")%> :</td>
-      <%if (event.getPriority() != 0){ %>
-        <td><%=almanach.getString("prioriteImportante")%></td>
-	<% } else{ %>
-        <td><%=almanach.getString("prioriteNormale")%></td>
-	<% } %>
-    </tr>
-    
-    <%	if (StringUtil.isDefined(link)) {	%>
-    	<tr>
-    		<td nowrap class="txtlibform"><%=almanach.getString("permalink")%> :</td>
-    		<td><a href="<%=link%>"><img  src="<%=m_context%>/util/icons/link.gif" border="0" alt='<%=resources.getString("CopyEventLink")%>' title='<%=resources.getString("CopyEventLink")%>' ></a></td>
-    	</tr>
-	<% } %>
 
-		<tr>
-          <td nowrap class="txtlibform"><%=resources.getString("periodicity")%>&nbsp;:&nbsp;</td>
-		  <td align=left>
+
+<!-- ne sert plus 
+<%=resources.getString("GML.name")%> 
+    <%=resources.getString("GML.description")%> 
+     <%=resources.getString("GML.dateBegin")%>
+	  <%=resources.getString("GML.dateEnd")%>
+	  <%=almanach.getString("lieuEvenement")%> 
+	  <%=almanach.getString("urlEvenement")%> 
+	  <%=resources.getString("GML.priority")%>
+	  <%=almanach.getString("prioriteNormale")%>
+	  <%=resources.getString("frequency")%>
+	  <%=resources.getString("beginDatePeriodicity")%>
+-->
+
+<div class="rightContent">
+	
+	  
+<%
+  		out.flush();
+  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+event.getId()+"&ComponentId="+instanceId+"&Context=Images").include(request, response);
+  %>
+	
+	
+	
+	
+	
+	
+	<%
+			if(periodicity != null) {
+		%>
+	<div id="eventPeriodicity" class="bgDegradeGris">
+		<div class="bgDegradeGris header">
+			<h4 class="clean"><%=resources.getString("periodicity")%></h4>
+		</div>
+		<p>
+			<b>
 			<%
-			if(periodicity == null) {
-				out.print(resources.getString("noPeriodicity"));
-			}
-			else
-			{
 				if (periodicity.getUnity() == Periodicity.UNIT_DAY) {
 					out.print(resources.getString("allDays"));
 				} else if (periodicity.getUnity() == Periodicity.UNIT_WEEK) {
@@ -247,24 +213,16 @@ $(document).ready(function(){
 				} else if (periodicity.getUnity() == Periodicity.UNIT_YEAR) {
 					out.print(resources.getString("allYears"));
 				}
-			}
+		
 			%>
-		  </td>
-        </tr>
-		<%
-			if(periodicity != null) {
-		%>
-			<tr>
-	          <td nowrap align=right class="txtlibform"><%=resources.getString("frequency")%>&nbsp;:&nbsp;</td>
-			  <td align=left><% out.print(periodicity.getFrequency());  %> </td> 
-	        </tr>
+			</b>
+			
 			
 			<%
 				if (periodicity.getUnity() == Periodicity.UNIT_WEEK) {
 			%>
-			<tr>
-	          <td nowrap align=right class="txtlibform"><%=resources.getString("choiceDaysWeek")%>&nbsp;:&nbsp;</td>
-			  <td align=left>
+			<br /><span class="eventPeriodicityDaysWeek"><%=resources.getString("choiceDaysWeek")%>&nbsp;:&nbsp;<b>
+			 
 			<%
 					String days = "";
 					if(periodicity.getDaysWeekBinary().charAt(0) == '1') { 
@@ -293,15 +251,12 @@ $(document).ready(function(){
 					}
 					out.print(days);
 			%>
-			 </td>
-	        </tr>
+			</b></span>
 			<%
 				} else if (periodicity.getUnity() == Periodicity.UNIT_MONTH) {
 					if(periodicity.getDay() > 0) {
 			%>
-			<tr>
-			  <td nowrap align=right class="txtlibform"><%=resources.getString("choiceDayMonth")%>&nbsp;:&nbsp;</td>
-			  <td align=left>	
+			<br /><span class="eventPeriodicityDayMonth"><%=resources.getString("choiceDayMonth")%>&nbsp;:&nbsp;<b>
 			<%
 						if(periodicity.getNumWeek() == 1) {
 							out.print(resources.getString("first"));
@@ -331,38 +286,153 @@ $(document).ready(function(){
 							out.print(resources.getString("GML.jour1"));
 						}
 			%>
-			  </td> 
-			</tr>
+			</b>  </span>
 			<%
 					}
 				} 
+			
+			
+			 if (event.getStartDate() != null && periodicity.getUntilDatePeriod() != null) {
+						%>
+						<br />
+						<span class="eventPeriodicityDate"> 
+						<% if (event.getStartDate() != null) { 
+							out.println(resources.getString("GML.fromDate"));
+							out.println("<b>");
+							out.print(resources.getInputDate(event.getStartDate()));
+						    out.println("</b> ");
+						}
+						%>
+						
+						<% if (periodicity.getUntilDatePeriod() != null) {
+							out.println(resources.getString("GML.toDate"));
+							out.println("<b>");
+							out.print(resources.getInputDate(periodicity.getUntilDatePeriod()));
+							out.println("</b> ");
+						}
+						%>
+						</span>
+						<%
+			 }
+			
+			   
+			 if (periodicity.getFrequency() != 1) { %>
+				<br />
+				<span class="eventPeriodicityFrequency"> <%=resources.getString("frequency")%> :  <b><% out.print(periodicity.getFrequency());  %> </b></span> 
+			<%	
+			}
 			%>
-			<tr> 
-	          <td nowrap align=right class="txtlibform"><span><%=resources.getString("beginDatePeriodicity")%>&nbsp;:&nbsp;</td>
-	          <td valign="baseline">  
-				<% if (event.getStartDate() != null) out.print(resources.getInputDate(event.getStartDate()));%>
-	          </td>
-	        </tr>
-			<tr> 
-	          <td nowrap align=right class="txtlibform"><span><%=resources.getString("endDatePeriodicity")%>&nbsp;:&nbsp;</td>
-	          <td valign="baseline"> 
-	           <% if (periodicity.getUntilDatePeriod() != null) out.print(resources.getInputDate(periodicity.getUntilDatePeriod()));%>
-	          </td>
-	        </tr>
-		<%
-		}
-		%>
-  </table>
-  <%
-		out.println(board.printAfter());
-  %>
-  </td><td valign="top">
-  <%
-  		out.flush();
-  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+event.getId()+"&ComponentId="+instanceId+"&Context=Images").include(request, response);
-  %>
-  </td></tr>
-  </table>
+			
+			
+			
+			
+			
+	          
+	          
+	          
+		</p>
+	</div>
+<%	}   %>
+			
+	
+		
+		   <div id="eventInfoPublication" class="bgDegradeGris">
+		   	<div class="paragraphe">
+		   		<b><%=resources.getString("GML.create")%> <%=resources.getString("GML.by")%></b> <a href="#" class="linkUser">Author</a>
+		   		<div class="profilPhoto"><a href="/silverpeas/Rprofil/jsp/Main?userId=449"><img src="http://intranoo.oevo.com/silverpeas/display/avatar/sophie.delord@silverpeas.com.jpg" alt="" class="defaultAvatar"></a></div>
+	   		</div>
+		   		
+		   	</p>
+			<%	if (StringUtil.isDefined(link)) {	%>
+				<p id="permalinkInfo">
+					<a href="<%=link%>" title='<%=resources.getString("CopyEventLink")%>'><img  src="<%=m_context%>/util/icons/link.gif" border="0" alt='<%=resources.getString("CopyEventLink")%>'  ></a>
+					<%=resources.getString("GML.permalink")%> <br />
+					<input class="inputPermalink" type="text" onFocus="select();" value="<%=link%>" />
+				</p>
+			<% } %>
+		   </div>	
+	     
+			
+		
+
+		
+		
+		
+		
+		
+	
+	
+</div>
+
+
+<div  class="principalContent">
+	<h2 class="eventName">
+			<%=EncodeHelper.javaStringToHtmlString(event.getTitle())%>
+			 <%if (event.getPriority() != 0){ %>
+       			 <span class="eventPriorityHight"> ! <%=almanach.getString("prioriteImportante")%></span>
+			<% } %>
+	</h2>
+	
+	
+	<div class="eventInfo">
+		
+		<% if (event.getPlace() != null ) { %>
+			<div class="eventPlace">
+				<div class="bloc">
+					 <span><%=EncodeHelper.javaStringToHtmlString(event.getPlace())%></span>
+			 	</div>
+			</div>
+		<%}%>
+		<div class="eventDate">
+			<div class="bloc">
+				<span class="eventBeginDate">
+					<%=resources.getString("GML.fromDate")%> 
+					<%=resources.getOutputDate(dateDebutIteration)%>
+					<%if (event.getStartHour() != null && event.getStartHour().length() != 0) {%>
+						<%=almanach.getString("ToHour")%> 
+						<%=EncodeHelper.javaStringToHtmlString(event.getStartHour())%>
+					<%}%>
+					</span>
+					
+					<span class="eventEndDate">  
+					<%
+						out.println(resources.getString("GML.toDate"));
+						out.println(resources.getOutputDate(dateFinIteration));
+						if (event.getEndHour() != null && event.getEndHour().length() != 0) {
+							out.println(almanach.getString("ToHour"));
+							out.println(EncodeHelper.javaStringToHtmlString(event.getEndHour()));
+						}%>
+					</span>
+				</div>
+		</div>
+		
+		
+			
+    	<% if (StringUtil.isDefined(event.getEventUrl())) {
+	    		out.println("<div class=\"eventURL\"><div class=\"bloc\">");
+	    		
+	    		String eventURL = event.getEventUrl();
+	    		if (eventURL.indexOf("://") == -1){
+	    			eventURL = "http://"+eventURL;
+	    		}
+	    			
+	    		%>
+		    		<span>
+		    			<a href="<%=EncodeHelper.javaStringToHtmlString(eventURL)%>" target="_blank"><%=resources.getString("linkToVisit")%></a>
+					</span>
+					</div>
+				</div>
+    		<%    			
+    		}
+    		%>
+    <br clear="left"/>&nbsp;
+	</div>
+	
+	
+	<div class="eventDesc"><%=description%></div>
+		
+ </div>   
+
   <%
 		out.println("<br/>");
  		ButtonPane buttonPane = graphicFactory.getButtonPane();
@@ -373,11 +443,10 @@ $(document).ready(function(){
 		buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.back"), backURL, false));
 		out.println(buttonPane.print());
 		out.println("<br/>");
-		out.println("</center>");
 		out.println(frame.printAfter());				
 		out.println(window.printAfter());
 	%>
-	<form name="eventForm" action="RemoveEvent" method="POST">
+	<form name="eventForm" action="RemoveEvent" method="post">
 		<input type="hidden" name="Action"/>
    		<input type="hidden" name="Id" value="<%=id%>"/>
    		<% if (periodicity != null) { %>
@@ -397,5 +466,5 @@ $(document).ready(function(){
 	<center><%=buttonPaneOnDelete.print()%></center>
 	</td></tr></table>
 </div>	
-</BODY>
-</HTML>
+</body>
+</html>
