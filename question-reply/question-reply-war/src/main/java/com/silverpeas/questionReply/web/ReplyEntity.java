@@ -27,6 +27,7 @@ import static com.stratelia.webactiv.SilverpeasRole.admin;
 import static com.stratelia.webactiv.SilverpeasRole.writer;
 
 import java.net.URI;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,9 +38,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.silverpeas.attachment.web.AttachmentEntity;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.rest.Exposable;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.persistence.IdPK;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import javax.xml.bind.annotation.XmlTransient;
 /**
  *
  * @author emmanuel.hugonnet@silverpeas.org
@@ -72,16 +77,24 @@ public class ReplyEntity implements Exposable {
   private boolean readOnly = true;
   @XmlElement
   private AttachmentEntity[] attachments;
+  
+  @XmlTransient
+  private String language = DisplayI18NHelper.getDefaultLanguage();
 
   protected ReplyEntity() {
   }
 
-  private ReplyEntity(Reply reply) {
+  private ReplyEntity(Reply reply, String lang) {
     this.id = reply.getPK().getId();
     this.questionId = reply.getQuestionId();
     this.content = reply.readCurrentWysiwygContent();
     this.title = reply.getTitle();
-    this.creationDate = reply.getCreationDate();
+    try {
+      this.creationDate = DateUtil.getOutputDate(reply.getCreationDate(), lang);
+      this.language = lang;
+    } catch (ParseException ex) {
+      this.creationDate = reply.getCreationDate();
+    }
     this.creatorId = reply.getCreatorId();
     this.creatorName = reply.readCreatorName();
     this.publicReply = reply.getPublicReply() == 1;
@@ -175,7 +188,6 @@ public class ReplyEntity implements Exposable {
   @Override
   public int hashCode() {
     int hash = 7;
-    Long longe = new Long(this.questionId);
     hash = 79 * hash + (this.id != null ? this.id.hashCode() : 0);
     hash = 79 * hash + (Long.valueOf(this.questionId)).intValue();
     hash = 79 * hash + (this.title != null ? this.title.hashCode() : 0);
@@ -193,8 +205,8 @@ public class ReplyEntity implements Exposable {
    * @param reply the reply to entitify.
    * @return the entity representing the specified reply.
    */
-  public static ReplyEntity fromReply(final Reply reply) {
-    return new ReplyEntity(reply);
+  public static ReplyEntity fromReply(final Reply reply, String lang) {
+    return new ReplyEntity(reply, lang);
   }
 
   /**
@@ -211,10 +223,10 @@ public class ReplyEntity implements Exposable {
    * @param replies the list of replies to entitify.
    * @return a list of entities representing each of then one of the specified replies.
    */
-  public static List<ReplyEntity> fromReplies(final Iterable<Reply> replies) {
+  public static List<ReplyEntity> fromReplies(final Iterable<Reply> replies, String lang) {
     List<ReplyEntity> entities = new ArrayList<ReplyEntity>();
     for (Reply reply : replies) {
-      entities.add(fromReply(reply));
+      entities.add(fromReply(reply, lang));
     }
     return entities;
   }
@@ -250,14 +262,14 @@ public class ReplyEntity implements Exposable {
   /**
    * Sets a URI to this entity.
    * With this URI, it can then be accessed through the Web.
-   * @param uri the web entity URI.
+   * @param attachmentDetails 
    * @return itself.
    */
   public ReplyEntity withAttachments(final Collection<AttachmentDetail> attachmentDetails) {
     if(attachmentDetails != null && !attachmentDetails.isEmpty()) {
       List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
       for(AttachmentDetail attachment : attachmentDetails) {
-        entities.add(AttachmentEntity.fromAttachment(attachment));
+        entities.add(AttachmentEntity.fromAttachment(attachment, this.language));
       }
       this.attachments = entities.toArray(new AttachmentEntity[entities.size()]);
     }

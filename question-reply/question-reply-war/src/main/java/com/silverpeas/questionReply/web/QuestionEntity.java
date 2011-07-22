@@ -25,10 +25,14 @@ package com.silverpeas.questionReply.web;
 
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.rest.Exposable;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
+import com.stratelia.webactiv.util.DateUtil;
+
 import java.net.URI;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
@@ -83,18 +87,27 @@ public class QuestionEntity implements Exposable {
   private boolean closeable = false;
   @XmlElement(required = true)
   private AuthorEntity creator;
+  
+  @XmlTransient
+  private String language = DisplayI18NHelper.getDefaultLanguage();
 
   protected QuestionEntity() {
   }
 
-  private QuestionEntity(Question question) {
+  private QuestionEntity(Question question, String lang) {
     this.id = question.getPK().getId();
     this.instanceId = question.getInstanceId();
     this.categoryId = question.getCategoryId();
     this.title = question.getTitle();
     this.content = question.getContent();
-    this.creationDate = question.getCreationDate();
+   try {
+      this.creationDate = DateUtil.getOutputDate(question.getCreationDate(), lang);
+      this.language = lang;
+    } catch (ParseException ex) {
+      this.creationDate = question.getCreationDate();
+    }
     this.creatorId = question.getCreatorId();
+    this.status = question.getStatus();
     this.privateReplyNumber = question.getPrivateReplyNumber();
     this.publicReplyNumber = question.getPublicReplyNumber();
     this.replyNumber = question.getReplyNumber();
@@ -246,30 +259,23 @@ public class QuestionEntity implements Exposable {
   /**
    * Creates a new question entity from the specified question.
    * @param question the question to entitify.
+   * @param lang the language of the current User.
    * @return the entity representing the specified question.
    */
-  public static QuestionEntity fromQuestion(final Question question) {
-    return new QuestionEntity(question);
-  }
-
-  /**
-   * Creates several new question entities from the specified questions.
-   * @param questions the questions to entitify.
-   * @return a list of entities representing each of then one of the specified questions.
-   */
-  public static List<QuestionEntity> fromQuestions(final Question... questions) {
-    return fromQuestions(questions);
+  public static QuestionEntity fromQuestion(final Question question, final String lang) {
+    return new QuestionEntity(question, lang);
   }
 
   /**
    * Creates several new reply entities from the specified list of questions.
    * @param questions the list of questions to entitify.
+   * @param lang the language of the current User.
    * @return a list of entities representing each of then one of the specified questions.
    */
-  public static List<QuestionEntity> fromQuestions(final Iterable<Question> questions) {
+  public static List<QuestionEntity> fromQuestions(final Iterable<Question> questions, final String lang) {
     List<QuestionEntity> entities = new ArrayList<QuestionEntity>();
     for (Question question : questions) {
-      entities.add(fromQuestion(question));
+      entities.add(fromQuestion(question, lang));
     }
     return entities;
   }
@@ -283,7 +289,11 @@ public class QuestionEntity implements Exposable {
     question.setPK(new IdPK(id));
     question.setCategoryId(categoryId);
     question.setContent(content);
-    question.setCreationDate(creationDate);
+    try {
+      question.setCreationDate(DateUtil.getInputDate(this.creationDate, language));
+    } catch (ParseException ex) {
+       question.setCreationDate(this.creationDate);
+    }
     question.setCreatorId(creatorId);
     question.setInstanceId(instanceId);
     question.setPrivateReplyNumber(privateReplyNumber);
@@ -296,7 +306,7 @@ public class QuestionEntity implements Exposable {
 
   public QuestionEntity withUser(UserDetail userDetail, SilverpeasRole profile) {
     this.updatable = isQuestionUpdatable(userDetail, profile);
-    this.reopenable = isQuestionReopenable(userDetail, profile);
+    this.reopenable = isQuestionReopenable(profile);
     this.replyable = isQuestionReplyable(userDetail, profile);
     this.closeable = isQuestionCloseable(userDetail, profile);
     return this;
@@ -327,7 +337,7 @@ public class QuestionEntity implements Exposable {
             userDetail, profile);
   }
 
-  boolean isQuestionReopenable(UserDetail userDetail, SilverpeasRole profile) {
+  boolean isQuestionReopenable(SilverpeasRole profile) {
     return this.getStatus() == Question.CLOSED && profile == admin;
   }
 

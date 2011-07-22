@@ -36,6 +36,7 @@ boolean 	isPrivateSearch	= ((Boolean) request.getAttribute("IsPrivateSearch")).b
 boolean 	isBasket	 	= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
 boolean 	isOrder		 	= ((Boolean) request.getAttribute("IsOrder")).booleanValue();
 boolean 	isGuest		 	= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
+List      	albums      	= (List) request.getAttribute("Albums");
 
 // parametrage pour l'affichage des dernieres photos telechargees
 int nbAffiche 	= 0;
@@ -286,14 +287,14 @@ function sendData()
   // --------------------------------
   out.println("<div id=\"subTopics\">");
   out.println("<ul id=\"albumList\">");
-  Iterator it = root.getChildrenDetails().iterator();
+  Iterator it = albums.iterator();
   while (it.hasNext()) {
+    AlbumDetail unAlbum = (AlbumDetail) it.next();
     IconPane icon = gef.getIconPane();
     Icon albumIcon = icon.addIcon();
     albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
     icon.setSpacing("30px");
       
-    NodeDetail unAlbum = (NodeDetail) it.next();
     int id = unAlbum.getId();
     String nom = unAlbum.getName();
     String link = "";
@@ -303,11 +304,16 @@ function sendData()
           getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString(
           "gallery.CopyAlbumLink") + "\"></a>";
     }
-    out.println("<li id=\"album_" + id + "\" class=\"ui-state-default\">");
-    
-    out.println("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.getName());
-    out.println("<span>" + unAlbum.getDescription() + "</span></a>");
-    out.println("</li>");
+    %>
+    <li id="album_<%=id%>" class="ui-state-default">
+	    <a href="ViewAlbum?Id=<%=id%>">
+	 		<strong><%=unAlbum.getName()%>
+	 		<span><%=unAlbum.getNbPhotos() %></span>
+	 		</strong>
+	 		<span><%=unAlbum.getDescription()%></span>
+	 	</a>
+    </li>
+    <%
 }
 out.println("</ul>");
 out.println("</div>");

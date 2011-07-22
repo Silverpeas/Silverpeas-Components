@@ -23,6 +23,7 @@
  */
 package com.silverpeas.questionReply.web;
 
+import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -37,6 +38,8 @@ import com.sun.jersey.api.client.WebResource;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -90,7 +93,6 @@ public class QuestionGettingTest extends RESTWebServiceTest {
     user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
-    personalisationService.setPersonalizationService(mock(PersonalizationService.class));
     QuestionManager mockedQuestionManager = mock(QuestionManager.class);
     Question question = getNewSimpleQuestion(3);
     when(mockedQuestionManager.getQuestion(3L)).thenReturn(question);
@@ -145,5 +147,14 @@ public class QuestionGettingTest extends RESTWebServiceTest {
     question.setContent("Hello world question");
     question.setCategoryId("");
     return question;
+  }
+
+  @Before
+  public void preparePersonalization() {
+     PersonalizationService myPersonalizationService = mock(PersonalizationService.class);
+     UserPreferences prefs = mock(UserPreferences.class);
+     when(prefs.getLanguage()).thenReturn("en");
+     when(myPersonalizationService.getUserSettings(anyString())).thenReturn(prefs);
+     personalisationService.setPersonalizationService(myPersonalizationService);
   }
 }
