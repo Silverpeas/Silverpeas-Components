@@ -23,6 +23,7 @@
  */
 package com.silverpeas.almanach.web;
 
+import com.stratelia.webactiv.almanach.control.TestEventDetail;
 import java.util.List;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import com.stratelia.webactiv.almanach.model.EventPK;
@@ -97,7 +98,7 @@ public class AlmanachTestResources {
 
   private EventDetail anEventDetailWithOccurrences(int occurrenceCount) throws Exception {
     Calendar date = Calendar.getInstance();
-    EventDetail event = new EventDetail(new EventPK("1000", null, COMPONENT_INSTANCE_ID), "An event",
+    EventDetail event = new TestEventDetail(new EventPK("1000", null, COMPONENT_INSTANCE_ID), "An event",
             date.getTime(), date.getTime());
     event.setDelegatorId("1298");
     event.setStartHour("09:30");

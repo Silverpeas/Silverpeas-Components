@@ -294,12 +294,12 @@
     <view:window>
 
       <view:tabs>
+        <fmt:message key="almanach.rssNext" var="opLabel" />
+        <view:tab label="${opLabel}" action="javascript:onClick=viewNextEvents()" selected="${calendarView.viewType.nextEventsView}"/>
         <fmt:message key="GML.week" var="opLabel" />
         <view:tab label="${opLabel}" action="javascript:onClick=viewByWeek()" selected="${calendarView.viewType.weeklyView}"/>
         <fmt:message key="GML.month" var="opLabel" />
         <view:tab label="${opLabel}" action="javascript:onClick=viewByMonth()" selected="${calendarView.viewType.monthlyView}"/>
-        <fmt:message key="almanach.rssNext" var="opLabel" />
-        <view:tab label="${opLabel}" action="javascript:onClick=viewNextEvents()" selected="${calendarView.viewType.nextEventsView}"/>
       </view:tabs>
 
       <view:frame>

@@ -23,10 +23,15 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+import java.util.Collection;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import static com.silverpeas.util.StringUtil.*;
@@ -55,8 +60,8 @@ public class DisplayableEventOccurrence extends EventOccurrence {
    * specified occurrences.
    */
   public static List<DisplayableEventOccurrence> decorate(final List<EventOccurrence> occurrences) {
-    List<DisplayableEventOccurrence> decorators = new ArrayList<DisplayableEventOccurrence>(occurrences.
-        size());
+    List<DisplayableEventOccurrence> decorators =
+            new ArrayList<DisplayableEventOccurrence>(occurrences.size());
     for (EventOccurrence occurrence : occurrences) {
       decorators.add(decorate(occurrence));
     }
@@ -105,12 +110,24 @@ public class DisplayableEventOccurrence extends EventOccurrence {
     EventDetail event = getEventDetail();
     String startDate = getStartDateTimeInISO();
     String endDate = getEndDateTimeInISO();
+    String description = null;
+    try {
+      description = event.getWysiwyg();
+    } catch (WysiwygException ex) {
+      Logger.getLogger(DisplayableEventOccurrence.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      if (!isDefined(description)) {
+        description = event.getDescription();
+      }
+    }
+    Collection<AttachmentDetail> attachments = event.getAttachments();
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("id", event.getId());
     jsonObject.put("instanceId", event.getInstanceId());
     jsonObject.put("title", event.getTitle());
-    jsonObject.put("description", event.getDescription());
+    jsonObject.put("description", description);
     jsonObject.put("location", event.getPlace());
+    jsonObject.put("hasAttachments", attachments != null && !attachments.isEmpty());
     jsonObject.put("start", startDate);
     jsonObject.put("end", endDate);
     jsonObject.put("className", new JSONArray(getCSSClasses()));

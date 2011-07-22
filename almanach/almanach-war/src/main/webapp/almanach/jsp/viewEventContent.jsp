@@ -35,7 +35,6 @@
 
 	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(almanach.getLanguage());
 
-	// récupération du user
 	String user = request.getParameter("flag");
 	
 	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");

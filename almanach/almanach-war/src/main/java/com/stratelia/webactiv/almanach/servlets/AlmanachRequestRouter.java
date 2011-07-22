@@ -54,9 +54,9 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
   @Override
   public ComponentSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext context) {
+          MainSessionController mainSessionCtrl, ComponentContext context) {
     return ((ComponentSessionController) new AlmanachSessionController(
-        mainSessionCtrl, context));
+            mainSessionCtrl, context));
   }
 
   /**
@@ -75,7 +75,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
    * @param request
    */
   private void setGlobalInfo(AlmanachSessionController almanach,
-      HttpServletRequest request) {
+          HttpServletRequest request) {
     ResourceLocator settings = almanach.getSettings();
     request.setAttribute("settings", settings);
   }
@@ -91,10 +91,10 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
    */
   @Override
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+          ComponentSessionController componentSC, HttpServletRequest request) {
 
     SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
 
     AlmanachSessionController almanach = (AlmanachSessionController) componentSC;
     setGlobalInfo(almanach, request);
@@ -105,7 +105,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
     String flag = getFlag(componentSC.getUserRoles());
     try {
       if (function.startsWith("Main") || function.startsWith("almanach")
-          || function.startsWith("portlet")) {
+              || function.startsWith("portlet")) {
 
         // contrôle de l'Action de l'utilisateur
         String action = request.getParameter("Action");
@@ -124,6 +124,8 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           almanach.setViewMode(MONTHLY);
         } else if ("ViewByWeek".equals(action)) {
           almanach.setViewMode(WEEKLY);
+        } else if ("ViewNextEvents".equals(action)) {
+          almanach.setViewMode(NEXT_EVENTS);
         }
 
         AlmanachCalendarView view = almanach.getAlmanachCalendarView();
@@ -136,7 +138,11 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         if (function.startsWith("portlet")) {
           destination = "/almanach/jsp/portletCalendar.jsp?flag=" + flag;
         } else {
-          destination = "/almanach/jsp/calendar.jsp?flag=" + flag;
+          if (view.getViewType() == NEXT_EVENTS) {
+            destination = "/almanach/jsp/nextEvents.jsp?flag=" + flag;
+          } else {
+            destination = "/almanach/jsp/calendar.jsp?flag=" + flag;
+          }
         }
       } else if (function.startsWith("viewEventContent")) {
         // initialisation de l'objet event
@@ -168,12 +174,12 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String day = request.getParameter("Day");
 
         EventDetail event = new EventDetail();
-        String[] startDay = {"", "" };
+        String[] startDay = {"", ""};
         if (day != null && day.length() > 0) {
           event.setStartDate(DateUtil.parseISO8601Date(day));
           ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
           startDay[0] = resources.getInputDate(event.getStartDate());
-          if (! day.endsWith("00:00")) {
+          if (!day.endsWith("00:00")) {
             startDay[1] = day.substring(day.indexOf("T") + 1);
             event.setStartHour(startDay[1]);
           }
@@ -188,7 +194,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           destination = "/almanach/jsp/createEvent.jsp";
         } else {
           destination = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "sessionTimeout");
+                  "sessionTimeout");
         }
       } else if (function.equals("ReallyAddEvent")) {
         EventDetail event = new EventDetail();
@@ -270,7 +276,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           }
           if (StringUtil.isDefined(periodicityUntilDate)) {
             periodicity.setUntilDatePeriod(DateUtil.stringToDate(periodicityUntilDate, endHour,
-                almanach.getLanguage()));
+                    almanach.getLanguage()));
           }
         } else {// update -> pas de périodicité
           periodicity = null;
@@ -301,7 +307,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           destination = "/almanach/jsp/editEvent.jsp";
         } else {
           destination = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "sessionTimeout");
+                  "sessionTimeout");
         }
       } else if (function.equals("ReallyUpdateEvent")) {
         String action = request.getParameter("Action");// ReallyUpdateOccurence
@@ -393,7 +399,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
           if (periodicityUntilDate != null && periodicityUntilDate.length() > 0) {
             periodicity.setUntilDatePeriod(DateUtil.stringToDate(
-                periodicityUntilDate, almanach.getLanguage()));
+                    periodicityUntilDate, almanach.getLanguage()));
           } else {
             periodicity.setUntilDatePeriod(null);
           }
@@ -407,10 +413,10 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
           // Met à jour l'événement et toutes les occurences de la série
           almanach.updateEventOccurence(event, dateDebutIteration,
-              dateFinIteration);
+                  dateFinIteration);
         } else if ("ReallyUpdateSerial".equals(action)) {
           java.util.Date startDateEvent = DateUtil.stringToDate(
-              periodicityStartDate, almanach.getLanguage());
+                  periodicityStartDate, almanach.getLanguage());
           event.setStartDate(startDateEvent);
           java.util.Calendar calStartDate = java.util.Calendar.getInstance();
           calStartDate.setTime(startDateEvent);
@@ -421,7 +427,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           almanach.updateEvent(event);
         } else if ("ReallyUpdate".equals(action)) {
           java.util.Date startDateEvent = DateUtil.stringToDate(
-              periodicityStartDate, almanach.getLanguage());
+                  periodicityStartDate, almanach.getLanguage());
           event.setStartDate(startDateEvent);
           java.util.Calendar calStartDate = java.util.Calendar.getInstance();
           calStartDate.setTime(startDateEvent);
@@ -445,8 +451,8 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Event", event);
         request.setAttribute("PdcUsed", almanach.isPdcUsed());
 
-        String componentUrl = almanach.getComponentUrl() + "editAttFiles.jsp?Id=" +
-            event.getPK().getId() + "&Date=" + dateIteration;
+        String componentUrl = almanach.getComponentUrl() + "editAttFiles.jsp?Id=" + event.getPK().
+                getId() + "&Date=" + dateIteration;
         request.setAttribute("ComponentURL", URLEncoder.encode(componentUrl, "UTF-8"));
 
         destination = "/almanach/jsp/editAttFiles.jsp";
@@ -483,7 +489,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         destination = "/almanach/jsp/viewEventContent.jsp?flag=" + flag;
       } else if (function.startsWith("GoToFilesTab")) { // ??
         destination = "/almanach/jsp/editAttFiles.jsp?Id="
-            + request.getParameter("Id");
+                + request.getParameter("Id");
       } else if (function.equals("RemoveEvent")) {
         String dateDebutIteration = request.getParameter("DateDebutIteration"); // format
         // client
@@ -495,7 +501,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         if ("ReallyDeleteOccurence".equals(action)) {
           // Supprime l'occurence
           almanach.removeOccurenceEvent(almanach.getCurrentEvent(),
-              dateDebutIteration, dateFinIteration);
+                  dateDebutIteration, dateFinIteration);
 
         } else if ("ReallyDelete".equals(action)) {
 
@@ -507,13 +513,13 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("UpdateAgregation")) {
         String[] instanceIds = request.getParameterValues("chk_almanach");
         SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "instanceIds = " + instanceIds);
+                "root.MSG_GEN_PARAM_VALUE", "instanceIds = " + instanceIds);
         almanach.updateAgregatedAlmanachs(instanceIds);
         destination = getDestination("almanach", almanach, request);
       } else if (function.equals("ToAlertUser")) {
         String id = request.getParameter("Id");
         SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "id = " + id);
+                "root.MSG_GEN_PARAM_VALUE", "id = " + id);
         try {
           destination = almanach.initAlertUser(id);
         } catch (Exception e) {
@@ -529,11 +535,6 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         request.setAttribute("calendarView", calendar);
         request.setAttribute("Function", function);
         destination = "/almanach/jsp/viewEvents.jsp";
-      } else if ("ViewNextEvents".equals(function)) {
-        AlmanachCalendarView calendar = almanach.getAlmanachCalendarViewOnTheNextEvents();
-        request.setAttribute("calendarView", calendar);
-        request.setAttribute("Function", function);
-        destination = "/almanach/jsp/nextEvents.jsp";
       } else if ("ViewYearEventsPOPUP".equals(function)) {
         AlmanachCalendarView calendarView = almanach.getYearlyAlmanachCalendarView();
         request.setAttribute("calendarView", calendarView);
@@ -546,11 +547,11 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           request.setAttribute("icsURL", FileServerUtils.getUrlToTempDir(icsFile));
         } catch (NoDataToExportException ex) {
           SilverTrace.info("almanach", getClass().getSimpleName() + ".getDestination()",
-              "root.EX_NO_MESSAGE", ex.getMessage());
+                  "root.EX_NO_MESSAGE", ex.getMessage());
           request.setAttribute("messageKey", "almanach.export.ical.empty");
         } catch (ExportException ex) {
           SilverTrace.error("almanach", getClass().getSimpleName() + ".getDestination()",
-              "root.EX_NO_MESSAGE", ex.getMessage());
+                  "root.EX_NO_MESSAGE", ex.getMessage());
           request.setAttribute("messageKey", "almanach.export.ical.failure");
         }
         destination = "/almanach/jsp/exportIcal.jsp";
@@ -563,7 +564,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
     }
 
     SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-        "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
+            "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
     return destination;
   }
 
