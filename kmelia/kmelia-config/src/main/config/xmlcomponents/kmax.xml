@@ -30,6 +30,7 @@
   <label>
     <message lang="fr">Gestion de contenu multi-axes</message>
     <message lang="en">Multi-level Tracker</message>
+    <message lang="de">Multi-level Tracker</message>
   </label>
   <description>
     <message lang="fr">Permet de créer une base documentaire classée suivant plusieurs axes.
@@ -38,12 +39,15 @@
     </message>
     <message lang="en">Create a document database where documents are classified according to various
       classification scheme. The user select
-      les values of the various axis to find the documents he was looking for.
+      the values of the various axis to find the documents he was looking for.
     </message>
+    <message lang="de">Erstellt eine Dokument Datenbank wo die Dokumente nach verschiedenen Systematik eingestuft werden.
+    Der Benutzer wählt die Werte der verschiedenen Achsen, um die Dokumente, die er suchte zu finden.</message>
   </description>
   <suite>
     <message lang="fr">01 Gestion Documentaire</message>
     <message lang="en">01 Document Management</message>
+    <message lang="de">01 Dokumentenverwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -53,40 +57,48 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="writer">
       <label>
         <message lang="fr">Rédacteur</message>
         <message lang="en">Writer</message>
+        <message lang="de">Schreiber</message>
       </label>
       <help>
         <message lang="fr">Rédacteur</message>
         <message lang="en">Writer</message>
+        <message lang="de">Schreiber</message>
       </help>
     </profile>
     <profile name="user">
       <label>      
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>      
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -96,6 +108,7 @@
       <label>
         <message lang="fr">Contenu</message>
         <message lang="en">Content</message>
+        <message lang="de">Inhalt</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -105,6 +118,7 @@
       <help>
         <message lang="fr">Pour pouvoir ajouter un contenu aux publication</message>
         <message lang="en">Add some content to a publication</message>
+        <message lang="de">Fügen Sie Inhalt in eine Veröffentlichung ein</message>
       </help>
     </parameter>
     <parameter>
@@ -112,6 +126,7 @@
       <label>
         <message lang="fr">Fichiers Joints</message>
         <message lang="en">Attachments</message>
+        <message lang="de">Anhang</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -121,6 +136,7 @@
       <help>
         <message lang="fr">Pour pouvoir joindre des fichiers à une publication</message>
         <message lang="en">Add attachments to a publication</message>
+        <message lang="de">Um Dateien in einer Veröffentlichung beilegen zu können</message>
       </help>
     </parameter>
     <parameter>
@@ -128,6 +144,7 @@
       <label>
         <message lang="fr">Commentaires</message>
         <message lang="en">Comments</message>
+        <message lang="de">Kommentare</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -137,6 +154,7 @@
       <help>
         <message lang="fr">Pour commenter une publication</message>
         <message lang="en">Enable to comment a publication</message>
+        <message lang="de">Um eine Veröffentlichung zu kommentieren</message>
       </help>
     </parameter>
     <parameter>
@@ -144,6 +162,7 @@
       <label>
         <message lang="fr">Contrôles de Lecture</message>
         <message lang="en">Readers list</message>
+        <message lang="de">Leser-Liste</message>
       </label>
       <order>4</order>
       <mandatory>true</mandatory>
@@ -153,6 +172,7 @@
       <help>
         <message lang="fr">Affiche la liste des personnes ayant lu une publication</message>
         <message lang="en">Display the list of people having read a publication</message>
+        <message lang="de">Zeigt eine Liste der Personen an, Die eine Veröffentlichung gelesen haben</message>
       </help>
     </parameter>
     <parameter>
@@ -160,6 +180,7 @@
       <label>
         <message lang="fr">Mode brouillon</message>
         <message lang="en">Draf</message>
+        <message lang="de">Entwurf</message>
       </label>
       <order>5</order>
       <mandatory>true</mandatory>
@@ -171,6 +192,7 @@
           puisse la voir.
         </message>
         <message lang="en">A publication in draft mode is visible only to the author, so he can work on it.</message>
+        <message lang="de">Eine Veröffentlichung im Entwurfs-Modus ist nur für den Autor sichtbar, so kann er daran arbeiten.</message>
       </help>
     </parameter>
     <parameter>
@@ -178,6 +200,7 @@
       <label>
         <message lang="fr">Champ Description</message>
         <message lang="en">Description field</message>
+        <message lang="de">Beschreibung</message>
       </label>
       <order>6</order>
       <mandatory>true</mandatory>
@@ -187,6 +210,7 @@
           <name>
             <message lang="fr">Non</message>
             <message lang="en">No</message>
+            <message lang="de">Neine</message>
           </name>
           <value>0</value>
         </option>
@@ -194,6 +218,7 @@
           <name>
             <message lang="fr">Saisie facultative</message>
             <message lang="en">Optionnal entry</message>
+            <message lang="de">Optionnaler Eintrag</message>
           </name>
           <value>1</value>
         </option>
@@ -201,6 +226,7 @@
           <name>
             <message lang="fr">Saisie obligatoire</message>
             <message lang="en">Mandatory entry</message>
+            <message lang="de">Pflichteintrag</message>
           </name>
           <value>2</value>
         </option>
@@ -210,6 +236,7 @@
       <help>
         <message lang="fr">Visibilité du champ Description</message>
         <message lang="en">Display a field to describe the publication.</message>
+        <message lang="de">Zeigt ein Feld an, um die Veröffentlichung zu beschreiben.</message>
       </help>
     </parameter>
     <parameter>
@@ -217,6 +244,7 @@
       <label>
         <message lang="fr">Champ Mots-clés</message>
         <message lang="en">Keywords</message>
+        <message lang="de">Schlüsselwörter</message>
       </label>
       <order>7</order>
       <mandatory>true</mandatory>
@@ -226,6 +254,7 @@
       <help>
         <message lang="fr">Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Mots clés'.</message>
         <message lang="en">Publications have a field to enter keywords.</message>
+        <message lang="de">Veröffentlichungen haben ein Feld um Schlüsselwörter einzugeben.</message>
       </help>
     </parameter>
     <parameter>
@@ -233,6 +262,7 @@
       <label>
         <message lang="fr">Champ Auteur</message>
         <message lang="en">Author field</message>
+        <message lang="de">Autor Feld</message>
       </label>
       <order>8</order>
       <mandatory>true</mandatory>
@@ -242,6 +272,7 @@
       <help>
         <message lang="fr">Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Auteur'.</message>
         <message lang="en">Publication have a field to enter the name of the 'author'.</message>
+        <message lang="de">Veröffentlichung verfügen über ein Feld, um den Namen des Autors anzugeben.</message>
       </help>
     </parameter>
     <parameter>
@@ -249,6 +280,7 @@
       <label>
         <message lang="fr">Champ Importance</message>
         <message lang="en">Importance field</message>
+        <message lang="de">Wichtigkeits Feld</message>
       </label>
       <order>9</order>
       <mandatory>true</mandatory>
@@ -258,6 +290,7 @@
       <help>
         <message lang="fr">Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Importance'. </message>
         <message lang="en">Publications have a field to define their 'importance'.</message>
+        <message lang="de">Veröffentlichung verfügen über ein Feld, um ihre Wichtigkeit anzugeben.</message>
       </help>
     </parameter>
     <parameter>
@@ -265,6 +298,7 @@
       <label>
         <message lang="fr">Champ Version</message>
         <message lang="en">Version field</message>
+        <message lang="de">Version Feld</message>
       </label>
       <order>10</order>
       <mandatory>true</mandatory>
@@ -274,6 +308,7 @@
       <help>
         <message lang="fr">Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Version'. </message>
         <message lang="en">Publications have a field to define their version.</message>
+        <message lang="de">Veröffentlichung verfügen über ein Feld, um ihre Version anzugeben.</message>
       </help>
     </parameter>
     <parameter>
@@ -281,6 +316,7 @@
       <label>
         <message lang="fr">Axe de période de publication</message>
         <message lang="en">Publication date axis</message>
+        <message lang="de">Veröffentlichungsdatum Achse</message>
       </label>
       <order>11</order>
       <mandatory>false</mandatory>
@@ -290,6 +326,7 @@
       <help>
         <message lang="fr">Axe de classements des publications selon leur date de creation/modification.</message>
         <message lang="en">Classification axis on the publication creation/modification date.</message>
+        <message lang="de">Klassifizierungachse zum Einordnen der Veröffentlichungen nach ihrem Erstellungs / Änderungs Datum</message>
       </help>
     </parameter>
     <parameter>
@@ -297,6 +334,7 @@
       <label>
         <message lang="fr">Assistant de publication</message>
         <message lang="en">Publication creation wizard</message>
+        <message lang="de">Assistent für die Erstellung einer Veröffentlichung</message>
       </label>
       <order>12</order>
       <mandatory>true</mandatory>
@@ -306,6 +344,7 @@
       <help>
         <message lang="fr">Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas. </message>
         <message lang="en">For beginners only. This wizard allows the user to create a publication step by step. </message>
+        <message lang="de">Nur für Anfänger. Dieser Assistent ermöglicht es dem Benutzer, eine Veröffentlichung Schritt für Schritt zu erstellen.</message>
       </help>
     </parameter>
     <parameter>
@@ -313,6 +352,7 @@
       <label>
         <message lang="fr">Gestion des retards</message>
         <message lang="en">Backlog management</message>
+        <message lang="de">Verwaltung der Verspätungen</message>
       </label>
       <order>13</order>
       <mandatory>false</mandatory>
@@ -328,6 +368,8 @@
         <message lang="en">This option defines a maximum duration for booking a file and managing the backlog.
         This duration is expressed in days, and week-ends are not taken into account.
         </message>
+        <message lang="de">Diese Option erlaubt, ein Buchungsfristen der verbundenen Dateien zu wählen und die Verspätungen zu verwalten.
+        Die Frist ist in den Tagen ausgedrückt und berücksichtige keine Samstage und Sonntage.</message>
       </help>
     </parameter>
     <parameter>
@@ -335,6 +377,7 @@
       <label>
         <message lang="fr">Exportation du composant</message>
         <message lang="en">Export component</message>
+        <message lang="de">Komponente Export</message>
       </label>
       <order>14</order>
       <mandatory>true</mandatory>
@@ -344,6 +387,7 @@
       <help>
         <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles du composant.</message>
         <message lang="en">This function allow the user to export all the visible publications in the component.</message>
+        <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
       </help>
     </parameter>
     <parameter>
@@ -351,6 +395,7 @@
       <label>
         <message lang="fr">Fichiers partageables</message>
         <message lang="en">Share attachments</message>
+        <message lang="de">Anhänge freigeben</message>
       </label>
       <order>15</order>
       <mandatory>true</mandatory>
@@ -360,6 +405,7 @@
       <help>
         <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail</message>
         <message lang="en">This feature allows to activate file sharing with persons who have no access to the portal</message>
+        <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
       </help>
     </parameter>
   </parameters>

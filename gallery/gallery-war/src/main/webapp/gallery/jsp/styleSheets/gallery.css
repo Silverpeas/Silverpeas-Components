@@ -1,0 +1,167 @@
+/**
+ * Copyright (C) 2000 - 2011 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+		
+
+
+#subTopics {
+		width:98%;
+		padding-bottom:5px;
+}
+
+#subTopics ul {
+	list-style-type:none;
+	padding:0;
+	margin:5px;
+}
+
+
+
+#subTopics ul li {
+	margin:2px 0 0 0;
+	height: 63px;
+	position:relative;
+	background-color:#EAEAEAEA;
+}
+
+/*** presentation sur 2 colonnes 
+#subTopics ul li  {
+    display: inline;
+    float: left;
+    height: 63px;
+    margin-right: 0.5em;
+    width: 48%;
+	position:relative;
+	}***/
+/*** presentation sur 3 colonnes
+#subTopics ul li  {
+	display: inline;
+    float: left;
+    height: 63px;
+    margin-right: 0.5em;
+    width:32%;
+	position:relative;
+	} ***/
+	
+/*** presentation sur 4 colonnes***/
+#subTopics ul li  {
+	display: inline;
+    float: left;
+    height: 63px;
+    margin-right: 0.5em;
+    width:24%;
+	position:relative;
+} 
+
+#subTopics ul li a { 
+    background: url("../icons/pack_big_icons.gif") 3px 5px no-repeat;
+    display: block;
+	overflow:hidden;
+	height: 32px;
+	padding:8px 3px 16px 50px;
+    line-height: 100%;
+	border:1px solid #EAEAEA ;
+	border-radius:10px;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+	background-color:#EAEAEA;
+}
+	
+#subTopics ul li a strong {
+	display:block;
+	padding:0 30px 2px 0;
+}
+	
+#subTopics ul li a strong span {
+	background: url("../icons/mini_publi.gif")  top right no-repeat;
+	display:block;
+    height: 20px;
+	width: 25px;
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    padding: 1px 17px 0 0;
+	color: #000000;
+	text-align: right;
+	}	
+#subTopics ul li a:hover { 
+    background: url("../icons/pack_big_icons.gif") 3px -95px no-repeat;
+	border:1px solid #FFFBBB;
+	background-color:#FFFFDC;
+	color:#000;
+}
+#subTopics ul li a span{
+	color: #666666;
+    display: block;
+    font-size: 11px;
+    height: 33px;
+    line-height: 11px;
+    overflow: hidden;
+    font-weight: normal;
+}
+/*** pour masquer les descriptions des topics
+#subTopics ul li a span {
+	display:none;}
+	  **/ 
+
+#topicDescription {
+	color:#666;
+	}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    background: none;
+    border: none;
+    color: #1C94C4;
+    font-weight: bold;
+}
+
+#albumList { 
+	list-style-type: none; 
+	margin: 0; 
+	padding: 0; 
+}
+
+#albumList li { 
+	margin: 3px 3px 3px 0; 
+	padding: 1px; 
+	float: left; 
+	width: 100px; 
+	height: 90px; 
+}
+
+
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
+    color: #000000;
+    text-decoration: none;
+}
+
+ul#albumList li.ui-state-highlight {
+	border: 1px dashed #BFBFBF;
+	border-width: 1px;
+	padding:10px;
+	background-image: none;
+	background-color: #EAEAEA;
+}
+
+

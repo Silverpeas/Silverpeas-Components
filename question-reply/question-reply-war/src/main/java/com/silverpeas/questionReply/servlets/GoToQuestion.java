@@ -21,11 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.questionReply.servlets;
 
 import com.silverpeas.peasUtil.GoTo;
-import com.silverpeas.questionReply.control.QuestionManager;
+import com.silverpeas.questionReply.control.QuestionManagerFactory;
 import com.silverpeas.questionReply.model.Question;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -35,26 +34,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 
 public class GoToQuestion extends GoTo {
+
   private static final long serialVersionUID = 8074965533055941265L;
 
-  public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
-    Question question = getQuestionManager().getQuestion(
-        Long.parseLong(objectId));
+  @Override
+  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
+      throws Exception {
+    Question question = QuestionManagerFactory.getQuestionManager().getQuestion(Long.parseLong(
+        objectId));
     String componentId = question.getInstanceId();
-
-    SilverTrace.info("questionReply", "GoToQuestion.doPost",
-        "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
-
+    SilverTrace.info("questionReply", "GoToQuestion.doPost", "root.MSG_GEN_PARAM_VALUE",
+        "componentId = " + componentId);
     String gotoURL = URLManager.getURL(null, componentId) + question._getURL();
-
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
-  }
-
-  private QuestionManager getQuestionManager() {
-    QuestionManager questionManager = null;
-    if (questionManager == null)
-      questionManager = QuestionManager.getInstance();
-    return questionManager;
   }
 }

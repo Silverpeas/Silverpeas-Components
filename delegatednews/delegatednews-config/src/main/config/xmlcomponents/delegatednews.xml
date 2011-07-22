@@ -31,14 +31,17 @@
   <label>
     <message lang="fr">Actualités déléguées</message>
     <message lang="en">Delegated news</message>
+    <message lang="de">Delegierte Nachrichten</message>
   </label>
   <description>
     <message lang="fr">Ce composant permet la validation et la mise en ligne en page d'accueil des actualités soumises à validation depuis les Gestion documentaire I dont l'option Gestion des actualités est activée.</message>
     <message lang="en">This component allows to validate and display news in home page. The news have been proposed from Theme Tracker which have the News manage option activated.</message>
+    <message lang="de">Diese Komponente ermöglicht es Nachrichten in der Homepage zu Validieren und anzuzeigen.</message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
+    <message lang="de">04 Inhalts Verwaltung</message>
   </suite>
   <visible>false</visible>
   <portlet>true</portlet>
@@ -48,20 +51,24 @@
       <label>
         <message lang="fr">Equipe éditoriale</message>
         <message lang="en">Editorial team</message>
+        <message lang="de">Redaktion</message>
       </label>
       <help>
         <message lang="fr">Equipe éditoriale</message>
         <message lang="en">Editorial team</message>
+        <message lang="de">Redaktion</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Contributeurs</message>
         <message lang="en">Contributors</message>
+        <message lang="de">Beitragende</message>
       </label>
       <help>
         <message lang="fr">Contributeurs</message>
         <message lang="en">Contributors</message>
+        <message lang="de">Beitragende</message>
       </help>
     </profile>
   </profiles>

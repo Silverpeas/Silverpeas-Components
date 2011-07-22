@@ -31,19 +31,22 @@
   <label>
     <message lang="fr">Archivage d'e-mails</message>
     <message lang="en">Email archiver</message>
+    <message lang="de">Email Archivierer</message>
   </label>
   <description>
     <message lang="fr">Ce composant permet d'archiver les emails reçus à une adresse de messagerie donnée.
   Les messages peuvent être soumis à modération. Grâce au paramètre Diffusion, le composant se
   transforme en liste de diffusion.
     </message>
-    <message lang="en">This component archives emails received on a specific email address. The messages may be moderated. Using the 'Diffusion list'parameter,
+    <message lang="en">This component archives emails received on a specific email address. The messages may be moderated. Using the 'Diffusion list' parameter,
   this component can be transformed into a mailing-list.
     </message>
+    <message lang="de">Diese Komponente archiviert E-Mails, die an einer bestimmten E-Mail-Adresse gesendet werden. Die Nachrichten können moderiert werden. Mit dem 'Diffusions Liste' parameter, kann diese Komponente in eine Mailing-Liste umgewandelt werden.</message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -53,30 +56,36 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="moderator">
       <label>
         <message lang="fr">Modérateur</message>
         <message lang="en">Moderator</message>
+        <message lang="de">Moderator</message>
       </label>
       <help>
         <message lang="fr">Modérateur</message>
         <message lang="en">Moderator</message>
+        <message lang="de">Moderator</message>
       </help>
     </profile>
     <profile name="reader">
       <label>
         <message lang="fr">Lecteurs</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteurs</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -86,6 +95,7 @@
       <label>
         <message lang="fr">Modération</message>
         <message lang="en">Moderation</message>
+        <message lang="de">Moderierung</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -95,6 +105,7 @@
       <help>
         <message lang="fr">Active/Désactive la modération de la liste de diffusion</message>
         <message lang="en">Activate/Deactivate moderation</message>
+        <message lang="de">Aktivieren / Deaktivieren der Moderierung</message>
       </help>
     </parameter>
     <parameter>
@@ -102,6 +113,7 @@
       <label>
         <message lang="fr">Liste ouverte</message>
         <message lang="en">Open list</message>
+        <message lang="de">Offene Liste</message>
       </label>
       <order>4</order>
       <mandatory>true</mandatory>
@@ -111,6 +123,7 @@
       <help>
         <message lang="fr">Indique que tout le monde peut envoyer un message à la liste</message>
         <message lang="en">Authorizes everyone to send a message to the list</message>
+        <message lang="de">Erlaubt jedermann, eine Nachricht an dieser Liste zu senden</message>
       </help>
     </parameter>
     <parameter>
@@ -118,6 +131,7 @@
       <label>
         <message lang="fr">Adresse e-mail</message>
         <message lang="en">Email address for the list</message>
+        <message lang="de">E-Mail-Adresse für die Liste</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -127,6 +141,7 @@
       <help>
         <message lang="fr">Adresse email dont les messages seront archivés</message>
         <message lang="en">Email address for the mailing list</message>
+        <message lang="de">E-Mail-Adressen, deren Nachrichten archiviert sein werden</message>
       </help>
     </parameter>
     <parameter>
@@ -134,6 +149,7 @@
       <label>
         <message lang="fr">Liste de diffusion</message>
         <message lang="en">Diffusion list</message>
+        <message lang="de">Diffusions Liste</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -143,6 +159,7 @@
       <help>
         <message lang="fr">Indique s'il s'agit d'une liste de diffusion ou d'archivage</message>
         <message lang="en">Indicates if the mailing list will be for storage only or with diffusion</message>
+        <message lang="de">Zeigt an, ob die Mailing-Liste für die Lagerung oder auch für die Verbreitung benützt wird</message>
       </help>
     </parameter>
     <parameter>
@@ -150,6 +167,7 @@
       <label>
         <message lang="fr">Flux RSS</message>
         <message lang="en">RSS</message>
+        <message lang="de">RSS</message>
       </label>
       <order>5</order>
       <mandatory>false</mandatory>
@@ -159,6 +177,7 @@
       <help>
         <message lang="fr">Permet de générer un flux RSS des derniers messages.</message>
         <message lang="en">Produce a RSS stream for the events of this almanach.</message>
+        <message lang="de">Erlaubt, eine RSS-Stream der letzten Nachrichten zu erzeugen</message>
       </help>
     </parameter>
   </parameters>

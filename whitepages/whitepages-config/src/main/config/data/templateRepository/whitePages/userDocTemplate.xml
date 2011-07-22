@@ -39,6 +39,10 @@
 			<labelName>type texte dans input</labelName>
 			<language>fr</language>
 		</label>
+		<label>
+			<labelName>Texttyp in Input</labelName>
+			<language>de</language>
+		</label>
 	</fieldTemplate>
 
 	<fieldTemplate>
@@ -52,6 +56,10 @@
 		<label>
 			<labelName>Affichage dans textarea</labelName>
 			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Anzeige in Textarea</labelName>
+			<language>de</language>
 		</label>
 	</fieldTemplate>
 
@@ -67,6 +75,10 @@
 			<labelName>Affichage editeur WYSIWYG</labelName>
 			<language>fr</language>
 		</label>
+		<label>
+			<labelName>Anzeige in WYSIWYG Editor</labelName>
+			<language>de</language>
+		</label>
 	</fieldTemplate>
 
 	<fieldTemplate>
@@ -77,9 +89,13 @@
 		<isReadOnly>false</isReadOnly>
 		<isDisabled>false</isDisabled>
 		<isHidden>false</isHidden>
-			<label>
+		<label>
 			<labelName>type url dans input</labelName>
 			<language>fr</language>
+		</label>
+		<label>
+			<labelName>URLtyp in Input</labelName>
+			<language>de</language>
 		</label>
 	</fieldTemplate>
 
@@ -94,6 +110,10 @@
 		<label>
 			<labelName>date dans input</labelName>
 			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Datum in Input</labelName>
+			<language>de</language>
 		</label>
 	</fieldTemplate>
 

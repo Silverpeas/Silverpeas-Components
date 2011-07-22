@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2009 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -27,81 +27,110 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <script type="text/javascript">
+
+	function trimAll(sString) {
+	  while (sString.substring(0,1) == ' ' ||  sString.substring(0,1) == '\t' || sString.substring(0,1) == '\n') {
+	    sString = sString.substring(1, sString.length);
+	  }
+	  while (sString.substring(sString.length-1, sString.length) == ' ' || 
+			  sString.substring(sString.length-1, sString.length) == '\n') {
+	    sString = sString.substring(0,sString.length-1);
+	  }
+	  return sString;
+	}
+	
 	function addOptionsHour(){
-    	document.addOptionsHour.submit();
+		var table = document.getElementById("dateTable");
+		var row;
+		var dateValue;
+		var alertFlag = false;
+		for (var i = 1; i < table.rows.length; i++) {
+		  row = table.rows[i];
+		  amChecked = row.cells[1].firstElementChild.checked;
+		  pmChecked = row.cells[2].firstElementChild.checked;
+		  if (!amChecked && !pmChecked) {
+			  dateValue =  trimAll(row.cells[0].firstChild.nodeValue)
+			  alertFlag = true;
+		  }
+		}
+		if (alertFlag) {
+	      alert('<fmt:message key="scheduleevent.form.hour.mandatoryCheck"/>' + ' ' + dateValue);
+		} else {
+    	  document.addOptionsHour.submit();
+		}
     }
+	
+	function checkEnable(){
+	}
   </script>
+<link rel='stylesheet' type='text/css' href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
 </head>
 <c:set var="sessionController">Silverpeas_ScheduleEvent</c:set>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle bundle="${requestScope.resources.iconsBundle}"
-	var="icons" />
+<%@ include file="dateFormat.jspf"%>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="currentScheduleEvent" value="${requestScope.currentScheduleEvent}" />
 
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
-	marginheight="5">
+<body class="scheduleEvent" id="scheduleEvent_selected_hour">
 
 <fmt:message key="scheduleevent.form.title.screen3" var="scheduleEventTitle" />
-<view:browseBar>
-	<view:browseBarElt link="" label="${scheduleEventTitle}" />
+<fmt:message key="scheduleevent" var="componentName" />
+<c:url value="/Rscheduleevent/jsp/Main" var="returnMain" />
+<view:browseBar extraInformations="${scheduleEventTitle}">
+	<view:browseBarElt link="${returnMain}" label="${componentName}" />
 </view:browseBar>
 <view:window>
-	
-	<fmt:message key="scheduleevent.form.hour.pm" var="hourChoicePM" />
-	<fmt:message key="scheduleevent.form.hour.am" var="hourChoiceAM" />
-	<fmt:message key="scheduleevent.form.hour.ampm" var="hourChoiceAMPM" />
-	<fmt:message key="scheduleevent.form.hour"/>
-	<form name="addOptionsHour" method="POST" action="<c:url value="/Rscheduleevent/jsp/AddOptionsHour"/>">
-	<c:if test="${currentScheduleEvent != null}">
-		<c:forEach var="currentDate" items="${currentScheduleEvent.dates}">
-			<c:set var="currentHour" value="${currentDate.hour}"/>
-			<fmt:formatDate pattern="dd MMM yy" value="${currentDate.day}"></fmt:formatDate>
-			<fmt:formatDate pattern="ddMMyy" value="${currentDate.day}" var="dateTmpId"></fmt:formatDate>
-			<c:if test="${empty currentHour}">
-				<input type="radio" name="hourFor${dateTmpId}" value="8" checked>${hourChoiceAM}&nbsp;
-				<input type="radio" name="hourFor${dateTmpId}" value="14">${hourChoicePM}
-				<input type="radio" name="hourFor${dateTmpId}" value="25">${hourChoiceAMPM}
-			</c:if>
-			<c:if test="${not empty currentHour}">
-				<c:if test="${currentHour == 8}">
-					<input type="radio" name="hourFor${dateTmpId}" value="8" checked>${hourChoiceAM}&nbsp;
-					<input type="radio" name="hourFor${dateTmpId}" value="14">${hourChoicePM}&nbsp;
-					<input type="radio" name="hourFor${dateTmpId}" value="25">${hourChoiceAMPM}
-				</c:if>
-				<c:if test="${currentHour == 14}">
-					<input type="radio" name="hourFor${dateTmpId}" value="8">${hourChoiceAM}&nbsp;
-					<input type="radio" name="hourFor${dateTmpId}" value="14" checked>${hourChoicePM}&nbsp;
-					<input type="radio" name="hourFor${dateTmpId}" value="25">${hourChoiceAMPM}
-				</c:if>
-				<c:if test="${currentHour != 8 && currentHour != 14}">
-					<input type="radio" name="hourFor${dateTmpId}" value="8">${hourChoiceAM}&nbsp;
-					<input type="radio" name="hourFor${dateTmpId}" value="14">${hourChoicePM}&nbsp;
-					<input type="radio" name="hourFor${dateTmpId}" value="25" checked>${hourChoiceAMPM}
-				</c:if>
-			</c:if>
-			<br/>
-		</c:forEach>		
-	</c:if>	
+	<%@ include file="descriptionBoard.jspf"%>
+
+	<p class="txtnav"><fmt:message key="scheduleevent.form.hour"/></p>
+
+	<form name="addOptionsHour" method="post" action="<c:url value='/Rscheduleevent/jsp/AddOptionsHour' />"><div id="selected_hour">
+		<table id="dateTable">
+			<thead>
+				<tr>
+					<td></td>
+					<td class="titreCouleur"><fmt:message key="scheduleevent.form.hour.am" /></td>
+					<td class="titreCouleur"><fmt:message key="scheduleevent.form.hour.pm" /></td>
+				</tr>
+			</thead>
+			<tbody>
+				<c:set var="checked" value=" checked='checked'" />
+				<c:forEach var="dateOption" items="${currentScheduleEvent.optionalDateIndexes}">
+					<tr>
+						<td class="day">
+							<fmt:formatDate pattern="${gmlDateFormat}" value="${dateOption.date}" />
+						</td>
+						<td>
+							<input type="checkbox" name="${dateOption.morningIndexFormat}" <c:if test='${dateOption.morning}'>${checked}</c:if> 
+							       value="${time.id}" onclick="checkEnable()"/>
+						</td>
+						<td>
+							<input type="checkbox" name="${dateOption.afternoonIndexFormat}" <c:if test='${dateOption.afternoon}'>${checked}</c:if>
+							       value="${time.id}" onclick="checkEnable()"/>
+						</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table></div>
 	</form>
-	
-	<center>
-	<view:buttonPane>
-	<fmt:message key="scheduleevent.button.cancel" var="cancelLabel" />
-	<c:url var="cancelUrl" value="/Rscheduleevent/jsp/Cancel"/>
-	<view:button label="${cancelLabel}" action="${cancelUrl}" />
-	<c:url var="backUrl" value="/Rscheduleevent/jsp/BackDate"/>
-	<fmt:message key="scheduleevent.button.back" var="backToDateLabel" />
-	<view:button label="${backToDateLabel}" action="${backUrl}" />
-	<fmt:message key="scheduleevent.button.next" var="addOptionsHourLabel" />
-	<view:button label="${addOptionsHourLabel}" action="${'javascript: addOptionsHour();'}" />
-	</view:buttonPane>
-	</center>
+
+	<div class="buttonBar">
+		<view:buttonPane>
+			<%@ include file="navigationRessource.jspf"%>
+			<c:url var="backUrl" value="/Rscheduleevent/jsp/BackDate"/>
+			<view:button label="${backLabel}" action="${backUrl}" />
+			<view:button label="${nextLabel}" action="${'javascript: addOptionsHour();'}"/>
+			<c:url var="cancelUrl" value="/Rscheduleevent/jsp/Cancel"/>
+			<view:button label="${cancelLabel}" action="${cancelUrl}" />
+		</view:buttonPane>
+	</div>
 </view:window>
 </body>
 </html>

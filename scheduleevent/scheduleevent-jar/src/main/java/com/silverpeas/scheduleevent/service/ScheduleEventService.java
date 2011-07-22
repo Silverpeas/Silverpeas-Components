@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,25 +25,25 @@
 package com.silverpeas.scheduleevent.service;
 
 import java.util.Set;
-
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 
 public interface ScheduleEventService {
 
-  public String createScheduleEvent(ScheduleEvent scheduleEvent);
+  String createScheduleEvent(ScheduleEvent scheduleEvent);
 
-  public void deleteScheduleEvent(String scheduleEventId);
+  void deleteScheduleEvent(String scheduleEventId);
 
-  public ScheduleEvent findScheduleEvent(String scheduleEventId);
+  ScheduleEvent findScheduleEvent(String scheduleEventId);
 
-  public Set<ScheduleEvent> listAllScheduleEventsByUserId(String userId);
+  Set<ScheduleEvent> listAllScheduleEventsByUserId(String userId);
 
-  public void updateScheduleEventStatus(String scheduleEventId, int newStatus);
+  void updateScheduleEventStatus(String scheduleEventId, int newStatus);
 
-  public void updateScheduleEvent(ScheduleEvent scheduleEvent);
+  void updateScheduleEvent(ScheduleEvent scheduleEvent);
 
-  public ScheduleEvent purgeOldResponseForUserId(ScheduleEvent scheduleEvent, int userId);
+  ScheduleEvent purgeOldResponseForUserId(ScheduleEvent scheduleEvent, int userId);
 
-  public void setLastVisited(String scheduleEventId, int userId);
+  void setLastVisited(String scheduleEventId, int userId);
 
+  void deleteContributor(String id);
 }

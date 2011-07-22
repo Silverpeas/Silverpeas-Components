@@ -41,6 +41,7 @@ import com.silverpeas.comment.service.CallBackOnCommentAction;
 import com.silverpeas.comment.model.Comment;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -148,7 +149,9 @@ public class ClassifiedCommentCallback extends CallBackOnCommentAction {
    */
   protected void notifyUsers(final Set<String> recipients, final NotificationMetaData notification)
       throws NotificationManagerException {
-    notification.addUserRecipients(recipients.toArray(new String[recipients.size()]));
+    for (String recipient : recipients) {
+      notification.addUserRecipient(new UserRecipient(recipient));
+    }
     NotificationSender sender = getNotificationSender(notification.getComponentId());
     sender.notifyUser(notification);
   }

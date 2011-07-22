@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,13 +24,15 @@
 
 package com.silverpeas.scheduleevent.servlets.handlers;
 
+import java.text.SimpleDateFormat;
+
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.icu.text.SimpleDateFormat;
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 
 public interface ScheduleEventRequestHandler {
 
+  public static final String LAST_DATE = "scheduleEventLastDate";
   public static final String SCHEDULE_EVENT_DETAIL = "scheduleEventDetail";
   public static final String CURRENT_SCHEDULE_EVENT = "currentScheduleEvent";
   public static final String LIST_SCHEDULE_EVENT = "scheduleEventList";

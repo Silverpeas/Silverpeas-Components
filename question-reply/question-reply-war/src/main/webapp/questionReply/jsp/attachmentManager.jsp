@@ -23,7 +23,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ include file="checkQuestionReply.jsp" %>
 
@@ -36,9 +41,9 @@ String	pIndexIt	= "1";
 String url = scc.getComponentUrl()+"ViewAttachments";
 boolean openUrl = false;
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%
 out.println(gef.getLookStyleSheet());
@@ -47,8 +52,8 @@ out.println(gef.getLookStyleSheet());
 <script language="javascript">
 
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel);
@@ -67,7 +72,7 @@ out.println(gef.getLookStyleSheet());
 		if (scc.isVersionControlled()) 
 		{
 			//Versioning links
-			getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/documents.jsp?Id="+URLEncoder.encode(replyId)+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images&IndexIt="+pIndexIt+"&Url="+URLEncoder.encode(url)+"&SL="+URLEncoder.encode(scc.getSpaceLabel())+"&CL="+URLEncoder.encode(scc.getComponentLabel())).include(request, response);
+			getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/documents.jsp?Id="+URLEncoder.encode(replyId)+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId, "UTF-8")+"&Context=Images&IndexIt="+pIndexIt+"&Url="+URLEncoder.encode(url, "UTF-8")+"&SL="+URLEncoder.encode(scc.getSpaceLabel(), "UTF-8")+"&CL="+URLEncoder.encode(scc.getComponentLabel(), "UTF-8")).include(request, response);
 		} 
 		else
 		{
@@ -83,5 +88,5 @@ out.println(gef.getLookStyleSheet());
 	out.println(window.printAfter());
 	
 %>
-</BODY>
-</HTML>
+</body>
+</html>

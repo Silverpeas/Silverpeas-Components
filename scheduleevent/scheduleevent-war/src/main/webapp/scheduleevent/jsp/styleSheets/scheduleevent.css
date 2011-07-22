@@ -1,0 +1,233 @@
+/**
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#datepicker {
+	float:left;
+	margin:10px;
+	}
+
+td.txtlibform {
+	width:70px;}
+
+.selected_date, #selected_hour {
+	float:left;
+	background:#EAEAEA url(/silverpeas/util/icons/arrow/bg_selection.gif) 0px 10px no-repeat;
+	width:168px;
+	min-height:182px;
+	padding:10px 18px;
+	margin:10px 0 30px 30px;
+	}
+
+#selected_hour {
+	width:auto;
+	margin-left:10px;
+	}
+#selected_hour input {
+	border:0;
+	background-color:inherit;}
+
+.selected_date ul, .selected_date li {
+	list-style-type:none;
+	margin:0; padding:0;
+	}
+
+.selected_date li , #selected_hour table td.day{
+	border-bottom:1px solid #FFF;
+	line-height:30px;
+	position:relative;
+	font-size:12px;
+	text-align:left;
+	}
+
+#selected_hour table td{
+	padding:3px;
+	border-bottom:1px solid #FFF;
+	border-right:1px solid #FFF;
+	text-align:center;
+	}
+
+#selected_hour thead td{
+	font-weight:bold;
+	padding:3px 10px;
+	}
+
+
+
+.selected_date li a {
+	position:absolute;
+	top:6px;
+	right:3px;
+	}
+.selected_date h3 {
+	padding:0;
+	margin:0 0 10px 0;
+	font-size:11px;
+	}
+
+.buttonBar {
+	clear:both;
+	text-align:center;
+	width:400px;
+}
+
+.scheduleEvent p {
+	margin:10px;
+	padding:0;
+	font-size:11px;}
+
+.questionResults td.day, .questionResults td.titreCouleur {
+	background-color:#E4E4E4;
+	border:1px solid #CCCCCC;
+	}
+
+.questionResults td.hideDay,.questionResults td.hideTime {
+	background-color:inherit;
+	border:1px solid #FFFFFF;
+	}
+
+#dateTable, #contributorsInfos {
+		margin:10px;
+		width:98%;}
+
+#contributorsInfos h3 {
+	padding:0;
+	margin:10px 0 0 7px;
+	}
+
+#contributorsInfos ul {
+	list-style-type:none;
+	margin:0;
+	padding:0;
+	}
+#contributorsInfos ul li { padding-left:100px; line-height:20px;}
+
+.btnAction {
+	background-image: none;
+	background-color:#F1790F;
+	border:1px solid #F1790F;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	padding:2px 15px;
+	color:#FFF;
+}
+.btnAction:hover {
+	background-color:#EF882C;
+	color:#FFF;
+}
+
+.inactif {
+	color:#999999;
+	}
+
+.buttonBar {
+	margin-top:30px;
+	text-align:center;
+	width:100%;
+	}
+.buttonBar table {
+	margin:0 auto;
+}
+
+.buttonBar table table{
+	margin:inherit;
+	}
+
+/* copie css survey */
+
+.questionResults th, .questionResults td, .questionResults tr {
+	padding:5px 0;
+	font-size:12px;
+}
+.questionResults thead td.day, .questionResults thead td.titreCouleur {
+	text-align:center;
+	}
+
+.questionResults td.titreLigne, #contributorsInfos h3{
+	color:#444;
+	font-size:11px;
+	font-weight:bold;
+	width:128px;
+	}
+
+.questionResults .questionResults-top th {
+	background-color:#E4E4E4;
+	border:#CCC 1px solid;
+	width:150px;
+
+}
+
+.questionResults .questionResults-top .questionResults-vide, .questionResults tbody .questionResults-vide {
+	background-color:#FFFFFF;
+	border:none;
+	padding:3px;
+
+}
+
+.questionResults  .questionResults-Oui {
+	background-color:#D5FAC5;
+	border:1px solid #7CCC24;
+	text-align:center;
+	font-size:12px;
+	line-height: 27px;
+}
+
+.questionResults  .questionResults-Non {
+	background-color:#FECBCB;
+	border:1px solid #FF928F;
+	text-align:center;
+	font-size:12px;
+	line-height: 27px;
+}
+
+.questionResults .displayUserName,
+.questionResults .displayUserName a,
+.questionResults .questionResults-NC,
+.questionResults .questionResults-NC a {
+	background-color: #E4E4E4;
+    font-size: 11px;
+    font-weight: 100;
+    line-height: 29px;
+    margin-right: 5px;
+    padding-left: 10px;
+	white-space:nowrap;
+}
+
+.questionResults .questionResults-NC {
+	text-align: center;
+}
+
+.questionResults tr.userVote td {
+	background-color:#D4D4D4;
+}
+
+.questionResults tr.userVote td.questionResults-Oui,
+.questionResults tr.userVote td.questionResults-Non {
+	border:none;
+	line-height: 29px;
+}
+
+tr.resultVote td.participation {
+	text-align:center;;
+}

@@ -45,6 +45,7 @@ import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
@@ -598,8 +599,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   }
 
   private void alertResource(TaskDetail task, boolean onCreation) {
-    NotificationSender notifSender = new NotificationSender(task
-        .getInstanceId());
+    NotificationSender notifSender = new NotificationSender(task.getInstanceId());
 
     String subject = "";
     StringBuilder body = new StringBuilder(128);
@@ -616,10 +616,9 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, subject, body.toString());
     notifMetaData.setSender(Integer.toString(task.getOrganisateurId()));
-    notifMetaData.addUserRecipient(Integer.toString((task.getResponsableId())));
+    notifMetaData.addUserRecipient(new UserRecipient(String.valueOf((task.getResponsableId()))));
 
-    String url = URLManager
-        .getURL("projectManager", null, task.getInstanceId())
+    String url = URLManager.getURL("projectManager", null, task.getInstanceId())
         + "searchResult?Type=Task&Id=" + task.getId();
     notifMetaData.setLink(url);
 
@@ -627,8 +626,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
       notifSender.notifyUser(notifMetaData);
     } catch (Exception e) {
       SilverTrace.warn("projectManager", "ProjectManagerBmEJB.alertResource()",
-          "projectManager.EX_CANT_SEND_NOTIFICATIONS", "taskId = "
-              + task.getId(), e);
+          "projectManager.EX_CANT_SEND_NOTIFICATIONS", "taskId = " + task.getId(), e);
     }
   }
 

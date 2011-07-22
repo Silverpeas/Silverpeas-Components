@@ -27,40 +27,48 @@
 
 <contribution product="questionReply">
 
-    <requirement>
-    </requirement>
+  <requirement>
+  </requirement>
 
-    <current version="004">
-        <create_table>
-            <file name="oracle\questionReply\004\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </create_table>
-        <create_constraint>
-            <file name="oracle\questionReply\004\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </create_constraint>
-        <create_index>
-            <file name="oracle\questionReply\004\create_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </create_index>               
-        <drop_table>
-            <file name="oracle\questionReply\004\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </drop_table>
-        <drop_constraint>
-            <file name="oracle\questionReply\004\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </drop_constraint>
-        <drop_index>
-            <file name="oracle\questionReply\004\drop_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </drop_index>        
-    </current>
+  <current version="005">
+    <create_table>
+      <file name="oracle\questionReply\005\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </create_table>
+    <create_constraint>
+      <file name="oracle\questionReply\005\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </create_constraint>
+    <create_index>
+      <file name="oracle\questionReply\005\create_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </create_index>               
+    <drop_table>
+      <file name="oracle\questionReply\005\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </drop_table>
+    <drop_constraint>
+      <file name="oracle\questionReply\005\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </drop_constraint>
+    <drop_index>
+      <file name="oracle\questionReply\005\drop_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </drop_index>        
+  </current>
 
-	<upgrade version="002">
-        <create_table>
-            <file name="oracle\questionReply\up002\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </create_table>
-    </upgrade>
+  <upgrade version="002">
+    <create_table>
+      <file name="oracle\questionReply\up002\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </create_table>
+  </upgrade>
     
-    <upgrade version="003">
-        <create_table>
-            <file name="oracle\questionReply\up003\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </create_table>
-    </upgrade>
+  <upgrade version="003">
+    <create_table>
+      <file name="oracle\questionReply\up003\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </create_table>
+  </upgrade>
+    
+        
+  <upgrade version="004">
+    <create_table>
+      <file name="ReplyContentToWysiwygMigration.jar" type="javalib" classname="com.silverpeas.migration.questionreply.ReplyContentToWysiwygMigration" methodname="migrateReplyContentToWysiwyg"/>
+	  <file name="oracle\questionReply\up004\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+    </create_table>
+  </upgrade>
 
 </contribution>

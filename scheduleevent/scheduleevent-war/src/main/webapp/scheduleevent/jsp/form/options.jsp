@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2009 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -26,90 +26,97 @@
 <%@ include file="../check.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
-	prefix="view"%>
-<html>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 <script type="text/javascript">
 	$(document).ready(function() {
-	    $("#datepicker").datepicker({
-	    	onSelect: function(dateText, inst) {
-	    		document.addDateForm.dateToAdd.value = dateText;
+		$("#datepicker").datepicker({
+			minDate : 0,
+			onSelect : function(dateText, inst) {
+				document.addDateForm.dateToAdd.value = dateText;
 				document.addDateForm.submit();
+				
 			}
-	    });
-	  });
+			<c:if test="${not empty scheduleEventLastDate}">
+				,
+				defaultDate: $.datepicker.parseDate('yy-mm-dd', '${scheduleEventLastDate}')
+			</c:if>
+		});
+	});
 
-	  function deleteDate(dateId){
-		  document.deleteDateForm.dateToDelete.value = dateId;
-		  document.deleteDateForm.submit();
-	  }
-  </script>
+	function deleteDate(dateId) {
+		document.deleteDateForm.dateToDelete.value = dateId;
+		document.deleteDateForm.submit();
+	}
+</script>
+<link rel='stylesheet' type='text/css' href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
 </head>
 <c:set var="sessionController">Silverpeas_ScheduleEvent</c:set>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
+<%@ include file="dateFormat.jspf"%>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle bundle="${requestScope.resources.iconsBundle}"
-	var="icons" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <c:set var="browseContext" value="${requestScope.browseContext}" />
+<c:set var="currentScheduleEvent" value="${requestScope.currentScheduleEvent}" />
 
-<c:set var="currentScheduleEvent" value="${requestScope.currentScheduleEvent}"/>
-
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
-	marginheight="5">
+<body class="scheduleEvent" id="scheduleEvent_selected_date">
 
 <fmt:message key="scheduleevent.form.title.screen2" var="scheduleEventTitle" />
-<view:browseBar>
-	<view:browseBarElt link="" label="${scheduleEventTitle}" />
+<fmt:message key="scheduleevent" var="componentName" />
+<c:url value="/Rscheduleevent/jsp/Main" var="returnMain" />
+<view:browseBar extraInformations="${scheduleEventTitle}">
+	<view:browseBarElt link="${returnMain}" label="${componentName}" />
 </view:browseBar>
 <view:window>
-	
-	<form name="addDateForm" method="POST" action="<c:url value="/Rscheduleevent/jsp/AddDate"/>">
-		<input type="hidden" name="dateToAdd"/>
-	</form>
-	<form name="deleteDateForm" method="POST" action="<c:url value="/Rscheduleevent/jsp/DeleteDate"/>">
-		<input type="hidden" name="dateToDelete"/>
-	</form>
-	<center>
-		<table>
-		<tr valign="top">
-			<td width="50%">
-				<div id="datepicker"></div>
-			</td>
-			<td width="50%" align="center">
-				<fmt:message key="scheduleevent.form.datesSelected"/>
-				<br/>
-				<c:if test="${not empty currentScheduleEvent.dates}">
-				  	<fmt:message key="scheduleevent.dates.delete" var="deleteScheduleEventDateAlt"/>
-					<fmt:message key="scheduleevent.icons.dates.delete" var="deleteScheduleEventDate" bundle="${icons}" />
-					<c:forEach var="currentDate" items="${currentScheduleEvent.dates}" varStatus="lineInfo">
-						<fmt:formatDate pattern="dd MMM yy" value="${currentDate.day}"></fmt:formatDate>
-						<fmt:formatDate pattern="ddMMyy" value="${currentDate.day}" var="currentId"></fmt:formatDate>
-						<a href="javascript:deleteDate(<c:out value="${currentId}"/>)"><img alt="${deleteScheduleEventDateAlt}" src="${deleteScheduleEventDate}"/></a>
-						<c:if test="${!lineInfo.last}"><br/></c:if> 
-					</c:forEach>		
-				</c:if>
-			</td>
-		</tr>
-		</table>
-	</center>
-	
-	<center>
-	<view:buttonPane>
-	<fmt:message key="scheduleevent.button.cancel" var="cancelLabel" />
-	<c:url var="cancelUrl" value="/Rscheduleevent/jsp/Cancel"/>
-	<view:button label="${cancelLabel}" action="${cancelUrl}" />
-	<c:url var="backUrl" value="/Rscheduleevent/jsp/BackInfoGene"/>
-	<fmt:message key="scheduleevent.button.back" var="backToInfoGeneLabel" />
-	<view:button label="${backToInfoGeneLabel}" action="${backUrl}" />
-	<c:if test="${not empty currentScheduleEvent.dates}">
-		<c:url var="nextUrl" value="/Rscheduleevent/jsp/AddOptionsNext"/>
-		<fmt:message key="scheduleevent.button.next" var="addOptionsLabel" />
-		<view:button label="${addOptionsLabel}" action="${nextUrl}" />
-	</c:if>
-	</view:buttonPane>
-	</center>
+	<%@ include file="descriptionBoard.jspf"%>
+	<p class="txtnav"><fmt:message key="scheduleevent.form.pickday" />&nbsp;:</p>
+
+	<div id="datepicker">
+		<form name="addDateForm" method="post" action="<c:url value='/Rscheduleevent/jsp/AddDate' />">
+			<input type="hidden" name="dateToAdd" />
+		</form>
+		<form name="deleteDateForm" method="post" action="<c:url value='/Rscheduleevent/jsp/DeleteDate' />">
+			<input type="hidden" name="dateToDelete" />
+		</form>
+	</div>
+
+	<div class="selected_date">
+		<h3 class="titreCouleur">
+			<fmt:message key="scheduleevent.form.datesSelected" />
+		</h3>
+
+		<c:if test="${not empty currentScheduleEvent.dates}">
+			<fmt:message key="scheduleevent.dates.delete" var="deleteScheduleEventDateAlt" />
+			<fmt:message key="scheduleevent.icons.dates.delete" var="deleteScheduleEventDate" bundle="${icons}" />
+			<ul>
+				<c:forEach var="currentDate" items="${currentScheduleEvent.optionalDateIndexes}" varStatus="lineInfo">
+					<li>
+						<fmt:formatDate pattern="${gmlDateFormat}" value="${currentDate.date}" />
+						<a href="javascript: deleteDate(${currentDate.indexFormat})">
+							<img alt="${deleteScheduleEventDateAlt}" src="${deleteScheduleEventDate}" />
+						</a>
+					</li>
+				</c:forEach>
+			</ul>
+		</c:if>
+	</div>
+
+	<div class="buttonBar">
+		<view:buttonPane>
+			<%@ include file="navigationRessource.jspf"%>
+			<c:url var="backUrl" value="/Rscheduleevent/jsp/BackInfoGene" />
+			<view:button label="${backLabel}" action="${backUrl}" />
+			<c:if test="${not empty currentScheduleEvent.optionalDateIndexes}">
+				<c:url var="nextUrl" value="/Rscheduleevent/jsp/AddOptionsNext" />
+				<view:button label="${nextLabel}" action="${nextUrl}" />
+			</c:if>
+			<c:url var="cancelUrl" value="/Rscheduleevent/jsp/Cancel" />
+			<view:button label="${cancelLabel}" action="${cancelUrl}" />
+		</view:buttonPane>
+	</div>
 </view:window>
 </body>
 </html>

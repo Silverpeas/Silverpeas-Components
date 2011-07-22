@@ -81,11 +81,11 @@ void displayLinkViewSelection(int selectedId, KmeliaSessionController kmeliaScc,
       out.println("</form>");
 	  out.println("</table>");
 }
-// Fin des d�clarations
+
 %>
 
 <%
-//R�cup�ration des param�tres
+//Retrieve parameters
 String profile 		= (String) request.getAttribute("Profile");
 String action 		= (String) request.getAttribute("Action");
 String wizard		= (String) request.getAttribute("Wizard");
@@ -114,10 +114,10 @@ String					instanceId		= pubComplete.getPublicationDetail().getPK().getInstanceI
 if (profile.equals("admin") || profile.equals("publisher") || profile.equals("supervisor") || (ownerDetail != null && kmeliaScc.getUserDetail().getId().equals(ownerDetail.getId()) && profile.equals("writer")))
 	isOwner = true;
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE></TITLE>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -151,8 +151,8 @@ function closeWindows() {
     	window.publicVersionsWindow.close();
 }
 </script>
-</HEAD>
-<BODY onUnload="closeWindows()">
+</head>
+<body onUnload="closeWindows()">
 <%
         Window window = gef.getWindow();
         Frame frame = gef.getFrame();
@@ -196,19 +196,8 @@ function closeWindows() {
         
         if (action.equals("LinkAuthorView")) {
             displayLinkViewSelection(1, kmeliaScc, out);
-                            
-            List  targets = pubComplete.getLinkList();
-            List authorizedTarget = new ArrayList();
-            ForeignPK curFPK = null;
-            String curComponentId = null;
-            for (int cpt=0; cpt < targets.size(); cpt++) {
-              curFPK = (ForeignPK) targets.get(cpt);
-              curComponentId = curFPK.getComponentName();
-              if (curComponentId != null && kmeliaScc.getOrganizationController().isComponentAvailable(curComponentId, kmeliaScc.getUserId())) {
-                authorizedTarget.add(curFPK);
-              }
-            }
-            Collection linkedPublications = kmeliaScc.getPublications(authorizedTarget);
+            
+            Collection linkedPublications = kmeliaScc.getLinkedVisiblePublications();
             displaySameSubjectPublications(linkedPublications, resources.getString("PubReferenceeParAuteur"), kmeliaScc, id, isOwner, resources, out);
         } else if (action.equals("SameTopicView")) {
             displayLinkViewSelection(3, kmeliaScc, out);
@@ -248,9 +237,10 @@ function closeWindows() {
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>
-<FORM NAME="pubForm" action="<%=routerUrl%>publicationManager.jsp" METHOD="POST">
-	<input type="hidden" name="Action"><input type="hidden" name="PubId">
-	<input type="hidden" name="CheckPath">
-</FORM>
-</BODY>
-</HTML>
+<form name="pubForm" action="<%=routerUrl%>publicationManager.jsp" method="post">
+  <input type="hidden" name="Action">
+  <input type="hidden" name="PubId">
+  <input type="hidden" name="CheckPath">
+</form>
+</body>
+</html>

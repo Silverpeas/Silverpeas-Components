@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
+import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
@@ -127,7 +128,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     }
   }
 
-  private Collection viewAllAlbums(String componentId) {
+  private Collection<AlbumDetail> viewAllAlbums(String componentId) {
     // récupération des albums de la photothèque
     try {
       return getGalleryBm().getAllAlbums(componentId);
@@ -139,7 +140,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
 
   }
 
-  private Collection viewPhotosOfAlbum(String componentId, String albumId) {
+  private Collection<PhotoDetail> viewPhotosOfAlbum(String componentId, String albumId) {
     // récupération de toutes les photos d'un album
     try {
       NodePK nodePK = new NodePK(albumId, componentId);
