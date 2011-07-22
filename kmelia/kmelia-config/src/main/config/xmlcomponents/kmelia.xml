@@ -63,7 +63,6 @@
   <visible>true</visible>
   <visibleInPersonalSpace>true</visibleInPersonalSpace>
   <portlet>true</portlet>
-  <searchTemplating>false</searchTemplating>  
   <instanceClassName>com.stratelia.webactiv.kmelia.KmeliaInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">

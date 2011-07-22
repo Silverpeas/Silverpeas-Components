@@ -9,3 +9,15 @@
 
 /kmelia/kmelia-ejb/src/main/resources/META-INF/MANIFEST.MF
 /kmelia/kmelia-war/src/main/webapp/META-INF
+/almanach/almanach-ejb/src/main/resources/META-INF/MANIFEST.MF
+/almanach/almanach-war/src/main/webapp/META-INF
+/gallery/gallery-ejb/src/main/resources/META-INF/MANIFEST.MF
+/gallery/gallery-war/src/main/webapp/META-INF
+/mailinglist/mailinglist-war/src/main/webapp/META-INF
+/process-manager/process-manager-ejb/src/main/resources/META-INF/MANIFEST.MF
+/process-manager/process-manager-war/src/main/webapp/META-INF
+/project-manager/project-manager-ejb/src/main/resources/META-INF/MANIFEST.MF
+/project-manager/project-manager-war/src/main/webapp/META-INF
+/question-reply/question-reply-war/src/main/webapp/META-INF
+/rssaggregator/rssaggregator-war/src/main/webapp/META-INF
+/webpages/webpages-war/src/main/webapp/META-INF

@@ -193,7 +193,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
                   .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + infoId);
 
           // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
-          Form xmlForm = pubTemplate.getViewForm();
+          Form xmlForm = pubTemplate.getSearchResultForm();
 
           RecordSet recordSet = pubTemplate.getRecordSet();
           DataRecord data = recordSet.getRecord(pubId, language);
