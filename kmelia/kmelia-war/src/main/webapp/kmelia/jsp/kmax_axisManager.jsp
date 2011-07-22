@@ -274,7 +274,7 @@ function removeTranslation()
 }
 </script>
 </head>
-<body   id="kmaxManager" class="<%=componentId %>" onUnload="closeWindows()">
+<body id="<%=componentId %>" class="kmaxManager" onUnload="closeWindows()">
 	<%
 if (action.equals("KmaxViewAxis") || action.equals("KmaxManageAxis") || action.equals("KmaxManagePosition")) {
 	  Window window = gef.getWindow();
