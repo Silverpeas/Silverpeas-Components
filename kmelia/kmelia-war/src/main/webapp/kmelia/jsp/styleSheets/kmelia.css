@@ -74,13 +74,30 @@
 }
 
 #preview .publiName {
-	font-size: 10pt;
+	font-size: 130%;
 	font-weight: bold;
-	color: #000000
+	color: #333;
+}
+
+#preview #status {
+	vertical-align:bottom;
+}
+
+#infoPublication{
+	padding-bottom:11px;
+}
+
+#permalinkInfo input {
+	width:90%;
+	border:1px solid #cacaca;
+	color:#333;
 }
 
 #preview .publiDesc {
 	font-weight: bold;
+	color:#666666;
+	padding:8px;
+	border-left:6px solid #e4e4e4;
 }
 
 #preview .extraInformation_Refused {
@@ -95,6 +112,14 @@
 #preview #pagination {
 	display: block;
 	float: right;
+	margin:5px 0;
+}
+#preview .currentPage {
+	opacity:0.6;
+}
+#preview #pagination img {
+	border:0;
+	vertical-align:top;
 }
 
 #sortingList {
@@ -252,11 +277,6 @@
 }
 
 #preview .txtBaseline {
-	color: #666666;
-    font-size: 10px;
-    display: block;
-    text-align: center;
- 	padding-top: 10px;   
 }
 
 #rightClick-message p {
@@ -405,3 +425,16 @@
 	color:#666;
 	}
 
+/*** A basculer dans la css global pour utilisation générique */
+.principalContent{
+	margin-right:310px;
+}
+.rightContent{
+	width:310px;
+	clear:right;
+	float:right;
+}
+
+.clearAll {
+	clear:both;
+}
