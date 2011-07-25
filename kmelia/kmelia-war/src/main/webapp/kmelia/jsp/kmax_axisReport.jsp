@@ -81,7 +81,7 @@ String getTimeAxis(KmeliaSessionController kmeliaScc, ResourceLocator timeSettin
       StringBuffer axis = new StringBuffer(1000);
 			axis.append("<div class=\"oneAxis\"  id=\"axisTime\">");
 				axis.append("<label for=\"timeAxis\">"+kmeliaScc.getString("TimeAxis")+"</label>");
-					axis.append("<select id=\"timeAxis\" name=\"\" size=\"1\"\">");
+					axis.append("<select id=\"timeAxis\" name=\"\" size=\"1\">");
 						String key = "";
 						StringBuffer values = new StringBuffer(1000);
 						String value = "";
@@ -134,14 +134,14 @@ List getAxis(KmeliaSessionController kmeliaScc, boolean axisLinked, List combina
                       }
                       axis.append("<div  class=\"oneAxis\" id=\"axis"+node.getNodePK().getId()+"\">");
                               if (axisLinked)
-                                  axis.append("<label onclick=\"axisManage('"+node.getNodePK().getId()+"')\" for=\""+node.getNodePK().getId()+"\">"+Encode.javaStringToHtmlString(node.getName(translation))+"</label><a  title=\""+kmeliaScc.getString("Update")+" \"  href=\"javaScript:axisManage('"+node.getNodePK().getId()+"')\" class=\"action\"><img alt=\""+kmeliaScc.getString("Update")+" \" src=\""+axisUpdate+"\"/></a>");
+                                  axis.append("<label onclick=\"axisManage('"+node.getNodePK().getId()+"')\" for=\"axe"+node.getNodePK().getId()+"\">"+Encode.javaStringToHtmlString(node.getName(translation))+"</label><a  title=\""+kmeliaScc.getString("Update")+" \"  href=\"javaScript:axisManage('"+node.getNodePK().getId()+"')\" class=\"action\"><img alt=\""+kmeliaScc.getString("Update")+" \" src=\""+axisUpdate+"\"/></a>");
                               else
-                                  axis.append("<label for=\""+node.getNodePK().getId()+"\">"+Encode.javaStringToHtmlString(node.getName(translation))+"</label>");
+                                  axis.append("<label for=\"axe"+node.getNodePK().getId()+"\">"+Encode.javaStringToHtmlString(node.getName(translation))+"</label>");
                               
                                         if (axisLinked)
-                                          axis.append("<select id=\""+node.getNodePK().getId()+"\" name=\""+node.getNodePK().getId()+"\" size=\"1\" onchange=\"positionManage(this)\">");
+                                          axis.append("<select id=\"axe"+node.getNodePK().getId()+"\" name=\""+node.getNodePK().getId()+"\" size=\"1\" onchange=\"positionManage(this)\">");
                                         else
-                                          axis.append("<select id=\""+node.getNodePK().getId()+"\" name=\""+node.getNodePK().getId()+"\" size=\"1\"\">");
+                                          axis.append("<select id=\"axe"+node.getNodePK().getId()+"\" name=\""+node.getNodePK().getId()+"\" size=\"1\">");
                                         axis.append("<option value=\""+node.getPath()+node.getNodePK().getId()+"\">"+kmeliaScc.getString("AllComponents")+"</option>");
                   } else if (node.getLevel() == 3) {
                       selectValue = "";

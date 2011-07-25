@@ -75,7 +75,8 @@ if (action == null) {
 %>
 
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <%
@@ -84,8 +85,8 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-<script language="JavaScript1.2">
-
+<script type="text/javascript" language="JavaScript1.2">
+<!--
 var axisAddWindow = window;
 var componentAddWindow = window;
 
@@ -272,9 +273,10 @@ function removeTranslation()
 {
 	axisUpdate();
 }
+-->
 </script>
 </head>
-<body id="<%=componentId %>" class="kmaxManager" onUnload="closeWindows()">
+<body id="<%=componentId %>" class="kmaxManager" onunload="closeWindows()">
 	<%
 if (action.equals("KmaxViewAxis") || action.equals("KmaxManageAxis") || action.equals("KmaxManagePosition")) {
 	  Window window = gef.getWindow();
@@ -345,7 +347,7 @@ String codeJSForTranslation(NodeDetail nodeDetail)
 }
 %>
 
-<form name="managerForm" method="post">
+<form name="managerForm" method="post" action="">
 	<input type="hidden" name="AxisId"/>
 	<input type="hidden" name="AxisName"/>
 	<input type="hidden" name="AxisDescription"/>
@@ -355,7 +357,7 @@ String codeJSForTranslation(NodeDetail nodeDetail)
 	<input type="hidden" name="NextAction"/>
 	<input type="hidden" name="Translation"/>
 	<input type="hidden" name="I18NLanguage"/>
-	<input type="hidden" name="TranslationRemoveIt" name="TranslationRemoveIt"/>
+	<input type="hidden" name="TranslationRemoveIt"/>
 </form>
 </body>
 </html>
