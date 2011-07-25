@@ -183,6 +183,109 @@ div.description {
     border: 1px solid #DFDFDF;
     margin: 5px 0;
     padding: 10px;
-    text-align: left;}
+    text-align: left;
+}
 	
 div.description p {padding:0; margin:0;}
+
+
+/* Mise en forme des ViewEventContent */
+
+.eventName {
+	color: #333333;
+    font-size: 130%;
+    font-weight: bold;
+	}    
+
+#eventPeriodicity h4 {
+	 background:transparent url('/silverpeas/util/icons/periodicity.gif') top right no-repeat;
+	height:16px;
+}
+
+#eventInfo, #eventPeriodicity, #eventInfoPublication {
+	padding-bottom:10px;
+}
+
+.eventInfo {
+	background-color:#EFEFEF;
+	border:1px solid #CDCDCD;
+	border-radius:15px;
+	padding:15px 0;
+	display:table;
+	width:98%;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+}
+
+.eventInfo div {
+	display:table-cell;
+	border-left:2px solid #DCDCDC;
+	min-height:20px;
+	vertical-align:middle;
+	text-align:center;
+}
+
+ *+html .eventInfo div {
+	float:left;
+	width:32%;
+}
+* html  .eventInfo div {
+	float:left;
+	width:32%;
+	border:0;
+}
+
+.eventInfo div:first-child {
+	border:0;
+}
+.eventInfo div div.bloc{
+	padding:0 10px 0 37px;
+	color:#333;
+	font-size:110%;
+	display:inline-block;
+}
+
+* html  .eventInfo div div.bloc {
+	padding:0 10px 0 27px;
+	width:70%;
+}
+
+.eventInfo div span {
+	display:block;
+}
+.eventInfo div span a {
+	color:#333;
+	font-size:110%;
+	text-decoration:underline;
+}
+
+.eventPlace .bloc{
+	 background:transparent url('/silverpeas/util/icons/marker.gif') 17px center   no-repeat;
+
+}
+
+.eventURL .bloc{
+	 background:transparent url('/silverpeas/util/icons/webLink.gif') 17px center   no-repeat;
+
+}
+
+.eventDate .bloc{
+	 background:transparent url('/silverpeas/util/icons/calendar_2.gif') 17px center   no-repeat;
+
+}
+
+.eventPriorityHight {
+	background-color:#F6DEDE;
+	border:1px solid #FDBABA;
+	border-radius:5px;
+	color:#F02929;
+	font-size:8px;
+	line-height:9px;
+	letter-spacing:0.11em;
+	display:inline;
+	padding:1px 4px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+}
+
+.eventDesc {
+	margin-top:10px;
+}

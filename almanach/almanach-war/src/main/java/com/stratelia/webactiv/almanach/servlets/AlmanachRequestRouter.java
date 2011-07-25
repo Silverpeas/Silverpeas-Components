@@ -140,7 +140,13 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         }
       } else if (function.startsWith("viewEventContent")) {
         // initialisation de l'objet event
-        String id = request.getParameter("Id"); // not null
+        String id = request.getParameter("Id");
+        
+        if (!StringUtil.isDefined(id)) {
+          id = (String) request.getAttribute("Id");
+        } else {
+          request.setAttribute("From", request.getParameter("Function"));
+        }
 
         // récupère l'Event et sa périodicité
         EventDetail event = almanach.getEventDetail(id);
@@ -148,8 +154,8 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         // Met en session l'événement courant
         almanach.setCurrentEvent(event);
 
-        if (event.getPeriodicity() != null) {
-          String dateIteration = request.getParameter("Date"); // not null (yyyy/MM/jj)
+        String dateIteration = request.getParameter("Date"); // not null (yyyy/MM/jj)
+        if (event.isPeriodic() && StringUtil.isDefined(dateIteration)) {
           java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
           calDateIteration.setTime(DateUtil.parse(dateIteration));
           request.setAttribute("DateDebutIteration", calDateIteration.getTime());
@@ -161,7 +167,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         }
 
         request.setAttribute("CompleteEvent", event);
-        request.setAttribute("From", request.getParameter("Function"));
+        request.setAttribute("Contributor", almanach.getUserDetail(event.getCreatorId()));
 
         destination = "/almanach/jsp/viewEventContent.jsp?flag=" + flag;
       } else if (function.startsWith("createEvent")) {
@@ -469,18 +475,9 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         destination = "/almanach/jsp/pdf.jsp";
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
+        request.setAttribute("Id", id);
 
-        // récupère l'Event et sa périodicité
-        EventDetail event = almanach.getEventDetail(id);
-
-        java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
-        calDateIteration.setTime(event.getStartDate());
-        request.setAttribute("DateDebutIteration", calDateIteration.getTime());
-        calDateIteration.add(java.util.Calendar.DATE, event.getNbDaysDuration());
-        request.setAttribute("DateFinIteration", calDateIteration.getTime());
-        request.setAttribute("CompleteEvent", event);
-
-        destination = "/almanach/jsp/viewEventContent.jsp?flag=" + flag;
+        destination = getDestination("viewEventContent", componentSC, request);
       } else if (function.startsWith("GoToFilesTab")) { // ??
         destination = "/almanach/jsp/editAttFiles.jsp?Id="
             + request.getParameter("Id");
