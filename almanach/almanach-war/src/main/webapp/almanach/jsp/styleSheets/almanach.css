@@ -99,7 +99,7 @@
 /**
  * CSS to apply to the events that have priority.
  */
-.priority a, .priority .fc-event-inner {
+.priority .fc-event-inner {
   background-image: url('/silverpeas/util/icons/important.gif');
   background-repeat: no-repeat;
   background-position: 0 1px;
@@ -192,7 +192,6 @@ div.description p {padding:0; margin:0;}
 /* Mise en forme des ViewEventContent */
 
 .eventName , .eventName a{
-	color: #333333;
     font-size: 130%;
     font-weight: bold;
 	padding:0;
@@ -291,6 +290,7 @@ span.priority {
 
 .eventDesc {
 	margin-top:10px;
+	color:#333;
 }
 
 .eventList, #eventList{
@@ -382,3 +382,15 @@ div.eventBeginDate {
 	padding:8px
 }
 
+.nextEvents #agregatedAlmanachs {
+  background-image: none;
+  padding: 0;
+}
+
+
+.sousNavBulle #agregatedAlmanachs a {
+	background-color:inherit;
+	border:inherit;
+	padding:inherit;
+	margin:inherit;
+	}

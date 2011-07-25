@@ -314,6 +314,7 @@
           <div id="today">
             <a href="javascript:onClick=goToDay()"><c:out value="${today}" /></a>
           </div>
+          
           <c:if test="${accessibleInstances ne null}">
             <div id="others">
               <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
@@ -323,7 +324,7 @@
                   <c:if test="${componentId eq instanceId}">
                     <c:set var="selected" value="selected='selected'"/>
                   </c:if>
-                  <option value="<c:out value='${instance.url}'/>Main" <c:out value="${selected}" escapeXml="false"/>><c:out value="${instance.spaceId} - ${instance.label}"/></option>
+                  <option value="<c:out value='${instance.url}'/>Main?view=<c:out value='${calendarView.viewType.name}'/>" <c:out value="${selected}" escapeXml="false"/>><c:out value="${instance.spaceId} - ${instance.label}"/></option>
                 </c:forEach>
               </select>
             </div>

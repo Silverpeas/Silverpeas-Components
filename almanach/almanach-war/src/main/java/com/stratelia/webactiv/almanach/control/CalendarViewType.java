@@ -87,6 +87,15 @@ public enum CalendarViewType {
   public boolean isNextEventsView() {
     return this == NEXT_EVENTS;
   }
+  
+  /**
+   * Gets the name of this enum.
+   * @see CalendarViewType#name()
+   * @return the enum name.
+   */
+  public String getName() {
+    return name();
+  }
 
   /**
    * Constructs a view type with the specified view mode.

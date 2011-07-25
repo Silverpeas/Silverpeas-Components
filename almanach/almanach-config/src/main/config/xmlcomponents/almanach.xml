@@ -182,6 +182,14 @@
           </name>
           <value>MONTHLY</value>
         </option>
+        <option>
+          <name>
+            <message lang="fr">Evénements à venir</message>
+            <message lang="en">Next events</message>
+            <message lang="de">Nächstes Ereigniss</message>
+          </name>
+          <value>NEXT_EVENTS</value>
+        </option>
       </options>
       <help>
         <message lang="fr">Permet de choisir la vue calendaire à afficher par défaut lorsque l'utilisateur accède à l'almanach.</message>

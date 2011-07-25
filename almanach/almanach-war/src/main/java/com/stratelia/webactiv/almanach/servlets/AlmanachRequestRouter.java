@@ -30,8 +30,6 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 
 import javax.servlet.http.HttpServletRequest;
 
-
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -39,6 +37,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
+import com.stratelia.webactiv.almanach.control.CalendarViewType;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import com.stratelia.webactiv.util.DBUtil;
@@ -47,6 +46,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.net.URLEncoder;
 import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
+import static com.silverpeas.util.StringUtil.*;
 
 public class AlmanachRequestRouter extends ComponentRequestRouter {
 
@@ -112,8 +112,12 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
         // accès première fois, initialisation de l'almanach à la date du jour
         // (utile pour générer le Header)
-        if (action == null || action.length() == 0) {
+        if (action == null || action.isEmpty()) {
           action = "View";
+          String viewType = request.getParameter("view");
+          if (isDefined(viewType)) {
+            almanach.setViewMode(CalendarViewType.valueOf(viewType));
+          }
         } else if ("PreviousView".equals(action)) {
           almanach.previousView();
         } else if ("NextView".equals(action)) {
@@ -211,7 +215,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
         int unity = 0;
         String unit = request.getParameter("Unity");
-        if (StringUtil.isDefined(unit) && StringUtil.isInteger(unit)) {
+        if (isDefined(unit) && isInteger(unit)) {
           unity = Integer.parseInt(unit);
         }
         String frequency = request.getParameter("Frequency");
@@ -231,7 +235,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         event.setNameDescription(description);
         event.setStartDate(DateUtil.stringToDate(startDate, almanach.getLanguage()));
         event.setStartHour(startHour);
-        if (StringUtil.isDefined(endDate)) {
+        if (isDefined(endDate)) {
           event.setEndDate(DateUtil.stringToDate(endDate, almanach.getLanguage()));
         } else {
           event.setEndDate(null);
@@ -274,7 +278,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
               }
               break;
           }
-          if (StringUtil.isDefined(periodicityUntilDate)) {
+          if (isDefined(periodicityUntilDate)) {
             periodicity.setUntilDatePeriod(DateUtil.stringToDate(periodicityUntilDate, endHour,
                     almanach.getLanguage()));
           }

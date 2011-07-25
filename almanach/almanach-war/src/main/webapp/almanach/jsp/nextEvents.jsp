@@ -36,7 +36,16 @@
       <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel}'/> : <fmt:message key='almanach.rssNext'/>" href="<c:url value='${rssUrl}'/>"/>
     </c:if>
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
+    <style type="text/css">
+      <c:out value=".${instanceId} { border-color: ${calendarView.almanach.color}; color: ${calendarView.almanach.color}; }"/>
+      <c:out value=".${instanceId} .fc-event-skin { background-color: ${calendarView.almanach.color}; border-color: ${calendarView.almanach.color}; color: white; }"/>
+      <c:forEach var="almanach" items="${othersAlmanachs}">
+        <c:out value=".${almanach.instanceId} { border-color: ${almanach.color}; color: ${almanach.color}; }"/>
+        <c:out value=".${almanach.instanceId} .fc-event-skin { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
+      </c:forEach>
+    </style>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
     <script type="text/javascript">
 
       function viewByMonth()
@@ -142,7 +151,18 @@
           document.agregateAlmanachs.submit();
         }
       </c:if>
+        var MONTH_NAMES = ['<fmt:message key="GML.mois0"/>', '<fmt:message key="GML.mois1"/>', '<fmt:message key="GML.mois2"/>', '<fmt:message key="GML.mois3"/>',
+          '<fmt:message key="GML.mois4"/>', '<fmt:message key="GML.mois5"/>', '<fmt:message key="GML.mois6"/>', '<fmt:message key="GML.mois7"/>',
+          '<fmt:message key="GML.mois8"/>', '<fmt:message key="GML.mois9"/>', '<fmt:message key="GML.mois10"/>', '<fmt:message key="GML.mois11"/>'];
+        var DAY_NAMES = ['<fmt:message key="GML.jour1"/>', '<fmt:message key="GML.jour2"/>', '<fmt:message key="GML.jour3"/>', '<fmt:message key="GML.jour4"/>',
+          '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'];
         
+        var monthsHavingEvents = [];
+        var events = <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>;
+        
+        /**
+         * Formats the specified date into a string according the pattern 'yyyy/MM/dd'.
+         */
         function formatDate(date) {
           var year = date.getFullYear(), month = date.getMonth(), day = date.getDate();
           if (month < 10) month = "0" + month;
@@ -150,6 +170,9 @@
           return year + "/" + month + "/" + day;
         }
         
+        /**
+         * Formats the specified date and time into a string according the patterm 'HH:mm'.
+         */
         function formatTime(time) {
           var hours = time.getHours(), minutes = time.getMinutes();
           if (hours < 10) hours = "0" + hours;
@@ -157,7 +180,38 @@
           return hours + ":" + minutes;
         }
         
+        /**
+         * Selects the specified month by showing the events that occur in this month and by hiding
+         * thoses in others specified months.
+         */
+        function selectMonth( elt, monthWithEvents ) {
+          $(".sousNavBulle a").removeClass();
+          elt.addClass("active");
+          printEventsInMonth(monthWithEvents);
+        }
+        
+        /**
+         * Prints the events that occur in the specified month. The month is indicated as a string
+         * with the following pattern 'NAME_OF_MONTH YEAR'.
+         * The events in the others months are hidden.
+         */
         function printEventsInMonth(selectedMonth) {
+          $.each(monthsHavingEvents, function(index, monthWithEvents) {
+            if (selectedMonth != null && monthWithEvents != selectedMonth) {
+              $('#' + monthWithEvents.replace(' ', '')).hide();
+            } else if (selectedMonth == null) {
+              $('#' + monthWithEvents.replace(' ', '')).show();
+            }
+          });
+          if (selectedMonth != null) $('#' + selectedMonth.replace(' ', '')).show();
+        }
+        
+        /**
+         * Builds the calendar view with the specified next events categorized by month and
+         * ordered by date.
+         * The months and built by browsing the events and are remembered for month selection.
+         */
+        function buildCalendarView( events, monthsHavingEvents ) {
           var currentMonth = -1;
           var monthSection = null;
           $("#calendar").children().remove();
@@ -165,102 +219,96 @@
           $.each(events, function(index, event) {
             // the Date object doesn't support currently the ISO-8661 date format with timezone,
             // so remove the timezone part of the date before converting it to a Date object
-            var startDate = new Date(event.start.replace(/\+\d+/g, ""));
-            var endDate = new Date(event.end.replace(/\+\d+/g, ""));
-            if (selectedMonth == null || selectedMonth == monthNames[startDate.getMonth()] + ' ' + startDate.getFullYear()) {
-              if (startDate.getMonth() != currentMonth) {
-                var currentYear = startDate.getFullYear();
-                currentMonth = startDate.getMonth();
-                monthSection = $("<ul>").addClass("eventList")
-                .appendTo($("<li>").attr("id", monthNames[currentMonth] + currentYear)
-                .append($("<h3>").addClass("eventMonth").html(monthNames[currentMonth] + ' ' + currentYear))
-                .appendTo($('#eventList')));
-                if (!isLoaded) {
-                  monthsHavingEvents.push(monthNames[currentMonth] + ' ' + currentYear);
-                }
-              }
-              var startTime = "", endTime = "";
-              if (!event.allDay) {
-                startTime = "<fmt:message key='GML.From'/> " + formatTime(startDate);
-              }
-              if (endDate.getFullYear() > startDate.getFullYear() || endDate.getMonth() > startDate.getMonth() ||
-                endDate.getDate() > startDate.getDate()) {
-                endTime = "<fmt:message key='GML.to'/> " + endDate.toLocaleDateString(); 
-              }
-              if (!event.allDay) {
-                endTime = endTime + " <fmt:message key='GML.at'/> " + formatTime(endDate);
-              }
-              var eventSection = $("<li>").attr("id", "event" + event.id).addClass("event " + event.className.join(' ')).click(function() {
-                viewEvent(event.id, formatDate(startDate), event.instanceId);
-              })
-              .append($("<div>").addClass("eventBeginDate")
-              .append($("<span>").addClass("day").html(dayNames[startDate.getDay()]))
-              .append($("<span>").addClass("number").html(startDate.getDate()))
-              .append($("<span>").addClass("month").html(monthNames[currentMonth]))
-              .append($("<span>").addClass("year").html(startDate.getFullYear())))
-              .append($("<h2>").addClass("eventName")
-              .append($("<a>").attr({
-                "href": "javascript:viewEvent(" + event.id + "," + formatDate(startDate) + "," + event.instanceId + ");",
-                "title": "<fmt:message key='almanach.openEvent'/>"}).html(event.title))).appendTo(monthSection);
-            
-              var eventInfoSection = $("<div>").addClass("eventInfo")
-              .append($("<div>").addClass("eventPlace")
-              .append($("<div>").addClass("bloc")
-              .append($("<span>").html(event.location))))
-              .append($("<div>").addClass("eventDate")
-              .append($("<div>").addClass("bloc")
-              .append($("<span>").addClass("eventBeginDate").html(startTime))
-              .append($("<span>").addClass("eventEndDate").html(endTime))));
-              if (event.url != null && event.url.length > 0) {
-                eventInfoSection.append($("<div>").addClass("eventURL")
-                .append($("<div>").addClass("bloc")
-                .append($("<span>")
-                .append($("<a>").attr({
-                  "target": "_blank",
-                  "href": event.url }).html("<fmt:message key='GML.linkToVisit'/>")))));
-              }
-              eventInfoSection.append($("<br>").attr("clear", "left")).appendTo(eventSection);
-            
-              var eventDescSection = $("<div>").addClass("eventDesc").appendTo(eventSection);
-              if (event.hasAttachments) {
-                eventDescSection.append($("<div>").addClass("eventAttachments")
-                .append($("<div>").addClass("attachments bgDegradeGris")
-                .append($("<h4>").addClass("clean").html("<fmt:message key='GML.attachments'/>"))
-                .append($("<div>").addClass("attachmentList").load(("<c:url value='/attachment/jsp/displayAttachments.jsp?Context=Images&ComponentId=${instanceId}' />&Id=" + event.id)))));
-              }
-              eventDescSection.append($("<div>").html(event.description)).append($("<br>").addClass("clearAll"));
+            //var startDate = new Date(event.start.replace(/\+\d+/g, ""));
+            //var endDate = new Date(event.end.replace(/\+\d+/g, ""));
+            var startDate = $.fullCalendar.parseDate(event.start);
+            var endDate = $.fullCalendar.parseDate(event.end);
+            if (startDate.getMonth() != currentMonth) {
+              var currentYear = startDate.getFullYear();
+              currentMonth = startDate.getMonth();
+              monthSection = $("<ul>").addClass("eventList")
+              .appendTo($("<li>").attr("id", MONTH_NAMES[currentMonth] + currentYear)
+              .append($("<h3>").addClass("eventMonth").html(MONTH_NAMES[currentMonth] + ' ' + currentYear))
+              .appendTo($('#eventList')));
+              monthsHavingEvents.push(MONTH_NAMES[currentMonth] + ' ' + currentYear);
             }
+            var startTime = "", endTime = "";
+            if (!event.allDay) {
+              startTime = "<fmt:message key='GML.From'/> " + formatTime(startDate);
+            }
+            if (endDate.getFullYear() > startDate.getFullYear() || endDate.getMonth() > startDate.getMonth() ||
+              endDate.getDate() > startDate.getDate()) {
+              endTime = "<fmt:message key='GML.to'/> " + endDate.toLocaleDateString(); 
+            }
+            if (!event.allDay) {
+              endTime = endTime + " <fmt:message key='GML.at'/> " + formatTime(endDate);
+            }
+            var eventSection = $("<li>").attr("id", "event" + event.id).addClass("event " + event.className.join(' ')).click(function() {
+              viewEvent(event.id, formatDate(startDate), event.instanceId);
+            })
+            .append($("<div>").addClass("eventBeginDate")
+            .append($("<span>").addClass("day").html(DAY_NAMES[startDate.getDay()]))
+            .append($("<span>").addClass("number").html(startDate.getDate()))
+            .append($("<span>").addClass("month").html(MONTH_NAMES[currentMonth]))
+            .append($("<span>").addClass("year").html(startDate.getFullYear())))
+            .append($("<h2>").addClass("eventName")
+            .append($("<a>").addClass(event.className.join(' ')).attr({
+              "href": "javascript:viewEvent(" + event.id + "," + formatDate(startDate) + "," + event.instanceId + ");",
+              "title": "<fmt:message key='almanach.openEvent'/>"}).html(event.title))).appendTo(monthSection);
+            
+            var eventInfoSection = $("<div>").addClass("eventInfo")
+            .append($("<div>").addClass("eventPlace")
+            .append($("<div>").addClass("bloc")
+            .append($("<span>").html(event.location))))
+            .append($("<div>").addClass("eventDate")
+            .append($("<div>").addClass("bloc")
+            .append($("<span>").addClass("eventBeginDate").html(startTime))
+            .append($("<span>").addClass("eventEndDate").html(endTime))));
+            if (event.url != null && event.url.length > 0) {
+              eventInfoSection.append($("<div>").addClass("eventURL")
+              .append($("<div>").addClass("bloc")
+              .append($("<span>")
+              .append($("<a>").attr({
+                "target": "_blank",
+                "href": event.url }).html("<fmt:message key='GML.linkToVisit'/>")))));
+            }
+            eventInfoSection.append($("<br>").attr("clear", "left")).appendTo(eventSection);
+            
+            var eventDescSection = $("<div>").addClass("eventDesc").appendTo(eventSection);
+            if (event.hasAttachments) {
+              eventDescSection.append($("<div>").addClass("eventAttachments")
+              .load("<c:url value='/attachment/jsp/displayAttachments.jsp?Context=Images&ComponentId=${instanceId}' />&Id=" + event.id));
+            }
+            eventDescSection.append($("<div>").html(event.description)).append($("<br>").addClass("clearAll"));
           });
         }
         
-        var monthNames = ['<fmt:message key="GML.mois0"/>', '<fmt:message key="GML.mois1"/>', '<fmt:message key="GML.mois2"/>', '<fmt:message key="GML.mois3"/>',
-          '<fmt:message key="GML.mois4"/>', '<fmt:message key="GML.mois5"/>', '<fmt:message key="GML.mois6"/>', '<fmt:message key="GML.mois7"/>',
-          '<fmt:message key="GML.mois8"/>', '<fmt:message key="GML.mois9"/>', '<fmt:message key="GML.mois10"/>', '<fmt:message key="GML.mois11"/>'];
-        var dayNames = ['<fmt:message key="GML.jour1"/>', '<fmt:message key="GML.jour2"/>', '<fmt:message key="GML.jour3"/>', '<fmt:message key="GML.jour4"/>',
-          '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'];
-        var monthsHavingEvents = [];
-        var events = <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>;
-        var isLoaded = false;
+        /**
+         * Builds the navigation by month from the specified array of months. Each element in the
+         * array is a string in the form of "NAME_OF_THE_MONTH YEAR".
+         * For a month selected, only the events occuring in this month are shown.
+         */
+        function buildNavigationByMonth( monthsHavingEvents ) {
+          var monthNavSection = $("<p>").html("<fmt:message key='GML.Show'/> ")
+          .append($("<a>").attr("href", "#").addClass("active").html("<fmt:message key='GML.allMP'/>").click(function() {
+            selectMonth($(this)); })).appendTo($("#navigation"));
+          $.each(monthsHavingEvents, function(index, monthWithEvents) {
+            $("<a>").attr("href", "#").html(monthWithEvents).click(function() {
+              selectMonth($(this), monthWithEvents);
+            }).appendTo(monthNavSection);
+          })
+        }
                 
         $(document).ready(function() {
 
           // page is now ready, initialize the calendar...
-
-          printEventsInMonth();
-          var monthNavSection = $("<p>").html("<fmt:message key='GML.Show'/>")
-          .append($("<a>").attr("href", "#").html("<fmt:message key='GML.allMP'/>").click(function() {
-            printEventsInMonth(); })).appendTo($("<div>").addClass("sousNavBulle").appendTo($("#navigation")));
-          $.each(monthsHavingEvents, function(index, monthWithEvents) {
-            $("<a>").attr("href", "#").html(monthWithEvents).click(function() {
-              printEventsInMonth(monthWithEvents);
-            }).appendTo(monthNavSection);
-          })
+          buildCalendarView(events, monthsHavingEvents);
+          buildNavigationByMonth(monthsHavingEvents);
           
-          isLoaded = true;
         });
     </script>
   </head>
-  <body>
+  <body class="nextEvents">
     <view:operationPane>
       <c:if test='${flag eq "admin" and almanach.pdcUsed}'>
         <fmt:message key="GML.PDCParam" var="opLabel" />
@@ -328,46 +376,61 @@
       </view:tabs>
 
       <view:frame>
-        <div id="navigation">
-        </div>
-
-        <c:if test="${almanach.agregationUsed and not empty othersAlmanachs}">
-          <div id="agregatedAlmanachs">
-            <form name="agregateAlmanachs">
-              <table><tr><td><fmt:message key="otherAlmanachEvents"/></td>
-                  <c:forEach var="i" begin="0" end="${fn:length(othersAlmanachs) - 1}" step="1">
-                    <c:set var="otherAlmanach" value="${othersAlmanachs[i]}"/>
-                    <c:set var="checked" value=""/>
-                    <c:if test="${otherAlmanach.agregated}">
-                      <c:set var="checked" value="checked"/>
-                    </c:if>
-                    <c:if test="${i % 5 eq 0 and i >= 5}">
-                    </tr><tr><td>&nbsp;</td>
-                    </c:if>
-                    <td>
-                      <input onclick="updateAgregation(<c:out value='${i}'/>)" type="checkbox" name="chk_almanach" <c:out value='${checked}'/> value="<c:out value='${otherAlmanach.instanceId}'/>"/>
-                    </td>
-                    <td>
-                      <a class="almanach" href="<c:url value='/Ralmanach/${otherAlmanach.instanceId}/Main'/>">
-                        <span class="<c:out value='${otherAlmanach.instanceId}'/>"><b><c:out value='${otherAlmanach.label}'/></b></span>
-                      </a>
-                    </td>
-                    <td>&nbsp;</td>
-                  </c:forEach>
-                  <c:if test="${fn:length(othersAlmanachs) gt 1}">
-                    <c:set var="checked" value=""/>
-                    <c:if test="${fn:length(othersAlmanachs) eq almanach.agregatedAlmanachsCount}">
-                      <c:set var="checked" value="checked"/>
-                    </c:if>
-                    <td><input onClick="javascript: agregateAll();" <c:out value="${checked}"/> name="chk_allalmanach" type="checkbox"/></td>
-                    <td><b><fmt:message key="allAlmanachs"/></b></td>
+        <div class="sousNavBulle">
+          <div id="navigation">
+            <c:if test="${accessibleInstances ne null}">
+            <div id="others">
+              <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
+                <c:forEach var="instance" items="${accessibleInstances}">
+                  <c:set var="componentId" value="${instance.instanceId}"/>
+                  <c:set var="selected" value=""/>
+                  <c:if test="${componentId eq instanceId}">
+                    <c:set var="selected" value="selected='selected'"/>
                   </c:if>
-                </tr>
-              </table>
-            </form>
-            <br clear="all"/>
+                  <option value="<c:out value='${instance.url}'/>Main?view=<c:out value='${calendarView.viewType.name}'/>" <c:out value="${selected}" escapeXml="false"/>><c:out value="${instance.spaceId} - ${instance.label}"/></option>
+                </c:forEach>
+              </select>
+            </div>
+          </c:if>
           </div>
-        </c:if>
+          <c:if test="${almanach.agregationUsed and not empty othersAlmanachs}">
+            <div id="agregatedAlmanachs">
+              <form name="agregateAlmanachs">
+                <table><tr><td><fmt:message key="otherAlmanachEvents"/></td>
+                    <c:forEach var="i" begin="0" end="${fn:length(othersAlmanachs) - 1}" step="1">
+                      <c:set var="otherAlmanach" value="${othersAlmanachs[i]}"/>
+                      <c:set var="checked" value=""/>
+                      <c:if test="${otherAlmanach.agregated}">
+                        <c:set var="checked" value="checked"/>
+                      </c:if>
+                      <c:if test="${i % 5 eq 0 and i >= 5}">
+                      </tr><tr><td>&nbsp;</td>
+                      </c:if>
+                      <td>
+                        <input onclick="updateAgregation(<c:out value='${i}'/>)" type="checkbox" name="chk_almanach" <c:out value='${checked}'/> value="<c:out value='${otherAlmanach.instanceId}'/>"/>
+                      </td>
+                      <td>
+                        <a class="almanach" href="<c:url value='/Ralmanach/${otherAlmanach.instanceId}/Main'/>">
+                          <span class="<c:out value='${otherAlmanach.instanceId}'/>"><b><c:out value='${otherAlmanach.label}'/></b></span>
+                        </a>
+                      </td>
+                      <td>&nbsp;</td>
+                    </c:forEach>
+                    <c:if test="${fn:length(othersAlmanachs) gt 1}">
+                      <c:set var="checked" value=""/>
+                      <c:if test="${fn:length(othersAlmanachs) eq almanach.agregatedAlmanachsCount}">
+                        <c:set var="checked" value="checked"/>
+                      </c:if>
+                      <td><input onClick="javascript: agregateAll();" <c:out value="${checked}"/> name="chk_allalmanach" type="checkbox"/></td>
+                      <td><b><fmt:message key="allAlmanachs"/></b></td>
+                    </c:if>
+                  </tr>
+                </table>
+              </form>
+              <br clear="all"/>
+            </div>
+          </c:if>
+        </div>
 
         <div id="calendar"></div>
 
