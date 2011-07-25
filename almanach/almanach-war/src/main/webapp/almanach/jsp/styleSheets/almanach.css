@@ -222,9 +222,9 @@ div.description p {padding:0; margin:0;}
 .eventInfo div {
 	display:table-cell;
 	border-left:2px solid #DCDCDC;
-	min-height:20px;
+	min-height:16px;
 	vertical-align:middle;
-	text-align:center;
+	text-align:left;
 	width:33%;
 }
 
@@ -247,6 +247,7 @@ div.description p {padding:0; margin:0;}
 	font-size:110%;
 	display:inline-block;
 	width:auto;
+	text-align:left;
 }
 
 * html  .eventInfo div div.bloc {
@@ -291,6 +292,7 @@ span.priority {
 .eventDesc {
 	margin-top:10px;
 	color:#333;
+	width:98%;
 }
 
 .eventList, #eventList{
@@ -304,10 +306,10 @@ span.priority {
 	}
 	
 .eventList 	.eventInfo {
-	padding:5px 0;
+	padding:4px 0;
 	}
 	
-.eventList li {
+li.event {
 	clear:both;
 	position:relative;
  	margin: 0 10px;
@@ -316,7 +318,7 @@ span.priority {
 	cursor:pointer;
 	min-height: 100px;
 	}
-.eventList li:hover {
+li.event:hover {
 	background-color:#E8E8E8;
 	}
 
@@ -358,9 +360,9 @@ div.eventBeginDate {
 	font-size:10px;
 	}
 .eventBeginDate .number {
-	top:31px;
-	font-family:Georgia, "Times New Roman", Times, serif;
-	font-size:28px;
+   font-size: 36px;
+    font-weight: bold;
+    top: 26px;
 	color:#333;
 	}
 .eventBeginDate .month {
@@ -394,4 +396,3 @@ div.eventBeginDate {
 	padding:inherit;
 	margin:inherit;
 	}
-

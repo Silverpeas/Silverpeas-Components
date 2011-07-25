@@ -175,14 +175,16 @@ public class EventDAO {
             + " from " + EventPK.TABLE_NAME + " left outer join " + Periodicity.getTableName()
             + " on " + EventPK.TABLE_NAME + ".eventId = " + Periodicity.getTableName() + ".eventId";
     if (isDefined(endDay)) {
-      selectQuery += " where ((eventStartDay < '" + endDay + "' and eventEndDay >= '" + endDay + "')"
+      selectQuery += " where ((eventStartDay < '" + endDay + "' and eventEndDay >= '" + endDay
+              + "')"
               + " or (eventStartDay < '" + endDay + "' and eventStartDay >= '" + startDay + "')"
               + " or (eventEndDay < '" + endDay + "' and eventEndDay >= '" + startDay + "')"
               + " or (id is not null and eventStartDay < '" + endDay + "'"
               + " and (untildateperiod >= '" + startDay + "' or untildateperiod is null)))";
     } else {
-      selectQuery += " where ((eventStartDay >= '" + startDay + "') or (id is not null"
-              + " and (untildateperiod >= '" + startDay + "' or untildateperiod is null)))";
+      selectQuery += " where ((eventStartDay >= '" + startDay + "') or (eventEndDay >= '"
+              + startDay + "') or (id is not null and (untildateperiod >= '" + startDay
+              + "' or untildateperiod is null)))";
     }
     selectQuery += paramInstanceIds + " order by eventStartDay";
     try {

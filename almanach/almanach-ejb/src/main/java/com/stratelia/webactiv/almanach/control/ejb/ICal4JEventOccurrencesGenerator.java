@@ -40,6 +40,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
@@ -174,6 +175,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
         occurrences.add(occurrence);
       }
     }
+    Collections.sort(occurrences);
     return occurrences;
   }
 

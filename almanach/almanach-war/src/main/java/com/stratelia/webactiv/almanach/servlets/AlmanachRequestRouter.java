@@ -152,7 +152,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         // initialisation de l'objet event
         String id = request.getParameter("Id");
         
-        if (!StringUtil.isDefined(id)) {
+        if (!isDefined(id)) {
           id = (String) request.getAttribute("Id");
         } else {
           request.setAttribute("From", request.getParameter("Function"));
@@ -165,7 +165,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         almanach.setCurrentEvent(event);
 
         String dateIteration = request.getParameter("Date"); // not null (yyyy/MM/jj)
-        if (event.isPeriodic() && StringUtil.isDefined(dateIteration)) {
+        if (event.isPeriodic() && isDefined(dateIteration)) {
           java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
           calDateIteration.setTime(DateUtil.parse(dateIteration));
           request.setAttribute("DateDebutIteration", calDateIteration.getTime());

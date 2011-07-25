@@ -48,6 +48,7 @@
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
     <script type="text/javascript">
+      <!--
 
       function viewByMonth()
       {
@@ -233,6 +234,8 @@
           $('#calendar').fullCalendar('gotoDate', <c:out value="${currentDay.year}"/>, <c:out value="${currentDay.month}"/>, <c:out value="${currentDay.dayOfMonth}"/>)
 
         });
+        
+        -->
     </script>
   </head>
   <body>

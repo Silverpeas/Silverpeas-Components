@@ -35,7 +35,6 @@
     <c:if test="${rssUrl ne null and not empty rssUrl}">
       <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel}'/> : <fmt:message key='almanach.rssNext'/>" href="<c:url value='${rssUrl}'/>"/>
     </c:if>
-    <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
     <style type="text/css">
       <c:out value=".${instanceId} { border-color: ${calendarView.almanach.color}; color: ${calendarView.almanach.color}; }"/>
       <c:out value=".${instanceId} .fc-event-skin { background-color: ${calendarView.almanach.color}; border-color: ${calendarView.almanach.color}; color: white; }"/>
@@ -47,7 +46,7 @@
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
     <script type="text/javascript">
-
+      <!--
       function viewByMonth()
       {
         document.almanachForm.Action.value = "ViewByMonth";
@@ -212,8 +211,7 @@
          * The months and built by browsing the events and are remembered for month selection.
          */
         function buildCalendarView( events, monthsHavingEvents ) {
-          var currentMonth = -1;
-          var monthSection = null;
+          var currentMonth = -1, monthSection = null, today = new Date();
           $("#calendar").children().remove();
           $("<ul>").attr("id", "eventList").appendTo("#calendar");
           $.each(events, function(index, event) {
@@ -223,6 +221,7 @@
             //var endDate = new Date(event.end.replace(/\+\d+/g, ""));
             var startDate = $.fullCalendar.parseDate(event.start);
             var endDate = $.fullCalendar.parseDate(event.end);
+            if (startDate < today) startDate = today;
             if (startDate.getMonth() != currentMonth) {
               var currentYear = startDate.getFullYear();
               currentMonth = startDate.getMonth();
@@ -256,23 +255,30 @@
               "href": "javascript:viewEvent(" + event.id + "," + formatDate(startDate) + "," + event.instanceId + ");",
               "title": "<fmt:message key='almanach.openEvent'/>"}).html(event.title))).appendTo(monthSection);
             
-            var eventInfoSection = $("<div>").addClass("eventInfo")
-            .append($("<div>").addClass("eventPlace")
-            .append($("<div>").addClass("bloc")
-            .append($("<span>").html(event.location))))
-            .append($("<div>").addClass("eventDate")
-            .append($("<div>").addClass("bloc")
-            .append($("<span>").addClass("eventBeginDate").html(startTime))
-            .append($("<span>").addClass("eventEndDate").html(endTime))));
-            if (event.url != null && event.url.length > 0) {
-              eventInfoSection.append($("<div>").addClass("eventURL")
-              .append($("<div>").addClass("bloc")
-              .append($("<span>")
-              .append($("<a>").attr({
-                "target": "_blank",
-                "href": event.url }).html("<fmt:message key='GML.linkToVisit'/>")))));
+            if (event.location.length > 0 || startTime.length > 0 || endTime.length > 0 || 
+              (event.url != null && event.url.length > 0)) {
+              var eventInfoSection = $("<div>").addClass("eventInfo");
+              if (event.location.length > 0) {
+                eventInfoSection.append($("<div>").addClass("eventPlace")
+                .append($("<div>").addClass("bloc")
+                .append($("<span>").html(event.location))));
+              }
+              if (startTime.length > 0 || endTime.length > 0) {
+                eventInfoSection.append($("<div>").addClass("eventDate")
+                .append($("<div>").addClass("bloc")
+                .append($("<span>").addClass("eventBeginDate").html(startTime))              
+                .append($("<span>").addClass("eventEndDate").html(endTime))));
+              }
+              if (event.url != null && event.url.length > 0) {
+                eventInfoSection.append($("<div>").addClass("eventURL")
+                .append($("<div>").addClass("bloc")
+                .append($("<span>")
+                .append($("<a>").attr({
+                  "target": "_blank",
+                  "href": event.url }).html("<fmt:message key='GML.linkToVisit'/>")))));
+              }
+              eventInfoSection.append($("<br>").attr("clear", "left")).appendTo(eventSection);
             }
-            eventInfoSection.append($("<br>").attr("clear", "left")).appendTo(eventSection);
             
             var eventDescSection = $("<div>").addClass("eventDesc").appendTo(eventSection);
             if (event.hasAttachments) {
@@ -306,6 +312,7 @@
           buildNavigationByMonth(monthsHavingEvents);
           
         });
+        -->
     </script>
   </head>
   <body class="nextEvents">
@@ -379,19 +386,19 @@
         <div class="sousNavBulle">
           <div id="navigation">
             <c:if test="${accessibleInstances ne null}">
-            <div id="others">
-              <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
-                <c:forEach var="instance" items="${accessibleInstances}">
-                  <c:set var="componentId" value="${instance.instanceId}"/>
-                  <c:set var="selected" value=""/>
-                  <c:if test="${componentId eq instanceId}">
-                    <c:set var="selected" value="selected='selected'"/>
-                  </c:if>
-                  <option value="<c:out value='${instance.url}'/>Main?view=<c:out value='${calendarView.viewType.name}'/>" <c:out value="${selected}" escapeXml="false"/>><c:out value="${instance.spaceId} - ${instance.label}"/></option>
-                </c:forEach>
-              </select>
-            </div>
-          </c:if>
+              <div id="others">
+                <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
+                  <c:forEach var="instance" items="${accessibleInstances}">
+                    <c:set var="componentId" value="${instance.instanceId}"/>
+                    <c:set var="selected" value=""/>
+                    <c:if test="${componentId eq instanceId}">
+                      <c:set var="selected" value="selected='selected'"/>
+                    </c:if>
+                    <option value="<c:out value='${instance.url}'/>Main?view=<c:out value='${calendarView.viewType.name}'/>" <c:out value="${selected}" escapeXml="false"/>><c:out value="${instance.spaceId} - ${instance.label}"/></option>
+                  </c:forEach>
+                </select>
+              </div>
+            </c:if>
           </div>
           <c:if test="${almanach.agregationUsed and not empty othersAlmanachs}">
             <div id="agregatedAlmanachs">
