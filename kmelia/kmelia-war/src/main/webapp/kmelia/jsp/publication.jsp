@@ -775,7 +775,7 @@
         out.println(frame.printAfter());
         out.println(window.printAfter());
       %>
-      <form name="pubForm" action="<%=routerUrl%>publication.jsp" method="POST">
+      <form name="pubForm" action="<%=routerUrl%>publication.jsp" method="post">
         <input type="hidden" name="Action"/>
         <input type="hidden" name="PubId"/>
         <input type="hidden" name="Profile" value="<%=profile%>"/>
@@ -784,7 +784,7 @@
         <input type="hidden" name="PubId" value="<%=id%>"/>
         <input type="hidden" name="Motive" value=""/>
       </form>
-      <form name="defermentForm" action="<%=routerUrl%>SuspendPublication" method="POST">
+      <form name="defermentForm" action="<%=routerUrl%>SuspendPublication" method="post">
         <input type="hidden" name="PubId" value="<%=id%>"/>
         <input type="hidden" name="Motive" value=""/>
       </form>

@@ -1178,7 +1178,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
               if ("WYSIWYG".equals(modelId)) {
                 // Wysiwyg content
                 destination = getDestination("ToWysiwyg", kmelia, request);
-              } else if (isInteger(modelId)) {
+              } else if (StringUtil.isInteger(modelId)) {
                 // DB template
                 ModelDetail model = kmelia.getModelDetail(modelId);
                 request.setAttribute("ModelDetail", model);
@@ -1903,15 +1903,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     return pubDetail;
   }
 
-  private static boolean isInteger(String id) {
-    try {
-      Integer.parseInt(id);
-      return true;
-    } catch (NumberFormatException e) {
-      return false;
-    }
-  }
-
   private void processVignette(List<FileItem> parameters, KmeliaSessionController kmelia,
       String instanceId, int pubId)
       throws Exception {
@@ -2177,7 +2168,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       throws PublicationTemplateException, FormException {
     String infoId = pubDetail.getInfoId();
     String pubId = pubDetail.getPK().getId();
-    if (!isInteger(infoId)) {
+    if (!StringUtil.isInteger(infoId)) {
       PublicationTemplateImpl pubTemplate =
           (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(pubDetail.
           getPK().getInstanceId()
