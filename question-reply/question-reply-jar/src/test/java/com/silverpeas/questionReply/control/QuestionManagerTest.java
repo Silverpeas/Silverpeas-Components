@@ -703,7 +703,11 @@ public class QuestionManagerTest extends AbstractTestDao {
         instanceId);
     assertThat(questions, is(notNullValue()));
     assertThat(questions, hasSize(2));
-    assertThat(questions.get(0), QuestionMatcher.matches(question1));
+    Question resultQuestion = questions.get(0);
+    if (!resultQuestion.getPK().getId().equals("100")) {
+      resultQuestion = questions.get(1);
+    }
+    assertThat(questions.get(1), QuestionMatcher.matches(question1));
   }
 
   /**

@@ -23,12 +23,10 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
-import java.util.Date;
-
-import com.stratelia.webactiv.persistence.SilverpeasBean;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+
 import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Recur;
@@ -36,10 +34,12 @@ import net.fortuna.ical4j.model.WeekDay;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 
+import com.stratelia.webactiv.persistence.SilverpeasBean;
+
 public class Periodicity extends SilverpeasBean {
 
   private static final long serialVersionUID = -5666462083577316755L;
-  private static String PERIODICITY_TABLE = "SC_Almanach_Periodicity";
+  private static final String PERIODICITY_TABLE = "SC_Almanach_Periodicity";
   public static final int UNIT_NONE = 0;
   public static final int UNIT_DAY = 1;
   public static final int UNIT_WEEK = 2;

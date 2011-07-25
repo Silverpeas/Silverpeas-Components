@@ -27,8 +27,10 @@ package com.stratelia.webactiv.kmelia;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class KmeliaException extends SilverpeasException {
+  
+  private static final long serialVersionUID = 9074259824141013543L;
+
   /**
-   * -------------------------------------------------------------------------- constructors
    * constructors
    */
   public KmeliaException(String callingClass, int errorLevel, String message) {
@@ -51,7 +53,7 @@ public class KmeliaException extends SilverpeasException {
   }
 
   /**
-   * -------------------------------------------------------------------------- getModule getModule
+   * getModule
    */
   public String getModule() {
     return "kmelia";
