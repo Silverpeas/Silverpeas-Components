@@ -29,6 +29,7 @@ import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -40,10 +41,15 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.statistic.control.StatisticBm;
+import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
+import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -282,6 +288,16 @@ public class KmeliaPublication implements Serializable {
               "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_POSTIONSPDC", ex);
     }
   }
+  
+  public int getNbAccess() {
+    try {
+      return getStatisticService().getCount(new ForeignPK(pk), 1, "Publication");
+    } catch (RemoteException e) {
+      SilverTrace.error("kmelia", "KmeliaPublication.getNbAccess", "kmelia.CANT_GET_NB_ACCESS",
+          "pubId = " + pk.getId(), e);
+    }
+    return -1;
+  }
 
   @Override
   public boolean equals(Object obj) {
@@ -321,16 +337,28 @@ public class KmeliaPublication implements Serializable {
   private KmeliaBm getKmeliaService() {
     KmeliaBm KmeliaBm = null;
     try {
-      KmeliaBmHome KmeliaBmHome = (KmeliaBmHome) EJBUtilitaire.getEJBObjectRef(
-              JNDINames.KMELIABM_EJBHOME,
-              KmeliaBmHome.class);
+      KmeliaBmHome KmeliaBmHome =
+          EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBmHome.class);
       KmeliaBm = KmeliaBmHome.create();
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.getKmeliaBm()",
+      throw new KmeliaRuntimeException("KmeliaPublication.getKmeliaService()",
               SilverpeasRuntimeException.ERROR,
               "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KmeliaBm_HOME", e);
     }
     return KmeliaBm;
+  }
+  
+  private StatisticBm getStatisticService() {
+    StatisticBm statisticBm = null;
+    try {
+      StatisticBmHome statisticHome =
+          EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
+      statisticBm = statisticHome.create();
+    } catch (Exception e) {
+      throw new StatisticRuntimeException("KmeliaPublication.getStatisticService()",
+                SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return statisticBm;
   }
 
   private CommentService getCommentService() {

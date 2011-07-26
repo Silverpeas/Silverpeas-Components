@@ -82,7 +82,7 @@
       "ACTION pubManager = " + action);
 
   CompletePublication pubComplete = kmeliaPublication.getCompleteDetail();
-  PublicationDetail pubDetail = pubComplete.getPublicationDetail();
+  PublicationDetail pubDetail = kmeliaPublication.getDetail();
   UserDetail ownerDetail = kmeliaPublication.getCreator();
   String pubName = pubDetail.getName(language);
   String id = pubDetail.getPK().getId();
@@ -627,14 +627,14 @@
 								  	<div id="lastModificationInfo" class="paragraphe">
 								  		<%=resources.getString("PubDateUpdate")%>  <br />
 								  		<b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%> <%= updaterName%>
-								  		<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaScc.getUserDetail(updaterId).getAvatar() %>" alt="" class="defaultAvatar"/></div>
+								  		<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 							  		</div>
 							  	 <% }	%>
 								
 								 <div id="creationInfo" class="paragraphe">
 								 	<%=resources.getString("PubDateCreation")%> <br/>
 								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <%= creatorName%>
-								 	<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaScc.getUserDetail(pubDetail.getCreatorId()).getAvatar() %>" alt="" class="defaultAvatar"/></div>
+								 	<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 							 	</div>
 							  	 
 							  	  <%
@@ -665,7 +665,7 @@
 							    %>
         					<p id="statInfo"> 
         						<%=resources.getString("kmelia.consulted")%><br/> 
-        						<b><%= pubDetail.getNbAccess()%> <%=resources.getString("kmelia.time")%></b></p>
+        						<b><%= kmeliaPublication.getNbAccess()%> <%=resources.getString("kmelia.time")%></b></p>
         					
 					        <% if (URLManager.displayUniversalLinks()) {
 					            String link = null;
