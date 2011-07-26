@@ -318,7 +318,7 @@
             <a href="javascript:onClick=goToDay()"><c:out value="${today}" /></a>
           </div>
           
-          <c:if test="${accessibleInstances ne null}">
+          <c:if test="${accessibleInstances ne null and not empty accessibleInstances}">
             <div id="others">
               <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
                 <c:forEach var="instance" items="${accessibleInstances}">

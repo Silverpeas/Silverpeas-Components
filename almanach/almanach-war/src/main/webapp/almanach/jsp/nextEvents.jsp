@@ -256,7 +256,7 @@
               "title": "<fmt:message key='almanach.openEvent'/>"}).html(event.title))).appendTo(monthSection);
             
             if (event.location.length > 0 || startTime.length > 0 || endTime.length > 0 || 
-              (event.url != null && event.url.length > 0)) {
+              (event.eventURL != null && event.eventURL.length > 0)) {
               var eventInfoSection = $("<div>").addClass("eventInfo");
               if (event.location.length > 0) {
                 eventInfoSection.append($("<div>").addClass("eventPlace")
@@ -269,13 +269,13 @@
                 .append($("<span>").addClass("eventBeginDate").html(startTime))              
                 .append($("<span>").addClass("eventEndDate").html(endTime))));
               }
-              if (event.url != null && event.url.length > 0) {
+              if (event.eventURL != null && event.eventURL.length > 0) {
                 eventInfoSection.append($("<div>").addClass("eventURL")
                 .append($("<div>").addClass("bloc")
                 .append($("<span>")
                 .append($("<a>").attr({
                   "target": "_blank",
-                  "href": event.url }).html("<fmt:message key='GML.linkToVisit'/>")))));
+                  "href": event.eventURL }).html("<fmt:message key='GML.linkToVisit'/>")))));
               }
               eventInfoSection.append($("<br>").attr("clear", "left")).appendTo(eventSection);
             }
@@ -385,7 +385,7 @@
       <view:frame>
         <div class="sousNavBulle">
           <div id="navigation">
-            <c:if test="${accessibleInstances ne null}">
+            <c:if test="${accessibleInstances ne null and not empty accessibleInstances}">
               <div id="others">
                 <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
                   <c:forEach var="instance" items="${accessibleInstances}">

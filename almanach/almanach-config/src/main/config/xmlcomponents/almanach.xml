@@ -156,8 +156,8 @@
     <parameter>
       <name>defaultView</name>
       <label>
-        <message lang="fr">Vue calendaire par défaut</message>
-        <message lang="en">Default calendar view</message>
+        <message lang="fr">Vue par défaut</message>
+        <message lang="en">Default view</message>
         <message lang="de">Standard-Ansicht</message>
       </label>
       <order>4</order>
@@ -192,7 +192,7 @@
         </option>
       </options>
       <help>
-        <message lang="fr">Permet de choisir la vue calendaire à afficher par défaut lorsque l'utilisateur accède à l'almanach.</message>
+        <message lang="fr">Permet de choisir la vue à afficher par défaut lorsque l'utilisateur accède à l'almanach.</message>
         <message lang="en">Choose the view to display by default when the user accesses the almanach.</message>
         <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der Benutzer auf die Almanach.</message>
       </help>

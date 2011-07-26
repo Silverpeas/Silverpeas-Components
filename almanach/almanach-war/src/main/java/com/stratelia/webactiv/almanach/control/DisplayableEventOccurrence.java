@@ -133,7 +133,7 @@ public class DisplayableEventOccurrence extends EventOccurrence {
     jsonObject.put("className", new JSONArray(getCSSClasses()));
     jsonObject.put("allDay", isAllDay());
     if (isDefined(event.getEventUrl())) {
-      jsonObject.put("url", event.getEventUrl());
+      jsonObject.put("eventURL", event.getEventUrl());
     }
     return jsonObject;
   }
