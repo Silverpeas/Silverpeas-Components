@@ -36,5 +36,21 @@
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.stratelia.webactiv.almanach"/>
 
+  <!-- AlmanachBm bean -->
+  <bean id="almanachBm" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
+    <property name="jndiName" value="${ALMANACHBM_EJBHOME}" />
+    <property name="businessInterface" value="com.stratelia.webactiv.almanach.control.ejb.AlmanachBm" />
+    <property name="cacheHome" value="true" />
+    <property name="lookupHomeOnStartup" value="true" />
+    <property name="resourceRef" value="false" />
+    <property name="homeInterface" value="com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome" />
+    <property name="refreshHomeOnConnectFailure" value="true" />
+  </bean>
+
+  <bean id="almanachSearchResultRenderer" class="com.silverpeas.component.almanach.ui.ResultSearchRenderer">
+  	<property name="almanachBm" ref="almanachBm" />
+  </bean>
+
+
 </beans>
 

@@ -236,7 +236,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
    * @param periodicity an event periodicity
    * @return a collection of exceptions that were applied to the specified periodicity.
    */
-  private Collection getPeriodicityExceptions(final Periodicity periodicity) {
+  private Collection<PeriodicityException> getPeriodicityExceptions(final Periodicity periodicity) {
     try {
       IdPK pk = new IdPK();
       return getPeriodicityExceptionDAO().findByWhereClause(pk, "periodicityId = " + periodicity.
@@ -249,10 +249,10 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
     }
   }
 
-  private SilverpeasBeanDAO getPeriodicityExceptionDAO() {
+  private SilverpeasBeanDAO<PeriodicityException> getPeriodicityExceptionDAO() {
     try {
-      SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory.getDAO(
-              "com.stratelia.webactiv.almanach.model.PeriodicityException");
+      SilverpeasBeanDAO<PeriodicityException> dao = SilverpeasBeanDAOFactory.getDAO(
+          "com.stratelia.webactiv.almanach.model.PeriodicityException");
       return dao;
     } catch (PersistenceException pe) {
       throw new AlmanachRuntimeException(

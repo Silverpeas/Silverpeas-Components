@@ -144,7 +144,7 @@ public class SilverpeasImageFinder {
             image.getId() + "/" + image.getImageName();
   }
 
-  private Map getQueryParameters(String href) {
+  private Map<String, String> getQueryParameters(String href) {
     Map<String, String> queryParameters = new HashMap<String, String>();
     String querySeparator = "%3F"; // the URL encoding of the ? token
     String queryPart = href.substring(href.indexOf(querySeparator) + querySeparator.length());

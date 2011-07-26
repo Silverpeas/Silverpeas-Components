@@ -51,23 +51,18 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
-   * 
-   * @param ids
-   *          list of silverContentId to retrieve
-   * @param peasId
-   *          the id of the instance
-   * @param userId
-   *          the id of the user who wants to retrieve silverContent
-   * @param userRoles
-   *          the roles of the user
+   * @param ids list of silverContentId to retrieve
+   * @param peasId the id of the instance
+   * @param userId the id of the user who wants to retrieve silverContent
+   * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
   @SuppressWarnings("unchecked")
   public List getSilverContentById(List ids, String peasId, String userId,
       List userRoles) {
-    if (getContentManager() == null)
+    if (getContentManager() == null) {
       return new ArrayList<EventDetail>();
-
+    }
     return getHeaders(makePKArray(ids, peasId), peasId);
   }
 
@@ -80,13 +75,9 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * add a new content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param pubDetail
-   *          the content to register
-   * @param userId
-   *          the creator of the content
+   * @param con a Connection
+   * @param pubDetail the content to register
+   * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
   public int createSilverContent(Connection con, EventDetail eventDetail,
@@ -99,57 +90,46 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * delete a content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param pubPK
-   *          the identifiant of the content to unregister
+   * @param con a Connection
+   * @param pubPK the identifiant of the content to unregister
    */
   public void deleteSilverContent(Connection con, EventPK eventPK)
       throws ContentManagerException {
     int contentId = getContentManager().getSilverContentId(eventPK.getId(),
         eventPK.getComponentName());
-    SilverTrace.info("almanach",
-        "AlmanachContentManager.deleteSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + eventPK.getId()
-            + ", contentId = " + contentId);
-    if (contentId != -1)
-      getContentManager().removeSilverContent(con, contentId,
-          eventPK.getComponentName());
+    SilverTrace.info("almanach", "AlmanachContentManager.deleteSilverContent()",
+        "root.MSG_GEN_ENTER_METHOD", "pubId = " + eventPK.getId() + ", contentId = " + contentId);
+    if (contentId != -1) {
+      getContentManager().removeSilverContent(con, contentId, eventPK.getComponentName());
+    }
   }
 
   /**
-   * update the visibility attributes of the content. Here, the type of content
-   * is a EventDetail
-   * 
-   * @param eventDetail
-   *          the content
+   * update the visibility attributes of the content. Here, the type of content is a EventDetail
+   * @param eventDetail the content
    */
   public void updateSilverContentVisibility(EventDetail eventDetail)
       throws ContentManagerException {
     int silverContentId = getContentManager().getSilverContentId(
         eventDetail.getPK().getId(), eventDetail.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility();
-    SilverTrace.info("almanach",
-        "AlmanachContentManager.updateSilverContentVisibility()",
+    SilverTrace.info("almanach", "AlmanachContentManager.updateSilverContentVisibility()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv);
 
-    if (silverContentId == -1)
+    if (silverContentId == -1) {
       createSilverContent(null, eventDetail, eventDetail.getDelegatorId());
-    else
+    } else {
       getContentManager().updateSilverContentVisibilityAttributes(scv,
           eventDetail.getPK().getComponentName(), silverContentId);
+    }
 
     ClassifyEngine.clearCache();
   }
 
   /**
    * return a list of almanachPK according to a list of silverContentId
-   * 
-   * @param idList
-   *          a list of silverContentId
-   * @param peasId
-   *          the id of the instance
+   * @param idList a list of silverContentId
+   * @param peasId the id of the instance
    * @return a list of almanachPK
    */
   private List<EventPK> makePKArray(List<Integer> idList, String peasId) {
@@ -175,9 +155,7 @@ public class AlmanachContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of almanachPK
-   * 
-   * @param ids
-   *          a list of almanachPK
+   * @param ids a list of almanachPK
    * @return a list of EventDetail
    */
   private List<EventDetail> getHeaders(List<EventPK> ids, String peasId) {

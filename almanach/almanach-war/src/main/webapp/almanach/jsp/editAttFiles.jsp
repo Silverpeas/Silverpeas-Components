@@ -55,13 +55,13 @@
 <c:set var="url" value="${requestScope.ComponentURL}"/>
 
 <!-- AFFICHAGE BROWSER -->
-<HTML>
-  <HEAD>
+<html>
+  <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel/>
-  </HEAD>
-  <TITLE><fmt:message key="GML.popupTitle"/></TITLE>
-  <BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5">
+  </head>
+  <title><fmt:message key="GML.popupTitle"/></title>
+  <body marginheight="5" marginwidth="5" topmargin="5" leftmargin="5">
     <view:browseBar componentId="${instanceId}" extraInformations="${title}"/>
     <view:window>
       <view:tabs>
@@ -80,5 +80,5 @@
         <c:import  url="/attachment/jsp/editAttFiles.jsp?Id=${id}&Date=${iterationStartDate}&SpaceId=${spaceId}&ComponentId=${instanceId}&Context=Images&Url=${url}"/>
       </view:frame>
     </view:window>
-  </BODY>
-</HTML>
+  </body>
+</html>

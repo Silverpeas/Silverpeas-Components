@@ -80,8 +80,8 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   private static final long serialVersionUID = -8559479482209447676L;
   private AlmanachContentManager almanachContentManager = null;
-  private SilverpeasBeanDAO eventPeriodicityDAO = null;
-  private SilverpeasBeanDAO periodicityExceptionDAO = null;
+  private SilverpeasBeanDAO<Periodicity> eventPeriodicityDAO = null;
+  private SilverpeasBeanDAO<PeriodicityException> periodicityExceptionDAO = null;
   private EventDAO eventDAO = new EventDAO();
 
   /**
@@ -416,7 +416,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   /**
    * @return
    */
-  private SilverpeasBeanDAO getEventPeriodicityDAO() {
+  private SilverpeasBeanDAO<Periodicity> getEventPeriodicityDAO() {
     if (eventPeriodicityDAO == null) {
       try {
         eventPeriodicityDAO = SilverpeasBeanDAOFactory.getDAO(
@@ -499,7 +499,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   /**
    * @return
    */
-  private SilverpeasBeanDAO getPeriodicityExceptionDAO() {
+  private SilverpeasBeanDAO<PeriodicityException> getPeriodicityExceptionDAO() {
     if (periodicityExceptionDAO == null) {
       try {
         periodicityExceptionDAO = SilverpeasBeanDAOFactory.getDAO(

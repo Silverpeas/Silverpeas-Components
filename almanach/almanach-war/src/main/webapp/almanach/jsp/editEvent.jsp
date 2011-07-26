@@ -59,9 +59,9 @@
 
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
+<html>
+<head>
+<title><%=generalMessage.getString("GML.popupTitle")%></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <style type="text/css">
 <!--
@@ -477,8 +477,8 @@ $(document).ready(function(){
 });
 //-->
 </script>
-</HEAD>
-<BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5" onLoad="document.eventForm.Title.focus()">
+</head>
+<body marginheight="5" marginwidth="5" topmargin="5" leftmargin="5" onLoad="document.eventForm.Title.focus()">
   <%
     Window 		window 		= graphicFactory.getWindow();
     Frame 		frame		= graphicFactory.getFrame();
@@ -506,16 +506,15 @@ $(document).ready(function(){
 	out.println(frame.printBefore());
 	out.println(board.printBefore());
 %>
-<table CELLPADDING="5" WIDTH="100%">
-<FORM name="eventForm" action="ReallyUpdateEvent" method="POST">
-
+<form name="eventForm" action="ReallyUpdateEvent" method="POST">
+  <table cellpadding="5" width="100%">
 	  <tr>
         <td nowrap valign="baseline" class="txtlibform"><%=resources.getString("GML.name")%> :</td>
         <td align=left><input type="text" name="Title" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"
 					<%if (event.getTitle()!=null) out.print("value=\""+ EncodeHelper.javaStringToHtmlString(event.getTitle()) + "\"");%>>
             &nbsp;<img src="icons/cube-rouge.gif" width="5" height="5">
         </td>
-	    </tr>
+	  </tr>
       <tr>
         <td nowrap valign="top" class="txtlibform"><%=resources.getString("GML.description")%> :</td>
         <td valign="top">
@@ -573,7 +572,7 @@ $(document).ready(function(){
 			<option value="4" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_YEAR) out.print("selected");%>><%=resources.getString("allYears")%></option>
 		  </select></td>
         </tr>
-        <tr>
+<!-- <tr> -->        
 	    <tr>
           <td nowrap align=right class="txtlibform"><%=resources.getString("frequency")%> :</td>
 		  <td align=left><input type="text" name="Frequency" size="5" maxlength="5" value="<% if(periodicity == null) out.print("1"); else out.print(periodicity.getFrequency());%>"></td>
@@ -708,13 +707,12 @@ $(document).ready(function(){
         <tr>
           <td colspan="2" valign="baseline" class="txtnote">(<img src="icons/cube-rouge.gif" width="5" height="5"> =  <%=resources.getString("GML.requiredField")%>)</td>
         </tr>
-
-	<input type="hidden" name="Action">
-   	<input type="hidden" name="Id" <%out.print("value=\""+event.getPK().getId()+"\"");%>>
-	<input type="hidden" name="DateDebutIteration" <%out.print("value=\""+dateDebutIterationString+"\"");%>>
-	<input type="hidden" name="DateFinIteration" <%out.print("value=\""+DateUtil.date2SQLDate(dateFinIteration)+"\"");%>>
-   </FORM>
-   </table>
+  </table>
+  <input type="hidden" name="Action">
+  <input type="hidden" name="Id" <%out.print("value=\""+event.getPK().getId()+"\"");%>>
+  <input type="hidden" name="DateDebutIteration" <%out.print("value=\""+dateDebutIterationString+"\"");%>>
+  <input type="hidden" name="DateFinIteration" <%out.print("value=\""+DateUtil.date2SQLDate(dateFinIteration)+"\"");%>>
+ </form>
    <%
 		out.println(board.printAfter());
    %>
@@ -756,8 +754,8 @@ $(document).ready(function(){
 	<center><%=buttonPaneOnDelete.print()%></center>
 	</td></tr></table>
 </div>
-</BODY>
-</HTML>
+</body>
+</html>
 <%
 out.println("<script language=\"JavaScript\">");
 out.println("var oFCKeditor = new FCKeditor('Description');");
