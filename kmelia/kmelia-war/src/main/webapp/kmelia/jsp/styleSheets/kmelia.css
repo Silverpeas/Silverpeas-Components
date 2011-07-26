@@ -423,12 +423,13 @@
 
 #topicDescription {
 	color:#666;
-	}
+}
 
 /*** A basculer dans la css global pour utilisation générique */
 .principalContent{
-	margin-right:310px;
+	margin-right:325px;
 }
+
 .rightContent{
 	width:310px;
 	clear:right;
