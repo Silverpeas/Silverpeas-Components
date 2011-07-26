@@ -48,6 +48,7 @@
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
     <script type="text/javascript">
+      <!--
 
       function viewByMonth()
       {
@@ -59,6 +60,13 @@
       function viewByWeek()
       {
         document.almanachForm.Action.value = "ViewByWeek";
+        $.progressMessage();
+        document.almanachForm.submit();
+      }
+      
+      function viewNextEvents()
+      {
+        document.almanachForm.Action.value = "ViewNextEvents";
         $.progressMessage();
         document.almanachForm.submit();
       }
@@ -226,6 +234,8 @@
           $('#calendar').fullCalendar('gotoDate', <c:out value="${currentDay.year}"/>, <c:out value="${currentDay.month}"/>, <c:out value="${currentDay.dayOfMonth}"/>)
 
         });
+        
+        -->
     </script>
   </head>
   <body>
@@ -287,6 +297,8 @@
     <view:window>
 
       <view:tabs>
+        <fmt:message key="almanach.rssNext" var="opLabel" />
+        <view:tab label="${opLabel}" action="javascript:onClick=viewNextEvents()" selected="${calendarView.viewType.nextEventsView}"/>
         <fmt:message key="GML.week" var="opLabel" />
         <view:tab label="${opLabel}" action="javascript:onClick=viewByWeek()" selected="${calendarView.viewType.weeklyView}"/>
         <fmt:message key="GML.month" var="opLabel" />
@@ -305,6 +317,7 @@
           <div id="today">
             <a href="javascript:onClick=goToDay()"><c:out value="${today}" /></a>
           </div>
+          
           <c:if test="${accessibleInstances ne null}">
             <div id="others">
               <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
@@ -314,7 +327,7 @@
                   <c:if test="${componentId eq instanceId}">
                     <c:set var="selected" value="selected='selected'"/>
                   </c:if>
-                  <option value="<c:out value='${instance.url}'/>Main" <c:out value="${selected}" escapeXml="false"/>><c:out value="${instance.spaceId} - ${instance.label}"/></option>
+                  <option value="<c:out value='${instance.url}'/>Main?view=<c:out value='${calendarView.viewType.name}'/>" <c:out value="${selected}" escapeXml="false"/>><c:out value="${instance.spaceId} - ${instance.label}"/></option>
                 </c:forEach>
               </select>
             </div>

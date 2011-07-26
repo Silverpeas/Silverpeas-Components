@@ -209,4 +209,9 @@ public class ReplyGettingTest extends RESTWebServiceTest {
      when(myPersonalizationService.getUserSettings(anyString())).thenReturn(prefs);
      personalisationService.setPersonalizationService(myPersonalizationService);
   }
+
+  @Override
+  public String[] getExistingComponentInstances() {
+    return new String[]{ COMPONENT_INSTANCE_ID };
+  }
 }
