@@ -47,7 +47,7 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
-import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;

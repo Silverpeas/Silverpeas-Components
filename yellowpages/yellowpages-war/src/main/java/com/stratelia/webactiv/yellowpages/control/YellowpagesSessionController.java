@@ -1500,7 +1500,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
                     fieldDisplayer.display(out, field, fieldTemplate, new PagesContext());
                   }
                   String fieldValue = sw.getBuffer().toString();
-                  // removing ending carriage return appended by out.println() of fieldDisplayer
+                  // removing ending carriage return appended by out.println() of displayers
                   if (fieldValue.endsWith("\r\n")) {
                     fieldValue = fieldValue.substring(0, fieldValue.length() - 2);
                   }

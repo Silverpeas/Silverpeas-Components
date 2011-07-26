@@ -64,7 +64,7 @@ import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.kmelia.export.ExportFileNameProducer;
