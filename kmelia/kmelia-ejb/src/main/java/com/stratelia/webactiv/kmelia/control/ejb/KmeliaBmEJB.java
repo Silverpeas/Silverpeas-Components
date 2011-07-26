@@ -1411,13 +1411,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
       if (draftModeUsed) {
         status = PublicationDetail.DRAFT;
-      }
-
-      String profile = getProfile(pubDetail.getCreatorId(), nodePK);
-      if (SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.admin.isInRole(profile)) {
-        if (!draftModeUsed) {
+      } else {
+        String profile = getProfile(pubDetail.getCreatorId(), nodePK);
+        if (SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.admin.isInRole(profile)) {
           status = PublicationDetail.VALID;
-          pubDetail.setValidatorId(pubDetail.getCreatorId());
         }
       }
     }
@@ -1452,7 +1449,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         if ("supervisor".equals(profile) || SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.admin.
                 isInRole(profile)) {
           newStatus = PublicationDetail.VALID;
-          pubDetail.setValidatorId(pubDetail.getUpdaterId());
         }
         pubDetail.setStatus(newStatus);
       }
