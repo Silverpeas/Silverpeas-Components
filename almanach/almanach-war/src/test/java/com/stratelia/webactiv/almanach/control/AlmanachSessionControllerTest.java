@@ -28,6 +28,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import java.util.Calendar;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
 
@@ -36,8 +37,19 @@ import static org.mockito.Mockito.*;
  * @author ehugonnet
  */
 public class AlmanachSessionControllerTest {
+  
+  private MainSessionController mainController;
+  private ComponentContext context;
 
   public AlmanachSessionControllerTest() {
+  }
+  
+  @Before
+  public void prepareMocksToUseInTests() {
+    mainController = mock(MainSessionController.class);
+    when(mainController.getComponentParameterValue(anyString(), anyString())).thenReturn("");
+    context = mock(ComponentContext.class);
+    when(context.getCurrentComponentId()).thenReturn("almanach121");
   }
 
   /**
@@ -45,8 +57,6 @@ public class AlmanachSessionControllerTest {
    */
   @Test
   public void testGetCurrentDay() {
-    MainSessionController mainController = mock(MainSessionController.class);
-    ComponentContext context = mock(ComponentContext.class);
     AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
     Calendar expResult = Calendar.getInstance();
     Date result = instance.getCurrentDay();
@@ -58,9 +68,6 @@ public class AlmanachSessionControllerTest {
    */
   @Test
   public void testSetCurrentDay() {
-    MainSessionController mainController = mock(MainSessionController.class);
-    ComponentContext context = mock(ComponentContext.class);
-    when(context.getCurrentComponentId()).thenReturn("almanach121");
     AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
     Calendar expResult = Calendar.getInstance();
     instance.setCurrentDay(expResult.getTime());
@@ -73,9 +80,6 @@ public class AlmanachSessionControllerTest {
    */
   @Test
   public void testNextMonth() {
-    MainSessionController mainController = mock(MainSessionController.class);
-    ComponentContext context = mock(ComponentContext.class);
-    when(context.getCurrentComponentId()).thenReturn("almanach121");
     AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
     Calendar today = Calendar.getInstance();
     instance.setCurrentDay(today.getTime());
@@ -91,9 +95,6 @@ public class AlmanachSessionControllerTest {
    */
   @Test
   public void testPreviousMonth() {
-    MainSessionController mainController = mock(MainSessionController.class);
-    ComponentContext context = mock(ComponentContext.class);
-    when(context.getCurrentComponentId()).thenReturn("almanach121");
     AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
     Calendar today = Calendar.getInstance();
     instance.setCurrentDay(today.getTime());
@@ -109,9 +110,6 @@ public class AlmanachSessionControllerTest {
    */
   @Test
   public void testToday() {
-    MainSessionController mainController = mock(MainSessionController.class);
-    ComponentContext context = mock(ComponentContext.class);
-    when(context.getCurrentComponentId()).thenReturn("almanach121");
     AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
     instance.today();
     Calendar expResult = Calendar.getInstance();

@@ -36,7 +36,6 @@
 
 	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(almanach.getLanguage());
 
-	// r�cup�ration du user
 	String user = request.getParameter("flag");
 	
 	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");

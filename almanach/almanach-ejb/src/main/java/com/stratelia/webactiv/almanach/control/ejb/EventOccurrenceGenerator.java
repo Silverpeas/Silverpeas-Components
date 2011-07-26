@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
+import com.silverpeas.calendar.Date;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import java.util.Calendar;
@@ -59,4 +60,12 @@ public interface EventOccurrenceGenerator {
    */
   List<EventOccurrence> generateOccurrencesInWeek(final Calendar week,
       final List<EventDetail> events);
+  
+  /**
+   * Generates the occurrences of the specified events that occur from the specified date.
+   * @param date the inclusive date from which the event occurrences occur.
+   * @param events the events for which the occurrences have to be generated.
+   * @return a list of occurrences occuring from the specified date.
+   */
+  List<EventOccurrence> generateOccurrencesFrom(final Date date, final List<EventDetail> events);
 }

@@ -128,7 +128,7 @@ public class DisplayableEventOccurrenceTest {
     Calendar endDate = Calendar.getInstance();
     Calendar startDate = Calendar.getInstance();
     endDate.add(Calendar.HOUR_OF_DAY, 2);
-    EventDetail eventDetail = new EventDetail(new EventPK("1", "WA1", "almanach1"),
+    EventDetail eventDetail = new TestEventDetail(new EventPK("1", "WA1", "almanach1"),
         "event test", startDate.getTime(), endDate.getTime());
     eventDetail.setNameDescription("An event for testing purpose");
     eventDetail.setTitle("event test");
