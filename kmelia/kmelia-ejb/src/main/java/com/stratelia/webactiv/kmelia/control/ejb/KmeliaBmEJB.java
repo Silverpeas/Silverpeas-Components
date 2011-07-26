@@ -3058,12 +3058,26 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    */
   @Override
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile) {
-    draftOutPublication(pubPK, topicPK, userProfile, false);
+    PublicationDetail pubDetail = draftOutPublicationWithoutNotifications(pubPK, topicPK, userProfile);
+    indexExternalElementsOfPublication(pubDetail);
+    sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile);
+  }
+  
+  /**
+   * This method is here to manage correctly transactional scope of EJB (conflicted by EJB and UserPreferences service)
+   */
+  public PublicationDetail draftOutPublicationWithoutNotifications(PublicationPK pubPK, NodePK topicPK, String userProfile) {
+    return draftOutPublication(pubPK, topicPK, userProfile, false, true);
   }
 
   @Override
-  public void draftOutPublication(PublicationPK pubPK, NodePK topicPK,
-          String userProfile, boolean forceUpdateDate) {
+  public PublicationDetail draftOutPublication(PublicationPK pubPK, NodePK topicPK,
+      String userProfile, boolean forceUpdateDate) {
+    return draftOutPublication(pubPK, topicPK, userProfile, forceUpdateDate, false);
+  }
+  
+  private PublicationDetail draftOutPublication(PublicationPK pubPK, NodePK topicPK,
+          String userProfile, boolean forceUpdateDate, boolean inTransaction) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.draftOutPublication()",
             "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId());
 
@@ -3091,38 +3105,53 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         } else {
           pubDetail.setStatus(PublicationDetail.TO_VALIDATE);
         }
-
-        // create validation todos for publishers
-        createTodosForPublication(pubDetail, true);
       }
 
       KmeliaHelper.checkIndex(pubDetail);
 
       getPublicationBm().setDetail(pubDetail, forceUpdateDate);
-
-      // PDC and subcriptions are supported by kmelia and filebox only
+      
       if (!KmeliaHelper.isKmax(pubDetail.getInstanceId())) {
         // update visibility attribute on PDC
         updateSilverContentVisibility(pubDetail);
-
-        // alert subscribers
-        sendSubscriptionsNotification(pubDetail, false);
-      }
-
-      // index all publication's elements
-      indexExternalElementsOfPublication(pubDetail);
-
-      // alert supervisors
-      if (topicPK != null) {
-        sendAlertToSupervisors(topicPK, pubDetail);
       }
 
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftOutPublication()",
               "root.MSG_GEN_PARAM_VALUE", "new status = " + pubDetail.getStatus());
+      
+      if (!inTransaction) {
+        // index all publication's elements
+        indexExternalElementsOfPublication(pubDetail);
+        
+        sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile);
+      }
+      
+      return pubDetail;
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.draftOutPublication()",
-              ERROR,
-              "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_LA_PUBLICATION", e);
+      throw new KmeliaRuntimeException("KmeliaBmEJB.draftOutPublication()", ERROR,
+          "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_LA_PUBLICATION", e);
+    }
+  }
+  
+  private void sendTodosAndNotificationsOnDraftOut(PublicationDetail pubDetail, NodePK topicPK, String userProfile) {
+    if (SilverpeasRole.writer.isInRole(userProfile)) {
+      try {
+        createTodosForPublication(pubDetail, true);
+      } catch (RemoteException e) {
+        throw new KmeliaRuntimeException("KmeliaBmEJB.sendTodosAndNotificationsOnDraftOut()", ERROR,
+            "kmelia.CANT_CREATE_TODOS", e);
+      }
+    }
+
+    // Subscriptions and supervisors are supported by kmelia and filebox only
+    if (!KmeliaHelper.isKmax(pubDetail.getInstanceId())) {
+      // alert subscribers
+      sendSubscriptionsNotification(pubDetail, false);
+      
+      // alert supervisors
+      if (topicPK != null) {
+        sendAlertToSupervisors(topicPK, pubDetail);
+      }
     }
   }
 

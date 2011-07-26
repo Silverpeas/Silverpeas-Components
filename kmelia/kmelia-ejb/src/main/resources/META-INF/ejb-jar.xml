@@ -160,7 +160,7 @@
     	<method>
     		<ejb-name>ejb/KmeliaBm</ejb-name>
     		<method-intf>Remote</method-intf>
-    		<method-name>draftOutPublication</method-name>
+    		<method-name>draftOutPublicationWithoutNotifications</method-name>
     		<method-params>
     			<method-param>com.stratelia.webactiv.util.publication.model.PublicationPK</method-param>
     			<method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>

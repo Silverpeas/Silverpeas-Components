@@ -403,8 +403,11 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK,
       String userProfile) throws RemoteException;
+  
+  public PublicationDetail draftOutPublicationWithoutNotifications(PublicationPK pubPK, NodePK topicPK,
+      String userProfile) throws RemoteException;
 
-  public void draftOutPublication(PublicationPK pubPK, NodePK topicPK,
+  public PublicationDetail draftOutPublication(PublicationPK pubPK, NodePK topicPK,
       String userProfile, boolean forceUpdateDate) throws RemoteException;
 
   /**
