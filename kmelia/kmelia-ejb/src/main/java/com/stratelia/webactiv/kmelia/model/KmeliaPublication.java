@@ -162,7 +162,7 @@ public class KmeliaPublication implements Serializable {
    */
   public String getURL() {
     String defaultURL =
-            getOrganizationService().getDomain(getCreator().getDomainId()).getSilverpeasServerURL();
+            getOrganizationController().getDomain(getCreator().getDomainId()).getSilverpeasServerURL();
     ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
     String serverURL = generalSettings.getString("httpServerBase", defaultURL);
     return serverURL + URLManager.getSimpleURL(URLManager.URL_PUBLI, getPk().getId());
@@ -206,7 +206,7 @@ public class KmeliaPublication implements Serializable {
    */
   public UserDetail getCreator() {
     String creatorId = getDetail().getCreatorId();
-    return getOrganizationService().getUserDetail(creatorId);
+    return getOrganizationController().getUserDetail(creatorId);
   }
 
   /**
@@ -222,7 +222,7 @@ public class KmeliaPublication implements Serializable {
     if (modifierId == null) {
       lastModifier = getCreator();
     } else {
-      lastModifier = getOrganizationService().getUserDetail(modifierId);
+      lastModifier = getOrganizationController().getUserDetail(modifierId);
     }
     return lastModifier;
   }
@@ -369,7 +369,7 @@ public class KmeliaPublication implements Serializable {
     return new VersioningUtil();
   }
 
-  private OrganizationController getOrganizationService() {
+  private OrganizationController getOrganizationController() {
     return organisationService;
   }
 
