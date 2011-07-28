@@ -51,10 +51,18 @@
 	</enterprise-beans>
 	<assembly-descriptor>
 		<container-transaction>
+      		<method>
+        		<ejb-name>ejb/GalleryBm</ejb-name>
+        		<method-intf>Remote</method-intf>
+        		<method-name>*</method-name>
+      		</method>
+      		<trans-attribute>NotSupported</trans-attribute>
+    	</container-transaction>
+		<container-transaction>
 			<method>
 				<ejb-name>ejb/GalleryBm</ejb-name>
 				<method-intf>Remote</method-intf>
-				<method-name> * </method-name>
+				<method-name>deleteAlbum</method-name>
 			</method>
 			<trans-attribute>Required</trans-attribute>
 		</container-transaction>

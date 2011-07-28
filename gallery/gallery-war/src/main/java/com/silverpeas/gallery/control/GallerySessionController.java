@@ -69,8 +69,10 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -881,9 +883,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // demande de photo
     // 1. création du message
 
-    OrganizationController orga = new OrganizationController();
+    OrganizationController orga = getOrganizationController();
     UserDetail[] admins = orga.getUsers("useless", getComponentId(), "admin");
-    String user = orga.getUserDetail(getUserId()).getDisplayedName();
+    String user = getUserDetail().getDisplayedName();
 
     ResourceLocator message = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle",
             "fr");
@@ -911,15 +913,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       notifMetaData.addUserRecipient(new UserRecipient(admin));
     }
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "Main");
-    notifMetaData.setComponentId(getComponentId());
 
     // 2. envoie de la notification aux admin
-    try {
-      getGalleryBm().notifyUsers(notifMetaData, getUserId(), getComponentId());
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.createMessage()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    notifyUsers(notifMetaData);
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String photoId)
@@ -1453,9 +1449,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // de l'utilisateur
     // 1. création du message
 
-    OrganizationController orga = new OrganizationController();
+    OrganizationController orga = getOrganizationController();
     UserDetail[] admins = orga.getUsers("useless", getComponentId(), "admin");
-    String user = orga.getUserDetail(getUserId()).getDisplayedName();
+    String user = getUserDetail().getDisplayedName();
 
     ResourceLocator message = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle",
             "fr");
@@ -1484,26 +1480,19 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
             + orderId);
-    notifMetaData.setComponentId(getComponentId());
 
     // 2. envoie de la notification aux admin
-    try {
-      getGalleryBm().notifyUsers(notifMetaData, getUserId(), getComponentId());
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.sendAskOrder()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    notifyUsers(notifMetaData);
   }
 
   public void sendAskOrderUser(String orderId) throws RemoteException {
     // envoyer une notification au lecteur pour le prévenir du traitement de sa
     // demande
     // 1. création du message
-
-    OrganizationController orga = new OrganizationController();
-
     Order order = getOrder(orderId);
-    String user = orga.getUserDetail(Integer.toString(order.getProcessUserId())).getDisplayedName();
+    String user =
+        getOrganizationController().getUserDetail(Integer.toString(order.getProcessUserId()))
+            .getDisplayedName();
 
     ResourceLocator message = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle",
             "fr");
@@ -1530,15 +1519,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(order.getUserId())));
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
             + orderId);
-    notifMetaData.setComponentId(getComponentId());
 
     // 2. envoie de la notification aux admin
-    try {
-      getGalleryBm().notifyUsers(notifMetaData, getUserId(), getComponentId());
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.sendAskOrderUser()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    notifyUsers(notifMetaData);
   }
 
   public void createBasket() {
@@ -1891,5 +1874,17 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       album.setNbPhotos(nbPhotos);
     }
     return albums;
+  }
+  
+  public void notifyUsers(NotificationMetaData notifMetaData) {
+    try {
+      notifMetaData.setSender(getUserId());
+      notifMetaData.setComponentId(getComponentId());
+      NotificationSender notifSender = new NotificationSender(getComponentId());
+      notifSender.notifyUser(notifMetaData);
+    } catch (NotificationManagerException e) {
+      throw new GalleryRuntimeException("GallerySessionController.notifyUsers()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    }
   }
 }

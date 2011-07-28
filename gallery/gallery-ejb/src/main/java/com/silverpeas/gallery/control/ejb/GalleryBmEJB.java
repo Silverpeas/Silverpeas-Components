@@ -43,9 +43,6 @@ import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.comment.CommentRuntimeException;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -203,14 +200,12 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     Connection con = initCon();
     try {
       int photoId = Integer.parseInt(photoPK.getId());
-      PhotoDetail photo = PhotoDAO.getPhoto(con, photoId);
-      return photo;
+      return PhotoDAO.getPhoto(con, photoId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -218,14 +213,12 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public Collection<PhotoDetail> getAllPhotos(String instanceId) {
     Connection con = initCon();
     try {
-      Collection<PhotoDetail> photos = PhotoDAO.getAllPhotos(con, instanceId);
-      return photos;
+      return PhotoDAO.getAllPhotos(con, instanceId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotos()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -235,16 +228,12 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     try {
       String albumId = nodePK.getId();
       String instanceId = nodePK.getInstanceId();
-      Collection<PhotoDetail> photos = PhotoDAO.getAllPhoto(con, albumId, instanceId,
-          viewAllPhoto);
-
-      return photos;
+      return PhotoDAO.getAllPhoto(con, albumId, instanceId, viewAllPhoto);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -255,17 +244,12 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     try {
       String albumId = nodePK.getId();
       String instanceId = nodePK.getInstanceId();
-      Collection<PhotoDetail> photos =
-          PhotoDAO.getAllPhotosSorted(con, albumId, instanceId, parsedParameters,
-              viewAllPhoto);
-
-      return photos;
+      return PhotoDAO.getAllPhotosSorted(con, albumId, instanceId, parsedParameters, viewAllPhoto);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -273,15 +257,12 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public Collection<PhotoDetail> getNotVisible(String instanceId) {
     Connection con = initCon();
     try {
-      Collection<PhotoDetail> photos = PhotoDAO.getPhotoNotVisible(con, instanceId);
-
-      return photos;
+      return PhotoDAO.getPhotoNotVisible(con, instanceId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getNotVisible()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -301,8 +282,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.createPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_CREATE", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -325,8 +305,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.updatePhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_UPDATE", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -358,8 +337,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.deletePhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_DELETE", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -367,26 +345,12 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public Collection<PhotoDetail> getDernieres(String instanceId, boolean viewAllPhoto) {
     Connection con = initCon();
     try {
-      Collection<PhotoDetail> photos = PhotoDAO.getDernieres(con, instanceId, viewAllPhoto);
-      return photos;
+      return PhotoDAO.getDernieres(con, instanceId, viewAllPhoto);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
-    }
-  }
-
-  private void fermerCon(Connection con) {
-    try {
-      if (con != null) {
-        con.close();
-      }
-    } catch (SQLException e) {
-      // traitement des exceptions
-      throw new GalleryRuntimeException("GalleryBmEJB.fermerCon()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", e);
+      DBUtil.close(con);
     }
   }
 
@@ -424,8 +388,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.getPathList()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PATH", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -447,8 +410,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR,
           "gallery.IMPOSSIBLE_D_AJOUTER_LES_MODELES", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -471,8 +433,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR,
           "gallery.IMPOSSIBLE_D_AJOUTER_LES_MODELES", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -495,8 +456,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR,
           "gallery.IMPOSSIBLE_D_AJOUTER_LES_MODELES", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -540,8 +500,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   private OrganizationController getOrganizationController() {
-    OrganizationController orga = new OrganizationController();
-    return orga;
+    return new OrganizationController();
   }
 
   private String displayPath(Collection<NodeDetail> path, int beforeAfter) {
@@ -782,29 +741,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotos()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
-    }
-  }
-
-  @Override
-  public void notifyUsers(NotificationMetaData notifMetaData, String senderId,
-      String componentId) {
-    Connection con = null;
-    try {
-      con = initCon();
-      notifMetaData.setConnection(con);
-      if (notifMetaData.getSender() == null
-          || notifMetaData.getSender().length() == 0) {
-        notifMetaData.setSender(senderId);
-      }
-      NotificationSender notifSender = new NotificationSender(componentId);
-      notifSender.notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.notifyUsers()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -817,8 +754,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.createOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_NOT_CREATE", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -832,8 +768,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR,
           "gallery.MSG_REQUEST_LIST_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -847,8 +782,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR,
           "gallery.MSG_REQUEST_ORDER_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -862,8 +796,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR,
           "gallery.MSG_REQUEST_ORDER_ROW_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -876,8 +809,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.getOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -890,8 +822,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.getOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -904,8 +835,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.deleteOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -918,8 +848,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.photoDateDownload()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
-      // fermer la connexion
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -1006,7 +935,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotobyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
-      fermerCon(con);
+      DBUtil.close(con);
     }
 
   }
@@ -1032,7 +961,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 
@@ -1059,7 +988,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     } finally {
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
   
@@ -1071,7 +1000,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       throw new GalleryRuntimeException("sortAlbums()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_NOT_ORDER", e);
     } finally {
-      fermerCon(con);
+      DBUtil.close(con);
     }
   }
 }
