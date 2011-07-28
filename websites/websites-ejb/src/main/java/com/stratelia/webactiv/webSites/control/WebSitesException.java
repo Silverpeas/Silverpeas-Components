@@ -32,6 +32,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class WebSitesException extends SilverpeasException {
 
+  private static final long serialVersionUID = 8020751439361166931L;
+
   public WebSitesException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }

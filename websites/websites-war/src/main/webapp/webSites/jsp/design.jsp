@@ -163,491 +163,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	}
 	//CBO : FIN ADD
 
-	//CBO : REMOVE
-    /*ArrayList listIcons = new ArrayList();
-    int i = 0;
-    int begin = 0;
-    int end = 0;
-    if (listeIcones != null) {
-      end = listeIcones.indexOf(',', begin);
-      while(end != -1) {
-          listIcons.add(listeIcones.substring(begin, end));
-          begin = end + 1;
-          end = listeIcones.indexOf(',', begin);
-      }
-    }*/
-
     if (currentPath != null) {
 		currentPath = doubleAntiSlash(currentPath);
     }
 
-    //CBO : REMOVE boolean searchOk = true;
 
     SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION = "+action);
-
-	//CBO : REMOVE
-    //NEW SITE -------------------------------------------------------------
-/*    if (action.equals("newSite")) {
-		//ADD NEW SITE  -------------------------------------------------------------
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ADD NEW  SITE = "+nomSite);
-
-		/* recuperation de l'id */
-/*		id = scc.getNextId();
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "webSite JSP designSite id = "+id);
-
-		/* Creer le repertoire id */
-		//CBO : UPDATE
-		//scc.createFolder(settings.getString("uploadsPath")+settings.getString("Context")+"/"+scc.getComponentId()+"/"+id);
-/*		scc.createFolder(settings.getString("uploadsPath")+settings.getString("Context")+"/"+componentId+"/"+id);
-
-		/* creation en BD */
-/*		SiteDetail descriptionSite = new SiteDetail(id, nomSite, description, nomPage, 0, null, null, 0, popup);  /* type 0 = site cree */
-
-		//CBO : UPDATE
-		//scc.createWebSite(descriptionSite);
-/*		String pubId = scc.createWebSite(descriptionSite);
-
-		if (listIcons.size() > 0)
-			scc.associateIcons(id, listIcons);
-
-		//CBO : UPDATE
-		//currentPath = settings.getString("uploadsPath")+settings.getString("Context")+"/"+scc.getComponentId()+"/"+id;
-		currentPath = settings.getString("uploadsPath")+settings.getString("Context")+"/"+componentId+"/"+id;
-
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "avant doubleAntiSlash :  currentPath= "+currentPath);
-		currentPath = doubleAntiSlash(currentPath);
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "apres doubleAntiSlash currentPath= "+currentPath);
-
-		/* ajout de la page principale */
-/*		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ADD PAGE PRINCIPALE : "+currentPath+"/"+nomPage);
-		String code = " ";
-
-		/* Creer la page principale */
-/*		scc.createFile(currentPath, nomPage, code);
-
-		/* publications : classer le site dans les themes coch�s */
-/*		ArrayList arrayToClassify = new ArrayList();
-		boolean publish = false;
-		i = 0;
-		begin = 0;
-		end = 0;
-		end = listeTopics.indexOf(',', begin);
-		while(end != -1) {
-			String idTopic = listeTopics.substring(begin, end);
-
-			begin = end + 1;
-			end = listeTopics.indexOf(',', begin);
-
-			// ajout de la publication dans le theme
-			//CBO : REMOVE PublicationDetail pubDetail = new PublicationDetail("X", nomSite, description, null, null, null, "", "0", id, "", nomPage);
-
-			//CBO : REMOVE scc.getFolder(idTopic);
-
-			//CBO : UPDATE
-			//String newPubId = scc.createPublication(pubDetail);
-			scc.addPublicationToFolder(pubId, idTopic);
-
-			publish = true;
-		}
-
-		if (publish) {
-			arrayToClassify.add(id);
-			scc.publish(arrayToClassify); //set etat du site a 1
-		}
-    }
-
-    //UPDATE DESCRIPTION -------------------------------------------------------------
-	else if (action.equals("updateDescription")) { // type 0 design ou 2 upload
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "UPDATE DESCRIPTION id = "+id);
-
-		String etat = (String) request.getParameter("etat");
-
-		SiteDetail ancien = scc.getWebSite(id);
-		int type = ancien.getType();
-
-		/* verif que le nom de la page principale est correcte */
-/*		Collection collPages = scc.getAllWebPages2(currentPath);
-		Iterator j = collPages.iterator();
-		boolean ok = false;
-		while (j.hasNext()) {
-			File f = (File) j.next();
-			if (f.getName().equals(nomPage)) {
-				ok = true;
-				break;
-			}
-		}
-
-		searchOk = ok;
-
-		if (searchOk) {
-
-			/* update description en BD */
-			//CBO : REMOVE
-			/*ArrayList theSite = new ArrayList();
-			theSite.add(id);
-			scc.deleteWebSites(theSite);*/
-
-/*			SiteDetail descriptionSite2 = new SiteDetail(id, nomSite, description, nomPage, type, null, null, new Integer(etat).intValue(), popup);
-
-			//CBO : UPDATE
-			//scc.createWebSite(descriptionSite2);
-			scc.updateWebSite(descriptionSite2);
-
-			if (listIcons.size() > 0)
-				scc.associateIcons(id, listIcons);
-
-			/* update description des publications */
-			//CBO : REMOVE
-			/*Collection c = scc.getAllPublication(id);
-			Iterator k = c.iterator();
-			while (k.hasNext()) {
-				String pubId = (String) k.next();
-				PublicationDetail pub = new PublicationDetail(pubId, nomSite, description, null, null, null, null, new Integer(type).toString(), id, "", nomPage);
-				scc.updatePublication(pub);
-			}*/
-/*		}
-	}
-
-    else if (action.equals("addFolder")) {
-        //ADD FOLDER -------------------------------------------------------------
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ADD FOLDER : "+currentPath+"/"+name);
-
-        /* Creer le nouveau repertoire */
-/*        scc.createFolder(currentPath+"/"+name);
-
-        SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "id= "+id);
-
-        SiteDetail site = scc.getWebSite(id);
-        nomSite = site.getName();
-
-		//CBO : UPDATE
-        //auteur = site.getAuthor();
-		auteur = site.getCreatorId();
-
-		//CBO : UPDATE
-        //date = resources.getOutputDate(site.getDate());
-		date = resources.getOutputDate(site.getCreationDate());
-
-        popup = site.getPopup();
-
-		//CBO : UPDATE
-        //nomPage = site.getPage();
-		nomPage = site.getContent();
-    }
-
-    else if (action.equals("renameFolder")) {
-        //RENAME FOLDER -------------------------------------------------------------
-        SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "RENAME FOLDER : "+currentPath+"/"+name);
-
-        /* Modifier le nom du repertoire */
-/*        scc.renameFolder(currentPath+"/"+name, currentPath+"/"+newName);
-
-        SiteDetail site = scc.getWebSite(id);
-        nomSite = site.getName();
-
-		//CBO : UPDATE
-        //auteur = site.getAuthor();
-		auteur = site.getCreatorId();
-
-		//CBO : UPDATE
-        //date = resources.getOutputDate(site.getDate());
-		date = resources.getOutputDate(site.getCreationDate());
-
-        popup = site.getPopup();
-
-		//CBO : UPDATE
-        //nomPage = site.getPage();
-		nomPage = site.getContent();
-    }
-
-    else if (action.equals("deleteFolder")) {
-        //DELETE FOLDER -------------------------------------------------------------
-        SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "DELETE FOLDER : "+currentPath+"/"+name);
-
-        /* Supprimer le repertoire */
- /*       scc.delFolder(currentPath+"/"+name);
-
-        SiteDetail site = scc.getWebSite(id);
-        nomSite = site.getName();
-
-		//CBO : UPDATE
-        //auteur = site.getAuthor();
-		auteur = site.getCreatorId();
-
-		//CBO : UPDATE
-        //date = resources.getOutputDate(site.getDate());
-		date = resources.getOutputDate(site.getCreationDate());
-
-        popup = site.getPopup();
-
-		//CBO : UPDATE
-        //nomPage = site.getPage();
-		nomPage = site.getContent();
-    }
-
-    else if (action.equals("addPage")) {
-		//ADD PAGE -------------------------------------------------------------
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ADD PAGE : "+currentPath+"/"+nomPage);
-		String code = (String) request.getParameter("Code"); // = code de la page a parser
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ADD PAGE, CODE A PARSER = "+code);
-
-		code = Encode.htmlStringToJavaString(code);
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ADD PAGE, apres encode = "+code);
-
-		String newCode = parseCodeSupprImage(scc, code, request, settings, currentPath); /* enleve les http://localhost:8000/WAwebSiteUploads/WA0webSite17/18/  et on garde seulement rep/icon.gif */
-/*		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ADD PAGE, APRES PARSE IMAGE, CODE = "+newCode);
-
-		newCode = parseCodeSupprHref(scc, newCode, settings, currentPath); /* enleve les http://localhost:8000/webactiv/RwebSite/jsp/  et on garde seulement rep/page.html */
-/*		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ADD PAGE, APRES PARSE HREF, CODE = "+newCode);
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "currentPath = "+currentPath);
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "nomPage = "+nomPage);
-		// Creer une nouvelle page
-		scc.createFile(currentPath, nomPage, newCode);
-
-		//deduction de l'id a partir du path
-		//CBO : UPDATE
-		//int longueur = scc.getComponentId().length();
-		int longueur = componentId.length();
-		//CBO : UPDATE
-		//int index2 = currentPath.lastIndexOf(scc.getComponentId());
-		int index2 = currentPath.lastIndexOf(componentId);
-		String chemin = currentPath.substring(index2 + longueur);
-
-		chemin = chemin.substring(1);
-		chemin = supprDoubleAntiSlash(chemin);
-
-		String finNode = chemin;
-		int index = finNode.indexOf("/");
-		if (index == -1)
-			id = finNode;
-		else {
-			id = finNode.substring(0, index);
-		}
-
-		SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "action= addPage, id du Site = "+id);
-
-		SiteDetail site = scc.getWebSite(id);
-		nomSite = site.getName();
-
-		//CBO : UPDATE
-		//auteur = site.getAuthor();
-		auteur = site.getCreatorId();
-
-		//CBO : UPDATE
-		//date = resources.getOutputDate(site.getDate());
-		date = resources.getOutputDate(site.getCreationDate());
-
-		popup = site.getPopup();
-
-		//CBO : UPDATE
-		//nomPage = site.getPage();
-		nomPage = site.getContent();
-    }
-
-    else if (action.equals("renamePage")) {
-        //RENAME PAGE -------------------------------------------------------------
-        SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "RENAME PAGE : "+currentPath+"/"+name);
-
-        /* Modifier le nom du fichier */
-/*        scc.renameFile(currentPath, name, newName);
-
-        SiteDetail site = scc.getWebSite(id);
-        nomSite = site.getName();
-
-		//CBO : UPDATE
-        //auteur = site.getAuthor();
-		auteur = site.getCreatorId();
-
-		//CBO : UPDATE
-        //date = resources.getOutputDate(site.getDate());
-		date = resources.getOutputDate(site.getCreationDate());
-
-        popup = site.getPopup();
-
-		//CBO : UPDATE
-        //nomPage = site.getPage();
-		nomPage = site.getContent();
-    }
-
-    else if (action.equals("deletePage")) {
-        //DELETE PAGE -------------------------------------------------------------
-        SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "DELETE PAGE : "+currentPath+"/"+name);
-
-        /* Supprimer la page */
-/*        scc.deleteFile(currentPath+"/"+name);
-
-        SiteDetail site = scc.getWebSite(id);
-        nomSite = site.getName();
-
-		//CBO : UPDATE
-        //auteur = site.getAuthor();
-		auteur = site.getCreatorId();
-
-		//CBO : UPDATE
-        //date = resources.getOutputDate(site.getDate());
-		date = resources.getOutputDate(site.getCreationDate());
-
-        popup = site.getPopup();
-
-		//CBO : UPDATE
-        //nomPage = site.getPage();
-		nomPage = site.getContent();
-    }
-
-    else if (action.equals("classifySite")) { // cas de l'upload et du design
-        //CLASSIFY SITE -------------------------------------------------------------
-        SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "action= classifySite, id du Site = "+id);
-
-        SiteDetail site = scc.getWebSite(id);
-        nomSite = site.getName();
-        description = site.getDescription();
-
-		//CBO : UPDATE
-        //auteur = site.getAuthor();
-		auteur = site.getCreatorId();
-
-		//CBO : UPDATE
-        //date = resources.getOutputDate(site.getDate());
-		date = resources.getOutputDate(site.getCreationDate());
-
-        popup = site.getPopup();
-
-		//CBO : UPDATE
-        //nomPage = site.getPage();
-		nomPage = site.getContent();
-
-        int type = site.getType(); // 0 design ou 2 upload
-
-        /* publications : declasser completement le site */
-		//CBO : REMOVE
-        /*Collection c = scc.getAllPublication(id);
-        Iterator k = c.iterator();
-        while (k.hasNext()) {
-            String pubId = (String) k.next();
-            scc.deletePublication(pubId);
-        }
-        ArrayList arrayToDeClassify = new ArrayList();
-        arrayToDeClassify.add(id);
-        scc.dePublish(arrayToDeClassify);*/
-
-		
-        /* publications : classer le site dans les themes coch�s*/
-/*        ArrayList arrayToClassify = new ArrayList();
-        boolean publish = false;
-
-		//CBO : UPDATE
-        /*i = 0;
-        begin = 0;
-        end = 0;
-        end = listeTopics.indexOf(',', begin);
-        while(end != -1) {
-            String idTopic = listeTopics.substring(begin, end);
-
-            begin = end + 1;
-            end = listeTopics.indexOf(',', begin);
-            // ajout de la publication dans le theme
-            PublicationDetail pubDetail = new PublicationDetail("X", nomSite, description, null, null, null, "", new Integer(type).toString(), id, "", nomPage);
-            scc.getFolder(idTopic);
-            String newPubId = scc.createPublication(pubDetail);
-            publish = true;
-        }
-
-        if (publish) {
-          arrayToClassify.add(id);
-          scc.publish(arrayToClassify); //set etat du site a 1
-       }*/
-    
-/*		ArrayList arrayTopic = new ArrayList();
-		i = 0;
-		begin = 0;
-		end = 0;
-		end = listeTopics.indexOf(',', begin);
-		String idTopic = null;
-		while(end != -1) {
-			idTopic = listeTopics.substring(begin, end);
-
-			begin = end + 1;
-			end = listeTopics.indexOf(',', begin);
-		
-			arrayTopic.add(idTopic);
-			publish = true;
-		}
-		scc.updateClassification(id, arrayTopic);
-
-		arrayToClassify.add(id);
-		if (publish) {
-          scc.publish(arrayToClassify); //set etat du site a 1
-       } else {
-			scc.dePublish(arrayToClassify); //set etat du site a 0
-	   }
-	    //CBO : FIN UPDATE
-    }
-
-    else if (action.equals("design")) {
-        //DESIGN -------------------------------------------------------------
-        SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "action= design, id du Site = "+id);
-        SiteDetail site = scc.getWebSite(id);
-        nomSite = site.getName();
-
-		//CBO : UPDATE
-        //auteur = site.getAuthor();
-		auteur = site.getCreatorId();
-
-		//CBO : UPDATE
-        //date = resources.getOutputDate(site.getDate());
-		date = resources.getOutputDate(site.getCreationDate());
-
-        popup = site.getPopup();
-
-		//CBO : UPDATE
-        //nomPage = site.getPage();
-		nomPage = site.getContent();
-    }
-
-/*    else {
-    //AUTRE  -------------------------------------------------------------
-        // view en cas de rechargement de la page pour naviguer dans le chemin
-        //ou createSite annule
-        // ou upload d'image
-       //deduction de l'id a partir du path
-
-		//CBO : UPDATE
-		//int longueur2 = scc.getComponentId().length();
-		int longueur2 = componentId.length();
-		//CBO : UPDATE
-		//int index2 = currentPath.lastIndexOf(scc.getComponentId());
-		int index2 = currentPath.lastIndexOf(componentId);
-		String chemin = currentPath.substring(index2 + longueur2);
-		chemin = chemin.substring(1);
-		chemin = supprDoubleAntiSlash(chemin);
-		String finNode = chemin;
-        int index = finNode.indexOf("/");
-        if (index == -1)
-            id = finNode;
-        else {
-            id = finNode.substring(0, index);
-        }
-
-        SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "action= view, id du Site = "+id);
-
-        SiteDetail site = scc.getWebSite(id);
-        nomSite = site.getName();
-
-		//CBO : UPDATE
-        //auteur = site.getAuthor();
-		auteur = site.getCreatorId();
-
-		//CBO : UPDATE
-        //date = resources.getOutputDate(site.getDate());
-		date = resources.getOutputDate(site.getCreationDate());
-
-        popup = site.getPopup();
-
-		//CBO : UPDATE
-        //nomPage = site.getPage();
-		nomPage = site.getContent();
-    }*/
-//CBO : FIN REMOVE
     
    	UserDetail user = scc.getUserDetail(auteur);
    	if (user != null)
@@ -660,23 +181,24 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <!-- design -->
 
-<HTML>
-<HEAD>
+<html>
+<head>
 
 <%
 out.println(gef.getLookStyleSheet());
 %>
 
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
+<title><%=resources.getString("GML.popupTitle")%></title>
 
-<Script language="JavaScript">
+<script language="javascript">
 
 <%
 
 if (! searchOk) {
     out.println("alert(\""+resources.getString("PrincipalPageNotCorrectDesign")+"\")");
-    if (description == null)
+    if (description == null) {
 		description = "";
+    }
 
    
 	//CBO : UPDATE	/*out.println("location.replace(\"modifDesc.jsp?Id="+id+"&path="+currentPath+"&type=design&RecupParam=oui&Nom="+nomSite+"&Description="+description+"&Page="+nomPage+"&ListeIcones="+listeIcones+"\");");*/
@@ -686,203 +208,212 @@ if (! searchOk) {
 
 %>
 
-    function URLENCODE(URL){
-        URL = escape(URL);
-        URL = URL.replace(/\+/g, "%2B");
-        return URL;
-    }
+function URLENCODE(URL){
+    URL = escape(URL);
+    URL = URL.replace(/\+/g, "%2B");
+    return URL;
+}
 
 /**********************************************/
 
-    function B_RETOUR_ONCLICK() {
-        if (window.repAddWindow != null)
-            window.repAddWindow.close();
-        if (window.repUpdateWindow != null)
-            window.repUpdateWindow.close();
-        if (window.pageUpdateWindow != null)
-            window.pageUpdateWindow.close();
-        if (window.uploadFileWindow != null)
-            window.uploadFileWindow.close();
-        if (window.pageAddWindow != null)
-            window.pageAddWindow.close();
+function B_RETOUR_ONCLICK() {
+    if (window.repAddWindow != null)
+        window.repAddWindow.close();
+    if (window.repUpdateWindow != null)
+        window.repUpdateWindow.close();
+    if (window.pageUpdateWindow != null)
+        window.pageUpdateWindow.close();
+    if (window.uploadFileWindow != null)
+        window.uploadFileWindow.close();
+    if (window.pageAddWindow != null)
+        window.pageAddWindow.close();
 
-        location.href="manage.jsp?Action=view";
-    }
-
-/**********************************************/
-    function folderAdd(id, path) {
-        if (window.repAddWindow != null)
-            window.repAddWindow.close();
-        if (window.repUpdateWindow != null)
-            window.repUpdateWindow.close();
-        if (window.pageUpdateWindow != null)
-            window.pageUpdateWindow.close();
-        if (window.uploadFileWindow != null)
-            window.uploadFileWindow.close();
-        if (window.pageAddWindow != null)
-            window.pageAddWindow.close();
-
-        url = "addRep.jsp?Id="+id+"&Path="+path+"&Action=View";
-        windowName = "repAddWindow";
-        windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
-        repAddWindow = open(url, windowName, windowParams, false);
-
-    }
+    location.href="manage.jsp?Action=view";
+}
 
 /**********************************************/
-    function pageAdd(path, nomsite) {
-        if (window.repAddWindow != null)
-            window.repAddWindow.close();
-        if (window.repUpdateWindow != null)
-            window.repUpdateWindow.close();
-        if (window.pageUpdateWindow != null)
-            window.pageUpdateWindow.close();
-        if (window.uploadFileWindow != null)
-            window.uploadFileWindow.close();
-        if (window.pageAddWindow != null)
-            window.pageAddWindow.close();
-        url = "addPage.jsp?Action=View&path="+URLENCODE(path)+"&nameSite="+URLENCODE(nomsite)+"&id=<%=id%>";
-        windowName = "pageAddWindow";
-        windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
-        pageAddWindow = open(url, windowName, windowParams, false);
+function folderAdd(id, path) {
+    if (window.repAddWindow != null) {
+        window.repAddWindow.close();
+    }
+    if (window.repUpdateWindow != null) {
+        window.repUpdateWindow.close();
+    }
+    if (window.pageUpdateWindow != null) {
+        window.pageUpdateWindow.close();
+    }
+    if (window.uploadFileWindow != null) {
+        window.uploadFileWindow.close();
+    }
+    if (window.pageAddWindow != null) {
+        window.pageAddWindow.close();
     }
 
+    url = "addRep.jsp?Id="+id+"&Path="+path+"&Action=View";
+    windowName = "repAddWindow";
+    windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
+    repAddWindow = open(url, windowName, windowParams, false);
+}
+
 /**********************************************/
-    function uploadFile(path) {
-        if (window.repAddWindow != null)
-            window.repAddWindow.close();
-        if (window.repUpdateWindow != null)
-            window.repUpdateWindow.close();
-        if (window.pageUpdateWindow != null)
-            window.pageUpdateWindow.close();
-        if (window.uploadFileWindow != null)
-            window.uploadFileWindow.close();
-        if (window.pageAddWindow != null)
-            window.pageAddWindow.close();
-
-        <% //CBO : REMOVE session.putValue("thePath", currentPath);
-           //CBO : REMOVE session.putValue("prems", "premiere fois");%>
-
-        url = "uploadFile.jsp?path="+URLENCODE(path);
-        windowName = "uploadFileWindow";
-        windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
-        uploadFileWindow = open(url, windowName, windowParams, false);
+function pageAdd(path, nomsite) {
+    if (window.repAddWindow != null) {
+        window.repAddWindow.close();
     }
-
-
-
-/**********************************************/
-    function renameFolder(id, path, name) {
-        if (window.repAddWindow != null)
-            window.repAddWindow.close();
-        if (window.repUpdateWindow != null)
-            window.repUpdateWindow.close();
-        if (window.pageUpdateWindow != null)
-            window.pageUpdateWindow.close();
-        if (window.uploadFileWindow != null)
-            window.uploadFileWindow.close();
-        if (window.pageAddWindow != null)
-            window.pageAddWindow.close();
-
-        url = "updateRep.jsp?Id="+id+"&Path="+path+"&Action=View&Name="+name;
-        windowName = "repUpdateWindow";
-        windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
-        repUpdateWindow = open(url, windowName, windowParams, false);
+    if (window.repUpdateWindow != null) {
+        window.repUpdateWindow.close();
     }
-
-/**********************************************/
-    function deleteFolder(id, path, name) {
-        if (window.repAddWindow != null)
-            window.repAddWindow.close();
-        if (window.repUpdateWindow != null)
-            window.repUpdateWindow.close();
-        if (window.pageUpdateWindow != null)
-            window.pageUpdateWindow.close();
-        if (window.uploadFileWindow != null)
-            window.uploadFileWindow.close();
-        if (window.pageAddWindow != null)
-            window.pageAddWindow.close();
-
-        if (window.confirm("<%=resources.getString("MessageSuppressionFolder")%>")) {
-            document.design.Action.value = "deleteFolder";
-            document.design.Id.value = id;
-            document.design.path.value = path;
-            document.design.name.value = name;
-            document.design.submit();
-        }
+    if (window.pageUpdateWindow != null) {
+        window.pageUpdateWindow.close();
     }
+    if (window.uploadFileWindow != null) {
+        window.uploadFileWindow.close();
+    }
+    if (window.pageAddWindow != null) {
+        window.pageAddWindow.close();
+    }
+    url = "addPage.jsp?Action=View&path="+URLENCODE(path)+"&nameSite="+URLENCODE(nomsite)+"&id=<%=id%>";
+    windowName = "pageAddWindow";
+    windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
+    pageAddWindow = open(url, windowName, windowParams, false);
+}
 
 /**********************************************/
-    function pageRedesign(path, name, namesite) {
-        if (window.repAddWindow != null)
-            window.repAddWindow.close();
-        if (window.repUpdateWindow != null)
-            window.repUpdateWindow.close();
-        if (window.pageUpdateWindow != null)
-            window.pageUpdateWindow.close();
-        if (window.uploadFileWindow != null)
-            window.uploadFileWindow.close();
-        if (window.pageAddWindow != null)
-            window.pageAddWindow.close();
+function uploadFile(path) {
+    if (window.repAddWindow != null)
+        window.repAddWindow.close();
+    if (window.repUpdateWindow != null)
+        window.repUpdateWindow.close();
+    if (window.pageUpdateWindow != null)
+        window.pageUpdateWindow.close();
+    if (window.uploadFileWindow != null)
+        window.uploadFileWindow.close();
+    if (window.pageAddWindow != null)
+        window.pageAddWindow.close();
+
+    <% //CBO : REMOVE session.putValue("thePath", currentPath);
+       //CBO : REMOVE session.putValue("prems", "premiere fois");%>
+
+    url = "uploadFile.jsp?path="+URLENCODE(path);
+    windowName = "uploadFileWindow";
+    windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
+    uploadFileWindow = open(url, windowName, windowParams, false);
+}
+
+
+
+/**********************************************/
+function renameFolder(id, path, name) {
+    if (window.repAddWindow != null)
+        window.repAddWindow.close();
+    if (window.repUpdateWindow != null)
+        window.repUpdateWindow.close();
+    if (window.pageUpdateWindow != null)
+        window.pageUpdateWindow.close();
+    if (window.uploadFileWindow != null)
+        window.uploadFileWindow.close();
+    if (window.pageAddWindow != null)
+        window.pageAddWindow.close();
+
+    url = "updateRep.jsp?Id="+id+"&Path="+path+"&Action=View&Name="+name;
+    windowName = "repUpdateWindow";
+    windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
+    repUpdateWindow = open(url, windowName, windowParams, false);
+}
+
+/**********************************************/
+function deleteFolder(id, path, name) {
+    if (window.repAddWindow != null)
+        window.repAddWindow.close();
+    if (window.repUpdateWindow != null)
+        window.repUpdateWindow.close();
+    if (window.pageUpdateWindow != null)
+        window.pageUpdateWindow.close();
+    if (window.uploadFileWindow != null)
+        window.uploadFileWindow.close();
+    if (window.pageAddWindow != null)
+        window.pageAddWindow.close();
+
+    if (window.confirm("<%=resources.getString("MessageSuppressionFolder")%>")) {
+        document.design.Action.value = "deleteFolder";
+        document.design.Id.value = id;
+        document.design.path.value = path;
+        document.design.name.value = name;
+        document.design.submit();
+    }
+}
+
+/**********************************************/
+function pageRedesign(path, name, namesite) {
+      if (window.repAddWindow != null)
+          window.repAddWindow.close();
+      if (window.repUpdateWindow != null)
+          window.repUpdateWindow.close();
+      if (window.pageUpdateWindow != null)
+          window.pageUpdateWindow.close();
+      if (window.uploadFileWindow != null)
+          window.uploadFileWindow.close();
+      if (window.pageAddWindow != null)
+          window.pageAddWindow.close();
   //DLE
-        location.href="ToWysiwyg?path="+URLENCODE(path)+"&name="+URLENCODE(name)+"&nameSite="+URLENCODE(namesite)+"&id=<%=id%>";
-    }
+      location.href="ToWysiwyg?path="+URLENCODE(path)+"&name="+URLENCODE(name)+"&nameSite="+URLENCODE(namesite)+"&id=<%=id%>";
+}
 
 /**********************************************/
-    function renamePage(id, path, name) {
-        if (window.repAddWindow != null)
-            window.repAddWindow.close();
-        if (window.repUpdateWindow != null)
-            window.repUpdateWindow.close();
-        if (window.pageUpdateWindow != null)
-            window.pageUpdateWindow.close();
-        if (window.uploadFileWindow != null)
-            window.uploadFileWindow.close();
-        if (window.pageAddWindow != null)
-            window.pageAddWindow.close();
+function renamePage(id, path, name) {
+    if (window.repAddWindow != null)
+        window.repAddWindow.close();
+    if (window.repUpdateWindow != null)
+        window.repUpdateWindow.close();
+    if (window.pageUpdateWindow != null)
+        window.pageUpdateWindow.close();
+    if (window.uploadFileWindow != null)
+        window.uploadFileWindow.close();
+    if (window.pageAddWindow != null)
+        window.pageAddWindow.close();
 
-        url = "updatePage.jsp?Id="+id+"&Path="+path+"&Action=View&Name="+name;
-        windowName = "pageUpdateWindow";
-        windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
-        pageUpdateWindow = open(url, windowName, windowParams, false);
+    url = "updatePage.jsp?Id="+id+"&Path="+path+"&Action=View&Name="+name;
+    windowName = "pageUpdateWindow";
+    windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
+    pageUpdateWindow = open(url, windowName, windowParams, false);
 
-    }
+}
 
 /**********************************************/
-    function deletePage(id, path, name) {
-        if (window.repAddWindow != null)
-            window.repAddWindow.close();
-        if (window.repUpdateWindow != null)
-            window.repUpdateWindow.close();
-        if (window.pageUpdateWindow != null)
-            window.pageUpdateWindow.close();
-        if (window.uploadFileWindow != null)
-            window.uploadFileWindow.close();
-        if (window.pageAddWindow != null)
-            window.pageAddWindow.close();
+function deletePage(id, path, name) {
+    if (window.repAddWindow != null)
+        window.repAddWindow.close();
+    if (window.repUpdateWindow != null)
+        window.repUpdateWindow.close();
+    if (window.pageUpdateWindow != null)
+        window.pageUpdateWindow.close();
+    if (window.uploadFileWindow != null)
+        window.uploadFileWindow.close();
+    if (window.pageAddWindow != null)
+        window.pageAddWindow.close();
 
-        if (window.confirm("<%=resources.getString("MessageSuppressionFile")%>")) {
-              document.design.Action.value = "deletePage";
-              document.design.Id.value = id;
-              document.design.path.value = path;
-              document.design.name.value = name;
-              document.design.submit();
-        }
+    if (window.confirm("<%=resources.getString("MessageSuppressionFile")%>")) {
+          document.design.Action.value = "deletePage";
+          document.design.Id.value = id;
+          document.design.path.value = path;
+          document.design.name.value = name;
+          document.design.submit();
     }
-</Script>
+}
+</script>
 
-</HEAD>
-<BODY>
+</head>
+<body>
 
-<FORM NAME="design" ACTION="verif.jsp" METHOD="POST">
+<form name="design" action="verif.jsp" method="post">
   <input type="hidden" name="Action">
   <input type="hidden" name="Id">
   <input type="hidden" name="path">
   <input type="hidden" name="name">
   <input type="hidden" name="newName">
-</FORM>
+</form>
 
-<FORM NAME="liste" ACTION="verif.jsp" METHOD="POST">
+<form name="liste" action="verif.jsp" method="post">
 <%
 	Window window = gef.getWindow();
 	String bodyPart="";
@@ -905,14 +436,14 @@ if (! searchOk) {
 	arrayPaneRep.setVisibleLineNumber(10);
 	arrayPaneRep.setTitle(resources.getString("ListeRepertoires"));
 
-	//D�finition des colonnes du tableau
+	//Definition des colonnes du tableau
 	ArrayColumn columnName = arrayPaneRep.addArrayColumn(resources.getString("GML.name"));
 	ArrayColumn columnOperation = arrayPaneRep.addArrayColumn(resources.getString("FolderOperations"));
 	columnOperation.setSortable(false);
 
 	String bodyRep = "";
 
-	//R�cup�ration du tableau dans le haut du cadre
+	//Recuperation du tableau dans le haut du cadre
 	// desc site + path
 	bodyRep += "<br><span class=\"txtnav\">"+Encode.javaStringToHtmlString(nomSite)+"</span>";
 	bodyRep += "<span class=\"txtnote\">&nbsp;("+Encode.javaStringToHtmlString(auteur)+" - "+date+")<br>\n";
@@ -953,7 +484,7 @@ if (! searchOk) {
 	arrayPaneFile.setVisibleLineNumber(10);
 	arrayPaneFile.setTitle(resources.getString("ListeFichiers"));
 
-	//D�finition des colonnes du tableau
+	//Definition des colonnes du tableau
 	ArrayColumn columnNam = arrayPaneFile.addArrayColumn(resources.getString("GML.name"));
 	ArrayColumn columnOp = arrayPaneFile.addArrayColumn(resources.getString("FolderOperations"));
 	columnOp.setSortable(false);
@@ -998,7 +529,7 @@ if (! searchOk) {
 		}
 	}
 
-    //R�cup�ration du tableau dans le bas du cadre
+    //Recuperation du tableau dans le bas du cadre
     String bodyFile = "<br><br>";
     bodyFile+=arrayPaneFile.print();
     bodyFile += "<br><br>";
@@ -1035,6 +566,6 @@ if (! searchOk) {
     window.addBody(bodyPart);
     out.println(window.print());
 %>
-</FORM>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>

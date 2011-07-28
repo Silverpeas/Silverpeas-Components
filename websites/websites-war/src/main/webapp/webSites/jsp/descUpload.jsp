@@ -214,179 +214,24 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	//currentDate
 	String creationDate = resources.getOutputDate(new Date());
 
-	//CBO : REMOVE
-/*	SilverpeasMultipartParser mp = new SilverpeasMultipartParser(request);
-	Part part;
-    while ((part = mp.readNextPart()) != null) {
-		String name = part.getName();
-
-		if (part.isParam()) {
-			SilverpeasParamPart paramPart = (SilverpeasParamPart) part;
-			if (name.equals("nomSite")) {
-				nomSite = paramPart.getStringValue();
-				SilverTrace.info("websites", "JSPdescUpload", "root.MSG_GEN_PARAM_VALUE", "nomSite= "+nomSite);
-			}
-			else if (name.equals("description")) {
-				description = paramPart.getStringValue();
-				SilverTrace.info("websites", "JSPdescUpload", "root.MSG_GEN_PARAM_VALUE", "desc= "+description);
-			}
-			else if (name.equals("nomPage")) {
-				nomPage = paramPart.getStringValue();
-				SilverTrace.info("websites", "JSPdescUpload", "root.MSG_GEN_PARAM_VALUE", "nomPage= "+nomPage);
-			}
-			else if (name.equals("ListeIcones"))
-				listeIcones = paramPart.getStringValue();
-			else if (name.equals("ListeTopics"))
-				listeTopics = paramPart.getStringValue();
-		}
-
-		else if (part.isFile()) {
-			FilePart filePart = (FilePart) part;
-
-			//addUpload
-
-			/* recuperation de l'id = nom du directory */
-/*			String id = scc.getNextId();
-
-			/* Cr�ation du directory */
-			//CBO : UPDATE
-			//File directory = new File(settings.getString("uploadsPath")+settings.getString("Context")+"/"+scc.getComponentId()+"/"+id);
-/*			File directory = new File(settings.getString("uploadsPath")+settings.getString("Context")+"/"+componentId+"/"+id);
-			if (directory.mkdir()) {
-				/* creation du zip sur le serveur */
-/*				String fichierZipName = filePart.getFileName();
-				String type = ".zip";
-				//CBO : UPDATE
-				//File fichier = new File(settings.getString("uploadsPath")+settings.getString("Context")+"/"+scc.getComponentId()+"/"+id+"/"+fichierZipName);
-				File fichier = new File(settings.getString("uploadsPath")+settings.getString("Context")+"/"+componentId+"/"+id+"/"+fichierZipName);
-				long size = filePart.writeTo(fichier);
-				if (size <= 0)
-				uploadOk = false;
-
-				if (uploadOk) {
-					/* dezip du fichier.zip sur le serveur */
-					//CBO : UPDATE
-					//String cheminZip = settings.getString("uploadsPath")+settings.getString("Context")+"/"+scc.getComponentId()+"/"+id;
-/*					String cheminZip = settings.getString("uploadsPath")+settings.getString("Context")+"/"+componentId+"/"+id;
-					String cheminFichierZip = cheminZip+"/"+fichierZipName;
-					scc.unzip(cheminZip, cheminFichierZip);
-
-					/* verif que le nom de la page principale est correcte */
-/*					Collection collPages = scc.getAllWebPages2(cheminZip);
-					Iterator j = collPages.iterator();
-					boolean ok = false;
-					while (j.hasNext()) {
-						File f = (File) j.next();
-						if (f.getName().equals(nomPage)) {
-							ok = true;
-							break;
-						}
-					}
-
-					searchOk = ok;
-
-					if (searchOk) {
-
-						/* creation en BD */
-/*						ArrayList listIcons = new ArrayList();
-						int i = 0;
-						int begin = 0;
-						int end = 0;
-						if (listeIcones != null) {
-							end = listeIcones.indexOf(',', begin);
-							while(end != -1) {
-								listIcons.add(listeIcones.substring(begin, end));
-								begin = end + 1;
-								end = listeIcones.indexOf(',', begin);
-							}
-						}
-
-						SiteDetail descriptionSite = new SiteDetail(id, nomSite, description, nomPage, 2, null, null, 0, 1); /* type 2 = site uploade,popup=1 affichage popup par defaut */
-
-						//CBO : UPDATE
-/*						//scc.createWebSite(descriptionSite);
-						String pubId = scc.createWebSite(descriptionSite);
-
-						if (listIcons.size() > 0)
-							scc.associateIcons(id, listIcons);
-
-						/* publications : classer le site dans les themes coch�s */
-/*						ArrayList arrayToClassify = new ArrayList();
-						boolean publish = false;
-						i = 0;
-						begin = 0;
-						end = 0;
-						end = listeTopics.indexOf(',', begin);
-						while(end != -1) {
-							String idTopic = listeTopics.substring(begin, end);
-
-							begin = end + 1;
-							end = listeTopics.indexOf(',', begin);
-
-							// ajout de la publication dans le theme
-							//CBO : REMOVE PublicationDetail pubDetail = new PublicationDetail("X", nomSite, description, null, null, null, "", "2", id, "", nomPage);
-
-							//CBO : REMOVE scc.getFolder(idTopic);
-
-							//CBO : UPDATE
-							//String newPubId = scc.createPublication(pubDetail);
-							scc.addPublicationToFolder(pubId, idTopic);
-
-							publish = true;
-						}
-
-						if (publish) {
-							arrayToClassify.add(id);
-							scc.publish(arrayToClassify); //set etat du site a 1
-						}
-					}
-					else { //le nom de la page principale n'est pas bonne, on supprime ce qu'on a dezipe
-						scc.deleteDirectory(cheminZip);
-					}
-
-
-					//site de reference ou pas : reaffichage de la page si pb
-					int i = 0;
-					int begin = 0;
-					int end = 0;
-					if (listeIcones != null) {
-						end = listeIcones.indexOf(',', begin);
-						while(end != -1) {
-							String idIcon = listeIcones.substring(begin, end);
-							if (idIcon.equals("0")) {
-								refChecked = true;
-								break;
-							}
-
-							begin = end + 1;
-							end = listeIcones.indexOf(',', begin);
-						}
-					}
-				}//if searchOk
-			}//if uploadOk
-		} //partFile
-	} //ferme le while
-	*/
-	//CBO : FIN REMOVE
-
-
 %>
 
 <!-- descUpload -->
 
-<HTML>
+<html>
 
-<HEAD>
+<head>
 
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript"
+  src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 
 <%
 out.println(gef.getLookStyleSheet());
 %>
 
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
+<title><%=resources.getString("GML.popupTitle")%></title>
 
-<Script language="JavaScript">
+<script language="javascript">
 
 <%
 
@@ -415,12 +260,10 @@ if (searchOk != null && searchOk.equals(Boolean.FALSE)) {
 %>
 
 function isCorrectName(nom) {
-
-    if (nom.indexOf("\"")>-1) {
-        return false;
-    }
-    return true;
-
+  if (nom.indexOf("\"")>-1) {
+      return false;
+  }
+  return true;
 }
 
 /************************************************************************************/
@@ -428,21 +271,20 @@ function isCorrectName(nom) {
 
 function isCorrect(nom) {
 
-    if (nom.indexOf("\\")>-1 || nom.indexOf("/")>-1 || nom.indexOf(":")>-1 ||
-        nom.indexOf("*")>-1 || nom.indexOf("?")>-1 || nom.indexOf("\"")>-1 ||
-        nom.indexOf("<")>-1 || nom.indexOf(">")>-1 || nom.indexOf("|")>-1 ||
-        nom.indexOf("&")>-1 || nom.indexOf(";")>-1 || nom.indexOf("+")>-1 ||
-        nom.indexOf("%")>-1 || nom.indexOf("#")>-1 || nom.indexOf("'")>-1 ||
-        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
-        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("^")>-1 ||
-        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || /*nom.indexOf("�")>-1 ||*/
-        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
-        nom.indexOf("�")>-1) {
-        return false;
-    }
+  if (nom.indexOf("\\")>-1 || nom.indexOf("/")>-1 || nom.indexOf(":")>-1 ||
+      nom.indexOf("*")>-1 || nom.indexOf("?")>-1 || nom.indexOf("\"")>-1 ||
+      nom.indexOf("<")>-1 || nom.indexOf(">")>-1 || nom.indexOf("|")>-1 ||
+      nom.indexOf("&")>-1 || nom.indexOf(";")>-1 || nom.indexOf("+")>-1 ||
+      nom.indexOf("%")>-1 || nom.indexOf("#")>-1 || nom.indexOf("'")>-1 ||
+      nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
+      nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("^")>-1 ||
+      nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || /*nom.indexOf("�")>-1 ||*/
+      nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
+      nom.indexOf("�")>-1) {
+      return false;
+  }
 
-    return true;
-
+  return true;
 }
 
 /************************************************************************************/
@@ -523,20 +365,20 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 	  out.println("var indexPoint = document.descriptionSite.nomPage.value.lastIndexOf(\".\");");
 	  out.println("var ext = document.descriptionSite.nomPage.value.substring(indexPoint + 1);");
 	  out.println("if ( (ext != \"html\") && (ext != \"htm\") && (ext != \"HTML\") && (ext != \"HTM\") )");
-		  out.println("document.descriptionSite.nomPage.value = document.descriptionSite.nomPage.value + \".html\"");
+	  out.println("document.descriptionSite.nomPage.value = document.descriptionSite.nomPage.value + \".html\"");
 	  out.println("f = \"\";");
 	  out.println("if (document.descriptionSite.radio[0].checked)");
-			out.println("f += \"0,\";");
+	  out.println("f += \"0,\";");
 	  out.println("for (i=0; i<nbicones; i++) {");
-		  out.println("if (document.descriptionSite.icon[i].checked)");
-			out.println("f += document.descriptionSite.icon[i].value + \",\";");
+	  out.println("if (document.descriptionSite.icon[i].checked)");
+	  out.println("f += document.descriptionSite.icon[i].value + \",\";");
 	  out.println("}");
 	  out.println("document.descriptionSite.ListeIcones.value = f;");
 
 	  out.println("f = \"\";");
 	  out.println("if (nbthemes == 1) {");
-		out.println("if (document.descriptionSite.topic.checked)");
-			out.println("f += document.descriptionSite.topic.value + \",\";");
+      out.println("  if (document.descriptionSite.topic.checked)");
+	  out.println("    f += document.descriptionSite.topic.value + \",\";");
 	  out.println("}");
 	  out.println("else {");
 		  out.println("for (i=0; i<nbthemes; i++) {");
@@ -553,16 +395,16 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 
 /*********************************************************************************************************/
 
-    function B_ANNULER_ONCLICK() {
-        document.desc.Action.value="view";
-        document.desc.submit();
-    }
+  function B_ANNULER_ONCLICK() {
+    document.desc.Action.value="view";
+    document.desc.submit();
+  }
 
 </Script>
 
-</HEAD>
+</head>
 
-<BODY bgcolor="white" topmargin="15" leftmargin="20" onload="document.descriptionSite.nomSite.focus()">
+<body bgcolor="white" topmargin="15" leftmargin="20" onload="document.descriptionSite.nomSite.focus()">
 <%
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
@@ -580,23 +422,21 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 	//Le board
 	Board board = gef.getBoard();
 
-    //D�but code
+    //Debut code
     out.println(window.printBefore());
     out.println(frame.printBefore());
 	out.print(board.printBefore());
 
 %>
+      <form name="desc" action="manage.jsp" method="post">
+      <input type="hidden" name="Action">
+      </form>
 
-            <TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
-			<FORM NAME="desc" ACTION="manage.jsp" METHOD="POST">
-			<input type="hidden" name="Action">
-			</FORM>
-
-			<!-- CBO : UPDATE -->
-			<!--<FORM NAME="descriptionSite" ACTION="descUpload.jsp" METHOD="POST" ENCTYPE="multipart/form-data">-->
-			<FORM NAME="descriptionSite" ACTION="EffectiveUploadSiteZip" METHOD="POST" ENCTYPE="multipart/form-data">
-			  <input type="hidden" name="ListeIcones">
-			  <input type="hidden" name="ListeTopics">
+      <!-- CBO : UPDATE -->
+      <form name="descriptionSite" action="EffectiveUploadSiteZip" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="ListeIcones">
+        <input type="hidden" name="ListeTopics">
+            <table align="center" cellpadding="5" cellspacing="0" border="0" width="100%" class=intfdcolor4>
 
                 <tr>
                         <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("GML.name")%> : </span></td>
@@ -696,29 +536,8 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
                         <td class="intfdcolor4">
 
 <%
-	//CBO : REMOVE
-	/*ArrayList listIcons = new ArrayList();
-	int i = 0;
-	int begin = 0;
-	int end = 0;
-	if (listeIcones != null) {
-		end = listeIcones.indexOf(',', begin);
-		while(end != -1) {
-			listIcons.add(listeIcones.substring(begin, end));
-
-			listIcons.add(idIcon);
-
-			begin = end + 1;
-			end = listeIcones.indexOf(',', begin);
-		}
-	}*/
-	//CBO : FIN REMOVE
-
-
-		//CBO : REMOVE Collection c = scc.getAllIcons();
 
 		//CBO : UPDATE
-		//Iterator j = c.iterator();
 		Iterator j = allIcons.iterator();
 
 		j.next(); // on saute la premiere icone (site important)
@@ -747,7 +566,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 
     ArrayPane arrayPane = gef.getArrayPane("siteList", "", request, session);
 	arrayPane.setVisibleLineNumber(1000);
-    //D�finition des colonnes du tableau
+    //Definition des colonnes du tableau
 	ArrayColumn arrayColumnTopic = arrayPane.addArrayColumn(resources.getString("NomThemes"));
 	arrayColumnTopic.setSortable(false);
 	ArrayColumn arrayColumnPub = arrayPane.addArrayColumn(resources.getString("GML.publish"));
@@ -757,7 +576,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 
 	out.println(resultat);
 %>
-		</FORM>
+		</form>
 <%
 
 	//fin du code
@@ -784,5 +603,5 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 	out.println(window.printAfter());
 
 %>
-</BODY>
-</HTML>
+</body>
+</html>
