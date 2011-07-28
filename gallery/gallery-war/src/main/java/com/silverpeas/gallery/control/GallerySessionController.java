@@ -339,7 +339,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       album.getNodePK().setComponentName(getComponentId());
 
       getGalleryBm().createAlbum(album, new NodePK(currentAlbumId, getComponentId()));
-      // recharger l'album courant pour prendre en comptes le nouvel album
+      // recharger l'album courant pour prendre en compte le nouvel album
       goToAlbum(currentAlbumId);
     } catch (RemoteException e) {
       throw new GalleryRuntimeException("GallerySessionController.createAlbum()",
@@ -350,7 +350,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public void updateAlbum(AlbumDetail album) {
     try {
       getGalleryBm().updateAlbum(album);
-      // recharger l'album courant pour prendre en comptes la modification de l'album
+      // recharger l'album courant pour prendre en compte la modification de l'album
       goToAlbum(currentAlbumId);
     } catch (RemoteException e) {
       throw new GalleryRuntimeException("GallerySessionController.updateAlbum()",
@@ -360,9 +360,10 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public void deleteAlbum(String albumId) {
     try {
+      String parentId = getAlbumLight(albumId).getFatherPK().getId();
       getGalleryBm().deleteAlbum(new NodePK(albumId, getComponentId()));
-      // recharger l'album courant pour prendre en comptes la suppression
-      goToAlbum(currentAlbumId);
+      // recharger l'album parent pour prendre en compte la suppression
+      goToAlbum(parentId);
     } catch (RemoteException e) {
       throw new GalleryRuntimeException("GGallerySessionController.deleteAlbum()",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
