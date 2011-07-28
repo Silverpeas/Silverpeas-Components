@@ -50,4 +50,6 @@
   </bean>
 
   <bean id="systemProperties" class="java.lang.System" factory-method="getProperties" />
+  
+  <import resource="spring-silverpeas.xml"/>
 </beans>

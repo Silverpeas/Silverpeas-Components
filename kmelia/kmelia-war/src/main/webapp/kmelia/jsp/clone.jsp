@@ -257,13 +257,16 @@ function pubDraftOut() {
 
         OperationPane operationPane = window.getOperationPane();
         if (!"supervisor".equals(profile)) {
-          operationPane.addOperation(deletePubliSrc, resources.getString("kmelia.DeleteClone"), "javaScript:deleteCloneConfirm();");
+          if (attachmentsEnabled) {
+          	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
+          }
           if (kmeliaScc.isDraftEnabled()) {
             if (pubDetail.isDraft()) {
               operationPane.addLine();
               operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javaScript:pubDraftOut()");
             }
           }
+          operationPane.addOperation(deletePubliSrc, resources.getString("kmelia.DeleteClone"), "javaScript:deleteCloneConfirm();");
         }
         if (profile.equals("admin") || profile.equals("publisher")) {
             if (pubDetail.isValid()) {

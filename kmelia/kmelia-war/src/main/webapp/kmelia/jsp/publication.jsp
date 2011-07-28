@@ -209,6 +209,11 @@
   }
 
   boolean highlightFirst = resources.getSetting("highlightFirstOccurence", false);
+  
+  //Attachments can be updated in both cases only : 
+  //  - on clone (if "publication always visible" is used)
+  //  - if current user can modified publication
+  boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
@@ -446,10 +451,9 @@
 
         if (isOwner) {
           if (!"supervisor".equals(profile)) {
-            if (suppressionAllowed) {
-              operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javaScript:pubDeleteConfirm()");
+            if (attachmentsUpdatable) {
+            	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
             }
-            operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
 
             if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone()) {
               if (pubDetail.isDraft()) {
@@ -457,6 +461,10 @@
               } else {
                 operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javaScript:pubDraftIn()");
               }
+            }
+            
+            if (suppressionAllowed) {
+              operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javaScript:pubDeleteConfirm()");
             }
             operationPane.addLine();
           }
@@ -591,10 +599,7 @@
 			                  "useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
 			                  include(request, response);
 			            } else {
-				              if (!isOwner || pubDetail.haveGotClone()) {
-				                // Attachments can be updated in both cases only : 
-				                //  - on clone (if "publication always visible" is used)
-				                //  - if current user can modified publication
+				              if (!attachmentsUpdatable) {
 				                attProfile = "user";
 				              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
