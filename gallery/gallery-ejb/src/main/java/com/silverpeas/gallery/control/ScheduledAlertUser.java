@@ -23,23 +23,24 @@
  */
 package com.silverpeas.gallery.control;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -77,7 +78,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       int nbDays = Integer.parseInt(resources.getString("nbDaysForAlertUser"));
 
       // rechercher la liste des photos arrivant à échéance
-      Collection photos = getGalleryBm().getAllPhotoEndVisible(nbDays);
+      Collection<PhotoDetail> photos = getGalleryBm().getAllPhotoEndVisible(nbDays);
       SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
               "root.MSG_GEN_PARAM_VALUE", "Photos=" + photos.toString());
 
@@ -95,10 +96,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       StringBuilder messageBody_en = new StringBuilder();
       PhotoDetail nextPhoto = new PhotoDetail();
 
-      @SuppressWarnings("unchecked")
-      Iterator<PhotoDetail> it = photos.iterator();
-      while (it.hasNext()) {
-        PhotoDetail photo = it.next();
+      for (PhotoDetail photo : photos) {
         nextPhoto = photo;
         if (photo.getInstanceId().equals(currentInstanceId)) {
           // construire la liste des images pour cette instance (a mettre dans
@@ -140,8 +138,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       // Création du message à envoyer aux admins pour la dernière instance en
       // cours
       UserDetail[] admins = orga.getUsers("useless", currentInstanceId, "admin");
-      createMessage(message, messageBody, message_en, messageBody_en,
-              nextPhoto, admins);
+      createMessage(message, messageBody, message_en, messageBody_en, nextPhoto, admins);
       messageBody = new StringBuilder();
       messageBody_en = new StringBuilder();
     } catch (Exception e) {
@@ -178,11 +175,14 @@ public class ScheduledAlertUser implements SchedulerEventListener {
     notifMetaData.setComponentId(photo.getInstanceId());
 
     // 2. envoie de la notification aux admin
+    if (StringUtil.isDefined(photo.getCreatorId())) {
+      notifMetaData.setSender(photo.getCreatorId());
+    }
+    NotificationSender notifSender = new NotificationSender(photo.getInstanceId());
     try {
-      getGalleryBm().notifyUsers(notifMetaData, photo.getCreatorId(), photo.getInstanceId());
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("ScheduledAlertUser.createMessage()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      notifSender.notifyUser(notifMetaData);
+    } catch (NotificationManagerException e) {
+      SilverTrace.error("gallery", "ScheduledAlertUser.ScheduledAlertUser", "gallery.CANT_NOTIFY_USERS", e);
     }
   }
 

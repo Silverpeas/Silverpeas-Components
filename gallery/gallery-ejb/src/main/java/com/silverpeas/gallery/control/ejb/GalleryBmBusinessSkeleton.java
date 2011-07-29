@@ -64,9 +64,6 @@ public interface GalleryBmBusinessSkeleton {
 
   public Collection<PhotoDetail> getAllPhotoEndVisible(int nbDays) throws RemoteException;
 
-  public void notifyUsers(NotificationMetaData notifMetaData, String senderId,
-      String instanceId) throws RemoteException;
-
   public Collection<PhotoDetail> getNotVisible(String instanceId) throws RemoteException;
 
   // ...

@@ -1,0 +1,10 @@
+#preview #pagination, #gef-tabs, #status,
+.rightContent, .cellBrowseBar, .cellOperation, .inlineMessage-ok, .inlineMessage-nok {
+	display: none;
+}
+.cellBodyWindows {
+	border-width: 0px;
+}
+.principalContent {
+	margin-right: 0px;
+}

@@ -69,8 +69,10 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -84,7 +86,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
@@ -199,6 +200,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
                 SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
+    
+    viewAllPhoto = SilverpeasRole.admin.isInRole(getRole());
   }
 
   public Collection<PhotoDetail> getDernieres() {
@@ -257,6 +260,18 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.getAlbum()",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return album;
+  }
+  
+  public AlbumDetail getAlbumLight(String albumId) {
+    NodePK nodePK = new NodePK(albumId, getComponentId());
+    AlbumDetail album = null;
+    try {
+      album = getGalleryBm().getAlbum(nodePK, viewAllPhoto);
+    } catch (Exception e) {
+      throw new GalleryRuntimeException("GallerySessionController.getAlbumLight()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return album;
   }
@@ -324,7 +339,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       album.getNodePK().setComponentName(getComponentId());
 
       getGalleryBm().createAlbum(album, new NodePK(currentAlbumId, getComponentId()));
-      // recharger l'album courant pour prendre en comptes le nouvel album
+      // recharger l'album courant pour prendre en compte le nouvel album
       goToAlbum(currentAlbumId);
     } catch (RemoteException e) {
       throw new GalleryRuntimeException("GallerySessionController.createAlbum()",
@@ -335,7 +350,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public void updateAlbum(AlbumDetail album) {
     try {
       getGalleryBm().updateAlbum(album);
-      // recharger l'album courant pour prendre en comptes la modification de l'album
+      // recharger l'album courant pour prendre en compte la modification de l'album
       goToAlbum(currentAlbumId);
     } catch (RemoteException e) {
       throw new GalleryRuntimeException("GallerySessionController.updateAlbum()",
@@ -345,9 +360,10 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public void deleteAlbum(String albumId) {
     try {
+      String parentId = getAlbumLight(albumId).getFatherPK().getId();
       getGalleryBm().deleteAlbum(new NodePK(albumId, getComponentId()));
-      // recharger l'album courant pour prendre en comptes la suppression
-      goToAlbum(currentAlbumId);
+      // recharger l'album parent pour prendre en compte la suppression
+      goToAlbum(parentId);
     } catch (RemoteException e) {
       throw new GalleryRuntimeException("GGallerySessionController.deleteAlbum()",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -868,9 +884,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // demande de photo
     // 1. création du message
 
-    OrganizationController orga = new OrganizationController();
+    OrganizationController orga = getOrganizationController();
     UserDetail[] admins = orga.getUsers("useless", getComponentId(), "admin");
-    String user = orga.getUserDetail(getUserId()).getDisplayedName();
+    String user = getUserDetail().getDisplayedName();
 
     ResourceLocator message = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle",
             "fr");
@@ -898,15 +914,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       notifMetaData.addUserRecipient(new UserRecipient(admin));
     }
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "Main");
-    notifMetaData.setComponentId(getComponentId());
 
     // 2. envoie de la notification aux admin
-    try {
-      getGalleryBm().notifyUsers(notifMetaData, getUserId(), getComponentId());
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.createMessage()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    notifyUsers(notifMetaData);
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String photoId)
@@ -965,10 +975,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public boolean isViewAllPhoto() {
     return viewAllPhoto;
-  }
-
-  public void setViewAllPhoto(boolean viewAllPhoto) {
-    this.viewAllPhoto = viewAllPhoto;
   }
 
   public Collection<String> getListSelected() {
@@ -1201,21 +1207,13 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       }
     }
   }
-
-  public ProfileInst getAlbumProfile(String role, String topicId) {
-    List<ProfileInst> profiles = new ArrayList<ProfileInst>();
-    // List profiles = getAdmin().getProfilesByObject(topicId,
-    // getComponentId());
-    for (int p = 0; profiles != null && p < profiles.size(); p++) {
-      ProfileInst profile = profiles.get(p);
-      if (profile.getName().equals(role)) {
-        return profile;
-      }
+  
+  public Collection<PhotoDetail> getAllPhotos(AlbumDetail album) {
+    try {
+      return getGalleryBm().getAllPhoto(album.getNodePK(), viewAllPhoto);
+    } catch (RemoteException e) {
+      return null;
     }
-
-    ProfileInst profile = new ProfileInst();
-    profile.setName(role);
-    return profile;
   }
 
   private void pasteImagesOfAlbum(NodePK fromPK, NodePK toPK, boolean isCutted,
@@ -1233,7 +1231,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   private void pastePhoto(PhotoDetail photo, boolean isCutted) {
     pastePhoto(photo, isCutted, null, null);
-
   }
 
   private void pastePhoto(PhotoDetail photo, boolean isCutted, NodePK nodePK,
@@ -1453,9 +1450,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // de l'utilisateur
     // 1. création du message
 
-    OrganizationController orga = new OrganizationController();
+    OrganizationController orga = getOrganizationController();
     UserDetail[] admins = orga.getUsers("useless", getComponentId(), "admin");
-    String user = orga.getUserDetail(getUserId()).getDisplayedName();
+    String user = getUserDetail().getDisplayedName();
 
     ResourceLocator message = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle",
             "fr");
@@ -1484,26 +1481,19 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
             + orderId);
-    notifMetaData.setComponentId(getComponentId());
 
     // 2. envoie de la notification aux admin
-    try {
-      getGalleryBm().notifyUsers(notifMetaData, getUserId(), getComponentId());
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.sendAskOrder()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    notifyUsers(notifMetaData);
   }
 
   public void sendAskOrderUser(String orderId) throws RemoteException {
     // envoyer une notification au lecteur pour le prévenir du traitement de sa
     // demande
     // 1. création du message
-
-    OrganizationController orga = new OrganizationController();
-
     Order order = getOrder(orderId);
-    String user = orga.getUserDetail(Integer.toString(order.getProcessUserId())).getDisplayedName();
+    String user =
+        getOrganizationController().getUserDetail(Integer.toString(order.getProcessUserId()))
+            .getDisplayedName();
 
     ResourceLocator message = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle",
             "fr");
@@ -1530,15 +1520,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(order.getUserId())));
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
             + orderId);
-    notifMetaData.setComponentId(getComponentId());
 
     // 2. envoie de la notification aux admin
-    try {
-      getGalleryBm().notifyUsers(notifMetaData, getUserId(), getComponentId());
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.sendAskOrderUser()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    notifyUsers(notifMetaData);
   }
 
   public void createBasket() {
@@ -1851,6 +1835,57 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.sortAlbums()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+  }
+  
+  //recherche du profile de l'utilisateur
+  public String getRole() {
+    String[] profiles = getUserRoles();
+    String flag = "user";
+    for (int i = 0; i < profiles.length; i++) {
+      if (profiles[i].equals("admin")) {
+        return profiles[i];
+      }
+      if (profiles[i].equals("publisher")) {
+        flag = profiles[i];
+      } else if (profiles[i].equals("writer")) {
+        if (!flag.equals("publisher")) {
+          flag = profiles[i];
+        }
+      } else if (profiles[i].equals("privilegedUser")) {
+        flag = profiles[i];
+      }
+    }
+    return flag;
+  }
+  
+  public Collection<AlbumDetail> addNbPhotos(Collection<AlbumDetail> albums) {
+    // retourne la liste des albums avec leurs nombre de photos
+    for (AlbumDetail album : albums) {
+      // pour chaque sous album, rechercher le nombre de photos
+      int nbPhotos = 0;
+      Collection<PhotoDetail> allPhotos = getAllPhotos(album);
+      nbPhotos = allPhotos.size();
+      // parcourir ses sous albums pour comptabiliser aussi ses photos
+      AlbumDetail thisAlbum = getAlbumLight(Integer.toString(album.getId()));
+      Collection<AlbumDetail> subAlbums = addNbPhotos(thisAlbum.getChildrenAlbumsDetails());
+      for (AlbumDetail oneSubAlbum : subAlbums) {
+        nbPhotos = nbPhotos + oneSubAlbum.getNbPhotos();
+      }
+      album.setNbPhotos(nbPhotos);
+    }
+    return albums;
+  }
+  
+  public void notifyUsers(NotificationMetaData notifMetaData) {
+    try {
+      notifMetaData.setSender(getUserId());
+      notifMetaData.setComponentId(getComponentId());
+      NotificationSender notifSender = new NotificationSender(getComponentId());
+      notifSender.notifyUser(notifMetaData);
+    } catch (NotificationManagerException e) {
+      throw new GalleryRuntimeException("GallerySessionController.notifyUsers()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
     }
   }
 }

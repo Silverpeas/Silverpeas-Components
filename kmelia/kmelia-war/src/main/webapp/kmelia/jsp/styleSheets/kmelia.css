@@ -74,13 +74,30 @@
 }
 
 #preview .publiName {
-	font-size: 10pt;
+	font-size: 130%;
 	font-weight: bold;
-	color: #000000
+	color: #333;
+}
+
+#preview #status {
+	vertical-align:bottom;
+}
+
+#infoPublication{
+	padding-bottom:11px;
+}
+
+#permalinkInfo input {
+	width:90%;
+	border:1px solid #cacaca;
+	color:#333;
 }
 
 #preview .publiDesc {
 	font-weight: bold;
+	color:#666666;
+	padding:8px;
+	border-left:6px solid #e4e4e4;
 }
 
 #preview .extraInformation_Refused {
@@ -95,6 +112,14 @@
 #preview #pagination {
 	display: block;
 	float: right;
+	margin:5px 0;
+}
+#preview .currentPage {
+	opacity:0.6;
+}
+#preview #pagination img {
+	border:0;
+	vertical-align:top;
 }
 
 #sortingList {
@@ -252,11 +277,6 @@
 }
 
 #preview .txtBaseline {
-	color: #666666;
-    font-size: 10px;
-    display: block;
-    text-align: center;
- 	padding-top: 10px;   
 }
 
 #rightClick-message p {
@@ -333,8 +353,6 @@
     line-height: 100%;
 	border:1px solid #EAEAEA ;
 	border-radius:10px;
-	-moz-border-radius:10px;
-	-webkit-border-radius:10px;
 	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 	background-color:#EAEAEA;
 	}
@@ -342,8 +360,6 @@
     background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -395px no-repeat;
 	border:1px solid #EAEAEA ;
 	border-radius:10px;
-	-moz-border-radius:10px;
-	-webkit-border-radius:10px;
 	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 	background-color:#EAEAEA;}
 #subTopics ul li a.trash:hover { 
@@ -355,8 +371,6 @@
     background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -195px no-repeat;
 	border:1px solid #EAEAEA ;
 	border-radius:10px;
-	-moz-border-radius:10px;
-	-webkit-border-radius:10px;
 	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 	background-color:#EAEAEA;}
 #subTopics ul li a.toValidate:hover { 
@@ -403,5 +417,98 @@
 
 #topicDescription {
 	color:#666;
-	}
+}
 
+/*** A basculer dans la css global pour utilisation générique */
+.principalContent{
+	margin-right:325px;
+}
+
+.rightContent{
+	width:310px;
+	clear:right;
+	float:right;
+}
+
+.clearAll {
+	clear:both;
+}
+
+/* Pour Kmax */
+#listAxis{
+	display:inline;
+	float:left;
+}
+
+#btnForm{
+	display:inline;
+	float:left;
+	padding-top:12px;
+	width:100px;
+}
+
+.oneAxis {
+    background-color: #FFFFFF;
+    border-left: 1px solid #CECECE;
+    display: inline;
+    float: left;
+    margin: 5px 25px 5px 4px;
+    padding: 0 5px 4px 4px;
+    position:relative;
+}
+
+.kmax .sousNavBulle, .kmaxManager .sousNavBull{
+	position:relative;
+	margin:0 2% 0 1%;
+	width:97%;
+}
+
+.kmax .sousNavBulle #btnForm .milieuBoutonV5 a {
+	background-color:transparent;
+	border:0;
+}
+
+.oneAxis  label {
+	display: block;
+	padding: 4px 0 3px 0;
+	font-weight:100;
+	color:#26334A;
+}
+
+.oneAxis select {
+	border: 1px solid #CECECE;
+    color: #666666;
+}
+
+
+.axisManagment .oneAxis label{
+	padding-right:8px;
+	cursor:pointer;
+}
+
+.oneAxis .action {
+	position:absolute;
+	top:6px;
+	right:6px;
+	border:0;
+	background-color:transparent;
+}
+.oneAxis .action:hover {
+	background-color:#FFFFCC;
+}
+.oneAxis .action img {
+	width:13px;
+}
+
+.axisManagment .oneAxis{
+	position:relative;
+	background-color: #EAEAEA;
+    border-left: 1px solid #CECECE;
+    display: inline;
+    float: left;
+    margin: 5px 25px 5px 4px;
+    padding: 6px 15px 14px 14px;
+    position:relative;
+	border:1px solid #EAEAEA ;
+	border-radius:10px;
+}

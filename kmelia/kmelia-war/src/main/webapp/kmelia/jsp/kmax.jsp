@@ -67,16 +67,17 @@ if (action == null) {
 	action = "KmaxView";
 }
 %>
-
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<Script language="JavaScript1.2">
+<script type="text/javascript" language="JavaScript1.2">
+<!--
 var subscriptionWindow = window;
 var favoriteWindow = window;
 var topicUpdateWindow = window;
@@ -196,10 +197,10 @@ function exportPublications()
 {
 	exportComponentWindow = SP_openWindow("exportTopic.jsp?TopicId=dummy","exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
 }
-
+-->
 </script>
-</HEAD>
-<BODY onLoad="init()">
+</head>
+<body  id="<%=componentId %>" class="kmax" onload="init()">
 <%
 Window window = gef.getWindow();
 
@@ -340,7 +341,7 @@ if (action.equals("KmaxView")) {
 	out.println(window.printAfter());
 }
 %>
-<form name="managerForm" action="KmaxAxisManager" method="Post">
+<form name="managerForm" action="KmaxAxisManager" method="post">
 	<input type="hidden" name="AxisId"/>
 	<input type="hidden" name="AxisName"/>
 	<input type="hidden" name="AxisDescription"/>
@@ -352,9 +353,9 @@ if (action.equals("KmaxView")) {
 	<input type="hidden" name="Id"/>
 </form>
 
-<FORM NAME="pubForm" METHOD="POST">
+<form name="pubForm" method="post" action="">
 	<input type="hidden" name="PubId"/>
-</FORM>
+</form>
 
-</BODY>
-</HTML>
+</body>
+</html>

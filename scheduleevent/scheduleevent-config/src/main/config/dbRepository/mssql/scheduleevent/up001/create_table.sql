@@ -1,5 +1,5 @@
 	ALTER TABLE sc_scheduleevent_contributor
-	ADD lastvalidation timestamp
+	ADD lastvalidation datetime
 	;
 	
 	UPDATE sc_scheduleevent_contributor

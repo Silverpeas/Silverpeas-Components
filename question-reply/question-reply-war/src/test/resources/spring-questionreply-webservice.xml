@@ -43,5 +43,7 @@
 
   <bean name="personalizationServiceFactory"
         class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
+        
+  <import resource="spring-silverpeas.xml"/>
 </beans>
 

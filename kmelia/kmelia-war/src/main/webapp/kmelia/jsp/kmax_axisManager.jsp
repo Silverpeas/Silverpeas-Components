@@ -75,17 +75,18 @@ if (action == null) {
 %>
 
 
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-<Script language="JavaScript1.2">
-
+<script type="text/javascript" language="JavaScript1.2">
+<!--
 var axisAddWindow = window;
 var componentAddWindow = window;
 
@@ -117,7 +118,9 @@ function axisUpdate() {
         <% if (I18NHelper.isI18N)  { %>
         	document.managerForm.I18NLanguage.value = document.axisManagerForm.I18NLanguage[document.axisManagerForm.I18NLanguage.selectedIndex].value;
         <% } %>
-        document.managerForm.TranslationRemoveIt.value = document.getElementById('TranslationRemoveIt').value;
+        if (document.getElementById('TranslationRemoveIt'))  { 
+        	document.managerForm.TranslationRemoveIt.value = document.getElementById('TranslationRemoveIt').value;
+		}
         document.managerForm.submit();
     }
 }
@@ -213,7 +216,9 @@ function positionUpdate() {
       <% if (I18NHelper.isI18N)  { %>
       	document.managerForm.I18NLanguage.value = document.axisManagerForm.I18NLanguage[document.axisManagerForm.I18NLanguage.selectedIndex].value;
       <% } %>
-      document.managerForm.TranslationRemoveIt.value = document.getElementById('TranslationRemoveIt').value;
+      if (document.getElementById('TranslationRemoveIt'))  { 
+     	 document.managerForm.TranslationRemoveIt.value = document.getElementById('TranslationRemoveIt').value;
+		} 
       document.managerForm.submit();
     }
 }
@@ -268,9 +273,10 @@ function removeTranslation()
 {
 	axisUpdate();
 }
+-->
 </script>
-</HEAD>
-<BODY onUnload="closeWindows()">
+</head>
+<body id="<%=componentId %>" class="kmaxManager" onunload="closeWindows()">
 	<%
 if (action.equals("KmaxViewAxis") || action.equals("KmaxManageAxis") || action.equals("KmaxManagePosition")) {
 	  Window window = gef.getWindow();
@@ -341,17 +347,17 @@ String codeJSForTranslation(NodeDetail nodeDetail)
 }
 %>
 
-<form name="managerForm" method="Post">
-	<input type="hidden" name="AxisId">
-	<input type="hidden" name="AxisName">
-	<input type="hidden" name="AxisDescription">
-	<input type="hidden" name="PositionId">
-	<input type="hidden" name="PositionName">
-	<input type="hidden" name="PositionDescription">
-	<input type="hidden" name="NextAction">
-	<input type="hidden" name="Translation">
-	<input type="hidden" name="I18NLanguage">
-	<input type="hidden" name="TranslationRemoveIt" name="TranslationRemoveIt">
+<form name="managerForm" method="post" action="">
+	<input type="hidden" name="AxisId"/>
+	<input type="hidden" name="AxisName"/>
+	<input type="hidden" name="AxisDescription"/>
+	<input type="hidden" name="PositionId"/>
+	<input type="hidden" name="PositionName"/>
+	<input type="hidden" name="PositionDescription"/>
+	<input type="hidden" name="NextAction"/>
+	<input type="hidden" name="Translation"/>
+	<input type="hidden" name="I18NLanguage"/>
+	<input type="hidden" name="TranslationRemoveIt"/>
 </form>
-</BODY>
-</HTML>
+</body>
+</html>

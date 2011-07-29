@@ -154,13 +154,57 @@
       </help>
     </parameter>
     <parameter>
+      <name>defaultView</name>
+      <label>
+        <message lang="fr">Vue par défaut</message>
+        <message lang="en">Default view</message>
+        <message lang="de">Standard-Ansicht</message>
+      </label>
+      <order>4</order>
+      <mandatory>true</mandatory>
+      <value>MONTHLY</value>
+      <type>select</type>
+      <updatable>always</updatable>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Hebdomadaire</message>
+            <message lang="en">Weekly</message>
+            <message lang="de">Wöchentlich</message>
+          </name>
+          <value>WEEKLY</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Mensuelle</message>
+            <message lang="en">Monthly</message>
+            <message lang="de">Monatlich</message>
+          </name>
+          <value>MONTHLY</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Evénements à venir</message>
+            <message lang="en">Next events</message>
+            <message lang="de">Nächstes Ereigniss</message>
+          </name>
+          <value>NEXT_EVENTS</value>
+        </option>
+      </options>
+      <help>
+        <message lang="fr">Permet de choisir la vue à afficher par défaut lorsque l'utilisateur accède à l'almanach.</message>
+        <message lang="en">Choose the view to display by default when the user accesses the almanach.</message>
+        <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der Benutzer auf die Almanach.</message>
+      </help>
+    </parameter>
+    <parameter>
       <name>rss</name>
       <label>
         <message lang="fr">Flux RSS</message>
         <message lang="en">RSS</message>
         <message lang="de">RSS</message>
       </label>
-      <order>4</order>
+      <order>5</order>
       <mandatory>false</mandatory>
       <value>N</value>
       <type>checkbox</type>
@@ -178,7 +222,7 @@
         <message lang="en">Aggregation type</message>
         <message lang="de">Aggregierung-Typ</message>
       </label>
-      <order>5</order>
+      <order>6</order>
       <mandatory>false</mandatory>
       <value>0</value>
       <options>

@@ -110,7 +110,7 @@
   			width: 350,
   			modal: true,
   			buttons: {
-  				"<%=resources.getSetting("kmelia.template.change.confirm")%>": function() {
+  				"<%=resources.getString("kmelia.template.change.confirm")%>": function() {
   					location.href="ChangeTemplate";
   				},
   				"<%=resources.getString("GML.cancel")%>": function() {

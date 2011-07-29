@@ -23,6 +23,12 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
+import java.util.Collection;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,8 +39,12 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
@@ -47,11 +57,11 @@ import net.fortuna.ical4j.model.property.Uid;
 import static com.silverpeas.util.StringUtil.*;
 
 public class EventDetail extends AbstractI18NBean implements
-    SilverContentInterface, Serializable {
+        SilverContentInterface, Serializable {
 
   private static final long serialVersionUID = 9077018265272108291L;
   public static ResourceLocator almanachSettings =
-      new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
+          new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
   private String _name = null;
   private EventPK _pk = null;
   private Date _startDate = null;
@@ -281,8 +291,21 @@ public class EventDetail extends AbstractI18NBean implements
   public String getWysiwyg() throws WysiwygException {
     String wysiwygContent = null;
     wysiwygContent = WysiwygController.loadFileAndAttachment(
-        getPK().getSpace(), getPK().getComponentName(), getPK().getId());
+            getPK().getSpace(), getPK().getComponentName(), getPK().getId());
     return wysiwygContent;
+  }
+
+  public Collection<AttachmentDetail> getAttachments() {
+    try {
+      AlmanachBm almanachService = ((AlmanachBmHome) EJBUtilitaire.getEJBObjectRef(
+              JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();
+      return almanachService.getAttachments(getPK());
+    } catch (Exception ex) {
+      Logger.getLogger(EventDetail.class.getName()).log(Level.SEVERE, null, ex);
+      throw new AlmanachRuntimeException("EventDetail.getAttachments()",
+              SilverpeasRuntimeException.ERROR,
+              "almanach.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS", ex);
+    }
   }
 
   public Periodicity getPeriodicity() {

@@ -74,14 +74,14 @@ publicationSrc = m_context + "/util/icons/publication.gif";
 fullStarSrc = m_context + "/util/icons/starFilled.gif";
 emptyStarSrc = m_context + "/util/icons/starEmpty.gif";
 %>
-
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<Script language="JavaScript1.2">
+<script language="JavaScript1.2">
 function search() {
     z = "";
     nbSelectedAxis = 0;
@@ -111,8 +111,8 @@ function search() {
 }
 
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
 	Window window = gef.getWindow();
 	
@@ -133,10 +133,10 @@ function search() {
     out.println(window.printAfter());
 %>
 
-<form name="managerForm" ACTION= "KmaxAxisManager" method="post" target="MyMain">
-	<input type="hidden" name="SearchCombination">
-	<input type="hidden" name="TimeCriteria">
+<form name="managerForm" action= "KmaxAxisManager" method="post" target="MyMain">
+	<input type="hidden" name="SearchCombination"/>
+	<input type="hidden" name="TimeCriteria"/>
 </form>
 
-</BODY>
-</HTML>
+</body>
+</html>

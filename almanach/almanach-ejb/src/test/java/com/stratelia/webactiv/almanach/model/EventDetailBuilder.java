@@ -99,6 +99,24 @@ public class EventDetailBuilder {
       periodicity.setUntilDatePeriod(parseDate("2011/05/31"));
       event.setPeriodicity(periodicity);
       builder.setEventDetail(event);
+    } else if ("1004".equals(id)) {
+      EventDetail event = new EventDetail(new EventPK(id, null, "almanach509"), "All day event 2",
+          parseDate("2012/02/20"), parseDate("2012/02/20"));
+      event.setDelegatorId("847");
+      event.setStartHour("09:30");
+      event.setEventUrl("");
+      event.setPlace("Eybens");
+      event.setPriority(1);
+      builder.setEventDetail(event);
+    }  else if ("1005".equals(id)) {
+      EventDetail event = new EventDetail(new EventPK(id, null, "almanach509"), "Event without end date 2",
+          parseDate("2013/06/20"), parseDate("2013/06/20"));
+      event.setDelegatorId("847");
+      event.setStartHour("09:30");
+      event.setEventUrl("");
+      event.setPlace("Eybens");
+      event.setPriority(1);
+      builder.setEventDetail(event);
     } else {
       throw new IllegalArgumentException("The event detail with id '" + id + "' is unknown!");
     }

@@ -64,7 +64,7 @@ import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.kmelia.export.ExportFileNameProducer;
@@ -1336,9 +1336,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       getStatisticBm().addStat(getUserId(), foreignPK, 1, "Publication");
     }
 
-    // set nb access
-    setNbAccess(publicationDetail);
-
     if (processIndex) {
       // mise à jour du rang de la publication
       // List publis = (List) getSessionTopic().getPublicationDetails();
@@ -1808,23 +1805,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
               getSessionPublication().getDetail().getPK(), getUserId());
     }
     refreshSessionPubliAndClone();
-  }
-
-  /**************************************************************************************/
-  /* KMelia - Gestion des Controles de lecture */
-  /**
-   * **********************************************************************************
-   */
-  /*
-   * public synchronized Collection getReadingStates(String pubId) throws RemoteException { return
-   * getKmeliaBm().getReadingStates(getPublicationPK(pubId)); }
-   */
-  private void setNbAccess(PublicationDetail pub) throws RemoteException {
-    int nbAccess =
-            getStatisticBm().getCount(
-            new ForeignPK(pub.getPK().getId(), pub.getPK().getInstanceId()),
-            1, "Publication");
-    pub.setNbAccess(nbAccess);
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId)
