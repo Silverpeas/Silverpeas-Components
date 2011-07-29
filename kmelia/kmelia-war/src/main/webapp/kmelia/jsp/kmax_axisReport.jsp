@@ -58,6 +58,11 @@
 <%@ page import="com.silverpeas.util.i18n.*"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%!
+
+String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+//Icons
+String axisUpdate = m_context + "/util/icons/update.gif";
+
 String getAxisAllLabel(int valueMaxLength, KmeliaSessionController kmeliaScc) {
 
       int nbSpaces = (valueMaxLength - kmeliaScc.getString("AllComponents").length()) / 2;
@@ -74,46 +79,34 @@ String getTimeAxis(KmeliaSessionController kmeliaScc, ResourceLocator timeSettin
 
       List keys = kmeliaScc.getTimeAxisKeys();
       StringBuffer axis = new StringBuffer(1000);
-      axis.append("<div align=\"center\">");
-        axis.append("<TABLE width=\"99%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" class=\"intfdcolor\">");
-          axis.append("<TR>");
-            axis.append("<TD>");
-             axis.append("<div align=\"center\" class=\"textePetitBold\">"+kmeliaScc.getString("TimeAxis")+"</div>");
-              axis.append("<TABLE width=\"100%\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\" class=\"intfdcolor4\">");
-                axis.append("<TR>");
-                  axis.append("<TD>");
-                    axis.append("<div align=\"center\">");
-                          axis.append("<select name=\"\" size=\"1\"\">");
-				      String key = "";
-				      StringBuffer values = new StringBuffer(1000);
-				      String value = "";
+			axis.append("<div class=\"oneAxis\"  id=\"axisTime\">");
+				axis.append("<label for=\"timeAxis\">"+kmeliaScc.getString("TimeAxis")+"</label>");
+					axis.append("<select id=\"timeAxis\" name=\"\" size=\"1\">");
+						String key = "";
+						StringBuffer values = new StringBuffer(1000);
+						String value = "";
 						String selectValue = ""; 
 						int valueMaxLength = 0;
-       
-						for (int i = 0; i < keys.size(); i++) {
-							selectValue = "";
-							key = ((Integer) keys.get(i)).toString();
-							value = timeSettings.getString(key);
-					       
-							if (value.length() > valueMaxLength)
-								valueMaxLength = value.length();
 						
-							if (key.equals(defaultValue))
-								selectValue = "selected";
-						       
-							values.append("<option value=\""+key+"\""+selectValue+">"+value+"</option>");
+						for (int i = 0; i < keys.size(); i++) {
+						selectValue = "";
+						key = ((Integer) keys.get(i)).toString();
+						value = timeSettings.getString(key);
+						
+						if (value.length() > valueMaxLength)
+							valueMaxLength = value.length();
+						
+						if (key.equals(defaultValue))
+							selectValue = "selected";
+						   
+						values.append("<option value=\""+key+"\""+selectValue+">"+value+"</option>");
 						}
-      
-                          axis.append("<option value=\"X\">"+kmeliaScc.getString("AllComponents")+"</option>");
-                          axis.append(values);
-                      axis.append("</select>");
-                    axis.append("</div>");
-                  axis.append("</TD>");
-                axis.append("</TR>");
-              axis.append("</TABLE>");
-            axis.append("</TD>");
-        axis.append("</TABLE>");
-      axis.append("</div>");
+						
+						axis.append("<option value=\"X\">"+kmeliaScc.getString("AllComponents")+"</option>");
+						axis.append(values);
+					axis.append("</select>");
+
+			axis.append("</div>");
     return axis.toString();
 }
 
@@ -133,33 +126,22 @@ List getAxis(KmeliaSessionController kmeliaScc, boolean axisLinked, List combina
                       axisName = node.getName(translation);
                       axisNb++;
                       if (axis.length()>0) {
-                                          axis.append("</select>");
-                                        axis.append("</div>");
-                                      axis.append("</TD>");
-                                    axis.append("</TR>");
-                                  axis.append("</TABLE>");
-                                axis.append("</TD>");
-                            axis.append("</TABLE>");
-                          axis.append("</div>");
+						axis.append("</select>");
+			
+				axis.append("</div>");
                           axisList.add(axis.toString());
                           axis = new StringBuffer(1000);
                       }
-                      axis.append("<div align=\"center\">");
-                        axis.append("<TABLE width=\"99%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" class=\"intfdcolor\">");
-                          axis.append("<TR>");
-                            axis.append("<TD>");
+                      axis.append("<div  class=\"oneAxis\" id=\"axis"+node.getNodePK().getId()+"\">");
                               if (axisLinked)
-                                  axis.append("<div align=\"center\" class=\"textePetitBold\"><A href=\"javaScript:axisManage('"+node.getNodePK().getId()+"')\" class=\"textePetitBold\">"+Encode.javaStringToHtmlString(node.getName(translation))+"</a></div>");
+                                  axis.append("<label onclick=\"axisManage('"+node.getNodePK().getId()+"')\" for=\"axe"+node.getNodePK().getId()+"\">"+Encode.javaStringToHtmlString(node.getName(translation))+"</label><a  title=\""+kmeliaScc.getString("Update")+" \"  href=\"javaScript:axisManage('"+node.getNodePK().getId()+"')\" class=\"action\"><img alt=\""+kmeliaScc.getString("Update")+" \" src=\""+axisUpdate+"\"/></a>");
                               else
-                                  axis.append("<div align=\"center\" class=\"textePetitBold\">"+Encode.javaStringToHtmlString(node.getName(translation))+"</div>");
-                              axis.append("<TABLE width=\"100%\" border=\"0\" cellspacing=\"2\" cellpadding=\"0\" class=\"intfdcolor4\">");
-                                axis.append("<TR>");
-                                  axis.append("<TD>");
-                                    axis.append("<div align=\"center\">");
+                                  axis.append("<label for=\"axe"+node.getNodePK().getId()+"\">"+Encode.javaStringToHtmlString(node.getName(translation))+"</label>");
+                              
                                         if (axisLinked)
-                                          axis.append("<select name=\""+node.getNodePK().getId()+"\" size=\"1\" onChange=\"positionManage(this)\">");
+                                          axis.append("<select id=\"axe"+node.getNodePK().getId()+"\" name=\""+node.getNodePK().getId()+"\" size=\"1\" onchange=\"positionManage(this)\">");
                                         else
-                                          axis.append("<select name=\""+node.getNodePK().getId()+"\" size=\"1\"\">");
+                                          axis.append("<select id=\"axe"+node.getNodePK().getId()+"\" name=\""+node.getNodePK().getId()+"\" size=\"1\">");
                                         axis.append("<option value=\""+node.getPath()+node.getNodePK().getId()+"\">"+kmeliaScc.getString("AllComponents")+"</option>");
                   } else if (node.getLevel() == 3) {
                       selectValue = "";
@@ -169,21 +151,16 @@ List getAxis(KmeliaSessionController kmeliaScc, boolean axisLinked, List combina
 	                  } else {
 	                      String spaces = "";
 	                      for (int i=0; i<node.getLevel()-3; i++)
-	                        spaces += "&nbsp;&nbsp;";
+	                        spaces += "&nbsp;&nbsp;&nbsp;&nbsp;";
 		                    selectValue = "";
 											  if (combination.contains(node.getPath()+node.getId()))
 	                            selectValue = "selected";
 											  axis.append("<option value=\""+node.getPath()+node.getNodePK().getId()+"|"+Encode.javaStringToHtmlString(axisName)+"\" class=\"intfdcolor5\" "+selectValue+">"+spaces+Encode.javaStringToHtmlString(node.getName(translation))+"</option>");
 	                  }
  			           }
-                      axis.append("</select>");
-                    axis.append("</div>");
-                  axis.append("</TD>");
-                axis.append("</TR>");
-              axis.append("</TABLE>");
-            axis.append("</TD>");
-        axis.append("</TABLE>");
-      axis.append("</div>");
+						axis.append("</select>");
+			
+				axis.append("</div>");
       axisList.add(axis.toString());
       }
 
@@ -227,72 +204,42 @@ String displayAxis(KmeliaSessionController kmeliaScc, GraphicElementFactory gef,
     Board board = gef.getBoard();
 
     int nbCol = 3;
-    result.append("<form name=\"axisForm\" Action=\"\" method=\"Post\">");
-    result.append(board.printBefore());
-    //result.append("<table width=\"98%\" border=\"0\" cellspacing=\"1\" cellpadding=\"2\" class=\"intfdcolor5\" align=center>\n");
-	//result.append("<tr align=center>\n");
-    //result.append("<td class=\"intfdcolor\"  align=center>\n");
-    result.append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" align=center>");
+    result.append("<form name=\"axisForm\" action=\"\" method=\"post\">");
+	if (axisLinked) {
+		result.append("<div class=\"axisManagment\">");
+	} else {
+		result.append("<div class=\"sousNavBulle\">");
+	}
+	    
+			    Iterator i = axisList.iterator();
+			    if (i.hasNext()) {
+			        
+			          while (i.hasNext()) {
+			            String axis = (String) i.next();
+			            result.append(axis);
+			          }
+			         
+			    }
+			
 
-	result.append("<tr>\n");
-	result.append("<td colspan="+(nbCol+1)+" class=\"intfdcolor4\" align=center>\n"); 
-	result.append("&nbsp;&nbsp;</td>\n");
-	result.append("</tr>\n");
-
-    Iterator i = axisList.iterator();
-    if (i.hasNext()) {
-          int j=1;
-          boolean endRaw = false;
-          while (i.hasNext()) {
-            String axis = (String) i.next();
-            if (j==1) {
-              result.append("<tr>\n");
-              result.append("<td class=\"intfdcolor4\" valign=\"top\">&nbsp;</td>\n");
-              endRaw = false;
-            }
-            if (j<=nbCol){
-              result.append("<td class=\"intfdcolor4\" valign=\"top\">\n");
-              result.append(axis);
-              result.append("</td>");
-              j++;
-            }
-            if (j>nbCol) {
-              result.append("\t</tr>");
-              endRaw=true;
-              j=1;
-            }
-          }
-          if (!endRaw) {
-              int nbTd = nbCol-j+1;
-              int k=1;
-              while (k<=nbTd) {
-                      result.append("<td class=\"intfdcolor4\" valign=\"top\">&nbsp;</td>\n");
-                      k++;
-              }
-              result.append("</tr>\n");
-          }
-    }
-    if (searchEnabled && (axisList.size() > 0)) {
-	    result.append("<tr><td class=\"intfdcolor4\" colspan=\""+nbCol+1+"\" align=\"center\"><BR>");
-    }
-
-	result.append("</td></tr>");
-	result.append("</table>");
-	result.append("<br/>");
-	result.append(board.printAfter());
-    //result.append("</td></tr></table>");
 	
-	if (searchEnabled && (axisList.size() > 0)) {
+		if (searchEnabled && (axisList.size() > 0)) {
 	    ButtonPane lebouton = gef.getButtonPane();
         Button validerButton = gef.getFormButton(kmeliaScc.getString("Validate"), "javaScript:search()", false);
         lebouton.addButton(validerButton);
         lebouton.setVerticalPosition();
         lebouton.setHorizontalPosition();
-		result.append("<BR><center>");
+		result.append("<div id=\"btnForm\">");
 		result.append(lebouton.print());
-		result.append("</center>");}
+		result.append("</div>");}
+	
+	result.append("<br clear=\"all\"/>");
+	result.append("</div>");
+	
+
 
 	result.append("</form>");
+	result.append("<br clear=\"all\"/>");
 	return result.toString();
 }
 
@@ -303,62 +250,62 @@ String displayAxisManageView(KmeliaSessionController kmeliaScc, GraphicElementFa
     
     Board board = gef.getBoard();
     result.append(board.printBefore());
-    //result.append("<TABLE ALIGN=CENTER CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
-      //result.append("<tr>"); 
-        //result.append("<td>"); 
-          result.append("<TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
-          result.append("<form name=\"axisManagerForm\" Method=\"Post\">");
-          result.append("<input type=\"hidden\" name=\"Id\" value=\""+axisId+"\">");
-            result.append("<tr>");
-              result.append("<td colspan=\"6\" class=\"txtnav\"><b>"+kmeliaScc.getString("AxisInformations")+" :</b></td>");
-            result.append("</tr>");
 
-            result.append(I18NHelper.getFormLine(resources, axis, translation));
-            
-            result.append("<tr>");
-              result.append("<td width=\"20%\" class=\"txtlibform\">"+kmeliaScc.getString("AxisTitle")+" : </td>");
-              result.append("<td>"); 
-                result.append("<input type=\"text\" id=\"nodeName\" name=\"Name\" value=\""+Encode.javaStringToHtmlString(axis.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img src=\""+mandatoryFieldSrc+"\" border=0 width=5 height=5>");
-              result.append("</td>");
-              result.append("<td>&nbsp;</td>");
-              result.append("<td>&nbsp;</td>");
-              result.append("<td>&nbsp;</td>");
-              result.append("<td>&nbsp;</td>");
-            result.append("</tr>");
-            result.append("<tr>"); 
-              result.append("<td width=\"20%\" class=\"txtlibform\">"+kmeliaScc.getString("AxisDescription")+" : </td>");
-              result.append("<td>"); 
-                result.append("<textarea id=\"nodeDesc\" name=\"Description\" cols=\"60\" rows=\"5\" wrap=\"PHYSICAL\">"+axis.getDescription(translation)+"</textarea>");
-              result.append("</td>");
-              result.append("<td colspan=\"4\">&nbsp;");
-              result.append("</td>");
-            result.append("</tr>");
-            result.append("<tr>");
-              result.append("<td colspan=\"6\" align=left>( <img border=\"0\" src=\""+mandatoryFieldSrc+"\" width=\"5\" height=\"5\"> : "+kmeliaScc.getString("ChampsObligatoires")+" ) </td>");
-            result.append("</tr>");
-            result.append("<tr>"); 
-              result.append("<td colspan=\"6\" align=\"center\">"); 
-
-                ButtonPane lebouton = gef.getButtonPane();
-                Button ajouterButton = gef.getFormButton(kmeliaScc.getString("AddComponent"), "javaScript:addPositionToAxis('"+axisId+"')", false);
-                Button validerButton = gef.getFormButton(kmeliaScc.getString("Validate"), "javaScript:axisUpdate()", false);
-                Button supprimerButton = gef.getFormButton(kmeliaScc.getString("DeleteAxis"), "javaScript:axisDelete()", false);
-
-                lebouton.addButton(validerButton);
-                lebouton.addButton(ajouterButton);
-                lebouton.addButton(supprimerButton);
-
-                lebouton.setVerticalPosition();
-                lebouton.setHorizontalPosition();
-
-				result.append("</td>");
-            result.append("</tr>");
-            result.append("</form>");
-          result.append("</table>");
+		result.append("<form name=\"axisManagerForm\" method=\"post\">");
+			result.append("<input type=\"hidden\" name=\"Id\" value=\""+axisId+"\"/>");
+			
+			result.append("<table align=\"center\" cellpading=\"5\" cellspacing=\"5\" border=\"0\" width=\"100%\">");
+				result.append("<tr>");
+					result.append("<td>&nbsp;</td><td colspan=\"5\" class=\"txtnav\"><b>"+kmeliaScc.getString("AxisInformations")+" </b></td>");
+	            result.append("</tr>");
+	
+	            result.append(I18NHelper.getFormLine(resources, axis, translation));
+	            
+	            result.append("<tr>");
+					result.append("<td width=\"20%\" class=\"txtlibform\">"+kmeliaScc.getString("AxisTitle")+" : </td>");
+					result.append("<td>"); 
+						result.append("<input type=\"text\" id=\"nodeName\" name=\"Name\" value=\""+Encode.javaStringToHtmlString(axis.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img alt=\"\" src=\""+mandatoryFieldSrc+"\" border=\"0\"  width=\"5px\"  height=\"5px\" />");
+					result.append("</td>");
+					result.append("<td>&nbsp;</td>");
+					result.append("<td>&nbsp;</td>");
+					result.append("<td>&nbsp;</td>");
+					result.append("<td>&nbsp;</td>");
+				result.append("</tr>");
+	            result.append("<tr>"); 
+					result.append("<td width=\"20%\" class=\"txtlibform\">"+kmeliaScc.getString("AxisDescription")+" : </td>");
+					result.append("<td>"); 
+						result.append("<textarea id=\"nodeDesc\" name=\"Description\" cols=\"60\" rows=\"5\" wrap=\"physical\">"+axis.getDescription(translation)+"</textarea>");
+					result.append("</td>");
+					result.append("<td colspan=\"4\">&nbsp;");
+					result.append("</td>");
+				result.append("</tr>");
+	            result.append("<tr>");
+					result.append("<td colspan=\"6\"t>( <img alt=\" \" border=\"0\" src=\""+mandatoryFieldSrc+"\" width=\"5px\" height=\"5px\" /> : "+kmeliaScc.getString("ChampsObligatoires")+" ) </td>");
+	            result.append("</tr>");
+	            result.append("<tr>"); 
+					result.append("<td colspan=\"6\">"); 
+	
+	                ButtonPane lebouton = gef.getButtonPane();
+	                Button ajouterButton = gef.getFormButton(kmeliaScc.getString("AddComponent"), "javaScript:addPositionToAxis('"+axisId+"')", false);
+	                Button validerButton = gef.getFormButton(kmeliaScc.getString("Validate"), "javaScript:axisUpdate()", false);
+	                Button supprimerButton = gef.getFormButton(kmeliaScc.getString("DeleteAxis"), "javaScript:axisDelete()", false);
+	
+	                lebouton.addButton(validerButton);
+	                lebouton.addButton(ajouterButton);
+	                lebouton.addButton(supprimerButton);
+	
+	                lebouton.setVerticalPosition();
+	                lebouton.setHorizontalPosition();
+	
+					result.append("</td>");
+				result.append("</tr>");
+			result.append("</table>");
+		
+		result.append("</form>");
 
         result.append(board.printAfter());
           
-	result.append("<center><br>");
+	result.append("<center><br/>");
 	result.append(lebouton.print());
 	result.append("</br></center>");
 	result.append("<script language=\"javascript\">document.axisManagerForm.Name.focus();</script>");
@@ -370,47 +317,48 @@ String displayComponentManageView(KmeliaSessionController kmelia, GraphicElement
     StringBuffer result = new StringBuffer(1000);
     Board board = gef.getBoard();
     result.append(board.printBefore());
-          result.append("<TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
-          result.append("<form name=\"axisManagerForm\" Method=\"Post\">");
-          result.append("<input type=\"hidden\" name=\"Id\" value=\""+componentId+"\">");
-            result.append("<tr>");
-              result.append("<td colspan=\"6\" class=\"txtnav\"><b>"+kmelia.getString("ComponentInformations")+" :</b></td>");
-            result.append("</tr>");
+		
+    result.append("<form name=\"axisManagerForm\" method=\"post\">");
+		result.append("<input type=\"hidden\" name=\"Id\" value=\""+componentId+"\">");
+		result.append("<table align=\"center\" cellpading=\"5\" cellspacing=\"5\" border=\"0\" width=\"100%\">");
+			result.append("<tr>");
+				result.append("<td>&nbsp;</td><td colspan=\"5\"  class=\"txtnav\"><b>"+kmelia.getString("ComponentInformations")+" </b></td>");
+			result.append("</tr>");
             result.append("<tr>"); 
-              result.append("<td width=\"20%\" class=\"txtlibform\">"+kmelia.getString("ComponentFather")+ " : </td>");
-              result.append("<td>"); 
-                result.append(path);
-              result.append("</td>");
-              result.append("<td>&nbsp;</td>");
-              result.append("<td>&nbsp;</td>");
-              result.append("<td>&nbsp;</td>");
-              result.append("<td>&nbsp;</td>");
+				result.append("<td width=\"20%\" class=\"txtlibform\">"+kmelia.getString("ComponentFather")+ " : </td>");
+				result.append("<td>"); 
+				result.append(path);
+				result.append("</td>");
+				result.append("<td>&nbsp;</td>");
+				result.append("<td>&nbsp;</td>");
+				result.append("<td>&nbsp;</td>");
+				result.append("<td>&nbsp;</td>");
             result.append("</tr>");
             result.append(I18NHelper.getFormLine(resources, nodeDetail, translation));
             result.append("<tr>"); 
-              result.append("<td width=\"20%\" class=\"txtlibform\">"+kmelia.getString("ComponentTitle")+" : </td>");
-              result.append("<td>"); 
-                result.append("<input type=\"text\" id=\"nodeName\" name=\"Name\" value=\""+Encode.javaStringToHtmlString(nodeDetail.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img src=\""+mandatoryFieldSrc+"\" border=0 width=5 height=5>");
-              result.append("</td>");
-              result.append("<td>&nbsp;</td>");
-              result.append("<td>&nbsp;</td>");
-              result.append("<td>&nbsp;</td>");
-              result.append("<td>&nbsp;</td>");
+				result.append("<td width=\"20%\" class=\"txtlibform\">"+kmelia.getString("ComponentTitle")+" : </td>");
+				result.append("<td>"); 
+					result.append("<input type=\"text\" id=\"nodeName\" name=\"Name\" value=\""+Encode.javaStringToHtmlString(nodeDetail.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img alt=\"  \" src=\""+mandatoryFieldSrc+"\" border=\"0\"  width=\"5px\" height=\"5px\" />");
+				result.append("</td>");
+				result.append("<td>&nbsp;</td>");
+				result.append("<td>&nbsp;</td>");
+				result.append("<td>&nbsp;</td>");
+				result.append("<td>&nbsp;</td>");
             result.append("</tr>");
             result.append("<tr>"); 
-              result.append("<td width=\"20%\" class=\"txtlibform\">"+kmelia.getString("ComponentDescription")+" : </td>");
-              result.append("<td>"); 
-                result.append("<textarea id=\"nodeDesc\" name=\"Description\" cols=\"60\" rows=\"5\" wrap=\"PHYSICAL\">"+nodeDetail.getDescription(translation)+"</textarea>");
-              result.append("</td>");
-              result.append("<td colspan=\"4\">&nbsp;");
-              result.append("</td>");
-            result.append("</tr>");
+				result.append("<td width=\"20%\" class=\"txtlibform\">"+kmelia.getString("ComponentDescription")+" : </td>");
+				result.append("<td>"); 
+					result.append("<textarea id=\"nodeDesc\" name=\"Description\" cols=\"60\" rows=\"5\" wrap=\"PHYSICAL\">"+nodeDetail.getDescription(translation)+"</textarea>");
+				result.append("</td>");
+				result.append("<td colspan=\"4\">&nbsp;");
+				result.append("</td>");
+			result.append("</tr>");
             result.append("<tr>");
-              result.append("<td colspan=\"6\" align=left>( <img border=\"0\" src=\""+mandatoryFieldSrc+"\" width=\"5\" height=\"5\"> : "+kmelia.getString("ChampsObligatoires")+" ) </td>");
+				result.append("<td colspan=\"6\" >( <img  alt=\" \"  border=\"0\" src=\""+mandatoryFieldSrc+"\" width=\"5px\" height=\"5px\" /> : "+kmelia.getString("ChampsObligatoires")+" ) </td>");
             result.append("</tr>");
           
             result.append("<tr>");
-              result.append("<td colspan=\"6\" align=\"center\">"); 
+				result.append("<td colspan=\"6\">"); 
 
                 ButtonPane lebouton = gef.getButtonPane();
                 Button ajouterButton = gef.getFormButton(kmelia.getString("AddComponent"), "javaScript:addPositionToPosition('"+componentId+"')", false);
@@ -426,8 +374,9 @@ String displayComponentManageView(KmeliaSessionController kmelia, GraphicElement
 
                 result.append("</td>");
             result.append("</tr>");
-            result.append("</form>");
-    result.append("</table>");
+   		 result.append("</table>");
+	result.append("</form>");
+
     result.append(board.printAfter());
 	result.append("<center><br>");
 	result.append(lebouton.print());

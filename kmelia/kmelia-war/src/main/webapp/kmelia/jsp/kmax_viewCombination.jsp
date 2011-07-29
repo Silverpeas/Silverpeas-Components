@@ -96,9 +96,10 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 	
 	String action = "KmaxViewCombination";
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -133,8 +134,8 @@ out.println(gef.getLookStyleSheet());
 	    }
 	}
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
 	Window window = gef.getWindow();
 	Frame frame = gef.getFrame();
@@ -166,7 +167,7 @@ out.println(gef.getLookStyleSheet());
 		out.println("<td>"+Encode.javaStringToHtmlParagraphe(resources.getString("kmelia.HelpKmaxClassification"))+"</td>");
 		out.println("</tr></table>");
 	    out.println(boardHelp.printAfter());
-	    out.println("<BR>");
+	    out.println("<br />");
 	}
     
 	out.println(displayAxisToPublish(kmeliaScc, gef, currentLang));
@@ -175,15 +176,15 @@ out.println(gef.getLookStyleSheet());
 	out.println("<br>");
 	out.println(board.printBefore());
 
-	out.println("<TABLE ALIGN=CENTER CELLPADDING=0 CELLSPACING=3 BORDER=0 WIDTH=\"100%\">");
+	out.println("<table align=\"center\" cellpading=\"0\" cellspacing=\"3\" border=\"0 \" width=\"100%\">");
     if (coordinates.size() <= 0) {
-        out.println("<tr><td ALIGN=CENTER>"+kmeliaScc.getString("NoPositions")+"</td></tr>");
+        out.println("<tr><td align=\"center\">"+kmeliaScc.getString("NoPositions")+"</td></tr>");
     } else {
       //display the axis names
       List axisHeaders = kmeliaScc.getAxisHeaders();
       Iterator headersIt = axisHeaders.iterator();
       NodeDetail nodeDetail = null;
-	  out.println("<TR><TD colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></TD></TR>");
+	  out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
       out.println("<tr>");
       while (headersIt.hasNext()) {
           nodeDetail = (NodeDetail) headersIt.next();
@@ -192,7 +193,7 @@ out.println(gef.getLookStyleSheet());
 			  out.println("<td align=\"center\"><b>"+Encode.javaStringToHtmlString(nodeDetail.getName(currentLang))+"</b></td>");
       }
      out.println("<td align=\"center\"><b>"+kmeliaScc.getString("Del")+"</b></td></tr>");
-	 out.println("<TR><TD colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></TD></TR>");
+	 out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
 
       //display coordinates
       Iterator it = coordinates.iterator();
@@ -228,7 +229,7 @@ out.println(gef.getLookStyleSheet());
           out.println("<td  align=\"center\"><A href=\"javaScript:deleteCoordinate('"+coordinate.getCoordinateId()+"')\"><img src=\""+deleteSrc+"\" title=\""+kmeliaScc.getString("Delete")+"\" border=0></A></td>");
           out.println("</tr>");
       }
-	  out.println("<TR><TD colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></TD></TR>");
+	  out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
     }
     out.println("</table>");
     out.println("</center>");
@@ -247,22 +248,22 @@ out.println(gef.getLookStyleSheet());
 		buttonPane.addButton(nextButton);
 		buttonPane.addButton(cancelButton);
 		buttonPane.setHorizontalPosition();
-		out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+		out.println("<br /><center>"+buttonPane.print()+"</center><br />");
 	}
     
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-<form name="managerForm" method="Post">
-<input type="hidden" name="AxisId">
-<input type="hidden" name="AxisName">
-<input type="hidden" name="AxisDescription">
-<input type="hidden" name="ComponentId">
-<input type="hidden" name="ComponentName">
-<input type="hidden" name="ComponentDescription">
-<input type="hidden" name="SearchCombination">
-<input type="hidden" name="PubId" value="<%=id%>">
-<input type="hidden" name="CoordinateId">
+<form name="managerForm" method="post">
+	<input type="hidden" name="AxisId"/>
+	<input type="hidden" name="AxisName"/>
+	<input type="hidden" name="AxisDescription"/>
+	<input type="hidden" name="ComponentId"/>
+	<input type="hidden" name="ComponentName"/>
+	<input type="hidden" name="ComponentDescription"/>
+	<input type="hidden" name="SearchCombination"/>
+	<input type="hidden" name="PubId" value="<%=id%>"/>
+	<input type="hidden" name="CoordinateId"/>
 </form>
-</BODY>
-</HTML>
+</body>
+</html>
