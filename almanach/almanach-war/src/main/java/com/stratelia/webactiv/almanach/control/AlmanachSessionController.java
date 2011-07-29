@@ -90,9 +90,10 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events.
  * A such object wraps in fact the current almanach in the user session; in others words, the
- * almanach the user works currently with. As the almanach is displayed in a given window time,
+ * almanach on which the user works currently. As the almanach is displayed in a given window time,
  * the AlmanachSessionController instance maintains the current opened window time and provides
- * a way to move this window front or back in the time.
+ * a way to move this window front or back in the time. The window time depends on the view mode
+ * choosen by the user: it can be a monthly view, a weekly view, and so on.
  */
 public class AlmanachSessionController extends AbstractComponentSessionController {
 
@@ -471,7 +472,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @return
+   * Is this almanach instance is parameterized to use the classification plan (PdC) to classify
+   * the events on it.
    */
   public boolean isPdcUsed() {
     String parameterValue = getComponentParameterValue("usepdc");
@@ -528,6 +530,11 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     return param;
   }
 
+  /**
+   * Gets the others almanach instances that are accessible from the current underlying almanach
+   * instance.
+   * @return a list of DTO carrying information about the others almanach instances.
+   */
   public List<AlmanachDTO> getAccessibleInstances() {
     List<AlmanachDTO> accessibleInstances = new ArrayList<AlmanachDTO>();
 
@@ -574,15 +581,18 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @param objectId
-   * @return
-   * @throws AlmanachBadParamException
-   * @throws AlmanachException
-   * @throws RemoteException
+   * Gets the identifier of the specified event as a Silverpeas object (an object that have a
+   * content that can be managed in Silverpeas).
+   * @param eventId the identifier of the event.
+   * @return the identifier of the Silverpeas object that represents the specified event.
+   * @throws AlmanachBadParamException if parameter is invalid; it doesn't represent an event
+   * identifier.
+   * @throws AlmanachException if the operation fail.
+   * @throws RemoteException if an error occurs while communicating with the remote almanach service.
    */
-  public int getSilverObjectId(final String objectId)
+  public int getSilverObjectId(final String eventId)
           throws AlmanachBadParamException, AlmanachException, RemoteException {
-    return getAlmanachBm().getSilverObjectId(new EventPK(objectId, getSpaceId(), getComponentId()));
+    return getAlmanachBm().getSilverObjectId(new EventPK(eventId, getSpaceId(), getComponentId()));
   }
 
   /**
@@ -595,7 +605,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     //if (colors == null) {
     colors = new HashMap<String, String>();
     colors.put(getComponentId(), getAlmanachColor(0));
-    List<AlmanachDTO> almanachs = getOthersAlmanachs();
+    List<AlmanachDTO> almanachs = getAggregatedAlmanachs();
     if (almanachs != null) {
       for (AlmanachDTO almanach : almanachs) {
         colors.put(almanach.getInstanceId(), almanach.getColor());
@@ -606,11 +616,11 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * Gets all almanachs others than the current one in the session.
+   * Gets the almanachs that can be aggregated with the curren t underlying one.
    * @return a list of AlmanachDTO instances, each of them carrying some data about an almanach.
    */
-  public List<AlmanachDTO> getOthersAlmanachs() {
-    List<AlmanachDTO> othersAlmanachs = new ArrayList<AlmanachDTO>();
+  public List<AlmanachDTO> getAggregatedAlmanachs() {
+    List<AlmanachDTO> aggregatedAlmanachs = new ArrayList<AlmanachDTO>();
 
     String agregationMode =
             getSettings().getString("almanachAgregationMode", ALMANACHS_IN_SUBSPACES);
@@ -635,11 +645,11 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
                 instanceId);
         AlmanachDTO almanach = new AlmanachDTO().setInstanceId(instanceId).setAgregated(isAlmanachAgregated(
                 instanceId)).setColor(getAlmanachColor(i + 1)).setLabel(almanachInst.getLabel());
-        othersAlmanachs.add(almanach);
+        aggregatedAlmanachs.add(almanach);
       }
     }
 
-    return othersAlmanachs;
+    return aggregatedAlmanachs;
   }
 
   /**
