@@ -43,7 +43,7 @@ public class IconDetail implements Serializable {
   /**
    * 
    */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -6326569229864803541L;
   /*-------------- Attributs ------------------*/
   private SitePK iconPk = new SitePK("", "", "");
   private String name;

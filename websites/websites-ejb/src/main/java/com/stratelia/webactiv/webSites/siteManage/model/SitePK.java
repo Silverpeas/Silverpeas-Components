@@ -42,10 +42,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class SitePK extends WAPrimaryKey implements Serializable {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 3986172113206842129L;
 
   public SitePK(String id) {
     super(id);
