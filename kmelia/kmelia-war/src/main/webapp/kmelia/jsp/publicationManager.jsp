@@ -23,16 +23,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 
-<%@ include file="checkKmelia.jsp" %>
-<%@ include file="publicationsList.jsp.inc" %>
-<%@ include file="topicReport.jsp.inc" %>
-<%@ include file="tabManager.jsp.inc" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%@include file="checkKmelia.jsp" %>
+<%@include file="publicationsList.jsp.inc" %>
+<%@include file="topicReport.jsp.inc" %>
+<%@include file="tabManager.jsp.inc" %>
 
 <%!  //Icons
   String folderSrc;
@@ -388,7 +389,6 @@
     <%
         out.println(gef.getLookStyleSheet());
     %>
-    <link rel="stylesheet" type="text/css" href="styleSheets/fieldset.css"/>
     <style type="text/css">
       #thumbnailPreviewAndActions {
         <% if (vignette_url == null) {%>
@@ -396,7 +396,6 @@
         <% }%>
       }
     </style>
-    <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css"/>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -489,14 +488,16 @@
 
       function sendPublicationDataToRouter(func) {
         if (isCorrectForm()) {
-        <% if("New".equals(action)) { %>
-          var positions = $('#classification').pdc('positions');
-          document.pubForm.Positions.value = $.toJSON(positions);
-        <% } %>
           document.pubForm.action = func;
           document.pubForm.submit();
         }
       }
+      
+      <% if("New".equals(action)) { %>
+      function setPositionsToForm(positions) {
+          document.pubForm.Positions.value = positions;
+      }
+        <% } %>
 
       function closeWindows() {
         if (window.publicationWindow != null)
@@ -597,13 +598,8 @@
                  
              }
              
-             <% if("New".equals(action)) {
-              ResourceLocator pdcResources = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
-             %>
-              if (!$('#classification').pdc('isClassificationValid')) {
-                errorMsg+=" - <%=resources.getString("kmelia.thePublication")%> <%=pdcResources.getString("pdcPeas.MustContainsMandatoryAxis")%>\n";
-                errorNb++;
-              }
+             <% if("New".equals(action)) { %>
+             <view:pdcValidateClassification functionToCall="setPositionsToForm"/>
             <% } %>
              
              switch(errorNb) {
@@ -621,7 +617,7 @@
                  result = false;
                  break;
                }
-               return result;
+               return result && document.pubForm.Positions.value != null && document.pubForm.Positions.value != '';
              }
 
       <%
@@ -819,6 +815,7 @@
   <div id="header">
   <form name="pubForm" action="publicationManager.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
   	<input type="hidden" name="Action"/>
+    <input type="hidden" name="Positions"/>
   	<input type="hidden" name="PubId" value="<%=id%>"/>
   	<input type="hidden" name="Status" value="<%=status%>"/>
   	<input type="hidden" name="TempId" value="<%=tempId%>"/>
@@ -1062,13 +1059,18 @@
 	</div>
 	
 	<!--  PDC goes here
-    <% if (!kmaxMode && !"New".equals(action)) { %>
-          <view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
-      <% } %>
+    
 	<fieldset id="pubPDC" class="skinFieldset">
 		... 
 	</fieldset>
 	-->
+    <%if (!kmaxMode) {
+        if ("New".equals(action)) { %>
+          <view:pdcNewClassification componentId="<%= componentId %>" contentId="<%= id %>"/>
+    <%  } else { %>
+    <view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
+    <%  }
+                }%>
 	
 	<div class="legend">
 		<img src="<%=mandatorySrc%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%>
