@@ -21,13 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * SiteDetail.java
- *
- * Created on 9 Avril 2001, 18:00
- */
-
 package com.stratelia.webactiv.webSites.siteManage.model;
 
 /** 
@@ -44,10 +37,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 //CBO : UPDATE
 //public class SiteDetail extends AbstractI18NBean implements Serializable, SilverContentInterface
 public class SiteDetail extends PublicationDetail {
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1435448496246944796L;
   /*-------------- Attributs ------------------*/
   private SitePK sitePk = new SitePK("", "", "");
   private int type; /*
@@ -102,8 +92,8 @@ public class SiteDetail extends PublicationDetail {
    */
   public SiteDetail(String idSite, String name, String description,
       String page, int type, String creatorId, String date, int state, int popup) {
-    super("X", name, description, null, null, null, creatorId,
-        new Integer(type).toString(), idSite, "", page);
+    super("X", name, description, null, null, null, creatorId, Integer.toString(type), idSite, "",
+        page);
 
     if (date != null) {
       Date theCreationDate = null;
