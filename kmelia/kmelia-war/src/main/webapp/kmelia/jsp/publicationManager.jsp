@@ -399,6 +399,7 @@
         <% }%>
       }
     </style>
+    <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css"/>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -492,7 +493,7 @@
       function sendPublicationDataToRouter(func) {
         if (isCorrectForm()) {
         <% if("New".equals(action)) { %>
-          var positions = $('#classification-creation').pdc('positions');
+          var positions = $('#classification').pdc('positions');
           document.pubForm.Positions.value = $.toJSON(positions);
         <% } %>
           document.pubForm.action = func;
@@ -602,7 +603,7 @@
              <% if("New".equals(action)) {
               ResourceLocator pdcResources = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
              %>
-              if (!$('#classification-creation').pdc('isClassificationValid')) {
+              if (!$('#classification').pdc('isClassificationValid')) {
                 errorMsg+=" - <%=resources.getString("kmelia.thePublication")%> <%=pdcResources.getString("pdcPeas.MustContainsMandatoryAxis")%>\n";
                 errorNb++;
               }
@@ -864,15 +865,7 @@
       <tr id="keywordsArea"><td class="txtlibform"><%=resources.getString("PubMotsCles")%></td>
         <td><input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="1000"></td></tr>
       <% }
-        if (!kmaxMode && !"New".equals(action)) { %>
-      <tr id="classificationArea">
-        <td colspan="2" width="100%">
-          <view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
-        </td>
-      </tr>
-
-      <!-- Author -->
-      <% }
+        
       if (kmeliaScc.isAuthorUsed()) {%>
       <tr id="authorArea">
         <td class="txtlibform"><%=resources.getString("GML.author")%></TD>
@@ -1002,9 +995,9 @@
       if ("New".equals(action)) {
       %>
       <input type="hidden" name="Positions"/>
-      <div id="classification-creation"></div>
+      <fieldset id="classification" class="skinFieldset"></fieldset>
       <script type="text/javascript">
-              $('#classification-creation').pdc('create', {
+              $('#classification').pdc('create', {
                 resource: {
                   context: '<%= m_context %>',
                   component: '<%= componentId %>'
@@ -1019,6 +1012,10 @@
       <tr><td><input type="hidden" name="Action"><input type="hidden" name="PubId" value="<%=id%>"><input type="hidden" name="Status" value="<%=status%>"><input type="hidden" name="TempId" value="<%=tempId%>"><input type="hidden" name="InfoId" value="<%=infoId%>"></TD></TR>
       <tr><td colspan="2">( <img border="0" src="<%=mandatorySrc%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%> )</td></tr>
     </table>
+    
+    <% if (!kmaxMode && !"New".equals(action)) { %>
+          <view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
+      <% } %>
   </form>
   </div>
   <%
