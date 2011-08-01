@@ -49,37 +49,37 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Adinistrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Adinistrators</message>
         <message lang="de">Adinistrator</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Adinistrator</message>
+        <message lang="fr">Les gestionnaires paramètrent le Plan de Classement.</message>
+        <message lang="en">Adinistrators set up the Classification Scheme.</message>
         <message lang="de">Adinistrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
+        <message lang="fr">Publieurs</message>
+        <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
+        <message lang="fr">Les publieurs créent des actualités.</message>
+        <message lang="en">Publishers create news.</message>
         <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs consultent les actualités.</message>
+        <message lang="en">Readers visualize news.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
     Copyright (C) 2000 - 2011 Silverpeas
@@ -24,9 +24,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>gallery</name>
   <label>
     <message lang="fr">Galerie d'images</message>
@@ -44,67 +42,67 @@
     <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
-  <visibleInPersonalSpace>true</visibleInPersonalSpace>
+  <visibleInPersonalSpace>no</visibleInPersonalSpace>
   <portlet>true</portlet>
   <instanceClassName>com.silverpeas.gallery.GalleryInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>     
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
       <help>     
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Les gestionnaires créent les albums et paramètrent le Plan de Classement</message>
+        <message lang="en">Administrators create albums and set up the Classification Scheme</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
+        <message lang="fr">Publieurs</message>
+        <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
+        <message lang="fr">Publieurs</message>
+        <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="writer">
       <label>
-        <message lang="fr">Contributeur</message>
-        <message lang="en">Contributor</message>
+        <message lang="fr">Contributeurs</message>
+        <message lang="en">Contributors</message>
         <message lang="de">Beiträger</message>
       </label>
       <help>
-        <message lang="fr">Contributeur</message>
-        <message lang="en">Contributor</message>
+        <message lang="fr">Contributeurs</message>
+        <message lang="en">Contributors</message>
         <message lang="de">Beiträger</message>
       </help>
     </profile>
     <profile name="privilegedUser">
       <label>
-        <message lang="fr">Lecteur privilégié</message>
-        <message lang="en">Reader with priviledge</message>
+        <message lang="fr">Lecteurs privilégiés</message>
+        <message lang="en">Readers with priviledge</message>
         <message lang="de">Leser mit Privileg</message>
       </label>
       <help>
-        <message lang="fr">Lecteur privilégié</message>
-        <message lang="en">Reader with priviledge</message>
+        <message lang="fr">Lecteurs privilégiés</message>
+        <message lang="en">Readers with priviledge</message>
         <message lang="de">Leser mit Privileg</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs visualisent les images.</message>
+        <message lang="en">Readers visualize pictures.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>
@@ -247,7 +245,7 @@
       </label>
       <order>9</order>
       <mandatory>false</mandatory>
-      <value></value>
+      <value/>
       <type>xmltemplates</type>
       <updatable>always</updatable>
       <help>
@@ -402,7 +400,7 @@
       </label>
       <order>16</order>
       <mandatory>false</mandatory>
-      <value></value>
+      <value/>
       <type>text</type>
       <size>25</size>
       <updatable>always</updatable>
@@ -457,7 +455,7 @@
       </label>
       <order>19</order>
       <mandatory>false</mandatory>
-      <value></value>
+      <value/>
       <type>xmltemplates</type>
       <updatable>always</updatable>
       <help>
@@ -475,7 +473,7 @@
       </label>
       <order>20</order>
       <mandatory>false</mandatory>
-      <value></value>
+      <value/>
       <type>text</type>
       <size>25</size>
       <updatable>always</updatable>

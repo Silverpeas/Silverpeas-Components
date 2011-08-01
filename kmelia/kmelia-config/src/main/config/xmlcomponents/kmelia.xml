@@ -67,49 +67,49 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Les gestionnaires créent des thèmes, sélectionnent les formulaires de métadonnées et paramètrent le Plan de Classement.</message>
+        <message lang="en">Administrators create topics, select metadata templates and set up the Classification Scheme.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
+        <message lang="fr">Publieurs</message>
+        <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
+        <message lang="fr">Les publieurs créent des publications et valident les publications des rédacteurs.</message>
+        <message lang="en">Publisher create publication and validate writer's publications.</message>
         <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="writer">
       <label>
-        <message lang="fr">Rédacteur</message>
-        <message lang="en">Writer</message>
+        <message lang="fr">Rédacteurs</message>
+        <message lang="en">Writers</message>
         <message lang="de">Schreiber</message>
       </label>
       <help>
-        <message lang="fr">Rédacteur</message>
-        <message lang="en">Writer</message>
+        <message lang="fr">Les rédacteurs créent des publications.</message>
+        <message lang="en">Writers create publications.</message>
         <message lang="de">Schreiber</message>
       </help>
     </profile>
     <profile name="user">
       <label>      
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>      
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs accèdent aux publications, s'abonnent aux différents thèmes et peuvent laisser des commentaires sur les publications.</message>
+        <message lang="en">Readers have access to publications, subscribe to various topics and can leave comments on publications.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>

@@ -52,25 +52,25 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Les gestionnaires paramètrent les flux RSS à diffuser.</message>
+        <message lang="en">Administrators set up RSS streams to broadcast.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs visualisent le contenu des flux RSS.</message>
+        <message lang="en">Readers visualize RSS streams.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>

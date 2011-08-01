@@ -54,37 +54,37 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="moderator">
       <label>
-        <message lang="fr">Modérateur</message>
-        <message lang="en">Moderator</message>
+        <message lang="fr">Modérateurs</message>
+        <message lang="en">Moderators</message>
         <message lang="de">Moderator</message>
       </label>
       <help>
-        <message lang="fr">Modérateur</message>
-        <message lang="en">Moderator</message>
+        <message lang="fr">Modérateurs</message>
+        <message lang="en">Moderators</message>
         <message lang="de">Moderator</message>
       </help>
     </profile>
     <profile name="reader">
       <label>
         <message lang="fr">Lecteurs</message>
-        <message lang="en">Reader</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteurs</message>
-        <message lang="en">Reader</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </help>
     </profile>

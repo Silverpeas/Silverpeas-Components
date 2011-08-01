@@ -49,37 +49,37 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
-        <message lang="de">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
+        <message lang="de">Administrators</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
-        <message lang="de">Administrator</message>
+        <message lang="fr">Les gestionnaires gèrent les rubriques, définissent la page d'accueil de chaque parution, publient les parutions.</message>
+        <message lang="en">Administrators manage topics, define the home page for each issue and publish issues.</message>
+        <message lang="de">Administrators</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Rédacteur</message>
-        <message lang="en">Writer</message>
+        <message lang="fr">Rédacteurs</message>
+        <message lang="en">Writers</message>
         <message lang="de">Schreiber</message>
       </label>
       <help>
-        <message lang="fr">Rédacteur</message>
-        <message lang="en">Writer</message>
+        <message lang="fr">Les rédacteurs rédigent des articles.</message>
+        <message lang="en">Writers create posts</message>
         <message lang="de">Schreiber</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs consultent les parutions.</message>
+        <message lang="en">Readers visualize issues.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>

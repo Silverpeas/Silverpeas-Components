@@ -56,37 +56,37 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires paramêtrent l'usage du Plan de Classement utilisé pour classer les événements.</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Les gestionnaires créent des événements et paramêtrent l'usage du Plan de Classement.</message>
+        <message lang="en">Administrators create events and set up the classification scheme.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
+        <message lang="fr">Publieurs</message>
+        <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Les publieurs peuvent créer, modifier et supprimer des événements. Ces événements peuvent être périodiques et être classés sur le Plan de Classement.</message>
-        <message lang="en">Publisher</message>
+        <message lang="fr">Les publieurs peuvent créer, modifier et supprimer des événements.</message>
+        <message lang="en">Publishers can create, update and delete events.</message>
         <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message> 
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message> 
         <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Les lecteurs consultent les événements aux travers des différentes vues offertes.</message>
-        <message lang="en">Reader</message>
+        <message lang="en">Readers consult the events throughout the different views available.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>
@@ -156,8 +156,8 @@
     <parameter>
       <name>defaultView</name>
       <label>
-        <message lang="fr">Vue par défaut</message>
-        <message lang="en">Default view</message>
+        <message lang="fr">Vue calendaire par défaut</message>
+        <message lang="en">Default calendar view</message>
         <message lang="de">Standard-Ansicht</message>
       </label>
       <order>4</order>
@@ -192,7 +192,7 @@
         </option>
       </options>
       <help>
-        <message lang="fr">Permet de choisir la vue à afficher par défaut lorsque l'utilisateur accède à l'almanach.</message>
+        <message lang="fr">Permet de choisir la vue calendaire à afficher par défaut lorsque l'utilisateur accède à l'almanach.</message>
         <message lang="en">Choose the view to display by default when the user accesses the almanach.</message>
         <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der Benutzer auf die Almanach.</message>
       </help>

@@ -52,25 +52,25 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Les gestionnaires paramètrent le Plan de Classement.</message>
+        <message lang="en">Administrators set up the Classification Scheme.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
+        <message lang="fr">Publieurs</message>
+        <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
+        <message lang="fr">Les publieurs gèrent les enquêtes.</message>
+        <message lang="en">Publishers manage surveys.</message>
         <message lang="de">Herausgeber</message>
       </help>
     </profile>
@@ -81,20 +81,20 @@
         <message lang="de">Mehrere Teilnehmer</message>
       </label>
       <help>
-        <message lang="fr">Participants multiples</message>
-        <message lang="en">Multiple participants</message>
+        <message lang="fr">Les participants multiples peuvent répondrent plusieurs fois à une enquête.</message>
+        <message lang="en">Multiple participants can take part in a survey several times.</message>
         <message lang="de">Mehrere Teilnehmer</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Participant</message>
-        <message lang="en">Participant</message>
+        <message lang="fr">Participants</message>
+        <message lang="en">Participants</message>
         <message lang="de">Teilnehmer</message>
       </label>
       <help>
-        <message lang="fr">Participant</message>
-        <message lang="en">Participant</message>
+        <message lang="fr">Les participants peuvent répondre à une enquête.</message>
+        <message lang="en">Participants take part in survey.</message>
         <message lang="de">Teilnehmer</message>
       </help>
     </profile>
