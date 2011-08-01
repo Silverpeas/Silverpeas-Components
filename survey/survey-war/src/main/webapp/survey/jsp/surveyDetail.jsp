@@ -347,7 +347,7 @@
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript1.2">
+<script type="text/javascript">
         function sendVote(roundId) {
           if (isCorrectForm()) {
 
@@ -498,7 +498,7 @@
 
     participated = false;
     String surveyPart =
-        displayQuestions(survey, new Integer(roundId).intValue(), gef, m_context, surveyScc,
+        displayQuestions(survey, Integer.parseInt(roundId), gef, m_context, surveyScc,
             resources, settings, profile, pollingStationMode, participated);
 
     // notification

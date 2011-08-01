@@ -35,7 +35,7 @@ public class FolderDetail extends Object implements java.io.Serializable {
   /**
    * 
    */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -3512181245552407866L;
 
   /** A NodeDetail collection representing the path from leaf to root */
   private Collection<NodeDetail> path;

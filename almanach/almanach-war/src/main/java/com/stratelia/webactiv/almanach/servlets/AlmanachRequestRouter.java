@@ -134,7 +134,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
         AlmanachCalendarView view = almanach.getAlmanachCalendarView();
         request.setAttribute("calendarView", view);
-        request.setAttribute("othersAlmanachs", almanach.getOthersAlmanachs());
+        request.setAttribute("othersAlmanachs", almanach.getAggregatedAlmanachs());
         request.setAttribute("accessibleInstances", almanach.getAccessibleInstances());
         request.setAttribute("RSSUrl", almanach.getRSSUrl());
         request.setAttribute("almanachURL", almanach.getAlmanachICSURL());
@@ -143,7 +143,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           destination = "/almanach/jsp/portletCalendar.jsp?flag=" + flag;
         } else {
           if (view.getViewType() == NEXT_EVENTS) {
-            destination = "/almanach/jsp/nextEvents.jsp?flag=" + flag;
+            destination = "/almanach/jsp/listOfEvents.jsp?flag=" + flag;
           } else {
             destination = "/almanach/jsp/calendar.jsp?flag=" + flag;
           }
@@ -529,15 +529,16 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         AlmanachCalendarView calendar = almanach.getYearlyAlmanachCalendarView();
         request.setAttribute("calendarView", calendar);
         request.setAttribute("Function", function);
-        destination = "/almanach/jsp/viewEvents.jsp";
+        destination = "/almanach/jsp/listOfEvents.jsp";
       } else if ("ViewMonthEvents".equals(function)) {
         AlmanachCalendarView calendar = almanach.getMonthlyAlmanachCalendarView();
         request.setAttribute("calendarView", calendar);
         request.setAttribute("Function", function);
-        destination = "/almanach/jsp/viewEvents.jsp";
+        destination = "/almanach/jsp/listOfEvents.jsp";
       } else if ("ViewYearEventsPOPUP".equals(function)) {
         AlmanachCalendarView calendarView = almanach.getYearlyAlmanachCalendarView();
         request.setAttribute("calendarView", calendarView);
+        request.setAttribute("Function", function);
         destination = "/almanach/jsp/viewEventsPopup.jsp";
       } else if ("exportToICal".equals(function)) {
         try {

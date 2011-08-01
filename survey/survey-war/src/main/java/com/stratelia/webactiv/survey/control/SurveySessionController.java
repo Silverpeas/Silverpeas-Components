@@ -115,7 +115,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   public SurveySessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext, "com.stratelia.webactiv.survey.multilang.surveyBundle");
+    super(mainSessionCtrl, componentContext,
+        "com.stratelia.webactiv.survey.multilang.surveyBundle", null,
+        "com.stratelia.webactiv.survey.surveySettings");
     setQuestionContainerBm();
     setQuestionResultBm();
 
@@ -853,8 +855,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
         if (StringUtil.isDefined(physicalName)) {
           // copy image
-          ResourceLocator settings =
-              new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", "");
           String type =
               physicalName.substring(physicalName.indexOf('.') + 1, physicalName.length());
           String newPhysicalName =
@@ -864,7 +864,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
           if (survey.getHeader().getInstanceId().equals(getComponentId())) {
             // in the same component
             String absolutePath = FileRepositoryManager.getAbsolutePath(componentId);
-            String dir = absolutePath + settings.getString("imagesSubDirectory") + File.separator;
+            String dir = absolutePath + getSettings().getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(dir + physicalName, dir + newPhysicalName);
           } else {
             // in other component
@@ -872,9 +872,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
                 FileRepositoryManager.getAbsolutePath(survey.getHeader().getInstanceId());
             String toAbsolutePath = FileRepositoryManager.getAbsolutePath(componentId);
             String fromDir =
-                fromAbsolutePath + settings.getString("imagesSubDirectory") + File.separator;
+                fromAbsolutePath + getSettings().getString("imagesSubDirectory") + File.separator;
             String toDir =
-                toAbsolutePath + settings.getString("imagesSubDirectory") + File.separator;
+                toAbsolutePath + getSettings().getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(fromDir + physicalName, toDir + newPhysicalName);
           }
           // update answer
@@ -889,13 +889,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @return a SilverpeasTemplate
    */
   protected SilverpeasTemplate getNewTemplate() {
-    ResourceLocator rs =
-        new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", "");
     Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString(
-        "templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString(
-        "customersTemplatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings()
+        .getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings()
+        .getString("customersTemplatePath"));
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 
@@ -999,13 +997,10 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   public String manageQuestionBusiness(String function, HttpServletRequest request) {
     String view = "";
-    // Get component settings
-    ResourceLocator surveySettings =
-        new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", this.getLanguage());
 
     String surveyImageDirectory =
         FileServerUtils.getUrl(this.getSpaceId(), this.getComponentId(), "REPLACE_FILE_NAME",
-        "REPLACE_FILE_NAME", "image/gif", surveySettings.getString("imagesSubDirectory"));
+        "REPLACE_FILE_NAME", "image/gif", getSettings().getString("imagesSubDirectory"));
 
     request.setAttribute("ImageDirectory", surveyImageDirectory);
     // Parameter variable declaration
@@ -1071,7 +1066,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
             attachmentSuffix = attachmentSuffix + 1;
             dir =
                 new File(FileRepositoryManager.getAbsolutePath(this.getComponentId())
-                + surveySettings.getString("imagesSubDirectory") + File.separator
+                + getSettings().getString("imagesSubDirectory") + File.separator
                 + physicalName);
             FileUploadUtil.saveToFile(dir, item);
             size = item.getSize();
@@ -1083,7 +1078,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
             // the field did not contain a file
             file = false;
           }
-          // out.flush();
         }
       }
     } catch (UtilException e) {
@@ -1101,6 +1095,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       // Remove answer for open question
       if ("open".equals(style)) {
         answers.clear();
+        answers.add(new Answer(null, null, "", 0, 0, false, "", 0, false, null));
       }
       // Remove the suggestion answer from the list
       if ("0".equals(suggestion)) {

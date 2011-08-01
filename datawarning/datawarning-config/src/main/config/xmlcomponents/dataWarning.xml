@@ -46,32 +46,32 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
       </label>
       <help> 
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Analyste</message>
-        <message lang="en">Analyst</message>
+        <message lang="fr">Analystes</message>
+        <message lang="en">Analysts</message>
       </label>
       <help>
-        <message lang="fr">Analyste</message>
-        <message lang="en">Analyst</message>
+        <message lang="fr">Analystes</message>
+        <message lang="en">Analysts</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
       </help>
     </profile>
   </profiles>

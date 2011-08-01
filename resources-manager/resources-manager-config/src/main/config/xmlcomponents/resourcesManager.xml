@@ -49,37 +49,37 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Les gestionnaires créent les catégories et les ressources.</message>
+        <message lang="en">Administrators create categories and resources.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="responsable">
       <label>
-        <message lang="fr">Responsable</message>
-        <message lang="en">Manager</message>
+        <message lang="fr">Responsables</message>
+        <message lang="en">Managers</message>
         <message lang="de">Verwalter</message>
       </label>
       <help>
-        <message lang="fr">Responsable</message>
-        <message lang="en">Manager</message>
+        <message lang="fr">Les responsables valident les réservations.</message>
+        <message lang="en">Managers validate when a reader book a resource.</message>
         <message lang="de">Verwalter</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs créent des événements et réservent les ressources nécessaires.</message>
+        <message lang="en">Readers create events and book necessary resources.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>

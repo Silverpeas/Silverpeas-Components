@@ -51,37 +51,37 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Administrateur</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Administrateurs</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Administrateur</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Administrateurs</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="writer">
       <label>
-        <message lang="fr">Contributeur</message>
-        <message lang="en">Contributor</message>
+        <message lang="fr">Contributeurs</message>
+        <message lang="en">Contributors</message>
         <message lang="de">Kontributor</message>
       </label>
       <help>
-        <message lang="fr">Contributeur</message>
-        <message lang="en">Contributor</message>
+        <message lang="fr">Contributeurs</message>
+        <message lang="en">Contributors</message>
         <message lang="de">Kontributor</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs consultent les pages du Wiki.</message>
+        <message lang="en">Readers visualize wiki's pages.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>

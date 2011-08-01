@@ -23,15 +23,14 @@
  */
 package com.stratelia.webactiv.webSites;
 
-import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import com.silverpeas.admin.components.InstanciationException;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.node.NodeInstanciator;
@@ -41,9 +40,12 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
+/**
+ * Implements ComponentsInstanciatorIntf for specific websites component.
+ * This class uses SQLRequest which is a CRUD SQL generator
+ */
 public class WebSitesInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
-  private static String iconsPath = URLManager.getApplicationURL();
   private static ResourceLocator uploadSettings = new ResourceLocator(
       "com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
 
@@ -119,11 +121,9 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
       try {
         stmt.close();
       } catch (SQLException err_closeStatement) {
-        InstanciationException ie = new InstanciationException(
-            "WebSitesInstanciator.deleteDataOfInstance()", SilverpeasException.ERROR,
-            "root.EX_RESOURCE_CLOSE_FAILED",
-            "componentId = " + componentId + " deleteQuery = " + deleteQuery, err_closeStatement);
-        throw ie;
+        throw new InstanciationException("WebSitesInstanciator.deleteDataOfInstance()",
+            SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "componentId = " +
+                componentId + " deleteQuery = " + deleteQuery, err_closeStatement);
       }
     }
 
@@ -142,10 +142,9 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
       prepStmt.executeUpdate();
       prepStmt.close();
     } catch (SQLException se) {
-      InstanciationException ie = new InstanciationException(
-          "WebSitesInstanciator.insertSpecialNode()", SilverpeasException.ERROR,
-          "root.EX_RECORD_INSERTION_FAILED", " insertQuery = " + insertQuery, se);
-      throw ie;
+      throw new InstanciationException("WebSitesInstanciator.insertSpecialNode()",
+          SilverpeasException.ERROR, "root.EX_RECORD_INSERTION_FAILED", " insertQuery = " +
+              insertQuery, se);
     }
   }
 
@@ -154,25 +153,23 @@ public class WebSitesInstanciator extends SQLRequest implements ComponentsInstan
     SilverTrace.info("websites", "WebSitesInstanciator.createAttachmentsAndImagesDirectory()",
         "webSites.MSG_CREATE_ATTACHMENTS_DIRECTORY_WITH_SPACE_AND_COMPONENT",
         "space : " + spaceId + "component : " + componentId);
-    File spaceDirectory = new File(uploadSettings.getString("uploadsPath") + uploadSettings.
-        getString("Context"));
+    File spaceDirectory = new File(uploadSettings.getString("uploadsPath"));
     if (spaceDirectory.exists()) {
-      FileFolderManager.createFolder(uploadSettings.getString("uploadsPath") + uploadSettings.
-          getString("Context") + File.separator + componentId);
+      FileFolderManager.createFolder(uploadSettings.getString("uploadsPath") + File.separator +
+          componentId);
     } else {
-      FileFolderManager.createFolder(uploadSettings.getString("uploadsPath") + uploadSettings.
-          getString("Context"));
-      FileFolderManager.createFolder(uploadSettings.getString("uploadsPath") + uploadSettings.
-          getString("Context") + File.separator + componentId);
+      FileFolderManager.createFolder(uploadSettings.getString("uploadsPath"));
+      FileFolderManager.createFolder(uploadSettings.getString("uploadsPath") + File.separator +
+          componentId);
     }
   }
 
   private void deleteAttachmentsAndImagesDirectory(String spaceId, String componentId) throws
       java.lang.Exception {
     SilverTrace.info("websites", "WebSitesInstanciator.deleteAttachmentsAndImagesDirectory()",
-        "webSites.MSG_DELETE_ATTACHMENTS_DIRECTORY_WITH_SPACE_AND_COMPONENT",
-        "space : " + spaceId + "component : " + componentId);
-    FileFolderManager.deleteFolder(uploadSettings.getString("uploadsPath") + uploadSettings.
-        getString("Context") + File.separator + componentId);
+        "webSites.MSG_DELETE_ATTACHMENTS_DIRECTORY_WITH_SPACE_AND_COMPONENT", "space : " + spaceId +
+            "component : " + componentId);
+    FileFolderManager.deleteFolder(uploadSettings.getString("uploadsPath") + File.separator +
+        componentId);
   }
 }

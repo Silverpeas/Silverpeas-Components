@@ -53,37 +53,37 @@
   <profiles>
     <profile name="Admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Les gestionnaires gèrent les thèmes et paramètrent le Plan de Classement.</message>
+        <message lang="en">Administrators manage topics and set up the Classification Scheme.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="Publisher">
       <label>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher></message>
+        <message lang="fr">Publieurs</message>
+        <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher></message>
+        <message lang="fr">Les publieurs créent ou téléchargent des sites web.</message>
+        <message lang="en">Publishers create or upload websites.</message>
         <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="Reader">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs consultent les sites web.</message>
+        <message lang="en">Readers consult websites.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>

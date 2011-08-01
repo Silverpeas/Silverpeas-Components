@@ -55,8 +55,8 @@
         <message lang="de">Administratoren</message>
       </label>
       <help>
-        <message lang="fr">Administrateurs</message>
-        <message lang="en">Administrators</message>
+        <message lang="fr">Les administrateurs créent des salles de discussions, gèrent les utilisateurs et paramètrent l'utilisation du Plan de Classement.</message>
+        <message lang="en">Administrators create chatrooms, manage users and set up the Classification Scheme.</message>
         <message lang="de">Administratoren</message>
       </help>
     </profile>
@@ -67,8 +67,8 @@
         <message lang="de">Animatoren</message>
       </label>
       <help>
-        <message lang="fr">Animateurs</message>
-        <message lang="en">Animators</message>
+        <message lang="fr">Les animateurs gèrent les utilisateurs de leur(s) salle(s) de discussion.</message>
+        <message lang="en">Animators manage users of their chatroom(s).</message>
         <message lang="de">Animatoren</message>
       </help>
     </profile>
@@ -79,8 +79,8 @@
         <message lang="de">Chaters</message>
       </label>
       <help>
-        <message lang="fr">Chatteurs</message>
-        <message lang="en">Chaters</message>
+        <message lang="fr">Les chatteurs peuvent discuter dans une salle de discussion.</message>
+        <message lang="en">Chaters can discuss in a chatroom.</message>
         <message lang="de">Chaters</message>
       </help>
     </profile>

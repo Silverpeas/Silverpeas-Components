@@ -53,8 +53,8 @@
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
+        <message lang="fr">Les gestionnaires modèrent et valident les annonces.</message>
+        <message lang="en">Administrators manage and validate adds.</message>
 		<message lang="de">Administrator</message>
       </help>
     </profile>
@@ -65,11 +65,21 @@
 		<message lang="de">Autor</message>
       </label>       
       <help>
-        <message lang="fr">Annonceurs</message>
-        <message lang="en">Authors</message>
+        <message lang="fr">Les annonceurs créent des annonces.</message>
+        <message lang="en">Authors create classified adds.</message>
      	<message lang="de">Autor</message>
       </help>
     </profile>
+	<profile name="reader">
+     <label>
+       <message lang="fr">Lecteurs</message>
+       <message lang="en">Readers</message>
+     </label>
+     <help>
+       <message lang="fr">Les lecteurs consultent les petites annonces et peuvent laisser des commentaires.</message>
+       <message lang="en">Readers consult classified adds and can leave comments.</message>
+     </help>
+   </profile>    
   </profiles>
   <parameters>
     <parameter>

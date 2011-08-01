@@ -21,3 +21,6 @@ wiki/wiki-jar/Test de base/
 /question-reply/question-reply-war/src/main/webapp/META-INF
 /rssaggregator/rssaggregator-war/src/main/webapp/META-INF
 /webpages/webpages-war/src/main/webapp/META-INF
+
+/websites/websites-war/src/main/webapp/META-INF
+/websites/websites-ejb/src/main/resources/META-INF/MANIFEST.MF

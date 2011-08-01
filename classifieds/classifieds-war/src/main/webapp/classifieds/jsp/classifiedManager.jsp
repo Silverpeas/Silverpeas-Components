@@ -181,9 +181,6 @@
 <c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
 <c:set var="displayedId"><view:encodeHtml string="${classifiedId}" /></c:set>
 <c:set var="displayedEmail"><view:encodeHtml string="${creatorEmail}" /></c:set>
-<view:formatDateTime var="displayedCreationDate" value="${creationDate}" language="${language}"/>
-<view:formatDateTime var="displayedUpdateDate" value="${updateDate}" language="${language}" />
-<view:formatDateTime var="displayedValidateDate" value="${validateDate}" language="${language}" />
 
 <form name="classifiedForm" action="${action}" method="post" enctype="multipart/form-data" onsubmit="sendData();return false;">
 <table cellpadding="5" width="100%">
@@ -207,19 +204,19 @@
 			<c:if test="${action eq 'UpdateClassified'}">
 				<tr>
 					<td class="txtlibform"><fmt:message key="classifieds.creationDate"/> :</td>
-					<td>${displayedCreationDate} <span class="txtlibform"><fmt:message key="classifieds.by"/></span> ${creatorName} ( ${displayedEmail} )</td>
+					<td><view:formatDateTime value="${creationDate}"/> <span class="txtlibform"><fmt:message key="classifieds.by"/></span> ${creatorName} ( ${displayedEmail} )</td>
 				</tr>
 			</c:if>
 			<c:if test="${not empty updateDate}">
 				<tr>
 					<td class="txtlibform"><fmt:message key="classifieds.updateDate"/> :</td>
-					<td>${displayedUpdateDate}</td>
+					<td><view:formatDateTime value="${updateDate}"/></td>
 				</tr>
 			</c:if>
 			<c:if test="${(not empty validateDate) && (not empty validatorName)}">
 				<tr>
 					<td class="txtlibform"><fmt:message key="classifieds.validateDate"/> :</td>
-					<td>${displayedValidateDate} <span class="txtlibform"><fmt:message key="classifieds.by"/></span> ${validatorName}</td>
+					<td><view:formatDateTime value="${validateDate}" /> <span class="txtlibform"><fmt:message key="classifieds.by"/></span> ${validatorName}</td>
 				</tr>
 			</c:if>
 			<tr><td colspan="2">( <img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}" />" width="5" height="5"> : <fmt:message key="classifieds.mandatory"/> )</td></tr>

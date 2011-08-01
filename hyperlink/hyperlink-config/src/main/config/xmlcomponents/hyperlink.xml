@@ -49,13 +49,13 @@
   <profiles>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs accèdent à l'URL.</message>
+        <message lang="en">Readers can access the URL.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>

@@ -62,8 +62,8 @@
 		<message lang="de">Animator</message>
       </label>
       <help>
-        <message lang="fr">Animateurs</message>
-        <message lang="en">Quiz masters</message>
+        <message lang="fr">Les animateurs gèrent les catégories et paramètrent le Plan de Classement.</message>
+        <message lang="en">Quiz masters manage categories and set up the Classification Scheme</message>
         <message lang="de">Animator</message>
       </help>
     </profile>
@@ -74,8 +74,8 @@
 		<message lang="de">Antragsteller</message>
       </label>
       <help>
-        <message lang="fr">Demandeurs</message>
-        <message lang="en">Applicants</message>
+        <message lang="fr">Les demandeurs posent des questions.</message>
+        <message lang="en">Applicants ask questions.</message>
         <message lang="de">Antragsteller</message>
       </help>
     </profile>
@@ -86,8 +86,8 @@
 		<message lang="de">Experte</message>
       </label>
       <help>
-        <message lang="fr">Experts</message>
-        <message lang="en">Experts</message>
+        <message lang="fr">Les experts répondent aux questions.</message>
+        <message lang="en">Experts answer questions.</message>
         <message lang="de">Experte</message>
       </help>
     </profile>
@@ -98,8 +98,8 @@
 		<message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Lecteurs</message>
-        <message lang="en">Readers</message>
+        <message lang="fr">Les lecteurs consultent les questions et leurs réponses.</message>
+        <message lang="en">Readers consult questions and answers.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>

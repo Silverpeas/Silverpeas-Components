@@ -512,3 +512,67 @@
 	border:1px solid #EAEAEA ;
 	border-radius:10px;
 }
+
+/**mise en page  publicationManager **/
+#creationArea .champs, #updateArea .champs{
+	position:relative;
+	padding-left:40px;
+}
+
+#updateArea .champs {
+	margin-left: 0px;
+}
+
+#creationArea .profilPhoto, #updateArea .profilPhoto {
+	position:absolute;
+	top:0;
+	left:0;
+	width:30px;
+	height:30px;
+	text-align:center;
+}
+* html #creationArea .profilPhoto, * html #updateArea .profilPhoto { 
+	left:-40px; 
+}
+
+#creationArea .profilPhoto img, #updateArea .profilPhoto img {
+	height:30px;
+	position:relative;
+}
+
+#pubDates legend{
+	background:transparent url(../../../util/icons/calendar_1.png) 11px 0px no-repeat; /*icone présente core > .. util > icons */
+}
+#pubThumb legend{
+	background:transparent url(../../../util/icons/images.png) 11px 0px no-repeat; /*icone présente core > .. util > icons */
+}
+
+#pubInfo legend{
+	background:transparent url(../icons/mini_publi.gif) 11px 0px no-repeat; /*icone présente dans kmelia */
+}
+
+#codificationArea, #pubNameArea, #descriptionArea , #keywordsArea, #authorArea, #draftOutArea, #endArea, #beginArea, #thumb, #validatorArea{
+	width:98%;
+	clear:both;
+}
+
+#stateArea img, #languageArea img {
+	vertical-align: middle;
+}
+
+* html #thumb { 
+	width:auto;
+}
+
+* html #endArea, * html #beginArea{	
+	float:none;
+}
+
+#descriptionArea textarea, #pubNameArea input, #keywordsArea input, #authorArea input{
+	width:95%;
+}
+
+#header .legend {
+	padding: 15px;
+	clear: both;
+}

@@ -1016,7 +1016,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           pdc.classifyContent(new PublicationPK(newPubId, kmelia.getComponentId()), positions);
         }
         // create vignette if exists
-        processVignette(parameters, kmelia, pubDetail.getInstanceId(), Integer.valueOf(newPubId));
+        processVignette(parameters, kmelia, pubDetail);
         request.setAttribute("PubId", newPubId);
         processPath(kmelia, newPubId);
         String wizard = kmelia.getWizard();
@@ -1041,7 +1041,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         kmelia.updatePublication(pubDetail);
 
         String id = pubDetail.getPK().getId();
-        processVignette(parameters, kmelia, pubDetail.getInstanceId(), Integer.valueOf(id));
+        processVignette(parameters, kmelia, pubDetail);
 
         String wizard = kmelia.getWizard();
         if (wizard.equals("progress")) {
@@ -1911,8 +1911,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     return pubDetail;
   }
 
-  private void processVignette(List<FileItem> parameters, KmeliaSessionController kmelia,
-      String instanceId, int pubId)
+  private void processVignette(List<FileItem> parameters, KmeliaSessionController kmelia, PublicationDetail publication)
       throws Exception {
     // First, check if image have been uploaded
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
@@ -1949,13 +1948,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     
     // If one image is defined, save it through Thumbnail service
     if (StringUtil.isDefined(physicalName)) {
-      ThumbnailDetail detail = new ThumbnailDetail(instanceId, pubId,
+      ThumbnailDetail detail = new ThumbnailDetail(kmelia.getComponentId(), Integer.parseInt(publication.getPK().getId()),
           ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
       detail.setOriginalFileName(physicalName);
       detail.setMimeType(mimeType);
       try {
         int[] thumbnailSize = kmelia.getThumbnailWidthAndHeight();
         ThumbnailController.updateThumbnail(detail, thumbnailSize[0], thumbnailSize[1]);
+        
+        // force indexation to taking into account new thumbnail
+        if (publication.isIndexable()) {
+          kmelia.getPublicationBm().createIndex(publication.getPK());
+        }
       } catch (ThumbnailRuntimeException e) {
         SilverTrace.error("Thumbnail", "ThumbnailRequestRouter.addThumbnail",
             "root.MSG_GEN_PARAM_VALUE", e);

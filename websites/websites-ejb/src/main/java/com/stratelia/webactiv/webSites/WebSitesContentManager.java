@@ -48,6 +48,8 @@ import com.stratelia.webactiv.webSites.siteManage.model.WebSitesRuntimeException
  * The webSites implementation of ContentInterface.
  */
 public class WebSitesContentManager implements java.io.Serializable, ContentInterface {
+  private static final long serialVersionUID = -8992766242253326927L;
+
   /**
    * Find all the SilverContent with the given list of SilverContentId
    * @param ids list of silverContentId to retrieve
@@ -56,8 +58,8 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
    * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
-  public List getSilverContentById(List ids, String peasId, String userId,
-      List userRoles) {
+  public List getSilverContentById(List<Integer> ids, String peasId, String userId,
+      List<String> userRoles) {
     return getHeaders(getSiteIds(ids), peasId);
   }
 
@@ -86,12 +88,9 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
       throws ContentManagerException, RemoteException {
     SilverContentVisibility scv = new SilverContentVisibility(
         isVisible(siteDetail));
-    SilverTrace.info("webSites",
-        "WebSitesContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
-    SilverTrace.info("webSites",
-        "WebSitesContentManager.createSilverContent()",
+    SilverTrace.info("webSites", "WebSitesContentManager.createSilverContent()",
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+    SilverTrace.info("webSites", "WebSitesContentManager.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "siteDetail = " + siteDetail.toString());
     return getContentManager().addSilverContent(con,
         siteDetail.getSitePK().getId(), componentId, userId, scv);
@@ -105,21 +104,17 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
   public void updateSilverContentVisibility(SiteDetail siteDetail,
       String prefixTableName, String componentId)
       throws ContentManagerException, RemoteException {
-    int silverContentId = getContentManager().getSilverContentId(
-        siteDetail.getSitePK().getId(), componentId);
-    SilverContentVisibility scv = new SilverContentVisibility(
-        isVisible(siteDetail));
-    SilverTrace.info("webSites",
-        "WebSitesContentManager.updateSilverContentVisibility()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
-    if (silverContentId == -1)
-      createSilverContent(null, siteDetail, siteDetail.getCreatorId(),
-          prefixTableName, componentId);
-    else
-      getContentManager().updateSilverContentVisibilityAttributes(scv,
-          componentId, silverContentId);
-
+    int silverContentId =
+        getContentManager().getSilverContentId(siteDetail.getSitePK().getId(), componentId);
+    SilverContentVisibility scv = new SilverContentVisibility(isVisible(siteDetail));
+    SilverTrace.info("webSites", "WebSitesContentManager.updateSilverContentVisibility()",
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+    if (silverContentId == -1) {
+      createSilverContent(null, siteDetail, siteDetail.getCreatorId(), prefixTableName, componentId);
+    } else {
+      getContentManager()
+          .updateSilverContentVisibilityAttributes(scv, componentId, silverContentId);
+    }
     ClassifyEngine.clearCache();
   }
 
@@ -137,7 +132,7 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
       SilverTrace.info("webSites",
           "WebSitesContentManager.deleteSilverContent()",
           "root.MSG_GEN_ENTER_METHOD", "siteId = " + sitePK.getId()
-          + ", contentId = " + contentId);
+              + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId, componentId);
     }
   }
@@ -153,12 +148,12 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
    * @param peasId the id of the instance
    * @return a list of sitePK
    */
-  private List getSiteIds(List silverContentIds) {
-    ArrayList ids = new ArrayList();
+  private List<String> getSiteIds(List<Integer> silverContentIds) {
+    List<String> ids = new ArrayList<String>();
     String id = null;
     // for each silverContentId, we get the corresponding publicationId
     for (int i = 0; i < silverContentIds.size(); i++) {
-      int silverContentId = ((Integer) silverContentIds.get(i)).intValue();
+      int silverContentId = silverContentIds.get(i).intValue();
       try {
         id = getContentManager().getInternalContentId(silverContentId);
         ids.add(id);
@@ -177,20 +172,20 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
    * @return a list of SiteDetail
    */
 
-  private List getHeaders(List siteIds, String peasId) {
+  private List<SiteDetail> getHeaders(List<String> siteIds, String peasId) {
     SiteDetail siteDetail = null;
-    ArrayList headers = new ArrayList();
+    List<SiteDetail> headers = new ArrayList<SiteDetail>();
     SilverTrace.info("webSites", "WebSitesContentManager.getHeaders()",
         "root.MSG_GEN_ENTER_METHOD", "siteIds = " + siteIds.toString());
     try {
-      ArrayList siteDetails = (ArrayList) getWebSiteBm(peasId).getWebSites(
-          siteIds);
+      List<SiteDetail> siteDetails = getWebSiteBm(peasId).getWebSites(siteIds);
       for (int i = 0; i < siteDetails.size(); i++) {
-        siteDetail = (SiteDetail) siteDetails.get(i);
+        siteDetail = siteDetails.get(i);
         siteDetail.getSitePK().setComponentName(peasId);
         siteDetail.setIconUrl("webSitesSmall.gif");
-        if (peasId.startsWith("bookmark"))
+        if (peasId.startsWith("bookmark")) {
           siteDetail.setIconUrl("bookmarkSmall.gif");
+        }
 
         // rustine : the getDate() of the SilverContentInterface have to return
         // a date like yyyy/MM/dd
@@ -212,8 +207,8 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("webSites", "WebSitesContentManager",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
+        SilverTrace.fatal("webSites", "WebSitesContentManager", "root.EX_UNKNOWN_CONTENT_MANAGER",
+            e);
       }
     }
     return contentManager;
@@ -226,10 +221,9 @@ public class WebSitesContentManager implements java.io.Serializable, ContentInte
       currentWebSiteBm = webSiteBmHome.create();
       currentWebSiteBm.setComponentId(componentId);
     } catch (Exception e) {
-      throw new WebSitesRuntimeException(
-          "WebSitesContentManager.getWebSiteBm()",
-          SilverpeasRuntimeException.ERROR,
-          "webSites.EX_IMPOSSIBLE_DE_FABRIQUER_BOOKMARKBM_HOME", e);
+      throw new WebSitesRuntimeException("WebSitesContentManager.getWebSiteBm()",
+          SilverpeasRuntimeException.ERROR, "webSites.EX_IMPOSSIBLE_DE_FABRIQUER_BOOKMARKBM_HOME",
+          e);
     }
     return currentWebSiteBm;
   }

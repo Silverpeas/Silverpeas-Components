@@ -384,7 +384,7 @@ div.eventBeginDate {
 	padding:8px
 }
 
-.nextEvents #agregatedAlmanachs {
+.eventsView #agregatedAlmanachs {
   background-image: none;
   padding: 0;
 }

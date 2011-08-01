@@ -35,7 +35,7 @@
   </label>
   <description>
     <message lang="fr">Supporte les processus de communication asynchrone de type forum. Des salons peuvent être ouverts, sur des thèmes variés. L'escalade à plusieurs niveaux est possible sur chaque intervention d'un participant. Chaque salon est classable sur le plan de classement.</message>
-    <message lang="en">Forums can be created on diverse themes. You can answer on every point in the thread. Froums can be classified on the classification scheme.</message>
+    <message lang="en">Forums can be created on diverse themes. You can answer on every point in the thread. Forums can be classified on the classification scheme.</message>
     <message lang="de">Foren können für verschiedene Themen erstellt werden. Sie können auf jedem Punkt in den Faden beantworten. 
 	Foren können Sie auf dem KP klassifizieren.</message>
   </description>
@@ -50,37 +50,37 @@
   <profiles>
     <profile name="admin">
       <label>      
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
       <help>      
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Les gestionnaires gèrent les thèmes de discussion, les catégories, choisissent les modérateurs et paramètrent le Plan de Classement.</message>
+        <message lang="en">Administrators manage threads and categories, choose moderators and set up the Classification scheme.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Participant</message>
-        <message lang="en">Participant</message>
+        <message lang="fr">Participants</message>
+        <message lang="en">Participants</message>
         <message lang="de">Teilnehmer</message>
       </label>
       <help>
-        <message lang="fr">Participant</message>
-        <message lang="en">Participant</message>
+        <message lang="fr">Les participants échanges au sein des forums. Un participant peut être désigné comme modérateur par les gestionnaires.</message>
+        <message lang="en">Participants discuss whithin forums. A participant can be designate as moderator by administrators.</message>
         <message lang="de">Teilnehmer</message>
       </help>
     </profile>
     <profile name="reader">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs consultent les forums.</message>
+        <message lang="en">Readers consult forums.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>

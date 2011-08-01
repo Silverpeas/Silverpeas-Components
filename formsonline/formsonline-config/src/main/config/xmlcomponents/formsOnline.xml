@@ -49,25 +49,25 @@
   <profiles>
     <profile name="Administrator">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Les gestionnaires gèrent les formulaires et déterminent les droits d'utilisation (émetteurs / valideurs).</message>
+        <message lang="en">Administrators manage forms and assign rights (senders/recievers).</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="SenderReceiver">
       <label>
-        <message lang="fr">Emetteur et Récepteur</message>
-        <message lang="en">Sender and Recipient</message>
+        <message lang="fr">Emetteurs et Récepteurs</message>
+        <message lang="en">Senders and Recipients</message>
         <message lang="de">Sender und Empfänger</message>
       </label>
       <help>
-        <message lang="fr">Emetteur et Récepteur</message>
-        <message lang="en">Sender and Recipient</message>
+        <message lang="fr">Utilisateurs pouvant envoyer ou valider un formulaire.</message>
+        <message lang="en">Users than can send or validate a form.</message>
         <message lang="de">Sender und Empfänger</message>
       </help>
     </profile>

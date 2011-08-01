@@ -54,8 +54,8 @@
         <message lang="de">Redaktion</message>
       </label>
       <help>
-        <message lang="fr">Equipe éditoriale</message>
-        <message lang="en">Editorial team</message>
+        <message lang="fr">L'équipe éditoriale valide ou refuse les actualités soumises par les contributeurs des différentes GED utilisées pour saisir les actualités.</message>
+        <message lang="en">The editorial team validates or denies the news submitted by contributors of the various GED used to capture the news.</message>
         <message lang="de">Redaktion</message>
       </help>
     </profile>
@@ -66,8 +66,8 @@
         <message lang="de">Beitragende</message>
       </label>
       <help>
-        <message lang="fr">Contributeurs</message>
-        <message lang="en">Contributors</message>
+        <message lang="fr">Les contributeurs visualisent l'état de leurs différentes actualités.</message>
+        <message lang="en">Contributors viewing the status of their various news.</message>
         <message lang="de">Beitragende</message>
       </help>
     </profile>

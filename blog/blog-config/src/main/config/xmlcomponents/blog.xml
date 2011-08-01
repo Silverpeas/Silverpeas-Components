@@ -49,25 +49,25 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Bloggeur</message>
-        <message lang="en">Author</message>
+        <message lang="fr">Bloggeurs</message>
+        <message lang="en">Authors</message>
         <message lang="de">Autor</message>
       </label>
       <help>
-        <message lang="fr">Bloggeur</message>
-        <message lang="en">Author</message>
+        <message lang="fr">Les bloggeurs peuvent créer des billets, des catégories et paramétrer le Plan de Classement.</message>
+        <message lang="en">Authors can create posts, categories and set up the classification scheme.</message>
         <message lang="de">Autor</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+		<message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs consultent les billets et peuvent s'abonner au blog. Ils peuvent également laisser des commentaires.</message>
+        <message lang="en">Readers visualize posts and can subscribe to the blog. They can also leave comments.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>
