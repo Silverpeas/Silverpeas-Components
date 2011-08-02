@@ -56,8 +56,8 @@
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Administrateurs</message>
-        <message lang="en">Administrators</message>
+        <message lang="fr">Les administrateurs peuvent supprimer et modifier n'importe quelle page. Ils peuvent évidemment créer de nouvelles pages.</message>
+        <message lang="en">Administrators can delete and edit any page. They can obviously create new pages.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
@@ -68,8 +68,8 @@
         <message lang="de">Kontributor</message>
       </label>
       <help>
-        <message lang="fr">Contributeurs</message>
-        <message lang="en">Contributors</message>
+        <message lang="fr">Les contributeurs peuvent modifier n'importe quelle page existante. Ils peuvent également créer de nouvelles pages.</message>
+        <message lang="en">Contributors can edit any existing page. They can also create new pages.</message>
         <message lang="de">Kontributor</message>
       </help>
     </profile>
@@ -80,8 +80,8 @@
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs consultent les pages du Wiki.</message>
-        <message lang="en">Readers visualize wiki's pages.</message>
+        <message lang="fr">Les lecteurs consultent les pages du Wiki et leurs historiques.</message>
+        <message lang="en">Readers visualize the pages of the wiki and their revisions.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>
