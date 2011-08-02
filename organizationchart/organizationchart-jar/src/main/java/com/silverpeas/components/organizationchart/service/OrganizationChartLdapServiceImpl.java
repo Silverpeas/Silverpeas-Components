@@ -27,11 +27,9 @@ package com.silverpeas.components.organizationchart.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
@@ -244,6 +242,18 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
           hasResults(unit.getCompleteName(), "(objectclass=" + config.getLdapClassPerson() + ")",
           ctx, ctls);
       unit.setHasMembers(hasMembers);
+      
+      try {
+        // get main actors of sub unit
+        List<OrganizationalPerson> users =
+            getOUMembers(ctx, ctls, unit.getCompleteName(), OrganizationalChartType.TYPE_UNITCHART);
+        unit.setMainActors(users);
+      } catch (Exception e) {
+        SilverTrace.error("organizationchart",
+            "OrganizationChartLdapServiceImpl.getSubOrganizationUnits",
+            "organizationchart.ERROR_GET_SUBUNIT_MAINACTORS", "dn : " + unit.getCompleteName(), e);
+      }
+      
     }
 
     return units;

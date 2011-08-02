@@ -37,41 +37,22 @@
     <message lang="en">This component display an organization chart based on the data from a LDAP server.</message>
   </description>
   <suite>
-    <message lang="fr">04 Gestion de contenu</message>
-    <message lang="en">04 Content management</message>
+    <message lang="fr">06 Connecteurs</message>
+    <message lang="en">06 Connectors</message>
+    <message lang="de">06 Verbinder</message>
   </suite>
   <visible>false</visible>
   <portlet>false</portlet>
   <instanceClassName>com.silverpeas.components.organizationchart.OrganizationChartInstanciator</instanceClassName>
   <profiles>
-    <profile name="admin">
-      <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
-      </label>
-      <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
-      </help>
-    </profile>
-    <profile name="publisher">
-      <label>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
-      </label>
-      <help>
-        <message lang="fr">Publieur</message>
-        <message lang="en">Publisher</message>
-      </help>
-    </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
-        <message lang="en">Reader</message>
+        <message lang="fr">Les lecteurs consultent l'organigramme, naviguent au sein des unités et visualisent les personnes qui y sont rattachées.</message>
+        <message lang="en">Readers consult the chart, navigate within the units and visualize the people who are linked to it.</message>
       </help>
     </profile>
   </profiles>

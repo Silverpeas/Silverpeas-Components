@@ -30,7 +30,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.components.organizationchart.control.OrganizationChartSessionController;
-import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
 import com.silverpeas.components.organizationchart.view.CategoryBox;
 import com.silverpeas.components.organizationchart.view.ChartPersonnVO;
@@ -64,7 +63,6 @@ public class OrganizationChartProcessor {
 
   public static String processSilverpeasUser(HttpServletRequest request,
       OrganizationChartSessionController organizationchartSC) {
-    String domainId = organizationchartSC.getComponentParameterValue(PARAM_DOMAINID);
     String login = request.getParameter("login");
 
     if (login != null) {
