@@ -2576,7 +2576,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     try {
       return getPdcBm().isClassifyingMandatory(getComponentId());
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaSessionController.isPDCClassifyingPossible()",
+      throw new KmeliaRuntimeException("KmeliaSessionController.isPDCClassifyingMandatory()",
               SilverpeasRuntimeException.ERROR, "kmelia.MSG_ERR_GENERAL", e);
     }
   }

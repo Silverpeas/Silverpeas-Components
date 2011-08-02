@@ -49,6 +49,7 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelper;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelperContext;
+import com.silverpeas.pdc.web.PdcWebServiceProvider;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
@@ -97,6 +98,7 @@ import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1007,6 +1009,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         // create publication
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
         String newPubId = kmelia.createPublication(pubDetail);
+        // create the positions of the new publication onto the PdC
+        String positions = FileUploadUtil.getParameter(parameters, "Positions");
+        if (StringUtil.isDefined(positions)) {
+          PdcWebServiceProvider pdc = PdcWebServiceProvider.aWebServiceProvider();
+          pdc.classifyContent(new PublicationPK(newPubId, kmelia.getComponentId()), positions);
+        }
         // create vignette if exists
         processVignette(parameters, kmelia, pubDetail);
         request.setAttribute("PubId", newPubId);

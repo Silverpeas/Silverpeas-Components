@@ -156,13 +156,6 @@ public void displayAllOperations(String id, KmeliaSessionController kmeliaScc, G
           tabbedPane.addTab( resources.getString("PubGererChemins"), routerUrl+"PublicationPaths?PubId="+id, action.equals("ViewPath"), enabled, row);
       }
 
-	  if (invisibleTabs.indexOf(kmeliaScc.TAB_PDC) == -1) {
-          i++;
-          if (i > 5)
-          	row = 1;
-          tabbedPane.addTab( resources.getString("GML.PDC"), routerUrl+"ViewPdcPositions?Action=ViewPdcPositions&PubId="+id, action.equals("ViewPdcPositions"), enabled, row);
-      }
-
 	  if (kmaxMode)
     	 tabbedPane.addTab(kmeliaScc.getString("PubPositions"), "KmaxViewCombination?PubId="+id+"", action.equals("KmaxViewCombination"), enabled, row);
 
