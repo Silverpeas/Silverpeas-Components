@@ -34,6 +34,9 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.silverpeas.components.organizationchart.control.OrganizationChartSessionController;
 
 public class OrganizationChartRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = 972108274467271631L;
+
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
