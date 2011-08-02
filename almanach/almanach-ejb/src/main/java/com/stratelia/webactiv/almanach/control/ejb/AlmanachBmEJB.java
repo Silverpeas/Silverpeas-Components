@@ -41,6 +41,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
@@ -79,6 +80,8 @@ import static com.stratelia.webactiv.util.DateUtil.*;
 public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   private static final long serialVersionUID = -8559479482209447676L;
+  private static final ResourceLocator settings = new ResourceLocator(
+          "com.stratelia.webactiv.almanach.settings.almanachSettings", "");
   private AlmanachContentManager almanachContentManager = null;
   private SilverpeasBeanDAO<Periodicity> eventPeriodicityDAO = null;
   private SilverpeasBeanDAO<PeriodicityException> periodicityExceptionDAO = null;
@@ -1003,24 +1006,39 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   @Override
   public List<EventOccurrence> getNextEventOccurrences(String... almanachIds) throws RemoteException {
+    List<EventOccurrence> occurrences;
     try {
       com.silverpeas.calendar.Date today = today();
-      Collection<EventDetail> events = getEventDAO().findAllEventsInRange(date2SQLDate(today), null,
-              almanachIds);
+      java.util.Calendar endDate = java.util.Calendar.getInstance();
+      String upToDay = null;
+      int numberOfMonths = getAlmanachSettings().getInteger("almanach.nextEvents.windowtime", 0);
+      if (numberOfMonths > 0) {
+        endDate.add(java.util.Calendar.MONTH, numberOfMonths);
+        upToDay = date2SQLDate(endDate.getTime());
+      }
+      Collection<EventDetail> events = getEventDAO().findAllEventsInRange(date2SQLDate(today),
+              upToDay, almanachIds);
+      
       EventOccurrenceGenerator occurrenceGenerator = EventOccurrenceGeneratorFactory.getFactory().
               getEventOccurrenceGenerator();
-      return occurrenceGenerator.generateOccurrencesFrom(today, new ArrayList<EventDetail>(events));
+      if (numberOfMonths > 0) {
+        com.silverpeas.calendar.Date endDay = new com.silverpeas.calendar.Date(endDate.getTime());
+        occurrences = occurrenceGenerator.generateOccurrencesInRange(today, endDay, new ArrayList<EventDetail>(events));
+      } else {
+        occurrences = occurrenceGenerator.generateOccurrencesFrom(today, new ArrayList<EventDetail>(events));
+      }
     } catch (Exception ex) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInWeek()",
               SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
               ex);
     }
+    return occurrences;
   }
 
   protected EventDAO getEventDAO() {
     return this.eventDAO;
   }
-  
+
   protected com.silverpeas.calendar.Date today() {
     return com.silverpeas.calendar.Date.today();
   }
@@ -1039,5 +1057,9 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
         throw new IllegalArgumentException("The event ends before its start!");
       }
     }
+  }
+  
+  private ResourceLocator getAlmanachSettings() {
+    return settings;
   }
 }
