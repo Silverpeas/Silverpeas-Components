@@ -97,7 +97,7 @@ public class KmeliaCallBack implements CallBack {
 
           if (isPublicationModified(pubId, action)) {
             getKmeliaBm().externalElementsOfPublicationHaveChanged(
-                new PublicationPK(pubId, componentId), sUserId);
+                new PublicationPK(pubId, componentId), sUserId, action);
           }
         }
       } catch (Exception e) {

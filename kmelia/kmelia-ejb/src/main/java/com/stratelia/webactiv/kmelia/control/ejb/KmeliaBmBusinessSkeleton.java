@@ -425,11 +425,8 @@ public interface KmeliaBmBusinessSkeleton {
    * @param pubId - id of the publication which contains this external elements
    * @throws RemoteException
    */
-  public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK)
-      throws RemoteException;
-
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK,
-      String userId) throws RemoteException;
+      String userId, int action) throws RemoteException;
 
   public PublicationBm getPublicationBm() throws RemoteException;
 
