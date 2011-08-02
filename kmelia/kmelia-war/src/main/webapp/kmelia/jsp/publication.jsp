@@ -579,11 +579,7 @@
 			          }
 			          try {
 			            out.flush();
-			            boolean indexIt = kmeliaScc.isIndexable(pubDetail);
 			            String pIndexIt = "0";
-			            if (indexIt) {
-			              pIndexIt = "1";
-			            }
 			            String attProfile = kmeliaScc.getProfile();
 			            if (kmeliaScc.isVersionControlled(componentId)) {
 			              if (!isOwner) {

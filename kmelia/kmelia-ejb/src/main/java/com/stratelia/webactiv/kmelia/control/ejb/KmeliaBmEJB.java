@@ -1493,6 +1493,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         // update only updateDate
         getPublicationBm().setDetail(pubDetail, forceUpdateDate);
       } else {
+        PublicationDetail old = getPublicationDetail(pubDetail.getPK());
+        
         boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
 
         getPublicationBm().setDetail(pubDetail, forceUpdateDate);
@@ -1513,8 +1515,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           if ("supervisor".equals(profile)) {
             sendModificationAlert(updateScope, pubDetail.getPK());
           }
+            
+          boolean visibilityPeriodUpdated = isVisibilityPeriodUpdated(pubDetail, old);
 
-          if (statusChanged) {
+          if (statusChanged || visibilityPeriodUpdated) {
             if (KmeliaHelper.isIndexable(pubDetail)) {
               indexExternalElementsOfPublication(pubDetail);
             } else {
@@ -1541,6 +1545,20 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
     SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()",
             "root.MSG_GEN_EXIT_METHOD");
+  }
+  
+  private boolean isVisibilityPeriodUpdated(PublicationDetail pubDetail, PublicationDetail old) {
+    boolean beginVisibilityPeriodUpdated =
+      ((pubDetail.getBeginDate() != null && old.getBeginDate() == null) ||
+          (pubDetail.getBeginDate() == null && old.getBeginDate() != null) || (pubDetail
+          .getBeginDate() != null && old.getBeginDate() != null && !pubDetail
+          .getBeginDate().equals(old.getBeginDate())));
+    boolean endVisibilityPeriodUpdated =
+        ((pubDetail.getEndDate() != null && old.getEndDate() == null) ||
+            (pubDetail.getEndDate() == null && old.getEndDate() != null) || (pubDetail
+            .getEndDate() != null && old.getEndDate() != null && !pubDetail
+            .getEndDate().equals(old.getEndDate())));
+    return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
   }
 
   /******************************************************************************************/
@@ -1665,13 +1683,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   @Override
-  public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK) {
-    externalElementsOfPublicationHaveChanged(pubPK, null);
-  }
-
-  @Override
-  public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK,
-          String userId) {
+  public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
+      int action) {
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
     if (isDefined(userId)) {
       pubDetail.setUpdaterId(userId);
@@ -1683,6 +1696,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             || pubDetail.getPK().getInstanceId().startsWith("toolbox")
             || pubDetail.getPK().getInstanceId().startsWith("kmax")) {
 
+      // update publication header to store last modifier and update date
       if (!isDefined(userId)) {
         updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT, false);
       } else {
@@ -1697,6 +1711,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                   + " is not allowed to update publication " + pubDetail.getPK().toString());
         }
       }
+      
+      // index all attached files to taking into account visibility period
+      indexExternalElementsOfPublication(pubDetail);
+      
     }
   }
 
@@ -3378,28 +3396,23 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
 
     if (pubs != null) {
-      Iterator<PublicationDetail> it = pubs.iterator();
-      PublicationDetail pub = null;
-      while (it.hasNext()) {
-        pub = it.next();
-
+      for (PublicationDetail pub : pubs) {
         try {
           pubPK = pub.getPK();
           List<NodePK> pubFathers = null;
           // index only valid publications
-          if (pub.getStatus() != null
-                  && pub.getStatus().equalsIgnoreCase(PublicationDetail.VALID)) {
+          if (pub.getStatus() != null && pub.isValid()) {
             pubFathers = (List<NodePK>) getPublicationBm().getAllFatherPK(pubPK);
             // index only valid publications which are not only in
             // dz or basket
             if (pubFathers.size() >= 2) {
-              indexPublication(pubPK);
+              indexPublication(pub);
             } else if (pubFathers.size() == 1) {
               NodePK nodePK = pubFathers.get(0);
               // index the valid publication if it is not in the
               // basket
               if (!nodePK.isTrash()) {
-                indexPublication(pubPK);
+                indexPublication(pub);
               }
             } else {
               // don't index publications in the dz
@@ -3414,23 +3427,19 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
   }
 
-  private void indexPublication(PublicationPK pubPK) throws RemoteException {
+  private void indexPublication(PublicationDetail pub) throws RemoteException {
     // index publication itself
-    getPublicationBm().createIndex(pubPK);
+    getPublicationBm().createIndex(pub.getPK());
 
     // index external elements
-    indexExternalElementsOfPublication(pubPK);
+    indexExternalElementsOfPublication(pub);
   }
 
   private void indexTopics(NodePK nodePK) {
-    Collection<NodeDetail> nodes = null;
     try {
-      nodes = getNodeBm().getAllNodes(nodePK);
+      Collection<NodeDetail> nodes = getNodeBm().getAllNodes(nodePK);
       if (nodes != null) {
-        Iterator<NodeDetail> it = nodes.iterator();
-        NodeDetail node = null;
-        while (it.hasNext()) {
-          node = it.next();
+        for (NodeDetail node : nodes) {
           if (!node.getNodePK().isRoot() && !node.getNodePK().isTrash()
                   && !node.getNodePK().getId().equals("2")) {
             getNodeBm().createIndex(node);
@@ -3742,29 +3751,27 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   private void indexExternalElementsOfPublication(PublicationDetail pubDetail) {
     if (KmeliaHelper.isIndexable(pubDetail)) {
-      indexExternalElementsOfPublication(pubDetail.getPK());
-    }
-  }
-
-  private void indexExternalElementsOfPublication(PublicationPK pubPK) {
-    // index attachments
-    AttachmentController.attachmentIndexer(pubPK);
-
-    try {
-      // index versioning
-      VersioningUtil versioning = new VersioningUtil();
-      versioning.indexDocumentsByForeignKey(new ForeignPK(pubPK));
-    } catch (Exception e) {
-      SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
-              "Indexing versioning documents failed", "pubPK = " + pubPK.toString(), e);
-    }
-
-    try {
-      // index comments
-      getCommentService().indexAllCommentsOnPublication(pubPK);
-    } catch (Exception e) {
-      SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
-              "Indexing comments failed", "pubPK = " + pubPK.toString(), e);
+      // index attachments
+      AttachmentController.attachmentIndexer(pubDetail.getPK(), pubDetail.getBeginDate(),
+          pubDetail.getEndDate());
+  
+      try {
+        // index versioning
+        VersioningUtil versioning = new VersioningUtil();
+        versioning.indexDocumentsByForeignKey(new ForeignPK(pubDetail.getPK()),
+            pubDetail.getBeginDate(), pubDetail.getEndDate());
+      } catch (Exception e) {
+        SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
+                "Indexing versioning documents failed", "pubPK = " + pubDetail.getPK().toString(), e);
+      }
+  
+      try {
+        // index comments
+        getCommentService().indexAllCommentsOnPublication(pubDetail.getPK());
+      } catch (Exception e) {
+        SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
+                "Indexing comments failed", "pubPK = " + pubDetail.getPK().toString(), e);
+      }
     }
   }
 

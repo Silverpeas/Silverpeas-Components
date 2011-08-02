@@ -46,10 +46,7 @@ if (!StringUtil.isDefined(xmlForm))
 String pubName 	= pubDetail.getName(currentLang);
 String pubId 	= pubDetail.getPK().getId();
 
-boolean	indexIt 	= kmeliaScc.isIndexable(pubDetail);
 String	pIndexIt	= "0";
-if (indexIt)
-	pIndexIt = "1";
 
 boolean isOwner = false;
 if (kmeliaScc.getSessionOwner())
