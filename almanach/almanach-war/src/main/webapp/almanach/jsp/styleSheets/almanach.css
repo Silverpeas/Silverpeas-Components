@@ -406,3 +406,35 @@ div.eventBeginDate {
 .sousNavBulle a {
       white-space: nowrap;
     }
+    
+/**mise en page createEvent **/
+#eventPeriodicity legend{
+	background:transparent url(../../../util/icons/periodicity.gif) 11px 0px no-repeat;
+}
+
+#eventInfo legend{
+	background:transparent url(../icons/mini_publi.gif) 11px 0px no-repeat; /*icone présente dans kmelia */
+}
+
+#eventNameArea, #eventDescriptionArea, #eventStartDateArea, #eventEndDateArea,
+#eventFrequencyWeekArea, #eventPeriodicityChoiceThisMonthArea, 
+#eventPeriodicityChoiceMonthArea, #eventPeriodicityStartDateArea, #eventPeriodicityUntilDateArea {
+	width:98%;
+	clear:both;
+}
+
+#eventDescriptionArea textarea, #eventNameArea input{
+	width:95%;
+}
+
+#eventPeriodicityChoiceThisMonthArea .champs{
+	margin:0;
+}
+
+#eventPeriodicityChoiceMonthArea select {
+	width:auto;
+}	
+
+#eventFrequencyArea input{
+	width:auto;
+}

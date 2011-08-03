@@ -24,12 +24,17 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<fmt:setLocale value="${sessionScope[sessionController].language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
 <%@ include file="checkAlmanach.jsp" %>
 
 <%
 	String language = almanach.getLanguage();
-
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
 
 	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");
 	Date dateDebutIteration = (Date) request.getAttribute("DateDebutIteration");
@@ -41,14 +46,10 @@
 
 	String description = "";
 	String id = event.getPK().getId();
-	String title = event.getTitle();
-	if (title.length() > 30) {
-		title = title.substring(0,30) + "....";
-	}
+	String title = EncodeHelper.javaStringToHtmlString(event.getTitle());
 	if (StringUtil.isDefined(event.getWysiwyg())) {
 		description = event.getWysiwyg();
-	}
-	else if (StringUtil.isDefined(event.getDescription())) {
+	} else if (StringUtil.isDefined(event.getDescription())) {
 		description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
 	}
 
@@ -56,18 +57,28 @@
 	if(event.getStartDate() != null) {
 		day = resources.getInputDate(event.getStartDate());
 	}
+	
+	String startHour = "";
+	if (event.getStartHour() != null) {
+	  startHour = event.getStartHour();
+	}
+	
+	String endHour = "";
+	if (event.getEndHour() != null) {
+	  endHour = event.getEndHour();
+	}
+	
+	String endPeriodicity = "";
+	if (periodicity != null && periodicity.getUntilDatePeriod() != null) {
+	  endPeriodicity = resources.getInputDate(periodicity.getUntilDatePeriod());
+	}
 
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title><%=generalMessage.getString("GML.popupTitle")%></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<style type="text/css">
-<!--
-.eventCells {  padding-right: 3px; padding-left: 3px; vertical-align: top; background-color: #FFFFFF}
--->
-</style>
+<title><%=resources.getString("GML.popupTitle")%></title>
 <%
 out.println(graphicFactory.getLookStyleSheet());
 %>
@@ -85,23 +96,11 @@ function FCKeditor_OnComplete( editorInstance )
 }
 
 function reallyUpdate() {
-	document.eventForm.WeekDayWeek2.disabled = false;
-	document.eventForm.WeekDayWeek3.disabled = false;
-	document.eventForm.WeekDayWeek4.disabled = false;
-	document.eventForm.WeekDayWeek5.disabled = false;
-	document.eventForm.WeekDayWeek6.disabled = false;
-	document.eventForm.WeekDayWeek7.disabled = false;
-	document.eventForm.WeekDayWeek1.disabled = false;
-	document.eventForm.ChoiceMonth[0].disabled = false;
-	document.eventForm.ChoiceMonth[1].disabled = false;
-	document.eventForm.MonthNumWeek.disabled = false;
-	document.eventForm.MonthDayWeek[0].disabled = false;
-	document.eventForm.MonthDayWeek[1].disabled = false;
-	document.eventForm.MonthDayWeek[2].disabled = false;
-	document.eventForm.MonthDayWeek[3].disabled = false;
-	document.eventForm.MonthDayWeek[4].disabled = false;
-	document.eventForm.MonthDayWeek[5].disabled = false;
-	document.eventForm.MonthDayWeek[6].disabled = false;
+	$('.WeekDayWeek').attr("disabled", false); 
+	$('.MonthDayWeek').attr("disabled", false); 
+  	document.eventForm.ChoiceMonth[0].disabled = false;
+  	document.eventForm.ChoiceMonth[1].disabled = false;
+  	document.eventForm.MonthNumWeek.disabled = false;
 
 	document.eventForm.Action.value = "ReallyUpdate";
 	document.eventForm.submit();
@@ -358,99 +357,79 @@ function sendEventData() {
     }
 }
 
-function changeUnity () {
-	var unity = document.eventForm.Unity.value;
-	if(unity == "2") {
-		document.eventForm.WeekDayWeek2.disabled = false;
-		document.eventForm.WeekDayWeek3.disabled = false;
-		document.eventForm.WeekDayWeek4.disabled = false;
-		document.eventForm.WeekDayWeek5.disabled = false;
-		document.eventForm.WeekDayWeek6.disabled = false;
-		document.eventForm.WeekDayWeek7.disabled = false;
-		document.eventForm.WeekDayWeek1.disabled = false;
+function changeUnity() {
+  var unity = document.eventForm.Unity.value;
+  if (unity == "2") {
+	  
+	$('#eventTypePeriodicitySelected').html('<fmt:message key='almanach.header.periodicity.frequency.weeks'/>');
+	$('#eventFrequencyArea').show();
+	$('.eventPeriodicityDateArea').show();
+		
+	$('.WeekDayWeek').attr("disabled", false);
+	$('.MonthDayWeek').attr("disabled", true);
 
-		document.eventForm.ChoiceMonth[0].disabled = true;
-		document.eventForm.ChoiceMonth[1].disabled = true;
-		document.eventForm.MonthNumWeek.disabled = true;
-		document.eventForm.MonthDayWeek[0].disabled = true;
-		document.eventForm.MonthDayWeek[1].disabled = true;
-		document.eventForm.MonthDayWeek[2].disabled = true;
-		document.eventForm.MonthDayWeek[3].disabled = true;
-		document.eventForm.MonthDayWeek[4].disabled = true;
-		document.eventForm.MonthDayWeek[5].disabled = true;
-		document.eventForm.MonthDayWeek[6].disabled = true;
+    document.eventForm.ChoiceMonth[0].disabled = true;
+    document.eventForm.ChoiceMonth[1].disabled = true;
+    document.eventForm.MonthNumWeek.disabled = true;
+    
+    $('#eventPeriodicityChoiceThisMonthArea').hide();	
+	$('#eventPeriodicityChoiceMonthArea').hide();
+	$('#eventFrequencyWeekArea').show();
+	 
+  } else if (unity == "3") {
 
-	} else if (unity == "3") {
-		document.eventForm.WeekDayWeek2.disabled = true;
-		document.eventForm.WeekDayWeek3.disabled = true;
-		document.eventForm.WeekDayWeek4.disabled = true;
-		document.eventForm.WeekDayWeek5.disabled = true;
-		document.eventForm.WeekDayWeek6.disabled = true;
-		document.eventForm.WeekDayWeek7.disabled = true;
-		document.eventForm.WeekDayWeek1.disabled = true;
-
-		document.eventForm.ChoiceMonth[0].disabled = false;
-		document.eventForm.ChoiceMonth[1].disabled = false;
-		if(document.eventForm.ChoiceMonth[0].checked) {
-			document.eventForm.MonthNumWeek.disabled = true;
-			document.eventForm.MonthDayWeek[0].disabled = true;
-			document.eventForm.MonthDayWeek[1].disabled = true;
-			document.eventForm.MonthDayWeek[2].disabled = true;
-			document.eventForm.MonthDayWeek[3].disabled = true;
-			document.eventForm.MonthDayWeek[4].disabled = true;
-			document.eventForm.MonthDayWeek[5].disabled = true;
-			document.eventForm.MonthDayWeek[6].disabled = true;
-		} else {
-			document.eventForm.MonthNumWeek.disabled = false;
-			document.eventForm.MonthDayWeek[0].disabled = false;
-			document.eventForm.MonthDayWeek[1].disabled = false;
-			document.eventForm.MonthDayWeek[2].disabled = false;
-			document.eventForm.MonthDayWeek[3].disabled = false;
-			document.eventForm.MonthDayWeek[4].disabled = false;
-			document.eventForm.MonthDayWeek[5].disabled = false;
-			document.eventForm.MonthDayWeek[6].disabled = false;
-		}
-	} else {
-		document.eventForm.WeekDayWeek2.disabled = true;
-		document.eventForm.WeekDayWeek3.disabled = true;
-		document.eventForm.WeekDayWeek4.disabled = true;
-		document.eventForm.WeekDayWeek5.disabled = true;
-		document.eventForm.WeekDayWeek6.disabled = true;
-		document.eventForm.WeekDayWeek7.disabled = true;
-		document.eventForm.WeekDayWeek1.disabled = true;
-
-		document.eventForm.ChoiceMonth[0].disabled = true;
-		document.eventForm.ChoiceMonth[1].disabled = true;
-		document.eventForm.MonthNumWeek.disabled = true;
-		document.eventForm.MonthDayWeek[0].disabled = true;
-		document.eventForm.MonthDayWeek[1].disabled = true;
-		document.eventForm.MonthDayWeek[2].disabled = true;
-		document.eventForm.MonthDayWeek[3].disabled = true;
-		document.eventForm.MonthDayWeek[4].disabled = true;
-		document.eventForm.MonthDayWeek[5].disabled = true;
-		document.eventForm.MonthDayWeek[6].disabled = true;
+	$('#eventTypePeriodicitySelected').html('<fmt:message key='almanach.header.periodicity.frequency.months'/>');
+	$('#eventFrequencyArea').show();
+	$('.eventPeriodicityDateArea').show();
+	
+	$('.WeekDayWeek').attr("disabled", true); 
+	
+    document.eventForm.ChoiceMonth[0].disabled = false;
+    document.eventForm.ChoiceMonth[1].disabled = false;
+    if (document.eventForm.ChoiceMonth[0].checked) {
+      document.eventForm.MonthNumWeek.disabled = true;
+      $('.MonthDayWeek').attr("disabled", true); 
+    } else {
+      document.eventForm.MonthNumWeek.disabled = false;
+      $('.MonthDayWeek').attr("disabled", false);
+    }
+    
+	$('#eventFrequencyWeekArea').hide();
+	$('#eventPeriodicityChoiceThisMonthArea').show();	
+	$('#eventPeriodicityChoiceMonthArea').show();
+  } else {  
+	if (unity == "1") {
+		$('#eventTypePeriodicitySelected').html('<fmt:message key='almanach.header.periodicity.frequency.days'/>');
+		$('#eventFrequencyArea').show();
+		$('.eventPeriodicityDateArea').show();
+	} else if (unity == "4") {
+		$('#eventTypePeriodicitySelected').html('<fmt:message key='almanach.header.periodicity.frequency.years'/>');
+		$('#eventFrequencyArea').show();
+		$('.eventPeriodicityDateArea').show();
+	} else { 
+		$('#eventFrequencyArea').hide();
+		$('.eventPeriodicityDateArea').hide();
 	}
+	
+	$('.WeekDayWeek').attr("disabled", true);
+	document.eventForm.ChoiceMonth[0].disabled = true;
+	document.eventForm.ChoiceMonth[1].disabled = true;
+	document.eventForm.MonthNumWeek.disabled = true;
+	$('.MonthDayWeek').attr("disabled", true); 
+	
+	$('#eventFrequencyWeekArea').hide();
+	$('#eventPeriodicityChoiceThisMonthArea').hide();	
+	$('#eventPeriodicityChoiceMonthArea').hide();
+  }
 }
 
 function changeChoiceMonth() {
-	if(document.eventForm.ChoiceMonth[0].checked) {
+	if (document.eventForm.ChoiceMonth[0].checked) {
 		document.eventForm.MonthNumWeek.disabled = true;
-		document.eventForm.MonthDayWeek[0].disabled = true;
-		document.eventForm.MonthDayWeek[1].disabled = true;
-		document.eventForm.MonthDayWeek[2].disabled = true;
-		document.eventForm.MonthDayWeek[3].disabled = true;
-		document.eventForm.MonthDayWeek[4].disabled = true;
-		document.eventForm.MonthDayWeek[5].disabled = true;
-		document.eventForm.MonthDayWeek[6].disabled = true;
+	    $('.MonthDayWeek').attr("disabled", true); 
 	} else {
-		document.eventForm.MonthNumWeek.disabled = false;
-		document.eventForm.MonthDayWeek[0].disabled = false;
-		document.eventForm.MonthDayWeek[1].disabled = false;
-		document.eventForm.MonthDayWeek[2].disabled = false;
-		document.eventForm.MonthDayWeek[3].disabled = false;
-		document.eventForm.MonthDayWeek[4].disabled = false;
-		document.eventForm.MonthDayWeek[5].disabled = false;
-		document.eventForm.MonthDayWeek[6].disabled = false;
+	    document.eventForm.MonthNumWeek.disabled = false;
+	    $('.MonthDayWeek').attr("disabled", false); 
 	}
 }
 
@@ -474,11 +453,13 @@ $(document).ready(function(){
         title: "<%=resources.getString("almanach.dialog.delete")%>",
         height: 'auto',
         width: 650});
+	
+	changeUnity();
 });
 //-->
 </script>
 </head>
-<body marginheight="5" marginwidth="5" topmargin="5" leftmargin="5" onLoad="document.eventForm.Title.focus()">
+<body onload="document.eventForm.Title.focus()">
   <%
     Window 		window 		= graphicFactory.getWindow();
     Frame 		frame		= graphicFactory.getFrame();
@@ -490,7 +471,7 @@ $(document).ready(function(){
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "almanach.jsp");
-	browseBar.setExtraInformation(title);
+	browseBar.setExtraInformation(event.getTitle());
 
     operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("supprimerEvenement"), "javascript:onClick=eventDeleteConfirm('" + EncodeHelper.javaStringToJsString(title) + "','" + id +"')");
     out.println(window.printBefore());
@@ -504,226 +485,164 @@ $(document).ready(function(){
 
 	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
-	out.println(board.printBefore());
 %>
-<form name="eventForm" action="ReallyUpdateEvent" method="POST">
-  <table cellpadding="5" width="100%">
-	  <tr>
-        <td nowrap valign="baseline" class="txtlibform"><%=resources.getString("GML.name")%> :</td>
-        <td align=left><input type="text" name="Title" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"
-					<%if (event.getTitle()!=null) out.print("value=\""+ EncodeHelper.javaStringToHtmlString(event.getTitle()) + "\"");%>>
-            &nbsp;<img src="icons/cube-rouge.gif" width="5" height="5">
-        </td>
-	  </tr>
-      <tr>
-        <td nowrap valign="top" class="txtlibform"><%=resources.getString("GML.description")%> :</td>
-        <td valign="top">
-					<textarea name="Description" id="Description"><%=description%></textarea>
-         </td>
-      </tr>
-	  <tr>
-          <td nowrap class="txtlibform"><%=resources.getString("GML.dateBegin")%> :</td>
-          <td valign="baseline">
-            <input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"
-				value="<%=resources.getOutputDate(dateDebutIteration)%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
-             <span class="txtlibform">&nbsp;<%=almanach.getString("ToHour")%>&nbsp;</span><input type="text" name="StartHour"
-									<%
-             						if (event.getStartHour() != null) out.println("value=\""+
-             							event.getStartHour()
-             							+"\"");
-             						%> size="5" maxlength="5"> <span class="txtnote">(hh:mm)</span>&nbsp;<img src="icons/cube-rouge.gif" width="5" height="5">
-          </td>
-        </tr>
-	    <tr>
-          <td nowrap class="txtlibform"><%=resources.getString("GML.dateEnd")%> :</td>
-          <td align=left>
-            <input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"
-				value="<%=resources.getOutputDate(dateFinIteration)%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
-             <span class="txtlibform">&nbsp;<%=almanach.getString("ToHour")%>&nbsp;</span><input type="text" name="EndHour" <%
-   						if (event.getEndHour() != null) out.println("value=\""+
-   							event.getEndHour()
-   							+"\"");
-   						%> size="5" maxlength="5"> <span class="txtnote">(hh:mm)</span>
-          </td>
-        </tr>
-		<tr>
-        	<td nowrap class="txtlibform"><%=almanach.getString("lieuEvenement")%> :</td>
-        	<td align=left><input type="text" name="Place" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"
-						<%if (event.getPlace()!=null) out.print("value=\""+ EncodeHelper.javaStringToHtmlString(event.getPlace()) + "\"");%>>
-					</td>
-        </tr>
-        <tr>
-        	<td nowrap class="txtlibform"><%=almanach.getString("urlEvenement")%> :</td>
-        	<td align=left><input type="text" name="EventUrl" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"
-			<%if (event.getEventUrl()!=null) out.print("value=\""+ EncodeHelper.javaStringToHtmlString(event.getEventUrl()) + "\"");%>></td>
-        </tr>
-        <tr>
-          <td nowrap class="txtlibform"><%=resources.getString("GML.priority")%> :</td>
-          <td align=left><input type="checkbox" name="Priority" value="checkbox" <%if (event.getPriority() != 0) out.print("CHECKED");%>></td>
-        </tr>
-		<tr>
-          <td nowrap class="txtlibform"><%=resources.getString("periodicity")%> :</td>
-          <td align=left>
-		  <select name="Unity" size="1" onChange="changeUnity();">
-			<option value="0" <%if (periodicity == null) out.print("selected");%>><%=resources.getString("noPeriodicity")%></option>
-			<option value="1" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_DAY) out.print("selected");%>><%=resources.getString("allDays")%></option>
-			<option value="2" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_WEEK) out.print("selected");%>><%=resources.getString("allWeeks")%></option>
-			<option value="3" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_MONTH) out.print("selected");%>><%=resources.getString("allMonths")%></option>
-			<option value="4" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_YEAR) out.print("selected");%>><%=resources.getString("allYears")%></option>
-		  </select></td>
-        </tr>
-<!-- <tr> -->        
-	    <tr>
-          <td nowrap align=right class="txtlibform"><%=resources.getString("frequency")%> :</td>
-		  <td align=left><input type="text" name="Frequency" size="5" maxlength="5" value="<% if(periodicity == null) out.print("1"); else out.print(periodicity.getFrequency());%>"></td>
-        </tr>
-		<tr>
-          <td nowrap align=right><%=resources.getString("choiceDaysWeek")%> :</td>
-		  <td align=left>
-			<%
-			if(periodicity == null ||
-				periodicity.getUnity() == Periodicity.UNIT_DAY ||
-				periodicity.getUnity() == Periodicity.UNIT_MONTH ||
-				periodicity.getUnity() == Periodicity.UNIT_YEAR) {
-			%>
-				<input type="checkbox" name="WeekDayWeek2" value="2" disabled><%=resources.getString("GML.jour2")%>
-				<input type="checkbox" name="WeekDayWeek3" value="3" disabled><%=resources.getString("GML.jour3")%>
-				<input type="checkbox" name="WeekDayWeek4" value="4" disabled><%=resources.getString("GML.jour4")%>
-				<input type="checkbox" name="WeekDayWeek5" value="5" disabled><%=resources.getString("GML.jour5")%>
-				<input type="checkbox" name="WeekDayWeek6" value="6" disabled><%=resources.getString("GML.jour6")%>
-				<input type="checkbox" name="WeekDayWeek7" value="7" disabled><%=resources.getString("GML.jour7")%>
-				<input type="checkbox" name="WeekDayWeek1" value="1" disabled><%=resources.getString("GML.jour1")%>
-			<%
-			} else if(periodicity != null && periodicity.getUnity() == Periodicity.UNIT_WEEK) {
-			%>
-				<input type="checkbox" name="WeekDayWeek2" value="2" <%if(periodicity.getDaysWeekBinary().charAt(0) == '1')  out.print("checked");%>><%=resources.getString("GML.jour2")%>
-				<input type="checkbox" name="WeekDayWeek3" value="3" <%if(periodicity.getDaysWeekBinary().charAt(1) == '1')  out.print("checked");%>><%=resources.getString("GML.jour3")%>
-				<input type="checkbox" name="WeekDayWeek4" value="4" <%if(periodicity.getDaysWeekBinary().charAt(2) == '1')  out.print("checked");%>><%=resources.getString("GML.jour4")%>
-				<input type="checkbox" name="WeekDayWeek5" value="5" <%if(periodicity.getDaysWeekBinary().charAt(3) == '1')  out.print("checked");%>><%=resources.getString("GML.jour5")%>
-				<input type="checkbox" name="WeekDayWeek6" value="6" <%if(periodicity.getDaysWeekBinary().charAt(4) == '1')  out.print("checked");%>><%=resources.getString("GML.jour6")%>
-				<input type="checkbox" name="WeekDayWeek7" value="7" <%if(periodicity.getDaysWeekBinary().charAt(5) == '1')  out.print("checked");%>><%=resources.getString("GML.jour7")%>
-				<input type="checkbox" name="WeekDayWeek1" value="1" <%if(periodicity.getDaysWeekBinary().charAt(6) == '1')  out.print("checked");%>><%=resources.getString("GML.jour1")%>
-			<%
-			}
-			%>
-		  </td>
-        </tr>
+<form name="eventForm" action="ReallyUpdateEvent" method="post">
 
-		<tr>
-			<%
-			if(periodicity == null ||
-				periodicity.getUnity() == Periodicity.UNIT_DAY ||
-				periodicity.getUnity() == Periodicity.UNIT_WEEK ||
-				periodicity.getUnity() == Periodicity.UNIT_YEAR) {
-			%>
-			  <td nowrap align=right>
-				<input type="radio" name="ChoiceMonth" value="MonthDate" disabled checked onClick="changeChoiceMonth();"><%=resources.getString("choiceDateMonth")%>&nbsp;</td>
-			  <td align=left>
-				<input type="radio" name="ChoiceMonth" value="MonthDay" disabled onClick="changeChoiceMonth();"><%=resources.getString("choiceDayMonth")%> :
-				<select name="MonthNumWeek" size="1" disabled>
-				<option value="1"><%=resources.getString("first")%></option>
-				<option value="2"><%=resources.getString("second")%></option>
-				<option value="3"><%=resources.getString("third")%></option>
-				<option value="4"><%=resources.getString("fourth")%></option>
-				<option value="-1"><%=resources.getString("fifth")%></option>
-				</select>
-
-				<input type="radio" name="MonthDayWeek" value="2" disabled checked><%=resources.getString("GML.jour2")%>
-				<input type="radio" name="MonthDayWeek" value="3" disabled><%=resources.getString("GML.jour3")%>
-				<input type="radio" name="MonthDayWeek" value="4" disabled><%=resources.getString("GML.jour4")%>
-				<input type="radio" name="MonthDayWeek" value="5" disabled><%=resources.getString("GML.jour5")%>
-				<input type="radio" name="MonthDayWeek" value="6" disabled><%=resources.getString("GML.jour6")%>
-				<input type="radio" name="MonthDayWeek" value="7" disabled><%=resources.getString("GML.jour7")%>
-				<input type="radio" name="MonthDayWeek" value="1" disabled><%=resources.getString("GML.jour1")%>
-			  </td>
-			<%
-			}  else if(periodicity != null && periodicity.getUnity() == Periodicity.UNIT_MONTH) {
-			%>
-			  <td nowrap align=right>
-				<input type="radio" name="ChoiceMonth" value="MonthDate" <%if(periodicity.getNumWeek() == 0) out.print("checked");%> onClick="changeChoiceMonth();"><%=resources.getString("choiceDateMonth")%>&nbsp;</td>
-			  <td align=left>
-				<input type="radio" name="ChoiceMonth" value="MonthDay" <%if(periodicity.getNumWeek() != 0) out.print("checked");%> onClick="changeChoiceMonth();"><%=resources.getString("choiceDayMonth")%> :
-				<%if(periodicity.getNumWeek() == 0) {
-				%>
-					<select name="MonthNumWeek" size="1"  disabled>
-					<option value="1" disabled><%=resources.getString("first")%></option>
-					<option value="2" disabled><%=resources.getString("second")%></option>
-					<option value="3" disabled><%=resources.getString("third")%></option>
-					<option value="4" disabled><%=resources.getString("fourth")%></option>
-					<option value="-1" disabled><%=resources.getString("fifth")%></option>
+	<fieldset id="eventInfo" class="skinFieldset">
+		<legend><fmt:message key='almanach.header.fieldset.main'/></legend>
+		<div class="fields">
+			<div class="field" id="eventNameArea">
+				<label for="eventName" class="txtlibform"><fmt:message key='GML.name'/></label>
+				<div class="champs">
+					<input id="eventName" type="text" name="Title" size="60" maxlength="<c:out value='${maxTextLength}'/>" value="<%=event.getTitle()%>"/>&nbsp;<img alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
+				</div>
+			</div>
+			
+			<div class="field" id="eventDescriptionArea">
+				<label for="Description" class="txtlibform"><fmt:message key='GML.description'/></label>
+				<div class="champs">
+					<textarea rows="5" cols="10" name="Description" id="Description"><%=description %></textarea>
+				</div>
+			</div>
+			
+			<div class="field" id="eventStartDateArea">
+				<label for="eventStartDate" class="txtlibform"><fmt:message key='GML.dateBegin'/></label>
+				<div class="champs">
+					<input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(dateDebutIteration)%>" onchange="javascript:updateDates();"/>
+					<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
+					<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
+					<input class="inputHour" type="text" name="StartHour" size="5" maxlength="5" value="<%=startHour%>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img  alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
+				</div>
+			</div>
+			
+			<div class="field" id="eventEndDateArea">
+				<label for="eventEndDate" class="txtlibform"><fmt:message key='GML.dateEnd'/></label>
+				<div class="champs">
+					<input id="eventEndDate" type="text" class="dateToPick" name="EndDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(dateFinIteration)%>"/>
+					<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
+					<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
+					<input class="inputHour" type="text" name="EndHour" size="5" maxlength="5" value="<%=endHour%>"/> <span class="txtnote">(hh:mm)</span>
+				</div>
+			</div>
+			
+			<div class="field" id="eventPlaceArea">
+				<label for="eventPlace" class="txtlibform"><fmt:message key='lieuEvenement'/></label>
+				<div class="champs">
+					<input type="text" id="eventPlace" name="Place" size="60" maxlength="<c:out value='${maxTextLength}'/>" value="<%=event.getPlace()%>"/>
+				</div>
+			</div>
+			
+			<div class="field" id="eventUrlArea">
+				<label for="eventUrl" class="txtlibform"><fmt:message key='urlEvenement'/></label>
+				<div class="champs">
+					<input type="text" id="eventUrl" name="EventUrl" size="60" maxlength="<c:out value='${maxTextLength}'/>" value="<%=event.getEventUrl()%>"/>
+				</div>
+			</div>
+			
+			<div class="field" id="eventPriorityArea">
+				<label for="eventPriority" class="txtlibform"><fmt:message key='GML.priority'/></label>
+				<div class="champs">
+					<input type="checkbox" class="checkbox" name="Priority" id="eventPriority" value="checkbox" <%if (event.getPriority() != 0) out.print("checked=\"checked\"");%>/>
+				</div>
+			</div>		
+		</div>
+	</fieldset>
+	
+	<fieldset id="eventPeriodicity" class="skinFieldset">
+		<legend><fmt:message key='periodicity'/></legend>
+		<div class="fields">
+			<div class="field" id="eventTypePeriodicityArea">
+				<label for="eventTypePeriodicity" class="txtlibform"><fmt:message key='periodicity'/></label>
+				<div class="champs">
+					<select id="eventTypePeriodicity" name="Unity" size="1" onchange="changeUnity();">
+						<option value="0" <%if (periodicity == null) out.print("selected=\"selected\"");%>><fmt:message key='noPeriodicity'/></option>
+	              		<option value="1" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_DAY) out.print("selected=\"selected\"");%>><fmt:message key='allDays'/></option>
+	              		<option value="2" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_WEEK) out.print("selected=\"selected\"");%>><fmt:message key='allWeeks'/></option>
+	              		<option value="3" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_MONTH) out.print("selected=\"selected\"");%>><fmt:message key='allMonths'/></option>
+	              		<option value="4" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_YEAR) out.print("selected=\"selected\"");%>><fmt:message key='allYears'/></option>
 					</select>
-
-					<input type="radio" name="MonthDayWeek" value="2" disabled checked><%=resources.getString("GML.jour2")%>
-					<input type="radio" name="MonthDayWeek" value="3" disabled><%=resources.getString("GML.jour3")%>
-					<input type="radio" name="MonthDayWeek" value="4" disabled><%=resources.getString("GML.jour4")%>
-					<input type="radio" name="MonthDayWeek" value="5" disabled><%=resources.getString("GML.jour5")%>
-					<input type="radio" name="MonthDayWeek" value="6" disabled><%=resources.getString("GML.jour6")%>
-					<input type="radio" name="MonthDayWeek" value="7" disabled><%=resources.getString("GML.jour7")%>
-					<input type="radio" name="MonthDayWeek" value="1" disabled><%=resources.getString("GML.jour1")%>
-				<%
-				} else {
-				%>
-					<select name="MonthNumWeek" size="1">
-					<option value="1" <%if (periodicity.getNumWeek() == 1) out.print("selected");%>><%=resources.getString("first")%></option>
-					<option value="2" <%if (periodicity.getNumWeek() == 2) out.print("selected");%>><%=resources.getString("second")%></option>
-					<option value="3" <%if (periodicity.getNumWeek() == 3) out.print("selected");%>><%=resources.getString("third")%></option>
-					<option value="4" <%if (periodicity.getNumWeek() == 4) out.print("selected");%>><%=resources.getString("fourth")%></option>
-					<option value="-1" <%if (periodicity.getNumWeek() == -1) out.print("selected");%>><%=resources.getString("fifth")%></option>
+				</div>
+			</div>
+			
+			<div class="field" id="eventFrequencyArea">
+				<label for="eventFrequency" class="txtlibform"><fmt:message key='frequency'/></label>
+				<div class="champs">
+					<input type="text" id="eventFrequency" name="Frequency" size="5" maxlength="5" value="<% if(periodicity == null) out.print("1"); else out.print(periodicity.getFrequency());%>"/> <span id="eventTypePeriodicitySelected"> <fmt:message key='almanach.header.periodicity.frequency.months'/></span>
+				</div>
+				
+			</div>
+			
+			<div class="field" id="eventFrequencyWeekArea">
+				<label class="txtlibform"><fmt:message key='almanach.header.periodicity.week.on'/></label>
+				<div class="champs">
+					<input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek2" value="2" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDaysWeekBinary().charAt(0) == '1') out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour2'/>
+		            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek3" value="3" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDaysWeekBinary().charAt(1) == '1') out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour3'/>
+		            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek4" value="4" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDaysWeekBinary().charAt(2) == '1') out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour4'/>
+		            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek5" value="5" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDaysWeekBinary().charAt(3) == '1') out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour5'/>
+		            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek6" value="6" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDaysWeekBinary().charAt(4) == '1') out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour6'/>
+		            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek7" value="7" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDaysWeekBinary().charAt(5) == '1') out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour7'/>
+		            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek1" value="1" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDaysWeekBinary().charAt(6) == '1') out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour1'/>
+				</div>
+			</div>
+			
+			<div class="field" id="eventPeriodicityChoiceThisMonthArea">
+				<label class="txtlibform"><fmt:message key='almanach.header.periodicity.rule'/></label>
+				<div class="champs">
+					<input id="eventPeriodicityChoiceMonth" type="radio" class="radio" name="ChoiceMonth" value="MonthDate" disabled="disabled" <%if(event.isPeriodic() && periodicity.getNumWeek() == 0) out.print("checked=\"checked\"");%> onclick="changeChoiceMonth();"/><fmt:message key='choiceDateMonth'/>&nbsp;
+				</div>
+			</div>
+			
+			<div class="field" id="eventPeriodicityChoiceMonthArea">
+				<div class="champs">
+					<input type="radio" class="radio" name="ChoiceMonth" value="MonthDay" disabled="disabled" <%if(event.isPeriodic() && periodicity.getNumWeek() != 0) out.print("checked=\"checked\"");%> onclick="changeChoiceMonth();"/><fmt:message key='choiceDayMonth'/>&nbsp;:&nbsp;
+					<select name="MonthNumWeek" size="1" disabled="disabled">
+						<option value="1" <%if (event.isPeriodic() && periodicity.getNumWeek() == 1) out.print("selected=\"selected\"");%>><fmt:message key='first'/></option>
+		                <option value="2" <%if (event.isPeriodic() && periodicity.getNumWeek() == 2) out.print("selected=\"selected\"");%>><fmt:message key='second'/></option>
+		                <option value="3" <%if (event.isPeriodic() && periodicity.getNumWeek() == 3) out.print("selected=\"selected\"");%>><fmt:message key='third'/></option>
+		                <option value="4" <%if (event.isPeriodic() && periodicity.getNumWeek() == 4) out.print("selected=\"selected\"");%>><fmt:message key='fourth'/></option>
+		                <option value="-1" <%if (event.isPeriodic() && periodicity.getNumWeek() == -1) out.print("selected=\"selected\"");%>><fmt:message key='fifth'/></option>
 					</select>
+					
+					<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="2" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDay() == 2) out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour2'/>
+	              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="3" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDay() == 3) out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour3'/>
+					<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="4" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDay() == 4) out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour4'/>
+	              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="5" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDay() == 5) out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour5'/>
+	              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="6" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDay() == 6) out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour6'/>
+	              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="7" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDay() == 7) out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour7'/>
+	              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="1" disabled="disabled" <%if(event.isPeriodic() && periodicity.getDay() == 1) out.print("checked=\"checked\"");%>/><fmt:message key='GML.jour1'/>
+				</div>
+			</div>
+			
+			<div class="field eventPeriodicityDateArea" id="eventPeriodicityStartDateArea">
+				<label for="eventPeriodicityStartDate" class="txtlibform"> <fmt:message key='beginDatePeriodicity'/> </label>
+				<div class="champs">
+					<input type="text" id="eventPeriodicityStartDate" class="dateToPick" name="PeriodicityStartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" readonly="readonly" value="<%=resources.getInputDate(event.getStartDate())%>" /> (<fmt:message key='GML.dateFormatExemple'/>)
+				</div>
+			</div>
+			
+			<div class="field eventPeriodicityDateArea" id="eventPeriodicityUntilDateArea">
+				<label for="eventPeriodicityUntil" class="txtlibform"><fmt:message key='endDatePeriodicity'/></label>
+				<div class="champs">
+					<input type="text" id="eventPeriodicityUntil" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=endPeriodicity%>"/><span class="txtnote"> (<fmt:message key='GML.dateFormatExemple'/>)</span>
+				</div>
+			</div>
+			
+		</div>
+	</fieldset>
 
-					<input type="radio" name="MonthDayWeek" value="2" <%if(periodicity.getDay() == 2) out.print("checked");%>><%=resources.getString("GML.jour2")%>
-					<input type="radio" name="MonthDayWeek" value="3" <%if(periodicity.getDay() == 3) out.print("checked");%>><%=resources.getString("GML.jour3")%>
-					<input type="radio" name="MonthDayWeek" value="4" <%if(periodicity.getDay() == 4) out.print("checked");%>><%=resources.getString("GML.jour4")%>
-					<input type="radio" name="MonthDayWeek" value="5" <%if(periodicity.getDay() == 5) out.print("checked");%>><%=resources.getString("GML.jour5")%>
-					<input type="radio" name="MonthDayWeek" value="6" <%if(periodicity.getDay() == 6) out.print("checked");%>><%=resources.getString("GML.jour6")%>
-					<input type="radio" name="MonthDayWeek" value="7" <%if(periodicity.getDay() == 7) out.print("checked");%>><%=resources.getString("GML.jour7")%>
-					<input type="radio" name="MonthDayWeek" value="1" <%if(periodicity.getDay() == 1) out.print("checked");%>><%=resources.getString("GML.jour1")%>
-				<%
-				}
-				%>
-			  </td>
-			<%
-			}
-			%>
-        </tr>
-		<tr>
-          <td  nowrap align=right class="txtlibform"><span><%=resources.getString("beginDatePeriodicity")%> :</span></td>
-          <td valign="baseline">
-            <input type="text" class="dateToPick" name="PeriodicityStartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"
-			<%
-			if (event.getStartDate() != null) out.print("value=\""+resources.getInputDate(event.getStartDate())+"\"");
-			%>/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
-          </td>
-        </tr>
-		<tr>
-          <td  nowrap align=right class="txtlibform"><span><%=resources.getString("endDatePeriodicity")%> :</span></td>
-          <td valign="baseline">
-            <input type="text" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"
-			<%
-			if (periodicity != null && periodicity.getUntilDatePeriod() != null) out.print("value=\""+resources.getInputDate(periodicity.getUntilDatePeriod())+"\"");
-			%>/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2" valign="baseline" class="txtnote">(<img src="icons/cube-rouge.gif" width="5" height="5"> =  <%=resources.getString("GML.requiredField")%>)</td>
-        </tr>
-  </table>
-  <input type="hidden" name="Action">
-  <input type="hidden" name="Id" <%out.print("value=\""+event.getPK().getId()+"\"");%>>
-  <input type="hidden" name="DateDebutIteration" <%out.print("value=\""+dateDebutIterationString+"\"");%>>
-  <input type="hidden" name="DateFinIteration" <%out.print("value=\""+DateUtil.date2SQLDate(dateFinIteration)+"\"");%>>
+  	<input type="hidden" name="Action"/>
+  	<input type="hidden" name="Id" value="<%=event.getPK().getId()%>"/>
+  	<input type="hidden" name="DateDebutIteration" value="<%=dateDebutIterationString%>"/>
+  	<input type="hidden" name="DateFinIteration" value="<%=DateUtil.date2SQLDate(dateFinIteration)%>"/>
  </form>
-   <%
-		out.println(board.printAfter());
-   %>
-   <center><br>
+   <center><br/>
    <%
  		ButtonPane buttonPane = graphicFactory.getButtonPane();
 		buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendEventData()", false));
 		buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.back"), "almanach.jsp", false));
 		out.println(buttonPane.print());
    %>
-   <br></center>
+   </center>
 <%
 		out.println(frame.printAfter());
 		out.println(window.printAfter());

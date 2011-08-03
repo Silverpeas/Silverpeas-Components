@@ -164,7 +164,7 @@
          * Formats the specified date into a string according the pattern 'yyyy/MM/dd'.
          */
         function formatDate(date) {
-          var year = date.getFullYear(), month = date.getMonth(), day = date.getDate();
+          var year = date.getFullYear(), month = date.getMonth()+1, day = date.getDate();
           if (month < 10) month = "0" + month;
           if (day < 10) day = "0" + day;
           return year + "/" + month + "/" + day;
