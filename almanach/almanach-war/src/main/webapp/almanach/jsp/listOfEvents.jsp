@@ -301,7 +301,7 @@
           $.each(monthsHavingEvents, function(index, monthWithEvents) {
             $("<a>").attr("href", "#").html(monthWithEvents).click(function() {
               selectMonth($(this), monthWithEvents);
-            }).appendTo(monthNavSection);
+            }).appendTo(monthNavSection.append(" "));
           })
       </c:if>
         }
