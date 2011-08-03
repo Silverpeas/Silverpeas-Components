@@ -62,7 +62,18 @@ public interface EventOccurrenceGenerator {
       final List<EventDetail> events);
   
   /**
-   * Generates the occurrences of the specified events that occur from the specified date.
+   * Generates the occurrences of the specified events that occur between the two specified dates.
+   * @param date the inclusive date from which the event occurrences occur.
+   * @param date the date to which the event occurrences occur.
+   * @param events the events for which the occurrences have to be generated.
+   * @return a list of occurrences occuring from the specified date.
+   */
+  List<EventOccurrence> generateOccurrencesInRange(final Date startDate, final Date endDate,
+          final List<EventDetail> events);
+  
+  /**
+   * Generates the occurrences of the specified events that occur from the specified date with no
+   * limit in the future.
    * @param date the inclusive date from which the event occurrences occur.
    * @param events the events for which the occurrences have to be generated.
    * @return a list of occurrences occuring from the specified date.
