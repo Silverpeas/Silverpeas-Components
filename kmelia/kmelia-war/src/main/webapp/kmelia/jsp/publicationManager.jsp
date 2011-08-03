@@ -488,16 +488,13 @@
 
       function sendPublicationDataToRouter(func) {
         if (isCorrectForm()) {
+          <% if("New".equals(action)) { %>
+                <view:pdcPositions setIn="document.pubForm.Positions.value"/>
+          <% } %>
           document.pubForm.action = func;
           document.pubForm.submit();
         }
       }
-      
-      <% if("New".equals(action)) { %>
-      function setPositionsToForm(positions) {
-          document.pubForm.Positions.value = positions;
-      }
-      <% } %>
 
       function closeWindows() {
         if (window.publicationWindow != null)
@@ -599,7 +596,7 @@
              }
              
              <% if("New".equals(action)) { %>
-             	<view:pdcValidateClassification functionToCall="setPositionsToForm"/>
+             	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>;
              <% } %>
              
              switch(errorNb) {
@@ -617,11 +614,7 @@
                  result = false;
                  break;
                }
-             <%  if ("New".equals(action)) { %>
-               return result && document.pubForm.Positions.value != null && document.pubForm.Positions.value != '';
-             <% } else { %>
                return result;
-             <% } %>
              }
 
       <%

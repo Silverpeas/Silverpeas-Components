@@ -140,13 +140,18 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
   }
 
   @Override
-  public List<EventOccurrence> generateOccurrencesFrom(Date date,  List<EventDetail> events) {
-    // a hack as the iCal4J Period objects don't support null end date or infinite end date.
-    java.util.Calendar rangeEndDate = java.util.Calendar.getInstance();
-    rangeEndDate.setTime(date);
-    rangeEndDate.add(java.util.Calendar.YEAR, 100);
-    Period period = new Period(new DateTime(date), new DateTime(rangeEndDate.getTime()));
+  public List<EventOccurrence> generateOccurrencesInRange(Date startDate,  Date endDate,
+    List<EventDetail> events) {
+    Period period = new Period(new DateTime(startDate), new DateTime(endDate));
     return generateOccurrencesOf(events, occuringIn(period));
+  }
+  
+  @Override
+  public List<EventOccurrence> generateOccurrencesFrom(Date date,  List<EventDetail> events) {
+    java.util.Calendar endDate = java.util.Calendar.getInstance();
+    // a hack as the iCal4J Period objects don't support null end date or infinite end date.
+    endDate.add(java.util.Calendar.YEAR, 100);
+    return generateOccurrencesInRange(date, new Date(endDate.getTime()), events);
   }
 
   /**

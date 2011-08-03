@@ -254,6 +254,45 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
     List<EventOccurrence> occurrences = generator.generateOccurrencesFrom(aDate(), events);
     assertThat(occurrences.size(), is(11));
   }
+          
+  @Test
+  public void generateOccurrencesInRangeWithNoEvents() throws Exception {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInRange(startDate(), endDate(), events);
+    assertThat(occurrences.isEmpty(),  is(true));
+  }
+  
+  @Test
+  public void generateOccurrencesInRangeWithNonPeriodicEvents() throws Exception {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build()); // it has no occurrences from the given date
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInRange(startDate(), endDate(), events);
+    assertThat(occurrences.size(), is(1));
+    assertThat(occurrences.get(0), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[1],
+        startingAt("2011-04-15"),
+        endingAt("2011-04-15"))));
+  }
+  
+  @Test
+  public void generateOccurrencesInRangeWithPeriodicEvents() throws Exception {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[0]).build()); // it has 5 occurrences from the given date
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has 5 occurrences from the given date
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInRange(startDate(), endDate(), events);
+    assertThat(occurrences.size(), is(10));
+  }
+  
+  @Test
+  public void generateOccurrencesInRangeWithPeriodicAndNonPeriodicEvents() throws Exception {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[0]).build()); // it has 5 occurrences from the given date
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build()); // it has no occurrences from the given date
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has 5 occurrences from the given date
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInRange(startDate(), endDate(), events);
+    assertThat(occurrences.size(), is(11));
+  }
 
   private Calendar aPeriod() {
     Calendar date = Calendar.getInstance();
@@ -263,5 +302,16 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
   
   private Date aDate() {
     return new Date(dateToUseInTests());
+  }
+  
+  private Date startDate() {
+    return aDate();
+  }
+  
+  private Date endDate() {
+    Calendar endDate = Calendar.getInstance();
+    endDate.setTime(aDate());
+    endDate.add(Calendar.MONTH, 3);
+    return new Date(endDate.getTime());
   }
 }
