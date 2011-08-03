@@ -497,7 +497,7 @@
       function setPositionsToForm(positions) {
           document.pubForm.Positions.value = positions;
       }
-        <% } %>
+      <% } %>
 
       function closeWindows() {
         if (window.publicationWindow != null)
@@ -599,8 +599,8 @@
              }
              
              <% if("New".equals(action)) { %>
-             <view:pdcValidateClassification functionToCall="setPositionsToForm"/>
-            <% } %>
+             	<view:pdcValidateClassification functionToCall="setPositionsToForm"/>
+             <% } %>
              
              switch(errorNb) {
                case 0 :
@@ -617,7 +617,11 @@
                  result = false;
                  break;
                }
+             <%  if ("New".equals(action)) { %>
                return result && document.pubForm.Positions.value != null && document.pubForm.Positions.value != '';
+             <% } else { %>
+               return result;
+             <% } %>
              }
 
       <%
@@ -732,7 +736,7 @@
         }
                 
     </script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"/>
+    <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
   </head>
   <body id="<%=componentId%>" class="publicationManager" onload="init()" onunload="closeWindows()">
 <%
@@ -1058,19 +1062,13 @@
 		
 	</div>
 	
-	<!--  PDC goes here
-    
-	<fieldset id="pubPDC" class="skinFieldset">
-		... 
-	</fieldset>
-	-->
-    <%if (!kmaxMode) {
+    <% if (!kmaxMode) {
         if ("New".equals(action)) { %>
-          <view:pdcNewClassification componentId="<%= componentId %>" contentId="<%= id %>"/>
+          	<view:pdcNewClassification componentId="<%= componentId %>" contentId="<%= id %>"/>
     <%  } else { %>
-    <view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
+    		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
     <%  }
-                }%>
+      } %>
 	
 	<div class="legend">
 		<img src="<%=mandatorySrc%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%>
