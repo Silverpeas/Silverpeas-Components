@@ -26,8 +26,8 @@ package com.silverpeas.components.organizationchart.model;
 
 import java.util.Map;
 
-public class OrganizationalPerson {
-
+public class OrganizationalPerson implements Comparable<OrganizationalPerson> {
+ 
   private int id;
   private int parentId;
   private String name;// =cn
@@ -35,6 +35,8 @@ public class OrganizationalPerson {
   private String description;// =tooltip
   private String service;// ou
   private String silverpeasAccount; // sAMAccountName
+  private String firstName;
+  private String lastName;
   private Map<String, String> detail;
 
   private boolean visibleOnCenter = false; // visible on the top central unit
@@ -162,6 +164,32 @@ public class OrganizationalPerson {
 
   public String getSilverpeasAccount() {
     return silverpeasAccount;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  @Override
+  public int compareTo(OrganizationalPerson other) {
+    int compare = lastName.compareToIgnoreCase(other.getLastName());
+    if (compare != 0) {
+      return compare;
+    } else {
+      return firstName.compareToIgnoreCase(other.getFirstName()); 
+    }
   }
 
 }
