@@ -910,17 +910,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized String deleteTopic(String topicId) throws RemoteException {
+    if (NodePK.ROOT_NODE_ID.equals(topicId) || NodePK.BIN_NODE_ID.equals(topicId)) {
+      return null;
+    }
     NodeDetail node = getNodeHeader(topicId);
     // check if user is allowed to delete this topic
     if (SilverpeasRole.admin.isInRole(getUserTopicProfile(topicId))
             || SilverpeasRole.admin.isInRole(getUserTopicProfile(node.getFatherPK().getId()))) {
       // First, remove rights on topic and its descendants
       List<NodeDetail> treeview = getNodeBm().getSubTree(getNodePK(topicId));
-      for (int n = 0;
-              n < treeview.size();
-              n++) {
-        node = treeview.get(n);
-        deleteTopicRoles(node);
+      for (NodeDetail nodeToDelete : treeview) {
+        deleteTopicRoles(nodeToDelete);
       }
       // Then, remove the topic itself
       getKmeliaBm().deleteTopic(getNodePK(topicId));
@@ -3129,13 +3129,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private void deleteTopicRoles(NodeDetail node) throws RemoteException {
     if (node != null && node.haveLocalRights()) {
       List<ProfileInst> profiles = getTopicProfiles(node.getNodePK().getId());
-      ProfileInst profile = null;
-      for (int p = 0;
-              profiles != null && p < profiles.size();
-              p++) {
-        profile = profiles.get(p);
-        if (profile != null && StringUtil.isDefined(profile.getId())) {
-          deleteTopicRole(profile.getId());
+      if (profiles != null) {
+        for (ProfileInst profile : profiles) {
+          if (profile != null && StringUtil.isDefined(profile.getId())) {
+            deleteTopicRole(profile.getId());
+          }
         }
       }
     }
