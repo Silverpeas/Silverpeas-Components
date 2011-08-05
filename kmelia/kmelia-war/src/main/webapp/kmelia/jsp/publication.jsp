@@ -690,9 +690,7 @@
         /*********************************************************************************************************************/
         if(!kmaxMode) {
         %>
-        <div class="bgDegradeGris"">
           <view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" /> 
-      </div>
         <%
         } %>
       </div>
