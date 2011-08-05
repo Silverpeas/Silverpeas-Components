@@ -49,7 +49,7 @@
     var organizationchartPath = '<%=request.getContextPath()%>/organizationchart/';
     </script>
     <script type="text/javascript" src="<c:url value="/organizationchart/js/organizationchart.js" />" ></script>
-    <script language="javascript">
+    <script type="text/javascript">
 	    function userDetail(url) {
 	    	$("#userDetailDialog").dialog("option", "title", "${userDetailsTitle}");
 	    	$("#userDetailDialog").dialog("option", "width", 850);
@@ -63,10 +63,18 @@
         };
 
         $("#userDetailDialog").dialog(dialogOpts);    //end dialog
-
+        
+        $(document).ready(function() {
+        	chartinit();
+        	$("a").click(function() {
+        		if ($(this).attr("target") != "_blank") {
+            		$.progressMessage();
+        		}
+            });
+        });
     </script>
   </head>
-  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onload="chartinit();">
+  <body>
   <div id="userDetailDialog"/>
 
 	<fmt:message key="organizationchart.icons.print" var="printIcon" bundle="${icons}" />
@@ -98,5 +106,7 @@
         </view:board>
       </view:frame>
     </view:window>
+    
+    <view:progressMessage/>
   </body>
 </html>

@@ -27,10 +27,13 @@
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 
-<%@ include file="checkKmelia.jsp" %>
-<%@ include file="publicationsList.jsp.inc" %>
-<%@ include file="topicReport.jsp.inc" %>
-<%@ include file="tabManager.jsp.inc" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%@include file="checkKmelia.jsp" %>
+<%@include file="publicationsList.jsp.inc" %>
+<%@include file="topicReport.jsp.inc" %>
+<%@include file="tabManager.jsp.inc" %>
 
 <%!  //Icons
   String folderSrc;
@@ -386,7 +389,6 @@
     <%
         out.println(gef.getLookStyleSheet());
     %>
-    <link rel="stylesheet" type="text/css" href="styleSheets/fieldset.css"/>
     <style type="text/css">
       #thumbnailPreviewAndActions {
         <% if (vignette_url == null) {%>
@@ -400,6 +402,10 @@
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
     <script type="text/javascript">
       var favoriteWindow = window;
+
+      function topicGoTo(id) {
+        location.href="GoToTopic?Id="+id;
+      }
 
       <% if (action.equals("UpdateView")) {%>
 
@@ -461,10 +467,6 @@
 
       <% }%>
 
-      function topicGoTo(id) {
-        location.href="GoToTopic?Id="+id;
-      }
-
       function publicationGoTo(id, action){
         document.pubForm.Action.value = "ViewPublication";
         document.pubForm.CheckPath.value = "1";
@@ -486,6 +488,9 @@
 
       function sendPublicationDataToRouter(func) {
         if (isCorrectForm()) {
+          <% if("New".equals(action)) { %>
+                <view:pdcPositions setIn="document.pubForm.Positions.value"/>
+          <% } %>
           document.pubForm.action = func;
           document.pubForm.submit();
         }
@@ -512,7 +517,7 @@
         var beginDateOK = true;
 
     	if (isWhitespace(title)) {
-          errorMsg+="  - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+          errorMsg+=" - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
           errorNb++;
         }
          
@@ -520,12 +525,12 @@
              var description = document.pubForm.Description;
       <% if (isFieldDescriptionMandatory) {%>
                 if (isWhitespace(description.value)) {
-                  errorMsg+="  - '<%=resources.getString("PubDescription")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+                  errorMsg+=" - '<%=resources.getString("PubDescription")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
                   errorNb++;
                 }
       <% }%>
                 if (!isValidTextArea(description)) {
-                  errorMsg+="  - '<%=resources.getString("GML.description")%>' <%=resources.getString("kmelia.containsTooLargeText") + resources.getString("kmelia.nbMaxTextArea") + resources.getString("kmelia.characters")%>\n";
+                  errorMsg+=" - '<%=resources.getString("GML.description")%>' <%=resources.getString("kmelia.containsTooLargeText") + resources.getString("kmelia.nbMaxTextArea") + resources.getString("kmelia.characters")%>\n";
                   errorNb++;
                 }
       <% }%>
@@ -533,36 +538,36 @@
       <% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {%>
              var validatorId = stripInitialWhitespace(document.pubForm.ValideurId.value);
              if (isWhitespace(validatorId)) {
-               errorMsg+="  - '<%=resources.getString("kmelia.Valideur")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+               errorMsg+=" - '<%=resources.getString("kmelia.Valideur")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
                errorNb++;
              }
       <% }%>
              if (!isWhitespace(beginDate)) {
             	if (!isDateOK(beginDate, '<%=kmeliaScc.getLanguage()%>')) {
-	                 errorMsg+="  - '<%=resources.getString("PubDateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+	                 errorMsg+=" - '<%=resources.getString("PubDateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
     	             errorNb++;
         	         beginDateOK = false;
                	} 
              }
              if (!checkHour(beginHour))
              {
-               errorMsg+="  - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
+               errorMsg+=" - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
                errorNb++;
              }
              if (!isWhitespace(endDate)) {
             	 if (!isDateOK(endDate, '<%=kmeliaScc.getLanguage()%>')) {
-                	errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+                	errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
                  	errorNb++;
                	} else {
                 	if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
               			if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=kmeliaScc.getLanguage()%>')) {
-                    		errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
+                    		errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
                     		errorNb++;
                   		}
                 	} else {
                   		if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
                 			if (!isFuture(endDate, '<%=kmeliaScc.getLanguage()%>')) {
-                      			errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
+                      			errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
                       			errorNb++;
                     		}
                   		}
@@ -571,7 +576,7 @@
              }
              if (!checkHour(endHour))
              {
-               errorMsg+="  - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
+               errorMsg+=" - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
                errorNb++;
              }
              if (<%=isThumbnailMandatory%>) {
@@ -589,6 +594,11 @@
                  }
                  
              }
+             
+             <% if("New".equals(action)) { %>
+             	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>;
+             <% } %>
+             
              switch(errorNb) {
                case 0 :
                  result = true;
@@ -605,10 +615,6 @@
                  break;
                }
                return result;
-             }
-
-             function init() {
-               document.pubForm.Name.focus();
              }
 
       <%
@@ -723,6 +729,7 @@
         }
                 
     </script>
+    <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
   </head>
   <body id="<%=componentId%>" class="publicationManager" onload="init()" onunload="closeWindows()">
 <%
@@ -805,6 +812,7 @@
   <div id="header">
   <form name="pubForm" action="publicationManager.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
   	<input type="hidden" name="Action"/>
+    <input type="hidden" name="Positions"/>
   	<input type="hidden" name="PubId" value="<%=id%>"/>
   	<input type="hidden" name="Status" value="<%=status%>"/>
   	<input type="hidden" name="TempId" value="<%=tempId%>"/>
@@ -1047,11 +1055,13 @@
 		
 	</div>
 	
-	<!--  PDC goes here
-	<fieldset id="pubPDC" class="skinFieldset">
-		... 
-	</fieldset>
-	-->
+    <% if (!kmaxMode) {
+        if ("New".equals(action)) { %>
+          	<view:pdcNewClassification componentId="<%= componentId %>" contentId="<%= id %>"/>
+    <%  } else { %>
+    		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
+    <%  }
+      } %>
 	
 	<div class="legend">
 		<img src="<%=mandatorySrc%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%>
@@ -1075,5 +1085,10 @@
   <form name="toRouterForm">
     <input type="hidden" name="PubId" value="<%=id%>"/>
   </form>
+  <script type="text/javascript">
+     $(document).ready(function() {
+      document.pubForm.Name.focus();
+     });
+  </script>
 </body>
 </html>
