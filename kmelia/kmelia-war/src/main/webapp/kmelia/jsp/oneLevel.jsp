@@ -344,7 +344,7 @@ function displaySubTopics(id) {
 }
 
 function getSubTopic(topic) {
-	var str = '<li>';
+	var str = '<li id="topic_'+topic.id+'">';
 	str += '<a href="#" onclick="topicGoTo(\''+topic.id+'\')" ';
 	if (topic.id == "tovalidate") {
 		str += 'class="toValidate"';
