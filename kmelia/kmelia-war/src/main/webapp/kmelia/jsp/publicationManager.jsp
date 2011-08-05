@@ -517,7 +517,7 @@
         var beginDateOK = true;
 
     	if (isWhitespace(title)) {
-          errorMsg+="  - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+          errorMsg+=" - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
           errorNb++;
         }
          
@@ -525,12 +525,12 @@
              var description = document.pubForm.Description;
       <% if (isFieldDescriptionMandatory) {%>
                 if (isWhitespace(description.value)) {
-                  errorMsg+="  - '<%=resources.getString("PubDescription")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+                  errorMsg+=" - '<%=resources.getString("PubDescription")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
                   errorNb++;
                 }
       <% }%>
                 if (!isValidTextArea(description)) {
-                  errorMsg+="  - '<%=resources.getString("GML.description")%>' <%=resources.getString("kmelia.containsTooLargeText") + resources.getString("kmelia.nbMaxTextArea") + resources.getString("kmelia.characters")%>\n";
+                  errorMsg+=" - '<%=resources.getString("GML.description")%>' <%=resources.getString("kmelia.containsTooLargeText") + resources.getString("kmelia.nbMaxTextArea") + resources.getString("kmelia.characters")%>\n";
                   errorNb++;
                 }
       <% }%>
@@ -538,36 +538,36 @@
       <% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {%>
              var validatorId = stripInitialWhitespace(document.pubForm.ValideurId.value);
              if (isWhitespace(validatorId)) {
-               errorMsg+="  - '<%=resources.getString("kmelia.Valideur")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+               errorMsg+=" - '<%=resources.getString("kmelia.Valideur")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
                errorNb++;
              }
       <% }%>
              if (!isWhitespace(beginDate)) {
             	if (!isDateOK(beginDate, '<%=kmeliaScc.getLanguage()%>')) {
-	                 errorMsg+="  - '<%=resources.getString("PubDateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+	                 errorMsg+=" - '<%=resources.getString("PubDateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
     	             errorNb++;
         	         beginDateOK = false;
                	} 
              }
              if (!checkHour(beginHour))
              {
-               errorMsg+="  - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
+               errorMsg+=" - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
                errorNb++;
              }
              if (!isWhitespace(endDate)) {
             	 if (!isDateOK(endDate, '<%=kmeliaScc.getLanguage()%>')) {
-                	errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+                	errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
                  	errorNb++;
                	} else {
                 	if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
               			if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=kmeliaScc.getLanguage()%>')) {
-                    		errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
+                    		errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
                     		errorNb++;
                   		}
                 	} else {
                   		if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
                 			if (!isFuture(endDate, '<%=kmeliaScc.getLanguage()%>')) {
-                      			errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
+                      			errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
                       			errorNb++;
                     		}
                   		}
@@ -576,7 +576,7 @@
              }
              if (!checkHour(endHour))
              {
-               errorMsg+="  - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
+               errorMsg+=" - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
                errorNb++;
              }
              if (<%=isThumbnailMandatory%>) {
