@@ -87,8 +87,8 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       // pour chaque photo, construction d'une ligne ...
       String currentInstanceId = null;
 
-      ResourceLocator message = new ResourceLocator(
-              "com.silverpeas.gallery.multilang.galleryBundle", "fr");
+      ResourceLocator message =
+          new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle", "fr");
       ResourceLocator message_en = new ResourceLocator(
               "com.silverpeas.gallery.multilang.galleryBundle", "en");
 
@@ -137,10 +137,10 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       }
       // Création du message à envoyer aux admins pour la dernière instance en
       // cours
-      UserDetail[] admins = orga.getUsers("useless", currentInstanceId, "admin");
-      createMessage(message, messageBody, message_en, messageBody_en, nextPhoto, admins);
-      messageBody = new StringBuilder();
-      messageBody_en = new StringBuilder();
+      if (currentInstanceId != null) {
+        UserDetail[] admins = orga.getUsers("useless", currentInstanceId, "admin");
+        createMessage(message, messageBody, message_en, messageBody_en, nextPhoto, admins);
+      }
     } catch (Exception e) {
       throw new GalleryRuntimeException("ScheduledAlertUser.doScheduledAlertUser()",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -153,6 +153,10 @@ public class ScheduledAlertUser implements SchedulerEventListener {
   private void createMessage(ResourceLocator message, StringBuilder messageBody,
           ResourceLocator message_en, StringBuilder messageBody_en, PhotoDetail photo,
           UserDetail[] admins) {
+    if (admins == null || admins.length == 0) {
+      return;
+    }
+    
     // 1. création du message
 
     // french notifications
