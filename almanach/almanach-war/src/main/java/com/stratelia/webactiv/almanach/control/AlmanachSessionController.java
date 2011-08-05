@@ -911,7 +911,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
-    String label = getString("mois" + currentAlmanachDay.getMonth())
+    String label = getGeneralString("GML.mois" + currentAlmanachDay.getMonth())
             + " " + String.valueOf(currentAlmanachDay.getYear());
     view.setEvents(listCurrentMonthEvents());
     view.setLabel(label);
@@ -938,10 +938,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       view.unsetWeekendVisible();
     }
     String firstDayMonth = "";
-    String lastDayMonth = " " + getString("mois" + view.getLastDay().getMonth()) + " "
+    String lastDayMonth = " " + getGeneralString("GML.mois" + view.getLastDay().getMonth()) + " "
             + String.valueOf(view.getLastDay().getYear());
     if (view.getFirstDay().getMonth() != view.getLastDay().getMonth()) {
-      firstDayMonth = " " + getString("mois" + view.getFirstDay().getMonth());
+      firstDayMonth = " " + getGeneralString("GML.mois" + view.getFirstDay().getMonth());
       if (view.getFirstDay().getYear() != view.getLastDay().getYear()) {
         firstDayMonth += " " + String.valueOf(view.getFirstDay().getYear());
       }
@@ -1110,5 +1110,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   private List<String> getAgregateAlmanachIds() {
     return agregatedAlmanachsIds;
+  }
+  
+  public String getGeneralString(String key) {
+    return GeneralPropertiesManager.getGeneralMultilang(getLanguage()).getString(key);
   }
 }
