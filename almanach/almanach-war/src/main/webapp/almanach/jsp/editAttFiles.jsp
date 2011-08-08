@@ -71,10 +71,6 @@
         <view:tab label="${tabLabel}" action="editEvent.jsp?Id=${id}&Date=${iterationStartDate}" selected="false"/>
         <fmt:message key="GML.attachments" var="tabLabel"/>
         <view:tab label="${tabLabel}" action="editAttFiles.jsp?Id=${id}&Date=${iterationStartDate}" selected="true"/>
-        <c:if test="${pdcUsed}">
-          <fmt:message key="GML.PDC" var="tabLabel"/>
-          <view:tab label="${tabLabel}" action="pdcPositions.jsp?Id=${id}&Date=${iterationStartDate}" selected="false"/>
-        </c:if>
       </view:tabs>
       <view:frame>
         <c:import  url="/attachment/jsp/editAttFiles.jsp?Id=${id}&Date=${iterationStartDate}&SpaceId=${spaceId}&ComponentId=${instanceId}&Context=Images&Url=${url}"/>

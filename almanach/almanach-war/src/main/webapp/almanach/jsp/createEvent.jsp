@@ -57,6 +57,7 @@
 <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/util/javaScript/silverpeas-pdc.js'/>"></script>
 <script type="text/javascript">
 function reallyAdd() {
 	$('.WeekDayWeek').attr("disabled", false); 
@@ -65,6 +66,7 @@ function reallyAdd() {
   	document.eventForm.ChoiceMonth[1].disabled = false;
   	document.eventForm.MonthNumWeek.disabled = false;
   
+  	<view:pdcPositions setIn="document.eventForm.Positions.value"/>
   	document.eventForm.action = "ReallyAddEvent";
   	document.eventForm.submit();
 }
@@ -183,6 +185,8 @@ function isCorrectForm() {
         }
       }
   }
+  
+  <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>;
 
   switch (errorNb) {
     case 0 :
@@ -448,12 +452,18 @@ $(document).ready(function() {
 						<input type="text" id="eventPeriodicityUntil" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<c:out value='${maxDateLength}'/>"/><span class="txtnote"> (<fmt:message key='GML.dateFormatExemple'/>)</span>
 					</div>
 				</div>
-				
 			</div>
 		</fieldset>
 		
+		<view:pdcNewClassification componentId="${instanceId}" contentId=""/>
+		
+		<div class="legend">
+			<img alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/> : <fmt:message key='GML.requiredField'/>
+		</div>
+		
 		<input type="hidden" name="Action"/>
         <input type="hidden" name="Id"/>
+        <input type="hidden" name="Positions"/>
       </form>
     <br/>
     <center>
