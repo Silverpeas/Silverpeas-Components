@@ -866,7 +866,7 @@
 				<div class="field" id="descriptionArea">
 					<label for="pubDesc" class="txtlibform"><%=resources.getString("PubDescription")%></label>
 					<div class="champs">
-						<textarea rows="8" cols="65" name="Description" id="pubDesc"><%=EncodeHelper.javaStringToHtmlString(description)%></textarea>
+						<textarea rows="4" cols="65" name="Description" id="pubDesc"><%=EncodeHelper.javaStringToHtmlString(description)%></textarea>
 						<% if (isFieldDescriptionMandatory) {%>
           					<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
           				<% }%>

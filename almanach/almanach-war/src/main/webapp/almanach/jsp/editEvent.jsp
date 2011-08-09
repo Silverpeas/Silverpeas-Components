@@ -86,6 +86,7 @@ out.println(graphicFactory.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
 <script type="text/javascript">
 <!--
 var oEditor;
@@ -479,9 +480,6 @@ $(document).ready(function(){
 	tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
 	tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+dateDebutIterationString, true);
 	tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
-	if (almanach.isPdcUsed()) {
-		tabbedPane.addTab(resources.getString("GML.PDC"), "pdcPositions.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
-	}
 
 	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
@@ -629,6 +627,8 @@ $(document).ready(function(){
 			
 		</div>
 	</fieldset>
+	
+	<view:pdcClassification componentId="<%= instanceId %>" contentId="<%= id %>" editable="true" />
 
   	<input type="hidden" name="Action"/>
   	<input type="hidden" name="Id" value="<%=event.getPK().getId()%>"/>

@@ -26,6 +26,8 @@ package com.stratelia.webactiv.almanach.servlets;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
+import com.silverpeas.pdc.web.PdcWebServiceProvider;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,11 +41,13 @@ import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.control.CalendarViewType;
 import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
 import java.net.URLEncoder;
 import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 import static com.silverpeas.util.StringUtil.*;
@@ -294,7 +298,13 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         event.setPeriodicity(periodicity);
 
         // Ajoute l'événement
-        almanach.addEvent(event);
+        EventPK eventPK = almanach.addEvent(event);
+        // create the positions of the new publication onto the PdC
+        String positions = request.getParameter("Positions");
+        if (StringUtil.isDefined(positions)) {
+          PdcWebServiceProvider pdc = PdcWebServiceProvider.aWebServiceProvider();
+          pdc.classifyContent(eventPK, positions);
+        }
         destination = getDestination("almanach", almanach, request);
       } else if (function.startsWith("editEvent")) {
         String id = request.getParameter("Id"); // peut etre null en cas de
@@ -465,17 +475,6 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         request.setAttribute("ComponentURL", URLEncoder.encode(componentUrl, "UTF-8"));
 
         destination = "/almanach/jsp/editAttFiles.jsp";
-      } else if (function.startsWith("pdcPositions")) {
-        String id = request.getParameter("Id");
-        String dateIteration = request.getParameter("Date");
-
-        // récupère l'Event
-        EventDetail event = almanach.getEventDetail(id);
-
-        request.setAttribute("DateDebutIteration", DateUtil.parse(dateIteration));
-        request.setAttribute("Event", event);
-
-        destination = "/almanach/jsp/pdcPositions.jsp";
       } else if (function.startsWith("Pdf")) {
         // Recuperation des parametres
         String fileName = almanach.buildPdf(function);

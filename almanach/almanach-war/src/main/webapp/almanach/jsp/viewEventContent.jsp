@@ -25,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 	<%
 	response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 	response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -159,9 +160,6 @@ $(document).ready(function(){
 		tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+dateDebutIterationString, true);
 		tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
 		tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
-  		if (almanach.isPdcUsed()) {
-			tabbedPane.addTab(resources.getString("GML.PDC"), "pdcPositions.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
-		}
 		out.println(tabbedPane.print());
     }
     
@@ -307,7 +305,6 @@ $(document).ready(function(){
 		   		<div class="profilPhoto"><img src="<%=m_context %><%=contributor.getAvatar() %>" alt="" class="defaultAvatar"/></div>
 	   		</div>
 		   		
-		   	</p>
 			<%	if (StringUtil.isDefined(link)) {	%>
 				<p id="permalinkInfo">
 					<a href="<%=link%>" title='<%=resources.getString("CopyEventLink")%>'><img src="<%=m_context%>/util/icons/link.gif" border="0" alt='<%=resources.getString("CopyEventLink")%>'/></a>
@@ -315,7 +312,9 @@ $(document).ready(function(){
 					<input class="inputPermalink" type="text" onfocus="select();" value="<%=URLManager.getServerURL(request)+link %>" />
 				</p>
 			<% } %>
-		   </div>	
+		   </div>
+		   
+		   <view:pdcClassification componentId="<%= instanceId %>" contentId="<%= id %>" />
 </div>
 
 

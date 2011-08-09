@@ -339,12 +339,13 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws AlmanachException if an error occurs while adding the event.
    * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
    */
-  public void addEvent(EventDetail eventDetail) throws AlmanachBadParamException, AlmanachException,
+  public EventPK addEvent(EventDetail eventDetail) throws AlmanachBadParamException, AlmanachException,
           WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.addEvent()",
             "root.MSG_GEN_ENTER_METHOD");
+    EventPK eventPK = new EventPK("", "useless", getComponentId());
     try {
-      eventDetail.setPK(new EventPK("", getSpaceId(), getComponentId()));
+      eventDetail.setPK(eventPK);
       eventDetail.setDelegatorId(getUserId());
       // Add the event
       String eventId = getAlmanachBm().addEvent(eventDetail);
@@ -357,8 +358,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
               getSpaceId(),
               getComponentId(), eventId);
-      getAlmanachBm().getEventDetail(new EventPK(eventId, getSpaceId(),
-              getComponentId()));
     } catch (RemoteException e) {
       throw new AlmanachRuntimeException(
               "AlmanachSessionController.addEvent()",
@@ -366,6 +365,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     }
     SilverTrace.info("almanach", "AlmanachSessionController.addEvent()",
             "root.MSG_GEN_EXIT_METHOD");
+    return eventPK;
   }
 
   /**
