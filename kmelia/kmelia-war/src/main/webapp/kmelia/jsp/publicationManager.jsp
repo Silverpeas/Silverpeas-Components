@@ -389,6 +389,7 @@
     <%
         out.println(gef.getLookStyleSheet());
     %>
+    <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
     <style type="text/css">
       #thumbnailPreviewAndActions {
         <% if (vignette_url == null) {%>
