@@ -54,6 +54,7 @@
 <head>
 <title><fmt:message key="GML.popupTitle"/></title>
 <view:looknfeel/>
+<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
 <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
