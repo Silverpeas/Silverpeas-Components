@@ -24,7 +24,6 @@
 package com.silverpeas.questionReply.web;
 
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.silverpeas.questionReply.control.QuestionManager;
@@ -35,7 +34,6 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
-import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
@@ -46,18 +44,12 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 import static com.silverpeas.rest.RESTWebService.*;
+import static com.silverpeas.questionReply.web.QuestionReplyTestResources.*;
 
 /**
  * Tests on the comment getting by the CommentResource web service.
  */
-public class QuestionGettingTest extends RESTWebServiceTest {
-
-  @Inject
-  private MockableQuestionManager questionManager;
-  @Inject
-  private MockablePersonalizationService personalisationService;
-  protected static final String COMPONENT_INSTANCE_ID = "questionReply12";
-  protected static final String RESOURCE_PATH = "questionreply/" + COMPONENT_INSTANCE_ID + "/questions";
+public class QuestionGettingTest extends RESTWebServiceTest<QuestionReplyTestResources> {
 
   public QuestionGettingTest() {
     super("com.silverpeas.questionReply.web", "spring-questionreply-webservice.xml");
@@ -67,7 +59,7 @@ public class QuestionGettingTest extends RESTWebServiceTest {
   public void getAQuestionByANonAuthenticatedUser() {
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH + "/3").accept(MediaType.APPLICATION_JSON).get(String.class);
+      resource.path(QUESTION_RESOURCE_PATH + "/3").accept(MediaType.APPLICATION_JSON).get(String.class);
       fail("A non authenticated user shouldn't access the comment");
     } catch (UniformInterfaceException ex) {
       int recievedStatus = ex.getResponse().getStatus();
@@ -96,8 +88,8 @@ public class QuestionGettingTest extends RESTWebServiceTest {
     QuestionManager mockedQuestionManager = mock(QuestionManager.class);
     Question question = getNewSimpleQuestion(3);
     when(mockedQuestionManager.getQuestion(3L)).thenReturn(question);
-    questionManager.setQuestionManager(mockedQuestionManager);
-    QuestionEntity entity = resource.path(RESOURCE_PATH + "/3").header(HTTP_SESSIONKEY, sessionKey).
+    getTestResources().getMockableQuestionManager().setQuestionManager(mockedQuestionManager);
+    QuestionEntity entity = resource.path(QUESTION_RESOURCE_PATH + "/3").header(HTTP_SESSIONKEY, sessionKey).
         accept(
         MediaType.APPLICATION_JSON).get(QuestionEntity.class);
     assertNotNull(entity);
@@ -122,14 +114,14 @@ public class QuestionGettingTest extends RESTWebServiceTest {
     user.setId("10");
     user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
-    personalisationService.setPersonalizationService(mock(PersonalizationService.class));
+    getMockedPersonalizationService().setPersonalizationService(mock(PersonalizationService.class));
     QuestionManager mockedQuestionManager = mock(QuestionManager.class);
     Question question = getNewSimpleQuestion(3);
     question.waitForAnswer();
     when(mockedQuestionManager.getQuestion(3L)).thenReturn(question);
-    questionManager.setQuestionManager(mockedQuestionManager);
+    getTestResources().getMockableQuestionManager().setQuestionManager(mockedQuestionManager);
     try {
-      resource.path(RESOURCE_PATH + "/3").header(HTTP_SESSIONKEY, sessionKey).
+      resource.path(QUESTION_RESOURCE_PATH + "/3").header(HTTP_SESSIONKEY, sessionKey).
           accept(MediaType.APPLICATION_JSON).get(QuestionEntity.class);
       fail("A non authenticated user shouldn't access the comment");
     } catch (UniformInterfaceException ex) {
@@ -155,7 +147,7 @@ public class QuestionGettingTest extends RESTWebServiceTest {
      UserPreferences prefs = mock(UserPreferences.class);
      when(prefs.getLanguage()).thenReturn("en");
      when(myPersonalizationService.getUserSettings(anyString())).thenReturn(prefs);
-     personalisationService.setPersonalizationService(myPersonalizationService);
+     getMockedPersonalizationService().setPersonalizationService(myPersonalizationService);
   }
 
   @Override

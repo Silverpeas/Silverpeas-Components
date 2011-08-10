@@ -1058,7 +1058,7 @@
 	
     <% if (!kmaxMode) {
         if ("New".equals(action)) { %>
-          	<view:pdcNewClassification componentId="<%= componentId %>" contentId="<%= id %>"/>
+          	<view:pdcNewClassification componentId="<%= componentId %>" />
     <%  } else { %>
     		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
     <%  }
