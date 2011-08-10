@@ -216,8 +216,9 @@
           $("#calendar").children().remove();
           $("<ul>").attr("id", "eventList").appendTo("#calendar");
           $.each(events, function(index, event) {
-            var startDate = $.fullCalendar.parseDate(event.start);
+            var eventStartDate = $.fullCalendar.parseDate(event.start);
             var endDate = $.fullCalendar.parseDate(event.end);
+            var startDate = eventStartDate;
       <c:if test="${calendarView.viewType.nextEventsView}">
             if (startDate < today) startDate = today;
       </c:if>
@@ -242,7 +243,7 @@
               endTime = endTime + " <fmt:message key='GML.at'/> " + formatTime(endDate);
             }
             var eventSection = $("<li>").attr("id", "event" + event.id).addClass("event " + event.className.join(' ')).click(function() {
-              viewEvent(event.id, formatDate(startDate), event.instanceId);
+              viewEvent(event.id, formatDate(eventStartDate), event.instanceId);
             })
             .append($("<div>").addClass("eventBeginDate")
             .append($("<span>").addClass("day").html(DAY_NAMES[startDate.getDay()]))
