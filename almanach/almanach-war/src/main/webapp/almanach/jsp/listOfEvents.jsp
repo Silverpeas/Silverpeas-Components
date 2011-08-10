@@ -212,7 +212,7 @@
          * The months and built by browsing the events and are remembered for month selection.
          */
         function buildCalendarView( events, monthsHavingEvents ) {
-          var currentMonth = -1, monthSection = null, today = new Date();
+          var currentMonth = -1, currentYear = -1, monthSection = null, today = new Date();
           $("#calendar").children().remove();
           $("<ul>").attr("id", "eventList").appendTo("#calendar");
           $.each(events, function(index, event) {
@@ -222,8 +222,8 @@
       <c:if test="${calendarView.viewType.nextEventsView}">
             if (startDate < today) startDate = today;
       </c:if>
-            if (startDate.getMonth() != currentMonth) {
-              var currentYear = startDate.getFullYear();
+            if (startDate.getMonth() != currentMonth || startDate.getFullYear() != currentYear) {
+              currentYear = startDate.getFullYear();
               currentMonth = startDate.getMonth();
               monthSection = $("<ul>").addClass("eventList")
               .appendTo($("<li>").attr("id", MONTH_NAMES[currentMonth] + currentYear)
@@ -242,7 +242,7 @@
             if (!event.allDay) {
               endTime = endTime + " <fmt:message key='GML.at'/> " + formatTime(endDate);
             }
-            var eventSection = $("<li>").attr("id", "event" + event.id).addClass("event " + event.className.join(' ')).click(function() {
+            var eventSection = $("<li>").attr("id", "event" + index).addClass("event " + event.className.join(' ')).click(function() {
               viewEvent(event.id, formatDate(eventStartDate), event.instanceId);
             })
             .append($("<div>").addClass("eventBeginDate")
