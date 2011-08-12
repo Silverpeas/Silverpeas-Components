@@ -187,6 +187,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
