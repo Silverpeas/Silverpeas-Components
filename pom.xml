@@ -163,6 +163,7 @@
     <module>formsonline</module>
     <module>scheduleevent</module>
     <module>crm</module>
+    <module>saasmanager</module>
   </modules>
 
 </project>
