@@ -24,6 +24,10 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
@@ -118,9 +122,9 @@ String returnURL = (String) request.getAttribute("ReturnURL");
 browseBar.setComponentName(componentLabel, "Main");
 
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>" ></script>
+<script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
 <%!
 String displayIcon(String source, String messageAlt)
 {
