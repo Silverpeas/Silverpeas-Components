@@ -199,7 +199,7 @@ $(document).ready(function() {
   <fmt:message key="questionReply.minicone" bundle="${icons}" var="publicAnswerIcon"/>
   <fmt:message key="questionReply.miniconeReponse" bundle="${icons}" var="privateAnswerIcon"/>
   function displayAnswer(answer) {
-    answerBlock = $('<li>').addClass('answer tableBoard');
+    answerBlock = $('<li>').addClass('answer');
     answerTitle = $('<h5>').addClass('answerTitle').text(answer.title);
     if(answer.publicReply) {
       answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rpublique" />').attr('title','<fmt:message key="questionReply.Rpublique" />').attr('src', '<c:url value="${publicAnswerIcon}" />'));

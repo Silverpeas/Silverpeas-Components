@@ -104,6 +104,16 @@ div.question{
   position:relative;    
   color: #333333;
   padding: 4px 0 10px 2px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  box-shadow:5px 5px 10px #cccccc;
+  -moz-box-shadow:5px 5px 10px #cccccc;
+  -webkit-box-shadow:5px 5px 10px #cccccc;
+  background-color:#FFF;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
 }
 
 .answers{ 
@@ -126,10 +136,9 @@ div.question{
 }
 
 .answerContent {
-  padding:8px 10px 8px 24px;
+  padding:0px 10px 8px 24px;
   overflow:auto;
 }
-
 
 .answerContent table.tableBoard {
   width:auto !important;
