@@ -456,7 +456,7 @@ $(document).ready(function() {
 			</div>
 		</fieldset>
 		
-		<view:pdcNewClassification componentId="${instanceId}" contentId=""/>
+		<view:pdcNewClassification componentId="${instanceId}"/>
 		
 		<div class="legend">
 			<img alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/> : <fmt:message key='GML.requiredField'/>

@@ -23,7 +23,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
 <%@ page import="java.util.*"%>
 
@@ -40,13 +48,13 @@
 	String categoryId = null;
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<SCRIPT LANGUAGE="JavaScript">
+<html>
+<head>
+  <title><fmt:message key="GML.popupTitle" /></title>
+  <view:looknfeel />
+  <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
+  <script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
+<script language="JavaScript">
 <!--
 function isCorrectForm() {
      	var errorMsg = "";
@@ -59,21 +67,21 @@ function isCorrectForm() {
 
         
 	if (isWhitespace(title)) {
-           errorMsg+="  - '<%=resource.getString("questionReply.question")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+           errorMsg+="  - '<fmt:message key="questionReply.question"/>' <fmt:message key="GML.MustBeFilled"/>\n";
            errorNb++; 
         }              
 	
      	if (!isValidTextArea(content)) {
-     		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("questionReply.containsTooLargeText")+resource.getString("questionReply.nbMaxTextArea")+resource.getString("questionReply.characters")%>\n";
-           	errorNb++; 
-		}  	  	
+     		errorMsg+="  - '<fmt:message key="GML.description"/>'<fmt:message key="questionReply.containsTooLargeText" /><fmt:message key="questionReply.nbMaxTextArea" /><fmt:message key="questionReply.characters" />\n";
+           	errorNb++;
+		}
 	if (isWhitespace(titleR)) {
-           errorMsg+="  - '<%=resource.getString("questionReply.reponse")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+           errorMsg+="  - '<fmt:message key="questionReply.reponse"/>'<fmt:message key="GML.MustBeFilled"/>\n";
            errorNb++; 
         }              
 	
      	if (!isValidTextArea(contentR)) {
-     		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("questionReply.containsTooLargeText")+resource.getString("questionReply.nbMaxTextArea")+resource.getString("questionReply.characters")%>\n";
+     		errorMsg+="  - '<fmt:message key="GML.description" />'<fmt:message key="questionReply.containsTooLargeText" /><fmt:message key="questionReply.nbMaxTextArea" /><fmt:message key="questionReply.characters" />\n";
            	errorNb++; 
 		}  	  	
 		
@@ -83,12 +91,12 @@ function isCorrectForm() {
             result = true;
             break;
         case 1 :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+            errorMsg = "<fmt:message key="GML.ThisFormContains" /> 1<fmt:message key="GML.error" /> : \n" + errorMsg;
             window.alert(errorMsg);
             result = false;
             break;
         default :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+            errorMsg = "<fmt:message key="GML.ThisFormContains" /> " + errorNb + "<fmt:message key="GML.errors" /> :\n" + errorMsg;
             window.alert(errorMsg);
             result = false;
             break;
@@ -102,27 +110,21 @@ function save()
 		document.forms[0].submit();
 }
 //-->
-</SCRIPT>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onLoad="document.forms[0].title.focus();">
-
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setPath(resource.getString("questionReply.addQR"));
-
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
-	out.println(board.printBefore());
-%>
+</script>
+</head>
+<body onLoad="document.forms[0].title.focus();">
+<fmt:message key="questionReply.addQR" var="currentPathLabel"/>
+<view:browseBar extraInformations="${currentPathLabel}"/>
+<view:window>
+<view:frame>
+<view:board>
 
 <center>
-<table CELLPADDING=5 width="100%">
-	<FORM METHOD=POST NAME="myForm" ACTION="<%=routerUrl%>EffectiveCreateQR">
-	
-	<!-- Affichage de la liste des cat�gories -->
+  <form method="POST" name="myForm" action="<%=routerUrl%>EffectiveCreateQR">
+    <table CELLPADDING=5 width="100%">
 	<tr>
 	  	<td>
-	  		<span class="txtlibform"><%= resource.getString("questionReply.category") %> :&nbsp;</span>
+	  		<span class="txtlibform"><fmt:message key="questionReply.category" /> :&nbsp;</span>
 	    </td>
 	    <TD>
 			<select name="CategoryId">
@@ -148,19 +150,19 @@ function save()
 		</TD>
 	</tr>
 	<tr> 
-		<td class="txtlibform"><%=resource.getString("questionReply.question")%> :</td>
+		<td class="txtlibform"><fmt:message key="questionReply.question" /> :</td>
 		<td><input type="text" name="title" size="120" maxlength="100" value="">&nbsp;<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"></td>
 	</tr>
 	<tr valign="top"> 
-		<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
+		<td class="txtlibform"><fmt:message key="GML.description" /> :</td>
 		<td><textarea cols="120" rows="5" name="content"></textarea></td>
 	</tr>
 	<tr> 
-		<td class="txtlibform"><%=resource.getString("GML.date")%> :</td>
+		<td class="txtlibform"><fmt:message key="GML.date" /> :</td>
 		<td><%=creationDate%></td>
 	</tr>
 	<tr> 
-		<td class="txtlibform"><%=resource.getString("GML.publisher")%> :</td>
+		<td class="txtlibform"><fmt:message key="GML.publisher" /> :</td>
 		<td><%=creator%></td>
 	</tr>
 	<tr> 
@@ -173,41 +175,54 @@ function save()
 		</td>
 	</tr>
 	<tr> 
-		<td class="txtlibform"><%=resource.getString("questionReply.reponse")%> :</td>
+		<td class="txtlibform"><fmt:message key="questionReply.reponse" /> :</td>
 		<td><input type="text" name="titleR" size="120" maxlength="100" value="">&nbsp;<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"></td>
 	</tr>
 	<tr valign="top"> 
-		<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
-		<td><textarea cols="120" rows="5" name="contentR"></textarea></td>
+		<td class="txtlibform"><fmt:message key="GML.description" /> :</td>
+		<td><textarea cols="120" rows="5" name="contentR" id="contentR"></textarea></td>
 	</tr>
 	<tr> 
-		<td class="txtlibform"><%=resource.getString("GML.date")%> :</td>
+		<td class="txtlibform"><fmt:message key="GML.date" /> :</td>
 		<td><%=creationDateR%></td>
 	</tr>
 	<tr> 
-		<td class="txtlibform"><%=resource.getString("GML.publisher")%> :</td>
+		<td class="txtlibform"><fmt:message key="GML.publisher" /> :</td>
 		<td><%=creatorR%></td>
 	</tr>
 	<tr>				 
-		<td colspan="2"><span class="txt">(<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</span></td>
+		<td colspan="2"><span class="txt">(<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"> :<fmt:message key="GML.requiredField" />)</span></td>
 	</tr>
-	</FORM>
 </table>
-<% out.println(board.printAfter()); %>
-<br>
-<CENTER>
+  </form>
+</view:board>
+<br/>
+<center>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
     out.println(buttonPane.print());
 %>
-</CENTER>
-
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
-
-</BODY>
-</HTML>
+</center>
+            </view:frame>
+</view:window>
+<script type="text/javascript">
+  <fmt:message key='configFile' var='configFile'/>
+  <c:if test="${configFile eq '???configFile???'}">
+  <c:url value="/wysiwyg/jsp/javaScript/myconfig.js" var="configFile"/>
+  </c:if>
+  var oFCKeditor = new FCKeditor('contentR');
+  oFCKeditor.Width = "500";
+  oFCKeditor.Height = "300";
+  oFCKeditor.BasePath = "<c:url value='/wysiwyg/jsp/FCKeditor/'/>";
+  oFCKeditor.DisplayErrors = true;
+  oFCKeditor.Config["AutoDetectLanguage"] = false;
+  oFCKeditor.Config["DefaultLanguage"] = "<c:out value='${language}'/>";
+  oFCKeditor.Config["CustomConfigurationsPath"] = "<c:out value='${configFile}'/>"
+  oFCKeditor.ToolbarSet = 'questionreply';
+  oFCKeditor.Config["ToolbarStartExpanded"] = true;
+  oFCKeditor.ReplaceTextarea();
+</script>
+</body>
+</html>
