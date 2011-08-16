@@ -907,7 +907,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
       IdPK pkQ = (IdPK) questionDao.add(con, question);
       idQ = pkQ.getIdAsLong();
       reply.setQuestionId(idQ);
-      replyDao.add(con, reply);
+      WAPrimaryKey pkR = replyDao.add(con, reply);
+      WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(), "", question.
+              getInstanceId(), pkR.getId());
       questionIndexer.createIndex(question, Collections.singletonList(reply));
       Question updatedQuestion = getQuestion(idQ);
       contentManager.createSilverContent(con, updatedQuestion);
