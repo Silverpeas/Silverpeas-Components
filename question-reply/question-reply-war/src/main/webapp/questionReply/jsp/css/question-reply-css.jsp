@@ -76,7 +76,6 @@ div.question{
   right:0px;
 }
 
-
 .question .action a {
   position:absolute;
 }
@@ -90,6 +89,13 @@ div.question{
 .question .action .delete {	top:3px;	left:89px;	}
 .question .action .checkbox {position:absolute; top:7px;	left:118px;}
 
+.question .permalink {
+  margin-right: 5px;
+}
+
+.question .permalink img {
+  vertical-align: middle;
+}
 
 .questionTitle {
   line-height: 140%;
@@ -151,4 +157,14 @@ div.question{
   text-align:right;
   font-style:italic;
   font-size:11px;
+}
+
+.attachments {
+ float:right;
+ overflow:hidden;
+ display:inline;
+}
+
+* html .attachments  {
+ width:30%;
 }
