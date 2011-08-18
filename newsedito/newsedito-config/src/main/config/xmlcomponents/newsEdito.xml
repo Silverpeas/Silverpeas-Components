@@ -40,7 +40,7 @@
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
-    <message lang="en">04 Content management</message>
+    <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
