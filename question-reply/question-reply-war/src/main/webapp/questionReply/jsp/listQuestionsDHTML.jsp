@@ -138,11 +138,11 @@ $(document).ready(function() {
     questionDiv = $('<div>').attr('id', 'q' + questionToBeDisplayed.id).addClass('question');
     questionTitleDiv = $('<div>').addClass('questionTitle');
     questionTitle = $('<h4>');
-    questionTitleLink = $('<a>').addClass('question').attr('id', 'l' + questionToBeDisplayed.id).attr('href', '#').attr('title', '<fmt:message key="questionReply.open"/>').text(questionToBeDisplayed.title);
+    questionTitleLink = $('<a>').addClass('question').attr('id', 'l' + questionToBeDisplayed.id).attr('href', '#'+questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.open"/>').text(questionToBeDisplayed.title);
     questionTitle.append(questionTitleLink);
     questionTitleDiv.append(questionTitle);
-    questionHyperlink = $('<a>').addClass('hyperlink').attr('href', '<c:url value="/Question/" />' + questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
-    hyperlinkImg = $('<img>').addClass('actionQuestion').attr('src', '<c:url value="${hyperlinkIcon}"/>').attr('alt', '<fmt:message key="questionReply.CopyQuestionLink"/>').attr('border', '0');
+    questionHyperlink = $('<a>').addClass('permalink').attr('href', '<c:url value="/Question/" />' + questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
+    hyperlinkImg = $('<img>').attr('src', '<c:url value="${hyperlinkIcon}"/>').attr('alt', '<fmt:message key="questionReply.CopyQuestionLink"/>').attr('border', '0');
     questionHyperlink.append(hyperlinkImg);    
     questionTitleDiv.append(questionHyperlink);
     switch(questionToBeDisplayed.status) {
@@ -199,7 +199,7 @@ $(document).ready(function() {
   <fmt:message key="questionReply.minicone" bundle="${icons}" var="publicAnswerIcon"/>
   <fmt:message key="questionReply.miniconeReponse" bundle="${icons}" var="privateAnswerIcon"/>
   function displayAnswer(answer) {
-    answerBlock = $('<li>').addClass('answer tableBoard');
+    answerBlock = $('<li>').addClass('answer');
     answerTitle = $('<h5>').addClass('answerTitle').text(answer.title);
     if(answer.publicReply) {
       answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rpublique" />').attr('title','<fmt:message key="questionReply.Rpublique" />').attr('src', '<c:url value="${publicAnswerIcon}" />'));
