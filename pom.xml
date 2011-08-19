@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>20-SNAPSHOT</version>
+    <version>20</version>
   </parent>
 
   <scm>
@@ -35,7 +35,7 @@
   <name>Silverpeas Components</name>
 
   <properties>
-    <core.version>5.7-SNAPSHOT</core.version>
+    <core.version>5.7</core.version>
   </properties>
 
   <dependencies>
