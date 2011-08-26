@@ -89,19 +89,18 @@ public class JSONServlet extends HttpServlet {
       TopicDetail topic = kmeliaSC.getTopic(id);
       List<NodeDetail> nodes = (List<NodeDetail>) topic.getNodeDetail().getChildrenDetails();
 
-      if ("0".equals(id) && !KmeliaHelper.isToolbox(componentId) &&
-          kmeliaSC.displayNbPublis() &&
-          ("admin".equals(kmeliaSC.getUserTopicProfile()) || "publisher".equals(kmeliaSC
-              .getUserTopicProfile()))) {
-        int nbPublisToValidate =
-            kmeliaSC.getKmeliaBm().getPublicationsToValidate(componentId).size();
+      if (displayToValidateTopic(id, kmeliaSC)) {
         NodeDetail temp = new NodeDetail();
         temp.getNodePK().setId("tovalidate");
         temp.setName(kmeliaSC.getString("ToValidateShort"));
-        temp.setNbObjects(nbPublisToValidate);
+        if (kmeliaSC.displayNbPublis()) {
+          int nbPublisToValidate =
+              kmeliaSC.getKmeliaBm().getPublicationsToValidate(componentId).size();
+          temp.setNbObjects(nbPublisToValidate);
+        }
         nodes.add(temp);
       }
-      writer.write(getListAsJSONArray(nodes, language, kmeliaSC));
+      writer.write(getListAsJSONArray(nodes, language, kmeliaSC, displayBasket(id, kmeliaSC)));
     } else if ("GetPath".equals(action)) {
       List<NodeDetail> nodes = (List<NodeDetail>) getNodeBm().getPath(nodePK);
       writer.write(getListAsJSONArray(nodes, language, kmeliaSC));
@@ -124,14 +123,36 @@ public class JSONServlet extends HttpServlet {
       writer.write(operations.toString());
     }
   }
-
+  
+  private boolean displayToValidateTopic(String id, KmeliaSessionController kmeliaSC)
+      throws RemoteException {
+    return "0".equals(id) &&
+        !KmeliaHelper.isToolbox(kmeliaSC.getComponentId()) &&
+        (SilverpeasRole.admin.isInRole(kmeliaSC.getUserTopicProfile()) || SilverpeasRole.publisher
+            .isInRole(kmeliaSC.getUserTopicProfile()));
+  }
+  
+  private boolean displayBasket(String id, KmeliaSessionController kmeliaSC) throws RemoteException {
+    return "0".equals(id) &&
+        !KmeliaHelper.isToolbox(kmeliaSC.getComponentId()) &&
+        (SilverpeasRole.admin.isInRole(kmeliaSC.getUserTopicProfile()) || SilverpeasRole.publisher
+            .isInRole(kmeliaSC.getUserTopicProfile()) || SilverpeasRole.writer.isInRole(kmeliaSC
+            .getUserTopicProfile()));
+  }
+  
   private String getListAsJSONArray(List<NodeDetail> nodes, String language,
       KmeliaSessionController kmelia) {
+    return getListAsJSONArray(nodes, language, kmelia, true);
+  }
+
+  private String getListAsJSONArray(List<NodeDetail> nodes, String language,
+      KmeliaSessionController kmelia, boolean includeBasket) {
     JSONArray jsonArray = new JSONArray();
-    JSONObject jsonObject;
     for (NodeDetail node : nodes) {
-      jsonObject = getNodeAsJSONObject(node, language, kmelia);
-      jsonArray.put(jsonObject);
+      if (!node.getNodePK().isTrash() || (node.getNodePK().isTrash() && includeBasket)) {
+        JSONObject jsonObject = getNodeAsJSONObject(node, language, kmelia);
+        jsonArray.put(jsonObject);
+      }
     }
 
     return jsonArray.toString();
