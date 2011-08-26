@@ -679,7 +679,7 @@
 					        	<a href="<%=link%>" title="<%=Encode.convertHTMLEntities(resources.getString(
 					                                                                     "kmelia.CopyPublicationLink"))%>"><img src="<%=resources.getIcon("kmelia.link")%>" alt="<%=Encode.convertHTMLEntities(resources.getString(
 					                                                                 "kmelia.CopyPublicationLink"))%>" /></a> <%=resources.getString("GML.permalink")%> <br />
-					            <input type="text" onfocus="select();" value="<%=URLManager.getServerURL(request)+link%>" />
+					            <input type="text" onfocus="select();" onmouseup="return false" value="<%=URLManager.getServerURL(request)+link%>" />
 					        </p>
 				            <% }%>
 					</div>
