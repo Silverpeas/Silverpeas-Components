@@ -120,7 +120,7 @@ function getTranslation() {
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows()">
-<div id="<%=componentId %>">
+<div id="<%=componentId %>" class="<%=profile%>">
 <%
 	Window window = gef.getWindow();
 	BrowseBar browseBar = window.getBrowseBar();
