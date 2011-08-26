@@ -226,22 +226,13 @@ public class JSONServlet extends HttpServlet {
 	      
 	      // topic operations
 	      operations.put("addTopic", isAdmin);
-	      boolean updateTopicAllowed = isAdmin;
-	      NodeDetail node = null;
-	      if (!updateTopicAllowed) {
-	        node = kmeliaSC.getNodeHeader(id);
-	        String parentProfile = kmeliaSC.getUserTopicProfile(node.getFatherPK().getId());
-	        updateTopicAllowed = SilverpeasRole.admin.isInRole(parentProfile);
-	      }
-	      operations.put("updateTopic", !isRoot && updateTopicAllowed);
-	      operations.put("deleteTopic", !isRoot && updateTopicAllowed);
+	      operations.put("updateTopic", !isRoot && isAdmin);
+	      operations.put("deleteTopic", !isRoot && isAdmin);
 	      operations.put("sortSubTopics", isAdmin);
 	      operations.put("copyTopic", !isRoot && isAdmin);
 	      operations.put("cutTopic", !isRoot && isAdmin);
 	      if (!isRoot && isAdmin && kmeliaSC.isOrientedWebContent()) {
-	    	  if (node == null) {
-	    	  	node = kmeliaSC.getNodeHeader(id);
-	    	  }
+	        NodeDetail node = kmeliaSC.getNodeHeader(id);
 	    	  operations.put("showTopic", NodeDetail.STATUS_INVISIBLE.equalsIgnoreCase(node.getStatus()));
 	    	  operations.put("hideTopic", NodeDetail.STATUS_VISIBLE.equalsIgnoreCase(node.getStatus()));
 	      }
