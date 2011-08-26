@@ -320,8 +320,8 @@ function getHeight() {
 
 </script>
 </head>
-<body id="kmelia" onUnload="closeWindows()" class="yui-skin-sam">
-<div id="<%=componentId %>">
+<body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
+<div id="<%=componentId %>" class="<%=profile%>">
 <%
         Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();
@@ -329,7 +329,7 @@ function getHeight() {
 
         //Display operations - following lines are mandatory to init menu correctly
         OperationPane operationPane = window.getOperationPane();
-      	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
+      	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+resources.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
 
     //Instanciation du cadre avec le view generator
 	Frame frame = gef.getFrame();

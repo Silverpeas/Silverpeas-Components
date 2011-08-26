@@ -584,6 +584,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (toSearch) {
         noPublications = kmeliaScc.getString("NoPubFound");
       }
+      out.write("<div id=\"noPublicationMessage\">");
       out.write(board.printBefore());
       out.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" align=\"center\">");
       out.write("<tr valign=\"middle\" class=\"intfdcolor\">");
@@ -598,6 +599,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("</tr>");
       out.write("</table>");
       out.write(board.printAfter());
+      out.write("</div>");
     }
     out.write("</form>");
   }
