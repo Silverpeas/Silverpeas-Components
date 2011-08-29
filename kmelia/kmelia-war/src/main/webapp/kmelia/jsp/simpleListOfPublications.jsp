@@ -39,7 +39,7 @@ String		urlTopic			= "";
 //R?cup?ration des param?tres
 String 	profile			= (String) request.getAttribute("Profile");
 String  translation 	= (String) request.getAttribute("Language");
-boolean	isGuest			= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
+boolean	isGuest			= (Boolean) request.getAttribute("IsGuest");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
 boolean updateChain		= ((Boolean) request.getAttribute("HaveDescriptor")).booleanValue();
 

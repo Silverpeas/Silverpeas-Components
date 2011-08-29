@@ -95,7 +95,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   private void writeInCache(String objectId, String objectType, String componentId,
       boolean available) {
     if (cacheEnabled) {
-      cache.put(objectId + objectType + componentId, Boolean.valueOf(available));
+      cache.put(objectId + objectType + componentId, available);
     }
   }
 
@@ -213,7 +213,7 @@ public class KmeliaSecurity implements ComponentSecurity {
     Boolean fromCache = readFromCache(pk.getId(), PUBLICATION_TYPE, pk.getInstanceId());
     if (fromCache != null) {
       // Availabily already processed
-      return fromCache.booleanValue();
+      return fromCache;
     }
 
     boolean objectAvailable = false;
@@ -245,7 +245,7 @@ public class KmeliaSecurity implements ComponentSecurity {
     Boolean fromCache = readFromCache(nodePK.getId(), NODE_TYPE, nodePK.getInstanceId());
     if (fromCache != null) {
       // Availabily already processed
-      return fromCache.booleanValue();
+      return fromCache;
     }
     boolean objectAvailable = false;
     if (isRightsOnTopicsEnabled(nodePK.getInstanceId())) {
@@ -316,7 +316,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   private PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
+        PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
             JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
         setPublicationBm(publicationBmHome.create());
       } catch (Exception e) {
@@ -331,7 +331,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   public NodeBm getNodeBm() {
     if (nodeBm == null) {
       try {
-        NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+        NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
             JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
         setNodeBm(nodeBmHome.create());
       } catch (Exception e) {

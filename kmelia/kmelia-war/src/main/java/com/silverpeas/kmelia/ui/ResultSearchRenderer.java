@@ -160,7 +160,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
           Iterator<String> languages = I18NHelper.getLanguages();
           if (languages != null) {
             while (languages.hasNext() && !StringUtil.isDefined(content)) {
-              language = (String) languages.next();
+              language = languages.next();
               content = WysiwygController.load(componentId, id, language);
             }
           }

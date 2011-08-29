@@ -24,14 +24,13 @@
 
 package com.stratelia.webactiv.kmelia.model.updatechain;
 
+import com.silverpeas.form.FormException;
+
+import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
-
-import javax.servlet.jsp.JspWriter;
-
-import com.silverpeas.form.FormException;
 
 public class FieldUpdateChainDescriptor {
   private String type;
@@ -113,10 +112,10 @@ public class FieldUpdateChainDescriptor {
       throws IOException, FormException {
     StringWriter sw = new StringWriter();
     PrintWriter out = new PrintWriter(sw, true);
-    if (type.equals("text")) {
+    if ("text".equals(type)) {
       TextFieldDisplayer fieldDisplayer = new TextFieldDisplayer();
       fieldDisplayer.display(out, this, fieldsContext, mandatory);
-    } else if (type.equals("jdbc")) {
+    } else if ("jdbc".equals(type)) {
       JdbcFieldDisplayer fieldDisplayer = new JdbcFieldDisplayer();
       fieldDisplayer.display(out, this, fieldsContext, mandatory);
     }

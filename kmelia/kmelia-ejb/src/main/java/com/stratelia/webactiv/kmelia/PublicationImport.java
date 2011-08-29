@@ -24,17 +24,6 @@
 
 package com.stratelia.webactiv.kmelia;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -62,6 +51,16 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.apache.commons.fileupload.FileItem;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class PublicationImport {
 
@@ -113,7 +112,7 @@ public class PublicationImport {
       throws RemoteException {
     String publicationToUpdateId = null;
     if (discrimatingParameterName != null && discrimatingParameterName.length() > 0) {
-      String discrimatingParameterValue = (String)formParams.get(discrimatingParameterName);
+      String discrimatingParameterValue = formParams.get(discrimatingParameterName);
       publicationToUpdateId = getPublicationId(
         xmlFormName, discrimatingParameterName, discrimatingParameterValue);
     }
@@ -362,9 +361,7 @@ public class PublicationImport {
       searchEngineBm.search(query);
       MatchingIndexEntry[] result = searchEngineBm.getRange(0, searchEngineBm
           .getResultLength());
-      MatchingIndexEntry mie;
-      for (int i = 0; i < result.length; i++) {
-        mie = result[i];
+      for (MatchingIndexEntry mie : result) {
         if ("Publication".equals(mie.getObjectType())) {
           return mie.getPK().getObjectId();
         }
@@ -411,7 +408,7 @@ public class PublicationImport {
       if (publication.getInfoId().equals(xmlFormName)) {
         fatherPKs = publicationBm.getAllFatherPK(publication.getPK());
         if (!fatherPKs.isEmpty()) {
-          fatherPK = (NodePK) fatherPKs.iterator().next();
+          fatherPK = fatherPKs.iterator().next();
           if (!fatherPK.getId().equals("1")) {
             fieldValue = publication.getFieldValue(fieldName);
             if (fieldValue != null && fieldValue.length() > 0) {

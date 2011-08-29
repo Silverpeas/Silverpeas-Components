@@ -78,10 +78,11 @@ public class FieldsContext {
 
   public void incCurrentFieldIndex(int increment) {
     int currentFieldIndexInt = 0;
-    if (currentFieldIndex != null)
-      currentFieldIndexInt = new Integer(currentFieldIndex).intValue();
+    if (currentFieldIndex != null) {
+      currentFieldIndexInt = Integer.parseInt(currentFieldIndex);
+    }
     currentFieldIndexInt = currentFieldIndexInt + increment;
-    this.currentFieldIndex = new Integer(currentFieldIndexInt).toString();
+    this.currentFieldIndex = Integer.toString(currentFieldIndexInt);
   }
 
   public String getUserId() {

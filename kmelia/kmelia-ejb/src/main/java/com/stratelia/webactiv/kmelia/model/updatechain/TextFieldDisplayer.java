@@ -24,13 +24,12 @@
 
 package com.stratelia.webactiv.kmelia.model.updatechain;
 
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.Util;
 import com.silverpeas.util.EncodeHelper;
+
+import java.io.PrintWriter;
+import java.util.List;
 
 public class TextFieldDisplayer {
   /**
@@ -49,12 +48,12 @@ public class TextFieldDisplayer {
       value = "";
     if (values != null && values.size() > 0) {
       out.println("<select name=\"" + field.getName() + "\">");
-      Iterator it = values.iterator();
-      while (it.hasNext()) {
-        String currentValue = (String) it.next();
+      for (Object value1 : values) {
+        String currentValue = (String) value1;
         String selected = "";
-        if (currentValue.equals(field.getName()))
+        if (currentValue.equals(field.getName())) {
           selected = "selected";
+        }
 
         out.println("<option value=\""
             + EncodeHelper.javaStringToHtmlString(currentValue) + "\" "

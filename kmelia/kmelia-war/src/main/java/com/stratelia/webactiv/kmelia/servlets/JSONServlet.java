@@ -194,7 +194,7 @@ public class JSONServlet extends HttpServlet {
     NodeBm nodeBm = null;
     try {
       NodeBmHome nodeBmHome =
-          (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+          EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
       throw new KmeliaRuntimeException("JSONServlet.getNodeBm()", SilverpeasRuntimeException.ERROR,

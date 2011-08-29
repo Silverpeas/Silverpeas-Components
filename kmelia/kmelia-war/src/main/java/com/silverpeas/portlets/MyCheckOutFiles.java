@@ -83,7 +83,7 @@ public class MyCheckOutFiles extends GenericPortlet implements FormNames {
   }
 
   private VersioningBm getVersioningBm() throws Exception {
-    VersioningBmHome vbmHome = (VersioningBmHome) EJBUtilitaire
+    VersioningBmHome vbmHome = EJBUtilitaire
         .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
     VersioningBm vbm = vbmHome.create();
     return vbm;

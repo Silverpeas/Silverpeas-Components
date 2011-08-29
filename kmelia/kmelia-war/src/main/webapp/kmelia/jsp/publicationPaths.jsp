@@ -257,7 +257,7 @@ function getObjects(selected)
 		    				NodePK node = (NodePK) it.next();
 		    				String nodeId = node.getId();
 
-		    				if (new Integer(topic.getId()).toString().equals(nodeId))
+		    				if (Integer.toString(topic.getId()).equals(nodeId))
 		    					usedCheck = " checked";
 		    			}
 	    				

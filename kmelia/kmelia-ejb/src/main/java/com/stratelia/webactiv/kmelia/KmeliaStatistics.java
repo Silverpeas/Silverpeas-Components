@@ -27,13 +27,6 @@
 
 package com.stratelia.webactiv.kmelia;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.EJBException;
-
 import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
 import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -43,6 +36,11 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import javax.ejb.EJBException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Class declaration
@@ -63,9 +61,8 @@ public class KmeliaStatistics implements ComponentStatisticsInterface {
       throws Exception {
     ArrayList myArrayList = new ArrayList();
     Collection c = getElements(spaceId, componentId);
-    Iterator iter = c.iterator();
-    while (iter.hasNext()) {
-      PublicationDetail detail = (PublicationDetail) iter.next();
+    for (Object aC : c) {
+      PublicationDetail detail = (PublicationDetail) aC;
 
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
@@ -85,8 +82,8 @@ public class KmeliaStatistics implements ComponentStatisticsInterface {
   private PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
+        publicationBm = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class).create();
       } catch (Exception e) {
         SilverTrace.error("kmelia", "KmeliaStatistics.getPublicationBm",
             "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);

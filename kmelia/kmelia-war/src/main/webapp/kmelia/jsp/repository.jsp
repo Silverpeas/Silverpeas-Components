@@ -40,7 +40,7 @@ String displayFilePath(String path, String startPath) {
       part_of_path = st.nextToken();
       link += File.separator + part_of_path;
       linkedPathString += " > ";
-      linkedPathString += "<a href=\"javascript:onClick=fileGoTo('"+Encode.javaStringToJsString(link)+"')\">"+Encode.javaStringToHtmlString(part_of_path)+"</a>";
+      linkedPathString += "<a href=\"javascript:onClick=fileGoTo('"+EncodeHelper.javaStringToJsString(link)+"')\">"+EncodeHelper.javaStringToHtmlString(part_of_path)+"</a>";
    }
    return linkedPathString;
 }
@@ -70,7 +70,7 @@ if (path != null)
 				chemin = chemin + " > ";
 				namePath = " > " + namePath;
 			}
-			chemin = chemin + "<a href=\"GoToDirectory?Path="+ directory + "\">" + Encode.javaStringToHtmlString(directory)+"</a>";
+			chemin = chemin + "<a href=\"GoToDirectory?Path="+ directory + "\">" + EncodeHelper.javaStringToHtmlString(directory)+"</a>";
 				
 			namePath = namePath + directory;
 			suivant = itPath.hasNext();
@@ -137,7 +137,7 @@ if (files != null && files.size() > 0)
         
         fileName = file.getName();
 
-        arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(fileName), "GoToDirectory?Path="+file.getPath());
+        arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileName), "GoToDirectory?Path="+file.getPath());
     }
     out.println(arrayPane.print());
 }
@@ -174,7 +174,7 @@ if (fileList != null && fileList.size() > 0)
 		ArrayCellText cell = arrayLine.addArrayCellText("<img src=\""+fileDetail.getFileIcon()+"\" width=\"20\" height=\"20\"/>");
 		cell.setCompareOn(FileRepositoryManager.getFileExtension(fileDetail.getName()));
 	
-	    ArrayCellLink cellLink = arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL());
+	    ArrayCellLink cellLink = arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL());
 	    cellLink.setTarget("_blank");
 	    
 	    ArrayCellText cellSize = arrayLine.addArrayCellText(fileDetail.getFileSize());

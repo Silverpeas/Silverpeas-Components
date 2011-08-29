@@ -43,7 +43,7 @@ TopicDetail currentTopic 		= (TopicDetail) request.getAttribute("CurrentTopic");
 String 		pathString 			= (String) request.getAttribute("PathString");
 String 		linkedPathString 	= (String) request.getAttribute("LinkedPathString");
 
-Boolean displayNbPublis = new Boolean(false);
+Boolean displayNbPublis = Boolean.FALSE;
 String id = currentTopic.getNodeDetail().getNodePK().getId();
 String language = kmeliaScc.getLanguage();
 

@@ -23,24 +23,12 @@
  */
 package com.silverpeas.kmelia.export;
 
-import com.silverpeas.converter.HTMLConverter;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.Form;
-import org.odftoolkit.odfdom.dom.element.text.TextAElement;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
-import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import java.util.List;
-import org.odftoolkit.simple.table.Row;
 import com.silverpeas.comment.model.Comment;
-import org.odftoolkit.simple.table.Table;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
+import com.silverpeas.converter.HTMLConverter;
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RenderingContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -48,33 +36,52 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.versioning.model.Document;
+import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
+import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
+import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import java.io.File;
-import java.util.Calendar;
-import java.util.UUID;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
+import org.odftoolkit.odfdom.dom.element.text.TextAElement;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.meta.Meta;
 import org.odftoolkit.simple.table.Cell;
+import org.odftoolkit.simple.table.Row;
+import org.odftoolkit.simple.table.Table;
 import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Section;
 import org.odftoolkit.simple.text.list.ListItem;
-import static com.stratelia.webactiv.util.DateUtil.*;
-import static com.silverpeas.converter.DocumentFormat.*;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
+
+import static com.silverpeas.converter.DocumentFormat.inFormat;
+import static com.silverpeas.converter.DocumentFormat.odt;
 import static com.silverpeas.kmelia.export.DocumentTemplateParts.*;
-import static com.silverpeas.kmelia.export.VersionedAttachmentHolder.*;
-import static com.silverpeas.kmelia.export.ODTDocumentsMerging.*;
-import static com.silverpeas.kmelia.export.ODTDocumentTextTranslator.*;
-import static com.silverpeas.util.StringUtil.*;
+import static com.silverpeas.kmelia.export.ODTDocumentTextTranslator.aTranslatorWith;
+import static com.silverpeas.kmelia.export.ODTDocumentsMerging.atSection;
+import static com.silverpeas.kmelia.export.ODTDocumentsMerging.decorates;
+import static com.silverpeas.kmelia.export.VersionedAttachmentHolder.hold;
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.util.StringUtil.isInteger;
+import static com.stratelia.webactiv.util.DateUtil.dateToString;
+import static com.stratelia.webactiv.util.DateUtil.getOutputDate;
 
 /**
  * A builder of an ODT document based on a given template and from a specified
@@ -534,7 +541,7 @@ public class ODTDocumentBuilder {
   protected KmeliaBm getKmeliaService() {
     try {
       KmeliaBmHome kscEjbHome =
-          (KmeliaBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME,
+          EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME,
           KmeliaBmHome.class);
       return kscEjbHome.create();
     } catch (Exception e) {

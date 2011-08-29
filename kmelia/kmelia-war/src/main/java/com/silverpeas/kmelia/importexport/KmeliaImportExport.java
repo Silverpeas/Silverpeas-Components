@@ -79,7 +79,7 @@ public class KmeliaImportExport extends GEDImportExport {
     KmeliaBm kmeliaBm = null;
 
     try {
-      KmeliaBmHome ejbHome = (KmeliaBmHome) EJBUtilitaire.getEJBObjectRef(
+      KmeliaBmHome ejbHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.KMELIABM_EJBHOME, KmeliaBmHome.class);
       kmeliaBm = ejbHome.create();
 

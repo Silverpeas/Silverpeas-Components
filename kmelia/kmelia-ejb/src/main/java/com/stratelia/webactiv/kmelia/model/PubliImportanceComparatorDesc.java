@@ -34,7 +34,7 @@ public class PubliImportanceComparatorDesc implements Comparator<KmeliaPublicati
   public int compare(KmeliaPublication p1, KmeliaPublication p2) {
     int compareResult =
         Integer.valueOf(p2.getDetail().getImportance()).compareTo(
-        Integer.valueOf(p1.getDetail().getImportance()));
+            p1.getDetail().getImportance());
     if (compareResult == 0) {
       compareResult = p1.getDetail().getId().compareTo(p2.getDetail().getId());
     }

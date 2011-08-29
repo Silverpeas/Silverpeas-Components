@@ -24,20 +24,7 @@
 
 package com.stratelia.webactiv.kmelia.servlets;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.google.common.io.Closeables;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -59,6 +46,19 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.util.List;
 
 /**
  * Class declaration
@@ -177,18 +177,17 @@ public class AliasFileServer extends HttpServlet {
    */
   private void display(HttpServletResponse res, String htmlFilePath)
       throws IOException {
-    BufferedInputStream input = null;
-    OutputStream out2 = res.getOutputStream();
+    BufferedInputStream input = new BufferedInputStream(new FileInputStream(htmlFilePath));
+    OutputStream out = res.getOutputStream();
     SilverTrace.info("kmelia", "AliasFileServer.display()",
         "root.MSG_GEN_ENTER_METHOD", " htmlFilePath " + htmlFilePath);
     try {
-      input = new BufferedInputStream(new FileInputStream(htmlFilePath));
       int read = input.read();
       if (read == -1) {
         displayWarningHtmlCode(res);
       } else {
         while (read != -1) {
-          out2.write(read); // writes bytes into the response
+          out.write(read); // writes bytes into the response
           read = input.read();
         }
       }
@@ -197,15 +196,8 @@ public class AliasFileServer extends HttpServlet {
           "root.EX_CANT_READ_FILE", "file name=" + htmlFilePath);
       displayWarningHtmlCode(res);
     } finally {
-      // we must close the in and out streams
-      try {
-        if (input != null)
-          input.close();
-        out2.close();
-      } catch (Exception e) {
-        SilverTrace.warn("kmelia", "AliasFileServer.display",
-            "root.EX_CANT_READ_FILE", "close failed");
-      }
+      Closeables.closeQuietly(input);
+      Closeables.closeQuietly(out);
     }
   }
 
@@ -241,7 +233,7 @@ public class AliasFileServer extends HttpServlet {
 
   private VersioningBm getVersioningBm() {
     try {
-      VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire
+      VersioningBmHome vscEjbHome = EJBUtilitaire
           .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
       return vscEjbHome.create();
     } catch (Exception e) {
@@ -253,7 +245,7 @@ public class AliasFileServer extends HttpServlet {
 
   private PublicationBm getPublicationBm() {
     try {
-      PublicationBmHome ejbHome = (PublicationBmHome) EJBUtilitaire
+      PublicationBmHome ejbHome = EJBUtilitaire
           .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
           PublicationBmHome.class);
       return ejbHome.create();

@@ -4,12 +4,17 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import com.silverpeas.converter.DocumentFormat;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
+import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.util.ClientBrowserUtil;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,12 +22,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import static com.silverpeas.util.StringUtil.*;
-import static com.silverpeas.converter.DocumentFormat.*;
+
+import static com.silverpeas.converter.DocumentFormat.inFormat;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * An HTTP servlet dedicated to the export of Kmelia publications.

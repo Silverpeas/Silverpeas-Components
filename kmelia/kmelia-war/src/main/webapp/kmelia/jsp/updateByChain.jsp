@@ -402,7 +402,7 @@ function last()
 						String topicId = topicChoice[i];
 						StringTokenizer tokenizer = new StringTokenizer(topicId,",");
 						String nodeId = tokenizer.nextToken();
-			    		if (new Integer(topic.getId()).toString().equals(nodeId))
+			    		if (Integer.toString(topic.getId()).equals(nodeId))
 			    			usedCheck = " checked";
 			    	}
 

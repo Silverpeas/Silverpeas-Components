@@ -23,26 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import com.stratelia.webactiv.kmelia.model.KmeliaPublicationComparator;
-import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.thumbnail.ThumbnailException;
@@ -66,6 +46,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.KmeliaSecurity;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublicationComparator;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -80,8 +62,26 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import static com.stratelia.webactiv.SilverpeasRole.*;
+import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 
 /**
  * @author ehugonnet
@@ -166,12 +166,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       SilverTrace.info("kmelia", "AjaxPublicationsListServlet.doPost", "root.MSG_GEN_PARAM_VALUE",
           "Request parameters = " + req.getQueryString());
 
-      TopicDetail currentTopic = null;
       boolean sortAllowed = true;
       boolean linksAllowed = true;
       boolean checkboxAllowed = false;
       List<String> selectedIds = new ArrayList<String>();
-      List<KmeliaPublication> publications = null;
+      List<KmeliaPublication> publications;
+      TopicDetail currentTopic = null;
       boolean subTopics = false;
       String role = kmeliaSC.getProfile();
       if (toLink) {
@@ -299,9 +299,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     boolean showTopicPathNameinSearchResult =
         resources.getSetting("showTopicPathNameinSearchResult", true);
     String language = kmeliaScc.getCurrentLanguage();
-    String name = null;
-    String description = null;
-
     String currentUserId = kmeliaScc.getUserDetail().getId();
     String currentTopicId = "0";
     if (kmeliaScc.getSessionTopic() != null) {
@@ -323,16 +320,15 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       for (KmeliaPublication aPub : pubs) {
         PublicationDetail pub = aPub.getDetail();
         UserDetail currentUser = aPub.getCreator();
-        name = pub.getName(language);
-        description = pub.getDescription(language);
+        String name = pub.getName(language);
+        String description = pub.getDescription(language);
 
         String pubColor = "";
         String pubState = "";
         String highlightClassBegin = "";
         String highlightClassEnd = "";
 
-        if (StringUtil.isDefined(pubIdToHighlight)
-            && pubIdToHighlight.equals(pub.getPK().getId())) {
+        if (StringUtil.isDefined(pubIdToHighlight) && pubIdToHighlight.equals(pub.getPK().getId())) {
           highlightClassBegin = "<span class=\"highlight\">";
           highlightClassEnd = "</span>";
         }
@@ -643,7 +639,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   void displayPermalink(PublicationDetail pub, KmeliaSessionController kmeliaScc,
       ResourcesWrapper resources, Writer out) throws IOException {
-    String link = null;
+    String link;
     if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
       link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId(),
           kmeliaScc.getComponentId());
@@ -717,13 +713,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (updater == null) {
       updater = currentUser;
     }
-    String userName = "";
-    if (updater != null && (updater.getFirstName().length() > 0 || updater.getLastName().length() > 0)) {
-      userName = updater.getDisplayedName();
-    } else {
-      userName = kmeliaScc.getString("kmelia.UnknownUser");
+    if (updater != null && (StringUtil.isDefined(updater.getFirstName())
+        || StringUtil.isDefined(updater.getLastName()))) {
+      return updater.getDisplayedName();
     }
-    return userName;
+    return kmeliaScc.getString("kmelia.UnknownUser");
   }
 
   private String displayImportance(int importance, int maxImportance, String fullStar,
@@ -754,10 +748,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
     // store the publication identifiers in an array list
     List<String> publicationsToLink = new ArrayList<String>();
-    StringTokenizer tokens = null;
     if (list != null) {
       for (String link : list) {
-        tokens = new StringTokenizer(link, "/");
+        StringTokenizer tokens = new StringTokenizer(link, "/");
         publicationsToLink.add(tokens.nextToken());
       }
     }
@@ -921,8 +914,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
     } else {
       // determines the label to display
-      String displayedTitle = "";
-      if (title == null || title.length() == 0) {
+      String displayedTitle;
+      if (!StringUtil.isDefined(title)) {
         displayedTitle = logicalName;
       } else {
         displayedTitle = title;
@@ -1003,14 +996,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       writer.write("<!-- Publications Header End -->");
       writer.write("<tr><td colspan=\"2\"><table border=\"0\" width=\"100%\">");
       int j = 1;
-      int nbCol = new Integer(resources.getSetting("HomeNbCols")).intValue();
+      int nbCol = Integer.parseInt(resources.getSetting("HomeNbCols"));
       if (pubs.size() < nbCol) {
         nbCol = pubs.size();
       }
-      String width = new Integer(100 / nbCol).toString();
+      String width = Integer.toString(100 / nbCol);
       boolean endRaw = false;
       String linkIcon = resources.getIcon("kmelia.link");
-      String shortcut = null;
       while (iterator.hasNext()) {
         if (j == 1) {
           writer.write("<tr>\n");
@@ -1020,7 +1012,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         if (j <= nbCol) {
           kmeliaPub = iterator.next();
           pub = kmeliaPub.getDetail();
-
+          String shortcut;
           if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
             shortcut = " (" + resources.getString("kmelia.Shortcut") + ")";
           } else {

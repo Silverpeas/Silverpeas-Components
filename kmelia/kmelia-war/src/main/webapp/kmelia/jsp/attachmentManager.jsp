@@ -71,9 +71,9 @@ else
 	nextButton = (Button) gef.getFormButton(resources.getString("GML.next"), "WizardNext?Position=Attachment", false);
 
 boolean openUrl = false;
-if (request.getParameter("OpenUrl") != null)
-	openUrl = new Boolean(request.getParameter("OpenUrl")).booleanValue();
-								
+if (request.getParameter("OpenUrl") != null)  {
+	openUrl = Boolean.parseBoolean(request.getParameter("OpenUrl"));
+}
 %>
 <HTML>
 <HEAD>

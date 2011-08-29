@@ -233,8 +233,8 @@ public class KmeliaTransversal implements PublicationHelper {
   private PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
+        publicationBm = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class).create();
       } catch (Exception e) {
         SilverTrace.error("quickinfo",
             "QuickInfoTransversalSC.getPublicationBm()",

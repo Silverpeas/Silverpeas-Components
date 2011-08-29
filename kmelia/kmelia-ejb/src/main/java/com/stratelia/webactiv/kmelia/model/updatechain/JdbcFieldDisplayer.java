@@ -24,6 +24,13 @@
 
 package com.stratelia.webactiv.kmelia.model.updatechain;
 
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.Util;
+import com.silverpeas.util.EncodeHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,13 +42,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.Util;
-import com.silverpeas.util.EncodeHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public class JdbcFieldDisplayer {
   static private final String VARIABLE_REGEX_USER_ID = "\\$\\$userId";
@@ -74,22 +74,28 @@ public class JdbcFieldDisplayer {
     String valueFieldType = "1"; // valeurs possibles 1 = choix restreint à la liste ou 2 = saisie
     // libre, par défaut 1
     int size = 30;
-    for (int i = 0; i < parameters.size(); i++) {
-      FieldParameter param = parameters.get(i);
-      if (param.getName().equals("url"))
+    for (FieldParameter param : parameters) {
+      if ("url".equals(param.getName())) {
         url = param.getValue();
-      if (param.getName().equals("valueFieldType"))
+      }
+      if ("valueFieldType".equals(param.getName())) {
         valueFieldType = param.getValue();
-      if (param.getName().equals("query"))
+      }
+      if ("query".equals(param.getName())) {
         query = param.getValue();
-      if (param.getName().equals("login"))
+      }
+      if ("login".equals(param.getName())) {
         login = param.getValue();
-      if (param.getName().equals("password"))
+      }
+      if ("password".equals(param.getName())) {
         password = param.getValue();
-      if (param.getName().equals("driverName"))
+      }
+      if ("driverName".equals(param.getName())) {
         driverName = param.getValue();
-      if (param.getName().equals("size"))
-        size = new Integer((String) param.getValue());
+      }
+      if ("size".equals(param.getName())) {
+        size = Integer.parseInt(param.getValue());
+      }
     }
 
     if (field != null) {
@@ -116,8 +122,8 @@ public class JdbcFieldDisplayer {
       String m_context =
           GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
       int zindex =
-          (fieldsContext.getLastFieldIndex() - new Integer(fieldsContext.getCurrentFieldIndex())
-          .intValue()) * 9000;
+          (fieldsContext.getLastFieldIndex() - Integer.parseInt(
+              fieldsContext.getCurrentFieldIndex())) * 9000;
 
       //Liste des valeurs 
       html += "<script type=\"text/javascript\">\n";
@@ -248,7 +254,7 @@ public class JdbcFieldDisplayer {
       html += "}\n";
 */
       if (mandatory) {
-        String sizeMandatory = new Integer(size / 2 + 1).toString();
+        String sizeMandatory = Integer.toString(size / 2 + 1);
         html +=
             "<img src=\"" + mandatoryImg +
             "\" width=\"5\" height=\"5\" border=\"0\" style=\"position:absolute;left:" +

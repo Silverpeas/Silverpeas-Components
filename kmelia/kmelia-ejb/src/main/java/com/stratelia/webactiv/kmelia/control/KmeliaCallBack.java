@@ -159,7 +159,7 @@ public class KmeliaCallBack implements CallBack {
   private KmeliaBmHome getKmeliaHome() {
     if (kmeliaHome == null) {
       try {
-        kmeliaHome = (KmeliaBmHome) EJBUtilitaire.getEJBObjectRef(
+        kmeliaHome = EJBUtilitaire.getEJBObjectRef(
             JNDINames.KMELIABM_EJBHOME, KmeliaBmHome.class);
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaCallback.getKmeliaHome()",

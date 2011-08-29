@@ -24,8 +24,6 @@
 
 package com.stratelia.webactiv.kmax;
 
-import java.util.Iterator;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
@@ -43,9 +41,7 @@ public class KmaxIndexer implements ComponentIndexerInterface {
     scc = new KmeliaSessionController(mainSessionCtrl, context);
     scc.indexKmax(scc.getComponentId());
 
-    Iterator<PublicationDetail> it = scc.getAllPublications().iterator();
-    while (it.hasNext()) {
-      PublicationDetail pd = it.next();
+    for (PublicationDetail pd : scc.getAllPublications()) {
       AttachmentController.attachmentIndexer(pd.getPK());
     }
   }

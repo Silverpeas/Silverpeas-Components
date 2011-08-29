@@ -175,7 +175,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
     String id = null;
     // for each silverContentId, we get the corresponding publicationId
     while (iter.hasNext()) {
-      int contentId = ((Integer) iter.next()).intValue();
+      int contentId = (Integer) iter.next();
       try {
         id = getContentManager().getInternalContentId(contentId);
         pubPK = new PublicationPK(id, peasId);
@@ -194,20 +194,16 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
    * @param ids a list of publicationPK
    * @return a list of publicationDetail
    */
-  private List getHeaders(List ids, String componentId, String userId) {
-    PublicationDetail pubDetail = null;
-    ArrayList headers = new ArrayList();
+  private List<PublicationDetail> getHeaders(List ids, String componentId, String userId) {
+    List<PublicationDetail> headers = new ArrayList<PublicationDetail>();
     try {
       KmeliaSecurity security = new KmeliaSecurity();
       boolean checkRights = security.isRightsOnTopicsEnabled(componentId);
 
-      ArrayList publicationDetails = (ArrayList) getPublicationBm()
-          .getPublications((ArrayList) ids);
-      for (int i = 0; i < publicationDetails.size(); i++) {
-        pubDetail = (PublicationDetail) publicationDetails.get(i);
-
-        if (!checkRights
-            || security.isPublicationAvailable(pubDetail.getPK(), userId)) {
+      ArrayList<PublicationDetail> publicationDetails = (ArrayList) getPublicationBm().getPublications(
+          ids);
+      for (PublicationDetail pubDetail : publicationDetails) {
+        if (!checkRights || security.isPublicationAvailable(pubDetail.getPK(), userId)) {
           pubDetail.setIconUrl("kmeliaSmall.gif");
           headers.add(pubDetail);
         }
@@ -233,7 +229,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
   private PublicationBm getPublicationBm() {
     if (currentPublicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
+        PublicationBmHome publicationBmHome = EJBUtilitaire
             .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
             PublicationBmHome.class);
         currentPublicationBm = publicationBmHome.create();

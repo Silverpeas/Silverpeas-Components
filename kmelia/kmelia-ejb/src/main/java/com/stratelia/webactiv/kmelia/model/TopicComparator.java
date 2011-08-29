@@ -24,10 +24,10 @@
 
 package com.stratelia.webactiv.kmelia.model;
 
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+
 import java.util.Comparator;
 import java.util.HashMap;
-
-import com.stratelia.webactiv.util.node.model.NodeDetail;
 import java.util.Map;
 
 public class TopicComparator implements Comparator<NodeDetail> {
@@ -46,10 +46,10 @@ public class TopicComparator implements Comparator<NodeDetail> {
       namesWeights = new HashMap<String, Integer>();
       int i = 0;
       for (i = 0; i < criteria.length; i++) {
-        namesWeights.put(criteria[i].toLowerCase(), Integer.valueOf(i));
+        namesWeights.put(criteria[i].toLowerCase(), i);
       }
       if (i > 0 && !namesWeights.containsKey(DEFAULT_NAME)) {
-        namesWeights.put(DEFAULT_NAME, Integer.valueOf(i));
+        namesWeights.put(DEFAULT_NAME, i);
       }
     }
     useCriteria = (namesWeights != null && !namesWeights.isEmpty());

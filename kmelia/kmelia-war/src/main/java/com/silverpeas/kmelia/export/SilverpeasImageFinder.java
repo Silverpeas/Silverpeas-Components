@@ -34,9 +34,10 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.apache.commons.lang.SystemUtils;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.lang.SystemUtils;
 
 /**
  * A finder of images that were uploaded by a Silverpeas component instance, whatever this
@@ -157,7 +158,7 @@ public class SilverpeasImageFinder {
   }
 
   private GalleryBm getGalleryBm() throws Exception {
-    GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire.getEJBObjectRef(
+    GalleryBmHome galleryBmHome = EJBUtilitaire.getEJBObjectRef(
             JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
     return galleryBmHome.create();
   }

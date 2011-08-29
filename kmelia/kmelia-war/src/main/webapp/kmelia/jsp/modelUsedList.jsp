@@ -36,7 +36,7 @@ Collection			modelUsed	= (Collection) request.getAttribute("ModelUsed");
 String linkedPathString = kmeliaScc.getSessionPath();
 
 // d�claration des boutons
-Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
+Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
 Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
 
 %>

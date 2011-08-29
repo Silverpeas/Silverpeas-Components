@@ -125,7 +125,7 @@ public class FileImport {
     int nbFiles = ZipManager.getNbFiles(fileUploaded);
 
     // Name of temp folder: timestamp and userId
-    String tempFolderName = new Long(new Date().getTime()).toString() + "_"
+    String tempFolderName = Long.toString(System.currentTimeMillis()) + "_"
         + kmeliaScc.getUserId();
 
     // Directory Temp for the extracted files
@@ -184,7 +184,7 @@ public class FileImport {
     ArrayList<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
 
     // Name of temp folder: timestamp and userId
-    String tempFolderName = new Long(new Date().getTime()).toString() + "_"
+    String tempFolderName = Long.toString(System.currentTimeMillis()) + "_"
         + kmeliaScc.getUserId();
     // Directory Temp for the extracted files
     try {
@@ -214,15 +214,16 @@ public class FileImport {
           + filesExtracted.length + " File="
           + fileUploaded.getAbsolutePath());
 
-      for (int i = 0; i < filesExtracted.length; i++) {
+      for (File aFilesExtracted : filesExtracted) {
         File[] fileToProcess = new File[1];
-        fileToProcess[0] = filesExtracted[i];
+        fileToProcess[0] = aFilesExtracted;
         // Create publications
         PublicationDetail publicationDetail = processImportFile(
             attachmentImportExport, versioningImportExport, fileToProcess,
             KmeliaSessionController.MASSIVE_IMPORT_MODE_MULTI_PUBLICATIONS);
-        if (publicationDetail != null)
+        if (publicationDetail != null) {
           publicationDetails.add(publicationDetail);
+        }
       }
       FileFolderManager.deleteFolder(tempFolderPath);
     } catch (Exception e) {
@@ -279,13 +280,13 @@ public class FileImport {
       List<AttachmentDetail> attachments = new ArrayList<AttachmentDetail>();
       if (isVersioningUsed) {
         // Versioning Mode
-        for (int i = 0; i < filesToProcess.length; i++) {
+        for (File filesToProces : filesToProcess) {
           AttachmentDetail attDetail = new AttachmentDetail();
-          attDetail.setPhysicalName(filesToProcess[i].getAbsolutePath());
+          attDetail.setPhysicalName(filesToProces.getAbsolutePath());
           SilverTrace.info("kmelia", "FileImport.processImportFile()",
               "root.MSG_GEN_PARAM_VALUE",
               "filesExtracted[i].getPath() versioning = "
-              + filesToProcess[i].getAbsolutePath());
+                  + filesToProces.getAbsolutePath());
           attDetail.setAuthor(userDetail.getId());
           attDetail.setInstanceId(componentId);
           attDetail.setPK(new AttachmentPK(componentId));
@@ -293,9 +294,9 @@ public class FileImport {
           SilverTrace.info("kmelia", "FileImport.processImportFile()",
               "root.MSG_GEN_PARAM_VALUE",
               "versioningIE.getVersioningPath(componentId) = "
-              + versioningIE.getVersioningPath(componentId));
+                  + versioningIE.getVersioningPath(componentId));
 
-          String filePath = filesToProcess[i].getAbsolutePath();
+          String filePath = filesToProces.getAbsolutePath();
           if (MSdpManager.isSummaryInformation(filePath)) {
             attDetail.setTitle(getOfficeTitle(filePath, ""));
             attDetail.setDescription(getOfficeSubject(filePath, ""));
@@ -309,21 +310,21 @@ public class FileImport {
             "root.MSG_GEN_PARAM_VALUE", "copiedAttachments.size() = "
             + copiedAttachments);
         versioningIE.importDocuments(pubDetailToCreate.getId(), componentId,
-            copiedAttachments, new Integer(userDetail.getId()).intValue(),
+            copiedAttachments, Integer.parseInt(userDetail.getId()),
             versionType, KmeliaHelper.isIndexable(pubDetailToCreate));
       } else {
         // Add attachments
-        for (int i = 0; i < filesToProcess.length; i++) {
+        for (File filesToProces : filesToProcess) {
           AttachmentDetail attDetail = new AttachmentDetail();
           SilverTrace.info("kmelia", "FileImport.processImportFile()",
               "root.MSG_GEN_PARAM_VALUE",
               "filesExtracted[i].getPath() Non versionning = "
-              + filesToProcess[i].getAbsolutePath());
-          attDetail.setPhysicalName(filesToProcess[i].getAbsolutePath());
+                  + filesToProces.getAbsolutePath());
+          attDetail.setPhysicalName(filesToProces.getAbsolutePath());
           attDetail.setAuthor(userDetail.getId());
 
           // Get information from Office document
-          String filePath = filesToProcess[i].getAbsolutePath();
+          String filePath = filesToProces.getAbsolutePath();
           if (MSdpManager.isSummaryInformation(filePath)) {
             attDetail.setTitle(getOfficeTitle(filePath, ""));
             attDetail.setDescription(getOfficeSubject(filePath, ""));

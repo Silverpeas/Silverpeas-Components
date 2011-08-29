@@ -38,14 +38,16 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
-import java.io.File;
-import java.util.Iterator;
-import java.util.List;
+
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML.Attribute;
 import javax.swing.text.html.HTML.Tag;
-import static javax.swing.text.html.HTML.Tag.*;
 import javax.swing.text.html.HTMLEditorKit.ParserCallback;
+import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+
+import static javax.swing.text.html.HTML.Tag.*;
 
 class Callback extends ParserCallback {
 
@@ -199,19 +201,18 @@ class Callback extends ParserCallback {
         if (attribute != null) {
           attribute_value = attribute.toString();
           if ("%".equals(attribute_value.substring(attribute_value.length() - 1))) {
-            tbl.setWidth((new Integer(attribute_value.substring(0,
-                attribute_value.length() - 1))).intValue());
+            tbl.setWidth((Integer.parseInt(attribute_value.substring(0, attribute_value.length() - 1))));
           }
         }
         attribute = a.getAttribute(Attribute.CELLPADDING);
         if (attribute != null) {
           attribute_value = attribute.toString();
-          tbl.setSpacing((new Integer(attribute_value)).intValue());
+          tbl.setSpacing(Integer.parseInt(attribute_value));
         }
         attribute = a.getAttribute(Attribute.CELLSPACING);
         if (attribute != null) {
           attribute_value = attribute.toString();
-          tbl.setPadding((new Integer(attribute_value)).intValue());
+          tbl.setPadding(Integer.parseInt(attribute_value));
         }
       } catch (Exception ex) {
         throw new KmeliaRuntimeException("Callback.handleStartTag",
@@ -287,7 +288,7 @@ class Callback extends ParserCallback {
             String currentImagePath = FileRepositoryManager.getAbsolutePath(imageDetail.getPK().
                 getComponentName()) + getImagePath() + File.separator + imageDetail.getPhysicalName();
             SilverTrace.info("kmelia", "Callback.handleText",
-                "root.MSG_PARAM_VALUE", "imagePath = " + currentImagePath.toString());
+                "root.MSG_PARAM_VALUE", "imagePath = " + currentImagePath);
             Image image = Image.getInstance(currentImagePath);
             document.add(image);
           }

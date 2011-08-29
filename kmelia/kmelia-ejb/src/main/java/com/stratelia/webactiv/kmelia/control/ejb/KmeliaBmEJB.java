@@ -862,14 +862,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   private int getIndexOfNode(String nodeId, List<NodeDetail> nodes) {
     SilverTrace.debug("kmelia", "KmeliaBmEJB.getIndexOfNode()",
             "root.MSG_GEN_ENTER_METHOD", "nodeId = " + nodeId);
-    NodeDetail node = null;
     int index = 0;
     if (nodes != null) {
-      for (int i = 0; i < nodes.size(); i++) {
-        node = nodes.get(i);
+      for (NodeDetail node : nodes) {
         if (nodeId.equals(node.getNodePK().getId())) {
           SilverTrace.debug("kmelia", "KmeliaBmEJB.getIndexOfNode()",
-                  "root.MSG_GEN_EXIT_METHOD", "index = " + index);
+              "root.MSG_GEN_EXIT_METHOD", "index = " + index);
           return index;
         }
         index++;
@@ -886,14 +884,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             "newStatus = " + newStatus + ", nodePK = " + nodePK.toString()
             + ", recursiveChanges = " + recursiveChanges);
     try {
-      NodeDetail nodeDetail = null;
       if (!recursiveChanges) {
-        nodeDetail = getNodeBm().getHeader(nodePK);
+        NodeDetail nodeDetail = getNodeBm().getHeader(nodePK);
         changeTopicStatus(newStatus, nodeDetail);
       } else {
-        List<NodeDetail> subTree = (List<NodeDetail>) getNodeBm().getSubTree(nodePK);
-        for (int i = 0; i < subTree.size(); i++) {
-          nodeDetail = subTree.get(i);
+        List<NodeDetail> subTree = getNodeBm().getSubTree(nodePK);
+        for (NodeDetail aSubTree : subTree) {
+          NodeDetail nodeDetail = aSubTree;
           changeTopicStatus(newStatus, nodeDetail);
         }
       }
@@ -1285,10 +1282,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     try {
       List<Collection<NodeDetail>> pathList = new ArrayList<Collection<NodeDetail>>();
       if (fatherPKs != null) {
-        Iterator<NodePK> i = fatherPKs.iterator();
         // For each topic, get the path to it
-        while (i.hasNext()) {
-          NodePK pk = i.next();
+        for (NodePK pk : fatherPKs) {
           Collection<NodeDetail> path = getNodeBm().getAnotherPath(pk);
           // add this path
           pathList.add(path);
@@ -1593,18 +1588,16 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
       for (int u = 0; u < userIds.length; u++) {
         String userId = userIds[u];
-        Worker worker = new Worker(new Integer(userId).intValue(), -1, u, false, true,
+        Worker worker = new Worker(Integer.parseInt(userId), -1, u, false, true,
                 pubPKFrom.getInstanceId(), "U", false, true, 0);
         workers.add(worker);
       }
     }
 
     // paste each document
-    for (int d = 0; d < documents.size(); d++) {
-      Document document = documents.get(d);
-
+    for (Document document : documents) {
       SilverTrace.info("kmelia", "KmeliaBmEJB.pasteDocuments()",
-              "root.MSG_GEN_PARAM_VALUE", "document name = " + document.getName());
+          "root.MSG_GEN_PARAM_VALUE", "document name = " + document.getName());
 
       // retrieve all versions of the document
       List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(document.getPk());
@@ -1614,7 +1607,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
       if (pathFrom == null) {
         pathFrom = versioningUtil.createPath(document.getPk().getSpaceId(),
-                document.getPk().getInstanceId(), null);
+            document.getPk().getInstanceId(), null);
       }
 
       // change some data to paste
@@ -1626,7 +1619,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
       if (pathTo == null) {
         pathTo = versioningUtil.createPath("useless",
-                pubPKFrom.getInstanceId(), null);
+            pubPKFrom.getInstanceId(), null);
       }
 
       String newVersionFile = null;
@@ -1638,13 +1631,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
       // create the document with its first version
       DocumentPK documentPK = getVersioningBm().createDocument(document,
-              version);
+          version);
       document.setPk(documentPK);
 
       for (DocumentVersion currentVersion : versions) {
         currentVersion.setDocumentPK(documentPK);
         SilverTrace.info("kmelia", "KmeliaBmEJB.pasteDocuments()",
-                "root.MSG_GEN_PARAM_VALUE", "paste version = " + currentVersion.getLogicalName());
+            "root.MSG_GEN_PARAM_VALUE", "paste version = " + currentVersion.getLogicalName());
         // paste file on fileserver
         newVersionFile = pasteVersionFile(currentVersion, pathFrom, pathTo);
         currentVersion.setPhysicalName(newVersionFile);
@@ -1913,8 +1906,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // topic subscriptions
       List<NodePK> fathers = (ArrayList<NodePK>) getPublicationFathers(pubDetail.getPK());
       if (fathers != null) {
-        for (int i = 0; i < fathers.size(); i++) {
-          oneFather = fathers.get(i);
+        for (NodePK father : fathers) {
+          oneFather = father;
           sendSubscriptionsNotification(oneFather, pubDetail, update);
         }
       }
@@ -2667,8 +2660,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     // get users who have already validate
     List<String> stepUserIds = new ArrayList<String>();
-    for (int s = 0; s < steps.size(); s++) {
-      stepUserIds.add((steps.get(s)).getUserId());
+    for (ValidationStep step : steps) {
+      stepUserIds.add(step.getUserId());
     }
 
     // get all users who have to validate
@@ -3490,9 +3483,9 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             + pubDetail.getName());
 
     List<Attendee> attendees = new ArrayList<Attendee>();
-    for (int i = 0; i < users.length; i++) {
-      if (users[i] != null) {
-        attendees.add(new Attendee(users[i]));
+    for (String user : users) {
+      if (user != null) {
+        attendees.add(new Attendee(user));
       }
     }
     todo.setAttendees(new Vector<Attendee>(attendees));
@@ -3964,9 +3957,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     List<NodeDetail> axis = new ArrayList<NodeDetail>();
     try {
       List<NodeDetail> headers = getAxisHeaders(componentId);
-      NodeDetail header = null;
-      for (int h = 0; h < headers.size(); h++) {
-        header = headers.get(h);
+      for (NodeDetail header : headers) {
         // Do not get hidden nodes (Basket and unclassified)
         if (!NodeDetail.STATUS_INVISIBLE.equals(header.getStatus())) {
           // get content  of  this axis
@@ -4005,7 +3996,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // axis creation
       axisPK = getNodeBm().createNode(axis, rootDetail);
       // add this new axis to existing coordinates
-      CoordinatePoint point = new CoordinatePoint(-1, new Integer(axisPK.getId()).intValue(), true);
+      CoordinatePoint point = new CoordinatePoint(-1, Integer.parseInt(axisPK.getId()), true);
       getCoordinatesBm().addPointToAllCoordinates(coordinatePK, point);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.addAxis()", ERROR,
@@ -4371,9 +4362,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // enrich combination by get ancestors
       Iterator<String> it = combination.iterator();
       List<CoordinatePoint> allnodes = new ArrayList<CoordinatePoint>();
-      CoordinatePoint point = null;
-      String anscestorId = "";
-      int nodeLevel;
       int i = 1;
       while (it.hasNext()) {
         String nodeId = it.next();
@@ -4384,12 +4372,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         SilverTrace.info("kmax", "KmeliaBmEjb.addPublicationToCombination()",
                 "root.MSG_GEN_PARAM_VALUE", "path for nodeId " + nodeId + " = "
                 + path.toString());
-        Iterator<NodeDetail> pathIt = path.iterator();
-        while (pathIt.hasNext()) {
-          nodeDetail = pathIt.next();
-          anscestorId = nodeDetail.getNodePK().getId();
-          nodeLevel = nodeDetail.getLevel();
-          if (!"0".equals(anscestorId)) {
+        for (NodeDetail aPath : path) {
+          nodeDetail = aPath;
+          String anscestorId = nodeDetail.getNodePK().getId();
+          int nodeLevel = nodeDetail.getLevel();
+          if (!nodeDetail.getNodePK().isRoot()) {
+            CoordinatePoint point;
             if (anscestorId.equals(nodeId)) {
               point = new CoordinatePoint(-1, Integer.parseInt(anscestorId), true, nodeLevel, i);
             } else {
@@ -4409,8 +4397,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   protected boolean checkCombination(Collection<Coordinate> coordinates, List<String> combination) {
-    for (Iterator<Coordinate> iter = coordinates.iterator(); iter.hasNext();) {
-      Coordinate coordinate = iter.next();
+    for (Coordinate coordinate : coordinates) {
       Collection<CoordinatePoint> points = coordinate.getCoordinatePoints();
       if (points.isEmpty()) {
         continue;
@@ -4418,8 +4405,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
       boolean matchFound = false;
 
-      for (Iterator<CoordinatePoint> pIter = points.iterator(); pIter.hasNext();) {
-        CoordinatePoint point = pIter.next();
+      for (CoordinatePoint point : points) {
         if (!checkPoint(point, combination)) {
           matchFound = false;
           break;
@@ -4435,8 +4421,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   protected boolean checkPoint(CoordinatePoint point, List<String> combination) {
-    for (int i = 0; i < combination.size(); i++) {
-      String intVal = combination.get(i);
+    for (String intVal : combination) {
       if (Integer.parseInt(intVal) == point.getNodeId()) {
         return true;
       }
@@ -4458,7 +4443,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   public void deletePublicationFromCombination(String pubId,
           String combinationId, String componentId) {
     SilverTrace.info("kmax", "KmeliaBmEjb.deletePublicationFromCombination()",
-            "root.MSG_GEN_PARAM_VALUE", "combinationId = " + combinationId.toString());
+            "root.MSG_GEN_PARAM_VALUE", "combinationId = " + combinationId);
     PublicationPK pubPK = new PublicationPK(pubId, componentId);
     NodePK fatherPK = new NodePK(combinationId, componentId);
     CoordinatePK coordinatePK = new CoordinatePK(combinationId, pubPK);
@@ -4586,8 +4571,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       path = AttachmentController.createPath(pubPK.getInstanceId(), context);
     }
 
-    String physicalName = new Long(creationDate.getTime()).toString() + "."
-            + type;
+    String physicalName = Long.toString(creationDate.getTime()) + "." + type;
     String logicalName = filename;
 
     File f = new File(path + physicalName);
@@ -4919,7 +4903,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                     getPhysicalName();
             String type = attachment.getPhysicalName().substring(attachment.getPhysicalName().
                     lastIndexOf('.') + 1, attachment.getPhysicalName().length());
-            String newName = new Long(new Date().getTime()).toString() + "." + type;
+            String newName = Long.toString(System.currentTimeMillis()) + "." + type;
             attachment.setPhysicalName(newName);
             String to = absolutePath + imagesSubDirectory + File.separator + newName;
             FileRepositoryManager.copyFile(from, to);
@@ -4987,7 +4971,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           String from = absolutePath + thumbnailsSubDirectory + File.separator + vignette;
 
           String type = FilenameUtils.getExtension(vignette);
-          String newVignette = new Long(new Date().getTime()).toString() + "." + type;
+          String newVignette = Long.toString(System.currentTimeMillis()) + "." + type;
 
           String to = absolutePath + thumbnailsSubDirectory + File.separator + newVignette;
           FileRepositoryManager.copyFile(from, to);

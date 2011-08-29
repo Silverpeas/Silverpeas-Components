@@ -40,15 +40,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%!
 CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String translation, KmeliaSessionController kmeliaScc)
 {
-	Iterator 		pointsIt 	= points.iterator();
-	CoordinatePoint point 		= null;
+	Iterator pointsIt 	= points.iterator();
 	while (pointsIt.hasNext()) {
-		point = (CoordinatePoint) pointsIt.next();
-		if (point.getPath().indexOf("/"+nodeDetail.getNodePK().getId()+"/") != -1)
+		CoordinatePoint point = (CoordinatePoint) pointsIt.next();
+		if (point.getPath().contains("/" + nodeDetail.getNodePK().getId() + "/"))
 		{
 			try
 			{
-				NodeDetail pointDetail = kmeliaScc.getNodeHeader(new Integer(point.getNodeId()).toString());
+				NodeDetail pointDetail = kmeliaScc.getNodeHeader(Integer.toString(point.getNodeId()));
 				point.setName(pointDetail.getName(translation));
 			}  catch (Exception e)
 			{

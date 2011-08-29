@@ -909,7 +909,7 @@
 							<% 	if (importance.equals("")) {
                  					importance = "1";
                					}
-               					int importanceInt = new Integer(importance).intValue();
+               					int importanceInt = Integer.parseInt(importance);
                					for (int i = 1; i <= 5; i++) {
 	                 				if (i == importanceInt) {
 	                   					out.println("<option selected=\"selected\" value=\"" + i + "\">" + i + "</option>");
