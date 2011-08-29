@@ -1670,13 +1670,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       } else {
         String pubId =
             getSessionPublication().getDetail().getPK().getId();
-        if (isPublicationClassifiedOnPDC(pubId)) {
-          // Au moins un axe est obligatoire et la publication est classée sur le PDC
-          return true;
-        } else {
-          // La publication n'est pas classée sur le PDC
-          return false;
-        }
+        return isPublicationClassifiedOnPDC(pubId);
       }
     }
   }

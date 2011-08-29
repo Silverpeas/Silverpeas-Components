@@ -732,7 +732,7 @@
     </script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
   </head>
-  <body id="<%=componentId%>" class="publicationManager" onload="init()" onunload="closeWindows()">
+  <body id="<%=componentId%>" class="publicationManager" onunload="closeWindows()">
 <%
         Window window = gef.getWindow();
         OperationPane operationPane = window.getOperationPane();
