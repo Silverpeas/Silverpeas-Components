@@ -141,6 +141,8 @@ function isCorrectForm() {
      var nbQuestions = document.surveyForm.nbQuestions.value;
      var beginDate = document.surveyForm.beginDate.value;
      var endDate = document.surveyForm.endDate.value;
+     var beginDateOK = true;
+     
      if (isWhitespace(title)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
            errorNb++;
