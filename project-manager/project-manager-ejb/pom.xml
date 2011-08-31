@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>project-manager</artifactId>
-    <version>5.7</version>
+    <version>5.7.1-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.project-manager</groupId>
