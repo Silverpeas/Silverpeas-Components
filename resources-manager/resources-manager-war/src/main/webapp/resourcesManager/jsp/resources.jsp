@@ -30,15 +30,15 @@
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
-//Récupération des détails de l'ulisateur
-//list est la liste des ressources de la catégorie
-//listCategory est la liste de l'ensemble des catégories
+//Recuperation des details de l'utilsateur
+//list est la liste des ressources de la categorie
+//listCategory est la liste de l'ensemble des categories
 List list = (List)request.getAttribute("list");
 List listCategory = (List)request.getAttribute("listCategories");
 String idCategory = (String)request.getAttribute("categoryId");
 String categoryName ="";
 
-while(listCategory.isEmpty() == false){
+while(!listCategory.isEmpty()){
 	CategoryDetail maCategory = (CategoryDetail)listCategory.get(0);
 	String categoryIdTemp = maCategory.getId();
 	if(categoryIdTemp.equals(idCategory)){
@@ -94,7 +94,7 @@ ArrayCellText arrayCellText2;
 			boolean bookable = maResource.getBookable();
 			String resourceId = maResource.getId();
 			arrayLine = arrayPane.addArrayLine();
-			if(bookable == true)
+			if(bookable)
 				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredGreen"),resource.getString("resourcesManager.resourcereservable"),"");
 			else
 				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredRed"),resource.getString("resourcesManager.resourceirreservable"),"");

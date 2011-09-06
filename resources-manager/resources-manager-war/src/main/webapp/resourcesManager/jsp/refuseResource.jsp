@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.silverpeas.util.EncodeHelper" %>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -31,9 +32,9 @@
 %>
 <%@ include file="check.jsp"%>
 <%
-    String resourceId = (String)request.getParameter("ResourceId");
-    String resourceName = (String)request.getParameter("ResourceName");
-    String reservationId = (String)request.getParameter("reservationId");
+    String resourceId = request.getParameter("ResourceId");
+    String resourceName = request.getParameter("ResourceName");
+    String reservationId = request.getParameter("reservationId");
     String objectView = request.getParameter("objectView");
     //Icons
     String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
@@ -75,7 +76,7 @@
 	    <TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
 	      <TR>
 	         <TD></TD>
-	         <TD valign="top"><%=Encode.javaStringToHtmlString(resourceName)%></TD>
+	         <TD valign="top"><%=EncodeHelper.javaStringToHtmlString(resourceName)%></TD>
 	      <TR>
 	         <TD class="txtlibform" valign=top><%=resource.getString("resourcesManager.RefusalMotive")%> :</TD>
 	         <TD>

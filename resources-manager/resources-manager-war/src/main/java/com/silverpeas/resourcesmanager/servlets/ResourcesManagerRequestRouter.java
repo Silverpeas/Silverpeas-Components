@@ -164,7 +164,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
     request.setAttribute("UserId", userId);
     try {
       if (function.startsWith("Main")) {
-        destination = getDestination("Calendar", componentSC, request);
+        destination = displayCalendarView(request, resourcesManagerSC);
       }
       else if ("NewCategory".equals(function)) {
         List<PublicationTemplate> listTemplates = getPublicationTemplateManager().getPublicationTemplates();
@@ -261,7 +261,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
 
         request.setAttribute("id", resource.getCategoryId());
         destination = getDestination("ViewResources", componentSC, request);
-      } else if (function.equals("ViewResources")) {
+      } else if ("ViewResources".equals(function)) {
         if (request.getAttribute("id") != null) {
           categoryId = (String) request.getAttribute("id");
         } else if (request.getParameter("id") != null) {
@@ -273,7 +273,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         request.setAttribute("list", list);
         request.setAttribute("categoryId", categoryId);
         destination = root + "resources.jsp";
-      } else if (function.equals("ViewResource")) {
+      } else if ("ViewResource".equals(function)) {
         String provenance;
         if (request.getParameter("provenance") != null) {
           provenance = request.getParameter("provenance");
@@ -490,18 +490,18 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("DeleteReservation")) {
         resourceId = request.getParameter("id");
         resourcesManagerSC.deleteReservation(resourceId);
-        destination = getDestination("Calendar", componentSC, request);
+        destination = displayCalendarView(request, resourcesManagerSC);
       } else if ("Calendar".equals(function))
         destination = displayCalendarView(request, resourcesManagerSC);
       else if ("PreviousMonth".equals(function)) {
         resourcesManagerSC.previousMonth();
-        destination = getDestination("Calendar", componentSC, request);
+        destination = displayCalendarView(request, resourcesManagerSC);
       } else if ("NextMonth".equals(function)) {
         resourcesManagerSC.nextMonth();
-        destination = getDestination("Calendar", componentSC, request);
+        destination = displayCalendarView(request, resourcesManagerSC);
       } else if ("GoToday".equals(function)) {
         resourcesManagerSC.today();
-        destination = getDestination("Calendar", componentSC, request);
+        destination = displayCalendarView(request, resourcesManagerSC);
       } else if ("Comments".equals(function)) {
         String provenance = resourcesManagerSC.getProvenanceResource();
         String idResource = resourcesManagerSC.getResourceIdForResource();
@@ -545,7 +545,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         request.setAttribute("userId", idUser);
         // on indique au rooter qu'on regarde le calandrier de quelqu un
         request.setAttribute("objectView", "PlanningOtherUser");
-        destination = getDestination("Calendar", componentSC, request);
+        destination = displayCalendarView(request, resourcesManagerSC);
       } else if (function.startsWith("searchResult")) {
         // traitement des recherches
         String id = request.getParameter("Id");
@@ -557,7 +557,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
                   request);
         } else if ("Category".equals(type)) {
           request.setAttribute("objectView", id);
-          destination = getDestination("Calendar", resourcesManagerSC, request);
+          destination = displayCalendarView(request, resourcesManagerSC);
         } else if ("Resource".equals(type)) {
           request.setAttribute("resourceId", id);
           request.setAttribute("provenance", "calendar");
@@ -651,27 +651,19 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
    * myObjectView représente ce qu'on est en train de visualiser, il est nul à
      * l'initialisation. idUser sert à savoir l'id de la personne dont on regarde le calandrier
    * @param request
-   * @param resourcesManagerSC
-   * @param root
+   * @param sessionController
    * @return
    */
-  private String displayCalendarView(HttpServletRequest request,
-      ResourcesManagerSessionController resourcesManagerSC) {
-    String destination;
-    String myObjectView = null;
-    if (StringUtil.isDefined(request.getParameter("objectView"))) {
-      myObjectView = request.getParameter("objectView");
-    } else if (StringUtil.isDefined((String) request.getAttribute("objectView"))) {
-      myObjectView = (String) request.getAttribute("objectView");
-    }
+  private String displayCalendarView(HttpServletRequest request, ResourcesManagerSessionController sessionController) {
+    String myObjectView = getView(request);
     String idUser = (String) request.getAttribute("userId");
     List<ReservationDetail> listOfReservation = null;
     List<ReservationDetail> listReservationsOfCategory = null;
     String currentResourceId = null;
     // on regarde le planning d'une catégorie ou d'une ressource
     if ((myObjectView != null) && isNotAnUserView(myObjectView)) {
-      listReservationsOfCategory = resourcesManagerSC.getMonthReservationOfCategory(myObjectView);
-      List<ResourceDetail> listResourcesofCategory = resourcesManagerSC.getResourcesByCategory(
+      listReservationsOfCategory = sessionController.getMonthReservationOfCategory(myObjectView);
+      List<ResourceDetail> listResourcesofCategory = sessionController.getResourcesByCategory(
               myObjectView);
       currentResourceId = request.getParameter("resourceId");
       if (StringUtil.isDefined(currentResourceId)) {
@@ -682,34 +674,46 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       if ("PlanningOtherUser".equals(myObjectView)) {
         // on récupère les réservations de l'utilisateur, ainsi que son nom et prenom
         if (idUser != null) {
-          resourcesManagerSC.setObjectViewForCalandar(idUser);
+          sessionController.setObjectViewForCalandar(idUser);
         } else {
-          idUser = resourcesManagerSC.getObjectViewForCalandar();
+          idUser = sessionController.getObjectViewForCalandar();
         }
-        listOfReservation = resourcesManagerSC.getMonthReservation(idUser);
-        request.setAttribute("firstNameUser", resourcesManagerSC.getFirstNameUserCalandar());
-        request.setAttribute("lastName", resourcesManagerSC.getLastNameUserCalandar());
+        listOfReservation = sessionController.getMonthReservation(idUser);
+        request.setAttribute("firstNameUser", sessionController.getFirstNameUserCalandar());
+        request.setAttribute("lastName", sessionController.getLastNameUserCalandar());
       } else if ("viewForValidation".equals(myObjectView)) {
         // on regarde les réservations à valider
-        listOfReservation = resourcesManagerSC.getReservationForValidation();
+        listOfReservation = sessionController.getReservationForValidation();
       } else {
         // on regarde ses propres réservations
-        listOfReservation = resourcesManagerSC.getMonthReservation();
+        listOfReservation = sessionController.getMonthReservation();
       }
       request.setAttribute("listOfReservation", listOfReservation);
     }
     // initialisation d'un MonthCalendar du viewgenerator
-    MonthCalendar monthC = resourcesManagerSC.getMonthCalendar();
-    setEvents(monthC, listOfReservation, listReservationsOfCategory, resourcesManagerSC,
+    MonthCalendar monthC = sessionController.getMonthCalendar();
+    setEvents(monthC, listOfReservation, listReservationsOfCategory, sessionController,
             myObjectView, currentResourceId);
-    List<CategoryDetail> listOfCategories = resourcesManagerSC.getCategories();
+    List<CategoryDetail> listOfCategories = sessionController.getCategories();
     request.setAttribute("idUser", idUser);
     request.setAttribute("listOfCategories", listOfCategories);
     request.setAttribute("idCategory", myObjectView);
     request.setAttribute("monthC", monthC);
-    request.setAttribute("IsResponsible", resourcesManagerSC.isResponsible());
-    destination = root + "almanach.jsp";
-    return destination;
+    request.setAttribute("IsResponsible", sessionController.isResponsible());
+    if(StringUtil.getBooleanValue(request.getParameter("isPortlet"))) {
+      return root + "portlet.jsp";
+    }
+    return root + "almanach.jsp";
+  }
+
+  private String getView(HttpServletRequest request) {
+    String myObjectView = null;
+    if (StringUtil.isDefined(request.getParameter("objectView"))) {
+      myObjectView = request.getParameter("objectView");
+    } else if (StringUtil.isDefined((String) request.getAttribute("objectView"))) {
+      myObjectView = (String) request.getAttribute("objectView");
+    }
+    return myObjectView;
   }
 
   private boolean isNotAnUserView(String myObjectView) {
@@ -880,9 +884,10 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
 
   private void setEvents(MonthCalendar monthC, List<ReservationDetail> listOfReservation,
           List<ReservationDetail> listReservationsOfCategory,
-          ResourcesManagerSessionController resourcesManagerSC, String objectView,
+          ResourcesManagerSessionController resourcesManagerSC, String view,
           String currentResourceId) {
-    if (objectView == null) {
+    String objectView = view;
+    if (view == null) {
       objectView = "myReservation";
     }
     // transformation des réservations (ReservationDetail) en Event du MonthCalendar

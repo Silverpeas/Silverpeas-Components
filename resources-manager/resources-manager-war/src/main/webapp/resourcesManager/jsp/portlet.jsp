@@ -51,10 +51,6 @@ if(objectView == null){
 
 String idResourceFromRR = (String)request.getAttribute("resourceId");
 String personalReservation = "myReservation";
-
-// identifiant du role de l'utilisateur en cours
-String flag = (String)request.getAttribute("Profile");
-boolean isResponsible = ((Boolean) request.getAttribute("IsResponsible")).booleanValue();
 %>
 <c:set var="objectView"><%=objectView%></c:set>
 <html>
@@ -95,7 +91,8 @@ function goToDay(object)
 function getReservationsOfCategory(select){
 	if (select.value.length == 0)
 	{
-		location.href = "Main";
+		document.almanachForm.action = "Main";
+		document.almanachForm.submit();
 	}
 	else
 	{
@@ -115,7 +112,7 @@ function getReservationsOfResource(select){
 		document.almanachForm.action = "Calendar";
 		document.almanachForm.objectView.value = document.getElementById("selectCategory").value;
 		document.almanachForm.resourceId.value = select.value;
-	    document.almanachForm.submit();
+	  document.almanachForm.submit();
 	}
 }
 
@@ -147,7 +144,6 @@ function viewOtherPlanning()
 </head>
 <body id="resourcesManager">
   <view:frame>
-<center>
   <table width="98%" border="0" cellspacing="0" cellpadding="1">
     <tr>
       <td>
@@ -159,10 +155,10 @@ function viewOtherPlanning()
                     <td class="intfdcolor" align="center" nowrap width="100%" height="24"> 
                       <select id="selectCategory" name="selectCategory" onChange="getReservationsOfCategory(this)" class="selectNS">
                         <c:if test="${requestScope['listOfCategories'] != null && !empty requestScope['listOfCategories']}">
-                          <option value="-1"><%=resource.getString("resourcesManager.categories")%></option>
+                          <option value=""><%=resource.getString("resourcesManager.categories")%></option>
                         	<option value="">-----------------</option>
                           <c:forEach items="${requestScope['listOfCategories']}" var="category">
-                           <option value="<c:out value="${category.id}" />" <c:if test="${category.id eq objectView}">selected="selected"</c:if>><c:out value="${category.name}"/><option>
+                           <option value="<c:out value="${category.id}" />" <c:if test="${category.id eq objectView}">selected="selected"</c:if>><c:out value="${category.name}"/></option>
                           </c:forEach>
                         </c:if>
                       </select>
@@ -249,10 +245,9 @@ function viewOtherPlanning()
   <br/>
 <%=monthC.print()%>
 
-</center>
-
   </view:frame>
 <form name="almanachForm" action="" method="post">
+  <input type="hidden" name="isPortlet" value="true"/>
   <input type="hidden" name="objectView" value=""/>
   <input type="hidden" name="resourceId" value=""/>
   <input type="hidden" name="idUser" value=""/>

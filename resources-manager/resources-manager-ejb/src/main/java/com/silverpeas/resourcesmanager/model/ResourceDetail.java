@@ -222,4 +222,8 @@ public class ResourceDetail implements Serializable {
     return false;
   }
 
+  @Override
+  public int hashCode() {
+    return 356 +(id != null ? id.hashCode() : 0);
+  }
 }

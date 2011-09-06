@@ -31,13 +31,13 @@
 
 <%@ include file="check.jsp" %>
 <% 
-// Récupération des détails de l'ulisateur
+// Recuperation des details de l'ulisateur
 	CategoryDetail category = (CategoryDetail)request.getAttribute("category");
 	String idcategory = category.getId();
 	ResourceDetail maResource = (ResourceDetail)request.getAttribute("resource");
 	String provenance = (String)request.getAttribute("provenance");
 	String flag = (String)request.getAttribute("Profile");
-//	 récupération des paramètres du formulaire
+//	 recuperation des parametres du formulaire
 	Form xmlForm = (Form) request.getAttribute("XMLForm");
 	DataRecord	xmlData = (DataRecord) request.getAttribute("XMLData");
 	PagesContext context = (PagesContext) request.getAttribute("context"); 
@@ -55,7 +55,7 @@
 //creation des boutons Annuler
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"Main");
-	if(provenance.equals("resources")){
+	if("resources".equals(provenance)){
 		// on vient de resources
 		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeResource"), "ViewResources?id="+idcategory+"&objectView="+objectView,false);
 		String chemin = "<a href=\"ViewCategories\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
@@ -63,13 +63,13 @@
 		chemin = chemin + " > " + chemin2;
 		browseBar.setPath(chemin);
 	}
-	else if (provenance.equals("calendar")){
+	else if ("calendar".equals(provenance)){
 		// on vient de l'almanach
 		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeReservation"), "Calendar?objectView="+idcategory+"&resourceId="+resourceId,false);
 		
 	}
-	else if (provenance.equals("reservation")){
-		// on vient du récapitulatif de la réservation
+	else if ("reservation".equals(provenance)){
+		// on vient du recapitulatif de la reservation
 		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourReservation"), "ViewReservation?objectView="+objectView,false);
 		String chemin ="<a href=\"ViewReservation\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.recapitulatifReservation"))+"</a>";
 		browseBar.setPath(chemin);
@@ -121,7 +121,7 @@ buttonPane.addButton(cancelButton);
 		<tr>
 			<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.reservable"));%> :</td> 
 			<td> 
-			<%if(bookable == true) 
+			<%if(bookable)
 					out.println(resource.getString("resourcesManager.ressourcereservable"));
 				else 
 					out.println(resource.getString("resourcesManager.ressourceireservable"));
