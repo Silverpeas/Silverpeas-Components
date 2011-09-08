@@ -554,7 +554,11 @@
 #codificationArea, #pubNameArea, #descriptionArea , #keywordsArea, #authorArea, #draftOutArea, #endArea, #beginArea, #thumb, #validatorArea{
 	width:98%;
 	clear:both;
+	display:block;
+	float:none;
 }
+
+
 
 #stateArea img, #languageArea img {
 	vertical-align: middle;
