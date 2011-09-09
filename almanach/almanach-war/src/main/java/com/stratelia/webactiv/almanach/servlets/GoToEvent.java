@@ -27,6 +27,8 @@ import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.silverpeas.peasUtil.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
@@ -35,7 +37,6 @@ import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.silverpeas.peasUtil.GoTo;
 
 public class GoToEvent extends GoTo {
   
@@ -49,6 +50,9 @@ public class GoToEvent extends GoTo {
 
     SilverTrace.info("gallery", "GoToImage.doPost", "root.MSG_GEN_PARAM_VALUE",
         "componentId = " + componentId);
+
+    // Set GEF and look helper space identifier
+    setGefSpaceId(req, componentId);
 
     String gotoURL = URLManager.getURL(null, componentId) + event.getURL();
 
