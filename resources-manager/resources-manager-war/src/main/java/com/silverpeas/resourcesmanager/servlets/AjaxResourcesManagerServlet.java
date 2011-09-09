@@ -23,22 +23,21 @@
  */
 package com.silverpeas.resourcesmanager.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Date;
-import java.util.List;
+import com.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
+import com.silverpeas.resourcesmanager.model.ResourceDetail;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
-import com.silverpeas.resourcesmanager.model.ResourceDetail;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Date;
+import java.util.List;
 
 public class AjaxResourcesManagerServlet extends HttpServlet {
 
@@ -73,7 +72,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
             .getResourcesofReservation(reservationId);
         String listResource = "";
         for (int i = 0; i < listResourceEverReserved.size(); i++) {
-          ResourceDetail myResource = (ResourceDetail) listResourceEverReserved
+          ResourceDetail myResource = listResourceEverReserved
               .get(i);
           String idResource = myResource.getId();
           if (i == 0) {
@@ -90,7 +89,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
             listResource, dateDebut, dateFin, reservationId);
         String listResourceName = "";
         for (int i = 0; i < listResources.size(); i++) {
-          ResourceDetail myResource = (ResourceDetail) listResources.get(i);
+          ResourceDetail myResource = listResources.get(i);
           String resourceName = myResource.getName();
           if (i == 0) {
             listResourceName = resourceName;
