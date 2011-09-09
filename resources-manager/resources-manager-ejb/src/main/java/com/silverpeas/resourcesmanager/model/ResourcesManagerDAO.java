@@ -23,6 +23,10 @@
  */
 package com.silverpeas.resourcesmanager.model;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.UtilException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,10 +38,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
 
 public class ResourcesManagerDAO {
 
@@ -92,7 +92,7 @@ public class ResourcesManagerDAO {
       prepStmt.setString(3, name);
       prepStmt.setString(4, Long.toString(creationdate.getTime()));
       prepStmt.setString(5, Long.toString(updatedate.getTime()));
-      if (bookable == false) {
+      if (!bookable) {
         prepStmt.setInt(6, 0);
       } else {
         prepStmt.setInt(6, 1);
@@ -118,33 +118,23 @@ public class ResourcesManagerDAO {
         "UPDATE SC_Resources_Category SET instanceId=?, name=?, updatedate=?, bookable=?, " +
         "form=?, responsibleid=?, updaterid=?, description=? WHERE id=?";
     PreparedStatement prepStmt = null;
-    // on récupère les informations de ContactDetail
-    String id = category.getId();
-    String instanceId = category.getInstanceId();
-    String name = category.getName();
-    Date updatedate = category.getUpdateDate();
     boolean bookable = category.getBookable();
-    String form = category.getForm();
-    String responsibleid = category.getResponsibleId();
-    String updaterid = category.getUpdaterId();
-    String description = category.getDescription();
-    int idcategory = Integer.parseInt(id);
     int book = 0;
-    if (bookable == true) {
+    if (bookable) {
       book = 1;
     }
     try {
       // Preparation de la requête
       prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, instanceId);
-      prepStmt.setString(2, name);
-      prepStmt.setString(3, Long.toString(updatedate.getTime()));
+      prepStmt.setString(1, category.getInstanceId());
+      prepStmt.setString(2, category.getName());
+      prepStmt.setString(3, Long.toString(category.getUpdateDate().getTime()));
       prepStmt.setInt(4, book);
-      prepStmt.setString(5, form);
-      prepStmt.setInt(6, Integer.parseInt(responsibleid));
-      prepStmt.setString(7, updaterid);
-      prepStmt.setString(8, description);
-      prepStmt.setInt(9, idcategory);
+      prepStmt.setString(5, category.getForm());
+      prepStmt.setInt(6, Integer.parseInt(category.getResponsibleId()));
+      prepStmt.setString(7, category.getUpdaterId());
+      prepStmt.setString(8, category.getDescription());
+      prepStmt.setInt(9, Integer.parseInt(category.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -347,7 +337,7 @@ public class ResourcesManagerDAO {
     ResourceDetail resource = null;
     try {
       prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, new Integer(id).intValue());
+      prepStmt.setInt(1, Integer.parseInt(id));
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         resource = resultSetToResourceDetail(rs);
@@ -356,7 +346,7 @@ public class ResourcesManagerDAO {
       DBUtil.close(rs, prepStmt);
     }
     // ajout des responsables
-    List<String> managers = getManagers(con, new Integer(id).intValue());
+    List<String> managers = getManagers(con, Integer.parseInt(id));
     resource.setManagers(managers);
     return resource;
   }
@@ -369,7 +359,7 @@ public class ResourcesManagerDAO {
     String query = "DELETE FROM SC_Resources_Resource WHERE ID=?";
     try {
       prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, new Integer(id).intValue());
+      prepStmt.setInt(1, Integer.parseInt(id));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -380,8 +370,7 @@ public class ResourcesManagerDAO {
       String idCategory) throws SQLException {
     List<ResourceDetail> listOfResources = getResourcesByCategory(con, idCategory);
     try {
-      for (int i = 0; i < listOfResources.size(); i++) {
-        ResourceDetail resource = listOfResources.get(i);
+      for (ResourceDetail resource : listOfResources) {
         String idResource = resource.getId();
         deleteResource(con, idResource);
       }
@@ -633,8 +622,7 @@ public class ResourcesManagerDAO {
   }
 
   public static List<ResourceReservableDetail> getResourcesReservable(Connection con,
-      String instanceId, Date startDate, Date endDate) throws SQLException,
-      ParseException {
+      String instanceId, Date startDate, Date endDate) throws SQLException {
     List<ResourceReservableDetail> list = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -680,7 +668,7 @@ public class ResourcesManagerDAO {
 
   public static List<ResourceDetail> verificationReservation(Connection con,
       String instanceId, String listeReservation, Date startDate, Date endDate)
-      throws SQLException, ParseException {
+      throws SQLException {
     List<ResourceDetail> listeResourcesEverReserved = new ArrayList<ResourceDetail>();
     if (listeReservation != null) {
       StringTokenizer tokenizer = new StringTokenizer(listeReservation, ",");
@@ -737,7 +725,7 @@ public class ResourcesManagerDAO {
 
   public static List<ResourceDetail> verificationNewDateReservation(Connection con,
       String instanceId, String listeReservation, Date startDate, Date endDate,
-      String reservationId) throws SQLException, ParseException {
+      String reservationId) throws SQLException {
     List<ResourceDetail> listeResourcesEverReserved = new ArrayList<ResourceDetail>();
     if (listeReservation != null) {
       StringTokenizer tokenizer = new StringTokenizer(listeReservation, ",");
@@ -796,7 +784,7 @@ public class ResourcesManagerDAO {
   }
 
   public static List<ReservationDetail> getReservationUser(Connection con, String instanceId,
-      String userId) throws SQLException, ParseException {
+      String userId) throws SQLException {
     List<ReservationDetail> list = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -841,7 +829,7 @@ public class ResourcesManagerDAO {
   }
 
   public static List<ReservationDetail> getReservations(Connection con, String instanceId)
-      throws SQLException, ParseException {
+      throws SQLException {
     List<ReservationDetail> list = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -885,8 +873,7 @@ public class ResourcesManagerDAO {
   }
 
   public static List<ResourceDetail> getResourcesofReservation(Connection con,
-      String instanceId, String reservationId) throws SQLException,
-      ParseException {
+      String instanceId, String reservationId) throws SQLException {
     List<ResourceDetail> list = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -935,7 +922,7 @@ public class ResourcesManagerDAO {
 
   public static List<ReservationDetail> getMonthReservation(Connection con,
       String instanceId, Date monthDate, String userId, String language)
-      throws SQLException, ParseException {
+      throws SQLException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     List<ReservationDetail> list = null;
@@ -971,7 +958,7 @@ public class ResourcesManagerDAO {
 
   public static List<ReservationDetail> getReservationForValidation(Connection con,
       String instanceId, Date monthDate, String userId, String language)
-      throws SQLException, ParseException {
+      throws SQLException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     List<ReservationDetail> list = null;
@@ -1277,9 +1264,7 @@ public class ResourcesManagerDAO {
   public static void addManagers(Connection con, int resourceId, List<String> managerIds)
       throws SQLException {
     if (managerIds != null && !managerIds.isEmpty()) {
-      Iterator<String> it = managerIds.iterator();
-      while (it.hasNext()) {
-        String managerId = it.next();
+      for (String managerId : managerIds) {
         addManager(con, resourceId, Integer.parseInt(managerId));
       }
     }

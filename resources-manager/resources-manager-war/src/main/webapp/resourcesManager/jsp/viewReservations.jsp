@@ -33,7 +33,7 @@
 <%@ page import= "java.util.Date" %>
 <%@ include file="check.jsp" %>
 <% 
-//Récupération des détails de l'ulisateur
+//Recuperation des details de l'ulisateur
 
 List listOfReservation = (List)request.getAttribute("listOfReservation");
 
@@ -54,7 +54,7 @@ ArrayCellText arrayCellText4;
 	}
 	
 	function deleteReservation(reservationId, event) {
-		  if (confirm("Etes vous sûr de vouloir supprimer la réservation liée à l'événement "+event+"?")) {
+		  if (confirm("Etes vous sÃ»r de vouloir supprimer la rÃ©servation liÃ©e Ã  l'Ã©vÃ¨nement "+event+"?")) {
 			location.href="DeleteReservation?id="+reservationId;
 		  }
 	}
@@ -88,7 +88,7 @@ ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("resourcesMan
 columnOp.setSortable(false);
 
 
-while(listOfReservation.isEmpty() == false){
+while(!listOfReservation.isEmpty()){
 	IconPane iconPane1 = gef.getIconPane();
 	Icon editIcon = iconPane1.addIcon();
 	Icon deleteIcon = iconPane1.addIcon();

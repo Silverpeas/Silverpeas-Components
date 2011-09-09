@@ -195,7 +195,7 @@ buttonPane.addButton(cancelButton);
 	
 	<tr>
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.reservable"));%> : </TD>
-		<TD><input type="checkbox" name="SPRM_bookable" id="bookable" <% if((details != null) && (bookable == true)){out.println("checked="+"checked");}else{out.println("");}%> /> <label for="bookable"></label>&nbsp;</TD>
+		<TD><input type="checkbox" name="SPRM_bookable" id="bookable" <% if((details != null) && (bookable)){out.println("checked="+"checked");}else{out.println("");}%> /> <label for="bookable"></label>&nbsp;</TD>
 	</tr>
 
 	<tr>

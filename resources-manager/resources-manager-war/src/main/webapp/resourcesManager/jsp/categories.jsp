@@ -29,10 +29,10 @@
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
-	// Récupération de la liste des catégories
+	// Recuperation de la liste des categories
 	List list = (List)request.getAttribute("categories");
 
-	// declaration des éléments du tableau
+	// declaration des elements du tableau
 	ArrayCellText arrayCellText1;
 	ArrayCellText arrayCellText2;
 	ArrayLine arrayLine;
@@ -59,8 +59,6 @@
 		browseBar.setPath(resource.getString("resourcesManager.gerercategorie"));
 	
 		operationPane.addOperation(resource.getIcon("resourcesManager.creationOfCategory"), resource.getString("resourcesManager.creercategorie"),"NewCategory");
-		//operationPane.addOperation(resource.getIcon("resourcesManager.creerResource"), resource.getString("resourcesManager.creerressource"),"NewResource?categoryId=noCategory");
-		
 		//Definition du tableau et des colonnes
 		ArrayPane arrayPane = gef.getArrayPane("categoryList", "ViewCategories", request, session);
 		ArrayColumn colreservable = arrayPane.addArrayColumn(resource.getString("resourcesManager.reservable"));
@@ -78,14 +76,14 @@
 		    Icon editIcon = iconPane1.addIcon();
 		    Icon deleteIcon = iconPane1.addIcon();
 		  		    
-		    //recupération des données de la liste
+		    //recuperation des donnees de la liste
 		    String id = category.getId();
 		    String name = category.getName();
 		    boolean bookable = category.getBookable();
 			String form = category.getForm();
 
 			arrayLine = arrayPane.addArrayLine();
-			if (bookable == true)	
+			if (bookable)
 				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredGreen"),resource.getString("resourcesManager.categoriereservable"),"");
 			else
 				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredRed"),resource.getString("resourcesManager.categorieirreservable"),"");
