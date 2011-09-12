@@ -661,23 +661,30 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       throws IOException {
     out.write(
         "<select name=\"sortBy\" id=\"sortingList\" onChange=\"javascript:sortGoTo(this.selectedIndex);\">");
-    out.write("<option selected=\"selected\">" + resources.getString("SortBy") + "</option>");
+    out.write("<option>" + resources.getString("SortBy") + "</option>");
     out.write("<option>-------------------------------</option>");
-    out.write("<option value=\"1\" id=\"sort1\">" + resources.getString("DateAsc") + "</option>");
-    out.write("<option value=\"2\" id=\"sort2\">" + resources.getString("DateDesc") + "</option>");
-    out.write("<option value=\"5\" id=\"sort5\">" + resources.getString("CreateDateAsc")
+    out.write("<option value=\"1\" id=\"sort1\" "+isSelectedSort(ksc, "1")+">" + resources.getString("DateAsc") + "</option>");
+    out.write("<option value=\"2\" id=\"sort2\" "+isSelectedSort(ksc, "2")+">" + resources.getString("DateDesc") + "</option>");
+    out.write("<option value=\"5\" id=\"sort5\" "+isSelectedSort(ksc, "5")+">" + resources.getString("CreateDateAsc")
         + "</option>");
-    out.write("<option value=\"6\" id=\"sort6\">" + resources.getString("CreateDateDesc")
+    out.write("<option value=\"6\" id=\"sort6\" "+isSelectedSort(ksc, "6")+">" + resources.getString("CreateDateDesc")
         + "</option>");
-    out.write("<option value=\"0\" id=\"sort0\">" + resources.getString("PubAuteur") + "</option>");
+    out.write("<option value=\"0\" id=\"sort0\" "+isSelectedSort(ksc, "0")+">" + resources.getString("PubAuteur") + "</option>");
     if (ksc.isFieldImportanceVisible()) {
-      out.write("<option value=\"3\" id=\"sort3\">" + resources.getString("PubImportance")
+      out.write("<option value=\"3\" id=\"sort3\" "+isSelectedSort(ksc, "3")+">" + resources.getString("PubImportance")
           + "</option>");
     }
-    out.write("<option value=\"4\" id=\"sort4\">" + resources.getString("PubTitre") + "</option>");
-    out.write("<option value=\"7\" id=\"sort7\">" + resources.getString("PubDescription")
+    out.write("<option value=\"4\" id=\"sort4\" "+isSelectedSort(ksc, "4")+">" + resources.getString("PubTitre") + "</option>");
+    out.write("<option value=\"7\" id=\"sort7\" "+isSelectedSort(ksc, "7")+">" + resources.getString("PubDescription")
         + "</option>");
     out.write("</select>");
+  }
+  
+  private String isSelectedSort(KmeliaSessionController ksc, String sort) {
+    if (sort.equals(ksc.getSortValue())) {
+      return "selected=\"selected\"";
+    }
+    return "";
   }
 
   void displayPublicationsListHeader(int nbPubs, boolean sortAllowed,

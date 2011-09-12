@@ -51,7 +51,6 @@ import javax.ejb.RemoveException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.FileUtils;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
@@ -287,6 +286,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (componentManageable) {
       componentManageable = getOrganizationController().isComponentManageable(getComponentId(),
           getUserId());
+    }
+    sortValue = getComponentParameterValue("publicationSort");
+    if (!StringUtil.isDefined(sortValue)) {
+      sortValue = getSettings().getString("publications.sort.default", "2");
     }
   }
 
@@ -1356,7 +1359,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return getKmeliaBm().getCompletePublication(getPublicationPK(pubId));
   }
 
-  public synchronized void orderPubs() throws RemoteException {
+  public synchronized void orderPubs() {
     if (!StringUtil.isDefined(getSortValue())) {
       sortValue = "2";
     }
@@ -1422,21 +1425,24 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     setSessionPublicationsList(orderedPublications);
   }
 
-  private synchronized void orderPubs(int sortType) throws RemoteException {
+  private synchronized void orderPubs(int sortType) {
 
     List<KmeliaPublication> publications = sort(getSessionPublicationsList(), sortType);
 
-    setSessionPublicationsList(publications);
+    sessionPublicationsList = publications;
   }
 
   public synchronized void orderPubsToValidate(int sortType)
       throws RemoteException {
     List<KmeliaPublication> publications =
         sort(getKmeliaBm().getPublicationsToValidate(getComponentId()), sortType);
-    setSessionPublicationsList(publications);
+    sessionPublicationsList = publications;
   }
 
   private List<KmeliaPublication> sort(Collection<KmeliaPublication> publications, int sortType) {
+    if (publications == null) {
+      return null;
+    }
     List<KmeliaPublication> publicationsToSort = new ArrayList<KmeliaPublication>(publications);
     switch (sortType) {
       case 0:
@@ -2197,6 +2203,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public void setSessionPublicationsList(List<KmeliaPublication> publications) {
     this.sessionPublicationsList = (publications == null ? null
         : new ArrayList<KmeliaPublication>(publications));
+    orderPubs();
   }
 
   public void setSessionCombination(List<String> combination) {
