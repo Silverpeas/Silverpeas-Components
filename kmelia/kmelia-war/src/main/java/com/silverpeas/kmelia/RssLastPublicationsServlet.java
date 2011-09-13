@@ -25,6 +25,7 @@ package com.silverpeas.kmelia;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
@@ -37,7 +38,6 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.kmelia.KmeliaTransversal;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import de.nava.informa.core.ChannelIF;
@@ -54,7 +54,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.Collection;
 
 public class RssLastPublicationsServlet extends HttpServlet {
@@ -92,10 +91,10 @@ public class RssLastPublicationsServlet extends HttpServlet {
         } else {
           kmeliaTransversal = new KmeliaTransversal(userId);
           preferredLanguage = getPersonalization(userId).getLanguage();
-        } 
+        }
 
         // récupération de la liste des N éléments à remonter dans le flux
-        Collection<PublicationDetail> publications = getElements(kmeliaTransversal, user, spaceId);
+        Collection<PublicationDetail> publications = getElements(kmeliaTransversal, spaceId);
 
         // création d'une liste de ItemIF en fonction de la liste des éléments
         for (PublicationDetail publication : publications) {
@@ -105,15 +104,11 @@ public class RssLastPublicationsServlet extends HttpServlet {
         // construction de l'objet Channel
         channel.setTitle(getChannelTitle(spaceId));
         // exportation du channel
-        response.setContentType("application/rss+xml");
+        response.setContentType(MimeTypes.RSS_MIME_TYPE);
         response.setHeader("Content-Disposition", "inline; filename=feeds.rss");
         Writer writer = response.getWriter();
         RSS_2_0_Exporter rssExporter = new RSS_2_0_Exporter(writer, "UTF-8");
         rssExporter.write(channel);
-
-        if (rssExporter == null) {
-          objectNotFound(request, response);
-        }
       } else {
         objectNotFound(request, response);
       }
@@ -125,7 +120,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
   }
 
   public Collection<PublicationDetail> getElements(KmeliaTransversal kmeliaTransversal,
-      UserFull user, String spaceId) throws RemoteException {
+      String spaceId) {
     int maxAge = settings.getInteger("max.age.last.publication", 0);
     int nbReturned = settings.getInteger("max.nb.last.publication", 10);
     return kmeliaTransversal.getUpdatedPublications(spaceId, maxAge, nbReturned);
@@ -137,9 +132,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
     item.setTitle(publication.getTitle());
     StringBuilder url = new StringBuilder(256);
     url.append(serverURL);
-    url.append(URLManager.getApplicationURL());
-    url.append(URLManager.getURL("kmelia", null, publication.getPK().getInstanceId()));
-    url.append(publication.getURL());
+    url.append(URLManager.getSimpleURL(URLManager.URL_PUBLI, publication.getPK().getId()));
     item.setLink(new URL(url.toString()));
     item.setDescription(publication.getDescription(lang));
     item.setDate(publication.getUpdateDate());
@@ -179,16 +172,17 @@ public class RssLastPublicationsServlet extends HttpServlet {
       throws IOException {
     boolean isLoggedIn = util.getMainSessionController(req) != null;
     if (!isLoggedIn) {
-      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "ApplicationURL") + "/admin/jsp/documentNotFound.jsp");
+      res.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
       return;
     }
     res.sendRedirect("/weblib/notFound.html");
   }
 
-  /** Return the personalization EJB
+  /**
+   * Return the personalization EJB
+   *
    * @param userId
-   * @return  
+   * @return
    */
   public UserPreferences getPersonalization(String userId) {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId);
