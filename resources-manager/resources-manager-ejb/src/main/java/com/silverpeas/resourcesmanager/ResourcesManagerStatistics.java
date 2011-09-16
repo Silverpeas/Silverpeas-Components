@@ -23,20 +23,14 @@
  */
 package com.silverpeas.resourcesmanager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.EJBException;
-
-import com.silverpeas.resourcesmanager.control.ejb.ResourcesManagerBm;
-import com.silverpeas.resourcesmanager.control.ejb.ResourcesManagerBmHome;
 import com.silverpeas.resourcesmanager.model.ReservationDetail;
+import com.silverpeas.resourcesmanager.util.ResourcesManagerFactory;
 import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
 import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.EJBUtilitaire;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class ResourcesManagerStatistics implements ComponentStatisticsInterface {
   @Override
@@ -44,10 +38,9 @@ public class ResourcesManagerStatistics implements ComponentStatisticsInterface 
       throws Exception {
     List<UserIdCountVolumeCouple> volumes = new ArrayList<UserIdCountVolumeCouple>();
 
-    List<ReservationDetail> allReservations = getResourcesManagerBm().getReservations(componentId);
-    for (Iterator<ReservationDetail> iterator = allReservations.iterator(); iterator.hasNext();) {
-      ReservationDetail reservationDetail = iterator.next();
-
+    List<ReservationDetail> allReservations =
+        ResourcesManagerFactory.getResourcesManagerBm().getReservations(componentId);
+    for (ReservationDetail reservationDetail : allReservations) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
       myCouple.setUserId(reservationDetail.getUserId());
@@ -59,16 +52,5 @@ public class ResourcesManagerStatistics implements ComponentStatisticsInterface 
 
   }
 
-  private ResourcesManagerBm getResourcesManagerBm() {
-    try {
-      ResourcesManagerBm bm =
-          ((ResourcesManagerBmHome) EJBUtilitaire.getEJBObjectRef("ejb/ResourcesManagerBm",
-          ResourcesManagerBmHome.class)).create();
-      return bm;
-    } catch (Exception e) {
-      SilverTrace.error("resourcesManager", "ResourcesManagerStatistics.getResourcesManagerBm",
-          "root.MSG_EJB_CREATE_FAILED", e);
-      throw new EJBException(e);
-    }
-  }
+
 }

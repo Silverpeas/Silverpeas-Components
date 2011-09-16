@@ -23,15 +23,6 @@
  */
 package com.silverpeas.resourcesmanager.control.ejb;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -53,6 +44,13 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author
@@ -147,14 +145,10 @@ public class ResourcesManagerBmEJB implements SessionBean {
     try {
       // First delete all resources of category
       List<ResourceDetail> resources = getResourcesByCategory(id);
-      ResourceDetail resource;
-      for (int r = 0; r < resources.size(); r++) {
-        resource = resources.get(r);
-
+      for (ResourceDetail resource : resources) {
         ResourcesManagerDAO.deleteResource(con, resource.getId());
         deleteIndex("Resource", resource.getId(), componentId);
       }
-
       // Then delete category itself
       ResourcesManagerDAO.deleteCategory(con, id);
       deleteIndex(id, "Category", componentId);
@@ -609,9 +603,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
   public void indexResourceManager(String instanceId) {
     List<ReservationDetail> listOfReservation = getReservations(instanceId);
     if (listOfReservation != null) {
-      Iterator<ReservationDetail> it = listOfReservation.iterator();
-      while (it.hasNext()) {
-        ReservationDetail reservation = it.next();
+      for (ReservationDetail reservation : listOfReservation) {
         try {
           createIndex(reservation);
         } catch (Exception e) {
@@ -642,9 +634,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
     Connection con = initCon();
     try {
       ResourcesManagerDAO.removeAllManagers(con, resourceId);
-      Iterator<String> it = managers.iterator();
-      while (it.hasNext()) {
-        String manager = it.next();
+      for (String manager : managers) {
         String managerId = manager.split("/")[0];
         addManager(resourceId, Integer.parseInt(managerId));
       }

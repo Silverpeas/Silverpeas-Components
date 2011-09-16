@@ -30,7 +30,7 @@
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate" %>
 <%@ include file="check.jsp" %>
 <% 
-// Récupération des détails de l'ulisateur
+// Recuperation des details de l'utilsateur
 	List listTemplates =(List)request.getAttribute("listTemplates"); 
 	String name="";
 	String form="";
@@ -108,7 +108,7 @@ buttonPane.addButton(cancelButton);
 	
 	<tr>
 		<TD class="txtlibform" nowrap="nowrap"><%=resource.getString("resourcesManager.reservable")%> : </TD>
-		<TD><input type="checkbox" name="bookable" id="bookable" <% if((category != null) && (bookable == true)){out.println("checked="+"checked");}else{out.println("");}%> /> <label for="bookable"></label>&nbsp;</TD>
+		<TD><input type="checkbox" name="bookable" id="bookable" <% if((category != null) && (bookable)){out.println("checked="+"checked");}else{out.println("");}%> /> <label for="bookable"></label>&nbsp;</TD>
 	</tr>
 
 	<tr>

@@ -31,7 +31,7 @@
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
-//Récupération des détails de l'ulisateur
+//Recuperation des details de l'ulisateur
 List listResourcesofReservation = (List)request.getAttribute("listResourcesofReservation");
 String reservationId = (String)request.getAttribute("reservationId");
 ReservationDetail maReservation = (ReservationDetail)request.getAttribute("reservation");
@@ -161,14 +161,14 @@ if (!isOwner) {
             String resourceId = maResource.getId();
             String resourceName = maResource.getName();%>
             <%
-            // afficher les icônes de validation et refus si la ressource est en état à valider 
+            // afficher les icones de validation et refus si la ressource est en etat a valider
             // et si l'utilisateur est le responsable de cette ressource
             String currentUser = resourcesManagerSC.getUserId() ;
             List managers = maResource.getManagers();
             if (STATUS_FOR_VALIDATION.equals(maResource.getStatus())) { %>
              <a style="color:red" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
             <% } else if (STATUS_REFUSED.equals(maResource.getStatus())) { %>
-              <a style="color:grey" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
+              <a style="color:grey" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
             <% } else {%>
               <a style="color:black" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
              <% } 

@@ -687,5 +687,89 @@
         <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
       </help>
     </parameter>
+	<parameter>
+      <name>publicationSort</name>
+      <label>
+        <message lang="fr">Ordre des publications</message>
+        <message lang="en">Publications sorting</message>
+        <message lang="de">Publications sorting</message>
+      </label>
+      <order>31</order>
+      <mandatory>true</mandatory>
+      <value>2</value>
+      <type>select</type>
+      <updatable>always</updatable>
+	  <options>
+        <option>
+          <name>
+            <message lang="fr">Nom du créateur croissant</message>
+            <message lang="en">Ascending creator's name</message>
+            <message lang="de">Ascending creator's name</message>
+          </name>
+          <value>0</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Date de modification croissante</message>
+            <message lang="en">Ascending update date</message>
+            <message lang="de">Ascending update date</message>
+          </name>
+          <value>1</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Date de modification décroissante</message>
+            <message lang="en">Descending update date</message>
+            <message lang="de">Descending update date</message>
+          </name>
+          <value>2</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Importance croissante</message>
+            <message lang="en">Ascending importance</message>
+            <message lang="de">Ascending importance</message>
+          </name>
+          <value>3</value>
+        </option>
+		<option>
+          <name>
+            <message lang="fr">Titre croissant</message>
+            <message lang="en">Ascending title</message>
+            <message lang="de">Ascending title</message>
+          </name>
+          <value>4</value>
+        </option>
+		<option>
+          <name>
+            <message lang="fr">Date de création croissante</message>
+            <message lang="en">Ascending creation date</message>
+            <message lang="de">Ascending creation date</message>
+          </name>
+          <value>5</value>
+        </option>
+		<option>
+          <name>
+            <message lang="fr">Date de création décroissante</message>
+            <message lang="en">Descending creation date</message>
+            <message lang="de">Descending creation date</message>
+          </name>
+          <value>6</value>
+        </option>
+		<option>
+          <name>
+            <message lang="fr">Description croissante</message>
+            <message lang="en">Ascending description</message>
+            <message lang="de">Ascending description</message>
+          </name>
+          <value>7</value>
+        </option>
+      </options>
+      <help>
+        <message lang="fr">Permet de définir l'ordre d'affichage des publications par défaut.</message>
+        <message lang="en">Sets the display order of publications.</message>
+        <message lang="de">Sets the display order of publications.</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>
