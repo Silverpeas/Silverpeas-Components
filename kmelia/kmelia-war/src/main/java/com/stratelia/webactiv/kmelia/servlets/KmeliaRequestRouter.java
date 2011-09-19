@@ -1194,53 +1194,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           }
         }
       } else if (function.equals("ListModels")) {
-        Collection<String> modelUsed = kmelia.getModelUsed();
-        Collection<PublicationTemplate> listModelXml = new ArrayList<PublicationTemplate>();
-        List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
-        try {
-          templates = getPublicationTemplateManager().getPublicationTemplates();
-          // recherche de la liste des modèles utilisables
-          PublicationTemplate xmlForm;
-          for (PublicationTemplate template : templates) {
-            xmlForm = template;
-            // recherche si le modèle est dans la liste
-            if (modelUsed.contains(xmlForm.getFileName())) {
-              listModelXml.add(xmlForm);
-            }
-          }
-
-          request.setAttribute("XMLForms", listModelXml);
-        } catch (Exception e) {
-          SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination(ListModels)",
-              "root.MSG_GEN_PARAM_VALUE", "", e);
-        }
-
-        // put dbForms
-        Collection<ModelDetail> dbForms = kmelia.getAllModels();
-        // recherche de la liste des modèles utilisables
-        Collection<ModelDetail> listModelForm = new ArrayList<ModelDetail>();
-        for (ModelDetail modelDetail : dbForms) {
-          // recherche si le modèle est dans la liste
-          if (modelUsed.contains(modelDetail.getId())) {
-            listModelForm.add(modelDetail);
-          }
-        }
-        request.setAttribute("DBForms", listModelForm);
-
-        // recherche si modele Wysiwyg utilisable
-        boolean wysiwygValid = false;
-        if (modelUsed.contains("WYSIWYG")) {
-          wysiwygValid = true;
-        }
-        request.setAttribute("WysiwygValid", wysiwygValid);
-
-        // s'il n'y a pas de modèles selectionnés, les présenter tous
-        if (((listModelXml == null) || (listModelXml.isEmpty()))
-            && ((listModelForm == null) || (listModelForm.isEmpty())) && (!wysiwygValid)) {
-          request.setAttribute("XMLForms", templates);
-          request.setAttribute("DBForms", dbForms);
-          request.setAttribute("WysiwygValid", Boolean.TRUE);
-        }
+        setTemplatesUsedIntoRequest(kmelia, request);
+        
         // put current publication
         request.setAttribute("CurrentPublicationDetail", kmelia.getSessionPublication().
             getDetail());
@@ -1430,8 +1385,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         setWizardParams(request, kmelia);
         
         // template can be changed only if current topic is using at least two templates
-        Collection<String> modelUsed = kmelia.getModelUsed();
-        request.setAttribute("IsChangingTemplateAllowed", modelUsed.size() >= 2);
+        setTemplatesUsedIntoRequest(kmelia, request);
+        @SuppressWarnings("unchecked")
+        Collection<PublicationTemplate> templates =
+            (Collection<PublicationTemplate>) request.getAttribute("XMLForms");
+        boolean wysiwygUsable = (Boolean) request.getAttribute("WysiwygValid");
+        request.setAttribute("IsChangingTemplateAllowed",
+            templates.size() >= 2 || (!templates.isEmpty() && wysiwygUsable));
 
         destination = rootDestination + "xmlForm.jsp";
       } else if (function.equals("UpdateXMLForm")) {
@@ -2630,5 +2590,55 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
    */
   public PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
+  }
+  
+  private void setTemplatesUsedIntoRequest(KmeliaSessionController kmelia, HttpServletRequest request) throws RemoteException {
+    Collection<String> modelUsed = kmelia.getModelUsed();
+    Collection<PublicationTemplate> listModelXml = new ArrayList<PublicationTemplate>();
+    List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
+    try {
+      templates = getPublicationTemplateManager().getPublicationTemplates();
+      // recherche de la liste des modèles utilisables
+      PublicationTemplate xmlForm;
+      for (PublicationTemplate template : templates) {
+        xmlForm = template;
+        // recherche si le modèle est dans la liste
+        if (modelUsed.contains(xmlForm.getFileName())) {
+          listModelXml.add(xmlForm);
+        }
+      }
+
+      request.setAttribute("XMLForms", listModelXml);
+    } catch (Exception e) {
+      SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination(ListModels)",
+          "root.MSG_GEN_PARAM_VALUE", "", e);
+    }
+
+    // put dbForms
+    Collection<ModelDetail> dbForms = kmelia.getAllModels();
+    // recherche de la liste des modèles utilisables
+    Collection<ModelDetail> listModelForm = new ArrayList<ModelDetail>();
+    for (ModelDetail modelDetail : dbForms) {
+      // recherche si le modèle est dans la liste
+      if (modelUsed.contains(modelDetail.getId())) {
+        listModelForm.add(modelDetail);
+      }
+    }
+    request.setAttribute("DBForms", listModelForm);
+
+    // recherche si modele Wysiwyg utilisable
+    boolean wysiwygValid = false;
+    if (modelUsed.contains("WYSIWYG")) {
+      wysiwygValid = true;
+    }
+    request.setAttribute("WysiwygValid", wysiwygValid);
+
+    // s'il n'y a pas de modèles selectionnés, les présenter tous
+    if ((listModelXml == null || listModelXml.isEmpty())
+        && (listModelForm == null || listModelForm.isEmpty()) && !wysiwygValid) {
+      request.setAttribute("XMLForms", templates);
+      request.setAttribute("DBForms", dbForms);
+      request.setAttribute("WysiwygValid", Boolean.TRUE);
+    }
   }
 }
