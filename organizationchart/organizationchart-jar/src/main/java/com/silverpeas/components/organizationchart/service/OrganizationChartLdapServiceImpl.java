@@ -92,7 +92,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 
       // get organization unit members
       ouMembers = getOUMembers(ctx, ctls, rootOu, type);
-      parent.setHasMembers((ouMembers.size() > 0));
+      parent.setHasMembers(ouMembers != null && ouMembers.size()>1);
 
       // get sub organization units
       if (type == OrganizationalChartType.TYPE_UNITCHART) {
@@ -237,17 +237,16 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
           hasResults(unit.getCompleteName(), "(objectclass=" + config.getLdapClassUnit() + ")",
           ctx, ctls);
       unit.setHasSubUnits(hasSubOrganizations);
-
-      boolean hasMembers =
-          hasResults(unit.getCompleteName(), "(objectclass=" + config.getLdapClassPerson() + ")",
-          ctx, ctls);
-      unit.setHasMembers(hasMembers);
       
       try {
-        // get main actors of sub unit
+        // set responsible of subunit
         List<OrganizationalPerson> users =
             getOUMembers(ctx, ctls, unit.getCompleteName(), OrganizationalChartType.TYPE_UNITCHART);
-        unit.setMainActors(users);
+        List<OrganizationalPerson> mainActors = getMainActors(users);
+        unit.setMainActors(mainActors);
+        
+        // check if subunit have more people
+        unit.setHasMembers(users.size() > mainActors.size());
       } catch (Exception e) {
         SilverTrace.error("organizationchart",
             "OrganizationChartLdapServiceImpl.getSubOrganizationUnits",
@@ -257,6 +256,16 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     }
 
     return units;
+  }
+  
+  private List<OrganizationalPerson> getMainActors(List<OrganizationalPerson> users) {
+    List<OrganizationalPerson> mainActors = new ArrayList<OrganizationalPerson>();
+    for (OrganizationalPerson person : users) {
+      if (person.isVisibleOnCenter()) {
+        mainActors.add(person);
+      }
+    }
+    return mainActors;
   }
 
   /**
@@ -270,8 +279,13 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
    */
   private boolean hasResults(String baseDN, String filter, DirContext ctx, SearchControls ctls)
       throws NamingException {
-    NamingEnumeration<SearchResult> results = ctx.search(baseDN, filter, ctls);
+    NamingEnumeration<SearchResult> results = getResults(baseDN, filter, ctx, ctls);
     return (results != null && results.hasMoreElements());
+  }
+  
+  private NamingEnumeration<SearchResult> getResults(String baseDN, String filter, DirContext ctx,
+      SearchControls ctls) throws NamingException {
+    return ctx.search(baseDN, filter, ctls);
   }
 
   /**
@@ -447,7 +461,6 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
         if (isFunctionMatchingRole(function, role)) {
           person.setVisibleOnCenter(true);
           person.setVisibleCenterRole(role);
-          roleDefined = true;
           break;
         }
       }

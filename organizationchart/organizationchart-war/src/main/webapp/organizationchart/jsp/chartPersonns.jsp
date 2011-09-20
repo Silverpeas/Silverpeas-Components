@@ -61,7 +61,8 @@ jCells[cellIndex] = new JCell( {
 	level : 0,
 	className : 0,
 	cellType : CELL_TYPE_ORGANIZATION,
-	commonUserURL : "Details?login="
+	commonUserURL : "Details?login=",
+	usersIcon : "${usersIcon}"
 });
 
 <%-- CATEGORIES --%>
