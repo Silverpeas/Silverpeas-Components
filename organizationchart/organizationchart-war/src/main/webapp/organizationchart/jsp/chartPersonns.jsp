@@ -74,9 +74,8 @@ jCells[cellIndex] = new JCell( {
 		level : 1,
 		className : 5,
 		cellType : CELL_TYPE_CATEGORY,
-		commonUserURL : "Details?login="
-		<%--<c:if test="${category.name eq 'Personnel'}"> --%>
-		, innerUsers : new Array(
+		commonUserURL : "Details?login=",
+		innerUsers : new Array(
 			<c:forEach items="${category.users}" var="user" varStatus="mainLoopInfo">
 					{login : "${user.login}", userFullName: "${user.fullName}",
 					userAttributes: new Array(
@@ -87,27 +86,6 @@ jCells[cellIndex] = new JCell( {
 					} ${(not mainLoopInfo.last) ? ',' : ''}
 			</c:forEach>
 			)
-		<%--</c:if> --%>
 	});
 	jLinks[linkIndex++] = new JLink(0,cellIndex++, 0, ORIENTATION_HORIZONTAL);
-
-<%--
-	<c:if test="${!(category.name eq 'Personnel')}">
-		<c:forEach items="${category.users}" var="user">
-			jCells[cellIndex] = new JCell( {
-				id : cellIndex,
-				title: "${user.fullName}",
-				level : 2,
-				className : 2,
-				userAttributes: new Array(
-					<c:forEach items="${user.details}" var="detail" varStatus="loopInfo">
-						{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
-					</c:forEach>
-				),
-				cellType : CELL_TYPE_PERSON,
-				onClickURL : "Details?login=${user.login}"
-			});
-			jLinks[linkIndex++] = new JLink(currentCategoryIndex,cellIndex++, 0, ORIENTATION_VERTICAL);
-		</c:forEach>
-	</c:if> --%>
 </c:forEach>
