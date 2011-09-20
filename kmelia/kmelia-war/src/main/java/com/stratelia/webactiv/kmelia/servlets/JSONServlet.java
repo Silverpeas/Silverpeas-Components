@@ -43,7 +43,6 @@ import org.json.JSONObject;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.DateUtil;
@@ -89,7 +88,7 @@ public class JSONServlet extends HttpServlet {
       TopicDetail topic = kmeliaSC.getTopic(id);
       List<NodeDetail> nodes = (List<NodeDetail>) topic.getNodeDetail().getChildrenDetails();
 
-      if (displayToValidateTopic(id, kmeliaSC)) {
+      if (NodePK.ROOT_NODE_ID.equals(id) && kmeliaSC.isUserCanValidate()) {
         NodeDetail temp = new NodeDetail();
         temp.getNodePK().setId("tovalidate");
         temp.setName(kmeliaSC.getString("ToValidateShort"));
@@ -100,7 +99,8 @@ public class JSONServlet extends HttpServlet {
         }
         nodes.add(temp);
       }
-      writer.write(getListAsJSONArray(nodes, language, kmeliaSC, displayBasket(id, kmeliaSC)));
+      boolean displayBasket = NodePK.ROOT_NODE_ID.equals(id) && kmeliaSC.isUserCanWrite();
+      writer.write(getListAsJSONArray(nodes, language, kmeliaSC, displayBasket));
     } else if ("GetPath".equals(action)) {
       List<NodeDetail> nodes = (List<NodeDetail>) getNodeBm().getPath(nodePK);
       writer.write(getListAsJSONArray(nodes, language, kmeliaSC));
@@ -122,22 +122,6 @@ public class JSONServlet extends HttpServlet {
       JSONObject operations = getOperations(id, kmeliaSC);
       writer.write(operations.toString());
     }
-  }
-  
-  private boolean displayToValidateTopic(String id, KmeliaSessionController kmeliaSC)
-      throws RemoteException {
-    return "0".equals(id) &&
-        !KmeliaHelper.isToolbox(kmeliaSC.getComponentId()) &&
-        (SilverpeasRole.admin.isInRole(kmeliaSC.getUserTopicProfile()) || SilverpeasRole.publisher
-            .isInRole(kmeliaSC.getUserTopicProfile()));
-  }
-  
-  private boolean displayBasket(String id, KmeliaSessionController kmeliaSC) throws RemoteException {
-    return "0".equals(id) &&
-        !KmeliaHelper.isToolbox(kmeliaSC.getComponentId()) &&
-        (SilverpeasRole.admin.isInRole(kmeliaSC.getUserTopicProfile()) || SilverpeasRole.publisher
-            .isInRole(kmeliaSC.getUserTopicProfile()) || SilverpeasRole.writer.isInRole(kmeliaSC
-            .getUserTopicProfile()));
   }
   
   private String getListAsJSONArray(List<NodeDetail> nodes, String language,
