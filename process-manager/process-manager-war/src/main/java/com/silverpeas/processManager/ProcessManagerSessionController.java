@@ -567,16 +567,18 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     RelatedGroup[] relatedGroups = qualifiedUsers.getRelatedGroups();
     if (relatedGroups != null) {
       for (RelatedGroup relatedGroup : relatedGroups) {
-        // Process folder item
-        Item item = relatedGroup.getFolderItem();
-        if (item != null) {
-          try {
-            String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
-            UserDetail[] usersOfGroup = getOrganizationController().getAllUsersOfGroup(groupId);
-            for (UserDetail userOfGroup : usersOfGroup) {
-              users.add(userOfGroup.getId());
+        if (relatedGroup != null) {
+          // Process folder item
+          Item item = relatedGroup.getFolderItem();
+          if (item != null) {
+            try {
+              String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
+              UserDetail[] usersOfGroup = getOrganizationController().getAllUsersOfGroup(groupId);
+              for (UserDetail userOfGroup : usersOfGroup) {
+                users.add(userOfGroup.getId());
+              }
+            } catch (WorkflowException we) {// ignore it.
             }
-          } catch (WorkflowException we) {// ignore it.
           }
         }
       }
