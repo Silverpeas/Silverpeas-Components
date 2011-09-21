@@ -61,7 +61,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   private ReservationDetail reservationCourante;
   private Calendar currentDay = Calendar.getInstance();
   private List<ResourceReservableDetail> resourceReserved =
-      new ArrayList<ResourceReservableDetail>();
+          new ArrayList<ResourceReservableDetail>();
   private List<ResourceReservableDetail> listReservableResource;
   private Date beginDateReservation;
   private Date endDateReservation;
@@ -166,11 +166,11 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
    * @param componentContext The component's profile
    * @see
    */
-  public ResourcesManagerSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+  public ResourcesManagerSessionController(MainSessionController mainSessionCtrl,
+          ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
-        "com.silverpeas.resourcesmanager.settings.resourcesManagerIcons");
+            "com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+            "com.silverpeas.resourcesmanager.settings.resourcesManagerIcons");
   }
 
   public boolean isResponsible() {
@@ -195,8 +195,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       ResourcesManagerFactory.getResourcesManagerBm().createCategory(category);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.createCategory()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.createCategory()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
 
   }
@@ -211,8 +211,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       ResourcesManagerFactory.getResourcesManagerBm().updateCategory(category);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.updateCategory()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.updateCategory()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -220,9 +220,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getCategories(getComponentId());
     } catch (RemoteException e) {
-      throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getCategories()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new ResourcesManagerRuntimeException("ResourcesManagerSessionController.getCategories()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
 
   }
@@ -231,9 +230,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getCategory(id);
     } catch (RemoteException e) {
-      throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getCategories()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new ResourcesManagerRuntimeException("ResourcesManagerSessionController.getCategories()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -242,15 +240,14 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       ResourcesManagerFactory.getResourcesManagerBm().deleteCategory(id, getComponentId());
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.deleteCategory()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.deleteCategory()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   /**
    * Gestion des ressources **
    */
-
   public String createResource(ResourceDetail resource) {
     resource.setInstanceId(getComponentId());
     resource.setCreaterId(getUserId());
@@ -261,8 +258,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       return ResourcesManagerFactory.getResourcesManagerBm().createResource(resource);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.createResource()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.createResource()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -274,8 +271,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       ResourcesManagerFactory.getResourcesManagerBm().updateResource(resource);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.updateResource()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.updateResource()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -285,9 +282,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       resource.setManagers(getManagerIds(id));
       return resource;
     } catch (RemoteException e) {
-      throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getResource()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new ResourcesManagerRuntimeException("ResourcesManagerSessionController.getResource()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -296,8 +292,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       ResourcesManagerFactory.getResourcesManagerBm().deleteResource(id, getComponentId());
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.deleteResource()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.deleteResource()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -306,38 +302,35 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       return ResourcesManagerFactory.getResourcesManagerBm().getResourcesByCategory(categoryId);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getResourcesByCategory()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.getResourcesByCategory()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public List<ResourceReservableDetail> getResourcesReservable(Date startDate, Date endDate) {
     try {
       this.listReservableResource = ResourcesManagerFactory.getResourcesManagerBm().
-          getResourcesReservable(
-              getComponentId(), startDate, endDate);
+              getResourcesReservable(getComponentId(), startDate, endDate);
       return listReservableResource;
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getResourcesReservable()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.getResourcesReservable()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public List<ResourceDetail> getResourcesofReservation(String reservationId) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getResourcesofReservation(
-          getComponentId(), reservationId);
+              getComponentId(), reservationId);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getResourcesofReservation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.getResourcesofReservation()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
-  public void createReservation
-      (ReservationDetail
-          reservation) {
+  public void createReservation(ReservationDetail reservation) {
     reservation.setInstanceId(getComponentId());
     reservation.setUserId(getUserId());
     reservation.setCreationDate(new Date());
@@ -345,12 +338,11 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     reservationCourante = reservation;
   }
 
-  public void saveReservation
-      () {
+  public void saveReservation() {
     try {
       // rechercher le statut à mettre sur la reservation
       ResourcesManagerFactory.getResourcesManagerBm().saveReservation(reservationCourante,
-          listReservationCurrent);
+              listReservationCurrent);
       // envoi d'une notification pour validation aux responsables des ressources selectionnées.
       StringTokenizer tokenizer = new StringTokenizer(listReservationCurrent, ",");
       while (tokenizer.hasMoreTokens()) {
@@ -359,67 +351,63 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       }
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.saveReservation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.saveReservation()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public List<ResourceDetail> verificationReservation(String listeReservation) {
     try {
-      return ResourcesManagerFactory.getResourcesManagerBm()
-          .verificationReservation(getComponentId(),
-              listeReservation, beginDateReservation, endDateReservation);
+      return ResourcesManagerFactory.getResourcesManagerBm().verificationReservation(
+              getComponentId(), listeReservation, beginDateReservation, endDateReservation);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.verificationReservation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.verificationReservation()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public List<ResourceDetail> getResourcesProblemDate(String listeReservation, Date beginDate,
-      Date endDate, String reservationId) {
+          Date endDate, String reservationId) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().verificationNewDateReservation(
-          getComponentId(),
-          listeReservation, beginDate, endDate, reservationId);
+              getComponentId(), listeReservation, beginDate, endDate, reservationId);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.verificationReservation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.verificationReservation()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public List<ReservationDetail> getReservationUser() {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getReservationUser(getComponentId(),
-          getUserId());
+              getUserId());
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getReservationUser()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.getReservationUser()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public ReservationDetail getReservation(String reservationId) {
     try {
-      ReservationDetail reservation =
-          ResourcesManagerFactory.getResourcesManagerBm().getReservation(
+      ReservationDetail reservation = ResourcesManagerFactory.getResourcesManagerBm().getReservation(
               getComponentId(), reservationId);
       reservation.setUserName(getUserDetail(reservation.getUserId()).getDisplayedName());
       return reservation;
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getReservation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.getReservation()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
-  public void updateReservation(String idReservation, String listReservation,
-      boolean updateDate) {
+  public void updateReservation(String idReservation, String listReservation, boolean updateDate) {
     try {
       reservationCourante.setId(idReservation);
       ResourcesManagerFactory.getResourcesManagerBm().updateReservation(listReservation,
-          reservationCourante, updateDate);
+              reservationCourante, updateDate);
       StringTokenizer tokenizer = new StringTokenizer(listReservation, ",");
       while (tokenizer.hasMoreTokens()) {
         String idResource = tokenizer.nextToken();
@@ -427,8 +415,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       }
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.updateReservation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.updateReservation()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -437,29 +425,25 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       ResourcesManagerFactory.getResourcesManagerBm().deleteReservation(id, getComponentId());
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.deleteReservation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.deleteReservation()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public void sendNotificationForValidation(String resourceId, String reservationId)
-      throws RemoteException, NotificationManagerException {
+          throws RemoteException, NotificationManagerException {
     ResourceDetail resource = getResource(resourceId);
     String status = ResourcesManagerFactory.getResourcesManagerBm().getStatusResourceOfReservation(
-        resourceId, reservationId);
+            resourceId, reservationId);
     if (ReservationDetail.STATUS_FOR_VALIDATION.equals(status)) {
       // envoyer une notification aux responsables de la ressource
       OrganizationController orga = new OrganizationController();
       String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
-      ResourceLocator message =
-          new ResourceLocator(
-              "com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
-              "fr");
-      ResourceLocator message_en =
-          new ResourceLocator(
-              "com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
-              "en");
+      ResourceLocator message = new ResourceLocator(
+              "com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", "fr");
+      ResourceLocator message_en = new ResourceLocator(
+              "com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", "en");
 
       StringBuffer messageBody = new StringBuffer();
       StringBuffer messageBody_en = new StringBuffer();
@@ -477,22 +461,21 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
         // french notifications
         String subject = message.getString("resourcesManager.notifSubject");
         messageBody = messageBody.append(user).append(" ").append(
-            message.getString("resourcesManager.notifBody")).append(" ").append(
-            resource.getName());
+                message.getString("resourcesManager.notifBody")).append(" ").append(
+                resource.getName());
 
         // english notifications
         String subject_en = message_en.getString("resourcesManager.notifSubject");
         messageBody_en = messageBody_en.append(user).append(" ").append(
-            message.getString("resourcesManager.notifBody")).append(" ").append(
-            resource.getName());
+                message.getString("resourcesManager.notifBody")).append(" ").append(
+                resource.getName());
 
-        NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL,
+        NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
                 subject, messageBody.toString());
         notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
 
-        notifMetaData.setLink(URLManager.getURL(null, getComponentId())
-            + "ViewReservation?reservationId=" + reservationId);
+        notifMetaData.setLink(URLManager.getURL(null, getComponentId()) 
+                + "ViewReservation?reservationId=" + reservationId);
         notifMetaData.setComponentId(getComponentId());
         notifMetaData.addUserRecipients(managers);
         notifMetaData.setSender(user);
@@ -512,33 +495,33 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public void addManager(String resourceId, String managerId) {
     try {
       ResourcesManagerFactory.getResourcesManagerBm().addManager(Integer.parseInt(resourceId),
-          Integer.parseInt(managerId));
+              Integer.parseInt(managerId));
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.addManager()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.addManager()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public void removeManager(String resourceId, String managerId) {
     try {
       ResourcesManagerFactory.getResourcesManagerBm().removeManager(Integer.parseInt(resourceId),
-          Integer.parseInt(managerId));
+              Integer.parseInt(managerId));
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.removeManager()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.removeManager()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public List<String> getManagerIds(String resourceId) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getManagers(
-          Integer.parseInt(resourceId));
+              Integer.parseInt(resourceId));
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getManagerIds()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.getManagerIds()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -546,8 +529,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     List<UserDetail> managers = new ArrayList<UserDetail>();
     try {
       List<String> managerIds =
-          ResourcesManagerFactory.getResourcesManagerBm().getManagers(Integer.
-              parseInt(resourceId));
+              ResourcesManagerFactory.getResourcesManagerBm().getManagers(Integer.parseInt(
+              resourceId));
       // ajouter le nom du responsable
       for (String managerId : managerIds) {
         UserDetail manager = getUserDetail(managerId);
@@ -555,8 +538,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       }
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getManagers()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.getManagers()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return managers;
 
@@ -565,19 +548,19 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public void addManagers(String resourceId, List<String> managers) {
     try {
       ResourcesManagerFactory.getResourcesManagerBm().addManagers(Integer.parseInt(resourceId),
-          managers);
+              managers);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.addManagers()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.addManagers()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public String initUserSelect(Collection<String> currentManagers) {
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+            "ApplicationURL");
     String hostUrl = m_context
-        + URLManager.getURL(getSpaceId(), getComponentId()) + "FromUserSelect";
+            + URLManager.getURL(getSpaceId(), getComponentId()) + "FromUserSelect";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -702,46 +685,46 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public List<ReservationDetail> getReservationForValidation() {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getReservationForValidation(
-          getComponentId(),
-          getCurrentDay().getTime(), getUserId(), getLanguage());
+              getComponentId(),
+              getCurrentDay().getTime(), getUserId(), getLanguage());
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getReservationForValidation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.getReservationForValidation()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public List<ReservationDetail> getMonthReservation() {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getMonthReservation(getComponentId(),
-          getCurrentDay().getTime(), getUserId(), getLanguage());
+              getCurrentDay().getTime(), getUserId(), getLanguage());
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getMonthReservation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.getMonthReservation()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public List<ReservationDetail> getMonthReservation(String idUser) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getMonthReservation(getComponentId(),
-          this.getCurrentDay().getTime(), idUser, this.getLanguage());
+              this.getCurrentDay().getTime(), idUser, this.getLanguage());
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getMonthReservation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.getMonthReservation()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   public List<ReservationDetail> getMonthReservationOfCategory(String idCategory) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getMonthReservationOfCategory(
-          getComponentId(), getCurrentDay().getTime(), getUserId(),
-          getLanguage(), idCategory);
+              getComponentId(), getCurrentDay().getTime(), getUserId(),
+              getLanguage(), idCategory);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.getMonthReservationOfCategory()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+              "ResourcesManagerSessionController.getMonthReservationOfCategory()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
@@ -749,13 +732,13 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     PairObject hostComponentName = new PairObject(getComponentLabel(), "");
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(
-        getString("resourcesManagerSC.SelectManager"), "");
+            getString("resourcesManagerSC.SelectManager"), "");
     String hostUrl =
-        URLManager.getApplicationURL() + URLManager.getURL("useless", getComponentId())
+            URLManager.getApplicationURL() + URLManager.getURL("useless", getComponentId())
             + "SetManager?PubId=" + pubId;
     String cancelUrl = URLManager.getApplicationURL()
-        + URLManager.getURL("useless", getComponentId())
-        + "SetManager?PubId=" + pubId;
+            + URLManager.getURL("useless", getComponentId())
+            + "SetManager?PubId=" + pubId;
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -788,15 +771,15 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
   public String initUserPanelOtherPlanning() {
     PairObject hostComponentName = new PairObject(
-        getString("resourcesManager.accueil"), URLManager.getApplicationURL()
-        + "/RresourcesManager/jsp/Main");
+            getString("resourcesManager.accueil"), URLManager.getApplicationURL()
+            + "/RresourcesManager/jsp/Main");
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(getString("resourcesManager.otherPlanning"),
-        URLManager.getApplicationURL() + URLManager.getURL(null, getComponentId()) + "Main");
+            URLManager.getApplicationURL() + URLManager.getURL(null, getComponentId()) + "Main");
     String hostUrl = URLManager.getApplicationURL() + URLManager.getURL(null, getComponentId())
-        + "ViewOtherPlanning";
+            + "ViewOtherPlanning";
     String cancelUrl =
-        URLManager.getApplicationURL() + URLManager.getURL(null, getComponentId())
+            URLManager.getApplicationURL() + URLManager.getURL(null, getComponentId())
             + "Main";
     Selection sel = getSelection();
     sel.resetAll();
@@ -827,12 +810,11 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void validateResource(int resourceId, int reservationId) throws
-      RemoteException, NotificationManagerException {
+          RemoteException, NotificationManagerException {
     ResourcesManagerFactory.getResourcesManagerBm().updateResourceStatus(
-        ReservationDetail.STATUS_VALIDATE, resourceId, reservationId, getComponentId());
+            ReservationDetail.STATUS_VALIDATE, resourceId, reservationId, getComponentId());
     ReservationDetail reservation = getReservation(Integer.toString(reservationId));
-    reservation
-        .setListResourcesReserved(getResourcesofReservation(Integer.toString(reservationId)));
+    reservation.setListResourcesReserved(getResourcesofReservation(Integer.toString(reservationId)));
     ResourcesManagerFactory.getResourcesManagerBm().updateReservation(reservation);
     // envoie d'une notification au créateur de la réservation quand cette dernière est totalement
     // validée
@@ -842,13 +824,12 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void refuseResource(int resourceId, int reservationId, String motive)
-      throws RemoteException, NotificationManagerException {
+          throws RemoteException, NotificationManagerException {
     ResourcesManagerFactory.getResourcesManagerBm().updateResourceStatus(
-        ReservationDetail.STATUS_REFUSED, resourceId,
-        reservationId, getComponentId());
+            ReservationDetail.STATUS_REFUSED, resourceId,
+            reservationId, getComponentId());
     ReservationDetail reservation = getReservation(Integer.toString(reservationId));
-    reservation
-        .setListResourcesReserved(getResourcesofReservation(Integer.toString(reservationId)));
+    reservation.setListResourcesReserved(getResourcesofReservation(Integer.toString(reservationId)));
     ResourcesManagerFactory.getResourcesManagerBm().updateReservation(reservation);
     // envoie d'une notification au créateur de la réservation si cette desnière est refusée
     if (ReservationDetail.STATUS_REFUSED.equals(reservation.getStatus())) {
@@ -857,15 +838,15 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void sendNotificationValidateReservation(ReservationDetail reservation)
-      throws NotificationManagerException {
+          throws NotificationManagerException {
     // envoyer une notification au créateur de la réservation
     OrganizationController orga = new OrganizationController();
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
     ResourceLocator message = new ResourceLocator(
-        "com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", "fr");
+            "com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", "fr");
     ResourceLocator message_en = new ResourceLocator(
-        "com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", "en");
+            "com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", "en");
 
     StringBuilder messageBody = new StringBuilder();
     StringBuilder messageBody_en = new StringBuilder();
@@ -883,11 +864,11 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     messageBody_en.append(message_en.getString("resourcesManager.notifBodyValideEnd"));
 
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-        subject, messageBody.toString());
+            subject, messageBody.toString());
     notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
 
     notifMetaData.setLink(URLManager.getURL(null, getComponentId())
-        + "ViewReservation?reservationId=" + reservation.getId());
+            + "ViewReservation?reservationId=" + reservation.getId());
     notifMetaData.setComponentId(getComponentId());
     notifMetaData.addUserRecipient(new UserRecipient(reservation.getUserId()));
     notifMetaData.setSender(user);
@@ -896,16 +877,16 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void sendNotificationRefuseReservation(ReservationDetail reservation, String resourceId,
-      String motive) throws NotificationManagerException {
+          String motive) throws NotificationManagerException {
     // envoyer une notification au créateur de la réservation
     OrganizationController orga = new OrganizationController();
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
     ResourceLocator message =
-        new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+            new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
             "fr");
     ResourceLocator message_en =
-        new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+            new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
             "en");
 
     ResourceDetail resource = getResource(resourceId);
@@ -915,7 +896,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     // french notifications
     String subject = message.getString("resourcesManager.notifSubjectRefuse");
     messageBody =
-        messageBody.append(message.getString("resourcesManager.notifBodyRefuseBegin")).append(
+            messageBody.append(message.getString("resourcesManager.notifBodyRefuseBegin")).append(
             " '").append(resource.getName()).append("' ").append(
             message.getString("resourcesManager.notifBodyRefuseMiddle")).append(" '").append(
             reservation.getEvent()).append("' ").append(
@@ -926,7 +907,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     // english notifications
     String subject_en = message_en.getString("resourcesManager.notifSubjectRefuse");
     messageBody_en =
-        messageBody_en.append(message_en.getString("resourcesManager.notifBodyRefuseBegin")).
+            messageBody_en.append(message_en.getString("resourcesManager.notifBodyRefuseBegin")).
             append(" '").append(resource.getName()).append("' ").append(
             message_en.getString("resourcesManager.notifBodyRefuseMiddle")).append(" '").append(
             reservation.getEvent()).append("' ").append(
@@ -935,11 +916,11 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
             motive);
 
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-        subject, messageBody.toString());
+            subject, messageBody.toString());
     notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
 
     notifMetaData.setLink(URLManager.getURL(null, getComponentId())
-        + "ViewReservation?reservationId=" + reservation.getId());
+            + "ViewReservation?reservationId=" + reservation.getId());
     notifMetaData.setComponentId(getComponentId());
     notifMetaData.addUserRecipient(new UserRecipient(reservation.getUserId()));
     notifMetaData.setSender(user);
