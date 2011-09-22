@@ -30,6 +30,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class ScheduleEvent implements ScheduleEventBean, Serializable {
 
@@ -39,7 +41,7 @@ public class ScheduleEvent implements ScheduleEventBean, Serializable {
   public String description;
   public Date creationDate;
   public int author;
-  public Set<DateOption> dates = new HashSet<DateOption>();
+  public SortedSet<DateOption> dates = new TreeSet<DateOption>();
   public Set<Contributor> contributors =
       new HashSet<Contributor>();
   public Set<Response> responses = new HashSet<Response>();
@@ -96,12 +98,12 @@ public class ScheduleEvent implements ScheduleEventBean, Serializable {
   }
 
   @Override
-  public Set<DateOption> getDates() {
+  public SortedSet<DateOption> getDates() {
     return dates;
   }
 
   @Override
-  public void setDates(Set<DateOption> dates) {
+  public void setDates(SortedSet<DateOption> dates) {
     this.dates = dates;
   }
 
