@@ -62,11 +62,11 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.yellowpages.dao.GroupDAO;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
+import com.stratelia.webactiv.yellowpages.model.dao.GroupDAO;
 
 /**
  * This is the Yellowpages EJB-tier controller of the MVC. It is implemented as a session EJB. It

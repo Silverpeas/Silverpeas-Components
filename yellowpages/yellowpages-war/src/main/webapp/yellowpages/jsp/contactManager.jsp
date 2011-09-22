@@ -35,6 +35,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.silverpeas.form.Form"%>
 <%@ page import="com.silverpeas.form.RecordSet"%>
 <%@ page import="com.silverpeas.form.PagesContext"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="modelUtils.jsp.inc" %>
@@ -517,6 +519,9 @@ else if (action.equals("ViewContact")) {
 			formView.display(out, context, data);
 
 		out.println(board.printAfter());
+		%>
+		<view:comments userId="<%= yellowpagesScc.getUserId() %>" componentId="<%= yellowpagesScc.getComponentId() %>" resourceId="<%= id %>" indexed="false"/>
+		<%
 		out.println(frame.printAfter());
 		out.println(window.printAfter());
 		%>
