@@ -432,5 +432,21 @@
         <message lang="en">Attribut name of the user login</message>
       </help>
     </parameter>
+	<parameter>
+      <name>ldapAttCSS</name>
+      <label>
+        <message lang="fr">Attribut contenant la classe CSS à utiliser</message>
+        <message lang="en">Name of the attribute for CSS class to use</message>
+      </label>      
+      <order>24</order>
+      <mandatory>false</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Attribut contenant la classe CSS à utiliser</message>
+        <message lang="en">Name of the attribute for CSS class to use</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>

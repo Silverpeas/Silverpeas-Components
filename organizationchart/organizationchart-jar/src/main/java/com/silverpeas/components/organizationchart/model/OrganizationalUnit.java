@@ -29,6 +29,7 @@ import java.util.List;
 public class OrganizationalUnit {
 
   private String name;
+  private String specificCSSClass = "";
 
   // case organizational unit is a category of personn
   private String key;
@@ -108,6 +109,14 @@ public class OrganizationalUnit {
 
   public List<OrganizationalPerson> getMainActors() {
     return mainActors;
+  }
+
+  public void setSpecificCSSClass(String specificCSSClass) {
+    this.specificCSSClass = specificCSSClass;
+  }
+
+  public String getSpecificCSSClass() {
+    return specificCSSClass;
   }
 
 }
