@@ -73,12 +73,12 @@ public class ScheduleEventVO implements ScheduleEventBean {
   }
 
   @Override
-  public Set<DateOption> getDates() {
+  public SortedSet<DateOption> getDates() {
     return event.getDates();
   }
 
   @Override
-  public void setDates(Set<DateOption> dates) {
+  public void setDates(SortedSet<DateOption> dates) {
     event.setDates(dates);
   }
 
@@ -149,7 +149,7 @@ public class ScheduleEventVO implements ScheduleEventBean {
   }
 
   public void setScheduleEventWith(Set<OptionDateVO> optionalDates) {
-    Set<DateOption> dates = event.getDates();
+    SortedSet<DateOption> dates = event.getDates();
     dates.clear();
     for (OptionDateVO date : optionalDates) {
       addMorningDateIfSelected(dates, date);
