@@ -68,6 +68,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   private static final String PARAM_LDAP_ATT_ACCOUNT = "ldapAttAccount"; // champ ldap de
   // l'identifiant de compte
   // Silverpeas
+  private static final String PARAM_LDAP_ATT_CSS = "ldapAttCSS";
   private static final String PARAM_UNITSCHART_CENTRAL_LABEL = "unitsChartCentralLabel";
   private static final String PARAM_UNITSCHART_RIGHT_LABEL = "unitsChartRightLabel";
   private static final String PARAM_UNITSCHART_LEFT_LABEL = "unitsChartLeftLabel";
@@ -138,7 +139,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     rootOrganization.setName(chart.getRoot().getName());
     rootOrganization.setDetailLinkActive(chart.getRoot().hasMembers());
     rootOrganization.setDn(chart.getRoot().getCompleteName());
-
+    rootOrganization.setSpecificCSSClass(chart.getRoot().getSpecificCSSClass());
 
     // Prevents user to go upper that the base DN
     if (!config.getLdapRoot().equalsIgnoreCase( chart.getRoot().getCompleteName() )) {
@@ -191,6 +192,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       subUnit.setName(subOrganization.getName());
       subUnit.setCenterLinkActive(subOrganization.hasSubUnits());
       subUnit.setDetailLinkActive(subOrganization.hasMembers());
+      subUnit.setSpecificCSSClass(subOrganization.getSpecificCSSClass());
       // setting main actors of subunit
       List<UserVO> subUnitMainActors = new ArrayList<UserVO>();
       for (OrganizationalPerson person : subOrganization.getMainActors()) {
@@ -214,6 +216,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     chartVO.setRootOrganization(rootOrganization);
     rootOrganization.setName(chart.getRoot().getName());
     rootOrganization.setParentDn(chart.getRoot().getParentOu());
+    rootOrganization.setSpecificCSSClass(chart.getRoot().getSpecificCSSClass());
 
     // Looks for specific users
     List<UserVO> mainActors = new ArrayList<UserVO>();
@@ -293,6 +296,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     // l'identifiant
     // de compte
     // Silverpeas
+    config.setLdapAttCSSClass(getComponentParameterValue(PARAM_LDAP_ATT_CSS));
 
     config
         .setUnitsChartCentralLabel(getRoles(getComponentParameterValue(PARAM_UNITSCHART_CENTRAL_LABEL)));

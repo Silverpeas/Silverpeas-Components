@@ -54,10 +54,10 @@
 	String titleClassName = resource.getSetting("titleClassName");
 	boolean backButtonAdded = false;
 	
-	// cr�ation du context
-	PagesContext  context = new PagesContext
-	               ("newInstanceForm", "0", resource.getLanguage(), false, "", null);
-
+	// context creation
+	PagesContext context = (PagesContext) request.getAttribute("FormContext");
+	context.setFormName("newInstanceForm");
+	context.setFormIndex("0");
 	context.setBorderPrinted(false);
 %>
 

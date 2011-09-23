@@ -89,10 +89,16 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
       SearchControls ctls = new SearchControls();
       ctls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
       ctls.setCountLimit(0);
+      
+      if (StringUtil.isDefined(config.getLdapAttCSSClass())) {
+        OrganizationalUnit root = getOrganizationalUnit(ctx, ctls, rootOu);
+        String cssClass = getSpecificCSSClass(ctx, ctls, root);
+        parent.setSpecificCSSClass(cssClass);
+      }
 
       // get organization unit members
       ouMembers = getOUMembers(ctx, ctls, rootOu, type);
-      parent.setHasMembers((ouMembers.size() > 0));
+      parent.setHasMembers(ouMembers != null && ouMembers.size()>1);
 
       // get sub organization units
       if (type == OrganizationalChartType.TYPE_UNITCHART) {
@@ -151,6 +157,27 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
       String parentOu = unit.getCompleteName().substring(indexStart - 3);
       unit.setParentOu(parentOu);
     }
+  }
+  
+  private OrganizationalUnit getParentOU(OrganizationalUnit unit, String ou) throws NamingException {
+    String parentName = null;
+    String parentOu = null;
+
+    String[] ous = unit.getCompleteName().split(",");
+    if (ous.length > 1) {
+      String[] values = ous[1].split("=");
+      if (values != null && values.length > 1 && values[0].equalsIgnoreCase(ou)) {
+        parentName = values[1];
+      }
+    }
+
+    if (parentName != null) {
+      // there is a parent so define is path for return to top level ou
+      int indexStart = unit.getCompleteName().lastIndexOf(parentName);
+      parentOu = unit.getCompleteName().substring(indexStart - 3);
+    }
+    
+    return new OrganizationalUnit(parentOu, parentName);
   }
 
   /**
@@ -229,6 +256,9 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
       String completeOu = entry.getNameInNamespace();
       OrganizationalUnit unit = new OrganizationalUnit(ou, completeOu);
       setParents(unit, config.getLdapAttUnit());
+      if (StringUtil.isDefined(config.getLdapAttCSSClass())) {
+        unit.setSpecificCSSClass(getFirstAttributeValue(attrs.get(config.getLdapAttCSSClass())));
+      }
       units.add(unit);
     }
 
@@ -237,17 +267,21 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
           hasResults(unit.getCompleteName(), "(objectclass=" + config.getLdapClassUnit() + ")",
           ctx, ctls);
       unit.setHasSubUnits(hasSubOrganizations);
-
-      boolean hasMembers =
-          hasResults(unit.getCompleteName(), "(objectclass=" + config.getLdapClassPerson() + ")",
-          ctx, ctls);
-      unit.setHasMembers(hasMembers);
       
       try {
-        // get main actors of sub unit
+        // set responsible of subunit
         List<OrganizationalPerson> users =
             getOUMembers(ctx, ctls, unit.getCompleteName(), OrganizationalChartType.TYPE_UNITCHART);
-        unit.setMainActors(users);
+        List<OrganizationalPerson> mainActors = getMainActors(users);
+        unit.setMainActors(mainActors);
+        
+        // check if subunit have more people
+        unit.setHasMembers(users.size() > mainActors.size());
+        
+        if (StringUtil.isDefined(config.getLdapAttCSSClass())) {
+          String cssClass = getSpecificCSSClass(ctx, ctls, unit);
+          unit.setSpecificCSSClass(cssClass);
+        }
       } catch (Exception e) {
         SilverTrace.error("organizationchart",
             "OrganizationChartLdapServiceImpl.getSubOrganizationUnits",
@@ -257,6 +291,67 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     }
 
     return units;
+  }
+  
+  private OrganizationalUnit getOrganizationalUnit(DirContext ctx,
+      SearchControls ctls, String rootOu) throws NamingException {
+    NamingEnumeration<SearchResult> results =
+        ctx.search(rootOu, "(objectclass=" + config.getLdapClassUnit() + ")", ctls);
+    SilverTrace.info("organizationchart",
+        "OrganizationChartLdapServiceImpl.getOrganizationalUnit()", "root.MSG_GEN_PARAM_VALUE",
+        "OU retrieved !");
+
+    OrganizationalUnit unit = null;
+    if (results != null && results.hasMore()) {
+      SearchResult entry = (SearchResult) results.next();
+      if (StringUtil.isDefined(entry.getName())) {
+        SilverTrace.info("organizationchart",
+            "OrganizationChartLdapServiceImpl.getOrganizationalUnit()", "root.MSG_GEN_PARAM_VALUE",
+            "entry.getName() = "+entry.getName());
+        Attributes attrs = entry.getAttributes();
+        String ou = getFirstAttributeValue(attrs.get(config.getLdapAttUnit()));
+        String completeOu = entry.getNameInNamespace();
+        SilverTrace.info("organizationchart",
+            "OrganizationChartLdapServiceImpl.getOrganizationalUnit()", "root.MSG_GEN_PARAM_VALUE",
+            "completeOu = "+completeOu);
+        unit = new OrganizationalUnit(ou, completeOu);
+        if (StringUtil.isDefined(config.getLdapAttCSSClass())) {
+          unit.setSpecificCSSClass(getFirstAttributeValue(attrs.get(config.getLdapAttCSSClass())));
+        }
+      }
+    }
+    return unit;
+  }
+  
+  private String getSpecificCSSClass(DirContext ctx, SearchControls ctls, OrganizationalUnit unit) throws NamingException {
+    String cssClass = unit.getSpecificCSSClass();
+    if (!StringUtil.isDefined(cssClass)) {
+      // get specific CSS class on parents
+      String ou = unit.getCompleteName();
+      while (StringUtil.isDefined(ou) && !StringUtil.isDefined(cssClass)) {
+        OrganizationalUnit parent = getParentOU(unit, ou);
+        if (parent.getCompleteName() != null) {
+          OrganizationalUnit fullParent = getOrganizationalUnit(ctx, ctls, parent.getCompleteName());
+          if (fullParent != null) {
+            cssClass = fullParent.getSpecificCSSClass();
+            ou = parent.getCompleteName();
+          }
+        } else {
+          ou = null;
+        }
+      }
+    }
+    return cssClass;
+  }
+  
+  private List<OrganizationalPerson> getMainActors(List<OrganizationalPerson> users) {
+    List<OrganizationalPerson> mainActors = new ArrayList<OrganizationalPerson>();
+    for (OrganizationalPerson person : users) {
+      if (person.isVisibleOnCenter()) {
+        mainActors.add(person);
+      }
+    }
+    return mainActors;
   }
 
   /**
@@ -270,8 +365,13 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
    */
   private boolean hasResults(String baseDN, String filter, DirContext ctx, SearchControls ctls)
       throws NamingException {
-    NamingEnumeration<SearchResult> results = ctx.search(baseDN, filter, ctls);
+    NamingEnumeration<SearchResult> results = getResults(baseDN, filter, ctx, ctls);
     return (results != null && results.hasMoreElements());
+  }
+  
+  private NamingEnumeration<SearchResult> getResults(String baseDN, String filter, DirContext ctx,
+      SearchControls ctls) throws NamingException {
+    return ctx.search(baseDN, filter, ctls);
   }
 
   /**
@@ -447,7 +547,6 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
         if (isFunctionMatchingRole(function, role)) {
           person.setVisibleOnCenter(true);
           person.setVisibleCenterRole(role);
-          roleDefined = true;
           break;
         }
       }
