@@ -24,6 +24,8 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ page isELIgnored="false"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");        //HTTP 1.0
@@ -68,8 +70,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.Date"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
-<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+
 <%@ page import="com.silverpeas.silvercrawler.model.FileFolder"%>
 <%@ page import="com.silverpeas.silvercrawler.model.FileDetail"%>
 <%@ page import="java.text.NumberFormat"%>

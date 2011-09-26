@@ -1,223 +1,225 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
+<!-- Copyright (C) 2000 - 2011 Silverpeas This program is free software:
+	you can redistribute it and/or modify it under the terms of the GNU Affero
+	General Public License as published by the Free Software Foundation, either
+	version 3 of the License, or (at your option) any later version. As a special
+	exception to the terms and conditions of version 3.0 of the GPL, you may
+	redistribute this Program in connection with Free/Libre Open Source Software
+	("FLOSS") applications as described in Silverpeas's FLOSS exception. You
+	should have recieved a copy of the text describing the FLOSS exception, and
+	it is also available here: "http://repository.silverpeas.com/legal/licensing"
+	This program is distributed in the hope that it will be useful, but WITHOUT
+	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+	FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+	details. You should have received a copy of the GNU Affero General Public
+	License along with this program. If not, see <http://www.gnu.org/licenses/>. -->
 
-    Copyright (C) 2000 - 2011 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
-  <name>silverCrawler</name>
-  <label>
-    <message lang="fr">Silvercrawler</message>
-    <message lang="en">Silvercrawler</message>
-    <message lang="de">Silvercrawler</message>
-  </label>
-  <description>
-    <message lang="fr">Le composant SilverCrawler permet aux utilisateurs de naviguer et/ou rechercher des
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+	<name>silverCrawler</name>
+	<label>
+		<message lang="fr">Silvercrawler</message>
+		<message lang="en">Silvercrawler</message>
+		<message lang="de">Silvercrawler</message>
+	</label>
+	<description>
+		<message lang="fr">Le composant SilverCrawler permet aux utilisateurs de naviguer et/ou rechercher des
   fichiers directement sur un serveur de fichiers.
     </message>
-    <message lang="en">This component crawls files and directories on a server filesystem indexing them so 
+		<message lang="en">This component crawls files and directories on a server filesystem indexing them so
     that users can browse thoses files and search for them with the search engine.
     </message>
-    <message lang="de">Die Komponente SilverCrawler erlaubt es den Benutzern, Dateien direkt auf 
+		<message lang="de">Die Komponente SilverCrawler erlaubt es den Benutzern, Dateien direkt auf
     einem Datenserver zu suchen und / oder zu erforschen.</message>
-  </description>
-  <suite>
-    <message lang="fr">06 Connecteurs</message>
-    <message lang="en">06 Connectors</message>
-    <message lang="de">06 Verbinder</message>
-  </suite>
-  <visible>true</visible>
-  <portlet>true</portlet>
-  <instanceClassName>com.silverpeas.silvercrawler.SilverCrawlerInstanciator</instanceClassName>
-  <profiles>
-    <profile name="admin">
-      <label>
-        <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
-      </label>
-      <help>
-        <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
-      </help>
-    </profile>
-    <profile name="user">
-      <label>
-        <message lang="fr">Lecteurs</message>
-        <message lang="en">Readers</message>
-        <message lang="de">Leser</message>
-      </label>
-      <help>
-        <message lang="fr">Lecteurs</message>
-        <message lang="en">Readers</message>
-        <message lang="de">Leser</message>
-      </help>
-    </profile>
-  </profiles>
-  <parameters>
-    <parameter>
-      <name>directory</name>
-      <label>
-        <message lang="fr">Répertoire de base</message>
-        <message lang="en">Root directory</message>
-        <message lang="de">Wurzel-Verzeichnis</message>
-      </label>
-      <order>1</order>
-      <mandatory>true</mandatory>
-      <value></value>
-      <type>text</type>
-      <size>25</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Chemin du répertoire sur le serveur de fichiers.</message>
-        <message lang="en">Path to the root directory for the Silvercrawler.</message>
-        <message lang="de">Pfad zum Wurzelverzeichnis für den Silvercrawler</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>maxiSize</name>
-      <label>
-        <message lang="fr">Taille maximale (Mo)</message>
-        <message lang="en">Maximum size (in Mo)</message>
-        <message lang="de">Maximale Größe (in Mo)</message>
-      </label>
-      <order>3</order>
-      <mandatory>false</mandatory>
-      <value>10</value>
-      <type>text</type>
-      <size>5</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Taille maximale (en Mo) autorisée lors du téléchargement d'un répertoire.
+	</description>
+	<suite>
+		<message lang="fr">06 Connecteurs</message>
+		<message lang="en">06 Connectors</message>
+		<message lang="de">06 Verbinder</message>
+	</suite>
+	<visible>true</visible>
+	<portlet>true</portlet>
+	<instanceClassName>com.silverpeas.silvercrawler.SilverCrawlerInstanciator</instanceClassName>
+	<profiles>
+		<profile name="admin">
+			<label>
+				<message lang="fr">Gestionnaires</message>
+				<message lang="en">Administrators</message>
+				<message lang="de">Administrator</message>
+			</label>
+			<help>
+				<message lang="fr">Gestionnaires</message>
+				<message lang="en">Administrators</message>
+				<message lang="de">Administrator</message>
+			</help>
+		</profile>
+		<profile name="publisher">
+			<label>
+				<message lang="fr">Publieurs</message>
+				<message lang="en">Publishers</message>
+				<message lang="de">Herausgeber</message>
+			</label>
+			<help>
+				<message lang="fr">Les publieurs créent, modifient et suppriments des fichiers.</message>
+				<message lang="en">Publisher create, modify and remove files.</message>
+				<message lang="de">Herausgeber</message>
+			</help>
+		</profile>
+		<profile name="user">
+			<label>
+				<message lang="fr">Lecteurs</message>
+				<message lang="en">Readers</message>
+				<message lang="de">Leser</message>
+			</label>
+			<help>
+				<message lang="fr">Lecteurs</message>
+				<message lang="en">Readers</message>
+				<message lang="de">Leser</message>
+			</help>
+		</profile>
+	</profiles>
+	<parameters>
+		<parameter>
+			<name>directory</name>
+			<label>
+				<message lang="fr">Répertoire de base</message>
+				<message lang="en">Root directory</message>
+				<message lang="de">Wurzel-Verzeichnis</message>
+			</label>
+			<order>1</order>
+			<mandatory>true</mandatory>
+			<value></value>
+			<type>text</type>
+			<size>25</size>
+			<updatable>always</updatable>
+			<help>
+				<message lang="fr">Chemin du répertoire sur le serveur de fichiers.</message>
+				<message lang="en">Path to the root directory for the Silvercrawler.</message>
+				<message lang="de">Pfad zum Wurzelverzeichnis für den Silvercrawler</message>
+			</help>
+		</parameter>
+		<parameter>
+			<name>maxiSize</name>
+			<label>
+				<message lang="fr">Taille maximale (Mo)</message>
+				<message lang="en">Maximum size (in Mo)</message>
+				<message lang="de">Maximale Größe (in Mo)</message>
+			</label>
+			<order>3</order>
+			<mandatory>false</mandatory>
+			<value>10</value>
+			<type>text</type>
+			<size>5</size>
+			<updatable>always</updatable>
+			<help>
+				<message lang="fr">Taille maximale (en Mo) autorisée lors du téléchargement d'un répertoire.
         Indiquer 0 pour interdire le téléchargement des répertoires.
         </message>
-        <message lang="en">Maximum size (in Mo) allowed during directory download. Enter 0 if you want
+				<message lang="en">Maximum size (in Mo) allowed during directory download. Enter 0 if you want
         to forbid the download of directories.
         </message>
-        <message lang="de">Maximale Größe (in Mo) die Sie herunterladen dürfen. Geben Sie 0, wenn Sie
+				<message lang="de">Maximale Größe (in Mo) die Sie herunterladen dürfen. Geben Sie 0, wenn Sie
         den Download von Verzeichnissen oder Dateien verbieten wollen.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>privateSearch</name>
-      <label>
-        <message lang="fr">Moteur de recherche dédié (O/N)</message>
-        <message lang="en">Use a dedicated serarch engine (Y/N)</message>
-        <message lang="de">Verwenden Sie eine dedizierte Suchmaschine (Y/N)</message>
-      </label>
-      <order>4</order>
-      <mandatory>false</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Si ce paramètre est activé, les fichiers indexés ne seront pas retrouvables
+			</help>
+		</parameter>
+		<parameter>
+			<name>privateSearch</name>
+			<label>
+				<message lang="fr">Moteur de recherche dédié (O/N)</message>
+				<message lang="en">Use a dedicated serarch engine (Y/N)</message>
+				<message lang="de">Verwenden Sie eine dedizierte Suchmaschine (Y/N)</message>
+			</label>
+			<order>4</order>
+			<mandatory>false</mandatory>
+			<value>no</value>
+			<type>checkbox</type>
+			<updatable>always</updatable>
+			<help>
+				<message lang="fr">Si ce paramètre est activé, les fichiers indexés ne seront pas retrouvables
         par le moteur de recherche général mais uniquement par le moteur de recherche dédié à ce
         composant.
         </message>
-        <message lang="en">If this parameter is enabled, indexed files will not be findable by global
+				<message lang="en">If this parameter is enabled, indexed files will not be findable by global
         search engine but only by the dedicated search engine of this component.
         </message>
-        <message lang="de">Falls dieser Parameter aktiviert ist, werden indexiert Informationen
+				<message lang="de">Falls dieser Parameter aktiviert ist, werden indexiert Informationen
         nicht durch die globale Suchmaschine auffindbar sein.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>allowedNav</name>
-      <label>
-        <message lang="fr">Navigation autorisée (O/N)</message>
-        <message lang="en">Allow browsing of files and directories (Y/N)</message>
-        <message lang="de">Durchsuchen von Dateien und Verzeichnissen Zulassen(Y / N)</message>
-      </label>
-      <order>5</order>
-      <mandatory>false</mandatory>
-      <value>yes</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet d'autoriser la navigation pour les lecteurs.</message>
-        <message lang="en">Allows readers to browse directories.</message>
-        <message lang="de">Leser erlauben, Verzeichnisse zu durchsuchen.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>periodicIndex</name>
-      <label>
-        <message lang="fr">Indexation périodique (O/N)</message>
-        <message lang="en">Periodic indexing (Y/N)</message>
-        <message lang="de">Periodische Indizierung (Y / N)</message>
-      </label>
-      <order>6</order>
-      <mandatory>false</mandatory>
-      <value>yes</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet une indexation périodique des fichiers et répertoires</message>
-        <message lang="en">Allows to index files and directories periodically</message>
-        <message lang="de">Ermöglicht es Dateien und Verzeichnisse in regelmäßigen Abständen zu Indexieren</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>nbMaxDirectoriesByPage</name>
-      <label>
-        <message lang="fr">Nombre maxi de répertoires affichés</message>
-        <message lang="en">Maximum number of directories displayed per page</message>
-        <message lang="de">Maximale Anzahl der Verzeichnisse die pro Seite angezeigt werden</message>
-      </label>
-      <order>7</order>      
-      <mandatory>false</mandatory>
-      <value>10</value>
-      <type>text</type>
-      <size>5</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Nombre maximum de répertoires qui seront affichés par page.</message>
-        <message lang="en">Maximum number of directories displayed per page.</message>
-        <message lang="de">Maximale Anzahl der Verzeichnisse die pro Seite angezeigt werden</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>nbMaxFilesByPage</name>
-      <label>
-        <message lang="fr">Nombre maxi de fichiers affichés</message>
-        <message lang="en">Maximum number of files displayed per page</message>
-        <message lang="de">Maximale Anzahl der Dateien die pro Seite angezeigt werden</message>
-      </label>
-      <order>8</order>
-      <mandatory>false</mandatory>
-      <value>10</value>
-      <type>text</type>
-      <size>5</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Nombre maximum de fichiers qui seront affichés par page.</message>
-        <message lang="en">Maximum number of files displayed per page.</message>
-        <message lang="de">Maximale Anzahl der Dateien die pro Seite angezeigt werden</message>
-      </help>
-    </parameter>
-  </parameters>
+			</help>
+		</parameter>
+		<parameter>
+			<name>allowedNav</name>
+			<label>
+				<message lang="fr">Navigation autorisée (O/N)</message>
+				<message lang="en">Allow browsing of files and directories (Y/N)</message>
+				<message lang="de">Durchsuchen von Dateien und Verzeichnissen Zulassen(Y / N)</message>
+			</label>
+			<order>5</order>
+			<mandatory>false</mandatory>
+			<value>yes</value>
+			<type>checkbox</type>
+			<updatable>always</updatable>
+			<help>
+				<message lang="fr">Permet d'autoriser la navigation pour les lecteurs.</message>
+				<message lang="en">Allows readers to browse directories.</message>
+				<message lang="de">Leser erlauben, Verzeichnisse zu durchsuchen.</message>
+			</help>
+		</parameter>
+		<parameter>
+			<name>periodicIndex</name>
+			<label>
+				<message lang="fr">Indexation périodique (O/N)</message>
+				<message lang="en">Periodic indexing (Y/N)</message>
+				<message lang="de">Periodische Indizierung (Y / N)</message>
+			</label>
+			<order>6</order>
+			<mandatory>false</mandatory>
+			<value>yes</value>
+			<type>checkbox</type>
+			<updatable>always</updatable>
+			<help>
+				<message lang="fr">Permet une indexation périodique des fichiers et répertoires</message>
+				<message lang="en">Allows to index files and directories periodically</message>
+				<message lang="de">Ermöglicht es Dateien und Verzeichnisse in regelmäßigen Abständen zu Indexieren</message>
+			</help>
+		</parameter>
+		<parameter>
+			<name>nbMaxDirectoriesByPage</name>
+			<label>
+				<message lang="fr">Nombre maxi de répertoires affichés</message>
+				<message lang="en">Maximum number of directories displayed per page</message>
+				<message lang="de">Maximale Anzahl der Verzeichnisse die pro Seite angezeigt werden</message>
+			</label>
+			<order>7</order>
+			<mandatory>false</mandatory>
+			<value>10</value>
+			<type>text</type>
+			<size>5</size>
+			<updatable>always</updatable>
+			<help>
+				<message lang="fr">Nombre maximum de répertoires qui seront affichés par page.</message>
+				<message lang="en">Maximum number of directories displayed per page.</message>
+				<message lang="de">Maximale Anzahl der Verzeichnisse die pro Seite angezeigt werden</message>
+			</help>
+		</parameter>
+		<parameter>
+			<name>nbMaxFilesByPage</name>
+			<label>
+				<message lang="fr">Nombre maxi de fichiers affichés</message>
+				<message lang="en">Maximum number of files displayed per page</message>
+				<message lang="de">Maximale Anzahl der Dateien die pro Seite angezeigt werden</message>
+			</label>
+			<order>8</order>
+			<mandatory>false</mandatory>
+			<value>10</value>
+			<type>text</type>
+			<size>5</size>
+			<updatable>always</updatable>
+			<help>
+				<message lang="fr">Nombre maximum de fichiers qui seront affichés par page.</message>
+				<message lang="en">Maximum number of files displayed per page.</message>
+				<message lang="de">Maximale Anzahl der Dateien die pro Seite angezeigt werden</message>
+			</help>
+		</parameter>
+	</parameters>
 </WAComponent>
