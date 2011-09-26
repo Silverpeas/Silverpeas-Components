@@ -21,30 +21,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.blog.servlets;
+package com.silverpeas.classifieds.control;
 
-import com.silverpeas.blog.control.BlogService;
-import com.silverpeas.blog.control.BlogServiceFactory;
-import java.net.URLEncoder;
+import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public class ClassifiedsInitialize implements IInitialize {
+  public ClassifiedsInitialize() {
+  }
 
-import com.silverpeas.blog.model.PostDetail;
-import com.silverpeas.peasUtil.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
-
-public class GoToPost extends GoTo {
   @Override
-  public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
-    BlogService service = BlogServiceFactory.getFactory().getBlogService();
-    PostDetail post = service.getContentById(objectId);
+  public boolean Initialize() {
+    initializeJobsScheduling();
+    return true;
+  }
 
-    String gotoURL = URLManager.getURL(null, post.getPublication()
-        .getInstanceId())
-        + post.getPublication().getURL();
-
-    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
+  /**
+   * Initializes the scheduling of the classifieds module's jobs
+   */
+  protected void initializeJobsScheduling() {
+    SilverTrace.info("classifieds", getClass().getSimpleName(), "root.EX_NO_MESSAGE",
+        "Initialize the scheduling");
+    ScheduledUnpublishExpiredClassifieds sc = new ScheduledUnpublishExpiredClassifieds();
+    sc.initialize();
   }
 }

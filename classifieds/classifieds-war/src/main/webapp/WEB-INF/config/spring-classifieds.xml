@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2011 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -34,11 +34,11 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="com.silverpeas.blog.control"/>
+  <ctx:component-scan base-package="com.silverpeas.classifieds"/>
   
   <!-- the ClassifiedService factory from which Silverpeas components access the classifieds service.
        It delegate to the Spring container the management of the life-cycle of the ClassifiedService objects. -->
-  <bean id="blogServiceFactory" class="com.silverpeas.blog.control.BlogServiceFactory"
+  <bean id="classifiedServiceFactory" class="com.silverpeas.classifieds.control.ClassifiedServiceFactory"
         factory-method="getFactory"/>
 
 </beans>

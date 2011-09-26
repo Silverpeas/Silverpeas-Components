@@ -25,17 +25,40 @@ package com.silverpeas.classifieds;
 
 import com.silverpeas.classifieds.control.ClassifiedService;
 import com.silverpeas.classifieds.control.ClassifiedServiceFactory;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 
-public class ClassifiedsIndexer implements ComponentIndexerInterface {
+import com.silverpeas.classifieds.model.ClassifiedDetail;
+import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
+import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+
+/**
+ * Class declaration
+ * @author
+ */
+public class ClassifiedsStatistics implements ComponentStatisticsInterface {
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context)
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
+    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
+    Collection<ClassifiedDetail> c = getElements(spaceId, componentId);
+    for (ClassifiedDetail classified : c) {
+      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+      myCouple.setUserId(classified.getCreatorId());
+      myCouple.setCountVolume(1);
+      myArrayList.add(myCouple);
+    }
+    return myArrayList;
+  }
+
+  public Collection<ClassifiedDetail> getElements(String spaceId, String componentId)
+      throws RemoteException {
     ClassifiedServiceFactory factory = ClassifiedServiceFactory.getFactory();
     ClassifiedService service = factory.getClassifiedService();
-    service.indexClassifieds(context.getCurrentComponentId());
+    Collection<ClassifiedDetail> result = service.getAllClassifieds(componentId);
+    return result;
   }
+
 }

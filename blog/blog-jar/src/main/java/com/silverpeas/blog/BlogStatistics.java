@@ -21,30 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.blog.servlets;
+package com.silverpeas.blog;
 
 import com.silverpeas.blog.control.BlogService;
 import com.silverpeas.blog.control.BlogServiceFactory;
-import java.net.URLEncoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.silverpeas.blog.model.PostDetail;
-import com.silverpeas.peasUtil.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
+import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
 
-public class GoToPost extends GoTo {
+public class BlogStatistics implements ComponentStatisticsInterface {
+
   @Override
-  public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
+      throws Exception {
+    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
     BlogService service = BlogServiceFactory.getFactory().getBlogService();
-    PostDetail post = service.getContentById(objectId);
+    Collection<PostDetail> posts = service.getAllPosts(componentId, 10000);
+    for (PostDetail post : posts) {
+      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+      myCouple.setUserId(post.getPublication().getCreatorId());
+      myCouple.setCountVolume(1);
+      myArrayList.add(myCouple);
+    }
 
-    String gotoURL = URLManager.getURL(null, post.getPublication()
-        .getInstanceId())
-        + post.getPublication().getURL();
-
-    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
+    return myArrayList;
   }
+
 }

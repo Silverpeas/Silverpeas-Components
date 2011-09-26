@@ -33,8 +33,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>classifieds-ejb</artifactId>
-      <classifier>client</classifier>
+      <artifactId>classifieds-jar</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

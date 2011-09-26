@@ -8,50 +8,59 @@
   </parent>
 
   <groupId>com.silverpeas.components.blog</groupId>
-  <artifactId>blog-war</artifactId>
-  <packaging>war</packaging>
-  <name>blog Webapp</name>
+  <artifactId>blog-jar</artifactId>
+  <packaging>jar</packaging>
+  <name>Blog Library</name>
+  <description>The business layer of the Blog Silverpeas component</description>
 
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.components.blog</groupId>
-      <artifactId>blog-jar</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>publication</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>node</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
+      <scope>provided</scope>
+    </dependency>
+     <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>statistic</artifactId>
+      <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>silverstatistics</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+     <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>mylinks</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>searchengine</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>comment</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>mylinks</artifactId>
-      <version>${core.version}</version>
-      <classifier>client</classifier>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
-
 </project>
+

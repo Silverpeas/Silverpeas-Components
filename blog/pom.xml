@@ -12,7 +12,7 @@
   <packaging>pom</packaging>
   <name>blog Component</name>
   <modules>
-    <module>blog-ejb</module>
+    <module>blog-jar</module>
     <module>blog-war</module>
     <module>blog-config</module>
   </modules>
