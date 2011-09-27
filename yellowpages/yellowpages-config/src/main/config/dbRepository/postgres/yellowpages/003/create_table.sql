@@ -14,15 +14,6 @@ CREATE TABLE SC_Contact_Company_GroupFather
 ) 
 ;
 
-CREATE TABLE SC_Contact_Company_Rel 
-(
-	contactId		int		NOT NULL,
-	companyId		int		NOT NULL,
-	relationType	int		NOT NULL,
-	enabled 		int 	DEFAULT(1) NOT NULL
-)
-;
-
 CREATE TABLE SC_Contact_Company 
 (
 	companyId			int			NOT NULL,
@@ -40,8 +31,17 @@ CREATE TABLE SC_Contact_GenericContact
 (
 	genericContactId	int		NOT NULL,
 	contactType			int		NOT NULL,
-	contactId			int		NOT NULL,
-	companyId			int		NOT NULL
+	contactId			int		NULL,
+	companyId			int	    NULL
+)
+;
+
+CREATE TABLE SC_Contact_GenericContact_Rel
+(
+	genericContactId	int		NOT NULL,
+	genericCompanyId    int		NOT NULL,
+	relationType	    int		NOT NULL,
+	enabled 	    	int 	DEFAULT(1) NOT NULL
 )
 ;
 

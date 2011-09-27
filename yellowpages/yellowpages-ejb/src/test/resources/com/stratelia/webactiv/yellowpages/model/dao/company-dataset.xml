@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
 
-    <uniqueid tableName="sb_comment_comment" maxId="100"/>
-
     <!-- Contacts -->
+    <uniqueid tableName="sb_contact_contact" maxId="100"/>
+
     <sb_contact_contact contactId="10" contactfirstname="George" contactlastname="Washington"
                         contactemail="George.Washington@oosphere.com" contactphone="" contactfax="" userid=""
                         contactcreationdate="2011/09/10" contactcreatorid="0" instanceId="yellowpages6"/>
@@ -37,6 +37,8 @@
                         contactcreationdate="2011/09/17" contactcreatorid="0" instanceId="yellowpages6"/>
 
     <!-- Companies -->
+    <uniqueid tableName="sc_contact_company" maxId="200"/>
+
 
     <sc_contact_company companyId="10" companyName="Walt Disney"
                         companyEmail="waltdisney@oosphere.com" companyPhone="" companyFax=""
@@ -61,5 +63,24 @@
     <sc_contact_company companyId="15" companyName="Boeing"
                         companyEmail="boeing@oosphere.com" companyPhone="" companyFax=""
                         companyCreationDate="2011/01/15" companyCreatorid="0" instanceId="yellowpages6"/>
+
+    <!-- Generic Contact (Entreprises) -->
+    <uniqueid tableName="sc_contact_genericcontact" maxId="300"/>
+    <sc_contact_genericcontact genericcontactid="110" contacttype="2" companyid="10"/>
+    <sc_contact_genericcontact genericcontactid="111" contacttype="2" companyid="11"/>
+    <sc_contact_genericcontact genericcontactid="112" contacttype="2" companyid="12"/>
+    <sc_contact_genericcontact genericcontactid="113" contacttype="2" companyid="13"/>
+    <sc_contact_genericcontact genericcontactid="114" contacttype="2" companyid="14"/>
+    <sc_contact_genericcontact genericcontactid="115" contacttype="2" companyid="15"/>
+
+    <!-- Generic Contact (Contacts) -->
+    <sc_contact_genericcontact genericcontactid="217" contacttype="1" contactid="17"/>
+    <!-- Obama -->
+
+    <!-- Generic Contact Rel -->
+    <!-- Exemple : Obama => CocaCola + WaltDisney + General Electrics (disabled) -->
+    <sc_contact_genericcontact_rel genericcontactid="217" genericcompanyid="113" relationtype="1" enabled="1"/>
+    <sc_contact_genericcontact_rel genericcontactid="217" genericcompanyid="110" relationtype="1" enabled="1"/>
+    <sc_contact_genericcontact_rel genericcontactid="217" genericcompanyid="114" relationtype="1" enabled="0"/>
 
 </dataset>

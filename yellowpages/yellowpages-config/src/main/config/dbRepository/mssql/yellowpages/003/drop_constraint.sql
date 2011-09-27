@@ -6,16 +6,16 @@ ALTER TABLE SC_Contact_Company_GroupFather
 DROP CONSTRAINT PK_SC_Contact_Company_GroupFather
 ;
 
-ALTER TABLE SC_Contact_Company_Rel
-DROP CONSTRAINT PK_Contact_Company_Rel
+ALTER TABLE SC_Contact_GenericContact_Rel
+DROP CONSTRAINT PK_Contact_GenericContact_Rel
 ;
 
-ALTER TABLE SC_Contact_Company_Rel 
-DROP CONSTRAINT FK_Contact_Company_Rel_FKContact
+ALTER TABLE SC_Contact_GenericContact_Rel
+DROP CONSTRAINT FK_Contact_GenericContact_Rel_FKContact
 ;
 
-ALTER TABLE SC_Contact_Company_Rel
-DROP CONSTRAINT FK_Contact_Company_Rel_FKCompany
+ALTER TABLE SC_Contact_GenericContact_Rel
+DROP CONSTRAINT FK_Contact_GenericContact_Rel_FKCompany
 ;
 
 ALTER TABLE SC_Contact_Company

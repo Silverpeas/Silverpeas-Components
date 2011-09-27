@@ -4,8 +4,11 @@ import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.contact.model.ContactPK;
+import com.stratelia.webactiv.yellowpages.model.GenericContactTypeConstant;
 import com.stratelia.webactiv.yellowpages.model.beans.Company;
 import com.stratelia.webactiv.yellowpages.model.beans.CompanyPK;
+import com.stratelia.webactiv.yellowpages.model.beans.GenericContact;
 import com.stratelia.webactiv.yellowpages.model.dao.jdbc.JDBCCompanyRequester;
 import org.dbunit.database.IDatabaseConnection;
 import org.junit.BeforeClass;
@@ -34,6 +37,7 @@ public class CompanyDaoTest extends AbstractJndiCase {
         baseTest.getDatabaseTester().closeConnection(databaseConnection);
     }
 
+
     @Test
     public void testSaveCompany() throws Exception {
         IDatabaseConnection dbConnection = baseTest.getConnection();
@@ -54,6 +58,11 @@ public class CompanyDaoTest extends AbstractJndiCase {
         assertEquals(company.getName(), companyFromDb.getName());
         assertEquals(company.getEmail(), companyFromDb.getEmail());
         assertEquals(company.getPk().getId(), companyFromDb.getPk().getId());
+
+        // Check GenericContact
+        GenericContact genericCompanyFromDb = companyDAO.getGenericContactFromCompanyPk(con, company.getPk());
+        assertNotNull(genericCompanyFromDb);
+        assertEquals(genericCompanyFromDb.getType(), GenericContactTypeConstant.COMPANY);
     }
 
     @Test
@@ -78,22 +87,50 @@ public class CompanyDaoTest extends AbstractJndiCase {
         assertEquals(company.getPk().getId(), companyFromDb.getPk().getId());
     }
 
-//    @Test
-    public void testDeleteCompany() {
+    @Test
+    public void testDeleteCompany() throws Exception {
+        IDatabaseConnection dbConnection = baseTest.getConnection();
+        Connection con = dbConnection.getConnection();
+        DBUtil.getInstanceForTest(con);
+
+        // Company à supprimer : Walt Disney
+        CompanyPK pk = new CompanyPK("10", null, "yellowpages6");
+        Company company = companyDAO.getCompany(con, pk);
+        assertNotNull(company);
+
+        int result = companyDAO.deleteCompany(con, company);
+        assertTrue(result > 0);
+        // relecture de la company en base
+        Company companyFromDb = companyDAO.getCompany(con, pk);
+        // comparaison des deux objets
+        assertNull(companyFromDb);
+
+        // verification de la table GenericContact. La company doit avoir été effacée également
+        GenericContact genericContact = companyDAO.getGenericContactFromCompanyPk(con, pk);
+        assertNull(genericContact);
+    }
+
+    //    @Test
+    public void testAddCompanyToContact() throws Exception {
+        IDatabaseConnection dbConnection = baseTest.getConnection();
+        Connection con = dbConnection.getConnection();
+        DBUtil.getInstanceForTest(con);
+
+        // Company à ajouter : Walt Disney
+        CompanyPK companyPkWaltDisney = new CompanyPK("10", null, "yellowpages6");
+        // Contact à utiliser : Georges Washington
+        ContactPK contactWashington = new ContactPK("17", null, "yellowpages6");
+
+        //companyDAO.
+
+    }
+
+    //    @Test
+    public void testFindCompanyListByContactId() {
         fail("Not yet implemented");
     }
 
-//    @Test
-    public void testFindCompanyListById() {
-        fail("Not yet implemented");
-    }
-
-//    @Test
-    public void testAddCompanyToContact() {
-        fail("Not yet implemented");
-    }
-
-//    @Test
+    //    @Test
     public void testRemoveCompanyFromContact() {
         fail("Not yet implemented");
     }

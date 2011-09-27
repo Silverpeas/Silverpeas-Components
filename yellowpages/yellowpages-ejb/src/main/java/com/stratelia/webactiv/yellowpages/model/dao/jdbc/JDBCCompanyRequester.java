@@ -25,8 +25,13 @@ package com.stratelia.webactiv.yellowpages.model.dao.jdbc;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.contact.model.ContactPK;
+import com.stratelia.webactiv.yellowpages.model.GenericContactTypeConstant;
 import com.stratelia.webactiv.yellowpages.model.beans.Company;
 import com.stratelia.webactiv.yellowpages.model.beans.CompanyPK;
+import com.stratelia.webactiv.yellowpages.model.beans.GenericContact;
+import com.stratelia.webactiv.yellowpages.model.beans.GenericContactPK;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -47,7 +52,7 @@ public class JDBCCompanyRequester {
     }
 
     public CompanyPK saveCompany(Connection con, Company company) throws SQLException {
-        String insert_query = "INSERT INTO sc_contact_company (companyid, companyname, companyemail, companyphone, companyfax, companycreationdate, companycreatorid, instanceid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String insert_query_company = "INSERT INTO sc_contact_company (companyid, companyname, companyemail, companyphone, companyfax, companycreationdate, companycreatorid, instanceid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement prepStmt = null;
         int newId = 0;
         try {
@@ -57,7 +62,7 @@ public class JDBCCompanyRequester {
             return null;
         }
         try {
-            prepStmt = con.prepareStatement(insert_query);
+            prepStmt = con.prepareStatement(insert_query_company);
             prepStmt.setInt(1, newId);
             prepStmt.setString(2, company.getName());
             prepStmt.setString(3, company.getEmail());
@@ -71,6 +76,12 @@ public class JDBCCompanyRequester {
             DBUtil.close(prepStmt);
         }
         company.getPk().setId(String.valueOf(newId));
+
+        // Enregistrement dans la table GenericContact
+        GenericContactPK newGenericContactPK = new GenericContactPK();
+        GenericContact newGenericContact = new GenericContact(newGenericContactPK, GenericContactTypeConstant.COMPANY, null, Integer.parseInt(company.getPk().getId()));
+        this.saveGenericContact(con, newGenericContact);
+
         return company.getPk();
     }
 
@@ -92,7 +103,6 @@ public class JDBCCompanyRequester {
             DBUtil.close(rs, prepStmt);
         }
     }
-
 
     public int updateCompany(Connection con, Company company) throws SQLException {
         String update_query = "UPDATE sc_contact_company SET companyname=?, companyemail=?, companyphone=?, companyfax=?, companycreationdate=?, companycreatorid=?, instanceId=? WHERE companyid=?";
@@ -118,6 +128,150 @@ public class JDBCCompanyRequester {
         }
     }
 
+    public int deleteCompany(Connection con, Company company) throws SQLException {
+
+        // Trouve le GenericContact associé
+
+
+        String delete_query = "DELETE sc_contact_company WHERE companyid=?";
+        PreparedStatement preStmt = null;
+        ResultSet rs = null;
+        try {
+            preStmt = con.prepareStatement(delete_query);
+
+            // Clause Where
+            preStmt.setInt(1, Integer.parseInt(company.getPk().getId()));
+            return preStmt.executeUpdate();
+
+        } finally {
+            DBUtil.close(preStmt);
+        }
+    }
+/*
+    public void addCompanyToContact(Connection con, Company company, ContactPK contactPK) throws SQLException {
+        // vérifie l'exitence de la company
+        Company company = getCompany(con, companyPK);
+        // insert du contact dans la table generic_contact s'il n'y est pas déjà
+        GenericContact genericContact = getGenericContact(contactPK);
+        if (genericContact == null) {
+            genericContact = new GenericContact()
+                                    saveGenericContact(con,genericContact)
+        }
+
+        // ajout de la company au contact
+        String add_company_query = "UPDATE sc_contact_contact"
+    }*/
+
+
+    public GenericContactPK saveGenericContact(Connection con, GenericContact genericContact) throws SQLException {
+        String insert_query = "INSERT INTO sc_contact_genericcontact (genericContactId, contactType, contactId, companyId) VALUES (?, ?, ?, ?)";
+        PreparedStatement prepStmt = null;
+
+        int newId = 0;
+        try {
+            newId = DBUtil.getNextId(genericContact.getPk().getTableName(), "genericContactId");
+        } catch (Exception e) {
+            SilverTrace.warn("genericContact", getClass().getSimpleName() + ".saveGenericContact", "yellowpages.EX_CREATE_GENERIC_CONTACT_FAILED", e);
+            return null;
+        }
+        try {
+            prepStmt = con.prepareStatement(insert_query);
+            prepStmt.setInt(1, newId);
+            prepStmt.setInt(2, genericContact.getType());
+            if (genericContact.getContactId() == null) {
+                prepStmt.setNull(3, java.sql.Types.INTEGER);
+            } else {
+                prepStmt.setInt(3, genericContact.getContactId());
+            }
+            if (genericContact.getCompanyId() == null) {
+                prepStmt.setNull(4, java.sql.Types.INTEGER);
+            } else {
+                prepStmt.setInt(4, genericContact.getCompanyId());
+            }
+            prepStmt.executeUpdate();
+        } finally {
+            DBUtil.close(prepStmt);
+        }
+
+        // Enregistrement dans la table GenericContact
+        genericContact.getPk().setId(String.valueOf(newId));
+        return genericContact.getPk();
+    }
+
+    public int deleteGenericContact(Connection con, GenericContact genericContact) throws SQLException {
+        String delete_query = "DELETE sc_contact_genericcontact WHERE genericContactId=?";
+        PreparedStatement preStmt = null;
+        ResultSet rs = null;
+        try {
+            preStmt = con.prepareStatement(delete_query);
+
+            // Clause Where
+            preStmt.setInt(1, Integer.parseInt(genericContact.getPk().getId()));
+            return preStmt.executeUpdate();
+
+        } finally {
+            DBUtil.close(preStmt);
+        }
+    }
+
+    public GenericContact getGenericContactFromContactPk(Connection con, ContactPK contactPk) throws SQLException {
+
+        String select_query = "SELECT genericContactId, contactType, contactId, companyId FROM sc_contact_genericcontact WHERE contactId = ?";
+        PreparedStatement prepStmt = null;
+        ResultSet rs = null;
+        try {
+            prepStmt = con.prepareStatement(select_query);
+            prepStmt.setInt(1, Integer.parseInt(contactPk.getId()));
+            rs = prepStmt.executeQuery();
+            if (rs.next()) {
+                contactPk.setComponentName(rs.getString("instanceId"));
+                contactPk.setId(String.valueOf(rs.getInt("genericContactId")));
+                return resultSet2GenericContact(rs, (WAPrimaryKey) contactPk);
+            }
+            return null;
+        } finally {
+            DBUtil.close(rs, prepStmt);
+        }
+
+    }
+
+    public GenericContact getGenericContactFromCompanyPk(Connection con, CompanyPK companyPK) throws SQLException {
+
+        String select_query = "SELECT genericContactId, contactType, contactId, companyId FROM sc_contact_genericcontact WHERE companyId = ?";
+        PreparedStatement prepStmt = null;
+        ResultSet rs = null;
+        try {
+            prepStmt = con.prepareStatement(select_query);
+            prepStmt.setInt(1, Integer.parseInt(companyPK.getId()));
+            rs = prepStmt.executeQuery();
+            if (rs.next()) {
+                companyPK.setId(String.valueOf(rs.getInt("genericContactId")));
+                return resultSet2GenericContact(rs, (WAPrimaryKey) companyPK);
+            }
+            return null;
+        } finally {
+            DBUtil.close(rs, prepStmt);
+        }
+
+    }
+
+    private static GenericContact resultSet2GenericContact(ResultSet rs, WAPrimaryKey pk) throws SQLException {
+
+        int id = rs.getInt("genericContactId");
+        GenericContactPK genericPK = new GenericContactPK(String.valueOf(id), pk);
+        int type = rs.getInt("contactType");
+        Integer contactId = rs.getInt("contactId");
+        if (rs.wasNull()) {
+            contactId = null;
+        }
+        Integer companyId = rs.getInt("companyId");
+        if (rs.wasNull()) {
+            companyId = null;
+        }
+
+        return new GenericContact(genericPK, type, contactId, companyId);
+    }
+
     private static Company resultSet2Company(ResultSet rs, CompanyPK pubPK) throws SQLException {
 
         int id = rs.getInt("companyId");
@@ -132,7 +286,21 @@ public class JDBCCompanyRequester {
         return new Company(pk, companyname, companyemail, companyphone, companyfax, creationDate, companycreatorid);
     }
 
+    public int deleteGenericContactRel(Connection con, GenericContact genericContact) throws SQLException {
+        String delete_query = "DELETE sc_contact_genericcontact WHERE genericContactId=?";
+        PreparedStatement preStmt = null;
+        ResultSet rs = null;
+        try {
+            preStmt = con.prepareStatement(delete_query);
 
+            // Clause Where
+            preStmt.setInt(1, Integer.parseInt(genericContact.getPk().getId()));
+            return preStmt.executeUpdate();
+
+        } finally {
+            DBUtil.close(preStmt);
+        }
+    }
 /*
     *//**
      * Deletes the company identified by the specified primary key from the data source onto which the given connection is opened.

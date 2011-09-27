@@ -19,31 +19,11 @@ ADD CONSTRAINT PK_Contact_Company PRIMARY KEY
 	)   
 ;
 
-ALTER TABLE SC_Contact_Company_Rel
-ADD CONSTRAINT PK_Contact_Company_Rel PRIMARY KEY 
-	(
-		contactId,
-		companyId
-	)   
-;
-
-ALTER TABLE SC_Contact_Company_Rel
-ADD CONSTRAINT FK_Contact_Company_Rel_FKContact FOREIGN KEY (contactId)
-    REFERENCES SB_Contact_Contact (contactId) MATCH SIMPLE
-    ON UPDATE NO ACTION ON DELETE NO ACTION
-;
-
-ALTER TABLE SC_Contact_Company_Rel
-ADD	CONSTRAINT FK_Contact_Company_Rel_FKCompany FOREIGN KEY (companyId)
-    REFERENCES SC_Contact_Company (companyId) MATCH SIMPLE
-    ON UPDATE NO ACTION ON DELETE NO ACTION
-;
-
 ALTER TABLE SC_Contact_GenericContact
-ADD CONSTRAINT PK_Contact_GenericContact PRIMARY KEY 
+ADD CONSTRAINT PK_Contact_GenericContact PRIMARY KEY
 	(
 		genericContactId
-	)   
+	)
 ;
 
 ALTER TABLE SC_Contact_GenericContact
@@ -57,3 +37,24 @@ ADD CONSTRAINT FK_Contact_GenericContact_FKCompany FOREIGN KEY (companyId)
     REFERENCES SC_Contact_Company (companyId) MATCH SIMPLE
     ON UPDATE NO ACTION ON DELETE NO ACTION
 ;
+
+ALTER TABLE SC_Contact_GenericContact_Rel
+ADD CONSTRAINT PK_Contact_GenericContact_Rel PRIMARY KEY
+	(
+		genericContactId,
+		genericCompanyId
+	)   
+;
+
+ALTER TABLE SC_Contact_GenericContact_Rel
+ADD CONSTRAINT FK_Contact_GenericContact_Rel_FKContact FOREIGN KEY (genericContactId)
+    REFERENCES SC_Contact_GenericContact (genericContactId) MATCH SIMPLE
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+
+ALTER TABLE SC_Contact_GenericContact_Rel
+ADD	CONSTRAINT FK_Contact_GenericContact_Rel_FKCompany FOREIGN KEY (genericCompanyId)
+    REFERENCES SC_Contact_GenericContact (genericContactId) MATCH SIMPLE
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;
+

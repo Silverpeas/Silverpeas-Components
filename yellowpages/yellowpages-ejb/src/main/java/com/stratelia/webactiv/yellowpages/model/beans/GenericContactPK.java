@@ -29,21 +29,28 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.io.Serializable;
 
 /**
- * It's the Company PrimaryKey object It identify a Company
+ * It's the GenericContact PrimaryKey object It identify a GenericContact
  */
-public class CompanyPK extends WAPrimaryKey implements Serializable {
+public class GenericContactPK extends WAPrimaryKey implements Serializable {
+
+    /**
+     * Default Constructor which empty id
+     */
+    public GenericContactPK() {
+        super("");
+    }
 
     /**
      * Constructor which set only the id
      */
-    public CompanyPK(String id) {
+    public GenericContactPK(String id) {
         super(id);
     }
 
     /**
      * Constructor which set the id The WAPrimaryKey provides space and component name
      */
-    public CompanyPK(String id, String space, String componentName) {
+    public GenericContactPK(String id, String space, String componentName) {
         super(id, space, componentName);
     }
 
@@ -52,7 +59,7 @@ public class CompanyPK extends WAPrimaryKey implements Serializable {
      *
      * @since 1.0
      */
-    public CompanyPK(String id, WAPrimaryKey pk) {
+    public GenericContactPK(String id, WAPrimaryKey pk) {
         super(id, pk);
     }
 
@@ -73,7 +80,7 @@ public class CompanyPK extends WAPrimaryKey implements Serializable {
      * @since 1.0
      */
     public String getTableName() {
-        return "SC_Contact_Company";
+        return "SC_Contact_GenericContact";
     }
 
     /**
@@ -84,11 +91,11 @@ public class CompanyPK extends WAPrimaryKey implements Serializable {
      * @since 1.0
      */
     public boolean equals(Object other) {
-        if (!(other instanceof CompanyPK))
+        if (!(other instanceof GenericContactPK))
             return false;
-        return (id.equals(((CompanyPK) other).getId()))
-                && (space.equals(((CompanyPK) other).getSpace()))
-                && (componentName.equals(((CompanyPK) other).getComponentName()));
+        return (id.equals(((GenericContactPK) other).getId()))
+                && (space.equals(((GenericContactPK) other).getSpace()))
+                && (componentName.equals(((GenericContactPK) other).getComponentName()));
     }
 
     /**

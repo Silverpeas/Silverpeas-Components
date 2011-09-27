@@ -24,23 +24,23 @@
 
 package com.stratelia.webactiv.yellowpages.model.dao;
 
-import java.util.List;
-
 import com.stratelia.webactiv.yellowpages.model.beans.Company;
 import com.stratelia.webactiv.yellowpages.model.beans.CompanyPK;
 
+import java.util.List;
+
 public interface CompanyDAO {
 
-  public CompanyPK saveCompany(Company company);
-  
-  public void updateCompany(Company company);
+    public CompanyPK saveCompany(Company company);
 
-  public void deleteCompany(Company company);
-  
-  public List<Company> findCompanyListById(String id);
+    public void updateCompany(Company company);
 
-  public void addCompanyToContact(Company company, int contactId);
-  
-  public void removeCompanyFromContact(int contactId);
-  
+    public int deleteCompany(Company company);
+
+    public void addCompanyToContact(Company company, int contactId);
+
+    public void removeCompanyFromContact(int contactId);
+
+    public List<Company> findCompanyListByContactId(int contactId);
+
 }
