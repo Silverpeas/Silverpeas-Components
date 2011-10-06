@@ -4,20 +4,21 @@ import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.contact.model.ContactPK;
-import com.stratelia.webactiv.yellowpages.model.GenericContactTypeConstant;
+import com.stratelia.webactiv.yellowpages.model.Constants.GenericContactTypeConstant;
 import com.stratelia.webactiv.yellowpages.model.beans.Company;
 import com.stratelia.webactiv.yellowpages.model.beans.CompanyPK;
 import com.stratelia.webactiv.yellowpages.model.beans.GenericContact;
 import com.stratelia.webactiv.yellowpages.model.dao.jdbc.JDBCCompanyRequester;
 import org.dbunit.database.IDatabaseConnection;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.naming.NamingException;
-import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -25,11 +26,13 @@ public class CompanyDaoTest extends AbstractJndiCase {
 
     private JDBCCompanyRequester companyDAO = new JDBCCompanyRequester();
 
+    Connection con;
+
     public CompanyDaoTest() {
     }
 
     @BeforeClass
-    public static void generalSetUp() throws IOException, NamingException, Exception {
+    public static void generalSetUp() throws Exception {
         baseTest = new SilverpeasJndiCase("com/stratelia/webactiv/yellowpages/model/dao/company-dataset.xml", "create-database.ddl");
         baseTest.configureJNDIDatasource();
         IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
@@ -37,12 +40,20 @@ public class CompanyDaoTest extends AbstractJndiCase {
         baseTest.getDatabaseTester().closeConnection(databaseConnection);
     }
 
+    @Before
+    public void getConnection() throws Exception {
+        IDatabaseConnection dbConnection = baseTest.getConnection();
+        con = dbConnection.getConnection();
+        DBUtil.getInstanceForTest(con);
+    }
+
+    @After
+    public void closeConnection() throws SQLException {
+        con.close();
+    }
 
     @Test
     public void testSaveCompany() throws Exception {
-        IDatabaseConnection dbConnection = baseTest.getConnection();
-        Connection con = dbConnection.getConnection();
-        DBUtil.getInstanceForTest(con);
         // Company à enregistrer
         CompanyPK pk = new CompanyPK("200", null, "yellowpages6");
         // CommentPK pk = new CommentPK(null, null, "kmelia18");
@@ -60,16 +71,13 @@ public class CompanyDaoTest extends AbstractJndiCase {
         assertEquals(company.getPk().getId(), companyFromDb.getPk().getId());
 
         // Check GenericContact
-        GenericContact genericCompanyFromDb = companyDAO.getGenericContactFromCompanyPk(con, company.getPk());
+        GenericContact genericCompanyFromDb = companyDAO.getGenericContactFromCompanyId(con, Integer.parseInt(companyFromDb.getPk().getId()));
         assertNotNull(genericCompanyFromDb);
         assertEquals(genericCompanyFromDb.getType(), GenericContactTypeConstant.COMPANY);
     }
 
     @Test
     public void testUpdateCompany() throws Exception {
-        IDatabaseConnection dbConnection = baseTest.getConnection();
-        Connection con = dbConnection.getConnection();
-        DBUtil.getInstanceForTest(con);
         // Company à modifier : Walt Disney
         CompanyPK pk = new CompanyPK("10", null, "yellowpages6");
         Company company = companyDAO.getCompany(con, pk);
@@ -89,12 +97,8 @@ public class CompanyDaoTest extends AbstractJndiCase {
 
     @Test
     public void testDeleteCompany() throws Exception {
-        IDatabaseConnection dbConnection = baseTest.getConnection();
-        Connection con = dbConnection.getConnection();
-        DBUtil.getInstanceForTest(con);
-
-        // Company à supprimer : Walt Disney
-        CompanyPK pk = new CompanyPK("10", null, "yellowpages6");
+        // Company à supprimer : Microsoft
+        CompanyPK pk = new CompanyPK("11", null, "yellowpages6");
         Company company = companyDAO.getCompany(con, pk);
         assertNotNull(company);
 
@@ -104,35 +108,48 @@ public class CompanyDaoTest extends AbstractJndiCase {
         Company companyFromDb = companyDAO.getCompany(con, pk);
         // comparaison des deux objets
         assertNull(companyFromDb);
-
-        // verification de la table GenericContact. La company doit avoir été effacée également
-        GenericContact genericContact = companyDAO.getGenericContactFromCompanyPk(con, pk);
-        assertNull(genericContact);
     }
 
-    //    @Test
+    @Test
     public void testAddCompanyToContact() throws Exception {
-        IDatabaseConnection dbConnection = baseTest.getConnection();
-        Connection con = dbConnection.getConnection();
-        DBUtil.getInstanceForTest(con);
+        // ajout de "Boing" au contact "Barack Obama"
+        CompanyPK companyPkWaltDisney = new CompanyPK("15", null, "yellowpages6");
+        Company companyBoing = companyDAO.getCompany(con, companyPkWaltDisney);
+        assertNotNull(companyBoing);
 
-        // Company à ajouter : Walt Disney
+        // Contact à utiliser : "Georges Washington"
+        int idContactObama = 17;
+
+        companyDAO.addCompanyToContact(con, companyBoing, idContactObama);
+
+        // Check dans la base
+        assertTrue(companyDAO.isAlreadyInContactList(con, companyBoing, idContactObama));
+    }
+
+    @Test
+    public void testRemoveCompanyFromContact() throws Exception {
+        // enlever "Walt Disney" du contact "Barack Obama"
         CompanyPK companyPkWaltDisney = new CompanyPK("10", null, "yellowpages6");
-        // Contact à utiliser : Georges Washington
-        ContactPK contactWashington = new ContactPK("17", null, "yellowpages6");
+        Company companyWaltDisney = companyDAO.getCompany(con, companyPkWaltDisney);
+        assertNotNull(companyWaltDisney);
 
-        //companyDAO.
+        // Contact à utiliser : "Barak Obama"
+        int idContactObama = 17;
 
+        companyDAO.removeCompanyFromContact(con, companyWaltDisney, idContactObama);
+
+        // Check dans la base
+        assertFalse(companyDAO.isAlreadyInContactList(con, companyWaltDisney, idContactObama));
     }
 
-    //    @Test
-    public void testFindCompanyListByContactId() {
-        fail("Not yet implemented");
-    }
+    @Test
+    public void testFindCompanyListByContactId() throws Exception {
+        // Contact à utiliser : "Barak Obama"
+        int idContactObama = 17;
 
-    //    @Test
-    public void testRemoveCompanyFromContact() {
-        fail("Not yet implemented");
+        List<Company> result = companyDAO.findCompanyListByContactId(con, idContactObama);
+        assertNotNull(result);
+        assertEquals(result.size(), 3);
     }
 
 }

@@ -2,8 +2,6 @@
 <dataset>
 
     <!-- Contacts -->
-    <uniqueid tableName="sb_contact_contact" maxId="100"/>
-
     <sb_contact_contact contactId="10" contactfirstname="George" contactlastname="Washington"
                         contactemail="George.Washington@oosphere.com" contactphone="" contactfax="" userid=""
                         contactcreationdate="2011/09/10" contactcreatorid="0" instanceId="yellowpages6"/>
@@ -37,9 +35,6 @@
                         contactcreationdate="2011/09/17" contactcreatorid="0" instanceId="yellowpages6"/>
 
     <!-- Companies -->
-    <uniqueid tableName="sc_contact_company" maxId="200"/>
-
-
     <sc_contact_company companyId="10" companyName="Walt Disney"
                         companyEmail="waltdisney@oosphere.com" companyPhone="" companyFax=""
                         companyCreationDate="2011/01/10" companyCreatorid="0" instanceId="yellowpages6"/>
@@ -65,17 +60,23 @@
                         companyCreationDate="2011/01/15" companyCreatorid="0" instanceId="yellowpages6"/>
 
     <!-- Generic Contact (Entreprises) -->
-    <uniqueid tableName="sc_contact_genericcontact" maxId="300"/>
-    <sc_contact_genericcontact genericcontactid="110" contacttype="2" companyid="10"/>
-    <sc_contact_genericcontact genericcontactid="111" contacttype="2" companyid="11"/>
-    <sc_contact_genericcontact genericcontactid="112" contacttype="2" companyid="12"/>
-    <sc_contact_genericcontact genericcontactid="113" contacttype="2" companyid="13"/>
-    <sc_contact_genericcontact genericcontactid="114" contacttype="2" companyid="14"/>
-    <sc_contact_genericcontact genericcontactid="115" contacttype="2" companyid="15"/>
+    <sc_contact_genericcontact genericcontactid="110" contacttype="2" companyid="10" contactid="0"/>
+    <sc_contact_genericcontact genericcontactid="111" contacttype="2" companyid="11" contactid="0"/>
+    <sc_contact_genericcontact genericcontactid="112" contacttype="2" companyid="12" contactid="0"/>
+    <sc_contact_genericcontact genericcontactid="113" contacttype="2" companyid="13" contactid="0"/>
+    <sc_contact_genericcontact genericcontactid="114" contacttype="2" companyid="14" contactid="0"/>
+    <sc_contact_genericcontact genericcontactid="115" contacttype="2" companyid="15" contactid="0"/>
 
     <!-- Generic Contact (Contacts) -->
-    <sc_contact_genericcontact genericcontactid="217" contacttype="1" contactid="17"/>
     <!-- Obama -->
+    <sc_contact_genericcontact genericcontactid="210" contacttype="1" companyid="0" contactid="10"/>
+    <sc_contact_genericcontact genericcontactid="211" contacttype="1" companyid="0" contactid="11"/>
+    <sc_contact_genericcontact genericcontactid="212" contacttype="1" companyid="0" contactid="12"/>
+    <sc_contact_genericcontact genericcontactid="213" contacttype="1" companyid="0" contactid="13"/>
+    <sc_contact_genericcontact genericcontactid="214" contacttype="1" companyid="0" contactid="14"/>
+    <sc_contact_genericcontact genericcontactid="215" contacttype="1" companyid="0" contactid="15"/>
+    <sc_contact_genericcontact genericcontactid="216" contacttype="1" companyid="0" contactid="16"/>
+    <sc_contact_genericcontact genericcontactid="217" contacttype="1" companyid="0" contactid="17"/>
 
     <!-- Generic Contact Rel -->
     <!-- Exemple : Obama => CocaCola + WaltDisney + General Electrics (disabled) -->

@@ -30,10 +30,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
 import com.stratelia.webactiv.yellowpages.model.beans.Company;
 import com.stratelia.webactiv.yellowpages.model.beans.CompanyPK;
-import com.stratelia.webactiv.yellowpages.model.beans.GenericContact;
 import com.stratelia.webactiv.yellowpages.model.dao.CompanyDAO;
 
-import javax.inject.Named;
 import java.sql.Connection;
 import java.util.List;
 
@@ -72,9 +70,8 @@ public class JDBCCompanyDAO implements CompanyDAO {
                 throw new YellowpagesRuntimeException(getClass().getSimpleName() + ".updateCompany()",
                         SilverpeasRuntimeException.ERROR, "yellowpages.EX_UPDATE_COMPANY_FAILED");
             }
-            //return companyPK;
         } catch (Exception re) {
-            throw new YellowpagesRuntimeException(getClass().getSimpleName() + ".saveCompany()",
+            throw new YellowpagesRuntimeException(getClass().getSimpleName() + ".updateCompany()",
                     SilverpeasRuntimeException.ERROR, "yellowpages.EX_UPDATE_COMPANY_FAILED", re);
         } finally {
             closeConnection(con);
@@ -88,14 +85,13 @@ public class JDBCCompanyDAO implements CompanyDAO {
         int nbLinesDeleted;
         try {
             JDBCCompanyRequester companyDAO = getCompanyDAO();
-            nbLinesDeleted = companyDAO.updateCompany(con, company);
+            nbLinesDeleted = companyDAO.deleteCompany(con, company);
             if (nbLinesDeleted <= 0) {
-                throw new YellowpagesRuntimeException(getClass().getSimpleName() + ".updateCompany()",
+                throw new YellowpagesRuntimeException(getClass().getSimpleName() + ".deleteCompany()",
                         SilverpeasRuntimeException.ERROR, "yellowpages.EX_DELETE_COMPANY_FAILED");
             }
-            //return companyPK;
         } catch (Exception re) {
-            throw new YellowpagesRuntimeException(getClass().getSimpleName() + ".saveCompany()",
+            throw new YellowpagesRuntimeException(getClass().getSimpleName() + ".deleteCompany()",
                     SilverpeasRuntimeException.ERROR, "yellowpages.EX_DELETE_COMPANY_FAILED", re);
         } finally {
             closeConnection(con);
@@ -106,23 +102,54 @@ public class JDBCCompanyDAO implements CompanyDAO {
 
     @Override
     public void addCompanyToContact(Company company, int contactId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        Connection con = openConnection();
+        try {
+            JDBCCompanyRequester companyDAO = getCompanyDAO();
+            companyDAO.addCompanyToContact(con, company, contactId);
+        } catch (Exception re) {
+            throw new YellowpagesRuntimeException(getClass().getSimpleName() + ".saveCompany()",
+                    SilverpeasRuntimeException.ERROR, "yellowpages.EX_ADD_COMPANY_TO_CONTACT_FAILED", re);
+        } finally {
+            closeConnection(con);
+        }
     }
 
     @Override
-    public void removeCompanyFromContact(int contactId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void removeCompanyFromContact(Company company, int contactId) {
+        Connection con = openConnection();
+        try {
+            JDBCCompanyRequester companyDAO = getCompanyDAO();
+            companyDAO.removeCompanyFromContact(con, company, contactId);
+        } catch (Exception re) {
+            throw new YellowpagesRuntimeException(getClass().getSimpleName() + ".saveCompany()",
+                    SilverpeasRuntimeException.ERROR, "yellowpages.EX_ADD_COMPANY_TO_CONTACT_FAILED", re);
+        } finally {
+            closeConnection(con);
+        }
     }
 
     @Override
     public List<Company> findCompanyListByContactId(int contactId) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Connection con = openConnection();
+        try {
+            JDBCCompanyRequester companyDAO = getCompanyDAO();
+            List<Company> companyList = companyDAO.findCompanyListByContactId(con, contactId);
+            if (companyList == null) {
+                throw new YellowpagesRuntimeException(getClass().getSimpleName() + ".deleteCompany()",
+                        SilverpeasRuntimeException.ERROR, "yellowpages.EX_FIND_COMPANY_LIST_FAILED");
+            }
+            return companyList;
+        } catch (Exception re) {
+            throw new YellowpagesRuntimeException(getClass().getSimpleName() + ".saveCompany()",
+                    SilverpeasRuntimeException.ERROR, "yellowpages.EX_FIND_COMPANY_LIST_FAILED", re);
+        } finally {
+            closeConnection(con);
+        }
     }
 
     private Connection openConnection() {
         try {
-            Connection con = DBUtil.makeConnection(JNDINames.NODE_DATASOURCE);
-            return con;
+            return DBUtil.makeConnection(JNDINames.NODE_DATASOURCE);
         } catch (Exception e) {
             throw new YellowpagesRuntimeException("YellowpagesBmEJB.getConnection()", SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
         }

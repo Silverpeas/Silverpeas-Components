@@ -39,7 +39,7 @@ public interface CompanyDAO {
 
     public void addCompanyToContact(Company company, int contactId);
 
-    public void removeCompanyFromContact(int contactId);
+    public void removeCompanyFromContact(Company company, int contactId);
 
     public List<Company> findCompanyListByContactId(int contactId);
 

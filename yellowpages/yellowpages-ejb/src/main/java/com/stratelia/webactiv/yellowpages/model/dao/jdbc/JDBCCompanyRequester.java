@@ -27,7 +27,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
-import com.stratelia.webactiv.yellowpages.model.GenericContactTypeConstant;
+import com.stratelia.webactiv.yellowpages.model.Constants.GenericContactTypeConstant;
+import com.stratelia.webactiv.yellowpages.model.Constants.RelationTypeConstant;
 import com.stratelia.webactiv.yellowpages.model.beans.Company;
 import com.stratelia.webactiv.yellowpages.model.beans.CompanyPK;
 import com.stratelia.webactiv.yellowpages.model.beans.GenericContact;
@@ -37,6 +38,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A specific JDBC requester dedicated on the company persisted in the underlying data source.
@@ -54,7 +57,7 @@ public class JDBCCompanyRequester {
     public CompanyPK saveCompany(Connection con, Company company) throws SQLException {
         String insert_query_company = "INSERT INTO sc_contact_company (companyid, companyname, companyemail, companyphone, companyfax, companycreationdate, companycreatorid, instanceid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement prepStmt = null;
-        int newId = 0;
+        int newId;
         try {
             newId = DBUtil.getNextId(company.getPk().getTableName(), "companyId");
         } catch (Exception e) {
@@ -130,8 +133,13 @@ public class JDBCCompanyRequester {
 
     public int deleteCompany(Connection con, Company company) throws SQLException {
 
-        // Trouve le GenericContact associé
+        int companyId = Integer.parseInt(company.getPk().getId());
 
+        // Trouve le GenericContact associé
+        GenericContact genericContact = getGenericContactFromCompanyId(con, companyId);
+        if (genericContact != null) {
+            deleteGenericContact(con, genericContact);
+        }
 
         String delete_query = "DELETE sc_contact_company WHERE companyid=?";
         PreparedStatement preStmt = null;
@@ -140,34 +148,123 @@ public class JDBCCompanyRequester {
             preStmt = con.prepareStatement(delete_query);
 
             // Clause Where
-            preStmt.setInt(1, Integer.parseInt(company.getPk().getId()));
+            preStmt.setInt(1, companyId);
             return preStmt.executeUpdate();
 
         } finally {
             DBUtil.close(preStmt);
         }
     }
-/*
-    public void addCompanyToContact(Connection con, Company company, ContactPK contactPK) throws SQLException {
-        // vérifie l'exitence de la company
-        Company company = getCompany(con, companyPK);
-        // insert du contact dans la table generic_contact s'il n'y est pas déjà
-        GenericContact genericContact = getGenericContact(contactPK);
-        if (genericContact == null) {
-            genericContact = new GenericContact()
-                                    saveGenericContact(con,genericContact)
+
+    public boolean isAlreadyInContactList(Connection con, Company company, int contactId) throws SQLException {
+        String select_query = "SELECT GCCOMPANY.companyId " +
+                "FROM sc_contact_genericcontact GCCONTACT, sc_contact_genericcontact GCCOMPANY, sc_contact_genericcontact_rel REL " +
+                "WHERE GCCONTACT.genericcontactid = REL.genericcontactid AND " +
+                "REL.genericcompanyid = GCCOMPANY.genericcontactid AND " +
+                "GCCOMPANY.contactType = ? AND " +
+                "GCCONTACT.contactId = ? AND " +
+                "GCCOMPANY.companyId = ?";
+
+        PreparedStatement prepStmt = null;
+        ContactPK contactPkSearch;
+        ResultSet rs = null;
+
+
+        List<Company> resultList = new ArrayList<Company>();
+        try {
+            prepStmt = con.prepareStatement(select_query);
+            prepStmt.setInt(1, GenericContactTypeConstant.COMPANY);
+            prepStmt.setInt(2, contactId);
+            prepStmt.setInt(3, Integer.parseInt(company.getPk().getId()));
+            rs = prepStmt.executeQuery();
+
+            return (rs.next());
+
+        } finally {
+            DBUtil.close(rs, prepStmt);
         }
 
-        // ajout de la company au contact
-        String add_company_query = "UPDATE sc_contact_contact"
-    }*/
+    }
 
+    public List<Company> findCompanyListByContactId(Connection con, int contactId) throws SQLException {
+        // Recupère la liste des companies associées
+        String select_query = "SELECT COMP.companyid, COMP.companyname, COMP.companyemail, COMP.companyphone, COMP.companyfax, COMP.companycreationdate, COMP.companycreatorid, COMP.instanceid " +
+                "FROM sc_contact_genericcontact GCCONTACT, sc_contact_genericcontact GCCOMPANY, sc_contact_genericcontact_rel REL, sc_contact_company COMP " +
+                "WHERE GCCONTACT.genericcontactid = REL.genericcontactid AND " +
+                "REL.genericcompanyid = GCCOMPANY.genericcontactid AND " +
+                "GCCOMPANY.companyId = COMP.companyId AND " +
+                "GCCOMPANY.contactType = ? AND " +
+                "GCCONTACT.contactId = ?";
+
+        PreparedStatement prepStmt = null;
+        ContactPK contactPkSearch;
+        ResultSet rs = null;
+        List<Company> resultList = new ArrayList<Company>();
+        try {
+            prepStmt = con.prepareStatement(select_query);
+            prepStmt.setInt(1, GenericContactTypeConstant.COMPANY);
+            prepStmt.setInt(2, contactId);
+            rs = prepStmt.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("companyId");
+                CompanyPK pk = new CompanyPK(String.valueOf(id));
+                resultList.add(resultSet2Company(rs, pk));
+            }
+            return resultList;
+        } finally {
+            DBUtil.close(rs, prepStmt);
+        }
+    }
+
+    public void addCompanyToContact(Connection con, Company company, int contactId) throws SQLException {
+        // Get generic company
+        GenericContact genericCompany = getGenericContactFromCompanyId(con, Integer.parseInt(company.getPk().getId()));
+        // Get generic contact
+        GenericContact genericContact = getGenericContactFromContactId(con, contactId);
+
+        String insert_query = "INSERT INTO sc_contact_genericcontact_rel (genericContactId, genericCompanyId, relationType) VALUES (?, ?, ?)";
+        PreparedStatement prepStmt = null;
+
+        try {
+            prepStmt = con.prepareStatement(insert_query);
+            prepStmt.setInt(1, Integer.parseInt(genericContact.getPk().getId()));
+            prepStmt.setInt(2, Integer.parseInt(genericCompany.getPk().getId()));
+            prepStmt.setInt(3, RelationTypeConstant.BELONGS_TO);
+            prepStmt.executeUpdate();
+
+        } finally {
+            DBUtil.close(prepStmt);
+        }
+    }
+
+    public void removeCompanyFromContact(Connection con, Company company, int contactId) throws SQLException {
+        // Get generic company
+        GenericContact genericCompany = getGenericContactFromCompanyId(con, Integer.parseInt(company.getPk().getId()));
+        // Get generic contact
+        GenericContact genericContact = getGenericContactFromContactId(con, contactId);
+
+        String delete_query = "DELETE sc_contact_genericcontact_rel WHERE genericContactId=? AND genericcompanyid=?";
+        PreparedStatement preStmt = null;
+        ResultSet rs = null;
+        try {
+            preStmt = con.prepareStatement(delete_query);
+
+            // Clause Where
+            preStmt.setInt(1, Integer.parseInt(genericContact.getPk().getId()));
+            preStmt.setInt(2, Integer.parseInt(genericCompany.getPk().getId()));
+            preStmt.executeUpdate();
+
+        } finally {
+            DBUtil.close(preStmt);
+        }
+    }
 
     public GenericContactPK saveGenericContact(Connection con, GenericContact genericContact) throws SQLException {
         String insert_query = "INSERT INTO sc_contact_genericcontact (genericContactId, contactType, contactId, companyId) VALUES (?, ?, ?, ?)";
         PreparedStatement prepStmt = null;
 
-        int newId = 0;
+        int newId;
         try {
             newId = DBUtil.getNextId(genericContact.getPk().getTableName(), "genericContactId");
         } catch (Exception e) {
@@ -214,39 +311,42 @@ public class JDBCCompanyRequester {
         }
     }
 
-    public GenericContact getGenericContactFromContactPk(Connection con, ContactPK contactPk) throws SQLException {
+    public GenericContact getGenericContactFromContactId(Connection con, int contactId) throws SQLException {
 
+        // TODO rajouter contactType dans la clause where
         String select_query = "SELECT genericContactId, contactType, contactId, companyId FROM sc_contact_genericcontact WHERE contactId = ?";
         PreparedStatement prepStmt = null;
+        ContactPK contactPkSearch;
         ResultSet rs = null;
+
         try {
             prepStmt = con.prepareStatement(select_query);
-            prepStmt.setInt(1, Integer.parseInt(contactPk.getId()));
+            prepStmt.setInt(1, contactId);
             rs = prepStmt.executeQuery();
             if (rs.next()) {
-                contactPk.setComponentName(rs.getString("instanceId"));
-                contactPk.setId(String.valueOf(rs.getInt("genericContactId")));
-                return resultSet2GenericContact(rs, (WAPrimaryKey) contactPk);
+                contactPkSearch = new ContactPK(String.valueOf(rs.getInt("genericContactId")));
+                return resultSet2GenericContact(rs, contactPkSearch);
             }
             return null;
         } finally {
             DBUtil.close(rs, prepStmt);
         }
-
     }
 
-    public GenericContact getGenericContactFromCompanyPk(Connection con, CompanyPK companyPK) throws SQLException {
+    public GenericContact getGenericContactFromCompanyId(Connection con, int companyId) throws SQLException {
 
+        // TODO rajouter contactType dans la clause where
         String select_query = "SELECT genericContactId, contactType, contactId, companyId FROM sc_contact_genericcontact WHERE companyId = ?";
         PreparedStatement prepStmt = null;
+        CompanyPK companyPKSearch;
         ResultSet rs = null;
         try {
             prepStmt = con.prepareStatement(select_query);
-            prepStmt.setInt(1, Integer.parseInt(companyPK.getId()));
+            prepStmt.setInt(1, companyId);
             rs = prepStmt.executeQuery();
             if (rs.next()) {
-                companyPK.setId(String.valueOf(rs.getInt("genericContactId")));
-                return resultSet2GenericContact(rs, (WAPrimaryKey) companyPK);
+                companyPKSearch = new CompanyPK(String.valueOf(rs.getInt("genericContactId")));
+                return resultSet2GenericContact(rs, companyPKSearch);
             }
             return null;
         } finally {
@@ -273,9 +373,9 @@ public class JDBCCompanyRequester {
     }
 
     private static Company resultSet2Company(ResultSet rs, CompanyPK pubPK) throws SQLException {
-
         int id = rs.getInt("companyId");
         CompanyPK pk = new CompanyPK(String.valueOf(id), pubPK);
+
         String companyname = rs.getString("companyname");
         String companyemail = rs.getString("companyemail");
         String companyphone = rs.getString("companyphone");
@@ -301,177 +401,5 @@ public class JDBCCompanyRequester {
             DBUtil.close(preStmt);
         }
     }
-/*
-    *//**
-     * Deletes the company identified by the specified primary key from the data source onto which the given connection is opened.
-     *
-     * @param con the connection to the data source.
-     * @param pk  the unique identifier of the company in the data source.
-     * @throws java.sql.SQLException if an error occurs while removing the company from the data source.
-     *//*
-    public void deleteComment(Connection con, CommentPK pk) throws SQLException {
-        String delete_query = "DELETE FROM sb_comment_comment WHERE commentId = ?";
-        PreparedStatement prep_stmt = null;
-        prep_stmt = con.prepareStatement(delete_query);
-        try {
-            prep_stmt.setInt(1, Integer.parseInt(pk.getId()));
-            prep_stmt.executeUpdate();
-        } finally {
-            DBUtil.close(prep_stmt);
-        }
-    }
-
-    *//**
-     * Moves company. (Requires more explanation!)
-     *
-     * @param con    the connection to the data source.
-     * @param fromPK the source unique identifier of the company in the data source.
-     * @param toPK   the destination unique identifier of another company in the data source.
-     * @throws java.sql.SQLException if an error occurs during the operation.
-     *//*
-    public void moveComments(Connection con, ForeignPK fromPK, ForeignPK toPK)
-            throws SQLException {
-        String update_query = "UPDATE sb_comment_comment SET foreignId=?, instanceId=? WHERE "
-                + "foreignId=? AND instanceId=?";
-        PreparedStatement prep_stmt = null;
-        try {
-            prep_stmt = con.prepareStatement(update_query);
-            prep_stmt.setInt(1, Integer.parseInt(toPK.getId()));
-            prep_stmt.setString(2, toPK.getInstanceId());
-            prep_stmt.setInt(3, Integer.parseInt(fromPK.getId()));
-            prep_stmt.setString(4, fromPK.getInstanceId());
-            prep_stmt.executeUpdate();
-            prep_stmt.close();
-        } finally {
-            DBUtil.close(prep_stmt);
-        }
-    }
-
-    *//**
-     * Gets the company identified by the specified identifier.
-     *
-     * @param con the connection to use for getting the company.
-     * @param pk  the identifier of the company in the data source.
-     * @return the company or null if no such company is found.
-     * @throws java.sql.SQLException if an error occurs during the company fetching.
-     *//*
-    public Comment getComment(Connection con, CommentPK pk) throws SQLException {
-        String select_query = "SELECT commentOwnerId, commentCreationDate, commentModificationDate, "
-                + "commentComment, foreignId, instanceId FROM sb_comment_comment WHERE commentId = ?";
-        PreparedStatement prep_stmt = null;
-        ResultSet rs = null;
-        try {
-            prep_stmt = con.prepareStatement(select_query);
-            prep_stmt.setInt(1, Integer.parseInt(pk.getId()));
-            rs = prep_stmt.executeQuery();
-            if (rs.next()) {
-                pk.setComponentName(rs.getString("instanceId"));
-                WAPrimaryKey father_id = new CommentPK(String.valueOf(rs.getInt("foreignId")));
-                return new Comment(pk, father_id, rs.getInt("commentOwnerId"), "",
-                        rs.getString("commentComment"), rs.getString("commentCreationDate"),
-                        rs.getString("commentModificationDate"));
-            }
-            return null;
-        } finally {
-            DBUtil.close(rs, prep_stmt);
-        }
-    }
-
-    public List<CommentedPublicationInfo> getMostCommentedAllPublications(Connection con)
-            throws SQLException {
-        String select_query = "SELECT COUNT(commentId) as nb_comment, foreignId, instanceId FROM "
-                + "sb_comment_comment GROUP BY foreignId, instanceId ORDER BY nb_comment desc;";
-        Statement prep_stmt = null;
-        ResultSet rs = null;
-        List<CommentedPublicationInfo> listPublisCommentsCount = new ArrayList<CommentedPublicationInfo>();
-        try {
-            prep_stmt = con.createStatement();
-            rs = prep_stmt.executeQuery(select_query);
-            while (rs.next()) {
-                Integer countComment = Integer.valueOf(rs.getInt("nb_comment"));
-                Integer foreignId = Integer.valueOf(rs.getInt("foreignId"));
-                String instanceId = rs.getString("instanceId");
-                listPublisCommentsCount.add(new CommentedPublicationInfo(
-                        foreignId.toString(), instanceId, countComment.intValue()));
-            }
-        } finally {
-            DBUtil.close(rs, prep_stmt);
-        }
-
-        return listPublisCommentsCount;
-
-    }
-
-    public int getCommentsCount(Connection con, WAPrimaryKey foreign_pk)
-            throws SQLException {
-        String select_query = "SELECT COUNT(commentId) AS nb_comment FROM sb_comment_comment "
-                + "WHERE instanceId = ? AND foreignid = ?";
-        PreparedStatement prep_stmt = null;
-        ResultSet rs = null;
-        int commentsCount = 0;
-        try {
-            prep_stmt = con.prepareStatement(select_query);
-            prep_stmt.setString(1, foreign_pk.getComponentName());
-            prep_stmt.setInt(2, Integer.parseInt(foreign_pk.getId()));
-            rs = prep_stmt.executeQuery();
-            while (rs.next()) {
-                commentsCount = rs.getInt("nb_comment");
-            }
-        } catch (Exception e) {
-            SilverTrace.error("comment", getClass().getSimpleName() + ".getCommentsCount()",
-                    "root.EX_NO_MESSAGE", e);
-        } finally {
-            DBUtil.close(rs, prep_stmt);
-        }
-
-        return commentsCount;
-    }
-
-    public List<Comment> getAllComments(Connection con, WAPrimaryKey foreign_pk)
-            throws SQLException {
-        String select_query =
-                "SELECT commentId, commentOwnerId, commentCreationDate, commentModificationDate, "
-                        + "commentComment, foreignId, instanceId FROM sb_comment_comment WHERE foreignId = ? "
-                        + "AND instanceId = ? ORDER BY commentCreationDate DESC, commentId DESC";
-        PreparedStatement prep_stmt = null;
-        ResultSet rs = null;
-        List<Comment> comments = new ArrayList<Comment>(INITIAL_CAPACITY);
-        try {
-            prep_stmt = con.prepareStatement(select_query);
-            prep_stmt.setInt(1, Integer.parseInt(foreign_pk.getId()));
-            prep_stmt.setString(2, foreign_pk.getComponentName());
-            rs = prep_stmt.executeQuery();
-            CommentPK pk;
-            Comment cmt = null;
-            while (rs.next()) {
-                pk = new CommentPK(String.valueOf(rs.getInt("commentId")));
-                pk.setComponentName(rs.getString("instanceId"));
-                WAPrimaryKey father_id = (WAPrimaryKey) new CommentPK(String.valueOf(rs.getInt("foreignId")));
-                cmt = new Comment(pk, father_id, rs.getInt("commentOwnerId"), "", rs.getString(
-                        "commentComment"), rs.getString("commentCreationDate"),
-                        rs.getString("commentModificationDate"));
-                comments.add(cmt);
-            }
-        } finally {
-            DBUtil.close(rs, prep_stmt);
-        }
-
-        return comments;
-    }
-
-    public void deleteAllComments(Connection con, ForeignPK pk)
-            throws SQLException {
-        String delete_query = "DELETE FROM sb_comment_comment WHERE foreignId = ? AND instanceId = ? ";
-        PreparedStatement prep_stmt = null;
-        try {
-            prep_stmt = con.prepareStatement(delete_query);
-            prep_stmt.setInt(1, Integer.parseInt(pk.getId()));
-            prep_stmt.setString(2, pk.getInstanceId());
-            prep_stmt.executeUpdate();
-        } finally {
-            DBUtil.close(prep_stmt);
-        }
-    }*/
-
 
 }
