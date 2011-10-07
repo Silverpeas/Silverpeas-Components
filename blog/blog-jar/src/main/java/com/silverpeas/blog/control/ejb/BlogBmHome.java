@@ -21,30 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.blog.servlets;
+package com.silverpeas.blog.control.ejb;
 
-import com.silverpeas.blog.control.BlogService;
-import com.silverpeas.blog.control.BlogServiceFactory;
-import java.net.URLEncoder;
+import javax.ejb.EJBHome;
+import javax.ejb.CreateException;
+import java.rmi.RemoteException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.silverpeas.blog.model.PostDetail;
-import com.silverpeas.peasUtil.GoTo;
-import com.stratelia.silverpeas.peasCore.URLManager;
-
-public class GoToPost extends GoTo {
-  @Override
-  public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
-    BlogService service = BlogServiceFactory.getFactory().getBlogService();
-    PostDetail post = service.getContentById(objectId);
-
-    String gotoURL = URLManager.getURL(null, post.getPublication()
-        .getInstanceId())
-        + post.getPublication().getURL();
-
-    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
-  }
+@Deprecated
+public interface BlogBmHome extends EJBHome {
+  public BlogBm create() throws RemoteException, CreateException;
 }

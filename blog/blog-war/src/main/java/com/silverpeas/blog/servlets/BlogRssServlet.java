@@ -23,37 +23,36 @@
  */
 package com.silverpeas.blog.servlets;
 
+import com.silverpeas.blog.control.BlogService;
+import com.silverpeas.blog.control.BlogServiceFactory;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.silverpeas.blog.control.ejb.BlogBm;
-import com.silverpeas.blog.control.ejb.BlogBmHome;
-import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.peasUtil.RssServlet;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class BlogRssServlet extends RssServlet<PostDetail> {
   /*
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)
    */
+  @Override
   public Collection<PostDetail> getListElements(String instanceId, int nbReturned)
       throws RemoteException {
     // récupération de la liste des 10 prochains billets du Blog
-    return getBlogBm().getAllPosts(instanceId, nbReturned);
+    BlogService service = BlogServiceFactory.getFactory().getBlogService();
+    return service.getAllPosts(instanceId, nbReturned);
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object, java.lang.String)
    */
+  @Override
   public String getElementTitle(PostDetail post, String userId) {
     return post.getPublication().getName();
   }
@@ -62,6 +61,7 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object, java.lang.String)
    */
+  @Override
   public String getElementLink(PostDetail post, String userId) {
     return URLManager.getApplicationURL() + "/Publication/"
         + post.getPublication().getPK().getId();
@@ -72,6 +72,7 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
    * @see com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
    */
+  @Override
   public String getElementDescription(PostDetail post, String userId) {
     return post.getPublication().getDescription();
   }
@@ -80,6 +81,7 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
    */
+  @Override
   public Date getElementDate(PostDetail post) {
     Calendar calElement = GregorianCalendar.getInstance();
     calElement.setTime(post.getPublication().getCreationDate());
@@ -91,20 +93,9 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
     return calElement.getTime();
   }
 
+  @Override
   public String getElementCreatorId(PostDetail post) {
     return post.getPublication().getUpdaterId();
   }
 
-  private BlogBm getBlogBm() {
-    BlogBm blogBm = null;
-    try {
-      BlogBmHome blogBmHome = (BlogBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.BLOGBM_EJBHOME, BlogBmHome.class);
-      blogBm = blogBmHome.create();
-    } catch (Exception e) {
-      throw new BlogRuntimeException("RssServlet.getBlogBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return blogBm;
-  }
 }

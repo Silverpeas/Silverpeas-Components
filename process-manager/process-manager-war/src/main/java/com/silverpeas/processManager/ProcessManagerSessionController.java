@@ -515,7 +515,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       // Process participants
       Participant participant = relatedUser.getParticipant();
       String relation = relatedUser.getRelation();
-      if (participant != null && relation != null) {
+      if (participant != null && relation == null) {
+        if (currentRole.equals(relatedUser.getRole())) {
+          users.add(getUserId());
+        }
+      } else if (participant != null && relation != null) {
         UserInfo userInfo = userSettings.getUserInfo(relation);
         if (userInfo != null) {
           users.add(userInfo.getValue());

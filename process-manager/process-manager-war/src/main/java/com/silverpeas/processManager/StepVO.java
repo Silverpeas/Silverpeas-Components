@@ -1,7 +1,5 @@
 package com.silverpeas.processManager;
 
-import java.util.Date;
-
 public class StepVO {
   String stepId = null;
   String activity = null;

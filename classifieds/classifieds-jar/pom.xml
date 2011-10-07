@@ -3,40 +3,38 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.silverpeas.components</groupId>
-    <artifactId>blog</artifactId>
+    <artifactId>classifieds</artifactId>
     <version>5.8-SNAPSHOT</version>
   </parent>
 
-  <groupId>com.silverpeas.components.blog</groupId>
-  <artifactId>blog-war</artifactId>
-  <packaging>war</packaging>
-  <name>blog Webapp</name>
+  <groupId>com.silverpeas.components.classifieds</groupId>
+  <artifactId>classifieds-jar</artifactId>
+  <packaging>jar</packaging>
+  <name>Classifieds Library</name>
+  <description>Business layer of the Classifieds Silverpeas component</description>
 
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.components.blog</groupId>
-      <artifactId>blog-jar</artifactId>
-      <version>${project.version}</version>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>searchengine</artifactId>
+      <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>publication</artifactId>
+      <artifactId>pdc</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>node</artifactId>
+      <artifactId>silverstatistics</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -46,12 +44,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>mylinks</artifactId>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>
+

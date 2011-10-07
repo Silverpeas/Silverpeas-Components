@@ -80,8 +80,7 @@ import static com.silverpeas.kmelia.export.ODTDocumentsMerging.decorates;
 import static com.silverpeas.kmelia.export.VersionedAttachmentHolder.hold;
 import static com.silverpeas.util.StringUtil.isDefined;
 import static com.silverpeas.util.StringUtil.isInteger;
-import static com.stratelia.webactiv.util.DateUtil.dateToString;
-import static com.stratelia.webactiv.util.DateUtil.getOutputDate;
+import static com.stratelia.webactiv.util.DateUtil.*;
 
 /**
  * A builder of an ODT document based on a given template and from a specified
@@ -255,8 +254,8 @@ public class ODTDocumentBuilder {
         Row row = commentsTable.getRowByIndex(i++);
         row.getCellByIndex(0).setStringValue(comment.getOwnerDetail().getDisplayedName());
         row.getCellByIndex(1).setStringValue(comment.getMessage());
-        row.getCellByIndex(2).setStringValue(comment.getCreationDate());
-        row.getCellByIndex(3).setStringValue(comment.getModificationDate());
+        row.getCellByIndex(2).setStringValue(formatDate(comment.getCreationDate()));
+        row.getCellByIndex(3).setStringValue(formatDate(comment.getModificationDate()));
       }
     }
   }
