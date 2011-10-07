@@ -42,6 +42,7 @@ import javax.naming.StringRefAddr;
 import javax.sql.DataSource;
 import org.apache.commons.io.FileUtils;
 
+import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
@@ -62,7 +63,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
   }
 
   public DataSourceConfiguration getDataSourceConfiguration(
-      DataSourceConfiguration config) {
+          DataSourceConfiguration config) {
     return this.config;
   }
 
@@ -76,7 +77,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
       InitialContext ic = new InitialContext();
       // Construct BasicDataSource reference
       Reference ref = new Reference("javax.sql.DataSource",
-          "org.apache.commons.dbcp.BasicDataSourceFactory", null);
+              "org.apache.commons.dbcp.BasicDataSourceFactory", null);
       ref.add(new StringRefAddr("driverClassName", config.getDriver()));
       ref.add(new StringRefAddr("url", config.getUrl()));
       ref.add(new StringRefAddr("username", config.getUsername()));
@@ -90,7 +91,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
       rebind(ic, JNDINames.DATABASE_DATASOURCE, ref);
       ic.rebind(JNDINames.DATABASE_DATASOURCE, ref);
       rebind(ic, JNDINames.ADMIN_DATASOURCE, ref);
-       ic.rebind(JNDINames.ADMIN_DATASOURCE, ref);
+      ic.rebind(JNDINames.ADMIN_DATASOURCE, ref);
       registerMockJMS(ic);
     } catch (NamingException nex) {
       logger.error(nex);
@@ -99,13 +100,12 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
     }
   }
 
-
   protected void registerMockJMS(InitialContext ic) throws NamingException {
-   Reference refFactory = new Reference("javax.jms.QueueConnectionFactory",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
+    Reference refFactory = new Reference("javax.jms.QueueConnectionFactory",
+            "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
     rebind(ic, JNDINames.JMS_FACTORY, refFactory);
     Reference refQueue = new Reference("javax.jms.Queue",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
+            "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
     rebind(ic, JNDINames.JMS_QUEUE, refQueue);
     QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
     assertNotNull(qconFactory);
@@ -117,22 +117,28 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
     return (config.getSchema() != null && !"".equals(config.getSchema()));
   }
 
-  protected IDatabaseConnection getConnection() throws SQLException {
+  protected IDatabaseConnection getConnection() throws SQLException, DatabaseUnitException {
     if (isOracle()) {
       try {
         Class.forName(config.getDriver()).newInstance();
       } catch (Exception ex) {
         logger.error(ex);
       }
-      IDatabaseConnection connection = new DatabaseConnection(DriverManager.getConnection(config.getUrl(), config.getUsername(), config.getPassword()));
-      connection.getConfig().setFeature(
-          "http://www.dbunit.org/features/qualifiedTableNames", true);
+      IDatabaseConnection connection = new DatabaseConnection(DriverManager.getConnection(config.
+              getUrl(), config.getUsername(), config.getPassword()));
       connection.getConfig().setProperty(
-          "http://www.dbunit.org/properties/datatypeFactory",
-          new org.dbunit.ext.oracle.OracleDataTypeFactory());
+              "http://www.dbunit.org/features/qualifiedTableNames", true);
+      connection.getConfig().setProperty(
+              "http://www.dbunit.org/properties/datatypeFactory",
+              new org.dbunit.ext.oracle.OracleDataTypeFactory());
       return connection;
+    } else {
+        IDatabaseConnection connection = new DatabaseConnection(datasource.getConnection());
+        connection.getConfig().setProperty(
+                "http://www.dbunit.org/properties/datatypeFactory",
+                new org.dbunit.ext.postgresql.PostgresqlDataTypeFactory());
+        return connection;
     }
-    return new DatabaseConnection(datasource.getConnection());
   }
 
   protected abstract IDataSet getDataSet() throws Exception;

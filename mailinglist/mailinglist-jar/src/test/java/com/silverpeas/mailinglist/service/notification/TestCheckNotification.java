@@ -33,7 +33,6 @@ import javax.jms.TextMessage;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.jvnet.mock_javamail.Mailbox;
 
@@ -47,6 +46,7 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 public class TestCheckNotification extends
     AbstractSilverpeasDatasourceSpringContextTests {
@@ -203,11 +203,7 @@ public class TestCheckNotification extends
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
-    if (isOracle()) {
-      return new FlatXmlDataSet(TestCheckNotification.class
-          .getResourceAsStream("test-check-notification-dataset.xml"));
-    }
-    return new FlatXmlDataSet(TestCheckNotification.class
+    return new FlatXmlDataSetBuilder().build(TestCheckNotification.class
         .getResourceAsStream("test-check-notification-dataset.xml"));
   }
 }

@@ -47,6 +47,7 @@ import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpringContextTests {
 
@@ -111,10 +112,10 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
   protected IDataSet getDataSet() throws DataSetException, IOException {
     FlatXmlDataSet dataSet;
     if (isOracle()) {
-      dataSet = new FlatXmlDataSet(TestMailingListComponent.class.getResourceAsStream(
+      dataSet = new FlatXmlDataSetBuilder().build(TestMailingListComponent.class.getResourceAsStream(
           "test-component-oracle-dataset.xml"));
     } else {
-      dataSet = new FlatXmlDataSet(TestMailingListComponent.class.getResourceAsStream(
+      dataSet = new FlatXmlDataSetBuilder().build(TestMailingListComponent.class.getResourceAsStream(
           "test-component-dataset.xml"));
     }
     return dataSet;

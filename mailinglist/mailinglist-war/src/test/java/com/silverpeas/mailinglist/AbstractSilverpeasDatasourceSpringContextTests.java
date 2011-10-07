@@ -39,6 +39,7 @@ import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import javax.sql.DataSource;
 
+import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
@@ -101,7 +102,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
     return (config.getSchema() != null && !"".equals(config.getSchema()));
   }
 
-  protected IDatabaseConnection getConnection() throws SQLException {
+  protected IDatabaseConnection getConnection() throws SQLException, DatabaseUnitException {
     if (isOracle()) {
       try {
         Class.forName(config.getDriver()).newInstance();

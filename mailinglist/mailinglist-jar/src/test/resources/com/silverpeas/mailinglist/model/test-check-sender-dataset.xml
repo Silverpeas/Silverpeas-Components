@@ -36,7 +36,7 @@
   <domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs"
     passwordvalid="Y" />
 
-  <st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
+  <st_user id="0" domainid="0" specificid="0" firstname="[NULL]" lastname="Administrateur" email="[NULL]" login="SilverAdmin" accesslevel="A" />
 
   <st_notifdefaultaddress />
 
@@ -100,7 +100,6 @@
   <st_instance_data name="subscribedAddress" id="425" componentid="102" label="Adresse" value="thesimpsons@silverpeas.com" />
   <st_instance_data id="426" componentid="102" name="rss" label="Flux RSS" value="no" />
   
-
   <st_user id="200" domainid="0" specificid="200" firstname="bart" lastname="simpson" email="bart.simpson@silverpeas.com"
     login="bsimpson" accesslevel="U" />
   <st_user id="202" domainid="0" specificid="201" firstname="lisa" lastname="simpson" email="lisa.simpson@silverpeas.com"
