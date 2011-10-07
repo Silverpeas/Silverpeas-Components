@@ -79,5 +79,4 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 	String[] browseContext = (String[]) request.getAttribute("browseContext");
 	String spaceLabel = browseContext[0];
 	String componentLabel = browseContext[1];
-	
 %>

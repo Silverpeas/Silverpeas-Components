@@ -36,6 +36,8 @@ public class OrganizationBox {
 
   private boolean detailLinkActive = false;
   private boolean centerLinkActive = false;
+  
+  private String specificCSSClass = "";
 
   /**
    * @return the name
@@ -124,6 +126,14 @@ public class OrganizationBox {
       return "";
     else
       return "Main?baseOu=" + URLEncoder.encode(parentDn, "UTF-8");
+  }
+
+  public void setSpecificCSSClass(String specificCSSClass) {
+    this.specificCSSClass = specificCSSClass;
+  }
+
+  public String getSpecificCSSClass() {
+    return specificCSSClass;
   }
 
 }

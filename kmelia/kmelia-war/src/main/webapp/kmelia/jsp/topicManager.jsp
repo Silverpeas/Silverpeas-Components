@@ -553,7 +553,8 @@ function loadNodeData(node, fnLoadComplete)  {
             }
 
             var tempNode;
-            var basketHere = false;
+            var displayBasket = false;
+            var displayToValidate = false;
             var nbItemsInBasket = 0;
             var nbItemsToValidate = 0;
             <%
@@ -577,12 +578,12 @@ function loadNodeData(node, fnLoadComplete)  {
                 }
                 if (m.id == "1")
                 {
-                    basketHere = true;
+                	displayBasket = true;
                     nbItemsInBasket = m.nbObjects;
-                    //alert("basket = "+m.nbObjects);
                 }
-                else if (m.id == "tovalidate")
+                if (m.id == "tovalidate")
                 {
+                	displayToValidate = true;
                 	nbItemsToValidate = m.nbObjects;
                 }
                 if (m.id != "1" && m.id != "2" && m.id != "tovalidate")
@@ -617,38 +618,33 @@ function loadNodeData(node, fnLoadComplete)  {
                     }
                 }
             }
-            if (basketHere)
-            {
-                if (<%=!toolboxMode%> && <%="admin".equals(profile) || "publisher".equals(profile)%>)
-                {
-					//add "To validate"
-					toValidateNode = new YAHOO.widget.TextNode({"id":"tovalidate"}, root, false, true);
-					toValidateNode.labelElId = "tovalidate";
-					toValidateNode.label = "<%=resources.getString("ToValidateShort")%>";
-					toValidateNode.title = "<%=resources.getString("ToValidate")%>";
-					if (nbItemsToValidate != -1 && <%=displayNBPublis%>)
-	   				{
-	   					toValidateNode.label = toValidateNode.label + " ("+nbItemsToValidate+")";
-	   				}
-					toValidateNode.href = "javascript:displayTopicContent('tovalidate')";
-					toValidateNode.isLeaf = true;
-					toValidateNode.hasIcon = true;
-					toValidateNode.labelStyle = "icon-tovalidate";
-                }
-
-                if (<%="admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)%>) {
-	            	//add basket
-		   			basketNode = new YAHOO.widget.TextNode({"id":"1"}, root, false, true);
-		   			basketNode.labelElId = "basket";
-		   			basketNode.label = "<%=resources.getString("kmelia.basket")%>";
-		   			if (nbItemsInBasket != -1) {
-		   				basketNode.label = basketNode.label + " ("+nbItemsInBasket+")";
-		   			}
-		   			basketNode.href = "javascript:displayTopicContent(1)";
-		   			basketNode.isLeaf = true;
-		   			basketNode.hasIcon = true;
-					basketNode.labelStyle = "icon-basket";
-                }
+            if (displayToValidate) {
+            	//add "To validate"
+				toValidateNode = new YAHOO.widget.TextNode({"id":"tovalidate"}, root, false, true);
+				toValidateNode.labelElId = "tovalidate";
+				toValidateNode.label = "<%=resources.getString("ToValidateShort")%>";
+				toValidateNode.title = "<%=resources.getString("ToValidate")%>";
+				if (nbItemsToValidate != -1 && <%=displayNBPublis%>)
+   				{
+   					toValidateNode.label = toValidateNode.label + " ("+nbItemsToValidate+")";
+   				}
+				toValidateNode.href = "javascript:displayTopicContent('tovalidate')";
+				toValidateNode.isLeaf = true;
+				toValidateNode.hasIcon = true;
+				toValidateNode.labelStyle = "icon-tovalidate";
+            }
+            if (displayBasket) {
+               	//add basket
+	   			basketNode = new YAHOO.widget.TextNode({"id":"1"}, root, false, true);
+	   			basketNode.labelElId = "basket";
+	   			basketNode.label = "<%=resources.getString("kmelia.basket")%>";
+	   			if (nbItemsInBasket != -1) {
+	   				basketNode.label = basketNode.label + " ("+nbItemsInBasket+")";
+	   			}
+	   			basketNode.href = "javascript:displayTopicContent(1)";
+	   			basketNode.isLeaf = true;
+	   			basketNode.hasIcon = true;
+				basketNode.labelStyle = "icon-basket";
             }
 
             if (nbPublisOnRoot > 0)

@@ -44,6 +44,7 @@ public class OrganizationChartConfiguration {
   private String ldapAttTitle = null; // champ LDAP du titre
   private String ldapAttDesc = null; // champ ldap de la description
   private String ldapAttAccount = null; // champ ldap de l'identifiant de compte Silverpeas
+  private String ldapAttCSSClass = null;
 
   private List<OrganizationalRole> unitsChartCentralLabel = null;
   private List<OrganizationalRole> unitsChartRightLabel = null;
@@ -348,4 +349,12 @@ public class OrganizationChartConfiguration {
     this.ldapAttActif = StringUtil.isDefined(ldapAttActif) ? ldapAttActif : null;
   }
 
+  public void setLdapAttCSSClass(String ldapAttCSSClass) {
+    this.ldapAttCSSClass = StringUtil.isDefined(ldapAttCSSClass) ? ldapAttCSSClass : null;
+  }
+
+  public String getLdapAttCSSClass() {
+    return ldapAttCSSClass;
+  }
+  
 }

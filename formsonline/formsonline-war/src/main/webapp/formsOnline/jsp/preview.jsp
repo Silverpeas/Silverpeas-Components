@@ -49,8 +49,10 @@
 	String title = (String) request.getAttribute("title");
 	String titleClassName 	= resource.getSetting("titleClassName");
 
-	// cr�ation du context
-	PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false, "", null);
+	// context creation
+	PagesContext context = (PagesContext) request.getAttribute("FormContext");
+	context.setFormName("myForm");
+	context.setFormIndex("0");
 	context.setBorderPrinted(false);
 %>
 
@@ -77,8 +79,7 @@
 	<%=tabbedPane.print()%>
 	<%=frame.printBefore()%>
 
-	<form name="myForm" method="POST" action="UpdateXMLForm" 
-                    enctype="multipart/form-data">
+	<form name="myForm" method="post" action="UpdateXMLForm" enctype="multipart/form-data">
 	<span class="<%=titleClassName%>"><%=title%></span>
 	<% 
 	formUpdate.display(out, context, data); 

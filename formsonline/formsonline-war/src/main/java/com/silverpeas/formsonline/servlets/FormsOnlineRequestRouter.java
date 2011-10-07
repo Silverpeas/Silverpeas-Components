@@ -32,6 +32,7 @@ import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
+import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.formsonline.control.FormsOnlineSessionController;
 import com.silverpeas.formsonline.control.TitleHelper;
@@ -247,6 +248,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
         request.setAttribute("XMLFormName", xmlFormName);
         request.setAttribute("title", TitleHelper.computeTitle(fake, formsOnlineSC.getCurrentForm()
             .getTitle()));
+        request.setAttribute("FormContext", getFormContext(formsOnlineSC));
 
         destination = "preview.jsp";
       }
@@ -375,6 +377,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);
         request.setAttribute("XMLFormName", xmlFormName);
+        request.setAttribute("FormContext", getFormContext(formsOnlineSC));
 
         destination = "newFormInstance.jsp";
       }
@@ -430,6 +433,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Form", formView);
         request.setAttribute("Data", data);
         request.setAttribute("XMLFormName", xmlFormName);
+        request.setAttribute("FormContext", getFormContext(formsOnlineSC));
         request.setAttribute("validationMode", "inactive");
         request.setAttribute("currentFormInstance", currentFormInstance);
         request.setAttribute("title", TitleHelper.computeTitle(currentFormInstance, formsOnlineSC
@@ -479,6 +483,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Form", formView);
         request.setAttribute("Data", data);
         request.setAttribute("XMLFormName", xmlFormName);
+        request.setAttribute("FormContext", getFormContext(formsOnlineSC));
         request.setAttribute("validationMode", "active");
         request.setAttribute("currentFormInstance", formInstance);
         request.setAttribute("backFunction", "InBox");
@@ -550,5 +555,9 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
    */
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
+  }
+  
+  private PagesContext getFormContext(FormsOnlineSessionController fosc) {
+    return new PagesContext("unknown", "0", fosc.getLanguage(), false, fosc.getComponentId(), fosc.getUserId());
   }
 }

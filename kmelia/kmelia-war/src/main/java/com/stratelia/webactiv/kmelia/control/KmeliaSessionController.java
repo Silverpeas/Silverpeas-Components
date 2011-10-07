@@ -793,16 +793,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return "admin".equalsIgnoreCase(KmeliaHelper.getProfile(getUserRoles()));
   }
 
-  /**************************************************************************************/
-  /* KMelia - Gestion des thèmes */
-  /**
-   * **********************************************************************************
+  /*
+   * Topic management
    */
-  /**
-   * @param id
-   * @return
-   * @throws RemoteException
-   */
+  public NodePK getRootPK() {
+    return new NodePK(NodePK.ROOT_NODE_ID, getComponentId());
+  }
+  
   public synchronized TopicDetail getTopic(String id) throws RemoteException {
     return getTopic(id, true);
   }
@@ -3274,6 +3271,67 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
     return null;
   }
+  
+  public boolean isUserCanValidate() throws RemoteException {
+    if (KmeliaHelper.isToolbox(getComponentId())) {
+      return false;
+    }
+    
+    String profile = getUserTopicProfile();
+    boolean isPublisherOrAdmin =
+        SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile);
+
+    if (!isPublisherOrAdmin && isRightsOnTopicsEnabled()) {
+      // check if current user is publisher or admin on at least one descendant
+      Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(getRootPK()).iterator();
+      while (!isPublisherOrAdmin && descendants.hasNext()) {
+        NodeDetail descendant = descendants.next();
+        if (descendant.haveLocalRights()) {
+          // check if user is admin or publisher on this topic
+          String[] profiles =
+              getAdmin().getProfilesByObjectAndUserId(descendant.getId(),
+                  ObjectType.NODE.getCode(), getComponentId(), getUserId());
+          if (profiles != null && profiles.length > 0) {
+            List<String> lProfiles = Arrays.asList(profiles);
+            isPublisherOrAdmin =
+                lProfiles.contains(SilverpeasRole.admin.name()) ||
+                lProfiles.contains(SilverpeasRole.publisher.name());
+          }
+        }
+      }
+    }
+    return isPublisherOrAdmin;
+  }
+  
+  public boolean isUserCanWrite() throws RemoteException {
+    String profile = getUserTopicProfile();
+    boolean userCanWrite =
+        SilverpeasRole.admin.isInRole(profile) || 
+        SilverpeasRole.publisher.isInRole(profile) ||
+        SilverpeasRole.writer.isInRole(profile);
+
+    if (!userCanWrite && isRightsOnTopicsEnabled()) {
+      // check if current user is publisher or admin on at least one descendant
+      Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(getRootPK()).iterator();
+      while (!userCanWrite && descendants.hasNext()) {
+        NodeDetail descendant = descendants.next();
+        if (descendant.haveLocalRights()) {
+          // check if user is admin, publisher or writer on this topic
+          String[] profiles =
+              getAdmin().getProfilesByObjectAndUserId(descendant.getId(),
+                  ObjectType.NODE.getCode(), getComponentId(), getUserId());
+          if (profiles != null && profiles.length > 0) {
+            List<String> lProfiles = Arrays.asList(profiles);
+            userCanWrite =
+                lProfiles.contains(SilverpeasRole.admin.name()) ||
+                lProfiles.contains(SilverpeasRole.publisher.name())||
+                lProfiles.contains(SilverpeasRole.writer.name());
+          }
+        }
+      }
+    }
+    return userCanWrite;
+  }
 
   public void copyPublication(String pubId) throws RemoteException {
     CompletePublication pub = getCompletePublication(pubId);
@@ -4353,22 +4411,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       }
     }
     return galleries;
-  }
-
-  public boolean isAdmin() {
-    return SilverpeasRole.admin.isInRole(getRole());
-  }
-
-  public boolean isWriter() {
-    return SilverpeasRole.writer.isInRole(getRole());
-  }
-
-  public boolean isPublisher() {
-    return SilverpeasRole.publisher.isInRole(getRole());
-  }
-
-  public boolean isUser() {
-    return SilverpeasRole.user.isInRole(getRole());
   }
 
   public String getRole() {

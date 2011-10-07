@@ -35,6 +35,11 @@
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.silverpeas.blog.control"/>
+  
+  <!-- the ClassifiedService factory from which Silverpeas components access the classifieds service.
+       It delegate to the Spring container the management of the life-cycle of the ClassifiedService objects. -->
+  <bean id="blogServiceFactory" class="com.silverpeas.blog.control.BlogServiceFactory"
+        factory-method="getFactory"/>
 
 </beans>
 

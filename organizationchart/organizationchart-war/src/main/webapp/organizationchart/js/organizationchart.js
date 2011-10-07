@@ -71,6 +71,7 @@ function JCell(options)
 	this.commonUserURL 	= options['commonUserURL'];		// URL to call when a user is clicked
 	this.parentURL 		= options['parentURL'];			// URL to call when parent link is clicked
 	this.className 		= options['className'];			// CSS class name
+	this.extraClassName = options['extraClassName'];	// Specific CSS class name
 	this.usersIcon 		= options['usersIcon'];			// icon to display details Link
 	this.innerUsers         = options['innerUsers'];		// users to display inside the same cell
 
@@ -194,7 +195,7 @@ function buildCellDIV(jCell)
 
 	// Main DIV
 	var div = document.createElement("DIV");
-	div.className = "cell"+jCell.className;
+	div.className = "cell"+jCell.className+" "+jCell.extraClassName;
 
 	// DIV Content as a HTML table
 	var table = document.createElement("TABLE");

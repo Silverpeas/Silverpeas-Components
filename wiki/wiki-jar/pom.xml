@@ -44,6 +44,7 @@
     <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
+      <classifier>jdk6</classifier>
       <exclusions>
         <exclusion>
           <artifactId>xml-apis</artifactId>

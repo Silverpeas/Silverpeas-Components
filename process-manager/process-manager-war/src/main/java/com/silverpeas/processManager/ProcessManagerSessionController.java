@@ -515,7 +515,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       // Process participants
       Participant participant = relatedUser.getParticipant();
       String relation = relatedUser.getRelation();
-      if (participant != null && relation != null) {
+      if (participant != null && relation == null) {
+        if (currentRole.equals(relatedUser.getRole())) {
+          users.add(getUserId());
+        }
+      } else if (participant != null && relation != null) {
         UserInfo userInfo = userSettings.getUserInfo(relation);
         if (userInfo != null) {
           users.add(userInfo.getValue());
@@ -567,16 +571,18 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     RelatedGroup[] relatedGroups = qualifiedUsers.getRelatedGroups();
     if (relatedGroups != null) {
       for (RelatedGroup relatedGroup : relatedGroups) {
-        // Process folder item
-        Item item = relatedGroup.getFolderItem();
-        if (item != null) {
-          try {
-            String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
-            UserDetail[] usersOfGroup = getOrganizationController().getAllUsersOfGroup(groupId);
-            for (UserDetail userOfGroup : usersOfGroup) {
-              users.add(userOfGroup.getId());
+        if (relatedGroup != null) {
+          // Process folder item
+          Item item = relatedGroup.getFolderItem();
+          if (item != null) {
+            try {
+              String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
+              UserDetail[] usersOfGroup = getOrganizationController().getAllUsersOfGroup(groupId);
+              for (UserDetail userOfGroup : usersOfGroup) {
+                users.add(userOfGroup.getId());
+              }
+            } catch (WorkflowException we) {// ignore it.
             }
-          } catch (WorkflowException we) {// ignore it.
           }
         }
       }

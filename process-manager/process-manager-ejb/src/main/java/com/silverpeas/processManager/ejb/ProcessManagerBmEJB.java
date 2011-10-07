@@ -83,9 +83,6 @@ public class ProcessManagerBmEJB implements SessionBean {
 
   private static final long serialVersionUID = -3111458120777031058L;
 
-  /** The current session context usefull for transactional management */
-  private SessionContext sessionContext = null;
-
   /** Default role for creating workflow processes. */
   public static final String DEFAULT_ROLE = "supervisor";
 
@@ -303,7 +300,6 @@ public class ProcessManagerBmEJB implements SessionBean {
    * @throws ProcessManagerException
    *             if no field exists for the given name and type.
    */
-  @SuppressWarnings("unchecked")
   private Field findMatchingField(XmlForm form, GenericDataRecord data,
       String name, String typeName)
       throws ProcessManagerException {
@@ -722,7 +718,6 @@ public class ProcessManagerBmEJB implements SessionBean {
 
   @Override
   public void setSessionContext(SessionContext sc) throws EJBException {
-    this.sessionContext = sc;
   }
 
   @Override

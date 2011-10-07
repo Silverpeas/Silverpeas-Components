@@ -597,7 +597,7 @@
              }
              
              <% if("New".equals(action)) { %>
-             	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>;
+             	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
              <% } %>
              
              switch(errorNb) {
@@ -730,7 +730,6 @@
         }
                 
     </script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
   </head>
   <body id="<%=componentId%>" class="publicationManager" onunload="closeWindows()">
 <%

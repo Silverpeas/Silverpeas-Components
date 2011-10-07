@@ -12,7 +12,7 @@
   <packaging>pom</packaging>
   <name>classifieds Component</name>
   <modules>
-    <module>classifieds-ejb</module>
+    <module>classifieds-jar</module>
     <module>classifieds-war</module>
     <module>classifieds-config</module>
   </modules>

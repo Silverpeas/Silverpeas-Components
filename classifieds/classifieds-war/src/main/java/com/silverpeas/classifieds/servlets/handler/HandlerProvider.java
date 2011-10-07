@@ -33,10 +33,6 @@ public class HandlerProvider {
     handlerMap.put("UpdateClassified", new ClassifiedUpdateHandler());
     handlerMap.put("DeleteClassified", new ClassifiedDeleteHandler());
 
-    handlerMap.put("AddComment", new CommentCreationHandler());
-    handlerMap.put("DeleteComment", new CommentDeleteHandler());
-    handlerMap.put("UpdateComment", new CommentUpdateHandler());
-
     handlerMap.put("DraftIn", new DraftInHandler());
     handlerMap.put("DraftOut", new DraftOutHandler());
 
