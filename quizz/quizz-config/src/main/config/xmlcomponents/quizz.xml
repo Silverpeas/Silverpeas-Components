@@ -100,7 +100,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les quizz créés au sein de ce composant pourront être classés sur le Plan de Classement.</message>
+        <message lang="fr">Les quizz créés au sein de cette application pourront être classés sur le Plan de Classement.</message>
         <message lang="en">The quizz will be classified on the classification scheme.</message>
         <message lang="de">Ein Quizz kann auf dem KP klassifiziert werden</message>
       </help>

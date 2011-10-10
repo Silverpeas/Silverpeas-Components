@@ -129,7 +129,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Active le masquage des mails dans l'IHM. Les notifications envoyées à partir de ce composant auront un expéditeur générique.</message>
+        <message lang="fr">Active le masquage des mails dans l'IHM. Les notifications envoyées à partir de cette application auront un expéditeur générique.</message>
         <message lang="en">Hide the emailaddress. The sender of notifications will be generic.</message>
         <message lang="de">Blendet die E-Mailadresse aus. Der Absender der eingegangenen Meldungen wird anonym sein.</message>
       </help>
