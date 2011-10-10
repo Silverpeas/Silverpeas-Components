@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://repository.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,8 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.formsonline;
 
+package com.silverpeas.formsonline;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
@@ -47,7 +47,8 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()",
+        "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
@@ -55,7 +56,8 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
-    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.delete()",
+        "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     deleteFormsData(con, componentId);
     deleteDataOfInstance(con, componentId, "UserRights");
