@@ -42,7 +42,7 @@
       indexation manuelle sur le Plan de Classement Silverpeas, contrôle de lecture,
       gestion de commentaires, abonnement à un dossier ou un fichier, alerte de publication.
     </message>
-    <message lang="en">This component organizes documentation in hierarchical themes. You have many options : XML
+    <message lang="en">This application organizes documentation in hierarchical themes. You have many options : XML
       form for metadata, attachments versioned or not, workflows with many steps for validation / acceptation,
       classification on the classification scheme, readers list, comments, subscription to a theme ,
       a publication or a file.
@@ -134,7 +134,7 @@
           Si la valeur saisie est égale à 0, la publication à la racine est alors possible mais
           les dernières publications ne sont pas affichées sur la page d'accueil.
         </message>
-        <message lang="en">Defines the number of publications displayed on the home page of the component.If not set to 0 
+        <message lang="en">Defines the number of publications displayed on the home page of the application. If not set to 0 
         you can't create publications in the root directory. When set to 0 you can create
         publications on the root directory but the last publications are no longer displayed on the home page. 
         </message>
@@ -293,7 +293,7 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Pour mettre une même publication à plusieurs endroits dans la hiérachie de cette application ou d'autres.</message>
-        <message lang="en">Indicates that publications can be in many places in the component's hierarchy or in other components.</message>
+        <message lang="en">Indicates that publications can be in many places in the application's hierarchy or in other applications.</message>
         <message lang="de">Um eine Veröffentlichungen an mehreren Orten in der Komponente Hierarchie anzeigen oder in einer anderen Komponente verwenden</message>
       </help>
       <personalSpaceValue>no</personalSpaceValue>
@@ -349,7 +349,7 @@
       <updatable>creation</updatable>
       <help>
         <message lang="fr">Permet de gérer les versions des fichiers joints. Ce paramêtre n'est modifiable qu'à la création de l'instance.</message>
-        <message lang="en">Attachments are versioned. This parameter is defined on the creation of the component and can't be updated.</message>
+        <message lang="en">Attachments are versioned. This parameter is defined on the creation of the application and can't be updated.</message>
         <message lang="de">Anhänge werden versioniert. Dieser Parameter wird bei der Erschaffung der Komponente definiert und kann nicht mehr geändert werden.</message>
       </help>
     </parameter>
@@ -404,7 +404,7 @@
           Rédacteurs seulement, Lecteurs seulement ou droits hérités de l'application.
         </message>
         <message lang="en">Access rights on the files with versions : Writers and readers,
-          Writers only, Readers only or rights inherited from the component.
+          Writers only, Readers only or rights inherited from the application.
         </message>
         <message lang="de">Zugriffsrechte auf die Dateien mit den Versionen: Autoren und Leser, 
           nur Autoren, nur Leser oder Rechte von der Komponente geerbt.
@@ -668,7 +668,7 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles de l'application.</message>
-        <message lang="en">This function allow the user to export all the visible publications in the component.</message>
+        <message lang="en">This function allow the user to export all the visible publications of the application.</message>
         <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
       </help>     
     </parameter>
@@ -840,7 +840,7 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Seuls les gestionnaires de l'application peuvent supprimer une publication et d'accéder à la corbeille de publications.</message>
-        <message lang="en">Only administrators of this component are be able to remove publications and to access to publications bin.</message>
+        <message lang="en">Only administrators of this application are be able to remove publications and to access to publications bin.</message>
         <message lang="de">Nur Administratoren dieser Komponente können Veröffentlichungen entfernen und am Papierkorb der Publikationen zugreifen.</message>
       </help>
     </parameter>
@@ -999,7 +999,7 @@
           grâce à l'éditeur Wysiwyg.
         </message>
         <message lang="en">
-          This feature allows indicating this component as a file storage. The
+          This feature allows indicating this application as a file storage. The
           attachment of a file storage can be inserted into the body of a publication with the help
           of Wysiwyg editor.
         </message>
@@ -1137,7 +1137,7 @@
       <updatable>hidden</updatable>
       <help>
         <message lang="fr">Permet de gérer les actualités soumises à validation dans l'application Actualités déléguées.</message>
-        <message lang="en">Activates the news manage option. The news are valided in the peas Delegated news.</message>
+        <message lang="en">Activates the news manage option. The news are valided in the application Delegated news.</message>
         <message lang="de">Diese Funktion erlaubt es Nachrichten zu verwalten die die Valiedierung in der Nachrichtenkomponente unterliegen, </message>
       </help>
     </parameter>

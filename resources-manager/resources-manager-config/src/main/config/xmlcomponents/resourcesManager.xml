@@ -35,7 +35,7 @@
   </label>
   <description>
     <message lang="fr">Cette application permet de gérer ses ressources matérielles et de les réserver.</message>
-    <message lang="en">This component manages physical resources and how to book them.</message>
+    <message lang="en">This application manages physical resources and how to book them.</message>
     <message lang="de">Diese Komponente verwaltet physische Ressourcen und wie man diese buchen kann.</message>
   </description>
   <suite>

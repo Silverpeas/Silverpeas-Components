@@ -35,7 +35,7 @@
   </label>
   <description>
     <message lang="fr">Cette application permet la validation et la mise en ligne en page d'accueil des actualités soumises à validation depuis les Gestion documentaire I dont l'option Gestion des actualités est activée.</message>
-    <message lang="en">This component allows to validate and display news in home page. The news have been proposed from Theme Tracker which have the News manage option activated.</message>
+    <message lang="en">This application allows to validate and display news in home page. The news have been proposed from Theme Tracker which have the News manage option activated.</message>
     <message lang="de">Diese Komponente ermöglicht es Nachrichten in der Homepage zu Validieren und anzuzeigen.</message>
   </description>
   <suite>

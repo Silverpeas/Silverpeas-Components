@@ -268,7 +268,7 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Permet d'utiliser les images de cette application depuis l'éditeur Wysiwyg et les applications Vote et Enquête</message>
-        <message lang="en">Images will be available from Wysiwyg editor and Vote and Survey components</message>
+        <message lang="en">Images will be available from Wysiwyg editor and Vote and Survey applications</message>
         <message lang="de">Bilder werden von WYSIWYG-Editor, Abstimmung und Umfrage Komponent verfügbar sein</message>
       </help>
     </parameter>
@@ -305,7 +305,7 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Si ce paramètre est activé, les images indexées ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à cette application.</message>
-        <message lang="en">If this parameter is enabled, indexed images will not be findable by global search engine but only by the dedicated search engine of this component.</message>
+        <message lang="en">If this parameter is enabled, indexed images will not be findable by global search engine but only by the dedicated search engine of this application.</message>
         <message lang="de">Wenn dieser Parameter aktiviert ist, werden indexierte Bilder von der globalen Suchmaschinen nicht auffindbaren sein, sondern nur durch die spezielle Suchmaschinen dieser Komponente.</message>
       </help>
       <personalSpaceValue>yes</personalSpaceValue>
