@@ -34,10 +34,10 @@
     <message lang="de">Silvercrawler</message>
   </label>
   <description>
-    <message lang="fr">Le composant SilverCrawler permet aux utilisateurs de naviguer et/ou rechercher des
+    <message lang="fr">L'application SilverCrawler permet aux utilisateurs de naviguer et/ou rechercher des
   fichiers directement sur un serveur de fichiers.
     </message>
-    <message lang="en">This component crawls files and directories on a server filesystem indexing them so 
+    <message lang="en">This application crawls files and directories on a server filesystem indexing them so 
     that users can browse thoses files and search for them with the search engine.
     </message>
     <message lang="de">Die Komponente SilverCrawler erlaubt es den Benutzern, Dateien direkt auf 
@@ -135,11 +135,10 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Si ce paramètre est activé, les fichiers indexés ne seront pas retrouvables
-        par le moteur de recherche général mais uniquement par le moteur de recherche dédié à ce
-        composant.
+        par le moteur de recherche général mais uniquement par le moteur de recherche dédié à cette application.
         </message>
         <message lang="en">If this parameter is enabled, indexed files will not be findable by global
-        search engine but only by the dedicated search engine of this component.
+        search engine but only by the dedicated search engine of this application.
         </message>
         <message lang="de">Falls dieser Parameter aktiviert ist, werden indexiert Informationen
         nicht durch die globale Suchmaschine auffindbar sein.</message>
