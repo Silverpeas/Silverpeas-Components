@@ -242,7 +242,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Pour mettre une même publication à plusieurs endroits dans la hiérachie de ce composant ou d'autres.</message>
+        <message lang="fr">Pour mettre une même publication à plusieurs endroits dans la hiérachie de cette application ou d'autres.</message>
         <message lang="en">Indicates that publications can be in many places in the component's hierarchy or in other components.</message>
         <message lang="de">Um eine Veröffentlichungen an mehreren Orten in der Komponente Hierarchie anzeigen oder in einer anderen Komponente verwenden</message>
       </help>
@@ -470,7 +470,7 @@
     <parameter>
       <name>exportComponent</name>
       <label>
-        <message lang="fr">Exportation du composant</message>
+        <message lang="fr">Exportation de l'application</message>
         <message lang="en">Export component</message>
         <message lang="de">Komponente Export</message>
       </label>
@@ -514,7 +514,7 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles du composant.</message>
+        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles de l'application.</message>
         <message lang="en">This function allow the user to export all the visible publications in the component</message>
         <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
       </help>

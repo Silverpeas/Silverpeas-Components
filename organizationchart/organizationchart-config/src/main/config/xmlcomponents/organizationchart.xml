@@ -33,7 +33,7 @@
     <message lang="en">Organization chart</message>
   </label>
   <description>
-    <message lang="fr">Ce composant permet l'affichage d'un organigramme à partir d'un annuaire LDAP.</message>
+    <message lang="fr">Cette application permet l'affichage d'un organigramme à partir d'un annuaire LDAP.</message>
     <message lang="en">This component display an organization chart based on the data from a LDAP server.</message>
   </description>
   <suite>

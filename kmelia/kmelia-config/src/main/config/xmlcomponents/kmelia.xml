@@ -130,7 +130,7 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Permet de définir le nombre de dernières publications affichées sur la
-          page d'accueil du composant. La création de publication à la racine est impossible.
+          page d'accueil de l'application. La création de publication à la racine est impossible.
           Si la valeur saisie est égale à 0, la publication à la racine est alors possible mais
           les dernières publications ne sont pas affichées sur la page d'accueil.
         </message>
@@ -292,7 +292,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Pour mettre une même publication à plusieurs endroits dans la hiérachie de ce composant ou d'autres.</message>
+        <message lang="fr">Pour mettre une même publication à plusieurs endroits dans la hiérachie de cette application ou d'autres.</message>
         <message lang="en">Indicates that publications can be in many places in the component's hierarchy or in other components.</message>
         <message lang="de">Um eine Veröffentlichungen an mehreren Orten in der Komponente Hierarchie anzeigen oder in einer anderen Komponente verwenden</message>
       </help>
@@ -401,7 +401,7 @@
       <updatable>creation</updatable>
       <help>
         <message lang="fr">Droits sur les fichiers versionnés: Rédacteurs et Lecteurs,
-          Rédacteurs seulement, Lecteurs seulement ou droits hérités du composant.
+          Rédacteurs seulement, Lecteurs seulement ou droits hérités de l'application.
         </message>
         <message lang="en">Access rights on the files with versions : Writers and readers,
           Writers only, Readers only or rights inherited from the component.
@@ -667,7 +667,7 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles du composant.</message>
+        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles de l'application.</message>
         <message lang="en">This function allow the user to export all the visible publications in the component.</message>
         <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
       </help>     
@@ -839,7 +839,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Seuls les gestionnaires du composant peuvent supprimer une publication et d'accéder à la corbeille de publications.</message>
+        <message lang="fr">Seuls les gestionnaires de l'application peuvent supprimer une publication et d'accéder à la corbeille de publications.</message>
         <message lang="en">Only administrators of this component are be able to remove publications and to access to publications bin.</message>
         <message lang="de">Nur Administratoren dieser Komponente können Veröffentlichungen entfernen und am Papierkorb der Publikationen zugreifen.</message>
       </help>
@@ -994,7 +994,7 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">
-          Ce paramètre permet de définir ce composant comme une banque de fichiers.
+          Ce paramètre permet de définir cette application comme une banque de fichiers.
           Les pièces jointes d'une banque peuvent être insérées dans le corps d'une publication
           grâce à l'éditeur Wysiwyg.
         </message>
@@ -1136,7 +1136,7 @@
       <type>checkbox</type>
       <updatable>hidden</updatable>
       <help>
-        <message lang="fr">Permet de gérer les actualités soumises à validation dans le composant Actualités déléguées.</message>
+        <message lang="fr">Permet de gérer les actualités soumises à validation dans l'application Actualités déléguées.</message>
         <message lang="en">Activates the news manage option. The news are valided in the peas Delegated news.</message>
         <message lang="de">Diese Funktion erlaubt es Nachrichten zu verwalten die die Valiedierung in der Nachrichtenkomponente unterliegen, </message>
       </help>
