@@ -78,7 +78,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
     Collection<ForumDetail> result = ForumsDAO.selectByForumPKs(con, forumPKs);
     assertThat(result, hasSize(1));
     ForumDetail expectedForum = new ForumDetail(new ForumPK("forums130", "8"),
-        "Utilisation de Silverpeas", "Les composants de Silverpeas sont riches et paramétrables. "
+        "Utilisation de Silverpeas", "Les applications de Silverpeas sont riches et paramétrables. "
         + "Ceci vous permet d'en faire une utilisation multiple et parfois détournée de leur "
         + "vocation initial. Partagez vos expériences à ce sujet...", "1",
         DateUtil.parse("2004/03/26"));
@@ -96,7 +96,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
     Collection<ForumPK> forumPKs = Lists.newArrayList(new ForumPK("forums130", "8"));
     Collection<Forum> result = ForumsDAO.getForumsByKeys(con, forumPKs);
     assertThat(result, hasSize(1));
-    Forum expectedForum = new Forum(8, "Utilisation de Silverpeas", "Les composants de Silverpeas sont riches et paramétrables. "
+    Forum expectedForum = new Forum(8, "Utilisation de Silverpeas", "Les applications de Silverpeas sont riches et paramétrables. "
         + "Ceci vous permet d'en faire une utilisation multiple et parfois détournée de leur "
         + "vocation initial. Partagez vos expériences à ce sujet...", true, 0, "2",
         "2004/03/26", "forums130");
@@ -175,7 +175,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
     IDatabaseConnection dbConnection = baseTest.getConnection();
     Connection con = dbConnection.getConnection();
     Forum result = ForumsDAO.getForum(con, new ForumPK("forums130", "8"));
-    Forum expectedForum = new Forum(8, "Utilisation de Silverpeas", "Les composants de Silverpeas sont riches et paramétrables. "
+    Forum expectedForum = new Forum(8, "Utilisation de Silverpeas", "Les applications de Silverpeas sont riches et paramétrables. "
         + "Ceci vous permet d'en faire une utilisation multiple et parfois détournée de leur "
         + "vocation initial. Partagez vos expériences à ce sujet...", true, 0, "2",
         "2004/03/26", "forums130");
@@ -263,7 +263,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
     Connection con = dbConnection.getConnection();
     ForumsDAO.lockForum(con, new ForumPK("forums130", "8"), 1);
     Forum result = ForumsDAO.getForum(con, new ForumPK("forums130", "8"));
-    Forum expectedForum = new Forum(8, "Utilisation de Silverpeas", "Les composants de Silverpeas sont riches et paramétrables. "
+    Forum expectedForum = new Forum(8, "Utilisation de Silverpeas", "Les applications de Silverpeas sont riches et paramétrables. "
         + "Ceci vous permet d'en faire une utilisation multiple et parfois détournée de leur "
         + "vocation initial. Partagez vos expériences à ce sujet...", false, 0, "2",
         "2004/03/26", "forums130");

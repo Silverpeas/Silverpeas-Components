@@ -41,7 +41,7 @@ public class TitleHelper {
       String keyword = title.substring(begin + 2, end);
       title =
           title.substring(0, begin) + computeKeyword(instance, keyword) +
-              title.substring(end + 1, title.length());
+          title.substring(end + 1, title.length());
     }
     return title;
   }
