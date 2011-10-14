@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <!-- Contacts (Présidents des USA) -->
+    <sb_contact_contact contactId="10" contactfirstname="George" contactlastname="Washington"
+                        contactemail="George.Washington@oosphere.com" contactphone="" contactfax="" userid=""
+                        contactcreationdate="2011/09/10" contactcreatorid="0" instanceId="yellowpages6"/>
+
+    <sb_contact_contact contactId="11" contactfirstname="Thomas" contactlastname="Jefferson"
+                        contactemail="T0homas.Jefferson@oosphere.com" contactphone="" contactfax="" userid=""
+                        contactcreationdate="2011/09/11" contactcreatorid="0" instanceId="yellowpages6"/>
+
+    <sb_contact_contact contactId="12" contactfirstname="James" contactlastname="Madison"
+                        contactemail="James.Madison@oosphere.com" contactphone="" contactfax="" userid=""
+                        contactcreationdate="2011/09/12" contactcreatorid="0" instanceId="yellowpages6"/>
+
+    <sb_contact_contact contactId="13" contactfirstname="Andrew" contactlastname="Jackson"
+                        contactemail="Andrew.Jackson@oosphere.com" contactphone="" contactfax="" userid=""
+                        contactcreationdate="2011/09/13" contactcreatorid="0" instanceId="yellowpages6"/>
+
+    <sb_contact_contact contactId="14" contactfirstname="Abraham" contactlastname="Lincoln"
+                        contactemail="Abraham.Lincoln@oosphere.com" contactphone="" contactfax="" userid=""
+                        contactcreationdate="2011/09/14" contactcreatorid="0" instanceId="yellowpages6"/>
+
+    <sb_contact_contact contactId="15" contactfirstname="Theodore" contactlastname="Roosevelt"
+                        contactemail="troosevelt@oosphere.com" contactphone="" contactfax="" userid=""
+                        contactcreationdate="2011/09/15" contactcreatorid="0" instanceId="yellowpages6"/>
+
+    <sb_contact_contact contactId="16" contactfirstname="John F." contactlastname="Kennedy"
+                        contactemail="John.f.kennedy@oosphere.com" contactphone="" contactfax="" userid=""
+                        contactcreationdate="2011/09/16" contactcreatorid="0" instanceId="yellowpages6"/>
+
+    <sb_contact_contact contactId="17" contactfirstname="Barack" contactlastname="Obama"
+                        contactemail="Barack.Obama@oosphere.com" contactphone="" contactfax="" userid=""
+                        contactcreationdate="2011/09/17" contactcreatorid="0" instanceId="yellowpages6"/>
+
+    <!-- Companies -->
+    <sc_contact_company companyId="0" companyName="Walt Disney"
+                        companyEmail="waltdisney@oosphere.com" companyPhone="" companyFax="" instanceId="yellowpages6"/>
+
+    <sc_contact_company companyId="1" companyName="Microsoft"
+                        companyEmail="microsoft@oosphere.com" companyPhone="" companyFax="" instanceId="yellowpages6"/>
+
+    <sc_contact_company companyId="2" companyName="Cisco Systems"
+                        companyEmail="ciscosystems@oosphere.com" companyPhone="" companyFax=""
+                        instanceId="yellowpages6"/>
+
+    <sc_contact_company companyId="3" companyName="Coca Cola"
+                        companyEmail="cocacola@oosphere.com" companyPhone="" companyFax="" instanceId="yellowpages6"/>
+
+    <sc_contact_company companyId="4" companyName="General Electric"
+                        companyEmail="generalelectric@oosphere.com" companyPhone="" companyFax=""
+                        instanceId="yellowpages6"/>
+
+    <sc_contact_company companyId="5" companyName="Boeing"
+                        companyEmail="boeing@oosphere.com" companyPhone="" companyFax="" instanceId="yellowpages6"/>
+
+    <!-- compagnie non rattaché à un contact generique pour tests DAO -->
+    <sc_contact_company companyId="6" companyName="RIM"
+                        companyEmail="rim@oosphere.com" companyPhone="" companyFax="" instanceId="yellowpages6"/>
+
+    <!-- Generic Contact (Contacts) -->
+    <sc_contact_genericcontact genericcontactid="210" contacttype="1" contactId="10" companyId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="211" contacttype="1" contactId="11" companyId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="212" contacttype="1" contactId="12" companyId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="213" contacttype="1" contactId="13" companyId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="214" contacttype="1" contactId="14" companyId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="215" contacttype="1" contactId="15" companyId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="216" contacttype="1" contactId="16" companyId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="217" contacttype="1" contactId="17" companyId="[NULL]"/>
+
+    <!-- Generic Contact (Entreprises) -->
+    <sc_contact_genericcontact genericcontactid="110" contacttype="2" companyId="0" contactId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="111" contacttype="2" companyId="1" contactId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="112" contacttype="2" companyId="2" contactId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="113" contacttype="2" companyId="3" contactId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="114" contacttype="2" companyId="4" contactId="[NULL]"/>
+    <sc_contact_genericcontact genericcontactid="115" contacttype="2" companyId="5" contactId="[NULL]"/>
+
+    <!-- Generic Contact Rel -->
+    <!-- Exemple : Obama => CocaCola + WaltDisney + General Electrics (disabled) -->
+    <sc_contact_genericcontact_rel relationId="0" genericcontactid="217" genericcompanyid="113" relationtype="0"
+                                   enabled="1"/>
+    <sc_contact_genericcontact_rel relationId="1" genericcontactid="217" genericcompanyid="110" relationtype="0"
+                                   enabled="1"/>
+    <sc_contact_genericcontact_rel relationId="2" genericcontactid="217" genericcompanyid="114" relationtype="0"
+                                   enabled="0"/>
+
+    <sc_contact_genericcontact_rel relationId="3" genericcontactid="212" genericcompanyid="111" relationtype="0"
+                                   enabled="1"/>
+    <sc_contact_genericcontact_rel relationId="4" genericcontactid="213" genericcompanyid="111" relationtype="0"
+                                   enabled="0"/>
+
+</dataset>

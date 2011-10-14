@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,44 +22,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.yellowpages.model.beans;
+package com.stratelia.webactiv.yellowpages.model;
 
-public class Company {
+import javax.persistence.*;
 
-    private CompanyPK pk;
+@Entity
+@Table(name = "sc_contact_company")
+public class Company implements java.io.Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int companyId;
+    @Column(name = "companyName")
     private String name;
+    @Column(name = "companyEmail")
     private String email;
+    @Column(name = "companyPhone")
     private String phone;
+    @Column(name = "companyFax")
     private String fax;
-    private String creationDate;
-    private String creatorId;
+    @Column(name = "instanceId")
+    private String instanceId;
 
-    public Company(CompanyPK pk, String name, String email, String phone, String fax, String creationDate, String creatorId) {
-        this.pk = pk;
+    public Company() {
+    }
+
+    public Company(String instanceId, String name, String email, String phone, String fax) {
+        super();
+        this.instanceId = instanceId;
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.fax = fax;
-        this.creationDate = creationDate;
-        this.creatorId = creatorId;
     }
 
-    public Company(String id, String name, String email, String phone, String fax, String creationDate, String creatorId) {
-        this.pk = new CompanyPK(id);
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.fax = fax;
-        this.creationDate = creationDate;
-        this.creatorId = creatorId;
+    public int getCompanyId() {
+        return companyId;
     }
 
-    public CompanyPK getPk() {
-        return pk;
+    public void setCompanyId(int companyId) {
+        this.companyId = companyId;
     }
 
-    public void setPk(CompanyPK pk) {
-        this.pk = pk;
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 
     public String getName() {
@@ -93,21 +103,4 @@ public class Company {
     public void setFax(String fax) {
         this.fax = fax;
     }
-
-    public String getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(String creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public String getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(String creatorId) {
-        this.creatorId = creatorId;
-    }
-
 }

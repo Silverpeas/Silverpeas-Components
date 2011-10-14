@@ -35,8 +35,7 @@ ADD CONSTRAINT FK_Contact_GenericContact_FKCompany FOREIGN KEY (companyId)
 ALTER TABLE SC_Contact_GenericContact_Rel
 ADD CONSTRAINT PK_Contact_GenericContact_Rel PRIMARY KEY
 	(
-		genericContactId,
-		genericCompanyId
+		relationId
 	)   
 ;
 

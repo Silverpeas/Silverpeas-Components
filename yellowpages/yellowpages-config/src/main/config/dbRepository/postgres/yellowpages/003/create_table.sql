@@ -21,11 +21,10 @@ CREATE TABLE SC_Contact_Company
 	companyEmail		varchar (1000)	NULL,
 	companyPhone		varchar (20)	NULL,
 	companyFax			varchar (20)	NULL,
-	companyCreationDate	varchar (10)	NOT NULL,
-	companyCreatorId	varchar (100)	NOT NULL,
 	instanceId			varchar (50)	NOT NULL
 )
 ;
+
 
 CREATE TABLE SC_Contact_GenericContact 
 (
@@ -38,6 +37,7 @@ CREATE TABLE SC_Contact_GenericContact
 
 CREATE TABLE SC_Contact_GenericContact_Rel
 (
+    relationId          int     NOT NULL,
 	genericContactId	int		NOT NULL,
 	genericCompanyId    int		NOT NULL,
 	relationType	    int		NOT NULL,
