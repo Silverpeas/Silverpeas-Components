@@ -28,6 +28,7 @@ import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -56,15 +57,14 @@ public class ReplyNotifier extends Notifier {
   final String source;
   final NotificationSender notifSender;
 
-  public ReplyNotifier(UserDetail sender, Question question, Reply reply, String subject,
-          String source, String componentLabel, String componentId) {
-    super(sender);
+  public ReplyNotifier(UserDetail sender, String serverUrl, Question question, Reply reply, NotificationData data) {
+    super(sender, serverUrl);
     this.reply = reply;
     this.question = question;
-    this.componentLabel = componentLabel;
-    this.subject = subject;
-    this.source = source;
-    this.notifSender = new NotificationSender(componentId);
+    this.componentLabel = data.getComponentLabel();
+    this.subject = data.getSubject();
+    this.source = data.getSource();
+    this.notifSender = new NotificationSender(data.getComponentId());
   }
 
   /**
@@ -96,7 +96,11 @@ public class ReplyNotifier extends Notifier {
       }
       notifMetaData.setSender(sender.getId());
       notifMetaData.addUserRecipients(users);
-      notifMetaData.setLink(question._getPermalink());
+      if(StringUtil.isDefined(serverUrl)) {
+        notifMetaData.setLink(serverUrl + question._getPermalink());
+      }else {
+         notifMetaData.setLink(question._getPermalink());
+      }
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
       throw new QuestionReplyException("QuestionReplySessionController.notify()",
