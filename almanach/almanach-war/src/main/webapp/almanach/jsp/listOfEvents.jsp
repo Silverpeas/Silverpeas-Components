@@ -179,6 +179,12 @@
           if (minutes < 10) minutes = "0" + minutes;
           return hours + ":" + minutes;
         }
+
+        function updateDate(dateTimeToUpdate, withDate) {
+          dateTimeToUpdate.setYear(withDate.getYear());
+          dateTimeToUpdate.setMonth(withDate.getMonth());
+          dateTimeToUpdate.setDate(withDate.getDate())
+        }
         
         /**
          * Selects the specified month by showing the events that occur in this month and by hiding
@@ -218,9 +224,9 @@
           $.each(events, function(index, event) {
             var eventStartDate = $.fullCalendar.parseDate(event.start);
             var endDate = $.fullCalendar.parseDate(event.end);
-            var startDate = eventStartDate;
+            var startDate = eval(uneval(eventStartDate));
       <c:if test="${calendarView.viewType.nextEventsView}">
-            if (startDate < today) startDate = today;
+            if (startDate < today) startDate.setDate(today.getDate());
       </c:if>
             if (startDate.getMonth() != currentMonth || startDate.getFullYear() != currentYear) {
               currentYear = startDate.getFullYear();
@@ -232,14 +238,22 @@
               monthsHavingEvents.push(MONTH_NAMES[currentMonth] + ' ' + currentYear);
             }
             var startTime = "", endTime = "";
-            if (!event.allDay) {
-              startTime = "<fmt:message key='GML.From'/> " + formatTime(startDate);
+            if (eventStartDate < startDate) {
+              startTime = "<fmt:message key='GML.From'/> " + eventStartDate.toLocaleDateString();
+            }
+            if (event.startTimeDefined) {
+              if (startTime.length > 0) {
+                startTime = startTime + " <fmt:message key='GML.at'/> "; 
+              } else {
+                startTime = "<fmt:message key='GML.From'/> ";
+              }
+              startTime = startTime + formatTime(startDate);
             }
             if (endDate.getFullYear() > startDate.getFullYear() || endDate.getMonth() > startDate.getMonth() ||
               endDate.getDate() > startDate.getDate()) {
               endTime = "<fmt:message key='GML.to'/> " + endDate.toLocaleDateString(); 
             }
-            if (!event.allDay) {
+            if (event.endTimeDefined) {
               endTime = endTime + " <fmt:message key='GML.at'/> " + formatTime(endDate);
             }
             var eventSection = $("<li>").attr("id", "event" + index).addClass("event " + event.className.join(' ')).click(function() {
@@ -475,7 +489,7 @@
                   <c:if test="${rssUrl ne null and not empty rssUrl}">
                     <td>
                       <a href="<c:url value='${rssUrl}'/>" class="rss_link"><img src="<c:url value="/util/icons/rss.gif" />" border="0" alt="rss"/></a>
-                      <fmt:message key="almanach.rssNext" var="rssNext"/>
+                        <fmt:message key="almanach.rssNext" var="rssNext"/>
                       <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel} : ${rssNext}'/>" href="<c:url value='${rssUrl}'/>"/>
                     </td>
                   </c:if>
@@ -497,16 +511,16 @@
             </form>
           </c:when>
           <c:otherwise>
-            <center>
-              <fmt:message key="GML.back" var="comeBack"/>
-              <view:button action="almanach.jsp" label="${comeBack}"/>
-            </center>
-          </c:otherwise>
-        </c:choose>
+          <center>
+            <fmt:message key="GML.back" var="comeBack"/>
+            <view:button action="almanach.jsp" label="${comeBack}"/>
+          </center>
+        </c:otherwise>
+      </c:choose>
 
-      </view:frame>
-    </view:window>
+    </view:frame>
+  </view:window>
 
-    <view:progressMessage/>
-  </body>
+  <view:progressMessage/>
+</body>
 </html>
