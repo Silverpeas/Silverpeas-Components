@@ -211,22 +211,14 @@ function openSPWindow(fonction, windowName){
 
     Window window = gef.getWindow();
     String bodyPart="";
-
-    // La barre de naviagtion
     BrowseBar browseBar = window.getBrowseBar();
-	//CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
     browseBar.setDomainName(spaceLabel);
-	//CBO : UPDATE
-    //browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp");
 	browseBar.setComponentName(componentLabel, "manage.jsp");
 
     //Les operations
     OperationPane operationPane = window.getOperationPane();
 
-	if (scc.isPdcUsed() && role.equals("Admin")) {
-		//CBO : UPDATE
-		/*operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+scc.getComponentId()+"','utilizationPdc1')");*/
+	if (scc.isPdcUsed() && "Admin".equals(role)) {
 		operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+componentId+"','utilizationPdc1')");
 		operationPane.addLine();
 	}
@@ -292,7 +284,7 @@ function openSPWindow(fonction, windowName){
 		}
 		else {//site interne
 			//CBO : UPDATE
-			arrayLine.addArrayCellLink(nom, "javascript:onClick=designSite('"+doubleAntiSlash(settings.getString("uploadsPath")+settings.getString("Context")+"/"+componentId+"/"+theId)+"', '"+theId+"')");
+			arrayLine.addArrayCellLink(nom, "javascript:onClick=designSite('"+doubleAntiSlash(settings.getString("uploadsPath")+componentId+"/"+theId)+"', '"+theId+"')");
 		}
 
 		//desc
