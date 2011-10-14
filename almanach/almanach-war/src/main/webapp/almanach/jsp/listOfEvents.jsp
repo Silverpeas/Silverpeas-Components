@@ -179,6 +179,12 @@
           if (minutes < 10) minutes = "0" + minutes;
           return hours + ":" + minutes;
         }
+
+         function updateDate(dateTimeToUpdate, withDate) {
+           dateTimeToUpdate.setYear(withDate.getYear());
+           dateTimeToUpdate.setMonth(withDate.getMonth());
+           dateTimeToUpdate.setDate(withDate.getDate())
+         }
         
         /**
          * Selects the specified month by showing the events that occur in this month and by hiding
@@ -220,7 +226,9 @@
             var endDate = $.fullCalendar.parseDate(event.end);
             var startDate = eventStartDate;
       <c:if test="${calendarView.viewType.nextEventsView}">
-            if (startDate < today) startDate = today;
+            if (!event.allDay) {
+              if (startDate < today) startDate.setDate(today.getDate());
+            }
       </c:if>
             if (startDate.getMonth() != currentMonth || startDate.getFullYear() != currentYear) {
               currentYear = startDate.getFullYear();
@@ -232,14 +240,14 @@
               monthsHavingEvents.push(MONTH_NAMES[currentMonth] + ' ' + currentYear);
             }
             var startTime = "", endTime = "";
-            if (!event.allDay) {
+            if (event.startTimeDefined) {
               startTime = "<fmt:message key='GML.From'/> " + formatTime(startDate);
             }
             if (endDate.getFullYear() > startDate.getFullYear() || endDate.getMonth() > startDate.getMonth() ||
               endDate.getDate() > startDate.getDate()) {
               endTime = "<fmt:message key='GML.to'/> " + endDate.toLocaleDateString(); 
             }
-            if (!event.allDay) {
+            if (event.endTimeDefined) {
               endTime = endTime + " <fmt:message key='GML.at'/> " + formatTime(endDate);
             }
             var eventSection = $("<li>").attr("id", "event" + index).addClass("event " + event.className.join(' ')).click(function() {
