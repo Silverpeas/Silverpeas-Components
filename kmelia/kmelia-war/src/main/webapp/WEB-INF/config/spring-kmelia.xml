@@ -50,6 +50,11 @@
   <bean id="kmeliaSearchResultRenderer" class="com.silverpeas.kmelia.ui.ResultSearchRenderer">
   	<property name="publicationBm" ref="publicationBm" />
   </bean>
+  
+  <!-- the KmeliaService factory from which Silverpeas components access the kmelia service.
+       It delegate to the Spring container the management of the life-cycle of the KmeliaService objects. -->
+  <bean id="kmeliaServiceFactory" class="com.silverpeas.kmelia.control.KmeliaServiceFactory"
+        factory-method="getFactory"/>
 
 </beans>
 
