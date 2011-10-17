@@ -258,7 +258,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
     NotificationMetaData notifMetaData =
             new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
             "blogNotification");
-    String url = URLManager.getURL(null, getComponentId()) + post.getURL();
+    String url = URLManager.getSearchResultURL(post);
     for (String lang : DisplayI18NHelper.getLanguages()) {
       SilverpeasTemplate template = getNewTemplate();
       templates.put(lang, template);
