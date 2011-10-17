@@ -2,7 +2,7 @@
 <dataset>
   <uniqueid tableName="sc_forums_forum" maxId="10" />
   <sc_forums_forum  forumid="8" forumname="Utilisation de Silverpeas"
-  forumdescription="Les composants de Silverpeas sont riches et paramétrables. Ceci vous permet d'en faire une utilisation multiple et parfois détournée de leur vocation initial. Partagez vos expériences à ce sujet..."
+  forumdescription="Les applications de Silverpeas sont riches et paramétrables. Ceci vous permet d'en faire une utilisation multiple et parfois détournée de leur vocation initial. Partagez vos expériences à ce sujet..."
   forumcreationdate="2004/03/26" forumclosedate="" forumcreator="1"
   forumactive="1" forumparent="0" forummodes="[NULL]" forumlocklevel="[NULL]" instanceid="forums130"
   categoryid="2" />

@@ -35,7 +35,7 @@
   </label>
   <description>
     <message lang="fr">Permet d'afficher, au sein de Silverpeas, des informations provenant de sites web
-  externes. Ce composant permet d'agréger plusieurs sources d'informations au format RSS.
+  externes. Cette application permet d'agréger plusieurs sources d'informations au format RSS.
     </message>
     <message lang="en">Aggregate inside Silverpeas data from external web sites using their RSS streams.</message>
     <message lang="de">Aggregierte in der Plateform, Daten aus externe Websiten die über RSS Streams verfügen.</message>

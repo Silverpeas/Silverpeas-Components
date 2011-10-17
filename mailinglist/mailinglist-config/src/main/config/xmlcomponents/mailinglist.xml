@@ -34,12 +34,12 @@
     <message lang="de">Email Archivierer</message>
   </label>
   <description>
-    <message lang="fr">Ce composant permet d'archiver les emails reçus à une adresse de messagerie donnée.
-  Les messages peuvent être soumis à modération. Grâce au paramètre Diffusion, le composant se
+    <message lang="fr">Cette application permet d'archiver les emails reçus à une adresse de messagerie donnée.
+  Les messages peuvent être soumis à modération. Grâce au paramètre Diffusion, l'application se
   transforme en liste de diffusion.
     </message>
-    <message lang="en">This component archives emails received on a specific email address. The messages may be moderated. Using the 'Diffusion list' parameter,
-  this component can be transformed into a mailing-list.
+    <message lang="en">This application archives emails received on a specific email address. The messages may be moderated. Using the 'Diffusion list' parameter,
+  this application can be transformed into a mailing-list.
     </message>
     <message lang="de">Diese Komponente archiviert E-Mails, die an einer bestimmten E-Mail-Adresse gesendet werden. Die Nachrichten können moderiert werden. Mit dem 'Diffusions Liste' parameter, kann diese Komponente in eine Mailing-Liste umgewandelt werden.</message>
   </description>

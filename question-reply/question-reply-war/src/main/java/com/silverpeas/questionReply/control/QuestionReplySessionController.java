@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.control;
 
@@ -27,6 +24,7 @@ import com.silverpeas.questionReply.control.notification.ReplyNotifier;
 import com.silverpeas.questionReply.control.notification.QuestionNotifier;
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.questionReply.QuestionReplyException;
+import com.silverpeas.questionReply.control.notification.NotificationData;
 import com.silverpeas.questionReply.model.Category;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Recipient;
@@ -198,14 +196,14 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /*
-   * Enregistre la nouvelle question
+   * Store the new question and notify subscribers and experts.
    */
   public long saveNewQuestion() throws QuestionReplyException {
-    // notifier les experts associés à cette question
+    long questionId = QuestionManagerFactory.getQuestionManager().createQuestion(newQuestion);
+    newQuestion.getPK().setId(String.valueOf(questionId));
     notifyQuestion(newQuestion);
-    // notifier la question à tous les experts du composant
     notifyQuestionFromExpert(newQuestion);
-    return QuestionManagerFactory.getQuestionManager().createQuestion(newQuestion);
+    return questionId;
   }
 
   /*
@@ -373,8 +371,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /*
-   * Supprime les réponses privées => QuestionManagerFactory.getQuestionManager().updateRepliesPrivateStatus() retourne le
-   * nombre de réponses privées restantes
+   * Supprime les réponses privées =>
+   * QuestionManagerFactory.getQuestionManager().updateRepliesPrivateStatus() retourne le nombre de
+   * réponses privées restantes
    */
   private int deletePrivateReplies(Collection<Long> replyIds) throws QuestionReplyException {
     QuestionManagerFactory.getQuestionManager().updateRepliesPrivateStatus(replyIds,
@@ -392,7 +391,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   /*
    * Retourne la liste des questions de l'utilisateur de rôle Writer (expert) i.e. liste des
-   * questions dont il est le destinataire non close => QuestionManagerFactory.getQuestionManager().getReceiveQuestions()
+   * questions dont il est le destinataire non close =>
+   * QuestionManagerFactory.getQuestionManager().getReceiveQuestions()
    */
   private Collection<Question> getWriterQuestions() throws QuestionReplyException {
     return QuestionManagerFactory.getQuestionManager().getReceiveQuestions(getUserId(),
@@ -411,7 +411,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   /*
    * Retourne la liste des questions de l'utilisateur de rôle Admin (animateur) i.e. liste des
-   * questions non close ou close avec réponses publiques => QuestionManagerFactory.getQuestionManager().getQuestions()
+   * questions non close ou close avec réponses publiques =>
+   * QuestionManagerFactory.getQuestionManager().getQuestions()
    */
   private Collection<Question> getAdminQuestions() throws QuestionReplyException {
     return QuestionManagerFactory.getQuestionManager().getQuestions(getComponentId());
@@ -623,9 +624,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private void notifyTemplateQuestion(Question question, Collection<UserRecipient> users)
           throws QuestionReplyException {
-    QuestionNotifier notifier = new QuestionNotifier(getUserDetail(getUserId()), question,
-            getString("questionReply.notification") + getComponentLabel(),
-            getSpaceLabel() + " - " + getComponentLabel(), getComponentLabel(), getComponentId());
+    QuestionNotifier notifier = new QuestionNotifier(getUserDetail(getUserId()), URLManager.
+            getServerURL(null), question, new NotificationData(getString(
+            "questionReply.notification")
+            + getComponentLabel(), getSpaceLabel() + " - " + getComponentLabel(),
+            getComponentLabel(),
+            getComponentId()));
     notifier.sendNotification(users);
   }
 
@@ -637,7 +641,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     Collection<Recipient> recipients = question.readRecipients();
     List<UserRecipient> users = new ArrayList<UserRecipient>(recipients.size());
     for (Recipient recipient : recipients) {
-     users.add(new UserRecipient(recipient.getUserId()));
+      users.add(new UserRecipient(recipient.getUserId()));
     }
     notifyTemplateQuestion(question, users);
   }
@@ -646,14 +650,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @param question
    * @throws QuestionReplyException
    */
-  private void notifyQuestionFromExpert(Question question)
-          throws QuestionReplyException {
+  private void notifyQuestionFromExpert(Question question) throws QuestionReplyException {
     List<String> profils = new ArrayList<String>();
     profils.add(SilverpeasRole.writer.name());
     String[] usersIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(), profils);
     List<UserRecipient> users = new ArrayList<UserRecipient>(usersIds.length);
     for (String userId : usersIds) {
-     users.add(new UserRecipient(userId));
+      users.add(new UserRecipient(userId));
     }
     notifyTemplateQuestion(question, users);
   }
@@ -666,10 +669,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private void notifyReply(Reply reply) throws QuestionReplyException {
     UserDetail user =
             getOrganizationController().getUserDetail(getCurrentQuestion().getCreatorId());
-    ReplyNotifier notifier = new ReplyNotifier(getUserDetail(getUserId()), getCurrentQuestion(),
-            reply, getString("questionReply.notification") + getComponentLabel(),
-            getSpaceLabel() + " - " + getComponentLabel(), getComponentLabel(), getComponentId());
-    notifier.sendNotification((List<UserRecipient>) Collections.singletonList(new UserRecipient(user)));
+    ReplyNotifier notifier = new ReplyNotifier(getUserDetail(getUserId()), URLManager.getServerURL(
+            null), getCurrentQuestion(), reply, new NotificationData(getString(
+            "questionReply.notification") + getComponentLabel(), getSpaceLabel() + " - "
+            + getComponentLabel(), getComponentLabel(), getComponentId()));
+    notifier.sendNotification((List<UserRecipient>) Collections.singletonList(
+            new UserRecipient(user)));
   }
 
   public QuestionReplySessionController(MainSessionController mainSessionCtrl,

@@ -42,7 +42,7 @@
     </message>
     <message lang="en">Structure and federate a simple group of files using metadata 'author, title, date). Files
   can be classfied on the classification scheme, and users can subscribe to them.
-  Thre two ways of using this component  : a view through Silverpeas of a tree of files and directories
+  Thre two ways of using this application : a view through Silverpeas of a tree of files and directories
   stored on a Windows© server, or the creation of a database of files on Silverpeas.
     </message>
     <message lang="de">Strukturiert und föderiert eine einfache Gruppe von Dateien anhand von Metadaten "Autor, Titel, Datum". Dateien können auf dem KP klassifiziert werden, Benutzer können sich auch abonnieren. Die zwei Möglichkeiten diese Komponente zu benützen sind: Zugang durch Silverpeas auf Dateien und Verzeichnissen die auf einem Windows © Server gespeichert sind, oder die Schaffung einer Datenbank von Dateien auf Silverpeas.</message>
@@ -242,8 +242,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Pour mettre une même publication à plusieurs endroits dans la hiérachie de ce composant ou d'autres.</message>
-        <message lang="en">Indicates that publications can be in many places in the component's hierarchy or in other components.</message>
+        <message lang="fr">Pour mettre une même publication à plusieurs endroits dans la hiérachie de cette application ou d'autres.</message>
+        <message lang="en">Indicates that publications can be in many places in the application's hierarchy or in other applications.</message>
         <message lang="de">Um eine Veröffentlichungen an mehreren Orten in der Komponente Hierarchie anzeigen oder in einer anderen Komponente verwenden</message>
       </help>
     </parameter>
@@ -297,7 +297,7 @@
       <updatable>never</updatable>
       <help>
         <message lang="fr">Permet de gérer les versions des fichiers joints. Ce paramêtre n'est modifiable qu'à la création de l'instance.</message>
-        <message lang="en">Attachments are versioned. This parameter isdefined on the creation of the component and can't be updated.</message>
+        <message lang="en">Attachments are versioned. This parameter isdefined on the creation of the application and can't be updated.</message>
         <message lang="de">Anhänge werden versioniert. Dieser Parameter wird bei der Erschaffung der Komponente definiert und kann nicht mehr geändert werden.</message>
       </help>
     </parameter>
@@ -470,8 +470,8 @@
     <parameter>
       <name>exportComponent</name>
       <label>
-        <message lang="fr">Exportation du composant</message>
-        <message lang="en">Export component</message>
+        <message lang="fr">Exportation de l'application</message>
+        <message lang="en">Export application</message>
         <message lang="de">Komponente Export</message>
       </label>
       <order>20</order>
@@ -514,8 +514,8 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles du composant.</message>
-        <message lang="en">This function allow the user to export all the visible publications in the component</message>
+        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles de l'application.</message>
+        <message lang="en">This function allow the user to export all the visible publications of the application.</message>
         <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
       </help>
     </parameter>

@@ -98,8 +98,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les brèves créées au sein de cette instance pourront Être classées sur le Plan de Classement.</message>
-        <message lang="en">News cerated in this component will be classified on the classification scheme.</message>
+        <message lang="fr">Les brèves créées au sein de cette instance pourront être classées sur le Plan de Classement.</message>
+        <message lang="en">News created in this application will be classified on the classification scheme.</message>
         <message lang="de">Nachrichten können auf dem KP klassifiziert werden</message>
       </help>
     </parameter>

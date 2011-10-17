@@ -34,8 +34,8 @@
     <message lang="de">Projektverwaltung</message>
   </label>
   <description>
-    <message lang="fr">Ce composant permet de gérer la notion de précédence entre deux tâches de même niveau.</message>
-    <message lang="en">This component create hierarchies of tasks affected to users.</message>
+    <message lang="fr">Cette application permet de gérer la notion de précédence entre deux tâches de même niveau.</message>
+    <message lang="en">This application creates hierarchies of tasks affected to users.</message>
     <message lang="de">Diese Komponente erstellt eine Aufgaben Hierarchie die an Benutzer zugewiesen kann.</message>
   </description>
   <suite>

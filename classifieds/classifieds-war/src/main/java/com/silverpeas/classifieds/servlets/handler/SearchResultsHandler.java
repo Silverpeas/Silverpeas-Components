@@ -1,25 +1,9 @@
 package com.silverpeas.classifieds.servlets.handler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
-import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.servlets.FunctionHandler;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.form.XmlSearchForm;
-import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 
 /**
  * Use Case : for all users, show all adds of given category
