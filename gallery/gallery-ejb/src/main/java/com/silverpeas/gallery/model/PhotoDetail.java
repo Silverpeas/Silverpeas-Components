@@ -23,18 +23,18 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileServerUtils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileServerUtils;
 
 public class PhotoDetail implements SilverContentInterface, Serializable {
   /**
@@ -85,7 +85,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   }
 
   public void setSilverObjectId(int silverObjectId) {
-    this.silverObjectId = new Integer(silverObjectId).toString();
+    this.silverObjectId = Integer.toString(silverObjectId);
   }
 
   public String getSilverObjectId() {
@@ -383,7 +383,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   }
 
   public MetaData getMetaData(String property) {
-    return (MetaData) metaData.get(property);
+    return metaData.get(property);
   }
 
   public Collection<String> getMetaDataProperties() {

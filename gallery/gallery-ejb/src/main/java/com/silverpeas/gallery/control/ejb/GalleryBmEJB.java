@@ -83,6 +83,8 @@ import java.util.List;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import static com.stratelia.webactiv.util.JNDINames.*;
+
 /**
  * @author
  */
@@ -185,8 +187,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   private NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getNodeBM()",
@@ -399,8 +400,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       SilverTrace.debug("gallery", "GalleryBmEJB.setPhotoPath()",
           "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
       PhotoDAO.deletePhotoPath(con, photoId, instanceId);
-      for (int i = 0; i < albums.length; i++) {
-        String albumId = albums[i];
+      for (String albumId : albums) {
         SilverTrace.debug("gallery", "GalleryBmEJB.setPhotoPath()",
             "root.MSG_GEN_PARAM_VALUE", "albumId = " + albumId);
         PhotoDAO.addPhotoPath(con, photoId, albumId, instanceId);
@@ -445,8 +445,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       SilverTrace.debug("gallery", "GalleryBmEJB.updatePhotoPath()",
           "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
       PhotoDAO.deletePhotoPath(con, photoId, instanceIdFrom);
-      for (int i = 0; i < albums.length; i++) {
-        String albumId = albums[i];
+      for (String albumId : albums) {
         SilverTrace.debug("gallery", "GalleryBmEJB.addAlbumPath()",
             "root.MSG_GEN_PARAM_VALUE", "albumId = " + albumId);
         PhotoDAO.addPhotoPath(con, photoId, albumId, instanceIdTo);
@@ -504,7 +503,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   private String displayPath(Collection<NodeDetail> path, int beforeAfter) {
-    String pathString = new String();
+    String pathString = "";
     int nbItemInPath = path.size();
     Iterator<NodeDetail> iterator = path.iterator();
     boolean alreadyCut = false;
@@ -709,8 +708,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       result = searchEngineBm.getRange(0, searchEngineBm.getResultLength());
 
       // création des photos à partir des resultats
-      for (int i = 0; i < result.length; i++) {
-        MatchingIndexEntry matchIndex = result[i];
+      for (MatchingIndexEntry matchIndex : result) {
         // Ne retourne que les photos
         if (matchIndex.getObjectType().equals("Photo")) {
           PhotoPK photoPK = new PhotoPK(matchIndex.getObjectId());
@@ -719,7 +717,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           if (photo != null) {
             SilverTrace.info("gallery", "GalleryBmEJB.getResultSearch()",
                 "root.MSG_GEN_ENTER_METHOD", "photo = "
-                    + photo.getPhotoPK().getId());
+                + photo.getPhotoPK().getId());
             photos.add(photo);
           }
         }
@@ -855,9 +853,8 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public PublicationBm getPublicationBm() {
     PublicationBm publicationBm = null;
     try {
-      PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.PUBLICATIONBM_EJBHOME,
-          PublicationBmHome.class);
+      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
+          PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
     } catch (Exception e) {
       throw new CommentRuntimeException(
@@ -871,8 +868,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     SearchEngineBm searchEngineBm = null;
     {
       try {
-        SearchEngineBmHome searchEngineHome = (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.SEARCHBM_EJBHOME,
+        SearchEngineBmHome searchEngineHome = EJBUtilitaire.getEJBObjectRef(SEARCHBM_EJBHOME,
             SearchEngineBmHome.class);
         searchEngineBm = searchEngineHome.create();
       } catch (Exception e) {
@@ -992,6 +988,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
   
+  @Override
   public void sortAlbums (List<NodePK> nodePKs) {
     Connection con = initCon();
     try {

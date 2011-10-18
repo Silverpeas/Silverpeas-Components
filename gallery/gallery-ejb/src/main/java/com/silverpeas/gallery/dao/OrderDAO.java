@@ -23,6 +23,13 @@
  */
 package com.silverpeas.gallery.dao;
 
+import com.silverpeas.gallery.model.Order;
+import com.silverpeas.gallery.model.OrderRow;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.UtilException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,13 +42,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import com.silverpeas.gallery.model.Order;
-import com.silverpeas.gallery.model.OrderRow;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
-
 public class OrderDAO {
 
   public static String createOrder(Connection con, Collection<String> basket,
@@ -53,9 +53,10 @@ public class OrderDAO {
       // 1. création de l'entête de la demande
       Date today = new Date();
       int newId = DBUtil.getNextId("SC_Gallery_Order", "orderId");
-      id = new Integer(newId).toString();
+      id = Integer.toString(newId);
       // création de la requête
-      String query = "insert into SC_Gallery_Order (orderId, userId, instanceId, creationDate) values (?,?,?,?)";
+      String query =
+          "insert into SC_Gallery_Order (orderId, userId, instanceId, creationDate) values (?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, newId);
@@ -65,9 +66,7 @@ public class OrderDAO {
       prepStmt.executeUpdate();
 
       // 2. création des lignes de la demande
-      Iterator<String> it = basket.iterator();
-      while (it.hasNext()) {
-        String photoId = it.next();
+      for (String photoId : basket) {
         addPhoto(con, photoId, id, instanceId);
       }
     } finally {
@@ -82,7 +81,8 @@ public class OrderDAO {
     // récupérer toutes les photos de la demande
     ArrayList<OrderRow> listPhoto = null;
 
-    String query = "select photoId, instanceId, downloadDate, downloadDecision  from SC_Gallery_OrderDetail where orderId = ? ";
+    String query =
+        "select photoId, instanceId, downloadDate, downloadDecision  from SC_Gallery_OrderDetail where orderId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -93,14 +93,14 @@ public class OrderDAO {
       while (rs.next()) {
         String photoId = rs.getString(1);
         String instanceId = rs.getString(2);
-        OrderRow orderRow = new OrderRow(Integer.parseInt(orderId), Integer
-            .parseInt(photoId), instanceId);
+        OrderRow orderRow =
+            new OrderRow(Integer.parseInt(orderId), Integer.parseInt(photoId), instanceId);
         String downloadDate = null;
         downloadDate = rs.getString(3);
         try {
-          if (downloadDate != null)
-            orderRow.setDownloadDate(new Date(Long
-                .parseLong((String) downloadDate)));
+          if (downloadDate != null) {
+            orderRow.setDownloadDate(new Date(Long.parseLong(downloadDate)));
+          }
         } catch (Exception e) {
           throw new SQLException(e.getMessage());
         }
@@ -114,35 +114,33 @@ public class OrderDAO {
     return listPhoto;
   }
 
-  public static void updateOrder(Connection con, Order order)
-      throws SQLException {
-    PreparedStatement prepStmt = null;
+  public static void updateOrder(Connection con, Order order) throws SQLException {
+    updateOrderStatus(con, order);
+    String query =
+        "update SC_Gallery_OrderDetail set downloadDecision = ? where orderId = ? and photoId = ? ";
+    PreparedStatement prepStmt = con.prepareStatement(query);
     try {
-      // mettre à jour l'entête
-      String query = "update SC_Gallery_Order set processDate = ?, processUser = ? where orderId = ?";
-      // initialisation des paramètres
-      Date today = new Date();
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, Long.toString(today.getTime()));
-      prepStmt.setInt(2, order.getProcessUserId());
-      prepStmt.setInt(3, new Integer(order.getOrderId()).intValue());
-      prepStmt.executeUpdate();
-
-      // pour chaque ligne
       List<OrderRow> rows = order.getRows();
-      Iterator<OrderRow> it = rows.iterator();
-      while (it.hasNext()) {
-        OrderRow row = (OrderRow) it.next();
-        query = "update SC_Gallery_OrderDetail set downloadDecision = ? where orderId = ? and photoId = ? ";
-        // initialisation des paramètres
-        prepStmt = con.prepareStatement(query);
+      for (OrderRow row : rows) {
         prepStmt.setString(1, row.getDownloadDecision());
-        prepStmt.setInt(2, new Integer(row.getOrderId()).intValue());
-        prepStmt.setInt(3, new Integer(row.getPhotoId()).intValue());
+        prepStmt.setInt(2, row.getOrderId());
+        prepStmt.setInt(3, row.getPhotoId());
         prepStmt.executeUpdate();
       }
     } finally {
-      // fermeture
+      DBUtil.close(prepStmt);
+    }
+  }
+
+  private static void updateOrderStatus(Connection con, Order order) throws SQLException {
+    String query = "update SC_Gallery_Order set processDate = ?, processUser = ? where orderId = ?";
+    PreparedStatement prepStmt = con.prepareStatement(query);
+    try {
+      prepStmt.setString(1, String.valueOf(System.currentTimeMillis()));
+      prepStmt.setInt(2, order.getProcessUserId());
+      prepStmt.setInt(3, order.getOrderId());
+      prepStmt.executeUpdate();
+    } finally {
       DBUtil.close(prepStmt);
     }
   }
@@ -152,11 +150,11 @@ public class OrderDAO {
     PreparedStatement prepStmt = null;
     try {
       // mettre à jour l'entête
-      String query = "update SC_Gallery_OrderDetail set downloadDate = ?, downloadDecision = ? where orderId = ? and photoId = ? ";
+      String query =
+          "update SC_Gallery_OrderDetail set downloadDate = ?, downloadDecision = ? where orderId = ? and photoId = ? ";
       // initialisation des paramètres
-      Date today = new Date();
       prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, Long.toString(today.getTime()));
+      prepStmt.setString(1, Long.toString(System.currentTimeMillis()));
       prepStmt.setString(2, row.getDownloadDecision());
       prepStmt.setInt(3, new Integer(row.getOrderId()).intValue());
       prepStmt.setInt(4, new Integer(row.getPhotoId()).intValue());
@@ -173,7 +171,8 @@ public class OrderDAO {
     PreparedStatement prepStmt = null;
     try {
       // création de la requete
-      String query = "insert into SC_Gallery_OrderDetail (orderId, photoId, instanceId) values (?,?,?)";
+      String query =
+          "insert into SC_Gallery_OrderDetail (orderId, photoId, instanceId) values (?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(orderId));
@@ -192,38 +191,41 @@ public class OrderDAO {
     ArrayList<Order> listOrder = null;
 
     boolean allUsers = false;
-    if (userId.equals("-1"))
+    if (userId.equals("-1")) {
       allUsers = true;
-    String query = "select orderId, userId, creationDate, processDate, processUser from SC_Gallery_Order where instanceId = ? ";
-    if (!allUsers)
+    }
+    String query =
+        "select orderId, userId, creationDate, processDate, processUser from SC_Gallery_Order where instanceId = ? ";
+    if (!allUsers) {
       query = query + "and userId = ? ";
+    }
     query = query + " order by creationDate desc";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
-      if (!allUsers)
+      if (!allUsers) {
         prepStmt.setInt(2, Integer.parseInt(userId));
+      }
 
       rs = prepStmt.executeQuery();
       listOrder = new ArrayList<Order>();
       while (rs.next()) {
-        int orderId = rs.getInt(1);
+        int orderId = rs.getInt("orderId");
 
         Order order = new Order(orderId);
-        order.setUserId(rs.getInt(2));
+        order.setUserId(rs.getInt("userId"));
         try {
-          order.setCreationDate(new Date(Long.parseLong((String) rs
-              .getString(3))));
+          order.setCreationDate(new Date(Long.parseLong(rs.getString("creationDate"))));
         } catch (Exception e) {
           throw new SQLException(e.getMessage());
         }
 
         String processDate = null;
-        if (StringUtil.isDefined(rs.getString(4))) {
+        if (StringUtil.isDefined(rs.getString("processDate"))) {
           try {
-            processDate = (String) rs.getString(4);
+            processDate = rs.getString("processDate");
           } catch (Exception e) {
             throw new SQLException(e.getMessage());
           }
@@ -231,18 +233,17 @@ public class OrderDAO {
         }
 
         int processUserId = -1;
-        if (StringUtil.isDefined(rs.getString(5)))
-          processUserId = rs.getInt(5);
+        if (StringUtil.isDefined(rs.getString("processUser"))) {
+          processUserId = rs.getInt("processUser");
+        }
         order.setProcessUserId(processUserId);
 
         order.setInstanceId(instanceId);
         OrganizationController orga = new OrganizationController();
-        order.setUserName(orga.getUserDetail(
-            Integer.toString(order.getUserId())).getDisplayedName());
-
+        order.setUserName(
+            orga.getUserDetail(Integer.toString(order.getUserId())).getDisplayedName());
         // récupérer les lignes
         order.setRows(getAllPhotos(con, Integer.toString(orderId)));
-
         listOrder.add(order);
       }
     } finally {
@@ -254,12 +255,12 @@ public class OrderDAO {
 
   public static Order getOrder(Connection con, String orderId, String instanceId)
       throws SQLException {
-    String query = "select userId, creationDate, processDate, processUser from SC_Gallery_Order where orderId = ? and instanceId = ?";
-    PreparedStatement prepStmt = null;
+    String query =
+        "select userId, creationDate, processDate, processUser from SC_Gallery_Order where orderId = ? and instanceId = ?";
+    PreparedStatement prepStmt = con.prepareStatement(query);
     ResultSet rs = null;
     Order order = new Order(Integer.parseInt(orderId));
     try {
-      prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(orderId));
       prepStmt.setString(2, instanceId);
       rs = prepStmt.executeQuery();
@@ -267,8 +268,7 @@ public class OrderDAO {
       if (rs.next()) {
         order.setUserId(rs.getInt(1));
         try {
-          order.setCreationDate(new Date(Long.parseLong((String) rs
-              .getString(2))));
+          order.setCreationDate(new Date(Long.parseLong(rs.getString(2))));
         } catch (Exception e) {
           throw new SQLException(e.getMessage());
         }
@@ -276,7 +276,7 @@ public class OrderDAO {
         String processDate = null;
         if (StringUtil.isDefined(rs.getString(3))) {
           try {
-            processDate = (String) rs.getString(3);
+            processDate = rs.getString(3);
           } catch (Exception e) {
             throw new SQLException(e.getMessage());
           }
@@ -284,8 +284,9 @@ public class OrderDAO {
         }
 
         int processUserId = -1;
-        if (StringUtil.isDefined(rs.getString(4)))
+        if (StringUtil.isDefined(rs.getString(4))) {
           processUserId = rs.getInt(4);
+        }
         order.setProcessUserId(processUserId);
 
         order.setInstanceId(instanceId);
@@ -305,7 +306,8 @@ public class OrderDAO {
   public static Date getDownloadDate(Connection con, String orderId,
       String photoId) throws SQLException {
     // rechercher la date de téléchargement si elle existe
-    String query = "select downloadDate from SC_Gallery_OrderDetail where orderId = ? and photoId = ? ";
+    String query =
+        "select downloadDate from SC_Gallery_OrderDetail where orderId = ? and photoId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     Date downloadDate = null;
@@ -315,8 +317,9 @@ public class OrderDAO {
       prepStmt.setString(2, photoId);
       rs = prepStmt.executeQuery();
       if (rs.next()) {
-        if (rs.getString(1) != null)
-          downloadDate = new Date(Long.parseLong((String) rs.getString(1)));
+        if (rs.getString(1) != null) {
+          downloadDate = new Date(Long.parseLong(rs.getString(1)));
+        }
       }
     } finally {
       // fermeture
@@ -337,7 +340,8 @@ public class OrderDAO {
     Date date = calendar.getTime();
     // String dateLimite = DateUtil.date2SQLDate(date);
 
-    String query = "select orderId, userId, instanceId, creationDate, processDate, processUser from SC_Gallery_Order where creationDate < ? ";
+    String query =
+        "select orderId, userId, instanceId, creationDate, processDate, processUser from SC_Gallery_Order where creationDate < ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -353,8 +357,7 @@ public class OrderDAO {
         order.setUserId(rs.getInt(2));
         order.setInstanceId(rs.getString(3));
         try {
-          order.setCreationDate(new Date(Long.parseLong((String) rs
-              .getString(4))));
+          order.setCreationDate(new Date(Long.parseLong(rs.getString(4))));
         } catch (Exception e) {
           throw new SQLException(e.getMessage());
         }
@@ -362,7 +365,7 @@ public class OrderDAO {
         String processDate = null;
         if (StringUtil.isDefined(rs.getString(5))) {
           try {
-            processDate = (String) rs.getString(5);
+            processDate = rs.getString(5);
           } catch (Exception e) {
             throw new SQLException(e.getMessage());
           }
@@ -370,8 +373,9 @@ public class OrderDAO {
         }
 
         int processUserId = -1;
-        if (StringUtil.isDefined(rs.getString(6)))
+        if (StringUtil.isDefined(rs.getString(6))) {
           processUserId = rs.getInt(6);
+        }
         order.setProcessUserId(processUserId);
 
         OrganizationController orga = new OrganizationController();

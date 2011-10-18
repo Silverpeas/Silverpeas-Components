@@ -23,16 +23,10 @@
  */
 package com.silverpeas.gallery.image;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.drew.metadata.exif.ExifDirectory;
+import com.silverpeas.gallery.model.MetaData;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.IImageMetadata;
@@ -44,10 +38,17 @@ import org.apache.sanselan.formats.tiff.constants.TagInfo;
 import org.apache.sanselan.formats.tiff.constants.TiffConstants;
 import org.apache.sanselan.formats.tiff.constants.TiffFieldTypeConstants;
 
-import com.drew.metadata.exif.ExifDirectory;
-import com.silverpeas.gallery.model.MetaData;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author ehugonnet
@@ -294,16 +295,13 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
   }
 
   private Date getDateValue(String value) throws ImageMetadataException {
-    String datePatterns[] = { "yyyyMMdd",
-        "yyyy:MM:dd HH:mm:ss",
-        "yyyy:MM:dd HH:mm",
-        "yyyy-MM-dd HH:mm:ss",
-        "yyyy-MM-dd HH:mm" };
-    for (int i = 0; i < datePatterns.length; i++) {
+    String datePatterns[] = {"yyyyMMdd", "yyyy:MM:dd HH:mm:ss", "yyyy:MM:dd HH:mm",
+        "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm" };
+    for (String datePattern : datePatterns) {
       try {
-        DateFormat parser = new java.text.SimpleDateFormat(datePatterns[i]);
+        DateFormat parser = new SimpleDateFormat(datePattern);
         return parser.parse(value);
-      } catch (java.text.ParseException ex) {
+      } catch (ParseException ex) {
         // simply try the next pattern
       }
     }
