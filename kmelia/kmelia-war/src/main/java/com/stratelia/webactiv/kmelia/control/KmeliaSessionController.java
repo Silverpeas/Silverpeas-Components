@@ -23,8 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -45,6 +43,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.EJBObject;
 import javax.ejb.RemoveException;
@@ -3930,7 +3930,26 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       if (infoId != null && !"0".equals(infoId)) {
         // register content to component
         getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
-                + publi.getInfoId(), publi.getInfoId() + ".xml");
+                + publi.getInfoId(), publi.getInfoId() + ".xml");        
+        // get xmlContent to move
+        PublicationTemplate pubTemplateFrom = getPublicationTemplateManager().
+            getPublicationTemplate(fromComponentId + ":" + publi.getInfoId());
+        IdentifiedRecordTemplate recordTemplateFrom =
+            (IdentifiedRecordTemplate) pubTemplateFrom.getRecordSet().getRecordTemplate();
+
+        PublicationTemplate pubTemplate =
+            getPublicationTemplateManager().getPublicationTemplate(
+                getComponentId() + ":" + publi.getInfoId());
+        IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate.
+            getRecordSet().getRecordTemplate();
+        
+        try {
+          GenericRecordSetManager.getInstance().moveRecord(recordTemplateFrom, fromId,
+              recordTemplate);
+        } catch (FormException e) {
+          SilverTrace.error("kmelia", "KmeliaSessionController.movePublication",
+              "kmelia.CANT_MOVE_PUBLICATION_CONTENT", "publication id = " + fromId, e);
+        }
       }
     }
 
