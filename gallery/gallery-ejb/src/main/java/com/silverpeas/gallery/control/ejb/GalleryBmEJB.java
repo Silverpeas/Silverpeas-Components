@@ -90,7 +90,8 @@ import static com.stratelia.webactiv.util.JNDINames.*;
  */
 public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   private static final long serialVersionUID = 8148021767416025104L;
-
+  private final OrderDAO orderDao = new OrderDAO();
+  
   @Override
   public AlbumDetail getAlbum(NodePK nodePK, boolean viewAllPhoto) {
     try {
@@ -747,7 +748,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public String createOrder(Collection<String> basket, String userId, String componentId) {
     Connection con = initCon();
     try {
-      return OrderDAO.createOrder(con, basket, userId, componentId);
+      return orderDao.createOrder(con, basket, userId, componentId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.createOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_NOT_CREATE", e);
@@ -760,7 +761,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public List<Order> getAllOrders(String userId, String instanceId) {
     Connection con = initCon();
     try {
-      return OrderDAO.getAllOrders(con, userId, instanceId);
+      return orderDao.getAllOrders(con, userId, instanceId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllOrders()",
           SilverpeasRuntimeException.ERROR,
@@ -802,7 +803,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public Order getOrder(String orderId, String instanceId) {
     Connection con = initCon();
     try {
-      return OrderDAO.getOrder(con, orderId, instanceId);
+      return orderDao.getOrder(con, orderId, instanceId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
@@ -815,7 +816,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public Collection<Order> getAllOrderToDelete(int nbDays) {
     Connection con = initCon();
     try {
-      return OrderDAO.getAllOrdersToDelete(con, nbDays);
+      return orderDao.getAllOrdersToDelete(con, nbDays);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
@@ -828,7 +829,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public void deleteOrder(String orderId) {
     Connection con = initCon();
     try {
-      OrderDAO.deleteOrder(con, orderId);
+      orderDao.deleteOrder(con, orderId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.deleteOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
