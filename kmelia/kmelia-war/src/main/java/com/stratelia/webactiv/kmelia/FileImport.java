@@ -320,10 +320,10 @@ public class FileImport {
       }
       
       // Compute the classification on the PdC
-      PdcClassification classification = pdcImportExport.getPredefinedClassification(String.valueOf(topicId),
-              componentId);
-      int silverObjectId = Integer.valueOf(pubDetailToCreate.getSilverObjectId());
-      pdcImportExport.addPositions(silverObjectId, componentId, classification.getClassifyPositions());
+//      PdcClassification classification = pdcImportExport.getPredefinedClassification(String.valueOf(topicId),
+//              componentId);
+//      int silverObjectId = Integer.valueOf(pubDetailToCreate.getSilverObjectId());
+//      pdcImportExport.addPositions(silverObjectId, componentId, classification.getClassifyPositions());
     } catch (Exception ex) {
       SilverTrace.error("kmelia", "FileImport.processImportFile()", "root.EX_NO_MESSAGE", ex);
     }

@@ -163,4 +163,9 @@ public final class PostDetail implements SilverpeasContent {
   public String getContributionType() {
     return TYPE;
   }
+
+  @Override
+  public String getSilverpeasContentId() {
+    return publication.getSilverpeasContentId();
+  }
 }
