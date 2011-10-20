@@ -23,8 +23,8 @@
  */
 package com.silverpeas.gallery.model;
 
-import com.stratelia.webactiv.util.node.model.NodeDetail;
 
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
