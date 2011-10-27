@@ -42,7 +42,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
         items.addAll(FileUploadUtil.parseRequest(request));
       } catch (UtilException e) {
         SilverTrace.error("processManager", "SessionSafeFunctionHandler.getDestination()",
-            "processManager.EX_CHECKING_TOKENID", e);
+            "processManager.TOKENID_CHECK_FAILURE", e);
       }
     }
 
