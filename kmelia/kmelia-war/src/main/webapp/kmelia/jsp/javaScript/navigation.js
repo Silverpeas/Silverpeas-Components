@@ -211,6 +211,12 @@ function initOperations(id, op) {
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
+    
+    if (op.predefinedPdcPosition) {
+        menuItem = new YAHOO.widget.MenuItem(labels["operation.predefinedPdcPositions"], {url: "javascript:onClick=openSPWindow('"+getWebContext()+"/pdcPeas/jsp/predefinedClassification.jsp?componentId="+getComponentId()+"&nodeId=" + id});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+    }
 	
 	if (op.templates) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.templates"], {url: "ModelUsed"});
