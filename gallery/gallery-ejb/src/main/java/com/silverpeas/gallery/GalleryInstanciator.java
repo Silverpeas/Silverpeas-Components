@@ -25,11 +25,6 @@ package com.silverpeas.gallery;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
@@ -41,6 +36,11 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class GalleryInstanciator implements ComponentsInstanciatorIntf {
 
@@ -120,11 +120,11 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
   private GalleryBm getGalleryBm() {
     GalleryBm galleryBm = null;
     try {
-      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire.getEJBObjectRef(
+      GalleryBmHome galleryBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
       galleryBm = galleryBmHome.create();
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.getGalleryBm()",
+      throw new GalleryRuntimeException("GalleryInstanciator.getGalleryBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return galleryBm;

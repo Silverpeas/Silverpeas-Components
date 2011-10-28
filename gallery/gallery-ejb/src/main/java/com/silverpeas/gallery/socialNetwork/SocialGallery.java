@@ -96,12 +96,11 @@ public class SocialGallery implements SocialGalleryInterface {
   private GalleryBm getGalleryBm() {
     GalleryBm galleryBm = null;
     try {
-      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire.getEJBObjectRef(
+      GalleryBmHome galleryBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
       galleryBm = galleryBmHome.create();
     } catch (Exception e) {
-      throw new GalleryRuntimeException(
-          "GallerySessionController.getGalleryBm()",
+      throw new GalleryRuntimeException("SocialGallery.getGalleryBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return galleryBm;
