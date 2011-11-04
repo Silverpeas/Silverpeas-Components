@@ -24,6 +24,22 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+%>
+
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
 <%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
@@ -51,9 +67,7 @@ ArrayCellText arrayCellText2;
 %>
 <html>
 	<head>
-	<%
-		out.println(gef.getLookStyleSheet());
-	%>
+	<view:looknfeel />
 	<script language="JavaScript">
 	function deleteResource(resourceId, name,categoryId) {
   		  if (confirm("<%=resource.getString("resourcesManager.deleteResource")%>" + " " + name + " ?")) {

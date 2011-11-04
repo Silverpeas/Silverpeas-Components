@@ -334,14 +334,13 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         } else if (request.getAttribute("reservationId") != null) {
           idReservation = (String) request.getAttribute("reservationId");
         }
-        ReservationDetail reservation = null;
         List<ResourceDetail> listResourcesProblem = (List<ResourceDetail>) request.getAttribute(
                 "listeResourcesProblem");
         List<ResourceDetail> listResourceEverReserved = null;
         // si listResourcesProblem c'est qu'il n y a pas eu de problème
         // d'enregistrement
         if ((listResourcesProblem == null)) {
-          reservation = request2ReservationDetail(request, resourcesManagerSC);
+          ReservationDetail reservation = request2ReservationDetail(request, resourcesManagerSC);
           resourcesManagerSC.createReservation(reservation);
           resourcesManagerSC.setBeginDateReservation(reservation.getBeginDate());
           resourcesManagerSC.setEndDateReservation(reservation.getEndDate());
@@ -368,23 +367,20 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
             }
           }
         }
-        int nbCategories = resourcesManagerSC.getCategories().size();
-        reservation = resourcesManagerSC.getReservationCourante();
+        int nbCategories = resourcesManagerSC.getCategories().size();        
+        ReservationDetail reservation = resourcesManagerSC.getReservationCourante();
         List<ResourceReservableDetail> maListResourcesReservable =
                 resourcesManagerSC.getResourcesReservable(
                 reservation.getBeginDate(), reservation.getEndDate());
-        SilverTrace.info("resourcesManager",
-                "ResourcesManagerRequestRouter.getDestination()",
+        SilverTrace.info("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "listResourcesReservable="
                 + maListResourcesReservable.size());
         // on envoie l'id de la réservation et l'ensemble des resources
         // associées à celles -ci
         request.setAttribute("idReservation", idReservation);
-        request.setAttribute("listResourceEverReserved",
-                listResourceEverReserved);
+        request.setAttribute("listResourceEverReserved", listResourceEverReserved);
 
-        request.setAttribute("listResourcesReservable",
-                maListResourcesReservable);
+        request.setAttribute("listResourcesReservable", maListResourcesReservable);
         request.setAttribute("reservation", reservation);
         request.setAttribute("listResourcesProblem", listResourcesProblem);
         request.setAttribute("nbCategories", nbCategories);
