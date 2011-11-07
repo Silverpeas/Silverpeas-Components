@@ -24,17 +24,24 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <%@ include file="check.jsp"%>
 
 <% 
-//listResourcesofCategory : liste des ressources de chaque cat�gorie, sert pour la s�lection de la ressource dans menu d�roulant
-//listOfCategories : liste des cat�gories, sert pour la s�lection de la cat�gorie dans menu d�roulant
 List listResourcesofCategory = (List)request.getAttribute("listResourcesofCategory");
 List listOfCategories = (List)request.getAttribute("listOfCategories");
 
@@ -59,8 +66,8 @@ boolean isResponsible = ((Boolean) request.getAttribute("IsResponsible")).boolea
 
 <html>
 <head>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
+  <script type="text/javascript" src="<c:url value="/util/javaScript/overlib.js" />"></script>
 <script type="text/javascript">
 
 function nextMonth(object)
@@ -115,7 +122,7 @@ function getReservationsOfResource(select){
 		document.almanachForm.action = "Calendar";
 		document.almanachForm.objectView.value = document.getElementById("selectCategory").value;
 		document.almanachForm.resourceId.value = select.value;
-	    document.almanachForm.submit();
+	  document.almanachForm.submit();
 	}
 }
 
@@ -142,9 +149,8 @@ function viewOtherPlanning()
 }
 
 </script>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <view:looknfeel />
 </head>
 <body id="resourcesManager">
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>

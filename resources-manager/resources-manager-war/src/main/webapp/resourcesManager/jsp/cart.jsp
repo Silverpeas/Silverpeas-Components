@@ -32,7 +32,7 @@
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
-//Récupération des détails de l'ulisateur
+//Rï¿½cupï¿½ration des dï¿½tails de l'ulisateur
 List 			list 						= (List) request.getAttribute("listResourcesReservable");
 int 				nbCategories 				= ((Integer)request.getAttribute("nbCategories")).intValue();
 ReservationDetail 	reservation 				= (ReservationDetail) request.getAttribute("reservation");
@@ -52,10 +52,10 @@ Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Main"
 buttonPane.addButton(validateButton);
 buttonPane.addButton(cancelButton);
 
-//String qui permet de récupérer la liste des ids des ressources réservées
+//String qui permet de recuperer la liste des ids des ressources reservees
 boolean noResource = true;
 
-// Permet de récupérer l'id de la catégorie courante
+// Permet de recuperer l'id de la categorie courante
 String idTemoin="";
 %>
 <html>
@@ -86,17 +86,14 @@ String idTemoin="";
 	
 	function switchResource(resourceId, categoryId)
 	{
-		//window.alert("reservee ? "+isResourceReservee(resourceId))
 		if (isResourceReservee(resourceId))
 		{
-			clearCategory(categoryId);
-			
+			clearCategory(categoryId);			
 			enleverRessource(resourceId, categoryId);			
 		}
 		else
 		{
-			ajouterRessource(resourceId, categoryId);
-			
+			ajouterRessource(resourceId, categoryId);			
 			if (isCategoryEmpty(categoryId))
 				addEmptyResource(categoryId);
 		}
@@ -104,11 +101,9 @@ String idTemoin="";
 	
 	function addEmptyResource(categoryId)
 	{
-		//window.alert("empty");
 		var emptyElement = document.createElement("div");
 		emptyElement.id = "-1";
 		emptyElement.innerHTML = "<span class=\"noRessource\"><center><%=resource.getString("resourcesManager.noResource")%></center></span>";
-		
 		var elementCategory = document.getElementById(categoryId);
 		elementCategory.appendChild(emptyElement);
 	}
@@ -160,7 +155,6 @@ String idTemoin="";
 				resourceIds += resources[r].id+",";
 		}
 		resourceIds = resourceIds.substring(0, resourceIds.length-1);
-		//window.alert(resourceIds);
 		return resourceIds;
 	}
 	
@@ -263,8 +257,8 @@ String idTemoin="";
 				}
 				if(!resourceId.equals("0")) {
 					
-					//on entre dans ce if, donc il y a une ressource au moins disponible dans la catégory, donc on ne veut pas 
-					// afficher "pas de ressource disponible dans cette catégorie"
+					//on entre dans ce if, donc il y a une ressource au moins disponible dans la category, donc on ne veut pas 
+					// afficher "pas de ressource disponible dans cette categorie"
 					noResource = false;%>
 					<div id="<%=resourceId%>" onClick="switchResource(<%=resourceId%>,'categ<%=maResource.getCategoryId()%>');" style="cursor: pointer;">
  						<table width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -292,7 +286,7 @@ String idTemoin="";
 		      <div id="listeReservation">
 		      <%if (listResourceEverReserved != null){ 
 		    	  
-		  			// la suppression ayant été faite, cette boucle permet d'afficher les resources qui n'ont pas posés problème
+		  			// la suppression ayant ete faite, cette boucle permet d'afficher les resources qui n'ont pas pose probleme
 		  			for (int i=0;i<listResourceEverReserved.size();i++){
 		  						ResourceDetail maRessource =(ResourceDetail)listResourceEverReserved.get(i);
 		  		  				String NomResource = maRessource.getName();
@@ -314,7 +308,7 @@ String idTemoin="";
 		      </div>
 	</td></tr></table>
 	<%
-    out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+    out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
 	out.println(frame.printAfter());
 	out.println(window.printAfter());		
 	%>
