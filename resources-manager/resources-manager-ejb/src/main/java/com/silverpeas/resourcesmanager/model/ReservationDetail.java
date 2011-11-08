@@ -24,11 +24,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class ReservationDetail implements Serializable {
-
-  public final static String STATUS_VALIDATE = "V";
-  public final static String STATUS_REFUSED = "R";
-  public final static String STATUS_FOR_VALIDATION = "A";
+public class ReservationDetail implements Serializable, ResourceStatus {
   private static final long serialVersionUID = 1L;
   private String id;
   private String event;
@@ -268,5 +264,17 @@ public class ReservationDetail implements Serializable {
     hash = 97 * hash + (this.status != null ? this.status.hashCode() : 0);
     hash = 97 * hash + (this.userName != null ? this.userName.hashCode() : 0);
     return hash;
+  }
+  
+  public boolean isValidated() {
+    return STATUS_VALIDATE.equals(status);
+  }
+  
+  public boolean isRefused() {
+    return STATUS_REFUSED.equals(status);
+  }
+  
+  public boolean isValidationRequired() {
+    return STATUS_FOR_VALIDATION.equals(status);
   }
 }

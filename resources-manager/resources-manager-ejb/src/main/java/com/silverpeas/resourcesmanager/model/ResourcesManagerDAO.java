@@ -28,22 +28,25 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+
+
+import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
 
 public class ResourcesManagerDAO {
 
   private final static ResourceDao dao = new ResourceDao();
 
+  
+  
   public static void deleteReservedResource(Connection con, String resourceId)
           throws SQLException {
     PreparedStatement prepStmt = null;
-    String query = "DELETE FROM SC_Resources_ReservedResource WHERE resourceId=?";
+    String query = "DELETE FROM sc_resources_reservedResource WHERE resourceId= ?";
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(resourceId));
@@ -143,22 +146,22 @@ public class ResourcesManagerDAO {
     StringTokenizer tokenizer = new StringTokenizer(listReservationCurrent, ",");
     boolean refused = false;
     boolean ok = false;
-    String reservationStatus = ReservationDetail.STATUS_VALIDATE;
+    String reservationStatus = STATUS_VALIDATE;
     while (tokenizer.hasMoreTokens() && !ok) {
       String idResource = tokenizer.nextToken();
       String status = getResourceStatus(con, idResource, reservation.getUserId());
       refused = false;
-      if (ReservationDetail.STATUS_FOR_VALIDATION.equals(status)) {
+      if (status.equals(STATUS_FOR_VALIDATION)) {
         // si une ressource reste à valider, la reservation est à valider
         reservationStatus = status;
         ok = true;
       }
-      if (status.equals(ReservationDetail.STATUS_REFUSED)) {
+      if (STATUS_REFUSED.equals(status)) {
         refused = true;
       }
     }
     if (refused) {
-      reservationStatus = ReservationDetail.STATUS_REFUSED;
+      reservationStatus = STATUS_REFUSED;
     }
     return reservationStatus;
   }
@@ -175,7 +178,7 @@ public class ResourcesManagerDAO {
 
   public static String getResourceStatus(Connection con, String resourceId, String userId)
           throws SQLException {
-    String status = ReservationDetail.STATUS_VALIDATE;
+    String status = STATUS_VALIDATE;
     ResourceDetail resource = dao.getResource(con, resourceId);
     // si le status n'existe pas sur cette ressource
     if (!StringUtil.isDefined(resource.getStatus())) {
@@ -183,7 +186,7 @@ public class ResourcesManagerDAO {
       if (managers != null && !managers.isEmpty()) {
         // il y a des responsables sur cette ressource
         if (!managers.contains(userId)) {
-          status = ReservationDetail.STATUS_FOR_VALIDATION;
+          status = STATUS_FOR_VALIDATION;
         }
       }
     }
@@ -235,42 +238,38 @@ public class ResourcesManagerDAO {
     return reservationIdProblem;
   }
 
+  private static final String SELECT_RESOURCES_RESERVABLE = "SELECT sc_resources_resource.id AS "
+          + "resourceId, sc_resources_category.id AS categoryId, sc_resources_resource.name AS "
+          + "resourceName, sc_resources_category.name AS categoryName FROM sc_resources_resource, "
+          + "sc_resources_category WHERE sc_resources_resource.instanceId = ? "
+          + "AND sc_resources_category.instanceId = ? AND sc_resources_resource.categoryId = "
+          + "sc_resources_category.id AND sc_resources_resource.bookable=1 AND "
+          + "sc_resources_category.bookable = 1 ORDER BY sc_resources_category.id";
+  
   public static List<ResourceReservableDetail> getResourcesReservable(Connection con,
           String instanceId, Date startDate, Date endDate) throws SQLException {
-    List<ResourceReservableDetail> list = null;
+    List<ResourceReservableDetail> list = new ArrayList<ResourceReservableDetail>(10);
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    String query =
-            "Select A.id, D.id, A.name, D.name "
-            + "from SC_Resources_Resource A, SC_Resources_Category D "
-            + "where A.instanceId = ? AND D.instanceId = ? AND A.categoryId = D.id "
-            + "AND A.bookable=1 AND D.bookable=1 ORDER BY D.id";
-    int categoryId;
-    int resourceId;
-    String categoryName = "";
-    String resourceName = "";
     try {
-      prepStmt = con.prepareStatement(query);
+      prepStmt = con.prepareStatement(SELECT_RESOURCES_RESERVABLE);
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, instanceId);
       rs = prepStmt.executeQuery();
-      list = new ArrayList<ResourceReservableDetail>();
+      
       while (rs.next()) {
-        resourceId = rs.getInt(1);
-        categoryId = rs.getInt(2);
-        categoryName = rs.getString(4);
+        int resourceId = rs.getInt("resourceId");
         int reservationIdProblem = idReservation(con, resourceId, startDate, endDate);
         // on envoie la liste des catégories, vides si toutes les ressources ont
         // déjà été réservées, ou avec des ressources non réservées
-        if (reservationIdProblem == 0) {
-          resourceName = rs.getString(3);
-        } else {
+        String resourceName = rs.getString("resourceName");
+        if (reservationIdProblem != 0) {
           resourceName = "";
           resourceId = 0;
         }
-        ResourceReservableDetail resourceReservable = new ResourceReservableDetail(
-                Integer.toString(categoryId), Integer.toString(resourceId),
-                categoryName, resourceName);
+        ResourceReservableDetail resourceReservable = new ResourceReservableDetail(String.valueOf(
+                rs.getInt("categoryId")), Integer.toString(resourceId), rs.getString("categoryName"),
+                resourceName);
         list.add(resourceReservable);
       }
     } finally {
@@ -280,16 +279,14 @@ public class ResourcesManagerDAO {
   }
 
   public static List<ResourceDetail> verificationReservation(Connection con,
-          String instanceId, String listeReservation, Date startDate, Date endDate)
-          throws SQLException {
+      String listeReservation, Date startDate, Date endDate) throws SQLException {
     List<ResourceDetail> listeResourcesEverReserved = new ArrayList<ResourceDetail>();
     if (listeReservation != null) {
       StringTokenizer tokenizer = new StringTokenizer(listeReservation, ",");
       while (tokenizer.hasMoreTokens()) {
         String idResource = tokenizer.nextToken();
         int resourceId = Integer.parseInt(idResource);
-        int reservationIdProblem = IdReservationProblem(con, resourceId,
-                startDate, endDate);
+        int reservationIdProblem = IdReservationProblem(con, resourceId, startDate, endDate);
         // si reservationIdProblem est différent de 0 c'est qu'une reservation
         // déjà faite est incompatible avec la nouvelle réservation, donc
         // on met la ressource fautive dans un arrayListe pour pouvoir en
@@ -338,8 +335,7 @@ public class ResourcesManagerDAO {
   }
 
   public static List<ResourceDetail> verificationNewDateReservation(Connection con,
-          String instanceId, String listeReservation, Date startDate, Date endDate,
-          String reservationId) throws SQLException {
+      String listeReservation, Date startDate, Date endDate, String reservationId) throws SQLException {
     List<ResourceDetail> listeResourcesEverReserved = new ArrayList<ResourceDetail>();
     if (listeReservation != null) {
       StringTokenizer tokenizer = new StringTokenizer(listeReservation, ",");
@@ -572,7 +568,7 @@ public class ResourcesManagerDAO {
     String query =
             "select A.reservationId from SC_Resources_ReservedResource A, SC_Resources_Managers B "
             + "where A.resourceId=B.resourceId AND B.managerId = ? AND A.status = '"
-            + ReservationDetail.STATUS_FOR_VALIDATION + "'";
+            + STATUS_FOR_VALIDATION + "'";
     int idUser = Integer.parseInt(userId);
     try {
       prepStmt = con.prepareStatement(query);
@@ -612,8 +608,7 @@ public class ResourcesManagerDAO {
   }
 
   public static List<ReservationDetail> getMonthReservationOfCategory(Connection con,
-          String instanceId, Date monthDate, String userId, String idCategory) throws SQLException,
-          ParseException {
+      String instanceId, Date monthDate, String idCategory) throws SQLException{
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     List<ReservationDetail> list = new ArrayList<ReservationDetail>();
@@ -648,22 +643,20 @@ public class ResourcesManagerDAO {
     return list;
   }
 
-  public static void deleteReservation(Connection con, String id)
-          throws SQLException {
+  private static final String DELETE_RESERVED_RESOURCE = "DELETE FROM sc_resources_reservedResource WHERE reservationId = ?";
+  private static final String DELETE_RESERVATION = "DELETE FROM sc_resources_reservation WHERE id = ?";
+  
+  public static void deleteReservation(Connection con, String id) throws SQLException {
     PreparedStatement prepStmt = null;
-
-    String query = "DELETE FROM SC_Resources_ReservedResource WHERE reservationId=?";
     try {
-      prepStmt = con.prepareStatement(query);
+      prepStmt = con.prepareStatement(DELETE_RESERVED_RESOURCE);
       prepStmt.setInt(1, Integer.parseInt(id));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
     }
-
-    query = "DELETE FROM SC_Resources_Reservation WHERE ID=?";
     try {
-      prepStmt = con.prepareStatement(query);
+      prepStmt = con.prepareStatement(DELETE_RESERVATION);
       prepStmt.setInt(1, Integer.parseInt(id));
       prepStmt.executeUpdate();
     } finally {
@@ -672,25 +665,23 @@ public class ResourcesManagerDAO {
   }
 
   public static void updateReservation(Connection con, String listReservation,
-          ReservationDetail reservationCourante, boolean updateDate) throws SQLException,
-          ParseException {
+          ReservationDetail reservationCourante, boolean updateDate) throws SQLException {
     PreparedStatement prepStmt = null;
     List<ResourceDetail> oldResources = new ArrayList<ResourceDetail>();
     if (!updateDate) {
       oldResources = dao.getResourcesofReservation(con, reservationCourante.getInstanceId(),
               reservationCourante.getId());
     }
-    String query = "DELETE FROM SC_Resources_ReservedResource WHERE reservationId=?";
     int reservationId = Integer.parseInt(reservationCourante.getId());
     try {
-      prepStmt = con.prepareStatement(query);
+      prepStmt = con.prepareStatement(DELETE_RESERVED_RESOURCE);
       prepStmt.setInt(1, reservationId);
       prepStmt.executeUpdate();
 
       StringTokenizer tokenizer = new StringTokenizer(listReservation, ",");
       boolean refused = false;
       boolean forValidation = false;
-      String reservationStatus = ReservationDetail.STATUS_VALIDATE;
+      String reservationStatus = ResourceStatus.STATUS_VALIDATE;
       while (tokenizer.hasMoreTokens()) {
         String idResource = tokenizer.nextToken();
         String status = null;
@@ -701,18 +692,18 @@ public class ResourcesManagerDAO {
           status = getResourceStatus(con, idResource, reservationCourante.getUserId());
         }
         insertIntoReservedResource(con, reservationId, idResource, status);
-        if (status.equals(ReservationDetail.STATUS_FOR_VALIDATION)) {
+        if (status.equals(STATUS_FOR_VALIDATION)) {
           forValidation = true;
         }
-        if (status.equals(ReservationDetail.STATUS_REFUSED)) {
+        if (STATUS_REFUSED.equals(status)) {
           refused = true;
         }
       }
       if (forValidation) {
-        reservationStatus = ReservationDetail.STATUS_FOR_VALIDATION;
+        reservationStatus = STATUS_FOR_VALIDATION;
       }
       if (refused) {
-        reservationStatus = ReservationDetail.STATUS_REFUSED;
+        reservationStatus = STATUS_REFUSED;
       }
       reservationCourante.setStatus(reservationStatus);
       updateIntoReservation(con, reservationCourante);
@@ -734,32 +725,28 @@ public class ResourcesManagerDAO {
 
   public static void updateReservation(Connection con, ReservationDetail reservationCourante)
           throws SQLException {
-      List<ResourceDetail> resources = reservationCourante.getListResourcesReserved();
-      String reservationStatus = computeReservationStatus(resources);
-      reservationCourante.setStatus(reservationStatus);
-      updateIntoReservation(con, reservationCourante);
-   
+    List<ResourceDetail> resources = reservationCourante.getListResourcesReserved();
+    String reservationStatus = computeReservationStatus(resources);
+    reservationCourante.setStatus(reservationStatus);
+    updateIntoReservation(con, reservationCourante);
+
   }
 
   public static String computeReservationStatus(List<ResourceDetail> resources) {
-    String reservationStatus = ReservationDetail.STATUS_VALIDATE;
+    String reservationStatus = STATUS_VALIDATE;
     if (resources != null) {
-      boolean refused = false;
       boolean forValidation = false;
       for (ResourceDetail resource : resources) {
         String status = resource.getStatus();
-        if (ReservationDetail.STATUS_FOR_VALIDATION.equals(status)) {
+        if (STATUS_FOR_VALIDATION.equals(status)) {
           forValidation = true;
         }
-        if (ReservationDetail.STATUS_REFUSED.equals(status)) {
-          refused = true;
+        if (STATUS_REFUSED.equals(status)) {
+          return STATUS_REFUSED;
         }
       }
       if (forValidation) {
-        reservationStatus = ReservationDetail.STATUS_FOR_VALIDATION;
-      }
-      if (refused) {
-        reservationStatus = ReservationDetail.STATUS_REFUSED;
+        reservationStatus = STATUS_FOR_VALIDATION;
       }
     }
     return reservationStatus;
@@ -802,7 +789,7 @@ public class ResourcesManagerDAO {
   }
 
   public static void updateResourceStatus(Connection con, String status, int resourceId,
-          int reservationId, String componentId) throws SQLException {
+      int reservationId) throws SQLException {
     String query =
             "UPDATE SC_Resources_ReservedResource SET status = ? WHERE resourceId = ? AND reservationId = ?";
     PreparedStatement prepStmt = null;
@@ -838,5 +825,8 @@ public class ResourcesManagerDAO {
       DBUtil.close(rs, prepStmt);
     }
     return status;
+  }
+
+  private ResourcesManagerDAO() {
   }
 }

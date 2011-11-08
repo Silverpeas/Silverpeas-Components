@@ -25,10 +25,10 @@ import java.io.Serializable;
 public class ResourceReservableDetail implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  String categoryId;
-  String resourceId;
-  String categoryName;
-  String resourceName;
+  private String categoryId;
+  private String resourceId;
+  private String categoryName;
+  private String resourceName;
 
   public String getCategoryId() {
     return categoryId;
