@@ -895,12 +895,12 @@ function loadNodeData(node, fnLoadComplete)  {
 								{
 									//oContextMenu.cfg.setProperty("visible", true);
 									//all actions are enabled
-                                    oContextMenu.getItem(0).cfg.setProperty("disabled", false);
+									oContextMenu.getItem(0).cfg.setProperty("disabled", false);
+									oContextMenu.getItem(1).cfg.setProperty("disabled", false);
+									oContextMenu.getItem(2).cfg.setProperty("disabled", false);
+									oContextMenu.getItem(3).cfg.setProperty("disabled", false);
                                     
-									oContextMenu.getItem(0,1).cfg.setProperty("disabled", false);
-									oContextMenu.getItem(1,1).cfg.setProperty("disabled", false);
-									oContextMenu.getItem(2,1).cfg.setProperty("disabled", false);
-									oContextMenu.getItem(3,1).cfg.setProperty("disabled", false);
+                                    oContextMenu.getItem(0,1).cfg.setProperty("disabled", false);
 	
 									oContextMenu.getItem(0,2).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(1,2).cfg.setProperty("disabled", false);
@@ -917,12 +917,12 @@ function loadNodeData(node, fnLoadComplete)  {
 									else
 									{
 										//oContextMenu.cfg.setProperty("visible", true);
-                                        oContextMenu.getItem(0).cfg.setProperty("disabled", true);
+										oContextMenu.getItem(0).cfg.setProperty("disabled", true);
+										oContextMenu.getItem(1).cfg.setProperty("disabled", false);
+										oContextMenu.getItem(2).cfg.setProperty("disabled", false);
+										oContextMenu.getItem(3).cfg.setProperty("disabled", true);
                                         
-										oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
-										oContextMenu.getItem(1,1).cfg.setProperty("disabled", false);
-										oContextMenu.getItem(2,1).cfg.setProperty("disabled", false);
-										oContextMenu.getItem(3,1).cfg.setProperty("disabled", true);
+                                        oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
 	
 										oContextMenu.getItem(0,2).cfg.setProperty("disabled", true);
 										oContextMenu.getItem(1,2).cfg.setProperty("disabled", true);
@@ -944,11 +944,11 @@ function loadNodeData(node, fnLoadComplete)  {
 										else if (creatorId == userId)
 										{
 											//oContextMenu.cfg.setProperty("visible", true);
-                                            oContextMenu.getItem(0).cfg.setProperty("disabled", true);
-                                            
 											oContextMenu.getItem(0,2).cfg.setProperty("disabled", true);
 											oContextMenu.getItem(1,2).cfg.setProperty("disabled", true);
 											oContextMenu.getItem(2,2).cfg.setProperty("disabled", true);
+                                            
+                                            oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
 	
 											oContextMenu.getItem(0,3).cfg.setProperty("disabled", true);
 											oContextMenu.getItem(1,3).cfg.setProperty("disabled", true);
@@ -998,15 +998,15 @@ function loadNodeData(node, fnLoadComplete)  {
 	            },
 		        lazyload: true,
 		        itemdata: [
-			        [
-                        { text: "<%=resources.getString("GML.PDCPredefinePositions")%>", onclick: { fn: addPredefinedPositions } }
-                    ],
                     [
 			            { text: "<%=resources.getString("CreerSousTheme")%>", onclick: { fn: addNode } },
 			            { text: "<%=resources.getString("ModifierSousTheme")%>", onclick: { fn: editNodeLabel } },
 			            { text: "<%=resources.getString("SupprimerSousTheme")%>", onclick: { fn: deleteNodeFromTreeview } },
 			            { text: "<%=resources.getString("kmelia.SortTopics")%>", onclick: { fn: sortTopics } }
 			        ],
+                    [
+                        { text: "<%=resources.getString("GML.PDCPredefinePositions")%>", onclick: { fn: addPredefinedPositions } }
+                    ],
 		            [
 			            { text: "<%=resources.getString("GML.copy")%>", onclick: { fn: copyNode } },
 		            	{ text: "<%=resources.getString("GML.cut")%>", onclick: { fn: cutNode } },
@@ -1080,13 +1080,13 @@ function loadNodeData(node, fnLoadComplete)  {
             	},
 		        lazyload: true,
 		        itemdata: [
-                        [
-                            { text: "<%=resources.getString("GML.PDCPredefinePositions")%>", onclick: { fn: addPredefinedPositions } }
-                        ],
 		   		        [
 		   		            { text: "<%=resources.getString("CreerSousTheme")%>", onclick: { fn: addNode } },
 		   		            { text: "<%=resources.getString("kmelia.SortTopics")%>", onclick: { fn: sortTopics } }
 		   		        ],
+                        [
+                            { text: "<%=resources.getString("GML.PDCPredefinePositions")%>", onclick: { fn: addPredefinedPositions } }
+                        ],
 		   	            [
 		   		            { text: "<%=resources.getString("GML.paste")%>", onclick: { fn: pasteFromTree } }
 		   	    		]

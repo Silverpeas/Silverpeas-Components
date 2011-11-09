@@ -1352,7 +1352,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // classify automatically the publication on the PdC
       PdcClassificationService classifier = PdcServiceFactory.getFactory().
               getPdcClassificationService();
-      PdcClassification predefinedClassification = classifier.getPreDefinedClassification(fatherPK.
+      PdcClassification predefinedClassification = classifier.findAPreDefinedClassification(fatherPK.
               getId(), pubDetail.getInstanceId());
       if (!predefinedClassification.isEmpty()) {
         classifier.classifyContent(pubDetail, withClassification(predefinedClassification));

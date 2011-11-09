@@ -188,7 +188,7 @@ $(document).ready(function() {
         if (SilverpeasRole.admin.isInRole(profile)){
           	if (kmeliaScc.isPdcUsed()) {
 	        	operationPane.addOperation("useless", resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+kmeliaScc.getComponentId()+"','utilizationPdc1')");
-                operationPane.addOperation("useless", resources.getString("GML.PDCPredefinePositions"), "javascript:onClick=openSPWindow('"+m_context+"/pdcPeas/jsp/predefinedClassification.jsp?componentId="+kmeliaScc.getComponentId()+"&nodeId="+id+")'");
+                operationPane.addOperation("useless", resources.getString("GML.PDCPredefinePositions"), "javascript:onClick=openPredefinedPdCClassification(" + id + ");");
           	}
           	if (kmeliaScc.isContentEnabled()) {
 	        	operationPane.addOperation(resources.getIcon("kmelia.modelUsed"), resources.getString("kmelia.ModelUsed"), "ModelUsed");
