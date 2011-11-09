@@ -139,6 +139,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
 
       // CASE 2 : an action is being processed, user open another window and try to access same workflow
       if (!StringUtil.isDefined(givenTokenId)) {
+        SilverTrace.error("processManager", "SessionSafeFunctionHandler.doVerifications", "processManager.BAD_TOKEN", "CASE 2 : an action is being processed, user open another window and try to access same workflow");
         return false;
       }
 
@@ -153,6 +154,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
         // then user open a instance procedure from same workflow
         // and at least try submit action form from the first window
         else {
+          SilverTrace.error("processManager", "SessionSafeFunctionHandler.doVerifications", "processManager.BAD_TOKEN", "CASE 4 : an action is being processed, user open another window and logged in");
           return false;
         }
       }
@@ -161,6 +163,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
     else {
       // CASE 5 : an action is being processed, user open another window and logged in => previous Silverpeas session data is lost then try submit action form from the first window
       if (StringUtil.isDefined(givenTokenId)) {
+        SilverTrace.error("processManager", "SessionSafeFunctionHandler.doVerifications", "processManager.BAD_TOKEN", "CASE 5 : an action is being processed, user open another window and logged in");
         return false;
       }
 
