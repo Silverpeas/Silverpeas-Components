@@ -746,8 +746,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           request.setAttribute("ObjectIds", silverObjectIds);
           request.setAttribute("ComponentId", gallerySC.getComponentId());
           destination = "/RpdcClassify/jsp/ToAddPositions";
-
-          deselectAll(gallerySC);
         } else {
           destination = rootDest + "closeWindow.jsp";
         }
