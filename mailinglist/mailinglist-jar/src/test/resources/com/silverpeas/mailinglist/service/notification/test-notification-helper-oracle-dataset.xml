@@ -35,7 +35,7 @@
 
   <SILVERPEAS.domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs" passwordvalid="Y" />
 
-  <SILVERPEAS.st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
+  <SILVERPEAS.st_user id="0" domainid="0" specificid="0" firstname="[NULL]" lastname="Administrateur" email="[NULL]" login="SilverAdmin" accesslevel="A" />
 
   <SILVERPEAS.st_space id="3" name="MGI Coutier" description="''" createdby="0" firstpagetype="1"
     firstpageextraparam="indicateurs16" ordernum="2" createtime="1194276699849" updatetime="1205750893265" removetime=""

@@ -71,6 +71,14 @@ function openSPWindow(fonction, windowName){
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
 
+function openPredefinedPdCClassification(nodeId) {
+  var uri = getWebContext()+"/pdcPeas/jsp/predefinedClassification.jsp?componentId="+getComponentId();
+  if (nodeId != 0) {
+        uri += "&nodeId=" + nodeId;
+  }
+  SP_openWindow(uri, "Classification", '600', '400','scrollbars=yes, resizable, alwaysRaised');
+}
+
 function displayTopicDescription(id)
 {
 	//display rich description of topic
@@ -211,6 +219,12 @@ function initOperations(id, op) {
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
+    
+    if (op.predefinedPdcPositions) {
+        menuItem = new YAHOO.widget.MenuItem(labels["operation.predefinedPdcPositions"], {url: "javascript:onClick=openPredefinedPdCClassification("+id+")"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+    }
 	
 	if (op.templates) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.templates"], {url: "ModelUsed"});

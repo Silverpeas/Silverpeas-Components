@@ -21,6 +21,8 @@
 package com.stratelia.webactiv.kmelia;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
+import com.silverpeas.pdc.importExport.PdcImportExport;
+import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.util.*;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -61,6 +63,7 @@ public class FileImport {
   private String topicId;
   private File fileUploaded;
   private KmeliaSessionController kmeliaScc;
+  private PdcImportExport pdcImportExport;
 
   public void setVersionType(int versionType) {
     this.versionType = versionType;
@@ -86,6 +89,7 @@ public class FileImport {
     attachmentImportExport = new AttachmentImportExport();
     versioningImportExport = new VersioningImportExport();
     metadataExtractor = new MetadataExtractor();
+    pdcImportExport = new PdcImportExport();
   }
 
   /**
@@ -314,6 +318,12 @@ public class FileImport {
         attachmentIE.importAttachments(pubDetailToCreate.getId(), componentId,
                 attachments, userDetail.getId(), KmeliaHelper.isIndexable(pubDetailToCreate));
       }
+      
+      // Compute the classification on the PdC
+//      PdcClassification classification = pdcImportExport.getPredefinedClassification(String.valueOf(topicId),
+//              componentId);
+//      int silverObjectId = Integer.valueOf(pubDetailToCreate.getSilverObjectId());
+//      pdcImportExport.addPositions(silverObjectId, componentId, classification.getClassifyPositions());
     } catch (Exception ex) {
       SilverTrace.error("kmelia", "FileImport.processImportFile()", "root.EX_NO_MESSAGE", ex);
     }
@@ -424,5 +434,9 @@ public class FileImport {
       officeValue = metadata.getKeywords();
     }
     return officeValue;
+  }
+  
+  private PdcImportExport getPdcImportExport() {
+    return this.pdcImportExport;
   }
 }
