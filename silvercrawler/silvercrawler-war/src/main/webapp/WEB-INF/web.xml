@@ -40,6 +40,11 @@
     <servlet-name>GoToCrawler</servlet-name>
     <servlet-class>com.silverpeas.silvercrawler.servlets.GoToCrawler</servlet-class>
   </servlet>
+  <servlet>
+    <display-name>SilverCrawlerDragAndDrop</display-name>
+    <servlet-name>SilverCrawlerDragAndDrop</servlet-name>
+    <servlet-class>com.silverpeas.silvercrawler.servlets.DragAndDrop</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>SilverCrawlerRequestRouter</servlet-name>
     <url-pattern>/RsilverCrawler/*</url-pattern>
@@ -51,5 +56,9 @@
   <servlet-mapping>
     <servlet-name>GoToCrawler</servlet-name>
     <url-pattern>/SubDir/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SilverCrawlerDragAndDrop</servlet-name>
+    <url-pattern>/SilverCrawlerDragAndDrop/*</url-pattern>
   </servlet-mapping>
 </web-app>

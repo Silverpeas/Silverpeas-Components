@@ -36,20 +36,23 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class FileFolder extends Object implements java.io.Serializable {
   /**
+	*
+	*/
+  private static final long serialVersionUID = 7637795486882013995L;
+
+  /**
    * A File collection representing files in folder
    */
-  private ArrayList files;
+  private ArrayList<FileDetail> files;
 
   /**
    * A File collection representing folders in folder
    */
-  private ArrayList folders;
+  private ArrayList<FileDetail> folders;
 
   /**
    * folder name
@@ -62,21 +65,32 @@ public class FileFolder extends Object implements java.io.Serializable {
   private String path;
 
   /**
+   * is folder writable ?
+   */
+  private boolean writable;
+
+  /**
+   * is folder readable ?
+   */
+  private boolean readable;
+
+  /**
    * Constructor declaration
-   * 
-   * 
    * @param path
-   * 
    * @see
    */
   public FileFolder(String rootPath, String path) {
     new FileFolder(rootPath, path, false, "");
   }
 
+  public boolean isWritable() {
+    return writable;
+  }
+
   public FileFolder(String rootPath, String path, boolean isAdmin,
       String componentId) {
-    files = new ArrayList(0);
-    folders = new ArrayList(0);
+    files = new ArrayList<FileDetail>(0);
+    folders = new ArrayList<FileDetail>(0);
 
     String childPath = null;
 
@@ -90,8 +104,14 @@ public class FileFolder extends Object implements java.io.Serializable {
       SilverTrace.debug("silverCrawler", "FileFolder.FileFolder()",
           "root.MSG_GEN_PARAM_VALUE", "isExists " + f.exists() + " isFile="
               + f.isFile());
+
+      writable = f.canWrite();
+
       if (f.exists()) {
         this.name = f.getName();
+
+        this.readable = f.canRead();
+
         String[] children_name = f.list();
 
         IndexReader reader = null;
@@ -151,34 +171,25 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
-  public Collection getFiles() {
+  public Collection<FileDetail> getFiles() {
     return files;
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
-  public Collection getFolders() {
+  public Collection<FileDetail> getFolders() {
     return folders;
   }
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -187,13 +198,24 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getPath() {
     return path;
+  }
+
+  /**
+   * @param readable the readable to set
+   */
+  public void setReadable(boolean readable) {
+    this.readable = readable;
+  }
+
+  /**
+   * @return the readable
+   */
+  public boolean isReadable() {
+    return readable;
   }
 }
