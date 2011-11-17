@@ -27,6 +27,7 @@ import static com.silverpeas.export.ExportDescriptor.withWriter;
 import static com.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 import static com.stratelia.webactiv.util.DateUtil.parse;
+import static com.silverpeas.pdc.model.PdcClassification.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -51,6 +52,9 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
 import com.silverpeas.export.ical.ExportableCalendar;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -339,7 +343,21 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws AlmanachException if an error occurs while adding the event.
    * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
    */
-  public EventPK addEvent(EventDetail eventDetail) throws AlmanachBadParamException, AlmanachException,
+  public EventPK addEvent(EventDetail eventDetail) throws AlmanachBadParamException,
+          AlmanachException,
+          WysiwygException {
+    return addEvent(eventDetail, PdcClassificationEntity.undefinedClassification());
+  }
+  
+  /**
+   * Adds the specified event into the underlying almanach.
+   * @param eventDetail the detail of the event to add.
+   * @throws AlmanachBadParamException if the event detail isn't well defined.
+   * @throws AlmanachException if an error occurs while adding the event.
+   * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
+   */
+  public EventPK addEvent(EventDetail eventDetail, PdcClassificationEntity classification) throws
+          AlmanachBadParamException, AlmanachException,
           WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.addEvent()",
             "root.MSG_GEN_ENTER_METHOD");
@@ -347,8 +365,16 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     try {
       eventDetail.setPK(eventPK);
       eventDetail.setDelegatorId(getUserId());
+
+      PdcClassification withClassification = NONE_CLASSIFICATION;
+      if (!classification.isUndefined()) {
+        List<PdcPosition> pdcPositions = classification.getPdcPositions();
+        withClassification = aPdcClassificationOfContent(eventDetail.getId(), eventDetail.
+                getInstanceId()).withPositions(pdcPositions);
+      }
+
       // Add the event
-      String eventId = getAlmanachBm().addEvent(eventDetail);
+      String eventId = getAlmanachBm().addEvent(eventDetail, withClassification);
       Date startDate = eventDetail.getStartDate();
       // currentDay
       if (startDate != null) {

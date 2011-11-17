@@ -900,8 +900,12 @@ function loadNodeData(node, fnLoadComplete)  {
 									oContextMenu.getItem(2).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(3).cfg.setProperty("disabled", false);
                                     
-                                    oContextMenu.getItem(0,1).cfg.setProperty("disabled", false);
-	
+                                    <% if (kmeliaScc.isPdcUsed()) { %>
+                                      oContextMenu.getItem(0,1).cfg.setProperty("disabled", false);
+                                    <% } else { %>
+                                      oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
+                                    <% } %>
+    
 									oContextMenu.getItem(0,2).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(1,2).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(2,2).cfg.setProperty("disabled", false);
@@ -1004,9 +1008,11 @@ function loadNodeData(node, fnLoadComplete)  {
 			            { text: "<%=resources.getString("SupprimerSousTheme")%>", onclick: { fn: deleteNodeFromTreeview } },
 			            { text: "<%=resources.getString("kmelia.SortTopics")%>", onclick: { fn: sortTopics } }
 			        ],
+                    <% if (kmeliaScc.isPdcUsed()) { %>
                     [
                         { text: "<%=resources.getString("GML.PDCPredefinePositions")%>", onclick: { fn: addPredefinedPositions } }
                     ],
+                    <% } %>
 		            [
 			            { text: "<%=resources.getString("GML.copy")%>", onclick: { fn: copyNode } },
 		            	{ text: "<%=resources.getString("GML.cut")%>", onclick: { fn: cutNode } },
@@ -1084,9 +1090,11 @@ function loadNodeData(node, fnLoadComplete)  {
 		   		            { text: "<%=resources.getString("CreerSousTheme")%>", onclick: { fn: addNode } },
 		   		            { text: "<%=resources.getString("kmelia.SortTopics")%>", onclick: { fn: sortTopics } }
 		   		        ],
+                        <% if (kmeliaScc.isPdcUsed()) { %>
                         [
                             { text: "<%=resources.getString("GML.PDCPredefinePositions")%>", onclick: { fn: addPredefinedPositions } }
                         ],
+                        <% } %>
 		   	            [
 		   		            { text: "<%=resources.getString("GML.paste")%>", onclick: { fn: pasteFromTree } }
 		   	    		]
