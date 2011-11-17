@@ -505,7 +505,7 @@ public class ProcessManagerBmEJB implements SessionBean {
 
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
-          "processManager.ERR_NO_CREATION_FORM", e);
+          "processManager.NO_CREATION_FORM", e);
     }
   }
 

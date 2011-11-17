@@ -23,6 +23,7 @@ package com.silverpeas.resourcesmanager.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
 
 public class ResourceDetail implements Serializable {
 
@@ -231,5 +232,17 @@ public class ResourceDetail implements Serializable {
             + description + ", responsibleId=" + responsibleId + ", createrId=" + createrId
             + ", updaterId=" + updaterId + ", instanceId=" + instanceId + ", bookable=" + bookable
             + ", managers=" + managers + ", status=" + status + '}';
+  }
+
+  public boolean isValidated() {
+    return STATUS_VALIDATE.equals(status);
+  }
+
+  public boolean isRefused() {
+    return STATUS_REFUSED.equals(status);
+  }
+
+  public boolean isValidationRequired() {
+    return STATUS_FOR_VALIDATION.equals(status);
   }
 }

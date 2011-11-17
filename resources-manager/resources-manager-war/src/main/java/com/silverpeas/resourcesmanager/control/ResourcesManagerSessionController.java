@@ -7,16 +7,16 @@
  *
  * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of
- * the text describing the FLOSS exception, and it is also available here:
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this
- * program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.resourcesmanager.control;
 
@@ -39,6 +39,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -55,13 +56,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
 
 public class ResourcesManagerSessionController extends AbstractComponentSessionController {
 
   private ReservationDetail reservationCourante;
   private Calendar currentDay = Calendar.getInstance();
-  private List<ResourceReservableDetail> resourceReserved =
-          new ArrayList<ResourceReservableDetail>();
+  private List<ResourceReservableDetail> resourceReserved = new ArrayList<ResourceReservableDetail>();
   private List<ResourceReservableDetail> listReservableResource;
   private Date beginDateReservation;
   private Date endDateReservation;
@@ -162,7 +163,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   /**
    * Standard Session Controller Constructeur
    *
-   * @param mainSessionCtrl  The user's profile
+   * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
    */
@@ -183,7 +184,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   /**
-   * Gestion des catégories **
+   * Creating a new Category.
+   * @param category the category to create.
    */
   public void createCategory(CategoryDetail category) {
     category.setInstanceId(getComponentId());
@@ -246,7 +248,9 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   /**
-   * Gestion des ressources **
+   * Create a new resource.
+   * @param resource
+   * @return 
    */
   public String createResource(ResourceDetail resource) {
     resource.setInstanceId(getComponentId());
@@ -435,7 +439,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     ResourceDetail resource = getResource(resourceId);
     String status = ResourcesManagerFactory.getResourcesManagerBm().getStatusResourceOfReservation(
             resourceId, reservationId);
-    if (ReservationDetail.STATUS_FOR_VALIDATION.equals(status)) {
+    if (STATUS_FOR_VALIDATION.equals(status)) {
       // envoyer une notification aux responsables de la ressource
       OrganizationController orga = new OrganizationController();
       String user = orga.getUserDetail(getUserId()).getDisplayedName();
@@ -474,7 +478,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
                 subject, messageBody.toString());
         notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
 
-        notifMetaData.setLink(URLManager.getURL(null, getComponentId()) 
+        notifMetaData.setLink(URLManager.getURL(null, getComponentId())
                 + "ViewReservation?reservationId=" + reservationId);
         notifMetaData.setComponentId(getComponentId());
         notifMetaData.addUserRecipients(managers);
@@ -528,9 +532,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public List<UserDetail> getManagers(String resourceId) {
     List<UserDetail> managers = new ArrayList<UserDetail>();
     try {
-      List<String> managerIds =
-              ResourcesManagerFactory.getResourcesManagerBm().getManagers(Integer.parseInt(
-              resourceId));
+      List<String> managerIds = ResourcesManagerFactory.getResourcesManagerBm().getManagers(
+              Integer.parseInt(resourceId));
       // ajouter le nom du responsable
       for (String managerId : managerIds) {
         UserDetail manager = getUserDetail(managerId);
@@ -685,8 +688,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public List<ReservationDetail> getReservationForValidation() {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getReservationForValidation(
-              getComponentId(),
-              getCurrentDay().getTime(), getUserId(), getLanguage());
+              getComponentId(), getCurrentDay().getTime(), getUserId());
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
               "ResourcesManagerSessionController.getReservationForValidation()",
@@ -697,7 +699,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public List<ReservationDetail> getMonthReservation() {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getMonthReservation(getComponentId(),
-              getCurrentDay().getTime(), getUserId(), getLanguage());
+              getCurrentDay().getTime(), getUserId());
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
               "ResourcesManagerSessionController.getMonthReservation()",
@@ -708,7 +710,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public List<ReservationDetail> getMonthReservation(String idUser) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getMonthReservation(getComponentId(),
-              this.getCurrentDay().getTime(), idUser, this.getLanguage());
+              this.getCurrentDay().getTime(), idUser);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
               "ResourcesManagerSessionController.getMonthReservation()",
@@ -719,8 +721,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public List<ReservationDetail> getMonthReservationOfCategory(String idCategory) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getMonthReservationOfCategory(
-              getComponentId(), getCurrentDay().getTime(), getUserId(),
-              getLanguage(), idCategory);
+              getComponentId(), getCurrentDay().getTime(), getUserId(), idCategory);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
               "ResourcesManagerSessionController.getMonthReservationOfCategory()",
@@ -731,14 +732,11 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public String initUPToSelectManager(String pubId) {
     PairObject hostComponentName = new PairObject(getComponentLabel(), "");
     PairObject[] hostPath = new PairObject[1];
-    hostPath[0] = new PairObject(
-            getString("resourcesManagerSC.SelectManager"), "");
-    String hostUrl =
-            URLManager.getApplicationURL() + URLManager.getURL("useless", getComponentId())
+    hostPath[0] = new PairObject(getString("resourcesManagerSC.SelectManager"), "");
+    String hostUrl = URLManager.getApplicationURL() + URLManager.getURL("useless", getComponentId())
             + "SetManager?PubId=" + pubId;
-    String cancelUrl = URLManager.getApplicationURL()
-            + URLManager.getURL("useless", getComponentId())
-            + "SetManager?PubId=" + pubId;
+    String cancelUrl = URLManager.getApplicationURL() + URLManager.getURL("useless",
+            getComponentId()) + "SetManager?PubId=" + pubId;
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -761,18 +759,17 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     // Add extra params
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
-    ArrayList<String> profiles = new ArrayList<String>();
-    profiles.add("publisher");
-    profiles.add("admin");
+    ArrayList<String> profiles = new ArrayList<String>(2);
+    profiles.add(SilverpeasRole.publisher.toString());
+    profiles.add(SilverpeasRole.admin.toString());
     sug.setProfileNames(profiles);
     sel.setExtraParams(sug);
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
   public String initUserPanelOtherPlanning() {
-    PairObject hostComponentName = new PairObject(
-            getString("resourcesManager.accueil"), URLManager.getApplicationURL()
-            + "/RresourcesManager/jsp/Main");
+    PairObject hostComponentName = new PairObject(getString("resourcesManager.accueil"), URLManager.
+            getApplicationURL() + "/RresourcesManager/jsp/Main");
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(getString("resourcesManager.otherPlanning"),
             URLManager.getApplicationURL() + URLManager.getURL(null, getComponentId()) + "Main");
@@ -809,16 +806,16 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     return "yes".equalsIgnoreCase(getComponentParameterValue("comments"));
   }
 
-  public void validateResource(int resourceId, int reservationId) throws
-          RemoteException, NotificationManagerException {
+  public void validateResource(int resourceId, int reservationId) throws RemoteException,
+          NotificationManagerException {
     ResourcesManagerFactory.getResourcesManagerBm().updateResourceStatus(
-            ReservationDetail.STATUS_VALIDATE, resourceId, reservationId, getComponentId());
+            STATUS_VALIDATE, resourceId, reservationId, getComponentId());
     ReservationDetail reservation = getReservation(Integer.toString(reservationId));
     reservation.setListResourcesReserved(getResourcesofReservation(Integer.toString(reservationId)));
     ResourcesManagerFactory.getResourcesManagerBm().updateReservation(reservation);
     // envoie d'une notification au créateur de la réservation quand cette dernière est totalement
     // validée
-    if (ReservationDetail.STATUS_VALIDATE.equals(reservation.getStatus())) {
+    if (reservation.isValidated()) {
       sendNotificationValidateReservation(reservation);
     }
   }
@@ -826,13 +823,12 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public void refuseResource(int resourceId, int reservationId, String motive)
           throws RemoteException, NotificationManagerException {
     ResourcesManagerFactory.getResourcesManagerBm().updateResourceStatus(
-            ReservationDetail.STATUS_REFUSED, resourceId,
-            reservationId, getComponentId());
+            STATUS_REFUSED, resourceId, reservationId, getComponentId());
     ReservationDetail reservation = getReservation(Integer.toString(reservationId));
     reservation.setListResourcesReserved(getResourcesofReservation(Integer.toString(reservationId)));
     ResourcesManagerFactory.getResourcesManagerBm().updateReservation(reservation);
     // envoie d'une notification au créateur de la réservation si cette desnière est refusée
-    if (ReservationDetail.STATUS_REFUSED.equals(reservation.getStatus())) {
+    if (reservation.isRefused()) {
       sendNotificationRefuseReservation(reservation, Integer.toString(resourceId), motive);
     }
   }
@@ -890,36 +886,34 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
             "en");
 
     ResourceDetail resource = getResource(resourceId);
-    StringBuffer messageBody = new StringBuffer();
-    StringBuffer messageBody_en = new StringBuffer();
+    StringBuilder messageBody = new StringBuilder(512);
+    StringBuilder messageBody_en = new StringBuilder(512);
 
     // french notifications
     String subject = message.getString("resourcesManager.notifSubjectRefuse");
-    messageBody =
-            messageBody.append(message.getString("resourcesManager.notifBodyRefuseBegin")).append(
-            " '").append(resource.getName()).append("' ").append(
-            message.getString("resourcesManager.notifBodyRefuseMiddle")).append(" '").append(
-            reservation.getEvent()).append("' ").append(
-            message.getString("resourcesManager.notifBodyRefuseEnd")).append(
-            message.getString("resourcesManager.notifBodyRefuseMotive")).append(" ").append(
-            motive);
+    messageBody.append(message.getString("resourcesManager.notifBodyRefuseBegin")).append(" '");
+    messageBody.append(resource.getName()).append("' ");
+    messageBody.append(message.getString("resourcesManager.notifBodyRefuseMiddle")).append(" '");
+    messageBody.append(reservation.getEvent()).append("' ");
+    messageBody.append(message.getString("resourcesManager.notifBodyRefuseEnd"));
+    messageBody.append(message.getString("resourcesManager.notifBodyRefuseMotive")).append(" ");
+    messageBody.append(motive);
 
     // english notifications
     String subject_en = message_en.getString("resourcesManager.notifSubjectRefuse");
-    messageBody_en =
-            messageBody_en.append(message_en.getString("resourcesManager.notifBodyRefuseBegin")).
-            append(" '").append(resource.getName()).append("' ").append(
-            message_en.getString("resourcesManager.notifBodyRefuseMiddle")).append(" '").append(
-            reservation.getEvent()).append("' ").append(
-            message_en.getString("resourcesManager.notifBodyRefuseEnd")).append(
-            message_en.getString("resourcesManager.notifBodyRefuseMotive")).append(" ").append(
-            motive);
+    messageBody_en.append(message_en.getString("resourcesManager.notifBodyRefuseBegin"));
+    messageBody_en.append(" '").append(resource.getName()).append("' ");
+    messageBody_en.append(message_en.getString("resourcesManager.notifBodyRefuseMiddle"));
+    messageBody_en.append(" '").append(reservation.getEvent()).append("' ");
+    messageBody_en.append(message_en.getString("resourcesManager.notifBodyRefuseEnd"));
+    messageBody_en.append(message_en.getString("resourcesManager.notifBodyRefuseMotive"));
+    messageBody_en.append(" ").append(motive);
 
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
             subject, messageBody.toString());
     notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
 
-    notifMetaData.setLink(URLManager.getURL(null, getComponentId())
+    notifMetaData.setLink(URLManager.getURL(null, getComponentId()) 
             + "ViewReservation?reservationId=" + reservation.getId());
     notifMetaData.setComponentId(getComponentId());
     notifMetaData.addUserRecipient(new UserRecipient(reservation.getUserId()));

@@ -289,14 +289,18 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
     @SuppressWarnings("unchecked")
     List<ImageMetadata.Item> items = (List<ImageMetadata.Item>) photoshopMetadata.getItems();
     for (ImageMetadata.Item item : items) {
-      result.put(item.getKeyword(), item.getText());
+      if(result.containsKey(item.getKeyword())) {
+        result.put(item.getKeyword(), result.get(item.getKeyword()) + item.getText());
+      } else {
+        result.put(item.getKeyword(), item.getText());
+      }
     }
     return result;
   }
 
   private Date getDateValue(String value) throws ImageMetadataException {
-    String datePatterns[] = {"yyyyMMdd", "yyyy:MM:dd HH:mm:ss", "yyyy:MM:dd HH:mm",
-        "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm" };
+    String datePatterns[] = {"yyyy-MM-dd HH:mm:ss Z","yyyyMMdd", "yyyy-MM-dd HH:mm:ss Z", "yyyy:MM:dd HH:mm:ss", "yyyy:MM:dd HH:mm",
+        "yyyy-MM-dd HH:mm:ss",  "yyyy-MM-dd HH:mm", "HHmmssZ", "HHmmss" };
     for (String datePattern : datePatterns) {
       try {
         DateFormat parser = new SimpleDateFormat(datePattern);

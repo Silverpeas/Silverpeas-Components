@@ -128,23 +128,23 @@ public class Statistic {
     }
   }
 
-  public static Collection getHistoryByObject(String path, String componentId) {
+  public static Collection<HistoryByUser> getHistoryByObject(String path, String componentId) {
     SilverTrace.info("silverCrawler", "Statistic.getHistoryByObject()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection list = getHistoryByAction(path, componentId);
+    Collection<HistoryDetail> list = getHistoryByAction(path, componentId);
 
     OrganizationController orga = new OrganizationController();
-    Collection statByUser = new ArrayList();
+    Collection<HistoryByUser> statByUser = new ArrayList<HistoryByUser>();
 
-    Iterator it = list.iterator();
+    Iterator<HistoryDetail> it = list.iterator();
     while (it.hasNext()) {
-      HistoryDetail historyObject = (HistoryDetail) it.next();
+      HistoryDetail historyObject = it.next();
 
       // rechercher si le user est déjà enregistré
-      Iterator itStat = statByUser.iterator();
+      Iterator<HistoryByUser> itStat = statByUser.iterator();
       boolean trouve = false;
       while (itStat.hasNext()) {
-        HistoryByUser historyUser = (HistoryByUser) itStat.next();
+        HistoryByUser historyUser = itStat.next();
         if (historyUser.getUser().getId().equals(historyObject.getUserId())) {
           // mettre à jour, l'enregistrement existe
           long currentLastAccess = historyUser.getLastDownload().getTime();
@@ -169,14 +169,14 @@ public class Statistic {
     return statByUser;
   }
 
-  public static Collection getHistoryByAction(String path, String componentId) {
+  public static Collection<HistoryDetail> getHistoryByAction(String path, String componentId) {
     SilverTrace.info("silverCrawler", "Statistic.getHistoryByAction",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
 
     try {
       con = getConnection();
-      Collection result = HistoryDAO.getHistoryDetailByObject(con,
+      Collection<HistoryDetail> result = HistoryDAO.getHistoryDetailByObject(con,
           historyTableName, path, componentId);
 
       return result;
@@ -189,7 +189,7 @@ public class Statistic {
     }
   }
 
-  public static Collection getHistoryByObjectAndUser(String path,
+  public static Collection<HistoryDetail> getHistoryByObjectAndUser(String path,
       String userId, String componentId) {
     SilverTrace.info("silverCrawler", "Statistic.getHistoryByObjectAndUser()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -197,7 +197,7 @@ public class Statistic {
 
     try {
       con = getConnection();
-      Collection result = HistoryDAO.getHistoryDetailByObjectAndUser(con,
+      Collection<HistoryDetail> result = HistoryDAO.getHistoryDetailByObjectAndUser(con,
           historyTableName, path, userId, componentId);
 
       return result;

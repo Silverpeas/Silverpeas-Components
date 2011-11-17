@@ -1244,7 +1244,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       }
     } catch (Exception e) {
       throw new ProcessManagerException("ProcessManagerRequestRouter",
-          "processManager.ERR_ILL_FILTER_FORM", e);
+          "processManager.ILL_FILTER_FORM", e);
     }
   }
 
