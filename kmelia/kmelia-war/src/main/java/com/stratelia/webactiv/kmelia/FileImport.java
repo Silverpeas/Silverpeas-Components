@@ -22,7 +22,6 @@ package com.stratelia.webactiv.kmelia;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
-import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.util.*;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

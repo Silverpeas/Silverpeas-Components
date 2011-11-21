@@ -690,7 +690,7 @@
         /*********************************************************************************************************************/
         if(!kmaxMode) {
         %>
-          <view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" /> 
+          <view:pdcClassificationPreview componentId="<%= componentId %>" contentId="<%= id %>" /> 
         <%
         } %>
       </div>

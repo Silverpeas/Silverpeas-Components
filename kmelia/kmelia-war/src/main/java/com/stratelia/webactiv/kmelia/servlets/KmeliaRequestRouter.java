@@ -2064,7 +2064,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
             request.setAttribute("ImportMode", importMode);
             request.setAttribute("DraftMode", draftMode);
             request.setAttribute("Title", importModeTitle);
-            destination = routeDestination + "reportImportFiles.jsp";
+            destination = routeDestination + "validateImportedFilesClassification.jsp";
+            //destination = routeDestination + "reportImportFiles.jsp";
           } else {
             // File access failed
             message = attachmentResourceLocator.getString("liaisonInaccessible");
