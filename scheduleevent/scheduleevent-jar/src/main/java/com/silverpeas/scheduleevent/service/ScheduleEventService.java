@@ -25,6 +25,7 @@
 package com.silverpeas.scheduleevent.service;
 
 import java.util.Set;
+
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 
 public interface ScheduleEventService {
