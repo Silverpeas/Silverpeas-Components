@@ -26,7 +26,7 @@ package com.stratelia.webactiv.almanach.servlets;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
-import com.silverpeas.pdc.web.PdcWebServiceProvider;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 
@@ -296,15 +296,17 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           periodicity = null;
         }
         event.setPeriodicity(periodicity);
-
+        
         // Ajoute l'événement
-        EventPK eventPK = almanach.addEvent(event);
-        // create the positions of the new publication onto the PdC
+        EventPK eventPK;
         String positions = request.getParameter("Positions");
         if (StringUtil.isDefined(positions)) {
-          PdcWebServiceProvider pdc = PdcWebServiceProvider.aWebServiceProvider();
-          pdc.classifyContent(eventPK, positions);
+          PdcClassificationEntity withClassification = PdcClassificationEntity.fromJSON(positions);
+          eventPK = almanach.addEvent(event, withClassification);
+        } else {
+          eventPK = almanach.addEvent(event);
         }
+        
         destination = getDestination("almanach", almanach, request);
       } else if (function.startsWith("editEvent")) {
         String id = request.getParameter("Id"); // peut etre null en cas de

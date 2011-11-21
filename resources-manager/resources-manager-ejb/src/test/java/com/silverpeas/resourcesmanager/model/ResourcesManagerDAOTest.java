@@ -46,6 +46,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
 
 /**
  * @author ehugonnet
@@ -84,7 +85,7 @@ public class ResourcesManagerDAOTest {
     String resourceId = "4";
     try {
       String result = ResourcesManagerDAO.getResourceStatus(con, resourceId, "5");
-      assertThat(result, is(ReservationDetail.STATUS_VALIDATE));
+      assertThat(result, is(STATUS_VALIDATE));
     } finally {
       DBUtil.close(con);
     }
@@ -99,7 +100,7 @@ public class ResourcesManagerDAOTest {
     String resourceId = "3";
     try {
       String result = ResourcesManagerDAO.getResourceStatus(con, resourceId, "0");
-      assertThat(result, is(ReservationDetail.STATUS_VALIDATE));
+      assertThat(result, is(STATUS_VALIDATE));
     } finally {
       DBUtil.close(con);
     }
@@ -114,7 +115,7 @@ public class ResourcesManagerDAOTest {
     String resourceId = "2";
     try {
       String result = ResourcesManagerDAO.getResourceStatus(con, resourceId, "5");
-      assertThat(result, is(ReservationDetail.STATUS_FOR_VALIDATION));
+      assertThat(result, is(ResourceStatus.STATUS_FOR_VALIDATION));
     } finally {
       DBUtil.close(con);
     }
@@ -262,8 +263,8 @@ public class ResourcesManagerDAOTest {
     Date endDate = calendar.getTime();
     String listeResources = "1,2,6,4";
     try {
-      List<ResourceDetail> result = ResourcesManagerDAO.verificationReservation(con, instanceId,
-              listeResources, beginDate, endDate);
+      List<ResourceDetail> result = ResourcesManagerDAO.verificationReservation(con,
+          listeResources, beginDate, endDate);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(2));
       assertThat(result, contains(new ResourceDetail("1", "1", "Salle Chartreuse",
@@ -464,7 +465,7 @@ public class ResourcesManagerDAOTest {
     try {
       List<ReservationDetail> result = ResourcesManagerDAO.getMonthReservationOfCategory(con,
               instanceId,
-              calend.getTime(), userId, categoryId);
+              calend.getTime(), categoryId);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(1));
       assertThat(result, contains(new ReservationDetail("3", "Test de la Toussaint",
@@ -474,7 +475,7 @@ public class ResourcesManagerDAOTest {
       assertThat(result.get(0).getListResourcesReserved(), hasSize(3));
       categoryId = "5";
       result = ResourcesManagerDAO.getMonthReservationOfCategory(con, instanceId,
-              calend.getTime(), userId, categoryId);
+              calend.getTime(), categoryId);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(0));
     } finally {
@@ -522,13 +523,13 @@ public class ResourcesManagerDAOTest {
       int resourceId = 2;
       String result = ResourcesManagerDAO.getStatusResourceOfReservation(con, resourceId,
               reservationId);
-      assertThat(result, is(ReservationDetail.STATUS_REFUSED));
-      ResourcesManagerDAO.updateResourceStatus(con, ReservationDetail.STATUS_VALIDATE, resourceId,
-              reservationId, "");
+      assertThat(result, is(STATUS_REFUSED));
+      ResourcesManagerDAO.updateResourceStatus(con, STATUS_VALIDATE, resourceId,
+              reservationId);
       con.commit();
       result = ResourcesManagerDAO.getStatusResourceOfReservation(con, resourceId,
               reservationId);
-      assertThat(result, is(ReservationDetail.STATUS_VALIDATE));
+      assertThat(result, is(STATUS_VALIDATE));
     } finally {
       DBUtil.close(con);
     }
@@ -549,11 +550,11 @@ public class ResourcesManagerDAOTest {
       resourceId = 1;
       result = ResourcesManagerDAO.getStatusResourceOfReservation(con, resourceId,
               reservationId);
-      assertThat(result, is(ReservationDetail.STATUS_VALIDATE));
+      assertThat(result, is(STATUS_VALIDATE));
       resourceId = 2;
       result = ResourcesManagerDAO.getStatusResourceOfReservation(con, resourceId,
               reservationId);
-      assertThat(result, is(ReservationDetail.STATUS_REFUSED));
+      assertThat(result, is(STATUS_REFUSED));
       resourceId = 3;
       result = ResourcesManagerDAO.getStatusResourceOfReservation(con, resourceId,
               reservationId);

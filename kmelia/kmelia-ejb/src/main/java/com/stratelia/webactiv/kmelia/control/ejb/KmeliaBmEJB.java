@@ -37,7 +37,6 @@ import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
 import static com.stratelia.webactiv.util.JNDINames.STATISTICBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.VERSIONING_EJBHOME;
 import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
-import static com.silverpeas.pdc.service.PdcClassificationService.withClassification;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -1308,11 +1307,21 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    */
   @Override
   public String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK) {
+    PdcClassificationService classifier = PdcServiceFactory.getFactory().
+            getPdcClassificationService();
+    PdcClassification predefinedClassification =
+            classifier.findAPreDefinedClassification(fatherPK.getId(), pubDetail.getInstanceId());
+    return createPublicationIntoTopic(pubDetail, fatherPK, predefinedClassification);
+  }
+
+  @Override
+  public String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK,
+          PdcClassification classification) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.createPublicationIntoTopic()",
             "root.MSG_GEN_ENTER_METHOD");
     String pubId = null;
     try {
-      pubId = createPublicationIntoTopicWithoutNotifications(pubDetail, fatherPK);
+      pubId = createPublicationIntoTopicWithoutNotifications(pubDetail, fatherPK, classification);
 
       // creates todos for publishers
       createTodosForPublication(pubDetail, true);
@@ -1334,9 +1343,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return pubId;
   }
 
-  @Override
   public String createPublicationIntoTopicWithoutNotifications(PublicationDetail pubDetail,
-          NodePK fatherPK) {
+          NodePK fatherPK, PdcClassification classification) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.createPublicationIntoTopic()",
             "root.MSG_GEN_ENTER_METHOD");
     PublicationPK pubPK = null;
@@ -1349,14 +1357,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       createSilverContent(pubDetail, pubDetail.getCreatorId());
       // add this publication to the current topic
       addPublicationToTopicWithoutNotifications(pubPK, fatherPK, true);
-      // classify automatically the publication on the PdC
-      PdcClassificationService classifier = PdcServiceFactory.getFactory().
-              getPdcClassificationService();
-      PdcClassification predefinedClassification = classifier.findAPreDefinedClassification(fatherPK.
-              getId(), pubDetail.getInstanceId());
-      if (!predefinedClassification.isEmpty()) {
-        classifier.classifyContent(pubDetail, withClassification(predefinedClassification));
+      // classify the publication on the PdC if its classification is defined
+      if (!classification.isEmpty()) {
+        PdcClassificationService service = PdcServiceFactory.getFactory().
+                getPdcClassificationService();
+        classification.ofContent(pubPK.getId());
+        service.classifyContent(pubDetail, classification);
       }
+
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.createPublicationIntoTopic()", ERROR,
               "kmelia.EX_IMPOSSIBLE_DE_CREER_LA_PUBLICATION", e);

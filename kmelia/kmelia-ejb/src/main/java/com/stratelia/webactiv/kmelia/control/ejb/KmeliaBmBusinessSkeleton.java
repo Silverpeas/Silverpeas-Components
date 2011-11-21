@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.pdc.ejb.PdcBm;
+import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
@@ -192,16 +193,18 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public String createPublicationIntoTopic(PublicationDetail pubDetail,
       NodePK fatherPK) throws RemoteException;
-   
-   /**
-    * Create a new Publication (only the header - parameters) to the current Topic
-    * @param pubDetail a PublicationDetail
-    * @return the id of the new publication
-    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
-    * @since 1.0
-    */
-   public String createPublicationIntoTopicWithoutNotifications(PublicationDetail pubDetail,
-       NodePK fatherPK) throws RemoteException;
+  
+  /**
+   * Creates a new publication into the specified topic and with the specified classification on the
+   * PdC.
+   * @param pubDetail the detail about the publication to create.
+   * @param fatherPK the unique identifier of the topic into which the publication is published.
+   * @param classification the classification on the PdC of the publication content.
+   * @return the unique identifier of the created publication.
+   * @throws RemoteException if an error occurs while communicating with the remote business logic.
+   */
+  public String createPublicationIntoTopic(PublicationDetail pubDetail,
+      NodePK fatherPK, PdcClassification classification) throws RemoteException;
 
   /**
    * Update a publication (only the header - parameters)

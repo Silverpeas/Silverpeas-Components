@@ -29,6 +29,7 @@
 <%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
 <%@ page import="com.silverpeas.resourcesmanager.model.ReservationDetail"%>
 <%@ page import="java.util.List" %>
+<%@ page import="com.silverpeas.resourcesmanager.model.ResourceStatus" %>
 <%@ include file="check.jsp" %>
 <% 
 //Recuperation des details de l'ulisateur
