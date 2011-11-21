@@ -23,7 +23,9 @@
  */
 package com.silverpeas.gallery.control.ejb;
 
+import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.GalleryContentManager;
 import com.silverpeas.gallery.ImageHelper;
@@ -41,8 +43,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.comment.service.CommentServiceFactory;
-import com.silverpeas.comment.CommentRuntimeException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -83,12 +83,15 @@ import java.util.List;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import static com.stratelia.webactiv.util.JNDINames.*;
+
 /**
  * @author
  */
 public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   private static final long serialVersionUID = 8148021767416025104L;
-
+  private final OrderDAO orderDao = new OrderDAO();
+  
   @Override
   public AlbumDetail getAlbum(NodePK nodePK, boolean viewAllPhoto) {
     try {
@@ -185,8 +188,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   private NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getNodeBM()",
@@ -399,8 +401,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       SilverTrace.debug("gallery", "GalleryBmEJB.setPhotoPath()",
           "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
       PhotoDAO.deletePhotoPath(con, photoId, instanceId);
-      for (int i = 0; i < albums.length; i++) {
-        String albumId = albums[i];
+      for (String albumId : albums) {
         SilverTrace.debug("gallery", "GalleryBmEJB.setPhotoPath()",
             "root.MSG_GEN_PARAM_VALUE", "albumId = " + albumId);
         PhotoDAO.addPhotoPath(con, photoId, albumId, instanceId);
@@ -445,8 +446,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       SilverTrace.debug("gallery", "GalleryBmEJB.updatePhotoPath()",
           "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
       PhotoDAO.deletePhotoPath(con, photoId, instanceIdFrom);
-      for (int i = 0; i < albums.length; i++) {
-        String albumId = albums[i];
+      for (String albumId : albums) {
         SilverTrace.debug("gallery", "GalleryBmEJB.addAlbumPath()",
             "root.MSG_GEN_PARAM_VALUE", "albumId = " + albumId);
         PhotoDAO.addPhotoPath(con, photoId, albumId, instanceIdTo);
@@ -504,7 +504,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   private String displayPath(Collection<NodeDetail> path, int beforeAfter) {
-    String pathString = new String();
+    String pathString = "";
     int nbItemInPath = path.size();
     Iterator<NodeDetail> iterator = path.iterator();
     boolean alreadyCut = false;
@@ -709,8 +709,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       result = searchEngineBm.getRange(0, searchEngineBm.getResultLength());
 
       // création des photos à partir des resultats
-      for (int i = 0; i < result.length; i++) {
-        MatchingIndexEntry matchIndex = result[i];
+      for (MatchingIndexEntry matchIndex : result) {
         // Ne retourne que les photos
         if (matchIndex.getObjectType().equals("Photo")) {
           PhotoPK photoPK = new PhotoPK(matchIndex.getObjectId());
@@ -719,15 +718,16 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           if (photo != null) {
             SilverTrace.info("gallery", "GalleryBmEJB.getResultSearch()",
                 "root.MSG_GEN_ENTER_METHOD", "photo = "
-                    + photo.getPhotoPK().getId());
+                + photo.getPhotoPK().getId());
             photos.add(photo);
           }
         }
       }
     } catch (Exception e) {
-      throw new GalleryRuntimeException(
+      /*throw new GalleryRuntimeException(
           "GallerySessionController.getResultSearch()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e); */
+      return photos;
     }
     return photos;
   }
@@ -749,7 +749,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public String createOrder(Collection<String> basket, String userId, String componentId) {
     Connection con = initCon();
     try {
-      return OrderDAO.createOrder(con, basket, userId, componentId);
+      return orderDao.createOrder(con, basket, userId, componentId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.createOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_NOT_CREATE", e);
@@ -762,7 +762,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public List<Order> getAllOrders(String userId, String instanceId) {
     Connection con = initCon();
     try {
-      return OrderDAO.getAllOrders(con, userId, instanceId);
+      return orderDao.getAllOrders(con, userId, instanceId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllOrders()",
           SilverpeasRuntimeException.ERROR,
@@ -804,7 +804,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public Order getOrder(String orderId, String instanceId) {
     Connection con = initCon();
     try {
-      return OrderDAO.getOrder(con, orderId, instanceId);
+      return orderDao.getOrder(con, orderId, instanceId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
@@ -817,7 +817,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public Collection<Order> getAllOrderToDelete(int nbDays) {
     Connection con = initCon();
     try {
-      return OrderDAO.getAllOrdersToDelete(con, nbDays);
+      return orderDao.getAllOrdersToDelete(con, nbDays);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
@@ -830,7 +830,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public void deleteOrder(String orderId) {
     Connection con = initCon();
     try {
-      OrderDAO.deleteOrder(con, orderId);
+      orderDao.deleteOrder(con, orderId);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.deleteOrder()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
@@ -855,9 +855,8 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public PublicationBm getPublicationBm() {
     PublicationBm publicationBm = null;
     try {
-      PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.PUBLICATIONBM_EJBHOME,
-          PublicationBmHome.class);
+      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
+          PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
     } catch (Exception e) {
       throw new CommentRuntimeException(
@@ -871,8 +870,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     SearchEngineBm searchEngineBm = null;
     {
       try {
-        SearchEngineBmHome searchEngineHome = (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.SEARCHBM_EJBHOME,
+        SearchEngineBmHome searchEngineHome = EJBUtilitaire.getEJBObjectRef(SEARCHBM_EJBHOME,
             SearchEngineBmHome.class);
         searchEngineBm = searchEngineHome.create();
       } catch (Exception e) {
@@ -992,6 +990,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
   
+  @Override
   public void sortAlbums (List<NodePK> nodePKs) {
     Connection con = initCon();
     try {
