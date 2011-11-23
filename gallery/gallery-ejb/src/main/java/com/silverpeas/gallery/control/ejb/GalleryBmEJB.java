@@ -71,6 +71,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import java.rmi.RemoteException;
+import java.rmi.ServerException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -723,11 +724,13 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           }
         }
       }
+    } catch (ServerException se) {
+        SilverTrace.error("gallery", "GalleryBmEJB.getResultSearch()", "gallery.MSG_INDEX_NOT_CREATE");
+        return photos;
     } catch (Exception e) {
-      /*throw new GalleryRuntimeException(
+      throw new GalleryRuntimeException(
           "GallerySessionController.getResultSearch()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e); */
-      return photos;
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e); 
     }
     return photos;
   }
