@@ -724,9 +724,10 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
         }
       }
     } catch (Exception e) {
-      throw new GalleryRuntimeException(
+      /*throw new GalleryRuntimeException(
           "GallerySessionController.getResultSearch()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e); */
+      return photos;
     }
     return photos;
   }
