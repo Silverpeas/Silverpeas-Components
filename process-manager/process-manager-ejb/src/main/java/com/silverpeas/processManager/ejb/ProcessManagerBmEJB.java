@@ -480,7 +480,7 @@ public class ProcessManagerBmEJB implements SessionBean {
       throws ProcessManagerException {
 
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       TaskDoneEvent event = getCreationTask(processModel, userId, currentRole).
           buildTaskDoneEvent(creation.getName(), data);
       Workflow.getWorkflowEngine().process(event);
@@ -499,7 +499,7 @@ public class ProcessManagerBmEJB implements SessionBean {
       ProcessManagerException {
 
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction("administrateur");
       return processModel.getPublicationForm(creation.getName(),
           "administrateur", getLanguage());
 
@@ -517,7 +517,7 @@ public class ProcessManagerBmEJB implements SessionBean {
       String currentRole) throws ProcessManagerException {
 
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       return processModel.getNewActionRecord(creation.getName(), currentRole,
           getLanguage(), null);
 

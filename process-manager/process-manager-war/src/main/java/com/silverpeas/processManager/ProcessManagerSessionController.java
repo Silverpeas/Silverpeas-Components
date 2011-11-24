@@ -181,8 +181,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       String[] roles = processModel.getCreationRoles();
 
-      for (int i = 0; i < roles.length; i++) {
-        if (roles[i].equals(currentRole)) {
+      for (String role : roles) {
+        if (role.equals(currentRole)) {
           creationRights = true;
         }
       }
@@ -753,7 +753,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public Form getCreationForm() throws ProcessManagerException {
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       return processModel.getPublicationForm(creation.getName(), currentRole,
           getLanguage());
     } catch (WorkflowException e) {
@@ -767,7 +767,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public DataRecord getEmptyCreationRecord() throws ProcessManagerException {
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       return processModel.getNewActionRecord(creation.getName(), currentRole,
           getLanguage(), null);
     } catch (WorkflowException e) {
@@ -958,7 +958,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   public String createProcessInstance(DataRecord data, boolean isDraft, boolean firstTimeSaved)
       throws ProcessManagerException {
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       GenericEvent event = (isDraft) ? getCreationTask().buildTaskSavedEvent(creation.getName(),
           data) : getCreationTask().buildTaskDoneEvent(creation.getName(), data);
 
@@ -1336,13 +1336,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       } else {
         // action kind=create
         try {
-          Action createAction = processModel.getCreateAction();
+          Action createAction = processModel.getCreateAction(currentRole);
           QualifiedUsers qualifiedUsers = createAction.getAllowedUsers();
           if (getUsers(qualifiedUsers).contains(getUserId())) {
             visible = true;
           }
         } catch (WorkflowException we) {
-          // no action ok kind create
+          // no action of kind create
           visible = true;
         }
       }
