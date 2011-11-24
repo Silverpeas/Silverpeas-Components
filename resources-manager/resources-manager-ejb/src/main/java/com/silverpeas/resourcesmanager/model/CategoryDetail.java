@@ -243,11 +243,8 @@ public class CategoryDetail implements Serializable {
             other.description)) {
       return false;
     }
-    if (this.resources != other.resources && (this.resources == null || !this.resources.equals(
-            other.resources))) {
-      return false;
-    }
-    return true;
+    return !(this.resources != other.resources && (this.resources == null || !this.resources.equals(
+        other.resources)));
   }
 
   @Override

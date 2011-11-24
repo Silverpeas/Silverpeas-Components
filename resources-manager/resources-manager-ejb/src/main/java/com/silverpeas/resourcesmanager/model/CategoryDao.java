@@ -53,7 +53,7 @@ public class CategoryDao {
     Date creationDate = new Date(Long.parseLong(rs.getString("creationDate")));
     Date updateDate = new Date(Long.parseLong(rs.getString("updateDate")));
     String instanceId = rs.getString("instanceId");
-    boolean bookable = (rs.getInt("bookable") == 1);
+    boolean bookable = rs.getInt("bookable") == 1;
     String form = rs.getString("form");
     int responsibleId = rs.getInt("responsibleId");
     int createrId = rs.getInt("createrId");
@@ -98,10 +98,10 @@ public class CategoryDao {
       prepStmt.setString(3, name);
       prepStmt.setString(4, Long.toString(creationdate.getTime()));
       prepStmt.setString(5, Long.toString(updatedate.getTime()));
-      if (!bookable) {
-        prepStmt.setInt(6, 0);
-      } else {
+      if (bookable) {
         prepStmt.setInt(6, 1);
+      } else {
+        prepStmt.setInt(6, 0);
       }
       prepStmt.setString(7, form);
       prepStmt.setInt(8, Integer.parseInt(responsibleid));
