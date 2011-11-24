@@ -72,7 +72,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testSelectByForumPKs() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     Collection<ForumPK> forumPKs = Lists.newArrayList(new ForumPK("forums130", "8"));
     Collection<ForumDetail> result = ForumsDAO.selectByForumPKs(con, forumPKs);
@@ -91,7 +91,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetForumsByKeys() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     Collection<ForumPK> forumPKs = Lists.newArrayList(new ForumPK("forums130", "8"));
     Collection<Forum> result = ForumsDAO.getForumsByKeys(con, forumPKs);
@@ -110,7 +110,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetForumsList() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     List<Forum> result = ForumsDAO.getForumsList(con, new ForumPK("forums122"));
     assertThat(result, hasSize(3));
@@ -129,7 +129,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetForumsIds() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     List<String> result = ForumsDAO.getForumsIds(con, new ForumPK("forums122"));
     assertThat(result, hasSize(3));
@@ -142,7 +142,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetForumsListByCategory() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     List<Forum> result = ForumsDAO.getForumsListByCategory(con, new ForumPK("forums122"), "2");
     assertThat(result, hasSize(1));
@@ -157,7 +157,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetForumSonsIds() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     List<String> result = ForumsDAO.getForumSonsIds(con, new ForumPK("forums122", "1"));
     assertThat(result, hasSize(0));
@@ -172,7 +172,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetForum() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     Forum result = ForumsDAO.getForum(con, new ForumPK("forums130", "8"));
     Forum expectedForum = new Forum(8, "Utilisation de Silverpeas", "Les applications de Silverpeas sont riches et paramétrables. "
@@ -189,7 +189,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetForumName() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     String result = ForumsDAO.getForumName(con, 8);
     String expectedName = "Utilisation de Silverpeas";
@@ -202,7 +202,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testIsForumActive() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     boolean result = ForumsDAO.isForumActive(con, 8);
     assertThat(result, equalTo(true));
@@ -217,7 +217,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetForumParentId() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     int result = ForumsDAO.getForumParentId(con, 8);
     assertThat(result, equalTo(0));
@@ -231,7 +231,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetForumInstanceId() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     String result = ForumsDAO.getForumInstanceId(con, 8);
     assertThat(result, equalTo("forums130"));
@@ -245,7 +245,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testGetForumCreatorId() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     String result = ForumsDAO.getForumCreatorId(con, 5);
     assertThat(result, equalTo("10"));
@@ -259,7 +259,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testLockForum() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     ForumsDAO.lockForum(con, new ForumPK("forums130", "8"), 1);
     Forum result = ForumsDAO.getForum(con, new ForumPK("forums130", "8"));
@@ -281,7 +281,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testUnlockForum() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     int result = ForumsDAO.unlockForum(con, new ForumPK("forums100", "5"), 2);
     assertThat(result, equalTo(0));
@@ -303,7 +303,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testCreateForum() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     String forumName = RandomGenerator.getRandomString();
     String forumDescription = RandomGenerator.getRandomString();
@@ -325,7 +325,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testUpdateForum() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     ForumPK forumPK = new ForumPK("forums130", "8");
     String forumName = RandomGenerator.getRandomString();
@@ -345,7 +345,7 @@ public class ForumsDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testDeleteForum() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getDatabaseTester().getConnection();
     Connection con = dbConnection.getConnection();
     ForumPK forumPK = new ForumPK("forums130", "8");
     ForumsDAO.deleteForum(con, forumPK);

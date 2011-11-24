@@ -181,4 +181,9 @@ public class ClassifiedDetail implements SilverpeasContent {
   public String getContributionType() {
     return TYPE;
   }
+
+  @Override
+  public String getSilverpeasContentId() {
+    return "";
+  }
 }

@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
+import com.silverpeas.pdc.model.PdcClassification;
+import com.stratelia.silverpeas.pdc.control.PdcClassifyBmImpl;
 import java.util.Collection;
 import java.rmi.RemoteException;
 
@@ -44,7 +46,7 @@ public interface AlmanachBmBusinessSkeleton {
    */
   @Deprecated
   public Collection<EventDetail> getMonthEvents(EventPK pk, java.util.Date date,
-      String[] instanceIds) throws RemoteException;
+          String[] instanceIds) throws RemoteException;
 
   /**
    * Get the events of the month
@@ -55,8 +57,8 @@ public interface AlmanachBmBusinessSkeleton {
    */
   @Deprecated
   public Collection<EventDetail> getMonthEvents(EventPK pk, java.util.Date date)
-      throws RemoteException;
-  
+          throws RemoteException;
+
   /**
    * Gets the event occurrences that occur in the specified year and that are defined in the
    * specified almanachs.
@@ -66,7 +68,7 @@ public interface AlmanachBmBusinessSkeleton {
    * @throws RemoteException if an error occurs with the remote business service.
    */
   public List<EventOccurrence> getEventOccurrencesInYear(java.util.Calendar year,
-      String... almanachIds) throws RemoteException;
+          String... almanachIds) throws RemoteException;
 
   /**
    * Gets the event occurrences that occur in the specified month and that are defined in the
@@ -77,7 +79,7 @@ public interface AlmanachBmBusinessSkeleton {
    * @throws RemoteException if an error occurs with the remote business service.
    */
   public List<EventOccurrence> getEventOccurrencesInMonth(java.util.Calendar month,
-      String... almanachIds) throws RemoteException;
+          String... almanachIds) throws RemoteException;
 
   /**
    * Gets the event occurrences that occur in the specified week and that are defined in the
@@ -88,8 +90,8 @@ public interface AlmanachBmBusinessSkeleton {
    * @throws RemoteException if an error occurs with the remote business service.
    */
   public List<EventOccurrence> getEventOccurrencesInWeek(java.util.Calendar week,
-      String... almanachIds) throws RemoteException;
-  
+          String... almanachIds) throws RemoteException;
+
   /**
    * Gets the next event occurrences that will occur andd that are defined in the specified
    * almanachs.
@@ -112,7 +114,7 @@ public interface AlmanachBmBusinessSkeleton {
    * @return Collection of Events
    */
   public Collection<EventDetail> getAllEvents(EventPK pk, String[] instanceIds)
-      throws RemoteException;
+          throws RemoteException;
 
   public Collection<EventDetail> getEvents(Collection<EventPK> pks) throws RemoteException;
 
@@ -120,6 +122,16 @@ public interface AlmanachBmBusinessSkeleton {
    * addEvent() add an event entry in the database
    */
   public String addEvent(EventDetail event) throws RemoteException;
+
+  /**
+   * Adds the event in the almanach with the specified classification on the PdC.
+   * @param event detail about the event to add in Silverpeas.
+   * @param withClassification the classificationwith which the event will be classified on the PdC.
+   * @return the unique identifier of the added event.
+   * @throws RemoteException if an error occurs while communicating with the remote business logic.
+   */
+  public String addEvent(EventDetail event, PdcClassification withClassification) throws
+          RemoteException;
 
   /**
    * updateEvent() update the event entry, specified by the pk, in the database
@@ -142,7 +154,6 @@ public interface AlmanachBmBusinessSkeleton {
 
 //  public Collection<EventDetail> getNextEvents(String instanceId, int nbReturned)
 //      throws RemoteException;
-
 //  public void addPeriodicity(Periodicity periodicity) throws RemoteException;
 //
 //  public Periodicity getPeriodicity(String eventId) throws RemoteException;
@@ -151,18 +162,18 @@ public interface AlmanachBmBusinessSkeleton {
 //
 //  public void updatePeriodicity(Periodicity periodicity) throws RemoteException;
   public void addPeriodicityException(PeriodicityException exception)
-      throws RemoteException;
+          throws RemoteException;
 
 //  public Collection<PeriodicityException> getListPeriodicityException(String periodicityId)
 //      throws RemoteException;
 //  public void removeAllPeriodicityException(String periodicityId)
 //      throws RemoteException;
   public Calendar getICal4jCalendar(Collection<EventDetail> events, String language)
-      throws RemoteException;
+          throws RemoteException;
 
   public Collection<EventDetail> getListRecurrentEvent(Calendar calendarAlmanach,
-      java.util.Calendar currentDay, String spaceId, String instanceId, boolean yearScope)
-      throws RemoteException;
+          java.util.Calendar currentDay, String spaceId, String instanceId, boolean yearScope)
+          throws RemoteException;
 
 //  public RRule generateRecurrenceRule(Periodicity periodicity)
 //      throws RemoteException;
