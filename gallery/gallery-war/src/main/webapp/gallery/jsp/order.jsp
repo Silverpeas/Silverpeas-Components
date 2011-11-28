@@ -110,7 +110,9 @@ var messages = new Array();
 		PhotoDetail photo = row.getPhoto();
 		String nomRep = resource.getSetting("imagesSubDirectory") + photo.getId();
 %>		
-		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId, photo.getId() + extensionAlt, photo.getImageMimeType(), nomRep)%>','<%=photo.getName()%>',"#FFFFFF");
+		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId, photo.getId() 
+		    + extensionAlt, photo.getImageMimeType(), nomRep)%>',
+		    '<%=EncodeHelper.javaStringToJsString(photo.getName())%>',"#FFFFFF");
 <%		
 		messagesId++;
 	}
