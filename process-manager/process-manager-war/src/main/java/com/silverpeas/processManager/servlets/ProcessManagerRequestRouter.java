@@ -56,7 +56,6 @@ import com.silverpeas.workflow.api.model.Item;
 import com.silverpeas.workflow.api.model.QualifiedUsers;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.task.Task;
-import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.model.ActionRefs;
 import com.silverpeas.workflow.engine.model.StateImpl;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -1245,7 +1244,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       }
     } catch (Exception e) {
       throw new ProcessManagerException("ProcessManagerRequestRouter",
-          "processManager.ERR_ILL_FILTER_FORM", e);
+          "processManager.ILL_FILTER_FORM", e);
     }
   }
 

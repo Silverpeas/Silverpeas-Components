@@ -83,9 +83,6 @@ public class ProcessManagerBmEJB implements SessionBean {
 
   private static final long serialVersionUID = -3111458120777031058L;
 
-  /** The current session context usefull for transactional management */
-  private SessionContext sessionContext = null;
-
   /** Default role for creating workflow processes. */
   public static final String DEFAULT_ROLE = "supervisor";
 
@@ -303,7 +300,6 @@ public class ProcessManagerBmEJB implements SessionBean {
    * @throws ProcessManagerException
    *             if no field exists for the given name and type.
    */
-  @SuppressWarnings("unchecked")
   private Field findMatchingField(XmlForm form, GenericDataRecord data,
       String name, String typeName)
       throws ProcessManagerException {
@@ -484,7 +480,7 @@ public class ProcessManagerBmEJB implements SessionBean {
       throws ProcessManagerException {
 
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       TaskDoneEvent event = getCreationTask(processModel, userId, currentRole).
           buildTaskDoneEvent(creation.getName(), data);
       Workflow.getWorkflowEngine().process(event);
@@ -503,13 +499,13 @@ public class ProcessManagerBmEJB implements SessionBean {
       ProcessManagerException {
 
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction("administrateur");
       return processModel.getPublicationForm(creation.getName(),
           "administrateur", getLanguage());
 
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
-          "processManager.ERR_NO_CREATION_FORM", e);
+          "processManager.NO_CREATION_FORM", e);
     }
   }
 
@@ -521,7 +517,7 @@ public class ProcessManagerBmEJB implements SessionBean {
       String currentRole) throws ProcessManagerException {
 
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       return processModel.getNewActionRecord(creation.getName(), currentRole,
           getLanguage(), null);
 
@@ -722,7 +718,6 @@ public class ProcessManagerBmEJB implements SessionBean {
 
   @Override
   public void setSessionContext(SessionContext sc) throws EJBException {
-    this.sessionContext = sc;
   }
 
   @Override

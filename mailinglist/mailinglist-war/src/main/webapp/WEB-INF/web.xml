@@ -38,7 +38,7 @@
   <servlet>
     <display-name>MailingListRequestRouter</display-name>
     <servlet-name>MailingListRequestRouter</servlet-name>
-    <description>Servlet controller pour le composant mailinglist</description>
+    <description>Servlet controller pour l'application mailinglist</description>
     <servlet-class>com.silverpeas.external.mailinglist.servlets.MailingListRequestRouter</servlet-class>
   </servlet>
 

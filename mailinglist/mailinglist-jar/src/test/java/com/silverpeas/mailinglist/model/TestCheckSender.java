@@ -40,6 +40,7 @@ import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 public class TestCheckSender extends
     AbstractSilverpeasDatasourceSpringContextTests {
@@ -99,14 +100,8 @@ public class TestCheckSender extends
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
-    FlatXmlDataSet dataSet;
-    if (isOracle()) {
-      dataSet = new FlatXmlDataSet(TestCheckSender.class
-          .getResourceAsStream("test-check-sender-dataset.xml"));
-    } else {
-      dataSet = new FlatXmlDataSet(TestCheckSender.class
-          .getResourceAsStream("test-check-sender-dataset.xml"));
-    }
+    FlatXmlDataSet dataSet = new FlatXmlDataSetBuilder().build(TestCheckSender.class
+          .getResourceAsStream("test-check-sender-dataset.xml"));;
     return dataSet;
   }
 

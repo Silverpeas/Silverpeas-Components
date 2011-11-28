@@ -35,7 +35,7 @@
   </label>
   <description>
     <message lang="fr">Permet de réunir des billets affichés par ordre antéchronologique et éventuellement classés par catégorie.</message>
-    <message lang="en">A blog component, displaying posts by categories or by time.</message>
+    <message lang="en">A blog application, displaying posts by categories or by time.</message>
     <message lang="de">Eine Blog-Komponente die Beiträge per Kategorien oder nach Zeit Anzeiget.</message>
   </description>
   <suite>

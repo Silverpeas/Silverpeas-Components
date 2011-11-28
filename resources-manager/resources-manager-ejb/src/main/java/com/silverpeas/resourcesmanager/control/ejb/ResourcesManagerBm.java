@@ -23,16 +23,15 @@
  */
 package com.silverpeas.resourcesmanager.control.ejb;
 
-import java.rmi.RemoteException;
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.EJBObject;
-
 import com.silverpeas.resourcesmanager.model.CategoryDetail;
 import com.silverpeas.resourcesmanager.model.ReservationDetail;
 import com.silverpeas.resourcesmanager.model.ResourceDetail;
 import com.silverpeas.resourcesmanager.model.ResourceReservableDetail;
+
+import javax.ejb.EJBObject;
+import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author
@@ -94,13 +93,13 @@ public interface ResourcesManagerBm extends EJBObject {
       String reservationId) throws RemoteException;
 
   public List<ReservationDetail> getMonthReservation(String instanceId, Date MonthDate,
-      String userId, String language) throws RemoteException;
+      String userId) throws RemoteException;
 
   public List<ReservationDetail> getReservationForValidation(String instanceId, Date MonthDate,
-      String userId, String language) throws RemoteException;
+      String userId) throws RemoteException;
 
   public List<ReservationDetail> getMonthReservationOfCategory(String instanceId, Date MonthDate,
-      String userId, String language, String idCategory) throws RemoteException;
+      String userId, String idCategory) throws RemoteException;
 
   public void indexResourceManager(String instanceId) throws RemoteException;
 

@@ -36,7 +36,7 @@
   <domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs"
     passwordvalid="Y" />
 
-  <st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
+  <st_user id="0" domainid="0" specificid="0" firstname="[NULL]" lastname="Administrateur" email="[NULL]" login="SilverAdmin" accesslevel="A" />
 
   <st_notifdefaultaddress />
   

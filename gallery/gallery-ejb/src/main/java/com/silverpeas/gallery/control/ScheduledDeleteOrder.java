@@ -23,8 +23,6 @@
  */
 package com.silverpeas.gallery.control;
 
-import java.util.Collection;
-
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
@@ -39,6 +37,8 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import java.util.Collection;
 
 public class ScheduledDeleteOrder
     implements SchedulerEventListener {
@@ -98,7 +98,7 @@ public class ScheduledDeleteOrder
   private GalleryBm getGalleryBm() {
     GalleryBm galleryBm = null;
     try {
-      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire.getEJBObjectRef(
+      GalleryBmHome galleryBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
       galleryBm = galleryBmHome.create();
     } catch (Exception e) {

@@ -334,14 +334,13 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         } else if (request.getAttribute("reservationId") != null) {
           idReservation = (String) request.getAttribute("reservationId");
         }
-        ReservationDetail reservation = null;
         List<ResourceDetail> listResourcesProblem = (List<ResourceDetail>) request.getAttribute(
                 "listeResourcesProblem");
         List<ResourceDetail> listResourceEverReserved = null;
         // si listResourcesProblem c'est qu'il n y a pas eu de problème
         // d'enregistrement
         if ((listResourcesProblem == null)) {
-          reservation = request2ReservationDetail(request, resourcesManagerSC);
+          ReservationDetail reservation = request2ReservationDetail(request, resourcesManagerSC);
           resourcesManagerSC.createReservation(reservation);
           resourcesManagerSC.setBeginDateReservation(reservation.getBeginDate());
           resourcesManagerSC.setEndDateReservation(reservation.getEndDate());
@@ -368,23 +367,20 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
             }
           }
         }
-        int nbCategories = resourcesManagerSC.getCategories().size();
-        reservation = resourcesManagerSC.getReservationCourante();
+        int nbCategories = resourcesManagerSC.getCategories().size();        
+        ReservationDetail reservation = resourcesManagerSC.getReservationCourante();
         List<ResourceReservableDetail> maListResourcesReservable =
                 resourcesManagerSC.getResourcesReservable(
                 reservation.getBeginDate(), reservation.getEndDate());
-        SilverTrace.info("resourcesManager",
-                "ResourcesManagerRequestRouter.getDestination()",
+        SilverTrace.info("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "listResourcesReservable="
                 + maListResourcesReservable.size());
         // on envoie l'id de la réservation et l'ensemble des resources
         // associées à celles -ci
         request.setAttribute("idReservation", idReservation);
-        request.setAttribute("listResourceEverReserved",
-                listResourceEverReserved);
+        request.setAttribute("listResourceEverReserved", listResourceEverReserved);
 
-        request.setAttribute("listResourcesReservable",
-                maListResourcesReservable);
+        request.setAttribute("listResourcesReservable", maListResourcesReservable);
         request.setAttribute("reservation", reservation);
         request.setAttribute("listResourcesProblem", listResourcesProblem);
         request.setAttribute("nbCategories", nbCategories);
@@ -584,7 +580,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         String[] userIds = SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), null);
         SilverTrace.debug("resourcesManager",
                 "ResourcesManagerRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "userIds:" + userIds.toString());
+                "root.MSG_GEN_PARAM_VALUE", "userIds:" + Arrays.toString(userIds));
         if (userIds.length != 0) {
           SilverTrace.debug("resourcesManager",
                   "ResourcesManagerRequestRouter.getDestination()",
@@ -594,7 +590,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
           SilverTrace.debug("resourcesManager",
                   "ResourcesManagerRequestRouter.getDestination()",
                   "root.MSG_GEN_PARAM_VALUE", "userDetails:"
-                  + userDetails.toString());
+                  + Arrays.toString(userDetails));
           request.setAttribute("Managers", Arrays.asList(userDetails));
         }
         destination = root + "refreshFromUserSelect.jsp";
@@ -897,9 +893,9 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         String event = maReservation.getEvent();
         Event evt = reservation2Event(maReservation, reservationId, event, resourcesManagerSC);
         String color = "black";
-        if (ReservationDetail.STATUS_FOR_VALIDATION.equals(maReservation.getStatus())) {
+        if (maReservation.isValidationRequired()) {
           color = "red";
-        } else if (ReservationDetail.STATUS_REFUSED.equals(maReservation.getStatus())) {
+        } else if (maReservation.isRefused()) {
           color = "gray";
         }
         evt.setColor(color);

@@ -156,6 +156,10 @@
       <groupId>org.odftoolkit</groupId>
       <artifactId>simple-odf</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

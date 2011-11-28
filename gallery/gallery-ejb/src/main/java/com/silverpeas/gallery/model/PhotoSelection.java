@@ -23,48 +23,28 @@
  */
 package com.silverpeas.gallery.model;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.Serializable;
-
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.clipboard.SKDException;
 import com.silverpeas.util.clipboard.SilverpeasKeyData;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 
-public class PhotoSelection extends ClipboardSelection implements Serializable {
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+
+public class PhotoSelection extends ClipboardSelection {
 
   private static final long serialVersionUID = -4373774805830276786L;
-  static public DataFlavor PhotoDetailFlavor;
+  static public DataFlavor PhotoDetailFlavor = new DataFlavor(PhotoDetail.class, "Photo");
+  private PhotoDetail currentPhoto;
 
-  static {
-    try {
-      PhotoDetailFlavor = new DataFlavor(Class
-          .forName("com.silverpeas.gallery.model.PhotoDetail"), "Photo");
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
 
-  private PhotoDetail m_photo;
-
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Constructor
-   * 
-   */
   public PhotoSelection(PhotoDetail photo) {
     super();
-    m_photo = photo;
+    currentPhoto = photo;
     super.addFlavor(PhotoDetailFlavor);
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   * 
-   */
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
     Object transferedData;
@@ -72,46 +52,34 @@ public class PhotoSelection extends ClipboardSelection implements Serializable {
     try {
       transferedData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
-      if (parFlavor.equals(PhotoDetailFlavor))
-        transferedData = m_photo;
-      else
+      if (PhotoDetailFlavor.equals(parFlavor)) {
+        transferedData = currentPhoto;
+      } else {
         throw e;
+      }
     }
     return transferedData;
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   * 
-   */
   public IndexEntry getIndexEntry() {
-    IndexEntry indexEntry;
-    PhotoPK photoPK = m_photo.getPhotoPK();
-    indexEntry = new IndexEntry(photoPK.getComponentName(), "Photo", m_photo
-        .getPhotoPK().getId());
-    indexEntry.setTitle(m_photo.getName());
+    PhotoPK photoPK = currentPhoto.getPhotoPK();
+    IndexEntry indexEntry =
+        new IndexEntry(photoPK.getComponentName(), "Photo", currentPhoto.getPhotoPK().getId());
+    indexEntry.setTitle(currentPhoto.getName());
     return indexEntry;
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Tranformation obligatoire en
-   * SilverpeasKeyData
-   */
   public SilverpeasKeyData getKeyData() {
     SilverpeasKeyData keyData = new SilverpeasKeyData();
-
-    keyData.setTitle(m_photo.getName());
-    keyData.setAuthor(m_photo.getCreatorId());
-    keyData.setCreationDate(m_photo.getCreationDate());
-    keyData.setDesc(m_photo.getDescription());
+    keyData.setTitle(currentPhoto.getName());
+    keyData.setAuthor(currentPhoto.getCreatorId());
+    keyData.setCreationDate(currentPhoto.getCreationDate());
+    keyData.setDesc(currentPhoto.getDescription());
     try {
-      keyData.setProperty("BEGINDATE", m_photo.getBeginDate().toString());
-      keyData.setProperty("ENDDATE", m_photo.getEndDate().toString());
+      keyData.setProperty("BEGINDATE", currentPhoto.getBeginDate().toString());
+      keyData.setProperty("ENDDATE", currentPhoto.getEndDate().toString());
     } catch (SKDException e) {
-      SilverTrace.error("gallery", "PhotoSelection.getKeyData",
-          "gallery.ERROR_KEY_DATA", e);
+      SilverTrace.error("gallery", "PhotoSelection.getKeyData", "gallery.ERROR_KEY_DATA", e);
     }
     return keyData;
   }

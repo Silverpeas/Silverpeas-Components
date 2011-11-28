@@ -229,9 +229,9 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
             .addDynamicPublicationTemplate(formsOnlineSC
             .getComponentId()
             + ":" + xmlFormShortName, xmlFormName);
-        PublicationTemplateImpl pubTemplate = 
-                (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                    formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+        PublicationTemplateImpl pubTemplate =
+            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+            formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
 
         // DataRecord and form creation
         Form formUpdate = pubTemplate.getUpdateForm();
@@ -365,8 +365,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
             .getComponentId()
             + ":" + xmlFormShortName, xmlFormName);
         PublicationTemplateImpl pubTemplate =
-                (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                    formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+            formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
 
         // form and DataRecord creation
         Form formUpdate = pubTemplate.getUpdateForm();
@@ -418,8 +418,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
             .getComponentId()
             + ":" + xmlFormShortName, xmlFormName);
         PublicationTemplateImpl pubTemplate =
-                (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                    formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+            formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
 
         // cr�ation du formulaire et du DataRecord
         Form formView = pubTemplate.getViewForm();
@@ -461,7 +461,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
             .getComponentId()
             + ":" + xmlFormShortName, xmlFormName);
         PublicationTemplateImpl pubTemplate =
-                (PublicationTemplateImpl) getPublicationTemplateManager()
+            (PublicationTemplateImpl) getPublicationTemplateManager()
             .getPublicationTemplate(formsOnlineSC.getComponentId()
             + ":" + xmlFormShortName, xmlFormName);
 
@@ -548,7 +548,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
     }
     return flag;
   }
-  
+
   /**
    * Gets an instance of the PublicationTemplateManager manager.
    * @return an instance of PublicationTemplateManager.
@@ -556,8 +556,9 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
   }
-  
+
   private PagesContext getFormContext(FormsOnlineSessionController fosc) {
-    return new PagesContext("unknown", "0", fosc.getLanguage(), false, fosc.getComponentId(), fosc.getUserId());
+    return new PagesContext("unknown", "0", fosc.getLanguage(), false, fosc.getComponentId(), fosc
+        .getUserId());
   }
 }

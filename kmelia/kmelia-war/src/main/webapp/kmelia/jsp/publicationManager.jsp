@@ -597,7 +597,7 @@
              }
              
              <% if("New".equals(action)) { %>
-             	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>;
+             	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
              <% } %>
              
              switch(errorNb) {
@@ -730,7 +730,6 @@
         }
                 
     </script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
   </head>
   <body id="<%=componentId%>" class="publicationManager" onunload="closeWindows()">
 <%
@@ -1058,7 +1057,7 @@
 	
     <% if (!kmaxMode) {
         if ("New".equals(action)) { %>
-          	<view:pdcNewClassification componentId="<%= componentId %>" />
+          	<view:pdcNewClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getSessionTopic().getNodePK().getId() %>"/>
     <%  } else { %>
     		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
     <%  }

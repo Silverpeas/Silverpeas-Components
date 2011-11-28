@@ -493,7 +493,7 @@ $(document).ready(function(){
 			<div class="field" id="eventNameArea">
 				<label for="eventName" class="txtlibform"><fmt:message key='GML.name'/></label>
 				<div class="champs">
-					<input id="eventName" type="text" name="Title" size="60" maxlength="<c:out value='${maxTextLength}'/>" value="<%=event.getTitle()%>"/>&nbsp;<img alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
+					<input id="eventName" type="text" name="Title" size="60" maxlength="<c:out value='${maxTextLength}'/>" value="<%=title%>"/>&nbsp;<img alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
 				</div>
 			</div>
 			

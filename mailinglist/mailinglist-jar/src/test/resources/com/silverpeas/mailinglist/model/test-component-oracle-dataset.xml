@@ -34,9 +34,9 @@
   <SILVERPEAS.st_domain id="-1" name="internal" description="Do not remove - Used by Silverpeas engine" propfilename="-"
     classname="-" authenticationserver="-" thetimestamp="0" silverpeasserverurl="''" />
 
-  <SILVERPEAS.domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs" passwordvalid="Y" />
+  <SILVERPEAS.domainsp_user id="0" flastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs" passwordvalid="Y" />
 
-  <SILVERPEAS.st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
+  <SILVERPEAS.st_user id="0" domainid="0" specificid="0" firstname="[NULL]" lastname="Administrateur" email="[NULL]" login="SilverAdmin" accesslevel="A" />
 
   <SILVERPEAS.st_notifdefaultaddress />
 

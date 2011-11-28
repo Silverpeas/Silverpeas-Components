@@ -262,7 +262,7 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet de choisir quelles autres instances du composant Almanach sont accessibles depuis
+        <message lang="fr">Permet de choisir quelles autres instances de l'application Almanach sont accessibles depuis
           la liste déroulante.
         </message>
         <message lang="en">Choose which almanachs can be aggregated into this almanach.</message>

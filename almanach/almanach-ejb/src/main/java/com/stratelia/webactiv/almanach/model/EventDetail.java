@@ -23,6 +23,9 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.silverpeas.SilverpeasContent;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Collection;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -39,6 +42,7 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.almanach.AlmanachContentManager;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -57,11 +61,12 @@ import net.fortuna.ical4j.model.property.Uid;
 import static com.silverpeas.util.StringUtil.*;
 
 public class EventDetail extends AbstractI18NBean implements
-        SilverContentInterface, Serializable {
+        SilverContentInterface, Serializable, SilverpeasContent {
 
   private static final long serialVersionUID = 9077018265272108291L;
   public static ResourceLocator almanachSettings =
           new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
+  private static final String TYPE = "Event";
   private String _name = null;
   private EventPK _pk = null;
   private Date _startDate = null;
@@ -75,6 +80,7 @@ public class EventDetail extends AbstractI18NBean implements
   private String place = "";
   private String eventUrl = "";
   private Periodicity periodicity;
+  private String silverObjectId = null;
 
   public String getPlace() {
     return place;
@@ -185,6 +191,7 @@ public class EventDetail extends AbstractI18NBean implements
     return !isDefined(getStartHour()) || !isDefined(getEndHour());
   }
 
+  @Override
   public String getTitle() {
     return _title;
   }
@@ -404,5 +411,45 @@ public class EventDetail extends AbstractI18NBean implements
     iCalDate = new DateTime(calDate.getTime());
     ((DateTime) iCalDate).setTimeZone(getTimeZone());
     return iCalDate;
+  }
+
+  @Override
+  public String getComponentInstanceId() {
+    return getInstanceId();
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    if (this.silverObjectId == null) {
+      AlmanachContentManager contentManager = new AlmanachContentManager();
+      try {
+        int objectId = contentManager.getSilverObjectId(getId(), getInstanceId());
+        if (objectId >= 0) {
+          this.silverObjectId = String.valueOf(objectId);
+        }
+      } catch (ContentManagerException ex) {
+        this.silverObjectId = null;
+      }
+    }
+    return this.silverObjectId;
+  }
+  
+  protected void setSilverpeasContentId(String contentId) {
+    this.silverObjectId = contentId;
+  }
+
+  @Override
+  public UserDetail getCreator() {
+    return UserDetail.getById(getCreatorId());
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return null;
+  }
+
+  @Override
+  public String getContributionType() {
+    return TYPE;
   }
 }

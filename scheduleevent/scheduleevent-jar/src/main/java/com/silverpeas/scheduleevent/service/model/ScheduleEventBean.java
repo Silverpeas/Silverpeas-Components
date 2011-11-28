@@ -6,6 +6,7 @@ import java.util.Set;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
+import java.util.SortedSet;
 
 public interface ScheduleEventBean {
   public String getId();
@@ -28,9 +29,9 @@ public interface ScheduleEventBean {
 
   public void setAuthor(int author);
 
-  public Set<DateOption> getDates();
+  public SortedSet<DateOption> getDates();
 
-  public void setDates(Set<DateOption> dates);
+  public void setDates(SortedSet<DateOption> dates);
 
   public Set<Contributor> getContributors();
 

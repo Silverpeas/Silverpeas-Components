@@ -281,6 +281,7 @@ labels["operation.updateChain"] = "<%=resources.getString("kmelia.updateByChain"
 labels["operation.subscribe"] = "<%=resources.getString("SubscriptionsAdd")%>";
 labels["operation.favorites"] = "<%=resources.getString("FavoritesAdd1")%> <%=resources.getString("FavoritesAdd2")%>";
 labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
+labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPredefinePositions")%>";
 
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
@@ -689,6 +690,15 @@ function loadNodeData(node, fnLoadComplete)  {
 }
 
 	var oCurrentTextNode = null;
+    
+    function addPredefinedPositions() {
+      var atUri = "<%= m_context %>/pdcPeas/jsp/predefinedClassification.jsp?componentId=<%=kmeliaScc.getComponentId()%>";
+      var nodeId = oCurrentTextNode.labelElId;
+      if (nodeId != 0) {
+        atUri += "&nodeId=" + nodeId;
+      }
+      SP_openWindow(atUri, "Classification", '600', '400','scrollbars=yes, resizable, alwaysRaised');
+    }
 	
 	/*
 	     Adds a new TextNode as a child of the TextNode instance
@@ -889,10 +899,16 @@ function loadNodeData(node, fnLoadComplete)  {
 									oContextMenu.getItem(1).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(2).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(3).cfg.setProperty("disabled", false);
-	
-									oContextMenu.getItem(0,1).cfg.setProperty("disabled", false);
-									oContextMenu.getItem(1,1).cfg.setProperty("disabled", false);
-									oContextMenu.getItem(2,1).cfg.setProperty("disabled", false);
+                                    
+                                    <% if (kmeliaScc.isPdcUsed()) { %>
+                                      oContextMenu.getItem(0,1).cfg.setProperty("disabled", false);
+                                    <% } else { %>
+                                      oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
+                                    <% } %>
+    
+									oContextMenu.getItem(0,2).cfg.setProperty("disabled", false);
+									oContextMenu.getItem(1,2).cfg.setProperty("disabled", false);
+									oContextMenu.getItem(2,2).cfg.setProperty("disabled", false);
 								}
 								else if (profile == "user")
 								{
@@ -909,10 +925,12 @@ function loadNodeData(node, fnLoadComplete)  {
 										oContextMenu.getItem(1).cfg.setProperty("disabled", false);
 										oContextMenu.getItem(2).cfg.setProperty("disabled", false);
 										oContextMenu.getItem(3).cfg.setProperty("disabled", true);
+                                        
+                                        oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
 	
-										oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
-										oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
-										oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
+										oContextMenu.getItem(0,2).cfg.setProperty("disabled", true);
+										oContextMenu.getItem(1,2).cfg.setProperty("disabled", true);
+										oContextMenu.getItem(2,2).cfg.setProperty("disabled", true);
 									}
 								}
 								else
@@ -930,12 +948,14 @@ function loadNodeData(node, fnLoadComplete)  {
 										else if (creatorId == userId)
 										{
 											//oContextMenu.cfg.setProperty("visible", true);
-											oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
-											oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
-											oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
-	
 											oContextMenu.getItem(0,2).cfg.setProperty("disabled", true);
 											oContextMenu.getItem(1,2).cfg.setProperty("disabled", true);
+											oContextMenu.getItem(2,2).cfg.setProperty("disabled", true);
+                                            
+                                            oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
+	
+											oContextMenu.getItem(0,3).cfg.setProperty("disabled", true);
+											oContextMenu.getItem(1,3).cfg.setProperty("disabled", true);
 										}
 									}
 									else
@@ -951,11 +971,11 @@ function loadNodeData(node, fnLoadComplete)  {
 								<% if (kmeliaScc.isOrientedWebContent()) { %>
 									if (data[0].status == "Invisible")
 									{
-										oContextMenu.getItem(1,2).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicInvisible2Visible")%>");
+										oContextMenu.getItem(1,3).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicInvisible2Visible")%>");
 									}
 									else
 									{
-										oContextMenu.getItem(1,2).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicVisible2Invisible")%>");
+										oContextMenu.getItem(1,3).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicVisible2Invisible")%>");
 									}
 								<% } %>
 							} catch (e) {
@@ -982,12 +1002,17 @@ function loadNodeData(node, fnLoadComplete)  {
 	            },
 		        lazyload: true,
 		        itemdata: [
-			        [
+                    [
 			            { text: "<%=resources.getString("CreerSousTheme")%>", onclick: { fn: addNode } },
 			            { text: "<%=resources.getString("ModifierSousTheme")%>", onclick: { fn: editNodeLabel } },
 			            { text: "<%=resources.getString("SupprimerSousTheme")%>", onclick: { fn: deleteNodeFromTreeview } },
 			            { text: "<%=resources.getString("kmelia.SortTopics")%>", onclick: { fn: sortTopics } }
 			        ],
+                    <% if (kmeliaScc.isPdcUsed()) { %>
+                    [
+                        { text: "<%=resources.getString("GML.PDCPredefinePositions")%>", onclick: { fn: addPredefinedPositions } }
+                    ],
+                    <% } %>
 		            [
 			            { text: "<%=resources.getString("GML.copy")%>", onclick: { fn: copyNode } },
 		            	{ text: "<%=resources.getString("GML.cut")%>", onclick: { fn: cutNode } },
@@ -1065,6 +1090,11 @@ function loadNodeData(node, fnLoadComplete)  {
 		   		            { text: "<%=resources.getString("CreerSousTheme")%>", onclick: { fn: addNode } },
 		   		            { text: "<%=resources.getString("kmelia.SortTopics")%>", onclick: { fn: sortTopics } }
 		   		        ],
+                        <% if (kmeliaScc.isPdcUsed()) { %>
+                        [
+                            { text: "<%=resources.getString("GML.PDCPredefinePositions")%>", onclick: { fn: addPredefinedPositions } }
+                        ],
+                        <% } %>
 		   	            [
 		   		            { text: "<%=resources.getString("GML.paste")%>", onclick: { fn: pasteFromTree } }
 		   	    		]

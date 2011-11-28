@@ -74,10 +74,7 @@ public class PhotoWithStatus {
     } else if (!photo.equals(other.photo)) {
       return false;
     }
-    if (update != other.update) {
-      return false;
-    }
-    return true;
+    return update == other.update;
   }
 
   
