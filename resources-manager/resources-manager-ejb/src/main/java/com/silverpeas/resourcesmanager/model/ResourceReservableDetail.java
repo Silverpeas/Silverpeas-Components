@@ -92,11 +92,8 @@ public class ResourceReservableDetail implements Serializable {
             other.categoryName)) {
       return false;
     }
-    if ((this.resourceName == null) ? (other.resourceName != null) : !this.resourceName.equals(
-            other.resourceName)) {
-      return false;
-    }
-    return true;
+    return !((this.resourceName == null) ? (other.resourceName != null) : !this.resourceName.equals(
+        other.resourceName));
   }
 
   @Override

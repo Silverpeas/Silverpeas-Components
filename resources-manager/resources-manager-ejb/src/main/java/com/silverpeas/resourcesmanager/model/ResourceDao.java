@@ -184,16 +184,16 @@ public class ResourceDao {
     return list;
   }
 
-  public ResourceDetail getResource(Connection con, String id) throws SQLException {
-    String query = "select * from SC_Resources_Resource where id=?";
 
-    PreparedStatement prepStmt = null;
+  private static final String SELECT_RESOURCE = "SELECT * FROM sc_resources_resource WHERE id = ?";
+
+  public ResourceDetail getResource(Connection con, String id) throws SQLException {
+    PreparedStatement prepStmt = con.prepareStatement(SELECT_RESOURCE);
     ResultSet rs = null;
     try {
-      prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(id));
       rs = prepStmt.executeQuery();
-      while (rs.next()) {
+      if (rs.next()) {
         ResourceDetail resource = resultSetToResourceDetail(rs);
         List<String> managers = getManagers(con, Integer.parseInt(id));
         resource.setManagers(managers);
@@ -205,13 +205,12 @@ public class ResourceDao {
     }
   }
 
+  private static final String DELETE_RESOURCE = "DELETE FROM sc_resources_resource WHERE id = ?";
+
   public void deleteResource(Connection con, String id) throws SQLException {
     ResourcesManagerDAO.deleteReservedResource(con, id);
-
-    PreparedStatement prepStmt = null;
-    String query = "DELETE FROM SC_Resources_Resource WHERE ID=?";
+    PreparedStatement prepStmt = con.prepareStatement(DELETE_RESOURCE);
     try {
-      prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(id));
       prepStmt.executeUpdate();
     } finally {
@@ -220,8 +219,7 @@ public class ResourceDao {
   }
 
   private List<ResourceDetail> returnArrayListofReservationResource(Connection con,
-          ResultSet rs, boolean resa)
-          throws SQLException {
+          ResultSet rs, boolean resa) throws SQLException {
     int id;
     String instanceId = "";
     String name = "";
@@ -256,7 +254,6 @@ public class ResourceDao {
               description, Integer.toString(responsibleId), Integer.toString(createrId), Integer.
               toString(updaterId), instanceId,
               book, status);
-      // TODO : ajouter les managers à la ressource
       List<String> managers = getManagers(con, id);
       resource.setManagers(managers);
       list.add(resource);
@@ -297,12 +294,10 @@ public class ResourceDao {
     }
   }
 
-  public void addManager(Connection con, int resourceId, int managerId)
-          throws SQLException {
-    String query = "INSERT INTO SC_Resources_Managers (resourceId, managerId) VALUES (?,?)";
-    PreparedStatement prepStmt = null;
+  private static final String ADD_MANAGER = "INSERT INTO sc_resources_managers (resourceId, managerId) VALUES (?, ?)";
+  public void addManager(Connection con, int resourceId, int managerId) throws SQLException {
+    PreparedStatement prepStmt = con.prepareStatement(ADD_MANAGER);
     try {
-      prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, resourceId);
       prepStmt.setInt(2, managerId);
       prepStmt.executeUpdate();
@@ -311,12 +306,10 @@ public class ResourceDao {
     }
   }
 
-  public void removeAllManagers(Connection con, int resourceId)
-          throws SQLException {
-    String query = "DELETE FROM SC_Resources_Managers WHERE resourceId = ?";
-    PreparedStatement prepStmt = null;
+  private static final String REMOVE_RESOURCE_MANAGERS = "DELETE FROM sc_resources_managers WHERE resourceId = ?";
+  public void removeAllManagers(Connection con, int resourceId) throws SQLException {
+    PreparedStatement prepStmt = con.prepareStatement(REMOVE_RESOURCE_MANAGERS);
     try {
-      prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, resourceId);
       prepStmt.executeUpdate();
     } finally {

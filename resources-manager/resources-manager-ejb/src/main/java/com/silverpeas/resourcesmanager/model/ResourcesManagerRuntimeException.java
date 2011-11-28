@@ -53,9 +53,7 @@ public class ResourcesManagerRuntimeException extends SilverpeasRuntimeException
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
+  @Override
   public String getModule() {
     return "ResourcesManager";
   }
