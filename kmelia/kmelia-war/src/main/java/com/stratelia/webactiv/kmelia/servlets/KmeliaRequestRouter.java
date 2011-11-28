@@ -2069,7 +2069,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
                     getString("ApplicationURL"));
 
             destination = routeDestination + "reportImportFiles.jsp";
-            if (publicationDetails.size() > 1) {
+            if (publicationDetails.size() > 1 && kmeliaScc.isClassifiedOnThePdC(publicationDetails.
+                    get(0))) {
               destination = routeDestination + "validateImportedFilesClassification.jsp";
             }
           } else {

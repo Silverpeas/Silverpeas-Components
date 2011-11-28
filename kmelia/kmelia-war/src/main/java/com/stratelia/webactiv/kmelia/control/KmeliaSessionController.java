@@ -1003,12 +1003,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       } else {
         List<PdcPosition> pdcPositions = classification.getPdcPositions();
         PdcClassification withClassification = aPdcClassificationOfContent(pubDetail.getId(),
-             pubDetail.getComponentInstanceId()).withPositions(pdcPositions);
+                pubDetail.getComponentInstanceId()).withPositions(pdcPositions);
         result = getKmeliaBm().createPublicationIntoTopic(pubDetail, getSessionTopic().getNodePK(),
                 withClassification);
       }
     }
-    
+
     SilverTrace.info("kmelia", "KmeliaSessionController.createPublication(pubDetail)",
             "Kmelia.MSG_ENTRY_METHOD");
     SilverTrace.spy("kmelia", "KmeliaSessionController.createPublication(pubDetail)", getSpaceId(),
@@ -4795,5 +4795,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   public boolean isFormatSupported(String format) {
     return getSupportedFormats().contains(format);
+  }
+
+  /**
+   * Is the specified publication classified on the PdC.
+   * @param publication a publication;
+   * @return true if the publication is classified, false otherwise.
+   * @throws PdcException if an error occurs while verifying the publication is classified.
+   */
+  public boolean isClassifiedOnThePdC(final PublicationDetail publication) throws PdcException {
+    List<ClassifyPosition> positions = getPdcBm().getPositions(
+            Integer.valueOf(publication.getSilverObjectId()), 
+            publication.getComponentInstanceId());
+    return !positions.isEmpty();
   }
 }
