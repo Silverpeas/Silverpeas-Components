@@ -38,9 +38,10 @@
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle basename="com.stratelia.webactiv.kmelia.multilang.kmeliaBundle"/>
-<fmt:message key="GML.close" var="close"/>
+<view:setBundle basename="com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle" var="pdcBundle"/>
+<fmt:message key="GML.validate" var="done"/>
 <fmt:message key="kmelia.publiClassification" var="classification"/>
-<c:set var="importedPublications" value="${requestScope[PublicationsDetails]}"/>
+<c:set var="importedPublications" value="${requestScope['PublicationsDetails']}"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -48,6 +49,240 @@
     <title><c:out value="${classification}"/></title>
     <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
     <view:looknfeel />
+    <script type="text/javascript" src="<c:url value='/util/javaScript/silverpeas-pdc-widgets.js'/>"></script>
+    <script type="text/javascript">
+      var classifications = []; // will store the classification of all the imported publications
+      
+      /**
+       * Translations
+       */
+      var positionErrorMessage = "<fmt:message key='pdcPeas.MustContainsMandatoryAxis' bundle='${pdcBundle}'/>";
+      var mandatoryAxisText    = "<fmt:message key='GML.selectAValue'/>";
+      var mandatoryAxisLegend  = "<fmt:message key='GML.requiredField'/>";
+      var invariantAxisLegend  = "<fmt:message key='pdcPeas.notVariants' bundle='${pdcBundle}'/>";
+      var labelOk              = "<fmt:message key='GML.validate'/>";
+      var labelCancel          = "<fmt:message key='GML.cancel'/>";
+      var labelPosition        = "<fmt:message key='pdcPeas.position' bundle='${pdcBundle}'/>";
+      var labelPositions       = "<fmt:message key='pdcPeas.positions' bundle='${pdcBundle}'/>";
+      var titleUpdate          = "<fmt:message key='GML.modify'/>";
+      var titleAddition        = "<fmt:message key='GML.PDCNewPosition'/>";
+      var titleDeletion        = "<fmt:message key='GML.PDCDeletePosition'/>";
+      
+      /**
+       * Loads recursively the classification on the PdC of the publications between startIndex and
+       * endIndex in the array of the imported publications.
+       */
+      function loadPublicationsClassification(publications, startIndex, endIndex) {
+        loadClassification(publications[startIndex], function(classification) {
+          classifications.push(classification);
+          if (endIndex > startIndex) {
+            loadPublicationsClassification(publications, startIndex + 1, endIndex);
+          }
+        }, function(classification, error) {
+          window.alert(error);
+        })
+      }
+      
+      /**
+       * Adds recursively the specified position into the classifications on the PdC between
+       * startIndex and endIndex in the array of the imported publication's classifications.
+       */
+      function addPositionInClassifications(position, classifications, startIndex, endIndex) {
+        postPosition(classifications[startIndex].uri, position, function(classification) {
+          classifications[startIndex] = classification;
+          if (endIndex > startIndex) {
+            addPositionInClassifications(position, classifications, startIndex + 1, endIndex);
+          } else {
+            $('#classification-modification').pdcPositions('refresh', classifications[0].positions);
+          }
+        });
+      }
+      
+      /**
+       * Deletes recursively the specified position in the classifications on the PdC between
+       * startIndex and endIndex in the array of the imported publication's classifications.
+       */
+      function deletePositionInClassifications(position, classifications, startIndex, endIndex) {
+        var confirmation = null; 
+        if (startIndex == 0) confirmation = "<fmt:message key='pdcPeas.confirmDeletePosition' bundle='${pdcBundle}'/>";
+        var positionToDelete = findPosition(position.values, classifications[startIndex].positions);
+        deletePosition(classifications[startIndex].uri, positionToDelete.position, confirmation, function() {
+          classifications[startIndex].positions.splice(positionToDelete.index, 1);
+          if (endIndex > startIndex) {
+            deletePositionInClassifications(position, classifications, startIndex + 1, endIndex);
+          } else {
+            $('#classification-modification').pdcPositions('refresh', classifications[0].positions);
+          }
+        });
+    }
+      
+    /**
+     * Updates recursively the specified position with the specified values in the classifications
+     * on the PdC between startIndex and endIndex in the array of the imported publication's
+     * classifications.
+     */
+    function updatePositionInClassifications(position, values, classifications, startIndex, endIndex) {
+      var positionToUpdate = findPosition(position.values, classifications[startIndex].positions);
+      updatePosition(classifications[startIndex].uri, {
+        uri: positionToUpdate.position.uri,
+        id: positionToUpdate.position.id,
+        values: values},
+      function(classification) {
+        classifications[startIndex] = classification;
+        if (endIndex > startIndex) {
+          updatePositionInClassifications(position, values, classifications, startIndex + 1, endIndex);
+        } else {
+          $('#classification-modification').pdcPositions('refresh', classifications[0].positions);
+        }
+      });
+    }
+      
+    /**
+     * Closes this window and go back to the Kmelia main page with the topics.
+     */
+    function closeWindow() {
+      window.opener.location.href="GoToCurrentTopic";
+      window.close();
+    }
+      
+    /**
+     * Validates the predefined classification on the PdC for all of the imported publications.
+     * This function has no side-effect if the classification on the PdC of one or more of the
+     * imported publications were previously modified by one of the two others options; the
+     * modified classifications on the PdC will be kept.
+     */
+    function validateDefaultClassificationForAllPublications() {
+      $('#classification-modification').hide().children().remove();
+    }
+      
+    /**
+     * Modifies the default classifications on the PdC for all of the imported publications. They
+     * will have the same classification on the PdC.
+     */
+    function modifyClassificationForAllPublications() {
+      loadPdC(uriOfPdC({
+        context: '<c:out value="${requestScope['Context']}"/>',
+        content: '<c:out value="${importedPublications[0].id}"/>',
+        component: '<c:out value="${importedPublications[0].componentInstanceId}"/>'
+      }), function(pdc) {
+        $('<legend>').addClass('header').html("<fmt:message key='kmelia.classificationModificationForAllPublications'/>").
+          appendTo($("#classification-modification").show());
+        $('#classification-modification').pdcPositions({
+          title     : labelPositions,
+          label     : labelPosition,
+          update    : { title: titleUpdate },
+          addition  : { title: titleAddition },
+          deletion  : { title: titleDeletion },
+          positions : classifications[0].positions,
+          onAddition: function($this) {
+            $('#pdc-edition-box').pdcAxisValuesSelector({
+              title              : titleAddition,
+              positionError      : positionErrorMessage,
+              mandatoryAxisText  : mandatoryAxisText,
+              mandatoryAxisLegend: mandatoryAxisLegend,
+              invariantAxisLegend: invariantAxisLegend,
+              labelOk            : labelOk,
+              labelCancel        : labelCancel,
+              axis               : pdc.axis,
+              onValuesSelected   : function($this, selectedValues) {
+                var position = { values: selectedValues };
+                if (isAlreadyInClassification(position, classifications[0]))
+                  alert("<fmt:message key='pdcPeas.positionAlreadyExist' bundle='${pdcBundle}'/>");
+                else
+                  addPositionInClassifications(position, classifications, 0, classifications.length - 1);
+              }
+            });
+          },
+          onDeletion: function($this, position) {
+            deletePositionInClassifications(position, classifications, 0, classifications.length - 1);
+          },
+          onUpdate  : function($this, position) {
+            $('#pdc-edition-box').pdcAxisValuesSelector({
+              title              : titleUpdate,
+              positionError      : positionErrorMessage,
+              mandatoryAxisText  : mandatoryAxisText,
+              mandatoryAxisLegend: mandatoryAxisLegend,
+              invariantAxisLegend: invariantAxisLegend,
+              labelOk            : labelOk,
+              labelCancel        : labelCancel,
+              axis               : pdc.axis,
+              values             : position.values,
+              onValuesSelected   : function($this, selectedValues) {
+                if (isAlreadyInClassification({ values: selectedValues }, classifications[0]))
+                  alert("<fmt:message key='pdcPeas.positionAlreadyExist' bundle='${pdcBundle}'/>");
+                else
+                  updatePositionInClassifications(position, selectedValues, classifications, 0, classifications.length - 1);
+              }
+            });
+          }
+        });    
+      }, function(pdc, error) {
+        alert(error);
+      })
+    }
+      
+    /**
+     * Modifies the default classifications on the PdC for each of the imported publications.
+     * The user then can independently choose different positions on the PdC for each publication.
+     */
+    function modifyClassificationOfEachPublications() {
+      $('#classification-modification').hide().children().remove();
+      alert("modify each");
+    }
+      
+    /**
+     * Once this HTML document ready, enrichs it with a set of radio buttons through which the user
+     * can choose to validate or to modify the classification on the PdC of the imported
+     * publications.
+     * As the publications have been automatically classified through the import process,
+     * their classification on the PdC is loaded.
+     */
+    $(document).ready(function() {
+      var okForAll = 0, modifyForAll = 1, modifyForEach = 2, publicationsURI = [];
+      $('<div>', {
+        id: 'validation'
+      }).addClass('field').append($('<input>', {
+        type: 'radio', 
+        name: 'validation', 
+        value: okForAll, 
+        checked: true
+      })).
+        append($('<span>').html("<fmt:message key='kmelia.validateClassificationForAllPublications'/>")).
+        append($('<br>')).
+        append($('<input>', {
+        type: 'radio', 
+        name: 'validation', 
+        value: modifyForAll,
+        checked: false
+      })).
+        append($('<span>').html("<fmt:message key='kmelia.modifyClassificationForAllPublications'/>")).
+        append($('<br>')).
+        append($('<input>', {
+        type: 'radio', 
+        name: 'validation', 
+        value: modifyForEach,
+        checked: false
+      })).
+        append($('<span>').html("<fmt:message key='kmelia.modifyClassificationForEachPublication'/>")).
+        appendTo($('#default-classification'));
+        
+      $('#validation.field input:radio').change(function() {
+        var userChoice = $('.field input:radio:checked').val();
+        if (userChoice == okForAll) validateDefaultClassificationForAllPublications();
+        else if (userChoice == modifyForAll) modifyClassificationForAllPublications();
+        else modifyClassificationOfEachPublications();
+      });
+          
+      <c:forEach items="${importedPublications}" var="publication">
+        publicationsURI.push(uriOfPdCClassification({
+          context: '<c:out value="${requestScope['Context']}"/>',
+          content: '<c:out value="${publication.id}"/>',
+          component: '<c:out value="${publication.componentInstanceId}"/>'
+        }));
+      </c:forEach>
+        loadPublicationsClassification(publicationsURI, 0, publicationsURI.length - 1);
+      });
+    </script>
   </head>
   <body>
     <view:browseBar clickable="false" path="${classification}"/>
@@ -58,35 +293,23 @@
             <fmt:param value="${fn:length(importedPublications)}"/>
           </fmt:message>
         </div>
+        <br clear="all"/>
         <div id="header">
 
-          <view:pdcClassification id="default-classification" contentId="" componentId="" editable="false" />
-<!--          <fieldset id="default-classification">
-            <legend class="header">Classement de vos publications</legend>
-            <div class="fields">
-              <div id="list_pdc_positions" class="field">
-                <label for="allpositions">Positions</label>
-                <div id="allpositions" class="champs">
-                  <ul></ul>
-                </div>
-              </div>
-            </div>
+          <view:pdcClassification id="default-classification" contentId="${importedPublications[0].id}" componentId="" editable="false" />
+
+          <div id="pdc-edition-box" class="pdc-edition-box fields" style="display: none;">
+          </div>
+
+          <fieldset id="classification-modification" class="classification skinFieldset" style="display: none;">
           </fieldset>
-          <br clear="all"/>
-          <fieldset id="classificiation-modification" style="display: none;">
-            <legend class="header">Modification du classement pour l'ensemble des publications</legend>
-          </fieldset>-->
-
-
-
-          &nbsp;
-          <center>
-            <view:buttonPane>
-              <view:button label="${close}" action="javascript: window.close();"/>
-            </view:buttonPane>
-          </center>
-
         </div>
+
+        <center>
+          <view:buttonPane>
+            <view:button label="${done}" action="javascript: closeWindow();"/>
+          </view:buttonPane>
+        </center>
       </view:frame>
     </view:window>
   </body>

@@ -1007,7 +1007,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         // create publication
         String positions = FileUploadUtil.getParameter(parameters, "Positions");
-        PdcClassificationEntity withClassification = PdcClassificationEntity.undefinedClassification();
+        PdcClassificationEntity withClassification =
+                PdcClassificationEntity.undefinedClassification();
         if (StringUtil.isDefined(positions)) {
           withClassification = PdcClassificationEntity.fromJSON(positions);
         }
@@ -2064,8 +2065,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
             request.setAttribute("ImportMode", importMode);
             request.setAttribute("DraftMode", draftMode);
             request.setAttribute("Title", importModeTitle);
-            destination = routeDestination + "validateImportedFilesClassification.jsp";
-            //destination = routeDestination + "reportImportFiles.jsp";
+            request.setAttribute("Context", GeneralPropertiesManager.getGeneralResourceLocator().
+                    getString("ApplicationURL"));
+
+            destination = routeDestination + "reportImportFiles.jsp";
+            if (publicationDetails.size() > 1) {
+              destination = routeDestination + "validateImportedFilesClassification.jsp";
+            }
           } else {
             // File access failed
             message = attachmentResourceLocator.getString("liaisonInaccessible");
