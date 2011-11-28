@@ -164,8 +164,7 @@ var messages = new Array();
                 + photo.getId();%>		
             messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId, photo.getId()
             + extensionAlt, photo.getImageMimeType(),
-            nomRep)%>','<%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(photo.
-                getName()))%>',"#FFFFFF");
+            nomRep)%>','<%=EncodeHelper.javaStringToJsString(photo.getName()) %>',"#FFFFFF");
         <%messagesId++;
       }%>
 
