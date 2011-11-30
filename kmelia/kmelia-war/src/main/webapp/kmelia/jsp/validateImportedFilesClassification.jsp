@@ -129,7 +129,7 @@
               labelOk            : labelOk,
               labelCancel        : labelCancel,
               axis               : pdc.axis,
-              onValuesSelected   : function($this, selectedValues) {
+              onValuesSelected   : function(selectedValues) {
                 var position = { values: selectedValues };
                 if (isAlreadyInClassification(position, classifications[startIndex]))
                   alert("<fmt:message key='pdcPeas.positionAlreadyExist' bundle='${pdcBundle}'/>");
@@ -138,10 +138,10 @@
               }
             });
           },
-          onDeletion: function($this, position) {
+          onDeletion: function(position) {
             deletePositionInClassifications($elt, position, startIndex, endIndex, startIndex == endIndex);
           },
-          onUpdate  : function($this, position) {
+          onUpdate  : function(position) {
             $('#pdc-edition-box').pdcAxisValuesSelector({
               title              : titleUpdate,
               positionError      : positionErrorMessage,
@@ -152,7 +152,7 @@
               labelCancel        : labelCancel,
               axis               : pdc.axis,
               values             : position.values,
-              onValuesSelected   : function($this, selectedValues) {
+              onValuesSelected   : function(selectedValues) {
                 if (isAlreadyInClassification({ values: selectedValues }, classifications[startIndex]))
                   alert("<fmt:message key='pdcPeas.positionAlreadyExist' bundle='${pdcBundle}'/>");
                 else
@@ -343,7 +343,7 @@
               value: okForAll, 
               checked: selection == okForAll
             })).
-              append($('<span>').html("<fmt:message key='kmelia.validateClassificationForAllPublications'/>")).
+              append($('<span>', {id: 'okForAll'}).html("<fmt:message key='kmelia.validateClassificationForAllPublications'/>")).
               append($('<br>')).
               append($('<input>', {
               type: 'radio', 
@@ -351,7 +351,7 @@
               value: modifyForAll,
               checked: selection == modifyForAll
             })).
-              append($('<span>').html("<fmt:message key='kmelia.modifyClassificationForAllPublications'/>")).
+              append($('<span>', {id: 'modifyForAll'}).html("<fmt:message key='kmelia.modifyClassificationForAllPublications'/>")).
               append($('<br>')).
               append($('<input>', {
               type: 'radio', 
@@ -359,7 +359,7 @@
               value: modifyForEach,
               checked: selection == modifyForEach
             })).
-              append($('<span>').html("<fmt:message key='kmelia.modifyClassificationForEachPublication'/>")).
+              append($('<span>', {id: 'modifyForEach'}).html("<fmt:message key='kmelia.modifyClassificationForEachPublication'/>")).
               appendTo($('#default-classification'));
         
             $('#validation.field input:radio').change(function() {
