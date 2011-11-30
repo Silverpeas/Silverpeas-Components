@@ -11,14 +11,4 @@
   <artifactId>quizz-jar</artifactId>
   <packaging>jar</packaging>
   <name>Lib quizz</name>
-  
-  <dependencies>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>silverstatistics</artifactId>
-      <version>${core.version}</version>
-      <classifier>client</classifier>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
 </project>

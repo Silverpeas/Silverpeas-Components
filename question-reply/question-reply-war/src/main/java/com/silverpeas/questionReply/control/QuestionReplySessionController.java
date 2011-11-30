@@ -235,7 +235,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Enregistre une FAQ
    */
   public long saveNewFAQ() throws QuestionReplyException {
-    newQuestion.setStatus(2); // close
+    newQuestion.setStatus(Question.CLOSED); // close
     newQuestion.setReplyNumber(1);
     newQuestion.setPublicReplyNumber(1);
     newQuestion.setPrivateReplyNumber(0);

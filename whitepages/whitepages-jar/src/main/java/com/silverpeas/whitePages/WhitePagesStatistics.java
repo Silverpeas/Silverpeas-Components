@@ -27,27 +27,28 @@
 
 package com.silverpeas.whitePages;
 
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import com.silverpeas.whitePages.control.CardManager;
+import com.silverpeas.whitePages.model.Card;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.silverpeas.whitePages.control.CardManager;
-import com.silverpeas.whitePages.model.Card;
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
-
 /**
  * Class declaration
+ *
  * @author
  */
 public class WhitePagesStatistics implements ComponentStatisticsInterface {
 
+  @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
-    Collection<Card> c = getWhitePages(spaceId, componentId);
+    Collection<Card> c = getWhitePages(componentId);
+    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(c.size());
     for (Card detail : c) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-
       myCouple.setUserId(detail.getUserId());
       myCouple.setCountVolume(1);
       myArrayList.add(myCouple);
@@ -56,7 +57,7 @@ public class WhitePagesStatistics implements ComponentStatisticsInterface {
     return myArrayList;
   }
 
-  public Collection<Card> getWhitePages(String spaceId, String componentId)
+  public Collection<Card> getWhitePages(String componentId)
       throws WhitePagesException {
     return CardManager.getInstance().getCards(componentId);
   }

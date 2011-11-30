@@ -24,11 +24,10 @@
 package com.stratelia.webactiv.hyperlink;
 
 
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
-import java.util.ArrayList;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 /**
  * Class declaration
@@ -37,14 +36,10 @@ import java.util.List;
 public class HyperlinkStatistics implements ComponentStatisticsInterface {
 
   @Override
-  public Collection getVolume(String spaceId, String componentId) throws Exception {
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
-
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws Exception {
     UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
     myCouple.setUserId("-2"); // unknown userId
     myCouple.setCountVolume(1);
-    myArrayList.add(myCouple);
-
-    return myArrayList;
+    return Collections.singletonList(myCouple);
   }
 }
