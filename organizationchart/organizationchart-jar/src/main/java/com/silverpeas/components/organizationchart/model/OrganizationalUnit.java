@@ -25,6 +25,7 @@
 package com.silverpeas.components.organizationchart.model;
 
 import java.util.List;
+import java.util.Map;
 
 public class OrganizationalUnit {
 
@@ -43,6 +44,8 @@ public class OrganizationalUnit {
   private String parentName;
   private String parentOu;
   private String completeName;
+  
+  private Map<String, String> detail;
 
   public OrganizationalUnit(String name, String completeName) {
     this.name = name;
@@ -117,6 +120,14 @@ public class OrganizationalUnit {
 
   public String getSpecificCSSClass() {
     return specificCSSClass;
+  }
+  
+  public void setDetail(Map<String, String> detail) {
+    this.detail = detail;
+  }
+
+  public Map<String, String> getDetail() {
+    return detail;
   }
 
 }

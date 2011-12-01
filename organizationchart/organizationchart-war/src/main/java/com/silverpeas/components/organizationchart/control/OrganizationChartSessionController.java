@@ -140,6 +140,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     rootOrganization.setDetailLinkActive(chart.getRoot().hasMembers());
     rootOrganization.setDn(chart.getRoot().getCompleteName());
     rootOrganization.setSpecificCSSClass(chart.getRoot().getSpecificCSSClass());
+    rootOrganization.setDetails(chart.getRoot().getDetail());
 
     // Prevents user to go upper that the base DN
     if (!config.getLdapRoot().equalsIgnoreCase( chart.getRoot().getCompleteName() )) {
@@ -193,6 +194,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       subUnit.setCenterLinkActive(subOrganization.hasSubUnits());
       subUnit.setDetailLinkActive(subOrganization.hasMembers());
       subUnit.setSpecificCSSClass(subOrganization.getSpecificCSSClass());
+      subUnit.setDetails(subOrganization.getDetail());
       // setting main actors of subunit
       List<UserVO> subUnitMainActors = new ArrayList<UserVO>();
       for (OrganizationalPerson person : subOrganization.getMainActors()) {
@@ -217,6 +219,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     rootOrganization.setName(chart.getRoot().getName());
     rootOrganization.setParentDn(chart.getRoot().getParentOu());
     rootOrganization.setSpecificCSSClass(chart.getRoot().getSpecificCSSClass());
+    rootOrganization.setDetails(chart.getRoot().getDetail());
 
     // Looks for specific users
     List<UserVO> mainActors = new ArrayList<UserVO>();

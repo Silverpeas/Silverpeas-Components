@@ -231,6 +231,18 @@ function buildCellDIV(jCell)
 				roleCell.align = "center";
 				roleCell.innerHTML = jCell.roles[i]['role'] + " : <a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.roles[i]['login'] + "\">" + jCell.roles[i]['userFullName'] + "</a>";
 			}
+			
+			// DIV Content as a HTML table
+			for (var j = 0; j < jCell.userAttributes.length; j++) {
+				if (jCell.userAttributes[j]['value'].length > 0) {
+					var attributeRow = table.insertRow(-1);
+					var attributeCell = attributeRow.insertCell(-1);
+					attributeCell.className = "cellUnitAttribute";
+					attributeCell.colSpan = 2;
+					attributeCell.align = "center";
+					attributeCell.innerHTML = jCell.userAttributes[j]['label'] + " : " + jCell.userAttributes[j]['value'];
+				}
+			}
 
 			// Links
 			var linksRow = table.insertRow(-1);
