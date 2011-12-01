@@ -310,6 +310,8 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
   
   private OrganizationalUnit getOrganizationalUnit(DirContext ctx,
       SearchControls ctls, String rootOu) throws NamingException {
+    SilverTrace.info("organizationchart",
+        "OrganizationChartLdapServiceImpl.getOrganizationalUnit()", "root.MSG_GEN_ENTER_METHOD", "rootOu = "+rootOu);
     NamingEnumeration<SearchResult> results =
         ctx.search(rootOu, "(objectclass=" + config.getLdapClassUnit() + ")", ctls);
     SilverTrace.info("organizationchart",
@@ -350,7 +352,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     if (!StringUtil.isDefined(cssClass) && !isRoot(unit.getCompleteName())) {
       // get specific CSS class on parents
       String ou = unit.getCompleteName();
-      while (StringUtil.isDefined(ou) && !StringUtil.isDefined(cssClass)) {
+      while (StringUtil.isDefined(ou) && !StringUtil.isDefined(cssClass) && !isRoot(ou)) {
         OrganizationalUnit parent = getParentOU(unit, ou);
         if (parent.getCompleteName() != null) {
           OrganizationalUnit fullParent = getOrganizationalUnit(ctx, ctls, parent.getCompleteName());
@@ -363,6 +365,8 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
         }
       }
     }
+    SilverTrace.info("organizationchart",
+        "OrganizationChartLdapServiceImpl.getSpecificCSSClass()", "root.MSG_GEN_EXIT_METHOD", "ou = "+unit.getCompleteName()+", cssClass = "+cssClass);
     return cssClass;
   }
   

@@ -65,6 +65,7 @@ jCells[cellIndex] = new JCell( {
 	parentURL : "${organigramme.rootOrganization.parentUrl}",
 	level : 0,
 	className : 0,
+	extraClassName : "${organigramme.rootOrganization.specificCSSClass}",
 	cellType : CELL_TYPE_ORGANIZATION,
 	commonUserURL : "Details?login=",
 	usersIcon : "${usersIcon}"
@@ -78,6 +79,7 @@ jCells[cellIndex] = new JCell( {
 		title: "${(category.name eq 'Personnel') ? '' : category.name}",
 		level : 1,
 		className : 5,
+		extraClassName : "${organigramme.rootOrganization.specificCSSClass}",
 		cellType : CELL_TYPE_CATEGORY,
 		commonUserURL : "Details?login=",
 		innerUsers : new Array(
