@@ -242,10 +242,8 @@ public class ReservationDetail implements Serializable, ResourceStatus {
     if ((this.status == null) ? (other.status != null) : !this.status.equals(other.status)) {
       return false;
     }
-    if ((this.userName == null) ? (other.userName != null) : !this.userName.equals(other.userName)) {
-      return false;
-    }
-    return true;
+    return !((this.userName == null) ? (other.userName != null) :
+        !this.userName.equals(other.userName));
   }
 
   @Override
