@@ -24,11 +24,11 @@
 package com.silverpeas.gallery.image;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import com.google.common.base.Splitter;
 import com.silverpeas.gallery.model.MetaData;
+import java.io.IOException;
 
 /**
  *
@@ -42,12 +42,12 @@ public interface ImageMetadataExtractor {
 
   List<ExifProperty> defineImageProperties(Iterable<String> propertyNames);
 
-  List<MetaData> extractImageExifMetaData(File image) throws ImageMetadataException, UnsupportedEncodingException;
+  List<MetaData> extractImageExifMetaData(File image) throws ImageMetadataException, IOException;
 
-  List<MetaData> extractImageExifMetaData(File image, String lang) throws ImageMetadataException, UnsupportedEncodingException;
+  List<MetaData> extractImageExifMetaData(File image, String lang) throws ImageMetadataException, IOException;
 
-  List<MetaData> extractImageIptcMetaData(File image) throws ImageMetadataException, UnsupportedEncodingException;
+  List<MetaData> extractImageIptcMetaData(File image) throws ImageMetadataException, IOException;
 
-  List<MetaData> extractImageIptcMetaData(File image, String lang) throws ImageMetadataException, UnsupportedEncodingException;
+  List<MetaData> extractImageIptcMetaData(File image, String lang) throws ImageMetadataException, IOException;
 
 }

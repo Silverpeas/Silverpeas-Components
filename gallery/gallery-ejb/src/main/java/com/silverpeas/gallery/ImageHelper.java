@@ -238,13 +238,12 @@ public class ImageHelper {
     }
   }
 
-  public static void setMetaData(PhotoDetail photo) throws UnsupportedEncodingException,
-      ImageMetadataException {
+  public static void setMetaData(PhotoDetail photo) throws IOException, ImageMetadataException {
     setMetaData(photo, I18NHelper.defaultLanguage);
   }
 
   public static void setMetaData(PhotoDetail photo, String lang) throws ImageMetadataException,
-      UnsupportedEncodingException {
+      IOException {
     String photoId = photo.getPhotoPK().getId();
     String name = photo.getImageName();
     String mimeType = photo.getImageMimeType();
