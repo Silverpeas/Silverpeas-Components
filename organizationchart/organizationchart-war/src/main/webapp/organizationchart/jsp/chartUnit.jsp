@@ -68,6 +68,11 @@ jCells[cellIndex] = new JCell( {
 			${(not mainLoopInfo.last) ? ',' : ''}
 		</c:forEach>
 	),
+	userAttributes : new Array(
+		<c:forEach items="${organigramme.rootOrganization.details}" var="detail" varStatus="loopInfo">
+			{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
+		</c:forEach>
+	),
 	parentURL : "${organigramme.rootOrganization.parentUrl}",
 	level : 0,
 	className : 0,
@@ -142,6 +147,11 @@ jCells[cellIndex] = new JCell( {
 	roles : new Array(
 		<c:forEach items="${organization.mainActors}" var="mainActor" varStatus="loopInfo">
 			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}"} ${(not loopInfo.last) ? ',' : ''}
+		</c:forEach>
+	),
+	userAttributes : new Array(
+		<c:forEach items="${organization.details}" var="detail" varStatus="loopInfo">
+			{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
 		</c:forEach>
 	),
 	level : 1+levelOffset,

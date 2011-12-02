@@ -27,6 +27,7 @@ package com.silverpeas.components.organizationchart.view;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
 
 public class OrganizationBox {
   private String name = null;
@@ -38,6 +39,7 @@ public class OrganizationBox {
   private boolean centerLinkActive = false;
   
   private String specificCSSClass = "";
+  private Map<String, String> details = null;
 
   /**
    * @return the name
@@ -134,6 +136,14 @@ public class OrganizationBox {
 
   public String getSpecificCSSClass() {
     return specificCSSClass;
+  }
+  
+  public Map<String, String> getDetails() {
+    return details;
+  }
+
+  public void setDetails(Map<String, String> details) {
+    this.details = details;
   }
 
 }

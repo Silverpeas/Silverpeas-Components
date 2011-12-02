@@ -25,11 +25,10 @@ package com.silverpeas.gallery.image;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
-import com.drew.metadata.exif.ExifDescriptor;
-import com.drew.metadata.exif.ExifDirectory;
+import com.drew.metadata.exif.ExifIFD0Descriptor;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.iptc.IptcDirectory;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.util.StringUtil;
@@ -37,6 +36,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,41 +55,41 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
   }
 
   public List<MetaData> extractImageExifMetaData(File image) throws ImageMetadataException,
-      UnsupportedEncodingException {
+      IOException {
     return extractImageExifMetaData(image, I18NHelper.defaultLanguage);
   }
 
   @Override
   public List<MetaData> extractImageExifMetaData(File image, String lang) throws
-      ImageMetadataException, UnsupportedEncodingException {
+      ImageMetadataException, IOException {
     try {
       List<MetaData> result = new ArrayList<MetaData>();
       // lire le fichier des properties
       // 1. Traitement des metadata EXIF
       Metadata metadata = ImageMetadataReader.readMetadata(image);
-      Directory exifDirectory = metadata.getDirectory(ExifDirectory.class);
-      ExifDescriptor descriptor = new ExifDescriptor(exifDirectory);
+      ExifIFD0Directory exifDirectory = metadata.getDirectory(ExifIFD0Directory.class);
+      ExifIFD0Descriptor descriptor = new ExifIFD0Descriptor(exifDirectory);
       String value = null;
       for (ExifProperty property : imageProperties) {
         // rechercher la valeur de la metadata "label"
         int currentMetadata = property.getProperty();
         switch (currentMetadata) {
-          case ExifDirectory.TAG_WIN_AUTHOR:
+          case ExifIFD0Directory.TAG_WIN_AUTHOR:
             value = descriptor.getWindowsAuthorDescription();
             break;
-          case ExifDirectory.TAG_WIN_COMMENT:
+          case ExifIFD0Directory.TAG_WIN_COMMENT:
             value = descriptor.getWindowsCommentDescription();
             break;
 
-          case ExifDirectory.TAG_WIN_KEYWORDS:
+          case ExifIFD0Directory.TAG_WIN_KEYWORDS:
             value = descriptor.getWindowsKeywordsDescription();
             break;
 
-          case ExifDirectory.TAG_WIN_SUBJECT:
+          case ExifIFD0Directory.TAG_WIN_SUBJECT:
             value = descriptor.getWindowsSubjectDescription();
             break;
 
-          case ExifDirectory.TAG_WIN_TITLE:
+          case ExifIFD0Directory.TAG_WIN_TITLE:
             value = descriptor.getWindowsTitleDescription();
             break;
           default:
@@ -108,7 +108,7 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
         }
       }
       return result;
-    } catch (MetadataException ex) {
+    } catch (IOException ex) {
       throw new ImageMetadataException(ex);
     } catch (ImageProcessingException ex) {
       throw new ImageMetadataException(ex);
@@ -117,23 +117,23 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
 
   @Override
   public List<MetaData> extractImageIptcMetaData(File image) throws ImageMetadataException,
-      UnsupportedEncodingException {
+      IOException {
     return extractImageIptcMetaData(image, I18NHelper.defaultLanguage);
 
   }
 
   @Override
   public List<MetaData> extractImageIptcMetaData(File image, String lang) throws
-      UnsupportedEncodingException, ImageMetadataException {
+      IOException, ImageMetadataException {
     try {
       List<MetaData> result = new ArrayList<MetaData>();
       // lire le fichier des properties
       // 1. Traitement des metadata EXIF
       Metadata metadata = ImageMetadataReader.readMetadata(image);
-      IptcDirectory iptcDirectory = (IptcDirectory) metadata.getDirectory(IptcDirectory.class);
+      IptcDirectory iptcDirectory = metadata.getDirectory(IptcDirectory.class);
       for (IptcProperty iptcProperty : imageIptcProperties) {
         // rechercher la valeur de la metadata "label"
-        String value = null;
+        String value;
         switch (iptcProperty.getProperty()) {
           case TAG_BY_LINE:
             value = getIptcValue(iptcDirectory, TAG_BY_LINE);
@@ -153,8 +153,11 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
           case TAG_COPYRIGHT_NOTICE:
             value = getIptcValue(iptcDirectory, TAG_COPYRIGHT_NOTICE);
             break;
-          case TAG_COUNTRY_OR_PRIMARY_LOCATION:
-            value = getIptcValue(iptcDirectory, TAG_COUNTRY_OR_PRIMARY_LOCATION);
+          case TAG_COUNTRY_OR_PRIMARY_LOCATION_NAME:
+            value = getIptcValue(iptcDirectory, TAG_COUNTRY_OR_PRIMARY_LOCATION_NAME);
+            break; 
+          case TAG_COUNTRY_OR_PRIMARY_LOCATION_CODE:
+            value = getIptcValue(iptcDirectory, TAG_COUNTRY_OR_PRIMARY_LOCATION_CODE);
             break;
           case TAG_CREDIT:
             value = getIptcValue(iptcDirectory, TAG_CREDIT);
@@ -180,9 +183,6 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
           case TAG_PROVINCE_OR_STATE:
             value = getIptcValue(iptcDirectory, TAG_PROVINCE_OR_STATE);
             break;
-          case TAG_RECORD_VERSION:
-            value = getIptcValue(iptcDirectory, TAG_RECORD_VERSION);
-            break;
           case TAG_RELEASE_DATE:
             value = getIptcStringValue(iptcDirectory, TAG_RELEASE_DATE);
             break;
@@ -204,8 +204,8 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
           case TAG_URGENCY:
             value = getIptcValue(iptcDirectory, TAG_URGENCY);
             break;
-          case TAG_WRITER:
-            value = getIptcValue(iptcDirectory, TAG_WRITER);
+          case TAG_CAPTION_WRITER:
+            value = getIptcValue(iptcDirectory, TAG_CAPTION_WRITER);
             break;
           default:
             value = getIptcValue(iptcDirectory, iptcProperty.getProperty());
@@ -221,8 +221,7 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
             metaData.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty()));
           }
           result.add(metaData);
-          SilverTrace.debug("gallery",
-              "GallerySessionController.addMetaData()",
+          SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
               "root.MSG_GEN_ENTER_METHOD", "METADATA IPTC label = " + iptcProperty.getLabel()
               + " value = " + value);
         }
@@ -237,9 +236,9 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
 
   private String getIptcValue(IptcDirectory iptcDirectory, int iptcTag) throws
       UnsupportedEncodingException, MetadataException {
-    if (iptcDirectory.containsTag(iptcTag)) {
+    if (iptcDirectory != null && iptcDirectory.containsTag(iptcTag)) {
       byte[] data = iptcDirectory.getByteArray(iptcTag);
-      String encoding = StringUtil.detectEncoding(data, "UTF-85");
+      String encoding = StringUtil.detectEncoding(data, "UTF-8");
       return new String(data, encoding);
     }
     return null;
@@ -247,7 +246,7 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
 
   private String getIptcStringValue(IptcDirectory iptcDirectory, int iptcTag) throws
       UnsupportedEncodingException, MetadataException {
-    if (iptcDirectory.containsTag(iptcTag)) {
+    if (iptcDirectory != null && iptcDirectory.containsTag(iptcTag)) {
       return iptcDirectory.getString(iptcTag);
     }
     return null;
