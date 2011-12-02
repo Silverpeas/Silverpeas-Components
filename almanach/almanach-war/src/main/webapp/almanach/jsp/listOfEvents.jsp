@@ -224,7 +224,7 @@
           $.each(events, function(index, event) {
             var eventStartDate = $.fullCalendar.parseDate(event.start);
             var endDate = $.fullCalendar.parseDate(event.end);
-            var startDate = eval(uneval(eventStartDate));
+            var startDate = $.extend(true, new Date(), eventStartDate);
       <c:if test="${calendarView.viewType.nextEventsView}">
             if (startDate < today) startDate.setDate(today.getDate());
       </c:if>

@@ -93,8 +93,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
         "com.silverpeas.components.organizationchart.settings.OrganizationChartIcons");
 
     config = loadConfiguration();
-    service = ServicesFactory.getOrganizationChartService();
-    service.configure(config);
+    service = ServicesFactory.getOrganizationChartService(config);
   }
 
   public ChartVO getChart(String baseDN, OrganizationalChartType chartType) {
