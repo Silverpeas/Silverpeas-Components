@@ -67,7 +67,7 @@
         $(document).ready(function() {
         	chartinit();
         	$("a").click(function() {
-        		if ($(this).attr("target") != "_blank") {
+        		if ($(this).attr("target") != "_blank" && $(this).attr("href") != "javascript:window.print();") {
             		$.progressMessage();
         		}
             });
@@ -82,7 +82,7 @@
 	<c:url var="printIconUrl" value="${printIcon}" />
 
 	<view:operationPane>
-		<view:operation altText="${printMessageAltText}" icon="${printIconUrl}" action="javascript: window.print();" />
+		<view:operation altText="${printMessageAltText}" icon="${printIconUrl}" action="javascript:window.print();" />
 	</view:operationPane>
 
     <view:window>

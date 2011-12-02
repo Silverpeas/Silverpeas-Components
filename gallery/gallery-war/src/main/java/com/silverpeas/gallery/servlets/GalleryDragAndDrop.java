@@ -23,22 +23,8 @@
  */
 package com.silverpeas.gallery.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.silverpeas.gallery.ImageType;
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.gallery.ImageHelper;
+import com.silverpeas.gallery.ImageType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.AlbumDetail;
@@ -46,6 +32,7 @@ import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -58,7 +45,19 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class declaration
@@ -145,7 +144,13 @@ public class GalleryDragAndDrop extends HttpServlet {
     boolean download = !"no".equalsIgnoreCase(orga.getComponentParameterValue(componentId,
         "download"));
     String watermarkHD = orga.getComponentParameterValue(componentId, "WatermarkHD");
+    if(!StringUtil.isInteger(watermarkHD))  {
+      watermarkHD = "";
+    }
     String watermarkOther = orga.getComponentParameterValue(componentId, "WatermarkOther");
+     if(!StringUtil.isInteger(watermarkOther))  {
+      watermarkOther = "";
+    }
     importRepository(dir, userId, componentId, albumId, watermark, watermarkHD,
         watermarkOther, download);
   }

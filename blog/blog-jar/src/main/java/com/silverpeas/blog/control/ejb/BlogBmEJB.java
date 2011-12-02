@@ -37,7 +37,7 @@ import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.NodeSubscription;
-import com.silverpeas.subscribe.service.Subscription;
+import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;

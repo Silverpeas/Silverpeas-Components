@@ -335,8 +335,8 @@ if (photo != null) {
     String nameRep = resource.getSetting("imagesSubDirectory") + photo.getId();
 %>		
 messages[0] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId,
-    photo.getId() + extensionAlt, photo.getImageMimeType(), nameRep)%>','<%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(photo.
-    getName()))%>',"#FFFFFF");
+    photo.getId() + extensionAlt, photo.getImageMimeType(), nameRep)%>','<%=EncodeHelper.javaStringToJsString(photo.
+    getName())%>',"#FFFFFF");
   
 <% } %>
 

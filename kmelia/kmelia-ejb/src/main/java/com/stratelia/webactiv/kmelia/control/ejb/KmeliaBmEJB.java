@@ -63,6 +63,7 @@ import javax.activation.FileTypeMap;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import com.silverpeas.subscribe.Subscription;
 import org.apache.commons.io.FilenameUtils;
 
 import com.silverpeas.comment.service.CommentService;
@@ -85,7 +86,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.NodeSubscription;
-import com.silverpeas.subscribe.service.Subscription;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;

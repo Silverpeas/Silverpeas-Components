@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.image;
 
-import com.drew.metadata.exif.ExifDirectory;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -108,22 +108,22 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
           // rechercher la valeur de la metadata "label"
           int currentMetadata = property.getProperty();
           switch (currentMetadata) {
-            case ExifDirectory.TAG_WIN_AUTHOR:
+            case ExifIFD0Directory.TAG_WIN_AUTHOR:
               value = getExifValue(jpegMetadata, TiffConstants.EXIF_TAG_XPAUTHOR);
               break;
-            case ExifDirectory.TAG_WIN_COMMENT:
+            case ExifIFD0Directory.TAG_WIN_COMMENT:
               value = getExifValue(jpegMetadata, TiffConstants.EXIF_TAG_XPCOMMENT);
               break;
 
-            case ExifDirectory.TAG_WIN_KEYWORDS:
+            case ExifIFD0Directory.TAG_WIN_KEYWORDS:
               value = getExifValue(jpegMetadata, TiffConstants.EXIF_TAG_XPKEYWORDS);
               break;
 
-            case ExifDirectory.TAG_WIN_SUBJECT:
+            case ExifIFD0Directory.TAG_WIN_SUBJECT:
               value = getExifValue(jpegMetadata, TiffConstants.EXIF_TAG_XPSUBJECT);
               break;
 
-            case ExifDirectory.TAG_WIN_TITLE:
+            case ExifIFD0Directory.TAG_WIN_TITLE:
               value = getExifValue(jpegMetadata, TiffConstants.EXIF_TAG_XPTITLE);
               break;
             default:
