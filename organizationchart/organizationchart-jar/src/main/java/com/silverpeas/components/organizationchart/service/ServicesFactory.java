@@ -51,7 +51,9 @@ public class ServicesFactory implements ApplicationContextAware {
     return ServicesFactory.instance;
   }
 
-  public static OrganizationChartService getOrganizationChartService() {
-    return (OrganizationChartService) getInstance().context.getBean(ORGANIZATION_CHART_SERVICE);
+  public static OrganizationChartService getOrganizationChartService(OrganizationChartConfiguration config) {
+    OrganizationChartService service = (OrganizationChartService) getInstance().context.getBean(ORGANIZATION_CHART_SERVICE);
+    service.configure(config);
+    return service;
   }
 }
