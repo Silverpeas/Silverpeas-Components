@@ -74,8 +74,10 @@ import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.kmelia.export.ExportFileNameProducer;
+import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
@@ -4805,8 +4807,27 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   public boolean isClassifiedOnThePdC(final PublicationDetail publication) throws PdcException {
     List<ClassifyPosition> positions = getPdcBm().getPositions(
-            Integer.valueOf(publication.getSilverObjectId()), 
+            Integer.valueOf(publication.getSilverObjectId()),
             publication.getComponentInstanceId());
     return !positions.isEmpty();
+  }
+
+  /**
+   * Is the default classification on the PdC used to classify the publications published in the
+   * specified topic of the specified component instance can be modified during the multi-publications
+   * import process?
+   * If no default classification is defined for the specified topic (and for any of its parent topics),
+   * then false is returned.
+   * @param topicId the unique identifier of the topic.
+   * @param componentId the unique identifier of the component instance.
+   * @return true if the default classification can be modified during the automatical
+   * classification of the imported publications. False otherwise.
+   */
+  public boolean isDefaultClassificationModifiable(String topicId, String componentId) {
+    PdcClassificationService classificationService = PdcServiceFactory.getFactory().
+            getPdcClassificationService();
+    PdcClassification defaultClassification = classificationService.findAPreDefinedClassification(
+            topicId, componentId);
+    return defaultClassification != NONE_CLASSIFICATION && defaultClassification.isModifiable();
   }
 }
