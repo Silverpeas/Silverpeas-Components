@@ -169,25 +169,17 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     }
   }
   
-  private OrganizationalUnit getParentOU(OrganizationalUnit unit, String ou) throws NamingException {
-    String parentName = null;
-    String parentOu = null;
-
-    String[] ous = unit.getCompleteName().split(",");
-    if (ous.length > 1) {
-      String[] values = ous[1].split("=");
-      if (values != null && values.length > 1 && values[0].equalsIgnoreCase(ou)) {
-        parentName = values[1];
-      }
-    }
-
-    if (parentName != null) {
-      // there is a parent so define is path for return to top level ou
-      int indexStart = unit.getCompleteName().lastIndexOf(parentName);
-      parentOu = unit.getCompleteName().substring(indexStart - 3);
-    }
+  private OrganizationalUnit getParentOU(String ou) throws NamingException {
+    SilverTrace.info("organizationchart",
+        "OrganizationChartLdapServiceImpl.getParentOU()", "root.MSG_GEN_ENTER_METHOD", "ou = "+ou);
     
-    return new OrganizationalUnit(parentOu, parentName);
+    String parentOu = ou.substring(ou.indexOf(",")+1); //OU=DGA2,OU=DGS,OU=Ailleurs
+    String parentName = parentOu.substring(3, parentOu.indexOf(",")); // DGA2
+    
+    SilverTrace.info("organizationchart",
+        "OrganizationChartLdapServiceImpl.getParentOU()", "root.MSG_GEN_EXIT_METHOD",
+        "parentOu = " + parentOu + ", parentName = " + parentName);
+    return new OrganizationalUnit(parentName, parentOu);
   }
 
   /**
@@ -312,36 +304,26 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
       SearchControls ctls, String rootOu) throws NamingException {
     SilverTrace.info("organizationchart",
         "OrganizationChartLdapServiceImpl.getOrganizationalUnit()", "root.MSG_GEN_ENTER_METHOD", "rootOu = "+rootOu);
-    NamingEnumeration<SearchResult> results =
-        ctx.search(rootOu, "(objectclass=" + config.getLdapClassUnit() + ")", ctls);
+    Attributes attrs = ctx.getAttributes(rootOu);
+    
     SilverTrace.info("organizationchart",
         "OrganizationChartLdapServiceImpl.getOrganizationalUnit()", "root.MSG_GEN_PARAM_VALUE",
         "OU retrieved !");
 
-    OrganizationalUnit unit = null;
-    if (results != null && results.hasMore()) {
-      SearchResult entry = (SearchResult) results.next();
-      if (StringUtil.isDefined(entry.getName())) {
-        SilverTrace.info("organizationchart",
-            "OrganizationChartLdapServiceImpl.getOrganizationalUnit()", "root.MSG_GEN_PARAM_VALUE",
-            "entry.getName() = "+entry.getName());
-        Attributes attrs = entry.getAttributes();
-        String ou = getFirstAttributeValue(attrs.get(config.getLdapAttUnit()));
-        String completeOu = entry.getNameInNamespace();
-        SilverTrace.info("organizationchart",
-            "OrganizationChartLdapServiceImpl.getOrganizationalUnit()", "root.MSG_GEN_PARAM_VALUE",
-            "completeOu = "+completeOu);
-        unit = new OrganizationalUnit(ou, completeOu);
-        if (StringUtil.isDefined(config.getLdapAttCSSClass())) {
-          unit.setSpecificCSSClass(getFirstAttributeValue(attrs.get(config.getLdapAttCSSClass())));
-        }
-        
-        // build details map
-        Map<String, String> attributesToReturn = config.getUnitsChartOthersInfosKeys();
-        Map<String, String> details = getDetails(attributesToReturn, attrs);
-        unit.setDetail(details);
-      }
+    String ou = getFirstAttributeValue(attrs.get(config.getLdapAttUnit()));
+    OrganizationalUnit unit = new OrganizationalUnit(ou, rootOu);
+    SilverTrace.info("organizationchart",
+        "OrganizationChartLdapServiceImpl.getOrganizationalUnit()", "root.MSG_GEN_PARAM_VALUE",
+        "ou = "+ou);
+    if (StringUtil.isDefined(config.getLdapAttCSSClass())) {
+      unit.setSpecificCSSClass(getFirstAttributeValue(attrs.get(config.getLdapAttCSSClass())));
     }
+    
+    // build details map
+    Map<String, String> attributesToReturn = config.getUnitsChartOthersInfosKeys();
+    Map<String, String> details = getDetails(attributesToReturn, attrs);
+    unit.setDetail(details);
+    
     return unit;
   }
   
@@ -353,7 +335,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
       // get specific CSS class on parents
       String ou = unit.getCompleteName();
       while (StringUtil.isDefined(ou) && !StringUtil.isDefined(cssClass) && !isRoot(ou)) {
-        OrganizationalUnit parent = getParentOU(unit, ou);
+        OrganizationalUnit parent = getParentOU(ou);
         if (parent.getCompleteName() != null) {
           OrganizationalUnit fullParent = getOrganizationalUnit(ctx, ctls, parent.getCompleteName());
           if (fullParent != null) {
