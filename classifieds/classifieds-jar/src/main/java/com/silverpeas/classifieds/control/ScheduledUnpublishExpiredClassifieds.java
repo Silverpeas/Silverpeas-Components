@@ -23,9 +23,6 @@
  */
 package com.silverpeas.classifieds.control;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.scheduler.Scheduler;
@@ -37,12 +34,15 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Collection;
+import java.util.Iterator;
 
 @Named
-public class ScheduledUnpublishExpiredClassifieds
-    implements SchedulerEventListener {
+public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListener {
   
   @Inject
   private Scheduler scheduler;
@@ -54,9 +54,9 @@ public class ScheduledUnpublishExpiredClassifieds
   private ClassifiedService classifiedService;
 
   public static final String CLASSIFIEDSENGINE_JOB_NAME = "ClassifiedsEngineJobDelete";
-  private ResourceLocator resources =
-      new ResourceLocator("com.silverpeas.classifieds.settings.classifiedsSettings", "");
+  private ResourceLocator resources = new ResourceLocator("com.silverpeas.classifieds.settings.classifiedsSettings", "");
 
+  @PostConstruct
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledDeleteClassifieds");
