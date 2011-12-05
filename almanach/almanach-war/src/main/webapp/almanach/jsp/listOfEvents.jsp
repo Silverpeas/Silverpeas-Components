@@ -239,7 +239,7 @@
             }
             var startTime = "", endTime = "";
             if (eventStartDate.valueOf() == endDate.valueOf() && event.startTimeDefined && event.endTimeDefined) {
-              startTime = "<fmt:message key='GML.At'/> " + formatTime(startDate);
+              startTime = "<fmt:message key='GML.at'/> " + formatTime(startDate);
             } else {
               if (eventStartDate < startDate) {
                 startTime = "<fmt:message key='GML.From'/> " + eventStartDate.toLocaleDateString();
