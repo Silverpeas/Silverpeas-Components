@@ -775,16 +775,17 @@
 				        }
 				        out.println("</div>");
 		
-		out.println("</div>");
-		
-        if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {
+                        if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {
 			      %>
       
-      <br clear="all"/>
       <view:comments userId="<%= user_id%>" componentId="<%= componentId %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>
       
-      <% } %>
+      <% }
 
+                        
+		out.println("</div>");
+       %>
+		
       <div id="publication-export">
         <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
           <fieldset>
