@@ -858,36 +858,53 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String stateName = request.getParameter("state");
       String actionName = request.getParameter("action");
 
-      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("editAction", "stateName="+stateName+", actionName="+actionName));
-
-      request.setAttribute("state", session.getState(stateName));
-      request.setAttribute("action", session.getAction(actionName));
+          SilverTrace.debug(
+              "processManagerTrace",
+              "ProcessManagerRequestRouter.getDestination()",
+              "root.MSG_GEN_ENTER_METHOD",
+              session.getTrace("editAction", "stateName=" + stateName + ", actionName=" +
+                  actionName));
 
       // Get the associated form
       com.silverpeas.form.Form form = session.getActionForm(stateName, actionName);
-      request.setAttribute("form", form);
+      if (form == null) {
+        // no form associated to this action, process action directly
+        DataRecord data = session.getActionRecord(stateName, actionName);
+        
+        // lock the process instance
+        session.lock(stateName);
 
-      // Set the form context
-      PagesContext context = getFormContext("actionForm", "0", session, true);
-      request.setAttribute("context", context);
+        session.processAction(stateName, actionName, data, false, true);
 
-      // Get the form data
-      DataRecord data = session.getActionRecord(stateName, actionName);
-      request.setAttribute("data", data);
+        return listProcessHandler.getDestination(function, session, request);
+      } else {
+        // a form is associated to this action, display it to process action
+        request.setAttribute("state", session.getState(stateName));
+        request.setAttribute("action", session.getAction(actionName));
+        request.setAttribute("form", form);
 
-      // Set flag to indicate action record has never been saved as draft for this step
-      request.setAttribute("isFirstTimeSaved", "yes");
+        // Set the form context
+        PagesContext context = getFormContext("actionForm", "0", session, true);
+        request.setAttribute("context", context);
 
-      // lock the process instance
-      session.lock(stateName);
+        // Get the form data
+        DataRecord data = session.getActionRecord(stateName, actionName);
+        request.setAttribute("data", data);
 
-      // Set global attributes
-      setSharedAttributes(session, request);
+        // Set flag to indicate action record has never been saved as draft for this step
+        request.setAttribute("isFirstTimeSaved", "yes");
 
-      // Session Safe : Generate token Id
-      generateTokenId(session, request);
+        // lock the process instance
+        session.lock(stateName);
 
-      return "/processManager/jsp/editAction.jsp";
+        // Set global attributes
+        setSharedAttributes(session, request);
+
+        // Session Safe : Generate token Id
+        generateTokenId(session, request);
+
+        return "/processManager/jsp/editAction.jsp";
+      }
     }
   };
 
