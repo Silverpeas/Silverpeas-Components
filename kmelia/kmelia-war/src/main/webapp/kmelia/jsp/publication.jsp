@@ -73,6 +73,10 @@
     delegatedNews = (DelegatedNews) request.getAttribute("DelegatedNews");
     isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
   }
+  String indexIt = "0";
+  if (kmeliaScc.isIndexable(kmeliaPublication.getDetail())) {
+    indexIt = "1";
+  }
 
   if (action == null) {
     action = "View";
@@ -773,10 +777,14 @@
 		
 		out.println("</div>");
 		
-		
+        if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {
 			      %>
+      
+      <br clear="all"/>
+      <view:comments userId="<%= user_id%>" componentId="<%= componentId %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>
+      
+      <% } %>
 
-     
       <div id="publication-export">
         <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
           <fieldset>
