@@ -129,12 +129,12 @@
               labelOk            : labelOk,
               labelCancel        : labelCancel,
               axis               : pdc.axis,
-              onValuesSelected   : function(selectedValues) {
-                var position = { values: selectedValues };
-                if (isAlreadyInClassification(position, classifications[startIndex]))
+              onValuesSelected   : function(positions) {
+                if (areAlreadyInClassification(positions, classifications[startIndex])) {
                   alert("<fmt:message key='pdcPeas.positionAlreadyExist' bundle='${pdcBundle}'/>");
-                else
-                  addPositionInClassifications($elt, position, startIndex, endIndex);
+                } else {
+                  addPositionsInClassifications($elt, positions, startIndex, endIndex);
+                }
               }
             });
           },
@@ -152,11 +152,11 @@
               labelCancel        : labelCancel,
               axis               : pdc.axis,
               values             : position.values,
-              onValuesSelected   : function(selectedValues) {
-                if (isAlreadyInClassification({ values: selectedValues }, classifications[startIndex]))
+              onValuesSelected   : function(positions) {
+                if (isAlreadyInClassification(positions[0], classifications[startIndex]))
                   alert("<fmt:message key='pdcPeas.positionAlreadyExist' bundle='${pdcBundle}'/>");
                 else
-                  updatePositionInClassifications($elt, position, selectedValues, startIndex, endIndex);
+                  updatePositionInClassifications($elt, position, positions[0].values, startIndex, endIndex);
               }
             });
           }
@@ -164,22 +164,25 @@
       }
       
       /**
-       * Adds recursively the specified position into the loaded classifications on the PdC between
+       * Adds recursively the specified positions into the loaded classifications on the PdC between
        * startIndex and endIndex in the array of the imported publication's classifications.
-       * If startIndex and endIndex refers the same index, then the position is added only into the
+       * If startIndex and endIndex refers the same index, then the positions are added only into the
        * classification at this index.
-       * Once the position added, the classification rendered within the HTML element $elt is refreshed.
+       * For each position added, the classification rendered within the HTML element $elt is refreshed.
        */
-      function addPositionInClassifications($elt, position, startIndex, endIndex) {
-        postPosition(classifications[startIndex].uri, position, function(classification) {
-          classifications[startIndex] = classification;
-          setModified();
-          if (endIndex > startIndex) {
-            addPositionInClassifications($elt, position, startIndex + 1, endIndex);
-          } else {
-            $elt.pdcPositions('refresh', classifications[startIndex].positions);
-          }
-        });
+      function addPositionsInClassifications($elt, positions, startIndex, endIndex) {
+        for(var i = 0; i < positions.length; i++) {
+          var position = positions[i];
+          postPosition(classifications[startIndex].uri, position, function(classification) {
+            classifications[startIndex] = classification;
+            setModified();
+            if (endIndex > startIndex) {
+              addPositionsInClassifications($elt, positions, startIndex + 1, endIndex);
+            } else {
+              $elt.pdcPositions('refresh', classifications[startIndex].positions);
+            }
+          });
+        }
       }
       
       /**
@@ -220,17 +223,17 @@
        * classification at this index.
        * Once the position updated, the classification rendered within the HTML element $elt is refreshed.
        */
-      function updatePositionInClassifications($elt, position, values, startIndex, endIndex) {
-        var positionToUpdate = findPosition(position.values, classifications[startIndex].positions);
+      function updatePositionInClassifications($elt, position, newValues, startIndex, endIndex) {
+        var location = findPosition(position.values, classifications[startIndex].positions);
         updatePosition(classifications[startIndex].uri, {
-          uri: positionToUpdate.position.uri,
-          id: positionToUpdate.position.id,
-          values: values},
+          uri: location.position.uri,
+          id: location.position.id,
+          values: newValues},
         function(classification) {
           classifications[startIndex] = classification;
           setModified();
           if (endIndex > startIndex) {
-            updatePositionInClassifications($elt, position, values, startIndex + 1, endIndex);
+            updatePositionInClassifications($elt, position, newValues, startIndex + 1, endIndex);
           } else {
             $elt.pdcPositions('refresh', classifications[startIndex].positions);
           }
