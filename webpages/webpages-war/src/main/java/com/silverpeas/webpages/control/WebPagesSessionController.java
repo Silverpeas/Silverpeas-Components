@@ -119,18 +119,13 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   }
 
   public void index() {
-    try {
-      String content = WysiwygController.load(getComponentId(), getComponentId(), null);
-      WysiwygController.updateFileAndAttachment(content, getSpaceId(), getComponentId(),
-              getComponentId(), getUserId());
-    } catch (WysiwygException ex) {
-    }
+    WysiwygController.index(getComponentId(), getComponentId());
   }
 
   public synchronized void removeSubscription() {
     SilverTrace.info("webPages", "WebPagesSessionController.unsubscribeFromNode()",
             "root.MSG_GEN_ENTER_METHOD");
-    getSubscribeBm().unsubscribe(new ComponentSubscription(getUserId(), getComponentName()));
+    getSubscribeBm().unsubscribe(new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   public synchronized void addSubscription() {
@@ -139,7 +134,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     if (isSubscriber()) {
       return;
     }
-    getSubscribeBm().subscribe(new ComponentSubscription(getUserId(), getComponentName()));
+    getSubscribeBm().subscribe(new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   public boolean isSubscriber() {
