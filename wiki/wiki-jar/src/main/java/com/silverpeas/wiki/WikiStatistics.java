@@ -23,22 +23,22 @@
  */
 package com.silverpeas.wiki;
 
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.silverpeas.wiki.control.WikiPageDAO;
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 /**
- *
  * @author ehugonnet
  */
 public class WikiStatistics implements ComponentStatisticsInterface {
 
   @Override
-  public Collection getVolume(String spaceId, String componentId)
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
     UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();

@@ -27,8 +27,8 @@
 
 package com.stratelia.webactiv.kmelia;
 
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -41,9 +41,11 @@ import javax.ejb.EJBException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class KmeliaStatistics implements ComponentStatisticsInterface {
@@ -52,30 +54,30 @@ public class KmeliaStatistics implements ComponentStatisticsInterface {
 
   /**
    * Method declaration
+   *
    * @param spaceId
    * @param componentId
    * @return
    * @see
    */
-  public Collection getVolume(String spaceId, String componentId)
+  @Override
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList myArrayList = new ArrayList();
-    Collection c = getElements(spaceId, componentId);
-    for (Object aC : c) {
-      PublicationDetail detail = (PublicationDetail) aC;
 
+    Collection<PublicationDetail> details = getElements(componentId);
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(details.size());
+    for (PublicationDetail detail : details) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-
       myCouple.setUserId(detail.getCreatorId());
       myCouple.setCountVolume(1);
       myArrayList.add(myCouple);
     }
-
     return myArrayList;
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -95,18 +97,14 @@ public class KmeliaStatistics implements ComponentStatisticsInterface {
 
   /**
    * Method declaration
-   * @param spaceId
    * @param componentId
    * @return
    * @throws RemoteException
    * @see
    */
-  public Collection getElements(String spaceId, String componentId)
+  public Collection<PublicationDetail> getElements(String componentId)
       throws RemoteException {
-    Collection result = getPublicationBm().getAllPublications(
-        new PublicationPK("useless", componentId));
-
-    return result;
+    return getPublicationBm().getAllPublications(new PublicationPK("useless", componentId));
   }
 
 }
