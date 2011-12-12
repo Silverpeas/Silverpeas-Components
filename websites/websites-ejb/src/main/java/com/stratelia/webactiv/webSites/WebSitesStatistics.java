@@ -27,20 +27,18 @@
 
 package com.stratelia.webactiv.webSites;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.EJBException;
-
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.webSites.control.ejb.WebSiteBm;
 import com.stratelia.webactiv.webSites.control.ejb.WebSiteBmHome;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
+
+import javax.ejb.EJBException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class WebSitesStatistics implements ComponentStatisticsInterface {
 
@@ -50,13 +48,8 @@ public class WebSitesStatistics implements ComponentStatisticsInterface {
       throws Exception {
     ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
     Collection<SiteDetail> c = getWebSites(spaceId, componentId);
-    Iterator<SiteDetail> iter = c.iterator();
-    while (iter.hasNext()) {
-      iter.next();
-
+    for(SiteDetail detail : c) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-      // ATTENTION getAuthor ne renvoie pas l'id mais Nom+Prénom
-      // myCouple.setUserId(detail.getAuthor());
       myCouple.setUserId("-2"); // unknown userId
       myCouple.setCountVolume(1);
       myArrayList.add(myCouple);
@@ -68,8 +61,8 @@ public class WebSitesStatistics implements ComponentStatisticsInterface {
   private WebSiteBm getWebSiteEjb() {
     if (webSiteEjb == null) {
       try {
-        WebSiteBmHome webSiteEjbHome = (WebSiteBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.WEBSITESBM_EJBHOME, WebSiteBmHome.class);
+        WebSiteBmHome webSiteEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.WEBSITESBM_EJBHOME,
+            WebSiteBmHome.class);
         webSiteEjb = webSiteEjbHome.create();
       } catch (Exception e) {
         throw new EJBException(e);
@@ -82,8 +75,6 @@ public class WebSitesStatistics implements ComponentStatisticsInterface {
       throws RemoteException {
     getWebSiteEjb().setPrefixTableName(spaceId);
     getWebSiteEjb().setComponentId(componentId);
-
-    Collection<SiteDetail> result = getWebSiteEjb().getAllWebSite();
-    return result;
+    return getWebSiteEjb().getAllWebSite();
   }
 }
