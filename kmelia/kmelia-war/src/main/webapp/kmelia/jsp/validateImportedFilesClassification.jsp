@@ -129,6 +129,7 @@
               labelOk            : labelOk,
               labelCancel        : labelCancel,
               axis               : pdc.axis,
+              multiValuation     : true,
               onValuesSelected   : function(positions) {
                 if (areAlreadyInClassification(positions, classifications[startIndex])) {
                   alert("<fmt:message key='pdcPeas.positionAlreadyExist' bundle='${pdcBundle}'/>");
