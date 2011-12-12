@@ -24,11 +24,7 @@
 
 package com.silverpeas.scheduleevent.control;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,7 +34,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import com.silverpeas.comment.model.Comment;
 import com.silverpeas.scheduleevent.service.ScheduleEventService;
 import com.silverpeas.scheduleevent.service.ServicesFactory;
 import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
@@ -52,7 +47,6 @@ import com.silverpeas.scheduleevent.view.ScheduleEventVO;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -66,16 +60,10 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
 
 public class ScheduleEventSessionController extends AbstractComponentSessionController {
   private Selection sel = null;
@@ -91,7 +79,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle",
-        "com.silverpeas.components.scheduleevent.settings.ScheduleEventIcons");
+        "com.silverpeas.components.scheduleevent.settings.ScheduleEventIcons",
+        "com.silverpeas.components.scheduleevent.settings.ScheduleEventSettings");
     sel = getSelection();
   }
 
@@ -114,11 +103,11 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   private Set<Contributor> getCurrentContributors() {
     Set<Contributor> contributors = currentScheduleEvent.getContributors();
     if (contributors == null) {
-      contributors = new HashSet<Contributor>(); 
+      contributors = new HashSet<Contributor>();
     }
     return contributors;
   }
-  
+
   private void addContributor(Set<Contributor> contributors, String userId) {
     Contributor contributor = new Contributor();
     contributor.setScheduleEvent(currentScheduleEvent);
@@ -126,11 +115,11 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     contributor.setUserName(getUserDetail(userId).getDisplayedName());
     contributors.add(contributor);
   }
-  
+
   public void createCurrentScheduleEvent() {
     setCurrentScheduleEvent(new ScheduleEvent());
     currentScheduleEvent.setAuthor(Integer.parseInt(getUserId()));
-    Set<Contributor> contributors = getCurrentContributors(); 
+    Set<Contributor> contributors = getCurrentContributors();
     addContributor(contributors, getUserId());
     currentScheduleEvent.setContributors(contributors);
   }
@@ -158,21 +147,21 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     String[] idUsers = getContributorsUserIds(currentScheduleEvent.getContributors());
     sel.setSelectedElements(idUsers);
     sel.setSelectedSets(new String[0]);
-    
+
     // Contraintes
     String hostDirection, cancelDirection;
     if (currentScheduleEvent.id == null) {
-    	hostDirection = "ConfirmUsers?popupMode=Yes";
-    	cancelDirection = "ConfirmScreen?popupMode=Yes";
+      hostDirection = "ConfirmUsers?popupMode=Yes";
+      cancelDirection = "ConfirmScreen?popupMode=Yes";
     } else {
-    	hostDirection = "ConfirmModifyUsers?scheduleEventId=" + currentScheduleEvent.id;
-    	cancelDirection = "Detail?scheduleEventId=" + currentScheduleEvent.id;
+      hostDirection = "ConfirmModifyUsers?scheduleEventId=" + currentScheduleEvent.id;
+      cancelDirection = "Detail?scheduleEventId=" + currentScheduleEvent.id;
     }
-    
-    String hostUrl = m_context
-    	+ URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + hostDirection;
-    String cancelUrl = m_context
-    	+ URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + cancelDirection;
+
+    String hostUrl =
+        m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) + hostDirection;
+    String cancelUrl =
+        m_context + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) + cancelDirection;
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
 
@@ -195,7 +184,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
   public void setIdUsersAndGroups() {
     String[] usersId =
-      SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), sel.getSelectedSets());
+        SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), sel.getSelectedSets());
 
     if (usersId.length < 1) {
       return;
@@ -207,25 +196,26 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   public void addContributors(String[] usersId, Set<Contributor> recordedContributors) {
-    if (usersId.length < 1) return;
+    if (usersId.length < 1) {
+      return;
+    }
     UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(usersId);
     boolean foundCreator = false;
-    for (int u = 0; u < userDetails.length; u++) {
-      UserDetail detail = userDetails[u];
+    for (UserDetail detail : userDetails) {
       if (detail.getId().equals(String.valueOf(currentScheduleEvent.author))) {
         foundCreator = true;
       }
       boolean foundAlreadyCreated = false;
       for (Contributor contributor : recordedContributors) {
-        if ( userDetails[u].getId().equals(String.valueOf(contributor.getUserId())) ) {
+        if (detail.getId().equals(String.valueOf(contributor.getUserId()))) {
           foundAlreadyCreated = true;
         }
       }
       if (!foundAlreadyCreated) {
         addContributor(recordedContributors, detail.getId());
-        SilverTrace.debug("scheduleevent", "ScheduleEventSessionController.setIdUsersAndGroups()", 
-            "Contributor '" + getUserDetail(detail.getId()).getDisplayedName() + 
-            "' added to event '" + currentScheduleEvent.getTitle() + "'");
+        SilverTrace.debug("scheduleevent", "ScheduleEventSessionController.setIdUsersAndGroups()",
+            "Contributor '" + getUserDetail(detail.getId()).getDisplayedName() +
+                "' added to event '" + currentScheduleEvent.getTitle() + "'");
       }
     }
     if (!foundCreator) {
@@ -234,48 +224,50 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   private void deleteRecordedContributors(String[] usersId, Set<Contributor> recordedContributors) {
-//    if (usersId.length < 1 || recordedContributors.isEmpty()) { 
-    if (recordedContributors.isEmpty()) { 
-    	return;
+    // if (usersId.length < 1 || recordedContributors.isEmpty()) {
+    if (recordedContributors.isEmpty()) {
+      return;
     }
-    
-  	UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(usersId);
-  	Contributor[] contrib = (Contributor[])recordedContributors.toArray(new Contributor[recordedContributors.size()]);
+
+    UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(usersId);
+    Contributor[] contrib =
+        (Contributor[]) recordedContributors.toArray(new Contributor[recordedContributors.size()]);
     boolean found = false;
-  	for (int c = contrib.length-1; c >= 0; c--) {
-  	  if (getUserId().equals(String.valueOf(contrib[c].getUserId()))) {
-  	    continue;
-  	  }
-  		for (int i=0; i<userDetails.length; i++) {
-  			if ( userDetails[i].getId().equals(String.valueOf(contrib[c].getUserId())) ) {
-  				found = true;
-  			}
-  		}
-  		if (!found) {
-//        if (currentScheduleEvent.id == null) {
-//          getScheduleEventService().deleteContributor(contrib[c].getId());
-//        } else {
-          currentScheduleEvent.getContributors().remove(contrib[c]);
-//        }
-        SilverTrace.debug("scheduleevent", "ScheduleEventSessionController.setIdUsersAndGroups()", 
-            "Contributor '" + contrib[c].getUserName() + "' deleted from event '" + currentScheduleEvent.getTitle() + "'");
-  		}
-  	}
+    for (int c = contrib.length - 1; c >= 0; c--) {
+      if (getUserId().equals(String.valueOf(contrib[c].getUserId()))) {
+        continue;
+      }
+      for (int i = 0; i < userDetails.length; i++) {
+        if (userDetails[i].getId().equals(String.valueOf(contrib[c].getUserId()))) {
+          found = true;
+        }
+      }
+      if (!found) {
+        // if (currentScheduleEvent.id == null) {
+        // getScheduleEventService().deleteContributor(contrib[c].getId());
+        // } else {
+        currentScheduleEvent.getContributors().remove(contrib[c]);
+        // }
+        SilverTrace.debug("scheduleevent", "ScheduleEventSessionController.setIdUsersAndGroups()",
+            "Contributor '" + contrib[c].getUserName() + "' deleted from event '" +
+                currentScheduleEvent.getTitle() + "'");
+      }
+    }
   }
-    
+
   public void updateIdUsersAndGroups() {
     String[] usersId =
         SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), sel.getSelectedSets());
 
     Set<Contributor> recordedContributors = currentScheduleEvent.contributors;
     if (recordedContributors == null)
-    	recordedContributors = new HashSet<Contributor>();
+      recordedContributors = new HashSet<Contributor>();
 
-		deleteRecordedContributors(usersId, recordedContributors);
-		addContributors(usersId, recordedContributors);
+    deleteRecordedContributors(usersId, recordedContributors);
+    addContributors(usersId, recordedContributors);
     currentScheduleEvent.setContributors(recordedContributors);
     getScheduleEventService().updateScheduleEvent(currentScheduleEvent);
-	  }
+  }
 
   public void save() {
 
@@ -286,127 +278,102 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
     // create all dateoption for database
     // preTreatementForDateOption();
-    
+
     getScheduleEventService().createScheduleEvent(currentScheduleEvent);
-    
+
     // notify contributors
-    //initAlertUser();
+    // initAlertUser();
     sendSubscriptionsNotification("create");
-    
+
     // delete session object after saving it
     currentScheduleEvent = null;
 
   }
- 
+
   public void sendSubscriptionsNotification(String type) {
     // send email alerts
     try {
       Set<Contributor> contributors = currentScheduleEvent.getContributors();
-      List<String> newSubscribers = new ArrayList<String>(contributors.size());
+      List<String> userIds = new ArrayList<String>(contributors.size());
       for (Contributor contributor : contributors) {
-            newSubscribers.add(Integer.toString(contributor.getUserId()));
+        userIds.add(Integer.toString(contributor.getUserId()));
+      }
+
+      if (!userIds.isEmpty()) {
+        ResourceLocator message =
+            new ResourceLocator(
+                "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle",
+                DisplayI18NHelper.getDefaultLanguage());
+        String subject = message.getString("scheduleEvent.notifSubject");
+
+        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+        String fileName = "";
+        if ("create".equals(type)) {
+          fileName = "new";
         }
-      
-        if (!newSubscribers.isEmpty()) {
-    
-          ResourceLocator message = new ResourceLocator(
-              "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle", DisplayI18NHelper.getDefaultLanguage());
-          String subject = message.getString("scheduleEvent.notifSubject");
-    
-          Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-          String fileName = "";
-          if ("create".equals(type)) {
-            fileName = "scheduleEventNotificationCreate";
-          } 
-          NotificationMetaData notifMetaData = new NotificationMetaData(
+        NotificationMetaData notifMetaData = new NotificationMetaData(
                   NotificationParameters.NORMAL, subject, templates, fileName);
 
-          //String url = "/ScheduleEvent/" + currentScheduleEvent.getId();
-          String url = "/Rscheduleevent/jsp/Detail?scheduleEventId=" + currentScheduleEvent.getId();
-          for (String lang : DisplayI18NHelper.getLanguages()) {
-            SilverpeasTemplate template = getNewTemplate();
-            templates.put(lang, template);
-            template.setAttribute("scheduleEventName", currentScheduleEvent.getTitle());
-            template.setAttribute("scheduleEventDate", DateUtil.getOutputDate(currentScheduleEvent.getCreationDate(),lang));
-            template.setAttribute("senderName", getUserDetail().getDisplayedName());        
-            template.setAttribute("silverpeasURL", url);
-    
-            ResourceLocator localizedMessage = new ResourceLocator(
+        // String url = "/ScheduleEvent/" + currentScheduleEvent.getId();
+        String url = "/Rscheduleevent/jsp/Detail?scheduleEventId=" + currentScheduleEvent.getId();
+        for (String lang : DisplayI18NHelper.getLanguages()) {
+          SilverpeasTemplate template = getNewTemplate();
+          templates.put(lang, template);
+          template.setAttribute("eventName", currentScheduleEvent.getTitle());
+          template.setAttribute("eventDescription", currentScheduleEvent.getDescription());
+          template.setAttribute("eventCreationDate",
+              DateUtil.getOutputDate(currentScheduleEvent.getCreationDate(), lang));
+          template.setAttribute("event", currentScheduleEvent);
+          template.setAttribute("senderName", getUserDetail().getDisplayedName());
+          template.setAttribute("silverpeasURL", url);
+
+          ResourceLocator localizedMessage = new ResourceLocator(
                 "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle", lang);
-            notifMetaData.addLanguage(lang, localizedMessage.getString("scheduleEvent.notifSubject", subject), "");
-            
-            
-          }
-          for (String subscriberId : newSubscribers) {
-            notifMetaData.addUserRecipient(new UserRecipient(subscriberId));
-          }
-          notifMetaData.setLink(url);
-          notifMetaData.setComponentId(getComponentId());
-          notifMetaData.setSender(getUserId());
-          notifyUsers(notifMetaData, getUserId());
+          notifMetaData.addLanguage(lang,
+              localizedMessage.getString("scheduleEvent.notifSubject", subject), "");
         }
+        for (String userId : userIds) {
+          notifMetaData.addUserRecipient(new UserRecipient(userId));
+        }
+        notifMetaData.setLink(url);
+        notifyUsers(notifMetaData);
+      }
     } catch (Exception e) {
-      SilverTrace.warn("scheduleEvent", "ScheduleEventSessionController.sendSubscriptionsNotification()",
+      SilverTrace.warn("scheduleEvent",
+          "ScheduleEventSessionController.sendSubscriptionsNotification()",
               "scheduleEvent.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "", e);
     }
   }
 
-  private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
-    Connection con = null;
+  private void notifyUsers(NotificationMetaData notifMetaData) {
     try {
-      con = initCon();
-      notifMetaData.setConnection(con);
-      if (notifMetaData.getSender() == null || notifMetaData.getSender().length() == 0) {
-        notifMetaData.setSender(senderId);
-      }
+      notifMetaData.setComponentId(getComponentId());
+      notifMetaData.setSender(getUserId());
       NotificationSender notifSender = new NotificationSender(notifMetaData.getComponentId());
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
       SilverTrace.warn("scheduleEvent", "ScheduleEventSessionController.notifyUsers()",
               "scheduleEvent.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
-    } finally {
-      fermerCon(con);
     }
   }
-  
-  private Connection initCon() {
-    Connection con = null;
-    // initialisation de la connexion
-    try {
-      con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    } catch (UtilException e) {
-      // traitement des exceptions
-      //throw new BlogRuntimeException("blogBmEJB.initCon()", SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-    return con;
-  }
-  private void fermerCon(Connection con) {
-    try {
-      con.close();
-    } catch (SQLException e) {
-      // traitement des exceptions
-      //throw new BlogRuntimeException("GalleryBmEJB.fermerCon()", SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", e);
-    }
-  }
-  
+
   protected SilverpeasTemplate getNewTemplate() {
-    ResourceLocator rs =
-          new ResourceLocator("com.silverpeas.components.scheduleevent.settings.ScheduleEventSettings", "");
-      Properties templateConfiguration = new Properties();
-      templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
-          .getString("templatePath"));
-      templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
-          .getString("customersTemplatePath"));
-    
+    Properties templateConfiguration = new Properties();
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings()
+        .getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings()
+        .getString("customersTemplatePath"));
+
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
-    }
+  }
 
   private ScheduleEventService getScheduleEventService() {
     return ServicesFactory.getScheduleEventService();
   }
 
   public List<ScheduleEvent> getScheduleEventsByUserId() {
-    Set<ScheduleEvent> allEvents = getScheduleEventService().listAllScheduleEventsByUserId(getUserId());
+    Set<ScheduleEvent> allEvents =
+        getScheduleEventService().listAllScheduleEventsByUserId(getUserId());
     List<ScheduleEvent> results = new ArrayList<ScheduleEvent>(allEvents);
     Collections.sort(results, new ScheduleEventComparator());
 
