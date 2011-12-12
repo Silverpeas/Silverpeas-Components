@@ -25,8 +25,8 @@ package com.silverpeas.resourcesmanager;
 
 import com.silverpeas.resourcesmanager.model.ReservationDetail;
 import com.silverpeas.resourcesmanager.util.ResourcesManagerFactory;
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,10 +36,11 @@ public class ResourcesManagerStatistics implements ComponentStatisticsInterface 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    List<UserIdCountVolumeCouple> volumes = new ArrayList<UserIdCountVolumeCouple>();
+    List<ReservationDetail> allReservations = ResourcesManagerFactory.getResourcesManagerBm().
+        getReservations(componentId);
 
-    List<ReservationDetail> allReservations =
-        ResourcesManagerFactory.getResourcesManagerBm().getReservations(componentId);
+    List<UserIdCountVolumeCouple> volumes = new ArrayList<UserIdCountVolumeCouple>(
+        allReservations.size());
     for (ReservationDetail reservationDetail : allReservations) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
