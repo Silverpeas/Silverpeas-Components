@@ -57,17 +57,35 @@
       /**
        * Translations
        */
-      var positionErrorMessage = "<fmt:message key='kmelia.thePublication'/> <fmt:message key='pdcPeas.MustContainsMandatoryAxis' bundle='${pdcBundle}'/>";
-      var mandatoryAxisText    = "<fmt:message key='GML.selectAValue'/>";
-      var mandatoryAxisLegend  = "<fmt:message key='GML.requiredField'/>";
-      var invariantAxisLegend  = "<fmt:message key='pdcPeas.notVariants' bundle='${pdcBundle}'/>";
-      var labelOk              = "<fmt:message key='GML.validate'/>";
-      var labelCancel          = "<fmt:message key='GML.cancel'/>";
-      var labelPosition        = "<fmt:message key='pdcPeas.position' bundle='${pdcBundle}'/>";
-      var labelPositions       = "<fmt:message key='pdcPeas.positions' bundle='${pdcBundle}'/>";
-      var titleUpdate          = "<fmt:message key='GML.modify'/>";
-      var titleAddition        = "<fmt:message key='GML.PDCNewPosition'/>";
-      var titleDeletion        = "<fmt:message key='GML.PDCDeletePosition'/>";
+      var positionErrorMessage  = "<fmt:message key='kmelia.thePublication'/> <fmt:message key='pdcPeas.MustContainsMandatoryAxis' bundle='${pdcBundle}'/>";
+      var mandatoryAxisText     = "<fmt:message key='GML.selectAValue'/>";
+      var mandatoryAxisLegend   = "<fmt:message key='GML.requiredField'/>";
+      var invariantAxisLegend   = "<fmt:message key='pdcPeas.notVariants' bundle='${pdcBundle}'/>";
+      var labelOk               = "<fmt:message key='GML.validate'/>";
+      var labelCancel           = "<fmt:message key='GML.cancel'/>";
+      var labelPosition         = "<fmt:message key='pdcPeas.position' bundle='${pdcBundle}'/>";
+      var labelPositions        = "<fmt:message key='pdcPeas.positions' bundle='${pdcBundle}'/>";
+      var titleUpdate           = "<fmt:message key='GML.modify'/>";
+      var titleAddition         = "<fmt:message key='GML.PDCNewPosition'/>";
+      var titleDeletion         = "<fmt:message key='GML.PDCDeletePosition'/>";
+      var deletionConfirmText   = "<fmt:message key='pdcPeas.confirmDeletePosition' bundle='${pdcBundle}'/>";
+      var globalPubliModifTitle = "<fmt:message key='kmelia.classificationModificationForAllPublications'/>";
+      var alreadyExistingPositionError = "<fmt:message key='pdcPeas.positionAlreadyExist' bundle='${pdcBundle}'/>";
+  <c:choose>
+    <c:when test="${fn:length(importedPublications) > 1}">
+      var classificationTitle   = "<fmt:message key='kmelia.classifyYourPublications'/>";
+      var validationText        = "<fmt:message key='kmelia.validateClassificationForAllPublications'/>";
+      var globalModifText       = "<fmt:message key='kmelia.modifyClassificationForAllPublications'/>";
+      var modificationText      = "<fmt:message key='kmelia.modifyClassificationForEachPublication'/>";
+      var publiModifTitle       = "<fmt:message key='kmelia.classificationModificationForEachPublication'/>";
+    </c:when>
+    <c:otherwise>
+      var classificationTitle   = "<fmt:message key='kmelia.classifyYourPublication'/>";
+      var validationText        = "<fmt:message key='kmelia.validateClassificationOfThePublication'/>";
+      var modificationText      = "<fmt:message key='kmelia.modifyClassificationOfThePublication'/>";
+      var publiModifTitle       = "<fmt:message key='kmelia.classificationModificationOfThePublication'/>";
+    </c:otherwise>
+  </c:choose>
       
       /**
        * Informs the classification of one of the imported publications is modified.
@@ -132,7 +150,7 @@
               onValuesSelected   : function(selectedValues) {
                 var position = { values: selectedValues };
                 if (isAlreadyInClassification(position, classifications[startIndex]))
-                  alert("<fmt:message key='pdcPeas.positionAlreadyExist' bundle='${pdcBundle}'/>");
+                  alert();
                 else
                   addPositionInClassifications($elt, position, startIndex, endIndex);
               }
@@ -154,7 +172,7 @@
               values             : position.values,
               onValuesSelected   : function(selectedValues) {
                 if (isAlreadyInClassification({ values: selectedValues }, classifications[startIndex]))
-                  alert("<fmt:message key='pdcPeas.positionAlreadyExist' bundle='${pdcBundle}'/>");
+                  alert(alreadyExistingPositionError);
                 else
                   updatePositionInClassifications($elt, position, selectedValues, startIndex, endIndex);
               }
@@ -194,7 +212,7 @@
       function deletePositionInClassifications($elt, position, startIndex, endIndex, withConfirmation) {
         var confirmation = null; 
         if (startIndex == 0 || withConfirmation)
-          confirmation = "<fmt:message key='pdcPeas.confirmDeletePosition' bundle='${pdcBundle}'/>";
+          confirmation = deletionConfirmText;
         var positionToDelete = findPosition(position.values, classifications[startIndex].positions);
         deletePosition(classifications[startIndex].uri, positionToDelete.position, confirmation, function() {
           classifications[startIndex].positions.splice(positionToDelete.index, 1);
@@ -269,7 +287,7 @@
           component: '<c:out value="${importedPublications[0].componentInstanceId}"/>'
         }), function(pdc) {
           // now renders the default classification for all imported publications
-          $('<legend>').addClass('header').html("<fmt:message key='kmelia.classificationModificationForAllPublications'/>").
+          $('<legend>').addClass('header').html(globalPubliModifTitle).
             appendTo($("#classification-modification").show());
           renderClassifications($("#classification-modification"), pdc, 0, classifications.length - 1);
         }, function(pdc, error) {
@@ -290,7 +308,7 @@
           content: '<c:out value="${importedPublications[0].id}"/>',
           component: '<c:out value="${importedPublications[0].componentInstanceId}"/>'
         }), function(pdc) {
-          $('<legend>').addClass('header').html("<fmt:message key='kmelia.classificationModificationForEachPublication'/>").
+          $('<legend>').addClass('header').html(publiModifTitle).
             appendTo($("#classification-modification").show());
           // now renders the default classification for each imported publications
       <c:forEach begin="0" end="${fn:length(importedPublications) - 1}" var="i">
@@ -324,7 +342,7 @@
       </c:forEach>
       
           loadPublicationsClassification(publicationsURI, 0, publicationsURI.length - 1, function() {
-            $('<legend>').html("<fmt:message key='kmelia.classifyYourPublications'/>").appendTo($('#default-classification'));
+            $('<legend>').html(classificationTitle).appendTo($('#default-classification'));
             $('#default-classification').pdcPositions({
               id        : 'default-list_pdc_position',
               title     : labelPositions,
@@ -335,7 +353,7 @@
               positions : classifications[0].positions
             });
           
-            $('<div>', {
+            var validation = $('<div>', {
               id: 'validation'
             }).addClass('field').append($('<input>', {
               type: 'radio', 
@@ -343,7 +361,10 @@
               value: okForAll, 
               checked: selection == okForAll
             })).
-              append($('<span>', {id: 'okForAll'}).html("<fmt:message key='kmelia.validateClassificationForAllPublications'/>")).
+              append($('<span>', {id: 'okForAll'}).html(validationText));
+            
+        <c:if test="${fn:length(importedPublications) > 1}">
+            validation.
               append($('<br>')).
               append($('<input>', {
               type: 'radio', 
@@ -351,7 +372,10 @@
               value: modifyForAll,
               checked: selection == modifyForAll
             })).
-              append($('<span>', {id: 'modifyForAll'}).html("<fmt:message key='kmelia.modifyClassificationForAllPublications'/>")).
+              append($('<span>', {id: 'modifyForAll'}).html(globalModifText));
+        </c:if>
+            
+            validation.
               append($('<br>')).
               append($('<input>', {
               type: 'radio', 
@@ -359,7 +383,7 @@
               value: modifyForEach,
               checked: selection == modifyForEach
             })).
-              append($('<span>', {id: 'modifyForEach'}).html("<fmt:message key='kmelia.modifyClassificationForEachPublication'/>")).
+              append($('<span>', {id: 'modifyForEach'}).html(modificationText)).
               appendTo($('#default-classification'));
         
             $('#validation.field input:radio').change(function() {
@@ -377,9 +401,16 @@
     <view:window browseBarVisible="true">
       <view:frame>
         <div class="inlineMessage">
-          <fmt:message key="kmelia.importedPublicationCount">
-            <fmt:param value="${fn:length(importedPublications)}"/>
-          </fmt:message>
+          <c:choose>
+            <c:when test="${fn:length(importedPublications) > 1}">
+              <fmt:message key="kmelia.importedPublicationCount">
+                <fmt:param value="${fn:length(importedPublications)}"/>
+              </fmt:message>
+            </c:when>
+            <c:otherwise>
+              <fmt:message key="kmelia.oneImportedPublicationCount"/>
+            </c:otherwise>
+          </c:choose>
         </div>
         <br clear="all"/>
         <div id="header">
