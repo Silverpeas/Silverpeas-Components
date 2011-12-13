@@ -845,10 +845,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       setSessionTreeview(treeview);
     }
     if (displayNbPublis()) {
-      List<NodeDetail> children =
-              (List<NodeDetail>) currentTopic.getNodeDetail().getChildrenDetails();
-      for (NodeDetail node :
-              children) {
+      // set nb objects of current root
+      currentTopic.getNodeDetail().setNbObjects(treeview.get(0).getNbObjects());
+      // set nb objects of children
+      Collection<NodeDetail> children = currentTopic.getNodeDetail().getChildrenDetails();
+      for (NodeDetail node : children) {
         if (node != null) {
           int index = treeview.indexOf(node);
           if (index != -1) {
