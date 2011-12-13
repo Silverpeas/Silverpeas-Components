@@ -27,7 +27,7 @@ import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_FOR_
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_LANGUAGE;
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_TOPIC;
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.aKmeliaPublicationExporter;
-import static com.silverpeas.pdc.model.PdcClassification.*;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -74,10 +74,8 @@ import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.kmelia.export.ExportFileNameProducer;
-import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
-import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
@@ -4547,7 +4545,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         getSearchEngine().search(queryDescription);
       }
       results = getSearchEngine().getRange(0, getSearchEngine().getResultLength());
-      MatchingIndexEntry result = null;
       PublicationDetail pubDetail = new PublicationDetail();
       pubDetail.setPk(new PublicationPK("unknown"));
       KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationFromDetail(pubDetail);
@@ -4569,41 +4566,40 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
       List<String> pubIds = new ArrayList<String>();
 
-      for (MatchingIndexEntry result1 : results) {
-        result = result1;
+      for (MatchingIndexEntry result : results) {
+        try {
+          if ("Publication".equals(result.getObjectType())) {
+            pubDetail.getPK().setId(result.getObjectId());
 
-        if ("Publication".equals(result.getObjectType())
-                || result.getObjectType().startsWith("Attachment")
-                || result.getObjectType().startsWith("Versioning")) {
-          pubDetail.getPK().setId(result.getObjectId());
+            PublicationPK pubPK = new PublicationPK(result.getObjectId(), result.getComponent());
+            Collection<Alias> pubAliases = getKmeliaBm().getAlias(pubPK);
 
-          PublicationPK pubPK = new PublicationPK(result.getObjectId(), result.getComponent());
-          Collection<Alias> pubAliases = getKmeliaBm().getAlias(pubPK);
+            // Add the alias which have a link to the targets topics
+            for (Alias alias : pubAliases) {
+              if (nodeIDs.contains(alias.getId())) {
+                if (!pubIds.contains(pubDetail.getId())) {
+                  pubIds.add(pubDetail.getId());
+                }
+              }
+            }
 
-          // Add the alias which have a link to the targets topics
-          for (Alias alias :
-                  pubAliases) {
-            if (nodeIDs.contains(alias.getId())) {
+            // Add the publications
+            WAAttributeValuePair pubWAFound =
+                    new WAAttributeValuePair(pubDetail.getId(), result.getComponent());
+            int index = pubsInPath.indexOf(pubWAFound);
+            if (index != -1) {
+              // Add only if not yet in the returned results
               if (!pubIds.contains(pubDetail.getId())) {
                 pubIds.add(pubDetail.getId());
               }
             }
           }
-
-          // Add the publications
-          WAAttributeValuePair pubWAFound =
-                  new WAAttributeValuePair(pubDetail.getId(), result.getComponent());
-          int index = pubsInPath.indexOf(pubWAFound);
-          if (index != -1) {
-            // Add only if not yet in the returned results
-            if (!pubIds.contains(pubDetail.getId())) {
-              pubIds.add(pubDetail.getId());
-            }
-          }
+        } catch (Exception e) {
+          SilverTrace.error("kmelia", "KmeliaSessionController.search",
+              "kmelia.ERROR_PROCESSING_POTENTIAL_RESULT", "pubId = " + result.getObjectId());
         }
       }
-      for (String pubId :
-              pubIds) {
+      for (String pubId : pubIds) {
         publication = KmeliaPublication.aKmeliaPublicationFromDetail(getPublicationDetail(pubId));
         userPublications.add(publication);
       }
