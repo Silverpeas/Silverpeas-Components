@@ -24,18 +24,19 @@
 
 package com.silverpeas.webpages;
 
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
-
 public class WebPagesStatistics implements ComponentStatisticsInterface {
+
+  @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
-
     UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
     myCouple.setUserId("-2"); // unknown userId
     myCouple.setCountVolume(1);

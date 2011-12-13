@@ -438,6 +438,7 @@ var root;
 var currentNodeIndex;
 var basketNode;
 var toValidateNode;
+var nbOnRoot = <%=nodeDetail.getNbObjects()%>;
 function initTree(id)
 {
 	//create a new tree:
@@ -450,6 +451,9 @@ function initTree(id)
     root = new YAHOO.widget.TextNode({"id":"0","role":"<%=kmeliaScc.getUserTopicProfile("0")%>"}, oTreeView.getRoot(), true);
 	root.labelElId = "0";
 	root.label = "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
+	if (nbOnRoot > 0) {
+    	root.label = root.label + " ("+nbOnRoot+")";
+    }
     root.href = "javascript:displayTopicContent(0)";
 
 	//render tree with these toplevel nodes; all descendants of these nodes
@@ -570,9 +574,9 @@ function loadNodeData(node, fnLoadComplete)  {
             ids += ")";
             %>
             // The returned data was parsed into an array of objects.
-            var nbPublisOnRoot = 0;
             for (var i = 0, len = messages.length; i < len; ++i) {
                 var m = messages[i];
+                //alert("id = "+m.id+", nb = "+m.nbObjects);
                 if (m.id == "0" && m.nbObjects != -1)
                 {
                 	root.label = root.label + " ("+m.nbObjects+")";
@@ -611,13 +615,6 @@ function loadNodeData(node, fnLoadComplete)  {
 						}
 					<% } %>
                 }
-                if (m.level == "2")
-                {
-                	if ((m.id != "1" && m.id != "tovalidate") || <%="admin".equals(kmeliaScc.getUserTopicProfile("0"))%>)
-                	{
-                    	nbPublisOnRoot += m.nbObjects;
-                    }
-                }
             }
             if (displayToValidate) {
             	//add "To validate"
@@ -648,13 +645,6 @@ function loadNodeData(node, fnLoadComplete)  {
 				basketNode.labelStyle = "icon-basket";
             }
 
-            if (nbPublisOnRoot > 0)
-            {
-            	root.label = root.label + " ("+nbPublisOnRoot+")";
-            	$("#"+root.labelElId).html("<%=EncodeHelper.javaStringToJsString(componentLabel)%> ("+nbPublisOnRoot+")");
-            	//root.refresh();
-            }
-
             //When we're done creating child nodes, we execute the node's
             //loadComplete callback method which comes in via the argument
             //in the response object (we could also access it at node.loadComplete,
@@ -678,9 +668,9 @@ function loadNodeData(node, fnLoadComplete)  {
             "fnLoadComplete": fnLoadComplete
         },
 
-        //timeout -- if more than 7 seconds go by, we'll abort
+        //timeout -- if more than 30 seconds go by, we'll abort
         //the transaction and assume there are no children:
-        timeout: 7000
+        timeout: 30000
     };
 
   	//With our callback object ready, it's now time to

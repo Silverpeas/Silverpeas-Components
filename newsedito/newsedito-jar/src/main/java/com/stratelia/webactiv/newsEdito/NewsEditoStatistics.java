@@ -26,14 +26,8 @@
 
 package com.stratelia.webactiv.newsEdito;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.EJBException;
-
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
@@ -41,8 +35,14 @@ import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
+import javax.ejb.EJBException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Class declaration
+ *
  * @author
  */
 public class NewsEditoStatistics implements ComponentStatisticsInterface {
@@ -51,15 +51,11 @@ public class NewsEditoStatistics implements ComponentStatisticsInterface {
 
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
-    Collection<NodeDetail> c = getElements(spaceId, componentId);
-    Iterator<NodeDetail> iter = c.iterator();
-
-    while (iter.hasNext()) {
-      NodeDetail detail = iter.next();
-
+    Collection<NodeDetail> details = getElements(spaceId, componentId);
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(
+        details.size());
+    for (NodeDetail detail : details) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-
       myCouple.setUserId(detail.getCreatorId());
       myCouple.setCountVolume(1);
       myArrayList.add(myCouple);
@@ -71,8 +67,7 @@ public class NewsEditoStatistics implements ComponentStatisticsInterface {
   private NodeBm getNodeBm() {
     if (nodeBm == null) {
       try {
-        nodeBm = ((NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).create();
+        nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class).create();
       } catch (Exception e) {
         throw new EJBException(e);
       }
@@ -83,8 +78,6 @@ public class NewsEditoStatistics implements ComponentStatisticsInterface {
   private Collection<NodeDetail> getElements(String spaceId, String componentId)
       throws Exception {
     // recuperation des journaux
-    Collection<NodeDetail> archives = getNodeBm().getFrequentlyAskedChildrenDetails(
-        new NodePK("0", spaceId, componentId));
-    return archives;
+    return getNodeBm().getFrequentlyAskedChildrenDetails(new NodePK("0", spaceId, componentId));
   }
 }

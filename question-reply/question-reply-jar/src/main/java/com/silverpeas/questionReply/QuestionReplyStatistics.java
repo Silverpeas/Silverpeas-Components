@@ -25,10 +25,9 @@
 package com.silverpeas.questionReply;
 
 import com.silverpeas.questionReply.control.QuestionManagerFactory;
-import com.silverpeas.questionReply.control.SilverpeasQuestionManager;
 import com.silverpeas.questionReply.model.Question;
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.persistence.PersistenceException;
 
 import java.util.ArrayList;
@@ -37,17 +36,19 @@ import java.util.List;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class QuestionReplyStatistics implements ComponentStatisticsInterface {
 
   @Override
-  public Collection getVolume(String spaceId, String componentId) throws Exception {
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
-    Collection<Question> c = getQuestionReplies(componentId);
-    for (Question detail : c) {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
+      throws Exception {
+    Collection<Question> questions = getQuestionReplies(componentId);
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(
+        questions.size());
+    for (Question detail : questions) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-
       myCouple.setUserId(detail.getCreatorId());
       myCouple.setCountVolume(1);
       myArrayList.add(myCouple);

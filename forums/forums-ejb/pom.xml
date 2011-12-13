@@ -50,12 +50,6 @@
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>silverstatistics</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>pdc</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>

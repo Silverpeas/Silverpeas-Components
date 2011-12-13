@@ -24,25 +24,25 @@
 
 package com.silverpeas.rssAgregator;
 
+import com.silverpeas.rssAgregator.control.RssAgregatorBm;
+import com.silverpeas.rssAgregator.control.RssAgregatorBmImpl;
+import com.silverpeas.rssAgregator.model.SPChannel;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.silverpeas.rssAgregator.control.RssAgregatorBm;
-import com.silverpeas.rssAgregator.control.RssAgregatorBmImpl;
-import com.silverpeas.rssAgregator.model.SPChannel;
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
-
 public class RssAgregatorStatistics implements ComponentStatisticsInterface {
-  public Collection getVolume(String spaceId, String componentId)
+  @Override
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    List<UserIdCountVolumeCouple> statsList = new ArrayList<UserIdCountVolumeCouple>();
     RssAgregatorBm rss = new RssAgregatorBmImpl();
     List<SPChannel> channels = rss.getChannels(componentId);
+    List<UserIdCountVolumeCouple> statsList = new ArrayList<UserIdCountVolumeCouple>(channels.size());
     for (SPChannel channel : channels) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-
       myCouple.setUserId(channel.getCreatorId());
       myCouple.setCountVolume(1);
       statsList.add(myCouple);

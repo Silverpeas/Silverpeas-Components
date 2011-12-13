@@ -1065,17 +1065,22 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
         NodeTree root = getPublicationBm().getDistributionTree(nodePK.getInstanceId(),
                 statusSubQuery.toString(), checkVisibility);
+        
+        // set right number of publications in basket
+        NodePK trashPk = new NodePK(NodePK.BIN_NODE_ID, nodePK.getInstanceId());
+        int nbPubsInTrash = getPublicationsInBasket(trashPk, profile, userId).size();
+        for (NodeTree node : root.getChildren()) {
+          if (node.getKey().isTrash()) {
+            node.setNbPublications(nbPubsInTrash);
+          }
+        }
+        
         Map<NodePK, NodeDetail> allowedNodes = new HashMap<NodePK, NodeDetail>(allowedTree.size());
         for (NodeDetail allowedNode : allowedTree) {
           allowedNodes.put(allowedNode.getNodePK(), allowedNode);
         }
+        
         countPublisInNode(allowedNodes, root);
-        NodePK trashPk = new NodePK(NodePK.BIN_NODE_ID, nodePK.getInstanceId());
-        NodeDetail trash = allowedNodes.get(trashPk);
-        if (trash != null) {
-          Collection<PublicationDetail> pubs = getPublicationsInBasket(trashPk, profile, userId);
-          trash.setNbObjects(pubs.size());
-        }
       }
       return allowedTree;
     } catch (RemoteException e) {
@@ -1101,7 +1106,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
               "root.MSG_GEN_EXIT_METHOD", "nbPublis = " + pubDetails.size());
       return pubDetails;
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()", ERROR,
+      throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationsInBasket()", ERROR,
               "kmelia.EX_IMPOSSIBLE_DAVOIR_LE_CONTENU_DE_LA_CORBEILLE", e);
     }
   }

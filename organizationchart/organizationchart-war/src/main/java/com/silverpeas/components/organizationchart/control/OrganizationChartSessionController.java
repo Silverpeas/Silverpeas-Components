@@ -25,6 +25,7 @@
 package com.silverpeas.components.organizationchart.control;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +91,8 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "com.silverpeas.components.organizationchart.multilang.OrganizationChartBundle",
-        "com.silverpeas.components.organizationchart.settings.OrganizationChartIcons");
+        "com.silverpeas.components.organizationchart.settings.OrganizationChartIcons",
+        "com.silverpeas.components.organizationchart.settings.OrganizationChartSettings");
 
     config = loadConfiguration();
     service = ServicesFactory.getOrganizationChartService(config);
@@ -203,6 +205,9 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       }
       subUnit.setMainActors(subUnitMainActors);
       subOrganizations.add(subUnit);
+    }
+    if (getSettings().getBoolean("sort.units.name", false)) {
+      Collections.sort(subOrganizations, UnitComparator.comparator);
     }
     chartVO.setSubOrganizations(subOrganizations);
 

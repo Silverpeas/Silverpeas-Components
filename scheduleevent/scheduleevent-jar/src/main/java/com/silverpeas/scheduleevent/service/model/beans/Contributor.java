@@ -26,6 +26,8 @@ package com.silverpeas.scheduleevent.service.model.beans;
 
 import java.util.Date;
 
+import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
+
 public class Contributor implements Comparable<Contributor> {
 
   private String id;

@@ -21,13 +21,6 @@
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>silverstatistics</artifactId>
-      <version>${core.version}</version>
-      <classifier>client</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>questioncontainer</artifactId>
       <version>${core.version}</version>
       <classifier>client</classifier>
