@@ -668,9 +668,9 @@ function loadNodeData(node, fnLoadComplete)  {
             "fnLoadComplete": fnLoadComplete
         },
 
-        //timeout -- if more than 7 seconds go by, we'll abort
+        //timeout -- if more than 30 seconds go by, we'll abort
         //the transaction and assume there are no children:
-        timeout: 7000
+        timeout: 30000
     };
 
   	//With our callback object ready, it's now time to
