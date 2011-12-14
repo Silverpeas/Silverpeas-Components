@@ -51,66 +51,75 @@
   <view:looknfeel />
   <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script type="text/javascript">
-<!-- 
-$(document).ready(function() {  
-  var etat = new Array();
+  <!--
 
-  $('.question').on('click', function(objectEvent) {
-      question = this.id;
-      id = question.substring(1);
-      answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
-      typeLien = question.substring(0,1);
-      if (typeLien!="l" && !$(objectEvent.target).hasClass('actionQuestion')) {
-        $('#' + this.id + ' .answers').hide();
-        if(etat[id] != "open"){
-          $('#a'+id).show();
-          etat[id] = "open";
-          var found = $('#a'+id + '>ul>li');
-          if (found.length == 0) {  
-            $.getJSON(answersUrl,function(data) {
-              $('#a'+id + ' > ul').html('');
-              $.each(data, function(key, answer) {
-                $('#a'+ id + ' > ul').append(displayAnswer(answer));
+var etat = new Array();
+function bindQuestionsEvent() {
+  $('.question').on('click', function(event) {
+    question = this.id;
+    id = question.substring(1);
+    answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
+    typeLien = question.substring(0,1);
+    if (typeLien!="l" && !$(event.target).hasClass('actionQuestion')) {
+      $('#' + this.id + ' .answers').hide();
+      if(etat[id] != "open"){
+        $('#a'+id).show();
+        etat[id] = "open";
+            var found = $('#a'+id + '>ul>li');
+            if (found.length == 0) {
+              $.getJSON(answersUrl,function(data) {
+                $('#a'+id + ' > ul').html('');
+                $.each(data, function(key, answer) {
+                  $('#a'+ id + ' > ul').append(displayAnswer(answer));
+                });
               });
-            });
-          }
-        } else {
-          $('#a'+id).hide();
-          etat[id] = "close";
-		} 
-      }
-    });
-    
-  $('.categoryTitle').on('click', function() {
+            }
+          } else {
+            $('#a'+id).hide();
+            etat[id] = "close";
+  		    }
+  		    return false;
+        }
+  });
+}
+
+function bindCategoryEvent() {
+   $('.categoryTitle').on('click', function() {
       category = this.id;
       id = category.substring(1);
       questionUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/questions/category/"/>' + id;
-      typeLien = category.substring(0,1);	
+      typeLien = category.substring(0,1);
       if (typeLien!="l") {
         $('.category').removeClass('select');
         $('.questions').hide();
         $('#qc' + id + ' .answers').hide();
-        $.each(etat, function(index) { 
+        $.each(etat, function(index) {
           etat[index] = 'close';
         });
         var found = $('#qc'+id + '>li');
-        if (found.length == 0) {  
+        if (found.length == 0) {
           $.getJSON(questionUrl,function(data) {
             $('#qc'+id).html('');
             $.each(data, function(key, question) {
               answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
               answersDiv.append($('<p>').text(question.content));
               answersDiv.append($('<ul>'));
-              answersDiv.hide();            
+              answersDiv.hide();
               $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
             });
+            $('.question').off('click');
+            bindQuestionsEvent();
           });
         }
-        $('#qc'+id).show();        	   
-        $(this).parent().addClass('select');			
+        $('#qc'+id).show();
+        $(this).parent().addClass('select');
       }
     });
-    
+}
+
+$(document).ready(function() {
+  bindCategoryEvent();
+  bindQuestionsEvent();
   $('.questions').hide();
   $("ul li:first-child .questions").show();
   $("ul li:first-child").addClass('select');
