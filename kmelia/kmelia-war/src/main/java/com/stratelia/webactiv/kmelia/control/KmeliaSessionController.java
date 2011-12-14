@@ -1004,12 +1004,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       } else {
         List<PdcPosition> pdcPositions = classification.getPdcPositions();
         PdcClassification withClassification = aPdcClassificationOfContent(pubDetail.getId(),
-             pubDetail.getComponentInstanceId()).withPositions(pdcPositions);
+                pubDetail.getComponentInstanceId()).withPositions(pdcPositions);
         result = getKmeliaBm().createPublicationIntoTopic(pubDetail, getSessionTopic().getNodePK(),
                 withClassification);
       }
     }
-    
+
     SilverTrace.info("kmelia", "KmeliaSessionController.createPublication(pubDetail)",
             "Kmelia.MSG_ENTRY_METHOD");
     SilverTrace.spy("kmelia", "KmeliaSessionController.createPublication(pubDetail)", getSpaceId(),
@@ -4794,5 +4794,37 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   public boolean isFormatSupported(String format) {
     return getSupportedFormats().contains(format);
+  }
+
+  /**
+   * Is the specified publication classified on the PdC.
+   * @param publication a publication;
+   * @return true if the publication is classified, false otherwise.
+   * @throws PdcException if an error occurs while verifying the publication is classified.
+   */
+  public boolean isClassifiedOnThePdC(final PublicationDetail publication) throws PdcException {
+    List<ClassifyPosition> positions = getPdcBm().getPositions(
+            Integer.valueOf(publication.getSilverObjectId()),
+            publication.getComponentInstanceId());
+    return !positions.isEmpty();
+  }
+
+  /**
+   * Is the default classification on the PdC used to classify the publications published in the
+   * specified topic of the specified component instance can be modified during the multi-publications
+   * import process?
+   * If no default classification is defined for the specified topic (and for any of its parent topics),
+   * then false is returned.
+   * @param topicId the unique identifier of the topic.
+   * @param componentId the unique identifier of the component instance.
+   * @return true if the default classification can be modified during the automatical
+   * classification of the imported publications. False otherwise.
+   */
+  public boolean isDefaultClassificationModifiable(String topicId, String componentId) {
+    PdcClassificationService classificationService = PdcServiceFactory.getFactory().
+            getPdcClassificationService();
+    PdcClassification defaultClassification = classificationService.findAPreDefinedClassification(
+            topicId, componentId);
+    return defaultClassification != NONE_CLASSIFICATION && defaultClassification.isModifiable();
   }
 }

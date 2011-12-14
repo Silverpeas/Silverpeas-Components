@@ -314,7 +314,7 @@ $(document).ready(function(){
 			<% } %>
 		   </div>
 		   
-		   <view:pdcClassification componentId="<%= instanceId %>" contentId="<%= id %>" />
+		   <view:pdcClassificationPreview componentId="<%= instanceId %>" contentId="<%= id %>" />
 </div>
 
 
