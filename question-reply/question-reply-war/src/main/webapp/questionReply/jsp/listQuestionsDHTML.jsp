@@ -55,7 +55,7 @@
 
 var etat = new Array();
 function bindQuestionsEvent() {
-  $('.question').on('click', function(event) {
+  $('.questionTitle').on('click', function(event) {
     question = this.id;
     id = question.substring(1);
     answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
@@ -142,8 +142,8 @@ $(document).ready(function() {
   <fmt:message key="questionReply.close" bundle="${icons}" var="closeIcon"/>
   <fmt:message key="questionReply.miniconeReponse" bundle="${icons}" var="addReplyIcon"/>
   function displayQuestion(questionToBeDisplayed) {
-    questionDiv = $('<div>').attr('id', 'q' + questionToBeDisplayed.id).addClass('question');
-    questionTitleDiv = $('<div>').addClass('questionTitle');
+    questionDiv = $('<div>').addClass('question');
+    questionTitleDiv = $('<div>').attr('id', 'q' + questionToBeDisplayed.id).addClass('questionTitle');
     questionTitle = $('<h4>');
     questionTitleLink = $('<a>').addClass('question').attr('id', 'l' + questionToBeDisplayed.id).attr('href', '#'+questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.open"/>').text(questionToBeDisplayed.title);
     questionTitle.append(questionTitleLink);
