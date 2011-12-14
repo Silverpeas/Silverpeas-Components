@@ -55,7 +55,7 @@
 $(document).ready(function() {  
   var etat = new Array();
 
-  $('.question').live('click', function(objectEvent) {
+  $('.question').on('click', function(objectEvent) {
       question = this.id;
       id = question.substring(1);
       answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
@@ -79,10 +79,9 @@ $(document).ready(function() {
           etat[id] = "close";
 		} 
       }
-    }, function() {}
-  );
+    });
     
-  $('.categoryTitle').click(function() {
+  $('.categoryTitle').on('click', function() {
       category = this.id;
       id = category.substring(1);
       questionUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/questions/category/"/>' + id;
@@ -110,8 +109,7 @@ $(document).ready(function() {
         $('#qc'+id).show();        	   
         $(this).parent().addClass('select');			
       }
-    }, function() {}
-  );  
+    });
     
   $('.questions').hide();
   $("ul li:first-child .questions").show();
