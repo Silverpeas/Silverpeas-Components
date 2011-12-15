@@ -67,12 +67,21 @@ function bindQuestionsEvent() {
         etat[id] = "open";
             var found = $('#a'+id + '>ul>li');
             if (found.length == 0) {
-              $.getJSON(answersUrl,function(data) {
-                $('#a'+id + ' > ul').html('');
-                $.each(data, function(key, answer) {
-                  $('#a'+ id + ' > ul').append(displayAnswer(answer));
-                });
-              });
+				
+				$.ajax({
+					url: answersUrl,
+					type: "GET",
+					contentType: "application/json",
+					dataType: "json",
+					cache: false,
+					success: function(data) {
+						$('#a'+id + ' > ul').html('');
+						$.each(data, function(key, answer) {
+						  $('#a'+ id + ' > ul').append(displayAnswer(answer));
+						});
+					}
+				});
+
             }
           } else {
             $('#a'+id).hide();
@@ -98,18 +107,29 @@ function bindCategoryEvent() {
         });
         var found = $('#qc'+id + '>li');
         if (found.length == 0) {
-          $.getJSON(questionUrl,function(data) {
-            $('#qc'+id).html('');
-            $.each(data, function(key, question) {
-              answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
-              answersDiv.append($('<p>').text(question.content));
-              answersDiv.append($('<ul>'));
-              answersDiv.hide();
-              $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
-            });
-            $('.question').off('click');
-            bindQuestionsEvent();
-          });
+		
+			   $.ajax({
+					url: questionUrl,
+					type: "GET",
+					contentType: "application/json",
+					dataType: "json",
+					cache: false,
+					success: function(data) {
+						$('#qc'+id).html('');
+						$.each(data, function(key, question) {
+						  answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
+						  answersDiv.append($('<p>').text(question.content));
+						  answersDiv.append($('<ul>'));
+						  answersDiv.hide();
+						  $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
+						});
+						$('.question').off('click');
+						bindQuestionsEvent();
+					}
+				});
+		
+		
+        
         }
         $('#qc'+id).show();
         $(this).parent().addClass('select');
