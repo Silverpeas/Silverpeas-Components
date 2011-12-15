@@ -123,7 +123,7 @@ function bindCategoryEvent() {
 						  answersDiv.hide();
 						  $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
 						});
-						$('.question').off('click');
+						$('.questionTitle').off('click');
 						bindQuestionsEvent();
 					}
 				});
