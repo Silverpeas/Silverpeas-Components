@@ -217,7 +217,7 @@ $(document).ready(function() {
       actionDiv.append(deleteQuestionLink);
     }
     <c:if test="${'user' != requestScope.Flag}">
-      actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox'));
+      actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox').prop('value', questionToBeDisplayed.id));
       actionDiv.append($('<input>').attr('name', 'status').attr('value', questionToBeDisplayed.status).attr('type', 'hidden'));
       questionDiv.append(actionDiv);
     </c:if>
@@ -288,6 +288,7 @@ function closeQ(id)
 	//confirmation de cloture de la question
 	if(window.confirm('<fmt:message key="MessageCloseQ" />'))
 	{
+		
 			document.QForm.action = "CloseQ";
 			document.QForm.Id.value = id;
 			document.QForm.submit();
@@ -327,7 +328,7 @@ function DeletesAdmin()
 // clore toutes les questions selectionnees
 function Closes()
 {
-	if (existSelect())
+	if (existSelected())
 	{
 		if (existStatusError('1'))
 			alert("<%=resource.getString("questionReply.closeStatusErr")%>");
