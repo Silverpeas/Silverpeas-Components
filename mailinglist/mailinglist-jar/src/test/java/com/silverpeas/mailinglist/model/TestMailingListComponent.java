@@ -23,20 +23,6 @@
  */
 package com.silverpeas.mailinglist.model;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.jms.TextMessage;
-import javax.mail.internet.MimeMessage;
-
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
-import org.jvnet.mock_javamail.Mailbox;
-
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.silverpeas.mailinglist.service.ServicesFactory;
@@ -46,8 +32,19 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.jvnet.mock_javamail.Mailbox;
+
+import javax.jms.TextMessage;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpringContextTests {
 
@@ -64,13 +61,12 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
   }
 
   @Override
-  protected void onTearDown() throws IOException {
+  protected void onTearDown() throws Exception {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
     } catch (Exception ex) {
       ex.printStackTrace();
     } finally {
