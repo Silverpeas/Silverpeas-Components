@@ -498,6 +498,7 @@
 }
 .oneAxis .action img {
 	width:13px;
+	border: 0px;
 }
 
 .axisManagment .oneAxis{
@@ -577,4 +578,9 @@
 #header .legend {
 	padding: 15px;
 	clear: both;
+}
+
+.commentaires {
+	border-top: 2px dotted #CECECE;
+	margin-top: 15px;
 }

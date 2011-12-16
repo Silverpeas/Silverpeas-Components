@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkProcessManager.jsp" %>
@@ -48,20 +49,19 @@ Item getItem(Item[] items, String itemName)
 
   Item[] items = (Item[]) request.getAttribute("FolderItems");
 
-  browseBar.setDomainName(spaceLabel);
-  browseBar.setComponentName(componentLabel,"listProcess");
-
   String canCreate = (String) request.getAttribute("canCreate");
-  if (canCreate.equals("1"))
+  if (canCreate.equals("1")) {
 		operationPane.addOperation(resource.getIcon("processManager.add"),
 									resource.getString("processManager.createProcess"),
 									"createProcess");
+  }
 
   String hasUserSettings = (String) request.getAttribute("hasUserSettings");
-  if (hasUserSettings.equals("1"))
+  if (hasUserSettings.equals("1")) {
 	operationPane.addOperation(resource.getIcon("processManager.userSettings"),
 								resource.getString("processManager.userSettings"),
 								"editUserSettings");
+  }
 
   Boolean isCSVExportEnabled = (Boolean) request.getAttribute("isCSVExportEnabled");
 
@@ -71,6 +71,14 @@ Item getItem(Item[] items, String itemName)
 			resource.getString("processManager.csvExport"),
 			"javaScript:exportCSV();");
   }
+  
+  if ("supervisor".equalsIgnoreCase((String)request.getAttribute("currentRole"))) {
+    operationPane.addLine();
+  	operationPane.addOperation(resource.getIcon("processManager.welcome"),
+			resource.getString("processManager.operation.welcome"),
+			"ToWysiwygWelcome");
+  }
+  String welcomeMessage = (String) request.getAttribute("WelcomeMessage");
 
 	String collapse = (String) request.getAttribute("collapse");
 	if (collapse == null) {
@@ -81,8 +89,8 @@ Item getItem(Item[] items, String itemName)
    DataRecord data = (DataRecord) request.getAttribute("data");
 
    ButtonPane buttonPane = gef.getButtonPane();
-   buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:setFilter()", false));
-   buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:resetFilter()", false));
+   buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:setFilter()", false));
+   buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:resetFilter()", false));
 
    boolean isProcessIdVisible = ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
 
@@ -96,6 +104,9 @@ Item getItem(Item[] items, String itemName)
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <%
    	out.println(gef.getLookStyleSheet());
+%>
+<link rel="stylesheet" type="text/css" href="<%=m_context%>/processManager/jsp/css/processManager.css"/>
+<%
 	if (collapse.equals("false")) {
 		form.displayScripts(out, context);
 	}
@@ -158,6 +169,11 @@ Item getItem(Item[] items, String itemName)
 	</tr>
 </table>
 <br/>
+<% } %>
+
+<% if (StringUtil.isDefined(welcomeMessage)) { %>
+	<span class="inlineMessage"><%=welcomeMessage %></span>
+	<br clear="all"/>
 <% } %>
 
 <FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="filterProcess" ENCTYPE="multipart/form-data">

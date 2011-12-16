@@ -101,6 +101,12 @@ function refreshPublications()
 			},"html");
 }
 
+function validatePublicationClassification(s)
+{
+    var componentId = getComponentId();
+    SP_openWindow(getWebContext()+'/Rkmelia/' + componentId + '/validateClassification?' + s, "Validation", '600', '400','scrollbars=yes, resizable, alwaysRaised');
+}
+
 function displayPublicationsToValidate()
 {
 	//display publications to validate

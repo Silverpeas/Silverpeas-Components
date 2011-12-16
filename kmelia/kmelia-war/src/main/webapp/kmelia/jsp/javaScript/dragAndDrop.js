@@ -40,6 +40,9 @@ function showHideDragDrop(targetURL1, message1, targetURL2, message2, altMessage
 
 function uploadCompleted(s)
 {
-	refreshPublications();
+    if (s.indexOf('pubid=') > -1)
+      validatePublicationClassification(s);
+    else
+      refreshPublications();
 	return true;
 }

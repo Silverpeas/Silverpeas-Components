@@ -169,6 +169,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         } else {
           destination = getDestination("GoToTopic", componentSC, request);
         }
+      } else if (function.startsWith("validateClassification")) {
+        String[] publicationIds = request.getParameterValues("pubid");
+        Collection<KmeliaPublication> publications = kmelia.getPublications(asPks(componentSC.
+                getComponentId(), publicationIds));
+        request.setAttribute("Context", GeneralPropertiesManager.getGeneralResourceLocator().
+                    getString("ApplicationURL"));
+        request.setAttribute("PublicationsDetails", publications);
+        destination = rootDestination + "validateImportedFilesClassification.jsp";
       } else if (function.startsWith("portlet")) {
         kmelia.setSessionPublication(null);
         String flag = componentSC.getUserRoleLevel();
@@ -2069,8 +2077,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
                     getString("ApplicationURL"));
             destination = routeDestination + "reportImportFiles.jsp";
             String componentId = publicationDetails.get(0).getComponentInstanceId();
-            if (publicationDetails.size() > 1 && 
-                    kmeliaScc.isDefaultClassificationModifiable(topicId, componentId)) {
+            if (kmeliaScc.isDefaultClassificationModifiable(topicId, componentId)) {
               destination = routeDestination + "validateImportedFilesClassification.jsp";
             }
           } else {
@@ -2662,5 +2669,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       request.setAttribute("DBForms", dbForms);
       request.setAttribute("WysiwygValid", Boolean.TRUE);
     }
+  }
+
+  /**
+   * Converts the specified identifier into a Silverpeas content primary key.
+   * @param instanceId the unique identifier of the component instance to which the contents belongs.
+   * @param ids one or several identifiers of Silverpeas contents.
+   * @return a list of one or several Silverpeas primary keys, each of them corresponding to one
+   * specified identifier.
+   */
+  private List<ForeignPK> asPks(String instanceId, String... ids) {
+    List<ForeignPK> pks = new ArrayList<ForeignPK>();
+    for (String oneId : ids) {
+      pks.add(new ForeignPK(oneId, instanceId));
+    }
+    return pks;
   }
 }
