@@ -55,7 +55,7 @@
 
 var etat = new Array();
 function bindQuestionsEvent() {
-  $('.question').on('click', function(event) {
+  $('.questionTitle').on('click', function(event) {
     question = this.id;
     id = question.substring(1);
     answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
@@ -67,12 +67,21 @@ function bindQuestionsEvent() {
         etat[id] = "open";
             var found = $('#a'+id + '>ul>li');
             if (found.length == 0) {
-              $.getJSON(answersUrl,function(data) {
-                $('#a'+id + ' > ul').html('');
-                $.each(data, function(key, answer) {
-                  $('#a'+ id + ' > ul').append(displayAnswer(answer));
-                });
-              });
+				
+				$.ajax({
+					url: answersUrl,
+					type: "GET",
+					contentType: "application/json",
+					dataType: "json",
+					cache: false,
+					success: function(data) {
+						$('#a'+id + ' > ul').html('');
+						$.each(data, function(key, answer) {
+						  $('#a'+ id + ' > ul').append(displayAnswer(answer));
+						});
+					}
+				});
+
             }
           } else {
             $('#a'+id).hide();
@@ -98,18 +107,29 @@ function bindCategoryEvent() {
         });
         var found = $('#qc'+id + '>li');
         if (found.length == 0) {
-          $.getJSON(questionUrl,function(data) {
-            $('#qc'+id).html('');
-            $.each(data, function(key, question) {
-              answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
-              answersDiv.append($('<p>').text(question.content));
-              answersDiv.append($('<ul>'));
-              answersDiv.hide();
-              $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
-            });
-            $('.question').off('click');
-            bindQuestionsEvent();
-          });
+		
+			   $.ajax({
+					url: questionUrl,
+					type: "GET",
+					contentType: "application/json",
+					dataType: "json",
+					cache: false,
+					success: function(data) {
+						$('#qc'+id).html('');
+						$.each(data, function(key, question) {
+						  answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
+						  answersDiv.append($('<p>').text(question.content));
+						  answersDiv.append($('<ul>'));
+						  answersDiv.hide();
+						  $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
+						});
+						$('.questionTitle').off('click');
+						bindQuestionsEvent();
+					}
+				});
+		
+		
+        
         }
         $('#qc'+id).show();
         $(this).parent().addClass('select');
@@ -142,8 +162,8 @@ $(document).ready(function() {
   <fmt:message key="questionReply.close" bundle="${icons}" var="closeIcon"/>
   <fmt:message key="questionReply.miniconeReponse" bundle="${icons}" var="addReplyIcon"/>
   function displayQuestion(questionToBeDisplayed) {
-    questionDiv = $('<div>').attr('id', 'q' + questionToBeDisplayed.id).addClass('question');
-    questionTitleDiv = $('<div>').addClass('questionTitle');
+    questionDiv = $('<div>').addClass('question');
+    questionTitleDiv = $('<div>').attr('id', 'q' + questionToBeDisplayed.id).addClass('questionTitle');
     questionTitle = $('<h4>');
     questionTitleLink = $('<a>').addClass('question').attr('id', 'l' + questionToBeDisplayed.id).attr('href', '#'+questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.open"/>').text(questionToBeDisplayed.title);
     questionTitle.append(questionTitleLink);
@@ -154,15 +174,15 @@ $(document).ready(function() {
     questionTitleDiv.append(questionHyperlink);
     switch(questionToBeDisplayed.status) {
       case 0 :
-        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.encours" />').attr('title',  '<fmt:message key="questionReply.encours" />').attr('src', '<c:url value="${newIcon}" />');
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.encours" />').attr('title',  '<fmt:message key="questionReply.encours" />').attr('src', '<c:url value="${newIcon}" />').attr('border', '0' );
         questionTitleDiv.append(questionStatusImg);
         break;
       case 1 :
-        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.waiting" />').attr('title',  '<fmt:message key="questionReply.waiting" />').attr('src', '<c:url value="${waitingIcon}" />');
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.waiting" />').attr('title',  '<fmt:message key="questionReply.waiting" />').attr('src', '<c:url value="${waitingIcon}" />').attr('border', '0' );
         questionTitleDiv.append(questionStatusImg);
         break;
       case 2 :
-        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.close" />').attr('title',  '<fmt:message key="questionReply.close" />').attr('src', '<c:url value="${closeIcon}" />');
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.close" />').attr('title',  '<fmt:message key="questionReply.close" />').attr('src', '<c:url value="${closeIcon}" />').attr('border', '0' );
         questionTitleDiv.append(questionStatusImg);
         break;
     }
@@ -175,29 +195,29 @@ $(document).ready(function() {
     actionDiv = $('<div>').addClass('action');
     if(questionToBeDisplayed.replyable){
       replyQuestionLink = $('<a>').addClass('reply').attr('title', '<fmt:message key="questionReply.ajoutR"/>').attr('href', 'CreateRQuery?QuestionId=' + questionToBeDisplayed.id);
-      replyQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.ajoutR"/>').attr('src', '<c:url value="${addReplyIcon}" />' );
+      replyQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.ajoutR"/>').attr('src', '<c:url value="${addReplyIcon}" />' ).attr('border', '0' );
       replyQuestionLink.append(replyQuestionImg);
       actionDiv.append(replyQuestionLink);
     }
     if(questionToBeDisplayed.reopenable){
       reopenQuestionLink = $('<a>').addClass('open').attr('title', '<fmt:message key="questionReply.open"/>').attr('href', 'javascript:openQ(\'' + questionToBeDisplayed.id + '\')');
-      reopenQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.open"/>').attr('src', '<c:url value="${openIcon}" />' );
+      reopenQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.open"/>').attr('src', '<c:url value="${openIcon}" />' ).attr('border', '0' );
       reopenQuestionLink.append(reopenQuestionImg);
       actionDiv.append(reopenQuestionLink);
     }
     if(questionToBeDisplayed.updatable){
       updateQuestionLink = $('<a>').addClass('update').attr('title', '<fmt:message key="questionReply.modifQ"/>').attr('href', 'UpdateQ?QuestionId=' + questionToBeDisplayed.id);
-      updateQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.modifQ"/>').attr('src', '<c:url value="${updateIcon}" />' );
+      updateQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.modifQ"/>').attr('src', '<c:url value="${updateIcon}" />' ).attr('border', '0' );
       updateQuestionLink.append(updateQuestionImg);
       actionDiv.append(updateQuestionLink);
       
       deleteQuestionLink = $('<a>').addClass('delete').attr('title', '<fmt:message key="questionReply.delQ"/>').attr('href', 'javascript:deleteConfirm(\'' + questionToBeDisplayed.id + '\')');
-      deleteQuestionImg = $('<img>').attr('alt', '<fmt:message key="questionReply.delQ"/>').attr('src', '<c:url value="${deleteIcon}" />' );
+      deleteQuestionImg = $('<img>').attr('alt', '<fmt:message key="questionReply.delQ"/>').attr('src', '<c:url value="${deleteIcon}" />' ).attr('border', '0' );
       deleteQuestionLink.append(deleteQuestionImg);
       actionDiv.append(deleteQuestionLink);
     }
     <c:if test="${'user' != requestScope.Flag}">
-      actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox'));
+      actionDiv.append($('<input>').addClass('checkbox').attr('name', 'checkedQuestion').attr('value', questionToBeDisplayed.id).attr('type', 'checkbox').prop('value', questionToBeDisplayed.id));
       actionDiv.append($('<input>').attr('name', 'status').attr('value', questionToBeDisplayed.status).attr('type', 'hidden'));
       questionDiv.append(actionDiv);
     </c:if>
@@ -209,19 +229,19 @@ $(document).ready(function() {
     answerBlock = $('<li>').addClass('answer');
     answerTitle = $('<h5>').addClass('answerTitle').text(answer.title);
     if(answer.publicReply) {
-      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rpublique" />').attr('title','<fmt:message key="questionReply.Rpublique" />').attr('src', '<c:url value="${publicAnswerIcon}" />'));
+      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rpublique" />').attr('title','<fmt:message key="questionReply.Rpublique" />').attr('src', '<c:url value="${publicAnswerIcon}" />').attr('border', '0' ));
     } else {
-      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rprivee" />').attr('title','<fmt:message key="questionReply.Rprivee" />').attr('src', '<c:url value="${privateAnswerIcon}" />'));
+      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rprivee" />').attr('title','<fmt:message key="questionReply.Rprivee" />').attr('src', '<c:url value="${privateAnswerIcon}" />').attr('border', '0' ));
     }
     actionDiv = $('<div>').addClass('action');    
     if(!answer.readOnly){
       updateAnswerLink = $('<a>').attr('title', '<fmt:message key="questionReply.modifR" />').attr('href', 'UpdateR?replyId=' + answer.id + '&QuestionId=' + answer.questionId);
-      updateAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.modifR" />').attr('src', '<c:url value="${updateIcon}" />');
+      updateAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.modifR" />').attr('src', '<c:url value="${updateIcon}" />').attr('border', '0' );
       updateAnswerLink.append(updateAnswerImg);
       actionDiv.append(updateAnswerLink);
       
       deleteAnswerLink = $('<a>').attr('title', '<fmt:message key="questionReply.delR" />').attr('href', 'javascript:deleteConfirmR(\'' + answer.id + '\', \'' + answer.questionId + '\')');
-      deleteAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.delR" />').attr('src', '<c:url value="${deleteIcon}" />');
+      deleteAnswerImg = $('<img>').attr('alt', '<fmt:message key="questionReply.delR" />').attr('src', '<c:url value="${deleteIcon}" />').attr('border', '0' );
       deleteAnswerLink.append(deleteAnswerImg);
       actionDiv.append(deleteAnswerLink);
     }
@@ -268,6 +288,7 @@ function closeQ(id)
 	//confirmation de cloture de la question
 	if(window.confirm('<fmt:message key="MessageCloseQ" />'))
 	{
+		
 			document.QForm.action = "CloseQ";
 			document.QForm.Id.value = id;
 			document.QForm.submit();
@@ -307,7 +328,7 @@ function DeletesAdmin()
 // clore toutes les questions selectionnees
 function Closes()
 {
-	if (existSelect())
+	if (existSelected())
 	{
 		if (existStatusError('1'))
 			alert("<%=resource.getString("questionReply.closeStatusErr")%>");
@@ -495,9 +516,9 @@ function subscribe() {
           <div class="action">
             <c:if test="${'admin' eq requestScope.Flag}">
             <a title="<fmt:message key="questionReply.updateCategory"/>" href="EditCategory?CategoryId=<c:out value='${category.id}'/>"> 
-              <img src="<c:url value="${updateCategoryIcon}"/>" alt="<fmt:message key="questionReply.updateCategory"/>"/></a>
+              <img src="<c:url value="${updateCategoryIcon}"/>" alt="<fmt:message key="questionReply.updateCategory"/>" border="0"/></a>
             <a title="<fmt:message key="questionReply.deleteCategory"/>" href="javascript:confirmDeleteCategory('<c:out value='${category.id}'/>');">
-              <img src="<c:url value="${deleteCategoryIcon}"/>" alt="<fmt:message key="questionReply.deleteCategory"/>"/></a>
+              <img src="<c:url value="${deleteCategoryIcon}"/>" alt="<fmt:message key="questionReply.deleteCategory"/>" border="0"/></a>
             </c:if>
           </div>
         </div>

@@ -498,6 +498,7 @@
 }
 .oneAxis .action img {
 	width:13px;
+	border: 0px;
 }
 
 .axisManagment .oneAxis{
