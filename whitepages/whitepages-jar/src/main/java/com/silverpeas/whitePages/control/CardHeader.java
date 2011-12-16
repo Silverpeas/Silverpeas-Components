@@ -24,16 +24,20 @@
 
 package com.silverpeas.whitePages.control;
 
-import java.util.*;
-
-import com.stratelia.silverpeas.contentManager.*;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FormException;
 import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.whitePages.model.*;
-import com.silverpeas.whitePages.record.*;
-import com.silverpeas.form.*;
-import com.stratelia.webactiv.beans.admin.*;
-import com.stratelia.webactiv.util.*;
+import com.silverpeas.whitePages.model.Card;
+import com.silverpeas.whitePages.record.UserRecord;
+import com.silverpeas.whitePages.record.UserTemplate;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * The fileboxplus implementation of SilverContentInterface
@@ -154,8 +158,7 @@ public final class CardHeader extends AbstractI18NBean implements SilverContentI
   }
 
   static private String getParam(String paramName, String instanceId) {
-    Admin admin = new Admin();
-    return admin.getComponentParameterValue(instanceId, paramName);
+    return AdminReference.getAdminService().getComponentParameterValue(instanceId, paramName);
   }
 
   static Map<String, UserTemplate> templates = new HashMap<String, UserTemplate>();
