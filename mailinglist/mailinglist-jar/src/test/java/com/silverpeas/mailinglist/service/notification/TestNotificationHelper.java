@@ -24,28 +24,6 @@
 
 package com.silverpeas.mailinglist.service.notification;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.jms.QueueConnectionFactory;
-import javax.jms.TextMessage;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
-import javax.naming.Reference;
-
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
-import org.jvnet.mock_javamail.Mailbox;
-
 import com.mockrunner.mock.jms.MockQueue;
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
@@ -56,15 +34,34 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.operation.DatabaseOperation;
+import org.jvnet.mock_javamail.Mailbox;
+
+import javax.jms.QueueConnectionFactory;
+import javax.jms.TextMessage;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.naming.InitialContext;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TestNotificationHelper extends
     AbstractSilverpeasDatasourceSpringContextTests {
 
-  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. "
-      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
-      + "l'homme canon dans la prochaine émission.Bart";
+  private static final String textEmailContent =
+      "Bonjour famille Simpson, j'espère que vous allez bien. "
+          + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
+          + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
+          + "l'homme canon dans la prochaine émission.Bart";
 
   private SimpleNotificationHelper notificationHelper;
 
@@ -78,21 +75,19 @@ public class TestNotificationHelper extends
 
   @Override
   protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml", "spring-personalization.xml" };
+    return new String[]{"spring-checker.xml", "spring-notification.xml",
+                        "spring-hibernate.xml", "spring-datasource.xml",
+                        "spring-personalization.xml"};
   }
 
   protected void registerMockJMS() throws Exception {
     InitialContext ic = new InitialContext();
     // Construct BasicDataSource reference
-    Reference refFactory = new Reference("javax.jms.QueueConnectionFactory",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
-    ic.rebind(JNDINames.JMS_FACTORY, refFactory);
-    Reference refQueue = new Reference("javax.jms.Queue",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
-    ic.rebind(JNDINames.JMS_QUEUE, refQueue);
-    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic
-        .lookup(JNDINames.JMS_FACTORY);
+    QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
+    rebind(ic, JNDINames.JMS_FACTORY, refFactory);
+    rebind(ic, JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
+    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(
+        JNDINames.JMS_FACTORY);
     assertNotNull(qconFactory);
     MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
     queue.clear();
@@ -110,8 +105,8 @@ public class TestNotificationHelper extends
     assertEquals(3, list.getModerators().size());
     assertNotNull(list.getReaders());
     assertEquals(2, list.getReaders().size());
-    List<String> userIds = Arrays.asList(new String[] { "200", "201", "202", "203",
-        "204" });
+    List<String> userIds = Arrays.asList(new String[]{"200", "201", "202", "203",
+                                                      "204"});
     notificationHelper.notifyInternals(message, list, userIds, null, false);
     List<TextMessage> messages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertNotNull(messages);
@@ -167,7 +162,7 @@ public class TestNotificationHelper extends
     MimeMessage mail = new MimeMessage(notificationHelper.getSession());
     InternetAddress theSimpsons = new InternetAddress(
         "thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[] { theSimpsons });
+    mail.addFrom(new InternetAddress[]{theSimpsons});
     mail.setSubject("Simple text Email test");
     mail.setText(textEmailContent);
     List<ExternalUser> externalUsers = new LinkedList<ExternalUser>();
@@ -183,7 +178,7 @@ public class TestNotificationHelper extends
     MimeMessage mail = new MimeMessage(notificationHelper.getSession());
     InternetAddress theSimpsons = new InternetAddress(
         "thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[] { theSimpsons });
+    mail.addFrom(new InternetAddress[]{theSimpsons});
     mail.setSubject("Simple text Email test");
     mail.setText(textEmailContent);
     List<ExternalUser> externalUsers = new LinkedList<ExternalUser>();
@@ -268,13 +263,12 @@ public class TestNotificationHelper extends
   }
 
   @Override
-  protected void onTearDown() throws IOException {
+  protected void onTearDown() throws Exception {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
     } catch (Exception ex) {
       ex.printStackTrace();
     } finally {
@@ -317,13 +311,13 @@ public class TestNotificationHelper extends
     list.setModerated(false);
     Collection<String> userIds = notificationHelper.getUsersIds(list);
     assertEquals(2, userIds.size());
-    for(String userId : userIds) {
+    for (String userId : userIds) {
       assertTrue("201".equals(userId) || "204".equals(userId));
     }
     list.setModerated(true);
     userIds = notificationHelper.getUsersIds(list);
     assertEquals(2, userIds.size());
-    for(String userId : userIds) {
+    for (String userId : userIds) {
       assertTrue("201".equals(userId) || "204".equals(userId));
     }
   }
@@ -333,14 +327,14 @@ public class TestNotificationHelper extends
         "100");
     Collection<String> userIds = notificationHelper.getModeratorsIds(list);
     assertEquals(3, userIds.size());
-    for(String userId : userIds) {
+    for (String userId : userIds) {
       assertTrue("Erreur userid " + userId, "200".equals(userId)
           || "202".equals(userId) || "203".equals(userId));
     }
     list.setModerated(false);
     userIds = notificationHelper.getModeratorsIds(list);
     assertEquals(3, userIds.size());
-    for(String userId : userIds) {
+    for (String userId : userIds) {
       assertTrue("Erreur userid " + userId, "200".equals(userId)
           || "202".equals(userId) || "203".equals(userId));
     }
@@ -348,7 +342,7 @@ public class TestNotificationHelper extends
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
-    if(isOracle()) {
+    if (isOracle()) {
       return new FlatXmlDataSet(TestNotificationHelper.class
           .getResourceAsStream("test-notification-helper-oracle-dataset.xml"));
     }

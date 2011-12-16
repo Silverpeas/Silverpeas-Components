@@ -24,21 +24,22 @@
 
 package com.silverpeas.mailinglist.jms;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import com.mockrunner.mock.jms.JMSMockObjectFactory;
+import com.mockrunner.mock.jms.MockQueue;
 
 import javax.jms.Queue;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.TextMessage;
+import javax.jms.TopicConnectionFactory;
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
-
-import com.mockrunner.mock.jms.JMSMockObjectFactory;
-import com.mockrunner.mock.jms.MockQueue;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import javax.jms.TextMessage;
 
 public class MockObjectFactory implements ObjectFactory {
 
@@ -49,12 +50,26 @@ public class MockObjectFactory implements ObjectFactory {
 
   public synchronized static void clearAll() {
     Set<String> keys = queues.keySet();
-    for(String name : keys){
+    for (String name : keys) {
       factory.getDestinationManager().removeQueue(name);
     }
     queues.clear();
     factory.getMockTopicConnectionFactory().clearConnections();
   }
+
+  public static QueueConnectionFactory getQueueConnectionFactory() {
+    return factory.getMockQueueConnectionFactory();
+  }
+
+  public static TopicConnectionFactory getTopicConnectionFactory() {
+    return factory.getMockTopicConnectionFactory();
+  }
+  
+  
+  public static Queue createQueue (String name) {
+    return getQueue(name);
+  }
+
 
   public Object getObjectInstance(Object obj, Name name, Context nameCtx,
       Hashtable environment) throws Exception {
@@ -65,15 +80,16 @@ public class MockObjectFactory implements ObjectFactory {
     }
     Reference ref = (Reference) obj;
     if ("javax.jms.QueueConnectionFactory".equals(ref.getClassName())) {
-      return factory.getMockQueueConnectionFactory();
+      return getQueueConnectionFactory();
     }
 
     if ("javax.jms.TopicConnectionFactory".equals(ref.getClassName())) {
-      return factory.getMockTopicConnectionFactory();
+      return getTopicConnectionFactory();
     }
 
-    if("javax.jms.Queue".equals(ref.getClassName())) {
-      return getQueue(name);
+    if ("javax.jms.Queue".equals(ref.getClassName())) {
+
+      return getQueue(name.toString());
     }
     return null;
 
@@ -83,15 +99,15 @@ public class MockObjectFactory implements ObjectFactory {
   public static synchronized void closeQueue(String name) {
     factory.getDestinationManager().removeQueue(name);
     Queue queue = queues.get(name.toString());
-    if(queue != null){
+    if (queue != null) {
       queues.remove(name);
     }
   }
 
-  private synchronized static Queue getQueue(Name name){
-    Queue queue = queues.get(name.toString());
-    if(queue == null){
-      queue = factory.getDestinationManager().createQueue(name.toString());
+  private synchronized static Queue getQueue(String name) {
+    Queue queue = queues.get(name);
+    if (queue == null) {
+      queue = factory.getDestinationManager().createQueue(name);
       queues.put(name.toString(), queue);
     }
     return queue;
@@ -100,7 +116,7 @@ public class MockObjectFactory implements ObjectFactory {
   @SuppressWarnings("unchecked")
   public synchronized static List<TextMessage> getMessages(String name) {
     MockQueue queue = factory.getDestinationManager().getQueue(name);
-    if(queue == null){
+    if (queue == null) {
       queue = (MockQueue) queues.get(name);
     }
     return (List<TextMessage>) queue.getCurrentMessageList();

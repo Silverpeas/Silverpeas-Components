@@ -24,12 +24,12 @@
 
 package com.silverpeas.mailinglist.service.model;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
+import com.silverpeas.mailinglist.service.model.beans.InternalUser;
+import com.silverpeas.mailinglist.service.model.beans.InternalUserSubscriber;
+import com.silverpeas.mailinglist.service.model.beans.MailingList;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
@@ -37,13 +37,11 @@ import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
-import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
-import com.silverpeas.mailinglist.service.model.beans.InternalUser;
-import com.silverpeas.mailinglist.service.model.beans.InternalUserSubscriber;
-import com.silverpeas.mailinglist.service.model.beans.MailingList;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class TestMailingListService extends
     AbstractSilverpeasDatasourceSpringContextTests {
@@ -66,13 +64,11 @@ public class TestMailingListService extends
   }
 
   @Override
-  protected void onTearDown() {
+  protected void onTearDown() throws Exception {
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
-      super.cleanJndi();
     } catch (Exception ex) {
       ex.printStackTrace();
     } finally {
@@ -84,10 +80,12 @@ public class TestMailingListService extends
         }
       }
     }
+    super.onTearDown();
   }
 
   @Override
   protected void onSetUp() {
+    super.onSetUp();
     registerDatasource();
     IDatabaseConnection connection = null;
     try {

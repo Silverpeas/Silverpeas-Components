@@ -23,27 +23,8 @@
  */
 package com.silverpeas.mailinglist.service.notification;
 
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.jms.QueueConnectionFactory;
-import javax.jms.TextMessage;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
-import javax.naming.Reference;
-
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.operation.DatabaseOperation;
-import org.jvnet.mock_javamail.Mailbox;
-
 import com.mockrunner.mock.jms.MockQueue;
 import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.mailinglist.PathTestUtil;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
@@ -52,13 +33,23 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-import org.apache.commons.io.FileUtils;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.operation.DatabaseOperation;
+import org.jvnet.mock_javamail.Mailbox;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.jms.QueueConnectionFactory;
+import javax.jms.TextMessage;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.naming.InitialContext;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public class AdvancedNotificationHelperTest extends AbstractTestDao {
 
@@ -69,23 +60,9 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
   private AdvancedNotificationHelper notificationHelper;
   private ConfigurableApplicationContext context;
 
-  /**
-   * Deletes the directory for JNDI file system provider
-   * @throws IOException
-   */
-  protected void cleanJndi() throws IOException {
-    Properties jndiProperties = new Properties();
-    jndiProperties.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jndi.properties"));
-    String jndiDirectoryPath = jndiProperties.getProperty("java.naming.provider.url").substring(7);
-    File jndiDirectory = new File(jndiDirectoryPath);
-    if (jndiDirectory.exists()) {
-      FileUtils.deleteQuietly(jndiDirectory);
-    }
-  }
 
   @Override
   public void setUp() throws Exception {
-    cleanJndi();
     super.setUp();
     registerMockJMS();
     context = new ClassPathXmlApplicationContext(new String[]{"spring-checker.xml",
@@ -114,12 +91,9 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
   protected void registerMockJMS() throws Exception {
     InitialContext ic = new InitialContext();
     // Construct BasicDataSource reference
-    Reference refFactory = new Reference("javax.jms.QueueConnectionFactory",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
+    QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
     rebind(ic, JNDINames.JMS_FACTORY, refFactory);
-    Reference refQueue = new Reference("javax.jms.Queue",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
-    rebind(ic, JNDINames.JMS_QUEUE, refQueue);
+    rebind(ic, JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
     QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
     assertNotNull(qconFactory);
     MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
@@ -295,16 +269,14 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
   }
 
   @Override
-  protected void tearDown() throws Exception {
+  public void tearDown() throws Exception {
     InitialContext ic = new InitialContext();
     MockObjectFactory.clearAll();
-    super.tearDown();
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
     } catch (Exception ex) {
       ex.printStackTrace();
     } finally {
@@ -316,7 +288,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
         }
       }
     }
-    cleanJndi();
+    super.tearDown();
   }
 
   public void testGetUsersIds() {

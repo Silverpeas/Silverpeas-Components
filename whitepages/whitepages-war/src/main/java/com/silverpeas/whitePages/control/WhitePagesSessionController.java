@@ -63,7 +63,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.DomainDriverManager;
@@ -620,8 +620,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * retourne la valeur d'un paramètre affecté lors de l'instanciation pour un annuaire donné
    */
   private String getParam(String paramName, String instanceId) {
-    Admin admin = new Admin();
-    return admin.getComponentParameterValue(instanceId, paramName);
+    return AdminReference.getAdminService().getComponentParameterValue(instanceId, paramName);
   }
 
   /*
