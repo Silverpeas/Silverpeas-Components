@@ -27,6 +27,7 @@ import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_FOR_
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_LANGUAGE;
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_TOPIC;
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.aKmeliaPublicationExporter;
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 import java.io.File;
@@ -74,8 +75,10 @@ import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.kmelia.export.ExportFileNameProducer;
+import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
