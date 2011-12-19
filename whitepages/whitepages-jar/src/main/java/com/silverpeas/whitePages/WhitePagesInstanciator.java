@@ -25,16 +25,16 @@ package com.silverpeas.whitePages;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.whitePages.service.ServicesFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class WhitePagesInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
@@ -47,8 +47,7 @@ public class WhitePagesInstanciator extends SQLRequest implements ComponentsInst
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
     try {
-      Admin admin = new Admin();
-      String template = admin.getComponentParameterValue(componentId, "cardTemplate");
+      String template = AdminReference.getAdminService().getComponentParameterValue(componentId, "cardTemplate");
       PublicationTemplateManager.getInstance().addDynamicPublicationTemplate(componentId,
           template);
     } catch (Exception e) {
