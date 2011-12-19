@@ -295,9 +295,13 @@
 	text-align: center;
 }
 
+#footer img {
+	border: 0px;
+}
+
 #subTopics {
-		width:98%;
-		padding-bottom:5px;
+	width:98%;
+	padding-bottom:5px;
 }
 
 #subTopics ul {
@@ -305,8 +309,6 @@
 	padding:0;
 	margin:5px;
 }
-
-
 
 #subTopics ul li {
 	margin:2px 0 0 0;
@@ -583,4 +585,8 @@
 .commentaires {
 	border-top: 2px dotted #CECECE;
 	margin-top: 15px;
+}
+
+.publicationManager .classification .legende {
+	display: none;
 }
