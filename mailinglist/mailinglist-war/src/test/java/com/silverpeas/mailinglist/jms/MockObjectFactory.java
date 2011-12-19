@@ -24,25 +24,49 @@
 
 package com.silverpeas.mailinglist.jms;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import com.mockrunner.mock.jms.JMSMockObjectFactory;
+import com.mockrunner.mock.jms.MockQueue;
 
 import javax.jms.Queue;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.TopicConnectionFactory;
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
-
-import com.mockrunner.mock.jms.JMSMockObjectFactory;
-import com.mockrunner.mock.jms.MockQueue;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MockObjectFactory implements ObjectFactory {
 
   private static JMSMockObjectFactory factory = new JMSMockObjectFactory();
 
-  private static Map queues = new HashMap(10);
+  private final static Map<String, Queue> queues = new HashMap<String, Queue>(10);
+
+  public synchronized static void clearAll() {
+    Set<String> keys = queues.keySet();
+    for (String name : keys) {
+      factory.getDestinationManager().removeQueue(name);
+    }
+    queues.clear();
+    factory.getMockTopicConnectionFactory().clearConnections();
+  }
+
+  public static QueueConnectionFactory getQueueConnectionFactory() {
+    return factory.getMockQueueConnectionFactory();
+  }
+
+  public static TopicConnectionFactory getTopicConnectionFactory() {
+    return factory.getMockTopicConnectionFactory();
+  }
+
+
+  public static Queue createQueue(String name) {
+    return getQueue(name);
+  }
 
   public Object getObjectInstance(Object obj, Name name, Context nameCtx,
       Hashtable environment) throws Exception {
@@ -60,25 +84,25 @@ public class MockObjectFactory implements ObjectFactory {
       return factory.getMockTopicConnectionFactory();
     }
 
-    if("javax.jms.Queue".equals(ref.getClassName())) {
-      return getQueue(name);
+    if ("javax.jms.Queue".equals(ref.getClassName())) {
+      return getQueue(name.toString());
     }
     return null;
 
   }
 
-  private static Queue getQueue(Name name){
-    Queue queue = (Queue) queues.get(name);
-    if(queue == null){
-      queue = factory.getDestinationManager().createQueue(name.toString());
-      queues.put(name, queue);
+  private synchronized static Queue getQueue(String name) {
+    Queue queue = queues.get(name);
+    if (queue == null) {
+      queue = factory.getDestinationManager().createQueue(name);
+      queues.put(name.toString(), queue);
     }
     return queue;
   }
 
   public static List getMessages(String name) {
     MockQueue queue = factory.getDestinationManager().getQueue(name);
-    if(queue == null){
+    if (queue == null) {
       queue = (MockQueue) queues.get(name);
     }
     return queue.getCurrentMessageList();

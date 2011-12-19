@@ -24,14 +24,12 @@
 
 package com.silverpeas.external.mailinglist.servlets;
 
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
+import com.silverpeas.mailinglist.service.model.beans.MailingList;
+import com.silverpeas.mailinglist.service.model.beans.MailingListActivity;
+import com.silverpeas.mailinglist.service.util.OrderBy;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -39,12 +37,13 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
-import com.silverpeas.mailinglist.service.ServicesFactory;
-import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
-import com.silverpeas.mailinglist.service.model.beans.MailingList;
-import com.silverpeas.mailinglist.service.model.beans.MailingListActivity;
-import com.silverpeas.mailinglist.service.util.OrderBy;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class TestActivitiesProcessor extends
     AbstractSilverpeasDatasourceSpringContextTests {
@@ -181,7 +180,7 @@ public class TestActivitiesProcessor extends
     request.setPathInfo("/Rmailinglist/mailinglist45/message/delete");
     request
         .setRequestURI("/silverpeas/RmailingList/mailinglist45/message/delete");
-    request.addParameter("message", new String[] { "1", "2" });
+    request.addParameter("message", new String[]{"1", "2"});
     RestRequest rest = new RestRequest(request);
     rest.setComponentId("mailingList45");
     assertEquals(RestRequest.DELETE, rest.getAction());
@@ -201,7 +200,7 @@ public class TestActivitiesProcessor extends
         .setPathInfo("/Rmailinglist/mailinglist45/destination/list/message/delete");
     request
         .setRequestURI("/silverpeas/Rmailinglist/mailinglist45/destination/list/message/delete");
-    request.addParameter("message", new String[] { "1", "2" });
+    request.addParameter("message", new String[]{"1", "2"});
     rest = new RestRequest(request);
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.DELETE, rest.getAction());
@@ -215,7 +214,7 @@ public class TestActivitiesProcessor extends
     request.setPathInfo("/Rmailinglist/mailinglist45/message/delete/");
     request
         .setRequestURI("/silverpeas/Rmailinglist/mailinglist45/message/delete/");
-    request.addParameter("message", new String[] { "1", "2" });
+    request.addParameter("message", new String[]{"1", "2"});
     rest = new RestRequest(request);
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.DELETE, rest.getAction());
@@ -229,8 +228,9 @@ public class TestActivitiesProcessor extends
     request
         .setPathInfo("/Rmailinglist/mailinglist45/destination/moderation/message/delete/");
     request
-        .setRequestURI("/silverpeas/Rmailinglist/mailinglist45/destination/moderation/message/delete/");
-    request.addParameter("message", new String[] { "1", "2" });
+        .setRequestURI(
+            "/silverpeas/Rmailinglist/mailinglist45/destination/moderation/message/delete/");
+    request.addParameter("message", new String[]{"1", "2"});
     rest = new RestRequest(request);
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.DELETE, rest.getAction());
@@ -255,7 +255,7 @@ public class TestActivitiesProcessor extends
         Boolean.FALSE);
     request.setPathInfo("/Rmailinglist/mailinglist45/message/put");
     request.setRequestURI("/silverpeas/RmailingList/mailinglist45/message/put");
-    request.addParameter("message", new String[] { "12", "13" });
+    request.addParameter("message", new String[]{"12", "13"});
     RestRequest rest = new RestRequest(request);
     rest.setComponentId("mailingList45");
     assertEquals(RestRequest.UPDATE, rest.getAction());
@@ -275,7 +275,7 @@ public class TestActivitiesProcessor extends
     request.setAttribute(MailingListRoutage.IS_USER_ADMIN_ATT, Boolean.TRUE);
     request.setPathInfo("/Rmailinglist/mailinglist45/message/put");
     request.setRequestURI("/silverpeas/Rmailinglist/mailinglist45/message/put");
-    request.addParameter("message", new String[] { "12", "13" });
+    request.addParameter("message", new String[]{"12", "13"});
     rest = new RestRequest(request);
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.UPDATE, rest.getAction());
@@ -302,7 +302,7 @@ public class TestActivitiesProcessor extends
         Boolean.FALSE);
     request.setPathInfo("/Rmailinglist/mailinglist45/message/put");
     request.setRequestURI("/silverpeas/RmailingList/mailinglist45/message/put");
-    request.addParameter("message", new String[] { "12"});
+    request.addParameter("message", new String[]{"12"});
     RestRequest rest = new RestRequest(request);
     rest.setComponentId("mailingList45");
     assertEquals(RestRequest.UPDATE, rest.getAction());
@@ -322,7 +322,7 @@ public class TestActivitiesProcessor extends
     request.setAttribute(MailingListRoutage.IS_USER_ADMIN_ATT, Boolean.TRUE);
     request.setPathInfo("/Rmailinglist/mailinglist45/message/put");
     request.setRequestURI("/silverpeas/Rmailinglist/mailinglist45/message/put");
-    request.addParameter("message", new String[] { "12" });
+    request.addParameter("message", new String[]{"12"});
     rest = new RestRequest(request);
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.UPDATE, rest.getAction());
@@ -335,7 +335,7 @@ public class TestActivitiesProcessor extends
     /*assertEquals(
         "http://localhost:8000/silverpeas/Rmailinglist/mailinglist45/moderationList/mailinglist45",
         url);*/
-   assertEquals(ServicesFactory.getMessageService().getMessage("12"), request
+    assertEquals(ServicesFactory.getMessageService().getMessage("12"), request
         .getAttribute(MailingListRoutage.MESSAGE_ATT));
     assertEquals("/mailingList/jsp/message.jsp", url);
   }
@@ -415,8 +415,8 @@ public class TestActivitiesProcessor extends
     assertTrue(mailingList.getExternalSubscribers().contains(tempUser));
     tempUser.setEmail("carl.carlson@silverpeas.com");
     assertTrue(mailingList.getExternalSubscribers().contains(tempUser));
-    request.addParameter("users", new String[] { "carl.carlson@silverpeas.com",
-        "toto@toto.fr", "nelson.muntz@silverpeas.com" });
+    request.addParameter("users", new String[]{"carl.carlson@silverpeas.com",
+                                               "toto@toto.fr", "nelson.muntz@silverpeas.com"});
     RestRequest rest = new RestRequest(request);
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.DELETE, rest.getAction());
@@ -458,8 +458,9 @@ public class TestActivitiesProcessor extends
     assertFalse(mailingList.getExternalSubscribers().contains(tempUser));
     tempUser.setEmail("snowball@silverpeas.com");
     assertFalse(mailingList.getExternalSubscribers().contains(tempUser));
-    request.addParameter("users", new String[] { "carl.carlson@silverpeas.com;"
-        + "krusty.theklown@silverpeas.com;snowball@silverpeas.com" });
+    request.addParameter("users", new String[]{"carl.carlson@silverpeas.com;"
+                                                   +
+                                                   "krusty.theklown@silverpeas.com;snowball@silverpeas.com"});
     RestRequest rest = new RestRequest(request);
     rest.setComponentId("mailinglist45");
     assertEquals(RestRequest.CREATE, rest.getAction());
@@ -483,20 +484,20 @@ public class TestActivitiesProcessor extends
   }
 
   protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml" };
+    return new String[]{"spring-checker.xml", "spring-notification.xml", "spring-hibernate.xml",
+                        "spring-silverpeas.xml", "spring-personalization.xml", "spring-datasource.xml"};
   }
 
   protected IDataSet getDataSet() throws Exception {
     ReplacementDataSet dataSet;
-    if(isOracle()) {
+    if (isOracle()) {
       dataSet = new ReplacementDataSet(new FlatXmlDataSet(
           TestActivitiesProcessor.class
               .getResourceAsStream("test-mailinglist-messages-oracle-dataset.xml")));
-    }
-    else { dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-        TestActivitiesProcessor.class
-            .getResourceAsStream("test-mailinglist-messages-dataset.xml")));
+    } else {
+      dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+          TestActivitiesProcessor.class
+              .getResourceAsStream("test-mailinglist-messages-dataset.xml")));
     }
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
@@ -504,7 +505,7 @@ public class TestActivitiesProcessor extends
 
   @Override
   protected void onSetUp() {
-    registerDatasource();
+    super.onSetUp();
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
