@@ -122,6 +122,10 @@
 	vertical-align:top;
 }
 
+#preview #permalinkInfo img {
+	border: 0px;
+}
+
 #sortingList {
 	float: right;
 }
