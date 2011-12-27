@@ -66,8 +66,7 @@ public class TestMailingListDao extends
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));
     assertNotNull(saved.getExternalSubscribers());
     assertEquals(1, saved.getExternalSubscribers().size());
-    ExternalUser savedUser = (ExternalUser) saved.getExternalSubscribers()
-        .iterator().next();
+    ExternalUser savedUser = (ExternalUser) saved.getExternalSubscribers().iterator().next();
     assertNotNull(savedUser.getId());
     assertNotNull("componentId", savedUser.getComponentId());
   }
