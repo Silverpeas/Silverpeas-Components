@@ -24,37 +24,36 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
-
-<ejb-jar>
+<ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>ConnecteurJDBCJar</display-name>
   <enterprise-beans>
-	<session>
-	  <description>no description</description>
-	  <display-name>ejb/ConnecteurJDBCBm</display-name>
-	  <ejb-name>ejb/ConnecteurJDBCBm</ejb-name>
-	  <home>com.stratelia.silverpeas.connecteurJDBC.control.ejb.ConnecteurJDBCBmHome</home>
-	  <remote>com.stratelia.silverpeas.connecteurJDBC.control.ejb.ConnecteurJDBCBm</remote>
-	  <ejb-class>com.stratelia.silverpeas.connecteurJDBC.control.ejb.ConnecteurJDBCBmEJB</ejb-class>
-	  <session-type>Stateless</session-type>
-	  <transaction-type>Container</transaction-type>
-	  <resource-ref>
-			<res-ref-name>jdbc/Silverpeas</res-ref-name>
-			<res-type>javax.sql.DataSource</res-type>
-			<res-auth>Container</res-auth>
-	  </resource-ref>
-	</session>
+    <session>
+      <description>no description</description>
+      <display-name>ConnecteurJDBCBm</display-name>
+      <ejb-name>ConnecteurJDBCBm</ejb-name>
+      <home>com.stratelia.silverpeas.connecteurJDBC.control.ejb.ConnecteurJDBCBmHome</home>
+      <remote>com.stratelia.silverpeas.connecteurJDBC.control.ejb.ConnecteurJDBCBm</remote>
+      <ejb-class>com.stratelia.silverpeas.connecteurJDBC.control.ejb.ConnecteurJDBCBmEJB</ejb-class>
+      <session-type>Stateless</session-type>
+      <transaction-type>Container</transaction-type>
+      <resource-ref>
+        <res-ref-name>jdbc/Silverpeas</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+      </resource-ref>
+    </session>
   </enterprise-beans>
   <assembly-descriptor>
-	    <container-transaction>
-	      <method>
-		<ejb-name>ejb/ConnecteurJDBCBm</ejb-name>
-		<method-name>*</method-name>
-	      </method>
-	      <trans-attribute>NotSupported</trans-attribute>
-	    </container-transaction>
-   </assembly-descriptor>
+    <container-transaction>
+      <method>
+        <ejb-name>ConnecteurJDBCBm</ejb-name>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>NotSupported</trans-attribute>
+    </container-transaction>
+  </assembly-descriptor>
 </ejb-jar>
 

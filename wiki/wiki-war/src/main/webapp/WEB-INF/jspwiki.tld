@@ -616,7 +616,7 @@
     </attribute>
   </tag>
 
-  <tag>
+  <!--tag>
     <name>RSSUserlandLink</name>
     <tagclass>com.ecyrd.jspwiki.tags.RSSCoffeeCupLinkTag</tagclass>
     <bodycontent>empty</bodycontent>
@@ -624,7 +624,7 @@
        <name>title</name>
        <rtexprvalue>true</rtexprvalue>
     </attribute>
-  </tag>
+  </tag !-->
 
   <tag>
     <name>SearchResultIterator</name>

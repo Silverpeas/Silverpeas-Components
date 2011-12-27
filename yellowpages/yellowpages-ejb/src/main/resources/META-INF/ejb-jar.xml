@@ -24,88 +24,87 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
-
-<ejb-jar>
+<ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>YellowpagesJar</display-name>
   <enterprise-beans>
     <session>
       <description>no description</description>
-      <display-name>ejb/YellowpagesBm</display-name>
-      <ejb-name>ejb/YellowpagesBm</ejb-name>
+      <display-name>YellowpagesBm</display-name>
+      <ejb-name>YellowpagesBm</ejb-name>
       <home>com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBmHome</home>
       <remote>com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBm</remote>
       <ejb-class>com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBmEJB</ejb-class>
       <session-type>Stateful</session-type>
       <transaction-type>Container</transaction-type>
       <ejb-ref>
-				<ejb-ref-name>ejb/NodeBm</ejb-ref-name>
-				<ejb-ref-type>Session</ejb-ref-type>
-				<home>com.stratelia.webactiv.util.node.control.NodeBmHome</home>
-				<remote>com.stratelia.webactiv.util.node.control.NodeBm</remote>
-				<ejb-link>ejb/NodeBm</ejb-link>
+        <ejb-ref-name>NodeBm</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <home>com.stratelia.webactiv.util.node.control.NodeBmHome</home>
+        <remote>com.stratelia.webactiv.util.node.control.NodeBm</remote>
+        <ejb-link>NodeBm</ejb-link>
       </ejb-ref>
       <ejb-ref>
-				<ejb-ref-name>ejb/ContactBm</ejb-ref-name>
-				<ejb-ref-type>Session</ejb-ref-type>
-				<home>com.stratelia.webactiv.util.contact.control.ContactBmHome</home>
-				<remote>com.stratelia.webactiv.util.contact.control.ContactBm</remote>
-				<ejb-link>ejb/ContactBm</ejb-link>
+        <ejb-ref-name>ContactBm</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <home>com.stratelia.webactiv.util.contact.control.ContactBmHome</home>
+        <remote>com.stratelia.webactiv.util.contact.control.ContactBm</remote>
+        <ejb-link>ContactBm</ejb-link>
       </ejb-ref>
     </session>
   </enterprise-beans>
   <assembly-descriptor>
     <container-transaction>
       <method>
-	<ejb-name>ejb/YellowpagesBm</ejb-name>
-	<method-name>*</method-name>
+        <ejb-name>YellowpagesBm</ejb-name>
+        <method-name>*</method-name>
       </method>
       <trans-attribute>NotSupported</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-	<ejb-name>ejb/YellowpagesBm</ejb-name>
-	<method-intf>Remote</method-intf>
-	<method-name>deleteTopic</method-name>
-	<method-params>
-	  <method-param>java.lang.String</method-param>
-	</method-params>
+        <ejb-name>YellowpagesBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>deleteTopic</method-name>
+        <method-params>
+          <method-param>java.lang.String</method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-	<ejb-name>ejb/YellowpagesBm</ejb-name>
-	<method-intf>Remote</method-intf>
-	<method-name>deleteContact</method-name>
-	<method-params>
-	  <method-param>java.lang.String</method-param>
-	</method-params>
+        <ejb-name>YellowpagesBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>deleteContact</method-name>
+        <method-params>
+          <method-param>java.lang.String</method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-	<ejb-name>ejb/YellowpagesBm</ejb-name>
-	<method-intf>Remote</method-intf>
-	<method-name>createContact</method-name>
-	<method-params>
-	  <method-param>com.stratelia.webactiv.util.contact.model.ContactDetail</method-param>
-	</method-params>
+        <ejb-name>YellowpagesBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>createContact</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.contact.model.ContactDetail</method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
-	<ejb-name>ejb/YellowpagesBm</ejb-name>
-	<method-intf>Remote</method-intf>
-	<method-name>addContactToTopic</method-name>
-	<method-params>
-	  <method-param>java.lang.String</method-param>
-	  <method-param>java.lang.String</method-param>
-	</method-params>
+        <ejb-name>YellowpagesBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>addContactToTopic</method-name>
+        <method-params>
+          <method-param>java.lang.String</method-param>
+          <method-param>java.lang.String</method-param>
+        </method-params>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
