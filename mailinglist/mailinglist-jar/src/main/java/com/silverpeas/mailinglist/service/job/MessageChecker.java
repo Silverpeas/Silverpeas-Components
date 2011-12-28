@@ -196,8 +196,7 @@ public class MessageChecker
         try {
           MimeMessage message = (MimeMessage) msgs[msgNum];
           if (isImap()) {
-            if (!message.getFlags().contains(Flag.SEEN)
-                && !message.getFlags().contains(Flag.DELETED)) {
+            if (!message.isSet(Flag.SEEN) && !message.isSet(Flag.DELETED)) {
               message = new MimeMessage(message);
               processEmail(message, eventsMap, listenersByEmail);
             }
@@ -255,8 +254,7 @@ public class MessageChecker
    * @throws MessagingException
    * @throws IOException
    */
-  void processEmail(MimeMessage mail,
-      Map<MessageListener, MessageEvent> eventsMap,
+  void processEmail(MimeMessage mail, Map<MessageListener, MessageEvent> eventsMap,
       Map<String, MessageListener> listenersByEmail) throws MessagingException,
       IOException {
     BetterMimeMessage email = new BetterMimeMessage(mail);
@@ -264,8 +262,7 @@ public class MessageChecker
       return;
     }
     Set<String> allRecipients = getAllRecipients(mail);
-    Set<MessageListener> mailingLists = getRecipientMailingLists(allRecipients,
-        listenersByEmail);
+    Set<MessageListener> mailingLists = getRecipientMailingLists(allRecipients, listenersByEmail);
     Iterator<MessageListener> iter = mailingLists.iterator();
     while (iter.hasNext()) {
       MessageEvent event;
@@ -321,7 +318,7 @@ public class MessageChecker
     Iterator<String> recipientIter = recipients.iterator();
     while (recipientIter.hasNext()) {
       String email = recipientIter.next();
-      MessageListener mailingList = listenersByEmail.get(email);
+      MessageListener mailingList = listenersByEmail.get(email.toLowerCase());
       if (mailingList != null) {
         mailingLists.add(mailingList);
       }
@@ -341,7 +338,7 @@ public class MessageChecker
       MessageListener listener = listenerIter.next();
       MailingList list = mailingListService.findMailingList(listener.getComponentId());
       if (list != null && list.getSubscribedAddress() != null) {
-        listenersByEmail.put(list.getSubscribedAddress(), listener);
+        listenersByEmail.put(list.getSubscribedAddress().toLowerCase(), listener);
       }
     }
     return listenersByEmail;
