@@ -23,23 +23,6 @@
  */
 package com.silverpeas.gallery.servlets;
 
-import java.io.File;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.Form;
@@ -71,7 +54,6 @@ import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -83,8 +65,23 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
 
-public class GalleryRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
+
+public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
 
   /**
    *
@@ -108,7 +105,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public GallerySessionController createComponentSessionController(
           MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new GallerySessionController(mainSessionCtrl, componentContext);
   }
@@ -117,21 +114,18 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param gallerySC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, GallerySessionController gallerySC,
           HttpServletRequest request) {
     String destination = "";
     String rootDest = "/gallery/jsp/";
-
-    GallerySessionController gallerySC = (GallerySessionController) componentSC;
     request.setAttribute("gallerySC", gallerySC);
-    SilverTrace
-        .info("gallery", "GalleryRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+    SilverTrace.info("gallery", "GalleryRequestRouter.getDestination()",
+            "root.MSG_GEN_PARAM_VALUE", "User=" + gallerySC.getUserId() + " Function=" + function);
 
     // création des paramètres généraux
     String flag = gallerySC.getRole();
@@ -995,7 +989,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           gallerySC.setIndexOfFirstItemToDisplay(index);
         }
 
-        destination = getDestination("ViewSearchResults", componentSC, request);
+        destination = getDestination("ViewSearchResults", gallerySC, request);
       } else if (function.equals("ViewSearchResults")) {
         // passage des paramètres
         request.setAttribute("SearchKeyWord", gallerySC.getSearchKeyWord());

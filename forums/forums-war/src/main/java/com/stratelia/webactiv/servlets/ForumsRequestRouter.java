@@ -23,14 +23,9 @@
  */
 package com.stratelia.webactiv.servlets;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.RequestHelper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -39,15 +34,18 @@ import com.stratelia.webactiv.forums.sessionController.ForumsSessionController;
 import com.stratelia.webactiv.forums.url.ActionUrl;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 
-public class ForumsRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionController> {
 
   private static final String ROOT_DEST = "/forums/jsp/";
   private static final long serialVersionUID = 4053081577285187038L;
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public ForumsSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    return (ComponentSessionController) new ForumsSessionController(mainSessionCtrl, context);
+    return new ForumsSessionController(mainSessionCtrl, context);
   }
 
   /**
@@ -60,11 +58,8 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
   }
 
   @Override
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, ForumsSessionController forumsSC, HttpServletRequest request) {
     String destination = "";
-    ForumsSessionController forumsSC = (ForumsSessionController) componentSC;
-
     if ((function.startsWith("Main")) || (function.startsWith("main"))) {
         String forumId = request.getParameter("forumId");
         if (forumId != null && Integer.parseInt(forumId) > 0) {
@@ -114,7 +109,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
         SilverTrace.info("forums", "ForumsRequestRouter",
             "root.MSG_GEN_PARAM_VALUE", "messageId (pour last visite) = "
             + messageId);
-        forumsSC.setLastVisit(componentSC.getUserId(), Integer.parseInt(messageId));
+        forumsSC.setLastVisit(forumsSC.getUserId(), Integer.parseInt(messageId));
       }
       int forumId = 0;
       String forumIdS = request.getParameter("forumId");
@@ -141,12 +136,12 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
     } else if (function.equals("ValidateMessage")) {
       String messageId = request.getParameter("params");
       forumsSC.validateMessage(Integer.parseInt(messageId));
-      destination = getDestination("viewMessage", componentSC, request);
+      destination = getDestination("viewMessage", forumsSC, request);
     } else if (function.equals("RefuseMessage")) {
       String messageId = request.getParameter("params");
       String motive = request.getParameter("Motive");
       forumsSC.refuseMessage(Integer.parseInt(messageId), motive);
-      destination = getDestination("viewMessage", componentSC, request);
+      destination = getDestination("viewMessage", forumsSC, request);
     } // gestion des catégories
     // ----------------------
     else if (function.equals("ViewCategory")) {
@@ -161,7 +156,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
           "unknown");
       forumsSC.createCategory(category);
 
-      destination = getDestination("ViewCategory", componentSC, request);
+      destination = getDestination("ViewCategory", forumsSC, request);
     } else if (function.equals("EditCategory")) {
       // récupération des paramètres
       String categoryId = request.getParameter("CategoryId");
@@ -178,13 +173,13 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
       category.setDescription(desc);
       forumsSC.updateCategory(category);
 
-      destination = getDestination("ViewCategory", componentSC, request);
+      destination = getDestination("ViewCategory", forumsSC, request);
     } else if (function.equals("DeleteCategory")) {
       String categoryId = request.getParameter("CategoryId");
       SilverTrace.debug("forums", "ForumsRequestRouter",
           "root.MSG_GEN_PARAM_VALUE", "categoryId = " + categoryId);
       forumsSC.deleteCategory(categoryId);
-      destination = getDestination("ViewCategory", componentSC, request);
+      destination = getDestination("ViewCategory", forumsSC, request);
     } else if (function.startsWith("searchResult")) {
       String id = request.getParameter("Id");
       String type = request.getParameter("Type");
@@ -192,7 +187,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
         destination = ROOT_DEST + "viewForum.jsp?forumId=" + id;
       } else if (type.equals("ForumsMessage")) {
         request.setAttribute("params", id);
-        destination = getDestination("viewMessage", componentSC, request);
+        destination = getDestination("viewMessage", forumsSC, request);
       } else {
         destination = ROOT_DEST + "viewMessage.jsp?action=1&params=" + id;
       }

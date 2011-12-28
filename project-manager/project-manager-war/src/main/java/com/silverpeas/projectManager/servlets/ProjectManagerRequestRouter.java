@@ -23,6 +23,23 @@
  */
 package com.silverpeas.projectManager.servlets;
 
+import com.silverpeas.projectManager.control.ProjectManagerSessionController;
+import com.silverpeas.projectManager.model.Filtre;
+import com.silverpeas.projectManager.model.TaskDetail;
+import com.silverpeas.projectManager.model.TaskResourceDetail;
+import com.silverpeas.projectManager.vo.MonthVO;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.selection.Selection;
+import com.stratelia.silverpeas.selection.SelectionUsersGroups;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -32,26 +49,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import com.silverpeas.projectManager.control.ProjectManagerSessionController;
-import com.silverpeas.projectManager.model.Filtre;
-import com.silverpeas.projectManager.model.TaskDetail;
-import com.silverpeas.projectManager.model.TaskResourceDetail;
-import com.silverpeas.projectManager.vo.MonthVO;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.selection.Selection;
-import com.stratelia.silverpeas.selection.SelectionUsersGroups;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-
-public class ProjectManagerRequestRouter extends ComponentRequestRouter {
+public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectManagerSessionController> {
 
   private static final long serialVersionUID = 5878086083042945518L;
   private static final String COMPONENT_NAME = "projectManager";
@@ -67,28 +65,23 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
   }
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public ProjectManagerSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    return new ProjectManagerSessionController(mainSessionCtrl,
-        componentContext);
+    return new ProjectManagerSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param projectManagerSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, ProjectManagerSessionController projectManagerSC, HttpServletRequest request) {
     String destination = "";
     String rootDestination = "/projectManager/jsp/";
-
-    ProjectManagerSessionController projectManagerSC =
-        (ProjectManagerSessionController) componentSC;
     SilverTrace.info(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + projectManagerSC.getUserId() + " Function=" +
             function);
@@ -139,14 +132,14 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         projectManagerSC.createProject(project);
 
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", projectManagerSC, request);
       } else if (function.equals("UpdateProject")) {
         updateCurrentProject(request, projectManagerSC);
 
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", projectManagerSC, request);
       } else if (function.startsWith("Filter")) {
         projectManagerSC.setFiltreActif(function.equals("FilterShow"));
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", projectManagerSC, request);
       } else if (function.equals("ToFilterTasks")) {
         Filtre filtre = new Filtre(request);
 
@@ -170,7 +163,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         projectManagerSC.setFiltre(filtre);
 
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", projectManagerSC, request);
       } else if (function.equals("ViewTask")) {
         String id = request.getParameter("Id");
 
@@ -187,13 +180,13 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         projectManagerSC.addUnfoldTask(id);
 
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", projectManagerSC, request);
       } else if (function.equals("CollapseTask")) {
         String id = request.getParameter("Id");
 
         projectManagerSC.removeUnfoldTask(id);
 
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", projectManagerSC, request);
       } else if (function.equals("ToAddTask")) {
         TaskDetail currentTask = projectManagerSC.getCurrentTask();
         if (projectManagerSC.isProjectDefined()) {
@@ -211,7 +204,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         projectManagerSC.addTask(task);
 
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", projectManagerSC, request);
       } else if (function.equals("ProcessEndDate")) {
         // Création ou modification ?
         String action = request.getParameter("Action");
@@ -229,7 +222,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         request.setAttribute("TaskInProgress", task);
 
-        destination = getDestination(action, componentSC, request);
+        destination = getDestination(action, projectManagerSC, request);
       } else if (function.equals("ToUpdateTask")) {
         if (projectManagerSC.isProjectDefined()) {
           TaskDetail currentProject = projectManagerSC.getCurrentProject();
@@ -257,12 +250,12 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("UpdateTask")) {
         updateActionCourante(request, projectManagerSC);
 
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", projectManagerSC, request);
       } else if (function.equals("RemoveTask")) {
         String id = request.getParameter("Id");
         projectManagerSC.removeTask(id);
 
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", projectManagerSC, request);
       } else if (function.equals("ToChooseDate")) {
         String inputId = request.getParameter("InputId");
         String jsFunction = request.getParameter("JSFunction");
@@ -487,10 +480,6 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         beginDate = calendar.getTime();
 
-        // calendar.setTime(endDate);
-        // calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH)+1);
-        // calendar.set(Calendar.DAY_OF_MONTH, 1);
-        // calendar.add(Calendar.DAY_OF_MONTH, -1);
         calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) + 1);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         calendar.add(Calendar.DAY_OF_MONTH, -1);
@@ -507,7 +496,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         projectManagerSC.changeDateStatus(date, status);
 
-        destination = getDestination("ToCalendar", componentSC, request);
+        destination = getDestination("ToCalendar", projectManagerSC, request);
       } else if (function.equals("ChangeDayOfWeekStatus")) {
         String year = request.getParameter("Year");
         String month = request.getParameter("Month");
@@ -515,7 +504,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         projectManagerSC.changeDayOfWeekStatus(year, month, day);
 
-        destination = getDestination("ToCalendar", componentSC, request);
+        destination = getDestination("ToCalendar", projectManagerSC, request);
       } else if (function.equals("Export")) {
         List<TaskDetail> tasks = projectManagerSC.getAllTasks();
         request.setAttribute("Tasks", tasks);
@@ -525,16 +514,16 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         String type = request.getParameter("Type");
 
         if (type.indexOf("TodoDetail") != -1) {
-          destination = getDestination("ToUpdateTask", componentSC, request);
+          destination = getDestination("ToUpdateTask", projectManagerSC, request);
         } else if (type.startsWith("Comment")) {
           if (id.equals("-1")) {
-            destination = getDestination("ToComments", componentSC, request);
+            destination = getDestination("ToComments", projectManagerSC, request);
           } else {
             projectManagerSC.getTask(id);
-            destination = getDestination("ToTaskComments", componentSC, request);
+            destination = getDestination("ToTaskComments", projectManagerSC, request);
           }
         } else {
-          destination = getDestination("ViewTask", componentSC, request);
+          destination = getDestination("ViewTask", projectManagerSC, request);
         }
       } else if (function.equals("portlet")) {
         if (projectManagerSC.isProjectDefined()) {

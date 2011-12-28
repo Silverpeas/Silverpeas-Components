@@ -27,22 +27,21 @@
 
 package com.stratelia.silverpeas.connecteurJDBC.control;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.connecteurJDBC.model.ConnecteurJDBCRuntimeException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer
  * rapidement et simplement des donnees du systeme d'information de l'entreprise.
  */
 
-public class ConnecteurJDBCRequestRouter extends ComponentRequestRouter {
+public class ConnecteurJDBCRequestRouter extends ComponentRequestRouter<ConnecteurJDBCSessionController> {
 
   /**
    * 
@@ -57,14 +56,10 @@ public class ConnecteurJDBCRequestRouter extends ComponentRequestRouter {
    * @throws ConnecteurJDBCRuntimeException
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public ConnecteurJDBCSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext)
       throws ConnecteurJDBCRuntimeException {
-    ComponentSessionController component =
-        (ComponentSessionController) new ConnecteurJDBCSessionController(
-        mainSessionCtrl, componentContext);
-
-    return component;
+    return new ConnecteurJDBCSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
@@ -85,15 +80,14 @@ public class ConnecteurJDBCRequestRouter extends ComponentRequestRouter {
    * state of the component (embbeded in the session controleur) and parameters from the request
    * object.
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param connecteurJDBC The component Session Control, build and initialised.
    * @param request current http request
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+      ConnecteurJDBCSessionController connecteurJDBC, HttpServletRequest request) {
     String destination = null;
-    ConnecteurJDBCSessionController connecteurJDBC = (ConnecteurJDBCSessionController) componentSC;
     String rootDest = "/connecteurJDBC/jsp/";
 
     String flag = connecteurJDBC.getUserRoleLevel();
@@ -129,7 +123,7 @@ public class ConnecteurJDBCRequestRouter extends ComponentRequestRouter {
             "ConnecteurJDBCRequestRouter.getDestination()",
             "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", e);
       }
-      return getDestination("ParameterConnection", componentSC, request);
+      return getDestination("ParameterConnection", connecteurJDBC, request);
     } else if (function.startsWith("processForm")) {
       destination = "processForm.jsp";
     } else {

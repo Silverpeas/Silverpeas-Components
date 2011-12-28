@@ -24,22 +24,10 @@
 
 package com.stratelia.webactiv.webSites.servlets;
 
-import java.io.File;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -51,12 +39,21 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.webSites.control.WebSiteSessionController;
 import com.stratelia.webactiv.webSites.siteManage.model.FolderDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class declaration
  * @author
  */
-public class WebSitesRequestRouter extends ComponentRequestRouter {
+public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSessionController> {
 
   /**
    * 
@@ -78,25 +75,21 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public WebSiteSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    ComponentSessionController component =
-        (ComponentSessionController) new WebSiteSessionController(
-            mainSessionCtrl, componentContext);
-
-    return component;
+    return new WebSiteSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
    * This method has to be implemented by the component request router it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param scc The component Session Control, build and initialised.
    * @param request The entering request. The request router need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, WebSiteSessionController scc,
       HttpServletRequest request) {
 
     SilverTrace.info("webSites", "WebSitesRequestRouter.getDestination()",
@@ -104,10 +97,8 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
     String destination = "";
 
     // the flag is the best user's profile
-    String flag = getFlag(componentSC.getUserRoles());
+    String flag = getFlag(scc.getUserRoles());
     request.setAttribute("BestRole", flag);
-    WebSiteSessionController scc = (WebSiteSessionController) componentSC;
-
     try {
 
       if (function.startsWith("Main")) {
@@ -215,7 +206,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
         request.setAttribute("SuggestionName", nomSite);
         request.setAttribute("SuggestionUrl", nomPage);
-        destination = getDestination("Main", componentSC, request);
+        destination = getDestination("Main", scc, request);
       }
 
       else if (function.equals("DisplaySite")) {

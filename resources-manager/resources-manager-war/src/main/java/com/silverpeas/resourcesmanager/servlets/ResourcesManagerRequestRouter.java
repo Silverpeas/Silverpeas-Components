@@ -60,7 +60,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
+public class ResourcesManagerRequestRouter extends ComponentRequestRouter<ResourcesManagerSessionController> {
 
   private static final long serialVersionUID = 1L;
   private static final String root = "/resourcesManager/jsp/";
@@ -82,7 +82,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public ResourcesManagerSessionController createComponentSessionController(
           MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ResourcesManagerSessionController(mainSessionCtrl, componentContext);
   }
@@ -145,18 +145,17 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param resourcesManagerSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, ResourcesManagerSessionController resourcesManagerSC, HttpServletRequest request) {
     String categoryId = "";
     String reservationId;
     String resourceId;
 
     String destination = "";
-    ResourcesManagerSessionController resourcesManagerSC = (ResourcesManagerSessionController) componentSC;
     request.setAttribute("rsc", resourcesManagerSC);
     String flag = getFlag(resourcesManagerSC.getUserRoles());
     String userId = resourcesManagerSC.getUserId();
@@ -173,7 +172,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       } else if ("SaveCategory".equals(function)) {
         CategoryDetail category = request2CategoryDetail(request);
         resourcesManagerSC.createCategory(category);
-        destination = getDestination("ViewCategories", componentSC, request);
+        destination = getDestination("ViewCategories", resourcesManagerSC, request);
       } else if ("EditCategory".equals(function)) {
         categoryId = request.getParameter("id");
         CategoryDetail category = resourcesManagerSC.getCategory(categoryId);
@@ -185,7 +184,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       } else if ("ModifyCategory".equals(function)) {
         CategoryDetail category = request2CategoryDetail(request);
         resourcesManagerSC.updateCategory(category);
-        destination = getDestination("ViewCategories", componentSC, request);
+        destination = getDestination("ViewCategories", resourcesManagerSC, request);
       } else if ("ViewCategories".equals(function)) {
         List<CategoryDetail> list = resourcesManagerSC.getCategories();
         request.setAttribute("categories", list);
@@ -193,7 +192,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("DeleteCategory")) {
         categoryId = request.getParameter("id");
         resourcesManagerSC.deleteCategory(categoryId);
-        destination = getDestination("ViewCategories", componentSC, request);
+        destination = getDestination("ViewCategories", resourcesManagerSC, request);
       }
       else if ("NewResource".equals(function)) {
         // categorie pré-séléctionnée
@@ -222,7 +221,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         resourcesManagerSC.setResourceIdForResource(idResource);
         updateXMLForm(resourcesManagerSC, items);
 
-        destination = getDestination("ViewResource", componentSC, request);
+        destination = getDestination("ViewResource", resourcesManagerSC, request);
       } else if (function.equals("EditResource")) {
         resourceId = request.getParameter("resourceId");
         if (!StringUtil.isDefined(resourceId)) {
@@ -260,7 +259,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         updateXMLForm(resourcesManagerSC, items);
 
         request.setAttribute("id", resource.getCategoryId());
-        destination = getDestination("ViewResources", componentSC, request);
+        destination = getDestination("ViewResources", resourcesManagerSC, request);
       } else if ("ViewResources".equals(function)) {
         if (request.getAttribute("id") != null) {
           categoryId = (String) request.getAttribute("id");
@@ -319,7 +318,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         categoryId = request.getParameter("categoryId");
         resourcesManagerSC.deleteResource(resourceId);
         request.setAttribute("id", categoryId);
-        destination = getDestination("ViewResources", componentSC, request);
+        destination = getDestination("ViewResources", resourcesManagerSC, request);
       }
       else if ("NewReservation".equals(function)) {
         String date = request.getParameter("Day");
@@ -417,13 +416,12 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
 
             // redirection vers la réservation
             request.setAttribute("reservationId", idModifiedReservation);
-            destination = getDestination("ViewReservation", componentSC, request);
+            destination = getDestination("ViewReservation", resourcesManagerSC, request);
           } else {
             request.setAttribute("listeResourcesProblem",
                     listeResourcesProblemeReservationTotal);
             request.setAttribute("reservationId", idModifiedReservation);
-            destination = getDestination("GetAvailableResources", componentSC,
-                    request);
+            destination = getDestination("GetAvailableResources", resourcesManagerSC, request);
           }
         } else {
           resourcesManagerSC.setListReservationCurrent(listeReservation);
@@ -433,11 +431,10 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
             resourcesManagerSC.saveReservation();
             request.setAttribute("reservationId",
                     resourcesManagerSC.getReservationCourante().getId());
-            destination = getDestination("ViewReservation", componentSC, request);
+            destination = getDestination("ViewReservation", resourcesManagerSC, request);
           } else {
             request.setAttribute("listeResourcesProblem", listeResourcesProblem);
-            destination = getDestination("GetAvailableResources", componentSC,
-                    request);
+            destination = getDestination("GetAvailableResources", resourcesManagerSC, request);
           }
         }
       } else if ("EditReservation".equals(function)) {
@@ -602,7 +599,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
                 reservationId));
         request.setAttribute("reservationId", reservationId);
         request.setAttribute("objectView", objectView);
-        destination = getDestination("ViewReservation", componentSC, request);
+        destination = getDestination("ViewReservation", resourcesManagerSC, request);
       } else if (function.equals("ForRefuseResource")) {
         resourceId = request.getParameter("ResourceId");
         reservationId = request.getParameter("reservationId");
@@ -622,7 +619,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
                 reservationId), motive);
         request.setAttribute("reservationId", reservationId);
         request.setAttribute("objectView", objectView);
-        destination = getDestination("ViewReservation", componentSC, request);
+        destination = getDestination("ViewReservation", resourcesManagerSC, request);
       } else {
         displayCalendarView(request, resourcesManagerSC);
         destination = root + function + ".jsp";

@@ -33,7 +33,6 @@ import com.silverpeas.crm.model.CrmParticipant;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -43,7 +42,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-public class CrmRequestRouter extends ComponentRequestRouter {
+public class CrmRequestRouter extends ComponentRequestRouter<CrmSessionController> {
 
   private static final long serialVersionUID = 8189464245986518392L;
 
@@ -62,7 +61,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public CrmSessionController createComponentSessionController(
       MainSessionController mainSC, ComponentContext componentContext) {
     return new CrmSessionController(mainSC, componentContext);
   }
@@ -71,36 +70,34 @@ public class CrmRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param crmSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function, ComponentSessionController componentSC,
-      HttpServletRequest request) {
+  public String getDestination(String function, CrmSessionController crmSC, HttpServletRequest request) {
     String destination = "";
-    CrmSessionController crmSC = (CrmSessionController) componentSC;
     SilverTrace.info("crm", "CrmRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "User=" + componentSC.getUserId() + " Function=" + function);
+        "User=" + crmSC.getUserId() + " Function=" + function);
 
     try {
       resetContainerContext(crmSC, request);
       resetReturnURL(crmSC, request);
 
-      if (function.equals("Main")) {
+      if ("Main".equals(function)) {
         destination = setJournalContext(crmSC, request);
-      } else if (function.equals("ViewClient")) {
+      } else if ("ViewClient".equals(function)) {
         destination = setClientContext(crmSC, request);
-      } else if (function.equals("ViewProject")) {
+      } else if ("ViewProject".equals(function)) {
         destination = setProjectContext(crmSC, request);
-      } else if (function.equals("ViewDelivrable")) {
+      } else if ("ViewDelivrable".equals(function)) {
         destination = setDeliveryContext(crmSC, request);
-      } else if (function.equals("ViewJournal")) {
+      } else if ("ViewJournal".equals(function)) {
         destination = setJournalContext(crmSC, request);
-      } else if (function.equals("NewEvent")) {
+      } else if ("NewEvent".equals(function)) {
         String eventId = param(request, "eventId");
         setNewEventContext(eventId, crmSC, request);
         destination = "/crm/jsp/newEvent.jsp";
-      } else if (function.equals("ChangeEvent")) {
+      } else if ("ChangeEvent".equals(function)) {
         String eventId = param(request, "eventId");
         String userName = crmSC.getFilterLib();
         String userId = param(request, "FilterId");
@@ -110,7 +107,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
         String actionDate = crmSC.getDate(param(request, "actionDate"));
         String state = request.getParameter("eventState");
         String sort = param(request, "ArrayPaneAction");
-        if (!sort.equals("Sort")) {
+        if (!"Sort".equals(sort)) {
           Crm defaultCrm = crmSC.getCurrentCrm();
           CrmEvent event;
           boolean creation = eventId.equals("");
@@ -136,7 +133,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
           }
         }
         destination = setJournalContext(crmSC, request);
-      } else if (function.equals("CallUserPanelEvent")) {
+      } else if ("CallUserPanelEvent".equals(function)) {
         // save request param
         crmSC.setEventId(param(request, "eventId"));
         crmSC.setEventState(request.getParameter("eventState"));
@@ -148,7 +145,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
 
         // init user panel
         destination = crmSC.initUserPanelEvent();
-      } else if (function.equals("ReturnFromUserPanelEvent")) {
+      } else if ("ReturnFromUserPanelEvent".equals(function)) {
         // get user panel data (update FilterLib, FilterId)
         crmSC.userPanelReturn();
 
@@ -164,7 +161,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
         request.setAttribute("actionTodo", crmSC.getActionTodo());
 
         destination = "/crm/jsp/newEvent.jsp";
-      } else if (function.equals("DeleteEvent")) {
+      } else if ("DeleteEvent".equals(function)) {
         String eventId = request.getParameter("eventId");
         if (eventId != null) {
           IdPK eventPK = new IdPK();
@@ -172,7 +169,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
           crmSC.deleteCrmEvent(eventPK);
         }
         destination = setJournalContext(crmSC, request);
-      } else if (function.equals("NewDelivery")) {
+      } else if ("NewDelivery".equals(function)) {
         String deliveryId = param(request, "deliveryId");
         setNewDeliveryContext(deliveryId, crmSC, request);
         destination = "/crm/jsp/newDelivery.jsp";
@@ -189,7 +186,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
 
         String media = request.getParameter("deliveryMedia");
         String sort = param(request, "ArrayPaneAction");
-        if (!sort.equals("Sort")) {
+        if (!"Sort".equals(sort)) {
           CrmDelivery delivery;
           boolean creation = (deliveryId.equals(""));
           if (creation) {
@@ -215,7 +212,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
           }
         }
         destination = setDeliveryContext(crmSC, request);
-      } else if (function.equals("CallUserPanelDelivery")) {
+      } else if ("CallUserPanelDelivery".equals(function)) {
         // save request param
         crmSC.setDeliveryId(param(request, "deliveryId"));
         crmSC.setDeliveryDate(crmSC.getDate(param(request, "deliveryDate")));
@@ -230,7 +227,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
 
         // init user panel
         destination = crmSC.initUserPanelDelivery();
-      } else if (function.equals("ReturnFromUserPanelDelivery")) {
+      } else if ("ReturnFromUserPanelDelivery".equals(function)) {
         // get user panel data (update FilterLib, FilterId)
         crmSC.userPanelReturn();
 
@@ -247,7 +244,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
         request.setAttribute("deliveryMedia", crmSC.getDeliveryMedia());
 
         destination = "/crm/jsp/newDelivery.jsp";
-      } else if (function.equals("DeleteDelivery")) {
+      } else if ("DeleteDelivery".equals(function)) {
         String deliveryId = request.getParameter("deliveryId");
 
         if (deliveryId != null) {
@@ -256,11 +253,11 @@ public class CrmRequestRouter extends ComponentRequestRouter {
           crmSC.deleteCrmDelivery(deliveryPK);
         }
         destination = setDeliveryContext(crmSC, request);
-      } else if (function.equals("NewContact")) {
+      } else if ("NewContact".equals(function)) {
         String contactId = param(request, "contactId");
         setNewContactContext(contactId, crmSC, request);
         destination = "/crm/jsp/newContact.jsp";
-      } else if (function.equals("ChangeContact")) {
+      } else if ("ChangeContact".equals(function)) {
         String contactId = param(request, "contactId");
 
         String contactName = param(request, "contactName");
@@ -274,7 +271,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
         }
 
         String sort = param(request, "ArrayPaneAction");
-        if (!sort.equals("Sort")) {
+        if (!"Sort".equals(sort)) {
           CrmContact contact;
           boolean creation = contactId.equals("");
           if (creation) {
@@ -298,7 +295,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
           }
         }
         destination = setClientContext(crmSC, request);
-      } else if (function.equals("DeleteContact")) {
+      } else if ("DeleteContact".equals(function)) {
         String contactId = request.getParameter("contactId");
 
         if (contactId != null) {

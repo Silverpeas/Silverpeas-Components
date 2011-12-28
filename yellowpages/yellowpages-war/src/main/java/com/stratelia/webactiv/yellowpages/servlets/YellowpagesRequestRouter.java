@@ -23,16 +23,6 @@
  */
 package com.stratelia.webactiv.yellowpages.servlets;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
@@ -43,7 +33,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -56,20 +45,25 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.yellowpages.control.YellowpagesSessionController;
 import com.stratelia.webactiv.yellowpages.model.GroupDetail;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
+import org.apache.commons.fileupload.FileItem;
 
-public class YellowpagesRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+public class YellowpagesRequestRouter extends ComponentRequestRouter<YellowpagesSessionController> {
 
   /**
    *
    */
   private static final long serialVersionUID = 1L;
 
-  public ComponentSessionController createComponentSessionController(
+  public YellowpagesSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    ComponentSessionController component =
-        (ComponentSessionController) new YellowpagesSessionController(
-        mainSessionCtrl, componentContext);
-    return component;
+    return new YellowpagesSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
@@ -83,18 +77,14 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   *
+   * @param function    The entering request function (ex : "Main.jsp")
+   * @param scc The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
-    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
-        "root.MSG_GEN_ENTER_METHOD");
-    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "function = " + function);
-    YellowpagesSessionController scc = (YellowpagesSessionController) componentSC;
+  public String getDestination(String function, YellowpagesSessionController scc, HttpServletRequest request) {
+    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "function = " + function);
 
     String destination = "";
     String rootDestination = "/yellowpages/jsp/";
@@ -168,23 +158,15 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
 
         destination = "/yellowpages/jsp/annuaire.jsp?Action=GoTo&Profile="
             + flag;
-      }
-
-      else if (function.startsWith("portlet")) {
+      } else if (function.startsWith("portlet")) {
         scc.setPortletMode(true);
         destination = getDestination("GoTo", scc, request);
-      }
-
-      else if (function.startsWith("annuaire")) {
+      } else if (function.startsWith("annuaire")) {
         destination = "/yellowpages/jsp/annuaire.jsp?Profile=" + flag;
-      }
-
-      else if (function.startsWith("topicManager")) {
+      } else if (function.startsWith("topicManager")) {
         scc.clearGroupPath();
         destination = "/yellowpages/jsp/topicManager.jsp?Profile=" + flag;
-      }
-
-      else if (function.equals("GoToGroup")) {
+      } else if (function.equals("GoToGroup")) {
         String id = request.getParameter("Id");
         id = id.substring(id.indexOf("_") + 1, id.length()); // remove "group_"
 
@@ -200,18 +182,14 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         scc.removeGroup(id);
 
         destination = getDestination("topicManager", scc, request);
-      }
-
-      else if (function.equals("ViewUserFull")) {
+      } else if (function.equals("ViewUserFull")) {
         String id = request.getParameter("Id");
 
         UserFull user = scc.getOrganizationController().getUserFull(id);
 
         request.setAttribute("UserFull", user);
         destination = "/yellowpages/jsp/userFull.jsp";
-      }
-
-      else if (function.startsWith("searchResult")) {
+      } else if (function.startsWith("searchResult")) {
         scc.setPortletMode(false);
 
         String id = request.getParameter("Id");
@@ -237,9 +215,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         } else if (type.equals("Node")) {
           destination = getDestination("GoTo", scc, request);
         }
-      }
-
-      else if (function.equals("Search")) {
+      } else if (function.equals("Search")) {
         TopicDetail currentTopic = scc.getTopic("0");
         scc.setCurrentTopic(currentTopic);
 
@@ -263,9 +239,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
 
         destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile="
             + flag;
-      }
-
-      else if (function.equals("PrintList")) {
+      } else if (function.equals("PrintList")) {
         Collection<ContactFatherDetail> contacts = scc.getCurrentContacts();
         TopicDetail currentTopic = scc.getCurrentTopic();
 
@@ -273,9 +247,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         request.setAttribute("CurrentTopic", currentTopic);
 
         destination = "/yellowpages/jsp/printContactList.jsp";
-      }
-
-      else if (function.startsWith("contactManager")) {
+      } else if (function.startsWith("contactManager")) {
 
         String action = (String) request.getParameter("Action");
         String contactId = (String) request.getParameter("ContactId");
@@ -293,10 +265,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             getPublicationTemplateManager().addDynamicPublicationTemplate(scc
                 .getComponentId()
                 + ":" + xmlFormShortName, xmlFormName);
-            PublicationTemplateImpl pubTemplate =
-                (PublicationTemplateImpl) getPublicationTemplateManager()
-                .getPublicationTemplate(scc.getComponentId() + ":"
-                + xmlFormShortName, xmlFormName);
+            PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
+                    .getPublicationTemplate(scc.getComponentId() + ":" + xmlFormShortName, xmlFormName);
 
             // création du formulaire et du DataRecord
             Form formView = pubTemplate.getViewForm();
@@ -324,25 +294,17 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Action", action);
 
         destination = "/yellowpages/jsp/contactManager.jsp";
-      }
-
-      else if (function.startsWith("http")) {
+      } else if (function.startsWith("http")) {
         destination = function;
-      }
-
-      else if (function.startsWith("selectUser")) {
+      } else if (function.startsWith("selectUser")) {
         // initialisation du userPanel avec les participants
         destination = scc.initUserPanel();
-      }
-
-      else if (function.startsWith("saveUser")) {
+      } else if (function.startsWith("saveUser")) {
         // retour du userPanel
         scc.setContactUserSelected();
         request.setAttribute("Action", "SaveUser");
         destination = "/yellowpages/jsp/contactManager.jsp";
-      }
-
-      else if (function.equals("ToChooseGroup")) {
+      } else if (function.equals("ToChooseGroup")) {
         destination = scc.initGroupPanel();
       } else if (function.equals("AddGroup")) {
         // retour du userPanel
@@ -389,8 +351,6 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         // contact
 
         if ("ModelChoice".equals(action)) {
-          // List listTemplate =
-          // getPublicationTemplateManager().getPublicationTemplates();
           List<PublicationTemplate> listTemplates = new ArrayList<PublicationTemplate>();
           ArrayList<String> usedTemplates = new ArrayList<String>(scc.getModelUsed());
           try {
@@ -400,8 +360,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             Iterator<PublicationTemplate> iterator = allTemplates.iterator();
             while (iterator.hasNext()) {
               xmlForm = (PublicationTemplate) iterator.next();
-              if (usedTemplates.contains(xmlForm.getFileName()))
+              if (usedTemplates.contains(xmlForm.getFileName())) {
                 listTemplates.add(xmlForm);
+              }
             }
             request.setAttribute("XMLForms", listTemplates);
           } catch (Exception e) {
@@ -429,8 +390,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
                 + ":" + xmlFormShortName, xmlFormName);
             PublicationTemplateImpl pubTemplate =
                 (PublicationTemplateImpl) getPublicationTemplateManager()
-                .getPublicationTemplate(scc.getComponentId() + ":"
-                + xmlFormShortName, xmlFormName);
+                    .getPublicationTemplate(scc.getComponentId() + ":"
+                        + xmlFormShortName, xmlFormName);
 
             // création du formulaire et du DataRecord
             Form formUpdate = pubTemplate.getUpdateForm();
@@ -464,8 +425,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
                 + ":" + xmlFormShortName, xmlFormName);
             PublicationTemplateImpl pubTemplate =
                 (PublicationTemplateImpl) getPublicationTemplateManager()
-                .getPublicationTemplate(scc.getComponentId() + ":"
-                + xmlFormShortName, xmlFormName);
+                    .getPublicationTemplate(scc.getComponentId() + ":"
+                        + xmlFormShortName, xmlFormName);
 
             // création du formulaire et du DataRecord
             Form formUpdate = pubTemplate.getUpdateForm();
@@ -496,7 +457,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             // récupération des données du formulaire (via le DataRecord)
             PublicationTemplate pubTemplate = getPublicationTemplateManager()
                 .getPublicationTemplate(scc.getComponentId() + ":"
-                + xmlFormShortName);
+                    + xmlFormShortName);
             Form formUpdate = pubTemplate.getUpdateForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
             DataRecord data = recordSet.getRecord(contactId);
@@ -542,7 +503,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
         FileItem fileItem = FileUploadUtil.getFile(parameters);
         String modelId = scc.getCurrentTopic().getNodeDetail().getModelId();
-        request.setAttribute("Result",scc.importCSV(fileItem, modelId));
+        request.setAttribute("Result", scc.importCSV(fileItem, modelId));
         destination = rootDestination + "importCSV.jsp";
       } else {
         destination = "/yellowpages/jsp/" + function;
@@ -556,9 +517,10 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
     return destination;
   }
-  
+
   /**
    * Gets an instance of PublicationTemplateManager.
+   *
    * @return an instance of PublicationTemplateManager.
    */
   private PublicationTemplateManager getPublicationTemplateManager() {

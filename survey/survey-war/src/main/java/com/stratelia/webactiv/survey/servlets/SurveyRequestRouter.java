@@ -24,16 +24,8 @@
 
 package com.stratelia.webactiv.survey.servlets;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -43,7 +35,13 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
-public class SurveyRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionController> {
 
   private static final long serialVersionUID = -1921269596127652643L;
 
@@ -72,7 +70,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
   }
 
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public SurveySessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new SurveySessionController(mainSessionCtrl, componentContext);
   }
@@ -86,19 +84,18 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialized.
+   * @param surveySC The component Session Control, build and initialized.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, SurveySessionController surveySC,
       HttpServletRequest request) {
     SilverTrace.info(COMPONENT_NAME, "SurveyRequestRouter.getDestination",
         "Survey.MSG_ENTRY_METHOD");
 
-    String flag = getFlag(componentSC.getUserRoles());
+    String flag = getFlag(surveySC.getUserRoles());
     String rootDest = "/survey/jsp/";
-    SurveySessionController surveySC = (SurveySessionController) componentSC;
     if (flag.equals("userMultiple")) {
       surveySC.setParticipationMultipleAllowedForUser(true);
     }

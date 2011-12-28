@@ -24,36 +24,34 @@
 
 package com.silverpeas.scheduleevent.servlets;
 
-import java.util.HashMap;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddDateRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDescriptionNextRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventSimpleFormRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventTimeNextRequestHandler;
-import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDateNextRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventAddRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventBackwardRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventCancelRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventConfirmRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventConfirmUsersRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDateNextRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDeleteDateRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDeleteRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDescriptionNextRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventDetailRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventMainRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventModifyStateRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventOpenUserRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventSimpleFormRequestHandler;
+import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventTimeNextRequestHandler;
 import com.silverpeas.scheduleevent.servlets.handlers.ScheduleEventValidResponseRequestHandler;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class ScheduleEventRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+
+public class ScheduleEventRequestRouter extends ComponentRequestRouter<ScheduleEventSessionController> {
 
   private static final long serialVersionUID = 368205022700081777L;
 
@@ -158,7 +156,7 @@ public class ScheduleEventRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public ScheduleEventSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ScheduleEventSessionController(mainSessionCtrl, componentContext);
   }
@@ -167,16 +165,15 @@ public class ScheduleEventRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param scheduleeventSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) {
     String destination = "";
-    ScheduleEventSessionController scheduleeventSC = (ScheduleEventSessionController) componentSC;
     SilverTrace.info("scheduleevent", "ScheduleEventRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "User=" + scheduleeventSC.getUserId() + " Function=" + function);
 
     try {
       ScheduleEventRequestHandler currentAction = actions.get(function);

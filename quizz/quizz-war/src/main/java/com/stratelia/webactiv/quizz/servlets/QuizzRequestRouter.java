@@ -24,13 +24,8 @@
 
 package com.stratelia.webactiv.quizz.servlets;
 
-import java.io.File;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -40,7 +35,10 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
-public class QuizzRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+
+public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionController> {
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -52,35 +50,33 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public QuizzSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    ComponentSessionController component = (ComponentSessionController) new QuizzSessionController(
-        mainSessionCtrl, componentContext);
-
-    return component;
+    return new QuizzSessionController(mainSessionCtrl, componentContext);
   }
 
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
-   * @param request The entering request. The request rooter need it to get parameters
+   * @param quizzSC  The component Session Control, build and initialised.
+   * @param request  The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex : "/quizz/jsp/quizz.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
-    SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", function);
-    QuizzSessionController quizzSC = (QuizzSessionController) componentSC;
+  public String getDestination(String function, QuizzSessionController quizzSC,
+      HttpServletRequest request) {
+    SilverTrace
+        .info("Quizz", "QuizzRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", function);
     String destination = "";
 
-    String flag = componentSC.getUserRoleLevel();
+    String flag = quizzSC.getUserRoleLevel();
     request.setAttribute("Profile", flag);
 
     try {
@@ -93,10 +89,11 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
           destination = "quizzUser.jsp";
         }
       } else if (function.startsWith("portlet")) {
-        if ("publisher".equals(flag) || "admin".equals(flag))
+        if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = "quizzPortlet.jsp";
-        else
+        } else {
           destination = "quizzUserPortlet.jsp";
+        }
       } else if (function.startsWith("quizzCreator")) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = "quizzCreator.jsp";
@@ -142,19 +139,20 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = "quizzQuestionsNew.jsp?Action=ViewQuizz&QuizzId=" + id;
         } else {
-          if (quizzSC.isParticipationAllowed(id))
+          if (quizzSC.isParticipationAllowed(id)) {
             destination = "quizzQuestionsNew.jsp?Action=ViewCurrentQuestions&QuizzId="
                 + id;
-          else
+          } else {
             destination = "quizzResultUser.jsp";
+          }
         }
       } else {
         destination = function;
       }
 
       if (profileError) {
-        String sessionTimeout = GeneralPropertiesManager
-            .getGeneralResourceLocator().getString("sessionTimeout");
+        String sessionTimeout =
+            GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
 
         destination = sessionTimeout;
       } else {
