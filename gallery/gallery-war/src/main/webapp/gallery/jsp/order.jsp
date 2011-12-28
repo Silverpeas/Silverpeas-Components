@@ -110,7 +110,9 @@ var messages = new Array();
 		PhotoDetail photo = row.getPhoto();
 		String nomRep = resource.getSetting("imagesSubDirectory") + photo.getId();
 %>		
-		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId, photo.getId() + extensionAlt, photo.getImageMimeType(), nomRep)%>','<%=photo.getName()%>',"#FFFFFF");
+		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId, photo.getId() 
+		    + extensionAlt, photo.getImageMimeType(), nomRep)%>',
+		    '<%=EncodeHelper.javaStringToJsString(photo.getName())%>',"#FFFFFF");
 <%		
 		messagesId++;
 	}
@@ -356,9 +358,9 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
     out.println(frame.printBefore());
     
  	// déclaration des boutons
-	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:updateOrder()", false);
-	Button cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cancel"), "OrderViewList", false);
-	Button returnButton	  = (Button) gef.getFormButton(resource.getString("GML.back"), "OrderViewList", false);
+	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:updateOrder()", false);
+	Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "OrderViewList", false);
+	Button returnButton	= gef.getFormButton(resource.getString("GML.back"), "OrderViewList", false);
 
     // entête de la demande
     // --------------------

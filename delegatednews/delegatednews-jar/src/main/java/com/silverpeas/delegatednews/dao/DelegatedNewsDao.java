@@ -24,15 +24,13 @@
 
 package com.silverpeas.delegatednews.dao;
 
-import java.util.List;
-
-import org.synyx.hades.dao.GenericDao;
-import org.synyx.hades.dao.Param;
-import org.synyx.hades.dao.Query;
-
 import com.silverpeas.delegatednews.model.DelegatedNews;
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-public interface DelegatedNewsDao extends GenericDao<DelegatedNews, Integer> {
+public interface DelegatedNewsDao extends JpaRepository<DelegatedNews, Integer> {
   
 
   @Query("from DelegatedNews dn WHERE dn.status = :status order by dn.validationDate DESC")

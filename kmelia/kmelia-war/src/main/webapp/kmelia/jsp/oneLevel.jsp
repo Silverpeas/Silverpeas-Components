@@ -253,6 +253,7 @@ labels["operation.updateChain"] = "<%=resources.getString("kmelia.updateByChain"
 labels["operation.subscribe"] = "<%=resources.getString("SubscriptionsAdd")%>";
 labels["operation.favorites"] = "<%=resources.getString("FavoritesAdd1")%> <%=resources.getString("FavoritesAdd2")%>";
 labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
+labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPredefinePositions")%>";
 
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";

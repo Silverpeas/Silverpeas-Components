@@ -40,20 +40,16 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import javax.imageio.ImageIO;
-import org.apache.commons.fileupload.FileItem;
 
 public class ImageHelper {
 
@@ -138,7 +134,7 @@ public class ImageHelper {
     if (!StringUtil.isDefined(percent)) {
       percent = "1";
     }
-    int percentSize = new Integer(percent).intValue();
+    int percentSize = Integer.parseInt(percent);
     if (percentSize <= 0) {
       percentSize = 1;
     }
@@ -212,7 +208,7 @@ public class ImageHelper {
         Metadata metadata = JpegMetadataReader.readMetadata(dir);
         Directory iptcDirectory = metadata.getDirectory(IptcDirectory.class);
 
-        int currentMetadata = new Integer(property).intValue();
+        int currentMetadata = Integer.parseInt(property);
         String value = iptcDirectory.getString(currentMetadata);
 
         if (value != null) {
@@ -227,7 +223,7 @@ public class ImageHelper {
         Metadata metadata = JpegMetadataReader.readMetadata(dir);
         Directory iptcDirectory = metadata.getDirectory(IptcDirectory.class);
 
-        int currentMetadata = new Integer(property).intValue();
+        int currentMetadata = Integer.parseInt(property);
         String value = iptcDirectory.getString(currentMetadata);
 
         if (value != null) {
@@ -242,13 +238,12 @@ public class ImageHelper {
     }
   }
 
-  public static void setMetaData(PhotoDetail photo) throws UnsupportedEncodingException,
-      ImageMetadataException {
+  public static void setMetaData(PhotoDetail photo) throws IOException, ImageMetadataException {
     setMetaData(photo, I18NHelper.defaultLanguage);
   }
 
   public static void setMetaData(PhotoDetail photo, String lang) throws ImageMetadataException,
-      UnsupportedEncodingException {
+      IOException {
     String photoId = photo.getPhotoPK().getId();
     String name = photo.getImageName();
     String mimeType = photo.getImageMimeType();

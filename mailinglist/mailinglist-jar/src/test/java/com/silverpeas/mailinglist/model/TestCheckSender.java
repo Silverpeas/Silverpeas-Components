@@ -24,22 +24,20 @@
 
 package com.silverpeas.mailinglist.model;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
-
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
-import org.jvnet.mock_javamail.Mailbox;
-
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.jvnet.mock_javamail.Mailbox;
+
+import java.io.IOException;
+import java.sql.SQLException;
 
 public class TestCheckSender extends
     AbstractSilverpeasDatasourceSpringContextTests {
@@ -54,13 +52,12 @@ public class TestCheckSender extends
   }
 
   @Override
-  protected void onTearDown() throws IOException {
+  protected void onTearDown() throws Exception {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
     } catch (Exception ex) {
       ex.printStackTrace();
     } finally {
@@ -99,14 +96,8 @@ public class TestCheckSender extends
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
-    FlatXmlDataSet dataSet;
-    if (isOracle()) {
-      dataSet = new FlatXmlDataSet(TestCheckSender.class
-          .getResourceAsStream("test-check-sender-dataset.xml"));
-    } else {
-      dataSet = new FlatXmlDataSet(TestCheckSender.class
-          .getResourceAsStream("test-check-sender-dataset.xml"));
-    }
+    FlatXmlDataSet dataSet = new FlatXmlDataSetBuilder().build(TestCheckSender.class
+          .getResourceAsStream("test-check-sender-dataset.xml"));;
     return dataSet;
   }
 

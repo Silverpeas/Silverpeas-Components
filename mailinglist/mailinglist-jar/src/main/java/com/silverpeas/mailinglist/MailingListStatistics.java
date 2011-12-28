@@ -24,21 +24,20 @@
 
 package com.silverpeas.mailinglist;
 
+import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.model.beans.MailingList;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.silverpeas.mailinglist.service.ServicesFactory;
-import com.silverpeas.mailinglist.service.model.beans.MailingList;
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 public class MailingListStatistics implements ComponentStatisticsInterface {
 
-  @SuppressWarnings("unchecked")
   @Override
-  public Collection getVolume(String spaceId, String componentId)
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
     UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
@@ -53,7 +52,7 @@ public class MailingListStatistics implements ComponentStatisticsInterface {
       SilverTrace.warn("mailingList", "MailingListStatistics.getVolume()",
           "root.MSG_GEN_ENTER_METHOD",
           "space = " + spaceId + ", componentId = " + componentId +
-          " doesn't look like a mailinglist");
+              " doesn't look like a mailinglist");
       myCouple.setCountVolume(0);
     }
     myArrayList.add(myCouple);

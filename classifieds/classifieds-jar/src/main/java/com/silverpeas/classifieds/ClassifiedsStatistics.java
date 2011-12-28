@@ -25,16 +25,17 @@ package com.silverpeas.classifieds;
 
 import com.silverpeas.classifieds.control.ClassifiedService;
 import com.silverpeas.classifieds.control.ClassifiedServiceFactory;
+import com.silverpeas.classifieds.model.ClassifiedDetail;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.silverpeas.classifieds.model.ClassifiedDetail;
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
-
 /**
  * Class declaration
+ *
  * @author
  */
 public class ClassifiedsStatistics implements ComponentStatisticsInterface {
@@ -57,8 +58,7 @@ public class ClassifiedsStatistics implements ComponentStatisticsInterface {
       throws RemoteException {
     ClassifiedServiceFactory factory = ClassifiedServiceFactory.getFactory();
     ClassifiedService service = factory.getClassifiedService();
-    Collection<ClassifiedDetail> result = service.getAllClassifieds(componentId);
-    return result;
+    return service.getAllClassifieds(componentId);
   }
 
 }

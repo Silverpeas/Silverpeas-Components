@@ -23,27 +23,28 @@
  */
 package com.silverpeas.silvercrawler.control;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.StringTokenizer;
-
+import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.silvercrawler.model.FileDetail;
 import com.silverpeas.silvercrawler.model.FileFolder;
+import com.silverpeas.silvercrawler.model.SilverCrawlerFileUploadException;
+import com.silverpeas.silvercrawler.model.SilverCrawlerFolderCreationException;
+import com.silverpeas.silvercrawler.model.SilverCrawlerFolderRenameException;
+import com.silverpeas.silvercrawler.model.SilverCrawlerForbiddenActionException;
 import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
+import com.silverpeas.silvercrawler.statistic.HistoryByUser;
+import com.silverpeas.silvercrawler.statistic.HistoryDetail;
 import com.silverpeas.silvercrawler.statistic.Statistic;
 import com.silverpeas.silvercrawler.util.FileServerUtils;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
 import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
@@ -53,39 +54,55 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.indexEngine.model.RepositoryIndexer;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
 
 public class SilverCrawlerSessionController extends
     AbstractComponentSessionController {
   private String currentPath = "";
   private String rootPath = "";
-  private Collection paths = null;
-  private Collection currentResultSearch = new ArrayList();
+  private Collection<String> paths = null;
+  private Collection<FileDetail> currentResultSearch = new ArrayList<FileDetail>();
   private String separator = "";
   private SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmm");
+  private UploadReport lastReport;
+  static private String[] WEIRD_CHARACTERS = {File.separator};
 
   /**
-   * Standard Session Controller Constructeur
+   * Standard Session Controller Constructor
    *
-   *
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   *
+   * @param mainSessionCtrl  The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public SilverCrawlerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "com.silverpeas.silvercrawler.multilang.silverCrawlerBundle",
-        "com.silverpeas.silvercrawler.settings.silverCrawlerIcons");
+        "com.silverpeas.silvercrawler.settings.silverCrawlerIcons",
+        "com.silverpeas.silvercrawler.settings.silverCrawlerSettings");
     rootPath = getComponentParameterValue("directory");
     separator = rootPath.substring(0, 1);
-    if (!separator.equals("/") && !separator.equals("\\"))
+    if (!separator.equals("/") && !separator.equals("\\")) {
       separator = "\\";
+    }
     if (rootPath.endsWith(separator)) {
       rootPath = rootPath.substring(rootPath.length() - 1, rootPath.length());
     }
@@ -110,7 +127,7 @@ public class SilverCrawlerSessionController extends
     SilverTrace.info("silverCrawler",
         "SilverCrawlerSessionController.isRootPath()",
         "root.MSG_GEN_PARAM_VALUE", "currentPath = " + currentPath
-            + " rootPath = " + rootPath);
+        + " rootPath = " + rootPath);
     return currentPath.equals(rootPath);
   }
 
@@ -118,42 +135,44 @@ public class SilverCrawlerSessionController extends
     currentPath = rootPath;
 
     // création de la collection des chemins
-    paths = new ArrayList();
+    paths = new ArrayList<String>();
   }
 
   public long getSizeMax() {
     return Long.parseLong(getComponentParameterValue("maxiSize"));
   }
 
-  public String getSizeMaxString() {
-    return getComponentParameterValue("maxiSize");
+  public Long getSizeMaxString() {
+    return Long.valueOf(getComponentParameterValue("maxiSize"));
   }
 
   public String getNbMaxDirectoriesByPage() {
     if (StringUtil
-        .isDefined(getComponentParameterValue("nbMaxDirectoriesByPage")))
+        .isDefined(getComponentParameterValue("nbMaxDirectoriesByPage"))) {
       return getComponentParameterValue("nbMaxDirectoriesByPage");
-    else
+    } else {
       return "10";
+    }
   }
 
   public String getNbMaxFilesByPage() {
-    if (StringUtil.isDefined(getComponentParameterValue("nbMaxFilesByPage")))
+    if (StringUtil.isDefined(getComponentParameterValue("nbMaxFilesByPage"))) {
       return getComponentParameterValue("nbMaxFilesByPage");
-    else
+    } else {
       return "10";
+    }
   }
 
   public void goToDirectory(String directory) {
     // parcourir les répertoires et recréer les variables courantes
-    Collection newPaths = new ArrayList();
+    Collection<String> newPaths = new ArrayList<String>();
 
     currentPath = rootPath;
     boolean trouve = false;
 
-    Iterator it = paths.iterator();
+    Iterator<String> it = paths.iterator();
     while (it.hasNext() && !trouve) {
-      String path = (String) it.next();
+      String path = it.next();
       // on ajoute ce répertoire à la liste
       newPaths.add(path);
       // currentPath = currentPath + File.separator + path;
@@ -170,8 +189,9 @@ public class SilverCrawlerSessionController extends
   public Boolean isDownload() {
     // retourne true si l'utilisateur peut télécharger un répertoire complet
     boolean download = true;
-    if (getSizeMax() == 0)
+    if (getSizeMax() == 0) {
       download = false;
+    }
     return new Boolean(download);
   }
 
@@ -203,7 +223,7 @@ public class SilverCrawlerSessionController extends
     SilverTrace.debug("silverCrawler",
         "SilverCrawlerSessionController.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "separator = " + separator + " path = "
-            + path);
+        + path);
 
     StringTokenizer st = new StringTokenizer(path, separator);
     String name = "";
@@ -228,19 +248,18 @@ public class SilverCrawlerSessionController extends
     return currentPath;
   }
 
-  public String getDownloadPath(String directory) {
-    // String exportPath = currentPath + File.separator + directory;
+  public String getFullPath(String directory) {
     String exportPath = currentPath + separator + directory;
     return exportPath;
   }
 
-  public Collection getPath() {
+  public Collection<String> getPath() {
     return paths;
   }
 
-  public String[] zipFolder(String folderName) {
-    String[] result = new String[5];
-    String downloadPath = getDownloadPath(folderName);
+  public FolderZIPInfo zipFolder(String folderName) {
+    FolderZIPInfo zipInfo = new FolderZIPInfo();
+    String downloadPath = getFullPath(folderName);
     SilverTrace.info("silverCrawler", "SilverCrawlerRequestRouter.zipFolder()",
         "root.MSG_GEN_PARAM_VALUE", "downloadPath = " + downloadPath);
 
@@ -286,39 +305,69 @@ public class SilverCrawlerSessionController extends
       fileZip = null;
     }
 
-    result[0] = fileZip;
-    result[1] = Long.toString(sizeZip);
-    result[2] = getSizeMaxString();
-    result[3] = url;
+    // Fill in ZipFolderInfo object
+    zipInfo.setFileZip(fileZip);
+    zipInfo.setSize(sizeZip);
+    zipInfo.setMaxiSize(getSizeMaxString());
+    zipInfo.setUrl(url);
 
     SilverTrace.info("silverCrawler",
         "SilverCrawlerSessionController.zipFolder()",
         "root.MSG_GEN_PARAM_VALUE", "fileZip = " + fileZip);
 
-    return result;
+    return zipInfo;
   }
 
-  public Collection getHistoryByFolder(String folderName) {
-    String path = getDownloadPath(folderName);
+  public Collection<HistoryByUser> getHistoryByFolder(String folderName) {
+    String path = getFullPath(folderName);
     return Statistic.getHistoryByObject(path, getComponentId());
 
   }
 
-  public Collection getHistoryByFolderFromResult(String folderName) {
+  public Collection<HistoryByUser> getHistoryByFolderFromResult(String folderName) {
     String path = rootPath + separator + folderName;
     return Statistic.getHistoryByObject(path, getComponentId());
 
   }
 
-  public Collection getHistoryByFile(String fileName) {
-    String path = getDownloadPath(fileName);
+  public Collection<HistoryByUser> getHistoryByFile(String fileName) {
+    String path = getFullPath(fileName);
     return Statistic.getHistoryByObject(path, getComponentId());
 
   }
 
-  public Collection getHistoryByUser(String folderName, String userId) {
-    String path = getDownloadPath(folderName);
+  public Collection<HistoryDetail> getHistoryByUser(String folderName, String userId) {
+    String path = getFullPath(folderName);
     return Statistic.getHistoryByObjectAndUser(path, userId, getComponentId());
+  }
+
+  public void unindexPath(String folderName) {
+    SilverTrace.info("silverCrawler",
+        "SilverCrawlerSessionController.unindexPath()",
+        "root.MSG_GEN_ENTER_METHOD", "folderName = " + folderName);
+
+    RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(),
+        getComponentId());
+    String pathRepository = getFullPath(folderName);
+    if (!pathRepository.endsWith(separator)) {
+      pathRepository += separator;
+    }
+    Date date = new Date();
+    repositoryIndexer.pathIndexer(pathRepository, date.toString(), getUserId(),
+        "remove");
+  }
+
+  public void unindexFile(String fileName) {
+    SilverTrace.info("silverCrawler",
+        "SilverCrawlerSessionController.unindexFile()",
+        "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);
+
+    String path = currentPath + separator + fileName;
+
+    RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(),
+        getComponentId());
+    repositoryIndexer.indexFile("remove", new Date().toString(), getUserId(),
+        new File(path));
   }
 
   public void indexPath(String folderName) {
@@ -328,9 +377,10 @@ public class SilverCrawlerSessionController extends
 
     RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(),
         getComponentId());
-    String pathRepository = getDownloadPath(folderName);
-    if (!pathRepository.endsWith(separator))
+    String pathRepository = getFullPath(folderName);
+    if (!pathRepository.endsWith(separator)) {
       pathRepository += separator;
+    }
     Date date = new Date();
     repositoryIndexer.pathIndexer(pathRepository, date.toString(), getUserId(),
         "add");
@@ -349,14 +399,14 @@ public class SilverCrawlerSessionController extends
         new File(path));
   }
 
-  public void indexPathSelected(Collection dirToIndex) {
+  public void indexPathSelected(Collection<String> dirToIndex) {
     SilverTrace.info("silverCrawler",
         "SilverCrawlerSessionController.indexPathSelected()",
         "root.MSG_GEN_ENTER_METHOD", "dirToIndex = " + dirToIndex.size());
 
-    Iterator it = dirToIndex.iterator();
+    Iterator<String> it = dirToIndex.iterator();
     while (it.hasNext()) {
-      String name = (String) it.next();
+      String name = it.next();
       SilverTrace.info("silverCrawler",
           "SilverCrawlerSessionController.indexPathSelected()",
           "root.MSG_GEN_ENTER_METHOD", "name = " + name);
@@ -364,26 +414,26 @@ public class SilverCrawlerSessionController extends
     }
   }
 
-  public void filePathSelected(Collection fileToIndex) {
+  public void indexSelectedFiles(Collection<String> fileToIndex) {
     SilverTrace.info("silverCrawler",
-        "SilverCrawlerSessionController.filePathSelected()",
+        "SilverCrawlerSessionController.indexSelectedFiles()",
         "root.MSG_GEN_ENTER_METHOD", "fileToIndex = " + fileToIndex.size());
 
-    Iterator it = fileToIndex.iterator();
+    Iterator<String> it = fileToIndex.iterator();
     while (it.hasNext()) {
-      String name = (String) it.next();
+      String name = it.next();
       SilverTrace.info("silverCrawler",
-          "SilverCrawlerSessionController.indexPathSelected()",
+          "SilverCrawlerSessionController.indexSelectedFiles()",
           "root.MSG_GEN_ENTER_METHOD", "name = " + name);
       indexFile(name);
     }
   }
 
-  public Collection getResultSearch(String word) {
+  public Collection<FileDetail> getResultSearch(String word) {
     SilverTrace.info("silverCrawler",
         "SilverCrawlerSessionController.getResultSearch()",
         "root.MSG_GEN_PARAM_VALUE", "word =" + word);
-    Collection docs = new ArrayList();
+    Collection<FileDetail> docs = new ArrayList<FileDetail>();
     try {
       if (word != null && !word.trim().equals("*") && word.trim().length() > 0) {
         QueryDescription query = new QueryDescription(word);
@@ -400,7 +450,7 @@ public class SilverCrawlerSessionController extends
         SilverTrace.info("silverCrawler",
             "SilverCrawlerSessionController.getResultSearch()",
             "root.MSG_GEN_PARAM_VALUE", "result =" + result.length
-                + "length = " + getSearchEngineBm().getResultLength());
+            + "length = " + getSearchEngineBm().getResultLength());
 
         FileDetail file = null;
         File fileOnServer = null;
@@ -452,7 +502,7 @@ public class SilverCrawlerSessionController extends
     return docs;
   }
 
-  public Collection getCurrentResultSearch() {
+  public Collection<FileDetail> getCurrentResultSearch() {
     return currentResultSearch;
   }
 
@@ -482,8 +532,9 @@ public class SilverCrawlerSessionController extends
       String[] list = dir.list();
       size = processFileList(list, path, sizeMaxi);
     }
-    if (size > sizeMaxi)
+    if (size > sizeMaxi) {
       ok = false;
+    }
 
     return ok;
   }
@@ -502,12 +553,14 @@ public class SilverCrawlerSessionController extends
         filesSize += processFileList(currentFile.list(), currentFile
             .getAbsolutePath()
             + separator, sizeMaxi);
-        if (filesSize > sizeMaxi)
+        if (filesSize > sizeMaxi) {
           return filesSize;
+        }
       } else {
         filesSize += currentFile.length();
-        if (filesSize > sizeMaxi)
+        if (filesSize > sizeMaxi) {
           return filesSize;
+        }
       }
     }
     return filesSize;
@@ -521,4 +574,364 @@ public class SilverCrawlerSessionController extends
     return rootPath;
   }
 
+  /**
+   * Is read//write access has been activated
+   *
+   * @return true only if is activated both in platform and component instance
+   */
+  public boolean isReadWriteActivated() {
+    boolean readWriteActivatedInInstance =
+        StringUtil.getBooleanValue(getComponentParameterValue("readWriteActivated"));
+    boolean readWriteActivatedInPlatform = getSettings().getBoolean("readWriteActivated", false);
+
+    return readWriteActivatedInInstance && readWriteActivatedInPlatform;
+  }
+
+  /**
+   * Activate/Desactivate read//write access.
+   *
+   * @param active true to activate read/write access
+   * @throws SilverCrawlerForbiddenActionException
+   *
+   */
+  public void switchReadWriteAccess(boolean active)
+      throws SilverCrawlerRuntimeException, SilverCrawlerForbiddenActionException {
+
+    // only people with admin profil AND listed in silverpeas configuration are allowed to set read/write access
+    checkRWSettingsAccess(true);
+    try {
+      ComponentInst instance = AdminReference.getAdminService().getComponentInst(getComponentId());
+      List<Parameter> params = instance.getParameters();
+      for (Parameter param : params) {
+        if (param.getName().equals("readWriteActivated")) {
+          params.remove(param);
+          break;
+        }
+      }
+
+      Parameter rwAccessParam = new Parameter();
+      HashMap<String, String> labels = new HashMap<String, String>();
+      labels.put("fr", "Accès lecture/écriture");
+      rwAccessParam.setName("readWriteActivated");
+      rwAccessParam.setLabel(labels);
+      rwAccessParam.setValue(active ? "yes" : "no");
+      params.add(rwAccessParam);
+
+      AdminReference.getAdminService().updateComponentInst(instance);
+    } catch (AdminException e) {
+      throw new SilverCrawlerRuntimeException(
+          "SilverCrawlerSessionController.switchReadWriteAccess", SilverpeasException.ERROR,
+          "silvercrawler.EX_SWITCH_RW_ACCESS", e);
+    }
+  }
+
+  /**
+   * Only people with admin profil AND listed in silverpeas configuration are allowed to set
+   * read/write access
+   *
+   * @param throwException true if exception must be thrown if checks failed. (else just return
+   *                       false)
+   * @throws SilverCrawlerForbiddenActionException
+   *          if user doesn't have those requirements.
+   */
+  public boolean checkRWSettingsAccess(boolean throwException)
+      throws SilverCrawlerForbiddenActionException {
+
+    // First checks read/Write access is enable in silverpeas platform
+    boolean readWriteActivatedInPlatform = getSettings().getBoolean("readWriteActivated", false);
+    if (!readWriteActivatedInPlatform) {
+      if (throwException) {
+        throw new SilverCrawlerForbiddenActionException(
+            "SilverCrawlerSessionController.checkRWSettingsAccess", SilverpeasException.ERROR,
+            "readWriteActivated in platform : " + readWriteActivatedInPlatform);
+      } else {
+        return false;
+      }
+    }
+
+    // Then checks admin profile
+    String[] userRoles = getUserRoles();
+    boolean isAdmin = false;
+    for (String userRole : userRoles) {
+      if (userRole.equals("admin")) {
+        isAdmin = true;
+        break;
+      }
+    }
+    if (!isAdmin) {
+      if (throwException) {
+        throw new SilverCrawlerForbiddenActionException(
+            "SilverCrawlerSessionController.checkRWSettingsAccess", SilverpeasException.ERROR,
+            "userRoles : " + userRoles);
+      } else {
+        return false;
+      }
+    }
+
+    // And checks that current user is present in user list authorized to set read/write access
+    String usersAllowedToSetRWAccessParamValue =
+        getSettings().getString("usersAllowedToSetRWAccess");
+    String userId = getUserId();
+
+    boolean userAllowedToSetRWAccess = false;
+    if (StringUtil.isDefined(usersAllowedToSetRWAccessParamValue)) {
+      String[] usersAllowedToSetRWAccess = usersAllowedToSetRWAccessParamValue.split(",");
+      for (String userIdAllowedToSetRWAccess : usersAllowedToSetRWAccess) {
+        if (userId.equals(userIdAllowedToSetRWAccess)) {
+          userAllowedToSetRWAccess = true;
+          break;
+        }
+      }
+    }
+    if (!userAllowedToSetRWAccess) {
+      if (throwException) {
+        throw new SilverCrawlerForbiddenActionException(
+            "SilverCrawlerSessionController.checkRWSettingsAccess", SilverpeasException.ERROR,
+            "usersAllowedToSetRWAccess : " + usersAllowedToSetRWAccessParamValue);
+      } else {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Remove given subfolder.
+   *
+   * @param folderName name of folder to be removed
+   * @param isAdmin    flag to indicate if user has admin profile
+   * @throws SilverCrawlerForbiddenActionException
+   *
+   */
+  public void removeSubFolder(String folderName, boolean isAdmin)
+      throws SilverCrawlerForbiddenActionException {
+    SilverTrace.info("silverCrawler",
+        "SilverCrawlerSessionController.removeSubFolder()",
+        "root.MSG_GEN_ENTER_METHOD", "folderName = " + folderName);
+
+    // 1st check : user must have admin profile for this component instance
+    if (!isAdmin) {
+      throw new SilverCrawlerForbiddenActionException(
+          "SilverCrawlerSessionController.removeSubFolder", SilverpeasException.ERROR,
+          "user has not admin rights");
+    }
+
+    // 2nd check : RW access must have been activated
+    if (!isReadWriteActivated()) {
+      throw new SilverCrawlerForbiddenActionException(
+          "SilverCrawlerSessionController.removeSubFolder", SilverpeasException.ERROR,
+          "RW Access not activated");
+    }
+
+    // Get Full Path
+    String fullPath = getFullPath(folderName);
+    SilverTrace.info("silverCrawler",
+        "SilverCrawlerSessionController.removeSubFolder()",
+        "root.MSG_GEN_PARAM_VALUE", "fullPath = " + fullPath);
+    FileFolderManager.deleteFolder(fullPath);
+  }
+
+  public void renameFolder(String folderName, String newName)
+      throws SilverCrawlerFolderRenameException {
+    // looks for weird characters in new file name
+    if (containsWeirdCharacters(newName)) {
+      throw new SilverCrawlerFolderRenameException("SilverCrawlerSessionController.renameFolder",
+          SilverpeasException.ERROR, getString("silverCrawler.nameIncorrect"));
+    }
+
+    // Get Full Path
+    String fullPath = getFullPath(newName);
+    File newFile = new File(fullPath);
+    if (newFile.exists()) {
+      throw new SilverCrawlerFolderRenameException("SilverCrawlerSessionController.renameFolder",
+          SilverpeasException.ERROR, getString("silverCrawler.folderNameAlreadyExists"));
+    }
+
+    // Rename file
+    String oldPath = getFullPath(folderName);
+    File oldFile = new File(oldPath);
+    oldFile.renameTo(newFile);
+
+
+  }
+
+  private boolean containsWeirdCharacters(String newName) {
+    for (String weirdChar : WEIRD_CHARACTERS) {
+      if (newName.contains(weirdChar)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  public void createFolder(String newName) throws SilverCrawlerFolderCreationException {
+    // Get Full Path
+    String fullPath = getFullPath(newName);
+    File newFile = new File(fullPath);
+    if (newFile.exists()) {
+      throw new SilverCrawlerFolderCreationException("SilverCrawlerSessionController.createFolder",
+          SilverpeasException.ERROR, getString("silverCrawler.folderNameAlreadyExists"));
+    }
+
+    // create folder
+    try {
+      FileUtils.forceMkdir(newFile);
+    } catch (IOException e) {
+      throw new SilverCrawlerFolderCreationException("SilverCrawlerSessionController.createFolder",
+          SilverpeasException.ERROR, getString("silverCrawler.notAllowedToDropCreateFolders"), e);
+    }
+  }
+
+  public void removeFile(String fileName, boolean isAdminOrPublisher)
+      throws SilverCrawlerForbiddenActionException {
+    SilverTrace.info("silverCrawler",
+        "SilverCrawlerSessionController.removeFile()",
+        "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);
+
+    // 1st check : user must have admin or publisher profile for this component instance
+    if (!isAdminOrPublisher) {
+      throw new SilverCrawlerForbiddenActionException("SilverCrawlerSessionController.removeFile",
+          SilverpeasException.ERROR, "user has not admin rights");
+    }
+
+    // 2nd check : RW access must have been activated
+    if (!isReadWriteActivated()) {
+      throw new SilverCrawlerForbiddenActionException("SilverCrawlerSessionController.removeFile",
+          SilverpeasException.ERROR, "RW Access not activated");
+    }
+
+    // Get Full Path
+    String fullPath = getFullPath(fileName);
+    SilverTrace.info("silverCrawler",
+        "SilverCrawlerSessionController.removeFile()",
+        "root.MSG_GEN_PARAM_VALUE", "fullPath = " + fullPath);
+    FileFolderManager.deleteFile(fullPath);
+  }
+
+  public void saveFile(FileItem fileItem, boolean replaceFile)
+      throws SilverCrawlerFileUploadException {
+    String name = fileItem.getName();
+    if (name != null) {
+
+      // extract file name
+      if (!FileUtil.isWindows()) {
+        name = name.replace('\\', File.separatorChar);
+      }
+      name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
+
+      // compute full path
+      String fullPath = getFullPath(name);
+      File newFile = new File(fullPath);
+
+      // Checks if file already exists
+      if (newFile.exists() && !replaceFile) {
+        throw new SilverCrawlerFileUploadException("SilverCrawlerSessionController.saveFile",
+            SilverpeasException.ERROR, getString("silverCrawler.fileAlreadyExists"));
+      }
+
+      // Write file to disk
+      try {
+        fileItem.write(newFile);
+      } catch (Exception e) {
+        throw new SilverCrawlerFileUploadException("SilverCrawlerSessionController.saveFile",
+            SilverpeasException.ERROR, getString("silverCrawler.unknownCause"), e);
+      }
+    }
+
+  }
+
+  ;
+
+  public void setLastUploadReport(UploadReport report) {
+    this.lastReport = report;
+  }
+
+  public UploadReport getLastUploadReport() {
+    return lastReport;
+  }
+
+  /**
+   * Checks upload info coming from DragNDrop. Uses UploadReport to retrieves folders/files list and
+   * detect conflicts
+   *
+   * @return
+   */
+  public UploadReport checkLastUpload() {
+    for (UploadItem item : lastReport.items) {
+
+      // Test if file already exists
+      String fullPath = currentPath + item.getFileName();
+      File targetFile = new File(fullPath);
+      if (targetFile.exists()) {
+        item.setItemAlreadyExists(true);
+        lastReport.setConflictous(true);
+      }
+    }
+
+    return lastReport;
+  }
+
+  /**
+   * Process copy from DragAndDrop temp repository to current folder
+   *
+   * @return
+   */
+  public UploadReport processLastUpload() {
+    String repositoryPath = lastReport.getRepositoryPath();
+    for (UploadItem item : lastReport.items) {
+
+      // Build full paths
+      String sourcePath = repositoryPath + item.getFileName();
+      String targetPath = currentPath + item.getFileName();
+      String parentPath = currentPath + File.separator + item.getParentPath();
+
+      // Creates parent folder(s) if needed
+      File parentDir = new File(parentPath);
+      if (!parentDir.exists()) {
+        parentDir.mkdirs();
+      }
+
+      // copy File from repository to current folder
+      if ((!item.itemAlreadyExists) || (item.replace == true)) {
+
+        try {
+          FileRepositoryManager.copyFile(sourcePath, targetPath);
+          if (item.itemAlreadyExists) {
+            lastReport.nbReplaced++;
+          } else {
+            lastReport.nbCopied++;
+          }
+        } catch (IOException e) {
+          SilverTrace.error("silverCrawler", "SilverCrawlerSessionController.processLastUpload",
+              "silverCrawler.EX_PROCESSING_UPLOAD",
+              "sourcePath :" + sourcePath + " , targetPath :" + targetPath);
+          item.setCopyFailed(e);
+          lastReport.setFailed(true);
+        }
+      } else {
+        lastReport.nbIgnored++;
+      }
+    }
+
+    return lastReport;
+  }
+
+  /**
+   * Reset any existing upload report and clean temp folder if exists.
+   */
+  public void resetLastUploadReport() {
+    if (lastReport != null) {
+      if (lastReport.getRepositoryPath() != null) {
+        File repository = new File(lastReport.getRepositoryPath());
+        if (repository.exists()) {
+          FileFolderManager.deleteFolder(lastReport.getRepositoryPath(), false);
+        }
+      }
+
+      lastReport = null;
+    }
+
+  }
 }

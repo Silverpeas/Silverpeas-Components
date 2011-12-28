@@ -31,6 +31,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public final class PostDetail implements SilverpeasContent {
+
+  private static final long serialVersionUID = -1703768097976820443L;
   private String content;
   private PublicationDetail publication;
   private Category category;
@@ -38,6 +40,8 @@ public final class PostDetail implements SilverpeasContent {
   private int nbComments;
   private String creatorName;
   private Date dateEvent;
+  
+  private static final String TYPE = "Publication";
 
   public PostDetail(PublicationDetail publication, String categoryId) {
     setPublication(publication);
@@ -131,11 +135,6 @@ public final class PostDetail implements SilverpeasContent {
   }
 
   @Override
-  public String getURL() {
-    return "/Rblog/" + getComponentInstanceId() + "/searchResult?Type=Publication&Id=" + getId();
-  }
-
-  @Override
   public String getId() {
     return publication.getId();
   }
@@ -158,5 +157,15 @@ public final class PostDetail implements SilverpeasContent {
   @Override
   public String getTitle() {
     return publication.getTitle();
+  }
+
+  @Override
+  public String getContributionType() {
+    return TYPE;
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    return publication.getSilverpeasContentId();
   }
 }

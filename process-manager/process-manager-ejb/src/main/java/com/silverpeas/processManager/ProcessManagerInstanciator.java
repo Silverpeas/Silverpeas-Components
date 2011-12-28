@@ -25,17 +25,17 @@ package com.silverpeas.processManager;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import java.sql.Connection;
-
 import com.silverpeas.versioning.VersioningInstanciator;
 import com.silverpeas.workflow.api.UpdatableProcessInstanceManager;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
-import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.Connection;
 
 public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
 
@@ -47,8 +47,7 @@ public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
       InstanciationException {
     String xmlFilename = null;
     try {
-      Admin admin = new Admin();
-      xmlFilename = admin.getComponentParameterValue(componentId, "XMLFileName");
+      xmlFilename = AdminReference.getAdminService().getComponentParameterValue(componentId, "XMLFileName");
       Workflow.getProcessModelManager().createProcessModel(xmlFilename, componentId);
     } catch (WorkflowException e) {
       throw new InstanciationException("ProcessManagerInstanciator", SilverpeasException.ERROR,

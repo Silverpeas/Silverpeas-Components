@@ -27,9 +27,6 @@
  */
 package com.silverpeas.kmelia.importexport;
 
-import java.rmi.RemoteException;
-import java.util.Date;
-
 import com.silverpeas.importExport.control.GEDImportExport;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.MassiveReport;
@@ -51,6 +48,11 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
+import java.rmi.RemoteException;
+import java.util.Date;
+
+import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
+
 /**
  * Classe métier de création d'entités silverpeas utilisée par le moteur d'importExport.
  * @author sDevolder.
@@ -62,9 +64,8 @@ public class KmeliaImportExport extends GEDImportExport {
 
   /**
    * Constructeur public de la classe
-   * @param userDetail - informations sur l'utilisateur faisant appel au moteur d'importExport
-   * @param targetComponentId - composant silverpeas cible
-   * @param topicId - topic cible du composant targetComponentId
+   * @param curentUserDetail informations sur l'utilisateur faisant appel au moteur d'importExport
+   * @param currentComponentId - composant silverpeas cible
    */
   public KmeliaImportExport(UserDetail curentUserDetail, String currentComponentId) {
     super(curentUserDetail, currentComponentId);
@@ -75,14 +76,11 @@ public class KmeliaImportExport extends GEDImportExport {
    * @throws ImportExportException
    */
   protected KmeliaBm getKmeliaBm() throws ImportExportException {
-
     KmeliaBm kmeliaBm = null;
-
     try {
       KmeliaBmHome ejbHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.KMELIABM_EJBHOME, KmeliaBmHome.class);
       kmeliaBm = ejbHome.create();
-
     } catch (Exception e) {
       throw new ImportExportException("KmeliaImportExport.getKmeliaBm()",
           "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -138,9 +136,9 @@ public class KmeliaImportExport extends GEDImportExport {
             .getInstanceId()));
       }
       if ("publisher".equals(profile) || "admin".equals(profile)) {
-        pubDet_temp.setStatus(PublicationDetail.VALID);
+        pubDet_temp.setStatus(VALID);
       } else {
-        pubDet_temp.setStatus(PublicationDetail.TO_VALIDATE);
+        pubDet_temp.setStatus(TO_VALIDATE);
       }
     }
     return getKmeliaBm().createPublicationIntoTopic(pubDet_temp, topicPK);
@@ -279,7 +277,7 @@ public class KmeliaImportExport extends GEDImportExport {
     try {
       PublicationDetail publication = getKmeliaBm().getPublicationDetail(
           new PublicationPK(pubId, getCurrentComponentId()));
-      publication.setStatus("Draft");
+      publication.setStatus(DRAFT);
       getKmeliaBm().updatePublication(publication);
     } catch (Exception e) {
       throw new KmeliaException("GEDImportExport.publicationNotClassifiedOnPDC(String)",
@@ -295,7 +293,7 @@ public class KmeliaImportExport extends GEDImportExport {
   @Override
   protected PublicationDetail createPublication(PublicationDetail pubDetail) throws Exception {
     try {
-      pubDetail.setStatus("Valid");
+      pubDetail.setStatus(VALID);
       String pubId = getKmeliaBm().createKmaxPublication(pubDetail);
       pubDetail.getPK().setId(pubId);
       return pubDetail;

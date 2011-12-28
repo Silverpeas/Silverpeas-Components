@@ -143,11 +143,6 @@ public void displayAllOperations(String id, KmeliaSessionController kmeliaScc, G
           String nbSeeAlso = Integer.toString(authorizedAndValidSeeAlsoList.size());
           tabbedPane.addTab(resources.getString("PubReferenceeParAuteur")+" ("+nbSeeAlso+")", routerUrl+"SeeAlso", action.equals("LinkAuthorView") || action.equals("SameSubjectView") || action.equals("SameTopicView"), enabled, row);
       }
-      if (invisibleTabs.indexOf(kmeliaScc.TAB_COMMENT) == -1) {
-          i++;
-          String nbComments = Integer.toString(kmeliaScc.getAllComments(id).size());
-          tabbedPane.addTab("<span id='comment-tab'>" + resources.getString("Comments")+" ("+nbComments+")</span>", routerUrl+"Comments?PubId="+id, action.equals("ViewComment"), enabled, row);
-      }
 
      if (invisibleTabs.indexOf(kmeliaScc.TAB_ACCESS_PATHS) == -1 && !kmaxMode) {
           i++;
@@ -211,11 +206,6 @@ void displayUserOperations(String id, KmeliaSessionController kmeliaScc, Graphic
 
               String nbSeeAlso = Integer.toString(authorizedSeeAlsoList.size());
 			tabbedPane.addTab(kmeliaScc.getString("PubReferenceeParAuteur")+" ("+nbSeeAlso+")", routerUrl+"SeeAlso?PubId="+id, action.equals("LinkAuthorView") || action.equals("SameSubjectView") || action.equals("SameTopicView"), enabled);
-			i++;
-      }
-	  if (invisibleTabs.indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode) {
-	  		String nbComments = Integer.toString(kmeliaScc.getAllComments(id).size());
-			tabbedPane.addTab("<span id='comment-tab'>" + kmeliaScc.getString("Comments")+" ("+nbComments+")</span>", routerUrl+"Comments?PubId="+id, action.equals("ViewComment"), enabled);
 			i++;
       }
 

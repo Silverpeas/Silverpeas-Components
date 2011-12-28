@@ -23,6 +23,9 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
+import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.almanach.AlmanachContentManager;
@@ -231,6 +234,11 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
    */
   @Override
   public String addEvent(EventDetail event) {
+    return addEvent(event, PdcClassification.NONE_CLASSIFICATION);
+  }
+  
+  @Override
+  public String addEvent(EventDetail event, PdcClassification classification) {
     SilverTrace.info("almanach", "AlmanachBmEJB.addEvent()",
             "root.MSG_GEN_ENTER_METHOD");
     checkEventDates(event);
@@ -250,6 +258,13 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
       createIndex(event);
       createSilverContent(connection, event, event.getCreatorId());
+      
+      if (!classification.isEmpty()) {
+        PdcClassificationService service = PdcServiceFactory.getFactory().
+                getPdcClassificationService();
+        classification.ofContent(event.getId());
+        service.classifyContent(event, classification);
+      }
       return id;
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.addEvent()",

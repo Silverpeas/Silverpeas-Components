@@ -23,7 +23,6 @@
  */
 package com.silverpeas.webpages.control;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -40,11 +39,9 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.service.ComponentSubscription;
-import com.silverpeas.subscribe.service.Subscription;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.webpages.WebPagesNotifier;
 import com.silverpeas.webpages.model.WebPagesException;
-import com.silverpeas.webpages.model.WebPagesRuntimeException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -53,7 +50,6 @@ import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -122,19 +118,18 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     return returnValue;
   }
 
-  public void index() {
-    try {
-      String content = WysiwygController.load(getComponentId(), getComponentId(), null);
-      WysiwygController.updateFileAndAttachment(content, getSpaceId(), getComponentId(),
-              getComponentId(), getUserId());
-    } catch (WysiwygException ex) {
+  public void index() throws WebPagesException {
+    if (isXMLTemplateUsed()) {
+      indexForm(null);
+    } else {
+      WysiwygController.index(getComponentId(), getComponentId());
     }
   }
 
   public synchronized void removeSubscription() {
     SilverTrace.info("webPages", "WebPagesSessionController.unsubscribeFromNode()",
             "root.MSG_GEN_ENTER_METHOD");
-    getSubscribeBm().unsubscribe(new ComponentSubscription(getUserId(), getComponentName()));
+    getSubscribeBm().unsubscribe(new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   public synchronized void addSubscription() {
@@ -143,7 +138,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     if (isSubscriber()) {
       return;
     }
-    getSubscribeBm().subscribe(new ComponentSubscription(getUserId(), getComponentName()));
+    getSubscribeBm().subscribe(new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   public boolean isSubscriber() {
@@ -281,6 +276,20 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     getNotifier().sendSubscriptionsNotification(getNodePK(), getUserId());
 
     // index updated data
+    indexForm(set);
+  }
+  
+  private void indexForm(RecordSet recordSet) throws WebPagesException {
+    try {
+      if (recordSet == null) {
+        PublicationTemplate pub = getXMLTemplate();
+        recordSet = pub.getRecordSet();
+      }
+    } catch (Exception e) {
+      throw new WebPagesException("WebPagesSessionController.indexForm()",
+          SilverpeasException.ERROR, "webPages.EX_CANT_GET_FORM", e);
+    }
+    // index data
     try {
       FullIndexEntry indexEntry =
               new FullIndexEntry(getComponentId(), "Component", getComponentId());
@@ -293,11 +302,11 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
         indexEntry.setPreView(component.getDescription());
       }
 
-      set.indexRecord("0", getUsedXMLTemplateShortname(), indexEntry);
+      recordSet.indexRecord("0", getUsedXMLTemplateShortname(), indexEntry);
 
       IndexEngineProxy.addIndexEntry(indexEntry);
     } catch (FormException e) {
-      throw new WebPagesException("WebPagesSessionController.saveDataRecord()",
+      throw new WebPagesException("WebPagesSessionController.indexForm()",
               SilverpeasException.ERROR, "webPages.EX_CANT_INDEX_DATA", e);
     }
   }

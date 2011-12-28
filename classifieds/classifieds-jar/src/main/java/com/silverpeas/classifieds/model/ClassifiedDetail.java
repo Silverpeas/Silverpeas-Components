@@ -24,7 +24,6 @@
 package com.silverpeas.classifieds.model;
 
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.classifieds.ClassifiedUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Date;
@@ -50,6 +49,8 @@ public class ClassifiedDetail implements SilverpeasContent {
   public static final String TO_VALIDATE = "ToValidate";
   public static final String REFUSED = "Unvalidate";
   public static final String UNPUBLISHED = "Unpublished";
+  
+  public static final String TYPE = "Classified";
 
   public ClassifiedDetail() {
   }
@@ -161,11 +162,6 @@ public class ClassifiedDetail implements SilverpeasContent {
   }
 
   @Override
-  public String getURL() {
-    return ClassifiedUtil.getClassifiedUrl(this);
-  }
-
-  @Override
   public UserDetail getCreator() {
     OrganizationController controller = new OrganizationController();
     return controller.getUserDetail(creatorId);
@@ -179,5 +175,15 @@ public class ClassifiedDetail implements SilverpeasContent {
   @Override
   public String getComponentInstanceId() {
     return instanceId;
+  }
+
+  @Override
+  public String getContributionType() {
+    return TYPE;
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    return "";
   }
 }

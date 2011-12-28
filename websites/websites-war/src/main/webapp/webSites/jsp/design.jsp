@@ -71,6 +71,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="com.stratelia.webactiv.util.exception.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
+<%@ page import="com.silverpeas.util.EncodeHelper" %>
 
 
 <%@ include file="util.jsp" %>
@@ -84,9 +85,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
   /* extractFinChemin */
   private String extractFinChemin(String deb, String chemin) {
-    /* deb = c:\\j2sdk\\public_html\\WAwebSiteUploads\\wa3webSite17 */
-   /* chemin = c:\\j2sdk\\public_html\\WAwebSiteUploads\\wa3webSite17\\3\\rep1\\rep11 */
-   /* res = 3\\rep1\\rep11 */
       int longueur = deb.length();
       String res = chemin.substring(longueur);
       return ignoreAntiSlash(res);
@@ -94,27 +92,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%
-//CBO : REMOVE 
-/*<jsp:useBean id="thePath" scope="session" class="java.lang.String"/>
-<jsp:useBean id="prems" scope="session" class="java.lang.String"/>*/
 
-
-	//CBO : REMOVE settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
-
-    //CBO : REMOVE String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
-    //Icons
-	//CBO : UPDATE
-    /*
-	String addFolder=iconsPath+"/util/icons/folderAddBig.gif";
-    String addPage=iconsPath+"/util/icons/webSites_page_to_add.gif";
-    String addPic=iconsPath+"/util/icons/webSites_upload_file.gif";
-    String addLib=iconsPath+"/util/icons/webSites_classify.gif";
-    String updateDescription=iconsPath+"/util/icons/webSites_to_modify.gif";
-    String belpou=iconsPath+"/util/icons/basket.gif";
-    String update=iconsPath+"/util/icons/update.gif";
-    String delete = iconsPath + "/util/icons/delete.gif";
-	*/
 	String addFolder=m_context+"/util/icons/folderAddBig.gif";
     String addPage=m_context+"/util/icons/webSites_page_to_add.gif";
     String addPic=m_context+"/util/icons/webSites_upload_file.gif";
@@ -124,24 +102,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String update=m_context+"/util/icons/update.gif";
     String delete = m_context + "/util/icons/delete.gif";
 
-    String action = (String) request.getParameter("Action"); /* = "newSite" la premiere fois, jamais null */
-    String id = (String) request.getParameter("Id"); //jamais null sauf en creation ou en update de description
-    String currentPath = (String) request.getParameter("path"); /* = null la premiere fois, rempli grace au newSite */
-    //CBO : REMOVE String name = (String) request.getParameter("name"); /* = null la premiere fois, puis = nom du repertoire courant */
-    //CBO : REMOVE String newName = (String) request.getParameter("newName"); /* = changement de noms des fichiers et repertoires */
-    //CBO : REMOVE String nomSite = (String) request.getParameter("nomSite"); /* = rempli au premier acces a designSite pui toujours null */
-    //CBO : REMOVE String description = (String) request.getParameter("description"); /* = rempli la premiere fois a la creation, puis toujours null*/
-    //CBO : REMOVE String nomPage = (String) request.getParameter("nomPage"); /* = rempli la premiere fois a la creation, puis toujours null*/
+    String action = request.getParameter("Action");
+    String id = request.getParameter("Id"); //jamais null sauf en creation ou en update de description
+    String currentPath = request.getParameter("path");
     String date = "";
     String auteur = "";
-    //CBO : REMOVE String tempPopup = (String) request.getParameter("popup");
     int popup = 0;
-    //CBO : REMOVE if ((tempPopup != null) && (tempPopup.length() > 0))
-    //CBO : REMOVE 	popup = 1;
-    //CBO : REMOVE String listeIcones = (String) request.getParameter("ListeIcones"); /* = rempli la premiere fois a la creation, puis toujours null*/
-    //CBO : REMOVE String listeTopics = (String) request.getParameter("ListeTopics"); /* = en cas de new Site ou de classifySite */
-
-	//CBO : ADD
 	String nomSite = null;
 	String description = null;
 	String nomPage = null;
@@ -161,7 +127,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	if(theSearch != null && theSearch == Boolean.FALSE) {
 		searchOk = false;
 	}
-	//CBO : FIN ADD
 
     if (currentPath != null) {
 		currentPath = doubleAntiSlash(currentPath);
@@ -198,11 +163,7 @@ if (! searchOk) {
     out.println("alert(\""+resources.getString("PrincipalPageNotCorrectDesign")+"\")");
     if (description == null) {
 		description = "";
-    }
-
-   
-	//CBO : UPDATE	/*out.println("location.replace(\"modifDesc.jsp?Id="+id+"&path="+currentPath+"&type=design&RecupParam=oui&Nom="+nomSite+"&Description="+description+"&Page="+nomPage+"&ListeIcones="+listeIcones+"\");");*/
-	out.println("location.replace(\"modifDesc.jsp?Id="+id+"&path="+currentPath+"&type=design&RecupParam=oui&Nom="+nomSite+"&Description="+description+"&Page="+nomPage+"&ListeIcones="+theListeIcones+"\");");
+    }out.println("location.replace(\"modifDesc.jsp?Id="+id+"&path="+currentPath+"&type=design&RecupParam=oui&Nom="+nomSite+"&Description="+description+"&Page="+nomPage+"&ListeIcones="+theListeIcones+"\");");
 
 }
 
@@ -505,7 +466,7 @@ function deletePage(id, path, name) {
 
 			//nom
 			if (type.startsWith("htm") || type.startsWith("HTM"))
-				arrayLine.addArrayCellLink(folderName, "javascript:onClick=pageRedesign('"+Encode.javaStringToJsString(currentPath)+"', '"+Encode.javaStringToJsString(folderName)+"', '"+Encode.javaStringToJsString(nomSite)+"')");
+				arrayLine.addArrayCellLink(folderName, "javascript:onClick=pageRedesign('"+ EncodeHelper.javaStringToJsString(currentPath)+"', '"+EncodeHelper.javaStringToJsString(folderName)+"', '"+EncodeHelper.javaStringToJsString(nomSite)+"')");
 			else if (folderName.equals(nomPage))
 				arrayLine.addArrayCellText(folderName);
 			else arrayLine.addArrayCellText(folderName);
@@ -514,10 +475,10 @@ function deletePage(id, path, name) {
 			if (! folderName.equals(nomPage)) {
 				IconPane iconPane = gef.getIconPane();
 				Icon updateIcon = iconPane.addIcon();
-				updateIcon.setProperties(update, resources.getString("Rename")+" '"+folderName+"'" , "javascript:onClick=renamePage('"+id+"', '"+Encode.javaStringToJsString(currentPath)+"', '"+Encode.javaStringToJsString(folderName)+"')");
+				updateIcon.setProperties(update, resources.getString("Rename")+" '"+folderName+"'" , "javascript:onClick=renamePage('"+id+"', '"+EncodeHelper.javaStringToJsString(currentPath)+"', '"+EncodeHelper.javaStringToJsString(folderName)+"')");
 
 				Icon deleteIcon = iconPane.addIcon();
-				deleteIcon.setProperties(delete, resources.getString("GML.delete")+" '"+folderName+"'" , "javascript:onClick=deletePage('"+id+"', '"+Encode.javaStringToJsString(currentPath)+"', '"+Encode.javaStringToJsString(folderName)+"')");
+				deleteIcon.setProperties(delete, resources.getString("GML.delete")+" '"+folderName+"'" , "javascript:onClick=deletePage('"+id+"', '"+EncodeHelper.javaStringToJsString(currentPath)+"', '"+EncodeHelper.javaStringToJsString(folderName)+"')");
 
 				iconPane.setSpacing("30px");
 				arrayLine.addArrayCellIconPane(iconPane);
@@ -539,11 +500,11 @@ function deletePage(id, path, name) {
 
     //Les op�rations
     OperationPane operationPane = window.getOperationPane();
-    operationPane.addOperation(addFolder,resources.getString("FolderAdd"), "javascript:onClick=folderAdd('"+id+"', '"+Encode.javaStringToJsString(currentPath)+"')");
+    operationPane.addOperation(addFolder,resources.getString("FolderAdd"), "javascript:onClick=folderAdd('"+id+"', '"+EncodeHelper.javaStringToJsString(currentPath)+"')");
     operationPane.addLine();
-    operationPane.addOperation(addPage,resources.getString("PageAdd"), "javascript:onClick=pageAdd('"+Encode.javaStringToJsString(currentPath)+"', '"+Encode.javaStringToJsString(nomSite)+"')");
+    operationPane.addOperation(addPage,resources.getString("PageAdd"), "javascript:onClick=pageAdd('"+EncodeHelper.javaStringToJsString(currentPath)+"', '"+EncodeHelper.javaStringToJsString(nomSite)+"')");
     operationPane.addLine();
-    operationPane.addOperation(addPic,resources.getString("FileUploadAdd"), "javascript:onClick=uploadFile('"+Encode.javaStringToJsString(currentPath)+"')");
+    operationPane.addOperation(addPic,resources.getString("FileUploadAdd"), "javascript:onClick=uploadFile('"+EncodeHelper.javaStringToJsString(currentPath)+"')");
     operationPane.addLine();
     operationPane.addOperation(addLib,resources.getString("ClasserSite"), "classifySite.jsp?Id="+id+"&path="+currentPath);
 

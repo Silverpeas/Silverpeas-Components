@@ -25,6 +25,7 @@
 package com.silverpeas.components.organizationchart.control;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,11 +91,11 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "com.silverpeas.components.organizationchart.multilang.OrganizationChartBundle",
-        "com.silverpeas.components.organizationchart.settings.OrganizationChartIcons");
+        "com.silverpeas.components.organizationchart.settings.OrganizationChartIcons",
+        "com.silverpeas.components.organizationchart.settings.OrganizationChartSettings");
 
     config = loadConfiguration();
-    service = ServicesFactory.getOrganizationChartService();
-    service.configure(config);
+    service = ServicesFactory.getOrganizationChartService(config);
   }
 
   public ChartVO getChart(String baseDN, OrganizationalChartType chartType) {
@@ -140,6 +141,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     rootOrganization.setDetailLinkActive(chart.getRoot().hasMembers());
     rootOrganization.setDn(chart.getRoot().getCompleteName());
     rootOrganization.setSpecificCSSClass(chart.getRoot().getSpecificCSSClass());
+    rootOrganization.setDetails(chart.getRoot().getDetail());
 
     // Prevents user to go upper that the base DN
     if (!config.getLdapRoot().equalsIgnoreCase( chart.getRoot().getCompleteName() )) {
@@ -193,6 +195,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       subUnit.setCenterLinkActive(subOrganization.hasSubUnits());
       subUnit.setDetailLinkActive(subOrganization.hasMembers());
       subUnit.setSpecificCSSClass(subOrganization.getSpecificCSSClass());
+      subUnit.setDetails(subOrganization.getDetail());
       // setting main actors of subunit
       List<UserVO> subUnitMainActors = new ArrayList<UserVO>();
       for (OrganizationalPerson person : subOrganization.getMainActors()) {
@@ -202,6 +205,9 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       }
       subUnit.setMainActors(subUnitMainActors);
       subOrganizations.add(subUnit);
+    }
+    if (getSettings().getBoolean("sort.units.name", false)) {
+      Collections.sort(subOrganizations, UnitComparator.comparator);
     }
     chartVO.setSubOrganizations(subOrganizations);
 
@@ -217,6 +223,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     rootOrganization.setName(chart.getRoot().getName());
     rootOrganization.setParentDn(chart.getRoot().getParentOu());
     rootOrganization.setSpecificCSSClass(chart.getRoot().getSpecificCSSClass());
+    rootOrganization.setDetails(chart.getRoot().getDetail());
 
     // Looks for specific users
     List<UserVO> mainActors = new ArrayList<UserVO>();

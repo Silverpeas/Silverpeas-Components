@@ -57,9 +57,15 @@ jCells[cellIndex] = new JCell( {
 			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}"} ${(not loopInfo.last) ? ',' : ''}
 		</c:forEach>
 	),
+	userAttributes : new Array(
+		<c:forEach items="${organigramme.rootOrganization.details}" var="detail" varStatus="loopInfo">
+			{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
+		</c:forEach>
+	),
 	parentURL : "${organigramme.rootOrganization.parentUrl}",
 	level : 0,
 	className : 0,
+	extraClassName : "${organigramme.rootOrganization.specificCSSClass}",
 	cellType : CELL_TYPE_ORGANIZATION,
 	commonUserURL : "Details?login=",
 	usersIcon : "${usersIcon}"
@@ -73,6 +79,7 @@ jCells[cellIndex] = new JCell( {
 		title: "${(category.name eq 'Personnel') ? '' : category.name}",
 		level : 1,
 		className : 5,
+		extraClassName : "${organigramme.rootOrganization.specificCSSClass}",
 		cellType : CELL_TYPE_CATEGORY,
 		commonUserURL : "Details?login=",
 		innerUsers : new Array(

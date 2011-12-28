@@ -480,7 +480,7 @@ public class ProcessManagerBmEJB implements SessionBean {
       throws ProcessManagerException {
 
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       TaskDoneEvent event = getCreationTask(processModel, userId, currentRole).
           buildTaskDoneEvent(creation.getName(), data);
       Workflow.getWorkflowEngine().process(event);
@@ -499,13 +499,13 @@ public class ProcessManagerBmEJB implements SessionBean {
       ProcessManagerException {
 
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction("administrateur");
       return processModel.getPublicationForm(creation.getName(),
           "administrateur", getLanguage());
 
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
-          "processManager.ERR_NO_CREATION_FORM", e);
+          "processManager.NO_CREATION_FORM", e);
     }
   }
 
@@ -517,7 +517,7 @@ public class ProcessManagerBmEJB implements SessionBean {
       String currentRole) throws ProcessManagerException {
 
     try {
-      Action creation = processModel.getCreateAction();
+      Action creation = processModel.getCreateAction(currentRole);
       return processModel.getNewActionRecord(creation.getName(), currentRole,
           getLanguage(), null);
 
@@ -535,7 +535,7 @@ public class ProcessManagerBmEJB implements SessionBean {
 
     try {
       OrganizationController controller = new OrganizationController();
-      User user = new UserImpl(controller.getUserDetail(userId), null);
+      User user = new UserImpl(controller.getUserDetail(userId));
       Task creationTask = Workflow.getTaskManager().getCreationTask(user,
           currentRole, processModel);
       return creationTask;
@@ -698,13 +698,10 @@ public class ProcessManagerBmEJB implements SessionBean {
   private VersioningBm getVersioningBm() {
     VersioningBm versioningBm = null;
     try {
-      VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire.
-          getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
+      VersioningBmHome vscEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
+          VersioningBmHome.class);
       versioningBm = vscEjbHome.create();
     } catch (Exception e) {
-      // NEED
-      // throw new
-      // ...RuntimeException("VersioningSessionController.initEJB()",SilverpeasRuntimeException.ERROR,"root.EX_CANT_GET_REMOTE_OBJECT",e);
     }
     return versioningBm;
   }

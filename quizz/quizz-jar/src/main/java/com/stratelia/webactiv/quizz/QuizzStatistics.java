@@ -27,15 +27,9 @@
 
 package com.stratelia.webactiv.quizz;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
-import javax.ejb.EJBException;
-
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm;
@@ -43,23 +37,26 @@ import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 
+import javax.ejb.EJBException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Class declaration
+ *
  * @author
  */
 public class QuizzStatistics implements ComponentStatisticsInterface {
 
   private QuestionContainerBm questionContainerBm = null;
 
-  public Collection getVolume(String spaceId, String componentId)
+  @Override
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList myArrayList = new ArrayList();
-
-    Collection c = getQuizz(spaceId, componentId);
-    Iterator iter = c.iterator();
-    while (iter.hasNext()) {
-      QuestionContainerHeader qcHeader = (QuestionContainerHeader) iter.next();
-
+    Collection<QuestionContainerHeader> headers = getQuizz(spaceId, componentId);
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList(headers.size());
+    for (QuestionContainerHeader qcHeader : headers) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(qcHeader.getCreatorId());
       myCouple.setCountVolume(1);
@@ -72,9 +69,8 @@ public class QuizzStatistics implements ComponentStatisticsInterface {
   private QuestionContainerBm getQuestionContainerBm() {
     if (questionContainerBm == null) {
       try {
-        QuestionContainerBmHome questionContainerBmHome = (QuestionContainerBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME,
-            QuestionContainerBmHome.class);
+        QuestionContainerBmHome questionContainerBmHome = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBmHome.class);
         questionContainerBm = questionContainerBmHome.create();
       } catch (Exception e) {
         throw new EJBException(e);
@@ -83,12 +79,10 @@ public class QuizzStatistics implements ComponentStatisticsInterface {
     return questionContainerBm;
   }
 
-  public Collection getQuizz(String spaceId, String componentId)
-      throws RemoteException {
-    Collection result = getQuestionContainerBm()
-        .getNotClosedQuestionContainers(
+  public Collection<QuestionContainerHeader> getQuizz(String spaceId, String componentId)
+      throws Exception {
+    return getQuestionContainerBm().getNotClosedQuestionContainers(
         new QuestionContainerPK(null, spaceId, componentId));
-    return result;
   }
 
 }

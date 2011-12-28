@@ -60,8 +60,7 @@ ul, li, h4, h3, h5{
   left:4px;
 }
 
-div.question{
-  cursor:pointer;		/* Cursor is like a hand when someone rolls the mouse over the question */
+div.question{	
   background-color:#EFF8E3;	
   position:relative;
   border:1px solid #CFCFCF;
@@ -100,6 +99,7 @@ div.question{
 .questionTitle {
   line-height: 140%;
   margin: 6px 142px 5px 25px;
+  cursor:pointer;	/* Cursor is like a hand when someone rolls the mouse over the question */
 }
 
 .questionTitle h4 {

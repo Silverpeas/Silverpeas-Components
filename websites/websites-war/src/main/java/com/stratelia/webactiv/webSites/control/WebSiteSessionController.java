@@ -229,8 +229,8 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   private synchronized void setWebSiteEJB() throws WebSitesException {
     if (webSiteEjb == null) {
       try {
-        webSiteEjbHome = (WebSiteBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.WEBSITESBM_EJBHOME, WebSiteBmHome.class);
+        webSiteEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.WEBSITESBM_EJBHOME, 
+                WebSiteBmHome.class);
         webSiteEjb = webSiteEjbHome.create();
       } catch (Exception e) {
         throw new WebSitesException("WebSiteSessionController.setWebSiteEJB()",

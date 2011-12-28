@@ -25,6 +25,8 @@
 package com.silverpeas.processManager.servlets;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -61,10 +63,13 @@ import com.silverpeas.workflow.engine.model.StateImpl;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
@@ -199,6 +204,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     handlerMap.put("searchResult", searchResultHandler);
     handlerMap.put("attachmentManager", attachmentManagerHandler);
     handlerMap.put("exportCSV", exportCSVHandler);
+    handlerMap.put("ToWysiwygWelcome", toWelcomeWysiwyg);
+    handlerMap.put("FromWysiwygWelcome", listProcessHandler);
 
     // handlerMap.put("adminListProcess", adminListProcessHandler);
     handlerMap.put("adminRemoveProcess", adminRemoveProcessHandler);
@@ -356,6 +363,15 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
+      
+      try {
+        String welcomeMessage = WysiwygController.load(session.getComponentId(), session.getComponentId(),
+                session.getLanguage());
+        request.setAttribute("WelcomeMessage", welcomeMessage);
+      } catch (WysiwygException e) {
+        SilverTrace.error("processManager", "ProcessManagerRequestRouter.listProcessHandler",
+            "processManager.CANT_LOAD_WYSIWYG_WELCOME_MESSAGE", e);
+      }
 
       setProcessFilterAttributes(session, request, session.getCurrentFilter());
       setSharedAttributes(session, request);
@@ -858,36 +874,53 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String stateName = request.getParameter("state");
       String actionName = request.getParameter("action");
 
-      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("editAction", "stateName="+stateName+", actionName="+actionName));
-
-      request.setAttribute("state", session.getState(stateName));
-      request.setAttribute("action", session.getAction(actionName));
+          SilverTrace.debug(
+              "processManagerTrace",
+              "ProcessManagerRequestRouter.getDestination()",
+              "root.MSG_GEN_ENTER_METHOD",
+              session.getTrace("editAction", "stateName=" + stateName + ", actionName=" +
+                  actionName));
 
       // Get the associated form
       com.silverpeas.form.Form form = session.getActionForm(stateName, actionName);
-      request.setAttribute("form", form);
+      if (form == null) {
+        // no form associated to this action, process action directly
+        DataRecord data = session.getActionRecord(stateName, actionName);
+        
+        // lock the process instance
+        session.lock(stateName);
 
-      // Set the form context
-      PagesContext context = getFormContext("actionForm", "0", session, true);
-      request.setAttribute("context", context);
+        session.processAction(stateName, actionName, data, false, true);
 
-      // Get the form data
-      DataRecord data = session.getActionRecord(stateName, actionName);
-      request.setAttribute("data", data);
+        return listProcessHandler.getDestination(function, session, request);
+      } else {
+        // a form is associated to this action, display it to process action
+        request.setAttribute("state", session.getState(stateName));
+        request.setAttribute("action", session.getAction(actionName));
+        request.setAttribute("form", form);
 
-      // Set flag to indicate action record has never been saved as draft for this step
-      request.setAttribute("isFirstTimeSaved", "yes");
+        // Set the form context
+        PagesContext context = getFormContext("actionForm", "0", session, true);
+        request.setAttribute("context", context);
 
-      // lock the process instance
-      session.lock(stateName);
+        // Get the form data
+        DataRecord data = session.getActionRecord(stateName, actionName);
+        request.setAttribute("data", data);
 
-      // Set global attributes
-      setSharedAttributes(session, request);
+        // Set flag to indicate action record has never been saved as draft for this step
+        request.setAttribute("isFirstTimeSaved", "yes");
 
-      // Session Safe : Generate token Id
-      generateTokenId(session, request);
+        // lock the process instance
+        session.lock(stateName);
 
-      return "/processManager/jsp/editAction.jsp";
+        // Set global attributes
+        setSharedAttributes(session, request);
+
+        // Session Safe : Generate token Id
+        generateTokenId(session, request);
+
+        return "/processManager/jsp/editAction.jsp";
+      }
     }
   };
 
@@ -1244,7 +1277,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       }
     } catch (Exception e) {
       throw new ProcessManagerException("ProcessManagerRequestRouter",
-          "processManager.ERR_ILL_FILTER_FORM", e);
+          "processManager.ILL_FILTER_FORM", e);
     }
   }
 
@@ -1325,15 +1358,46 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     }
   };
 
-  static private FunctionHandler exportCSVHandler = new SessionSafeFunctionHandler()
-      {
+  static private FunctionHandler toWelcomeWysiwyg = new SessionSafeFunctionHandler() {
+    protected String computeDestination(String function,
+        ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items)
+        throws ProcessManagerException {
+
+      StringBuilder destination = new StringBuilder();
+      
+      try {
+        String returnURL = URLEncoder.encode(
+            URLManager.getApplicationURL()
+                + URLManager.getURL(null, session.getComponentId())
+                + "FromWysiwygWelcome", "UTF-8");
+        destination.append("/wysiwyg/jsp/htmlEditor.jsp?");
+        destination.append("SpaceName=").append(
+            URLEncoder.encode(session.getSpaceLabel(), "UTF-8"));
+        destination.append("&ComponentId=").append(session.getComponentId());
+        destination.append("&ComponentName=").append(
+            URLEncoder.encode(session.getComponentLabel(), "UTF-8"));
+        destination.append("&BrowseInfo=").append(session.getString("processManager.welcomeWysiwyg"));
+        destination.append("&Language=").append(session.getLanguage());
+        destination.append("&ObjectId=").append(session.getComponentId());
+        destination.append("&ReturnUrl=").append(returnURL);
+      } catch (UnsupportedEncodingException e) {
+        throw new ProcessManagerException("processManager", "processManager.CANT_GO_TO_WYSIWYG", e);
+      }
+
+      return destination.toString();
+    }
+  };
+  
+  static private FunctionHandler exportCSVHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items)
         throws ProcessManagerException {
       String csvFilename = session.exportListAsCSV();
 
-      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("exportCSV", ""));
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
+          "root.MSG_GEN_ENTER_METHOD", session.getTrace("exportCSV", ""));
 
       request.setAttribute("CSVFilename", csvFilename);
       if (StringUtil.isDefined(csvFilename)) {

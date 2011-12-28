@@ -752,11 +752,19 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public String getWatermarkHD() {
-    return getComponentParameterValue("WatermarkHD");
+    String watermarkHD = getComponentParameterValue("WatermarkHD");
+    if(StringUtil.isInteger(watermarkHD)) {
+      return watermarkHD;
+    }
+    return StringUtil.EMPTY;
   }
 
   public String getWatermarkOther() {
-    return getComponentParameterValue("WatermarkOther");
+    String watermarkOther = getComponentParameterValue("WatermarkOther");
+    if(StringUtil.isInteger(watermarkOther)) {
+      return watermarkOther;
+    }
+    return StringUtil.EMPTY;
   }
 
   public Integer getPercentSizeWatermark() {
@@ -1638,10 +1646,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
               title = EncodeHelper.javaStringToHtmlString(photo.getImageName());
             }
           }
-          url =
-                  FileServerUtils.getUrl(getSpaceId(), getComponentId(), getUrlEncodedParameter(
-                  title),
-                  photo.getImageMimeType(), nomRep);
+          url = FileServerUtils.getUrl(getSpaceId(), getComponentId(), getUrlEncodedParameter(
+                  title), photo.getImageMimeType(), nomRep);
         }
       }
     }

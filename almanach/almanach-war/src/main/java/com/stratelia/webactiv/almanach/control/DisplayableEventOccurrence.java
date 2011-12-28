@@ -24,6 +24,8 @@
 package com.stratelia.webactiv.almanach.control;
 
 import java.util.Collection;
+
+import com.silverpeas.calendar.DateTime;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
@@ -89,6 +91,14 @@ public class DisplayableEventOccurrence extends EventOccurrence {
     return toJSONObject().toString();
   }
 
+  public boolean isStartTimeDefined() {
+    return getStartDate() instanceof DateTime;
+  }
+
+  public boolean isEndTimeDefined() {
+    return getEndDate() instanceof DateTime;
+  }
+
   /**
    * Gets a JSON (JavaScript Object Notation) representation of all the specified events.
    * @param events the events.
@@ -132,6 +142,8 @@ public class DisplayableEventOccurrence extends EventOccurrence {
     jsonObject.put("end", endDate);
     jsonObject.put("className", new JSONArray(getCSSClasses()));
     jsonObject.put("allDay", isAllDay());
+    jsonObject.put("startTimeDefined", isStartTimeDefined());
+    jsonObject.put("endTimeDefined", isEndTimeDefined());
     if (isDefined(event.getEventUrl())) {
       jsonObject.put("eventURL", event.getEventUrl());
     }

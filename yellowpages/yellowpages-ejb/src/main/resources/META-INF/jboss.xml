@@ -27,18 +27,18 @@
           "-//JBoss//DTD JBOSS 4.0//EN"
           "http://www.jboss.org/j2ee/dtd/jboss_4_0.dtd">
 <jboss>
-    <enterprise-beans>
-        <session>
-            <ejb-name>ejb/YellowpagesBm</ejb-name>
-            <jndi-name>ejb/YellowpagesBm</jndi-name>
-		    <ejb-ref>
-				<ejb-ref-name>ejb/NodeBm</ejb-ref-name>
-				<jndi-name>ejb/NodeBm</jndi-name>
-		    </ejb-ref>
-		    <ejb-ref>
-				<ejb-ref-name>ejb/ContactBm</ejb-ref-name>
-				<jndi-name>ejb/ContactBm</jndi-name>
-		    </ejb-ref>
-        </session>
-    </enterprise-beans>
+  <enterprise-beans>
+    <session>
+      <ejb-name>YellowpagesBm</ejb-name>
+      <jndi-name>ejb/YellowpagesBm</jndi-name>
+      <ejb-ref>
+        <ejb-ref-name>NodeBm</ejb-ref-name>
+        <jndi-name>ejb/NodeBm</jndi-name>
+      </ejb-ref>
+      <ejb-ref>
+        <ejb-ref-name>ContactBm</ejb-ref-name>
+        <jndi-name>ejb/ContactBm</jndi-name>
+      </ejb-ref>
+    </session>
+  </enterprise-beans>
 </jboss>

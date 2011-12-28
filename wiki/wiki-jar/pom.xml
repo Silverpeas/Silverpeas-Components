@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>wiki</artifactId>
-    <version>5.8-SNAPSHOT</version>
+    <version>5.9-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.wiki</groupId>
@@ -22,13 +22,6 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>silverstatistics</artifactId>
-      <version>${core.version}</version>
-      <classifier>client</classifier>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>

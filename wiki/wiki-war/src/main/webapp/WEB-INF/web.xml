@@ -88,33 +88,6 @@
         <servlet-name>WikiRequestRouter</servlet-name>
         <servlet-class>com.silverpeas.wiki.servlets.WikiRequestRouter</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>XMLRPC</servlet-name>
-        <servlet-class>com.ecyrd.jspwiki.xmlrpc.RPCServlet</servlet-class>
-        <init-param>
-            <param-name>handler</param-name>
-            <param-value>com.ecyrd.jspwiki.xmlrpc.RPCHandler</param-value>
-        </init-param>
-        <init-param>
-            <param-name>prefix</param-name>
-            <param-value>wiki</param-value>
-        </init-param>
-    </servlet>
-    <!--
-       OK, this then defines that our UTF-8 -capable server.
-     -->
-    <servlet>
-        <servlet-name>XMLRPC-UTF8</servlet-name>
-        <servlet-class>com.ecyrd.jspwiki.xmlrpc.RPCServlet</servlet-class>
-        <init-param>
-            <param-name>handler</param-name>
-            <param-value>com.ecyrd.jspwiki.xmlrpc.RPCHandlerUTF8</param-value>
-        </init-param>
-        <init-param>
-            <param-name>prefix</param-name>
-            <param-value>wiki</param-value>
-        </init-param>
-    </servlet>
     <!-- JSON AJAX API -->
     <servlet>
         <servlet-name>com.metaparadigm.jsonrpc.JSONRPCServlet</servlet-name>

@@ -23,30 +23,27 @@
  */
 package com.silverpeas.gallery;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class GalleryStatistics implements ComponentStatisticsInterface {
 
+  @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
-
     Collection<PhotoDetail> photos = getGalleryBm().getAllPhotos(componentId);
-    Iterator<PhotoDetail> iter = photos.iterator();
-    while (iter.hasNext()) {
-      PhotoDetail photo = iter.next();
+    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(photos.size());
+    for (PhotoDetail photo : photos) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(photo.getCreatorId());
       myCouple.setCountVolume(1);
@@ -59,12 +56,11 @@ public class GalleryStatistics implements ComponentStatisticsInterface {
   private GalleryBm getGalleryBm() {
     GalleryBm galleryBm = null;
     try {
-      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
+      GalleryBmHome galleryBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME,
+          GalleryBmHome.class);
       galleryBm = galleryBmHome.create();
     } catch (Exception e) {
-      throw new GalleryRuntimeException(
-          "GallerySessionController.getGalleryBm()",
+      throw new GalleryRuntimeException("GalleryStatistics.getGalleryBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return galleryBm;

@@ -40,6 +40,6 @@
     factory-method="getInstance" />
 
   <bean id="organizationChartService" name="organizationChartService"
-    class="com.silverpeas.components.organizationchart.service.OrganizationChartLdapServiceImpl" />
+    class="com.silverpeas.components.organizationchart.service.OrganizationChartLdapServiceImpl" scope="prototype"/>
 
 </beans>

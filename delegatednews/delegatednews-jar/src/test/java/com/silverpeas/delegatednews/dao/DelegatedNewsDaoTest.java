@@ -24,27 +24,24 @@
 package com.silverpeas.delegatednews.dao;
 
 import com.silverpeas.delegatednews.model.DelegatedNews;
-
-import org.dbunit.operation.DatabaseOperation;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import javax.naming.NamingException;
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.operation.DatabaseOperation;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import java.lang.String;
-import java.lang.Integer;
-import java.util.Date;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class DelegatedNewsDaoTest {
 
@@ -79,7 +76,7 @@ public class DelegatedNewsDaoTest {
     String contributorId = "1";
     DelegatedNews expectedDetail = new DelegatedNews(pubId.intValue(), instanceId, contributorId, new Date(), new Date(), null);
     expectedDetail = dao.save(expectedDetail);
-    DelegatedNews detail = dao.readByPrimaryKey(pubId);
+    DelegatedNews detail = dao.findOne(pubId);
     assertThat(detail, notNullValue());
     assertThat(detail.getPubId(), is(expectedDetail.getPubId()));
     assertThat(detail.getInstanceId(), is(expectedDetail.getInstanceId()));
@@ -89,11 +86,11 @@ public class DelegatedNewsDaoTest {
   @Test
   public void testGetDelegatedNews() throws Exception {
     Integer pubId = new Integer("1");
-	  DelegatedNews detail = dao.readByPrimaryKey(pubId);
+	  DelegatedNews detail = dao.findOne(pubId);
     assertThat(detail, notNullValue());
 
     pubId = new Integer("2");
-    detail = dao.readByPrimaryKey(pubId);
+    detail = dao.findOne(pubId);
     assertThat(detail, notNullValue());
   }
   

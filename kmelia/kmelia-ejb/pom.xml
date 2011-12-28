@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>kmelia</artifactId>
-    <version>5.8-SNAPSHOT</version>
+    <version>5.9-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.kmelia</groupId>
@@ -21,12 +21,6 @@
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>statistic</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>silverstatistics</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>

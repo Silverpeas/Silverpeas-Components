@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.control;
 
@@ -35,6 +32,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
@@ -143,7 +141,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       }
       updateQuestion(con, question);
       questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId(), question.
-              getInstanceId()));      
+              getInstanceId()));
       notifySubscribers(question, reply);
       return idR;
     } catch (UtilException e) {
@@ -985,10 +983,12 @@ public class SilverpeasQuestionManager implements QuestionManager {
     return StringUtil.getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
   }
 
-  void notifySubscribers(Question question, Reply reply) throws QuestionReplyException {
+  void notifySubscribers(Question question, Reply reply) throws
+          QuestionReplyException {
     if (reply.getPublicReply() == 1) {
       UserDetail sender = reply.readAuthor(controller);
-      SubscriptionNotifier notifier = new SubscriptionNotifier(sender, question, reply);
+      SubscriptionNotifier notifier = new SubscriptionNotifier(sender, URLManager.getServerURL(null),
+              question, reply);
       Collection<String> subscribers = SubscriptionServiceFactory.getFactory().getSubscribeService().
               getSubscribers(new ForeignPK("0", question.getInstanceId()));
       Set<UserRecipient> userRecipients = new HashSet<UserRecipient>();

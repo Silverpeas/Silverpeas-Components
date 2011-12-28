@@ -314,7 +314,7 @@ $(document).ready(function(){
 			<% } %>
 		   </div>
 		   
-		   <view:pdcClassification componentId="<%= instanceId %>" contentId="<%= id %>" />
+		   <view:pdcClassificationPreview componentId="<%= instanceId %>" contentId="<%= id %>" />
 </div>
 
 
@@ -322,7 +322,7 @@ $(document).ready(function(){
 	<h2 class="eventName">
 			<%=EncodeHelper.javaStringToHtmlString(event.getTitle())%>
 			 <%if (event.getPriority() != 0){ %>
-       			 <span class="eventPriorityHight"> ! <%=almanach.getString("prioriteImportante")%></span>
+       			 <span class="eventPriorityHight"><img src='<%= m_context %>/util/icons/important.gif' alt='<%=almanach.getString("prioriteImportante")%>'/></span>
 			<% } %>
 	</h2>
 	

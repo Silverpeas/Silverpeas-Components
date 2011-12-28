@@ -34,10 +34,10 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.notification.CommentUserNotificationService;
+import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.NodeSubscription;
-import com.silverpeas.subscribe.service.Subscription;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -48,6 +48,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
@@ -240,7 +241,7 @@ public class DefaultBlogService implements BlogService  {
                   NotificationParameters.NORMAL, subject, templates, fileName);
 
           PublicationDetail pubDetail = post.getPublication();
-          String url = post.getURL();
+          String url = URLManager.getSearchResultURL(post);
           for (String lang : DisplayI18NHelper.getLanguages()) {
             SilverpeasTemplate template = getNewTemplate();
             templates.put(lang, template);

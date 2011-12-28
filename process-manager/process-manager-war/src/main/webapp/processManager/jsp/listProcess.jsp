@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkProcessManager.jsp" %>
@@ -48,41 +49,48 @@ Item getItem(Item[] items, String itemName)
 
   Item[] items = (Item[]) request.getAttribute("FolderItems");
 
-  browseBar.setDomainName(spaceLabel);
-  browseBar.setComponentName(componentLabel,"listProcess");
-
   String canCreate = (String) request.getAttribute("canCreate");
-  if (canCreate.equals("1"))
+  if (canCreate.equals("1")) {
 		operationPane.addOperation(resource.getIcon("processManager.add"),
 									resource.getString("processManager.createProcess"),
 									"createProcess");
+  }
 
   String hasUserSettings = (String) request.getAttribute("hasUserSettings");
-  if (hasUserSettings.equals("1"))
+  if (hasUserSettings.equals("1")) {
 	operationPane.addOperation(resource.getIcon("processManager.userSettings"),
 								resource.getString("processManager.userSettings"),
 								"editUserSettings");
+  }
 
   Boolean isCSVExportEnabled = (Boolean) request.getAttribute("isCSVExportEnabled");
 
-  if (isCSVExportEnabled != null && isCSVExportEnabled.booleanValue())
-  {
+  if (isCSVExportEnabled != null && isCSVExportEnabled.booleanValue()) {
   	operationPane.addLine();
   	operationPane.addOperation(resource.getIcon("processManager.csvExport"),
 			resource.getString("processManager.csvExport"),
 			"javaScript:exportCSV();");
   }
+  
+  if ("supervisor".equalsIgnoreCase((String)request.getAttribute("currentRole"))) {
+    operationPane.addLine();
+  	operationPane.addOperation(resource.getIcon("processManager.welcome"),
+			resource.getString("processManager.operation.welcome"),
+			"ToWysiwygWelcome");
+  }
+  String welcomeMessage = (String) request.getAttribute("WelcomeMessage");
 
 	String collapse = (String) request.getAttribute("collapse");
-	if (collapse == null)
+	if (collapse == null) {
 		collapse = "true";
+	}
    	com.silverpeas.form.Form form = (com.silverpeas.form.Form) request.getAttribute("form");
    PagesContext context = (PagesContext) request.getAttribute("context");
    DataRecord data = (DataRecord) request.getAttribute("data");
 
    ButtonPane buttonPane = gef.getButtonPane();
-   buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:setFilter()", false));
-   buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:resetFilter()", false));
+   buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:setFilter()", false));
+   buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:resetFilter()", false));
 
    boolean isProcessIdVisible = ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
 
@@ -95,37 +103,39 @@ Item getItem(Item[] items, String itemName)
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <%
-   out.println(gef.getLookStyleSheet());
-	form.displayScripts(out, context);
+   	out.println(gef.getLookStyleSheet());
 %>
-<script language="JavaScript1.2">
-   function collapseFilter(arg){
-	   document.<%=context.getFormName()%>.collapse.value=arg;
-		setFilter();
-   }
-	function setFilter()
-	{
-		if (isCorrectForm())
-		{
+<link rel="stylesheet" type="text/css" href="<%=m_context%>/processManager/jsp/css/processManager.css"/>
+<%
+	if (collapse.equals("false")) {
+		form.displayScripts(out, context);
+	}
+%>
+<script type="text/javascript">
+   	function collapseFilter(arg){
+		document.<%=context.getFormName()%>.collapse.value=arg;
+		document.<%=context.getFormName()%>.submit();
+   	}
+   	
+	function setFilter() {
+		if (isCorrectForm()) {
 			document.<%=context.getFormName()%>.submit();
 		}
 	}
 
 	function resetFilter() {
-			document.<%=context.getFormName()%>.reset();
+		document.<%=context.getFormName()%>.reset();
 	}
 
-	function confirmURL(url, message)
-	{
-		if (confirm(message))
+	function confirmURL(url, message) {
+		if (confirm(message)) {
 			window.location.href = url;
+		}
 	}
 
-	function exportCSV()
-	{
+	function exportCSV() {
 		SP_openWindow("exportCSV", "exportWindow", "550", "350", "directories=0,menubar=0,toolbar=0,alwaysRaised");
 	}
-</SCRIPT>
 </script>
 </HEAD>
 <BODY class="yui-skin-sam">
@@ -134,6 +144,7 @@ Item getItem(Item[] items, String itemName)
    out.println(frame.printBefore());
 %>
 <CENTER>
+<% if (roles != null && roles.length > 1) { %>
 <TABLE CELLPADDING="1" CELLSPACING="0" BORDER="0" WIDTH="98%">
 	<TR>
 		<TD class="textePetitBold" nowrap><%=resource.getString("processManager.yourRole") %> :&nbsp;</td>
@@ -158,58 +169,52 @@ Item getItem(Item[] items, String itemName)
 	</tr>
 </table>
 <br/>
+<% } %>
+
+<% if (StringUtil.isDefined(welcomeMessage)) { %>
+	<span class="inlineMessage"><%=welcomeMessage %></span>
+	<br clear="all"/>
+<% } %>
+
 <FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="filterProcess" ENCTYPE="multipart/form-data">
 	<% out.println(board.printBefore()); %>
 			<table CELLPADDING="0" CELLSPACING="0" BORDER="0" WIDTH="100%">
 				<tr>
-					<td class="intfdcolor" rowspan="2" nowrap width="100%">
+					<td rowspan="2" nowrap width="100%">
 						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5">
 						<a href="listProcess"><img border="0" src="<%=resource.getIcon("processManager.refresh")%>" alt="<%=resource.getString("processManager.refresh")%>" align="absmiddle"></a>
 						<span class="txtNav">
 						<%=resource.getString("processManager.filter") %>
 						</span>
 					</td>
-					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"></td>
-					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"></td>
+					<td><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"></td>
+					<td><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"></td>
 				</tr>
 				<tr>
-					<td height="0" class="intfdcolor" align="right" valign="bottom"><img border="0" src="<%=resource.getIcon("processManager.boxAngleLeft") %>"></td>
+					<td height="0" align="right" valign="bottom"><img border="0" src="<%=resource.getIcon("processManager.px") %>"></td>
 					<td align="center" valign="bottom" nowrap>
 					<%if (collapse.equals("true")) {
-					out.println("<a href=\"javascript:collapseFilter('false')\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxDown")+"\"></a>");
-					}
-					else{
-					out.println("<a href=\"javascript:collapseFilter('true')\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxUp")+"\"></a>");
+						out.println("<a href=\"javascript:collapseFilter('false')\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxDown")+"\"></a>");
+					} else {
+						out.println("<a href=\"javascript:collapseFilter('true')\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxUp")+"\"></a>");
 					}
 					%>
 					<img border="0" height="1" width="3" src="<%=resource.getIcon("processManager.px") %>">
 					</td>
 				</tr>
 			</table>
-				<%
-				if (collapse.equals("false"))
-				{
-				%>
+				<% if (collapse.equals("false")) { %>
 					<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
 						<tr>
 							<td>
 						      <br><center><% form.display(out, context, data); %></center>
-									<br><center><% out.println(buttonPane.print()); %></center>
+							  <br><center><% out.println(buttonPane.print()); %></center>
 							</td>
 						</tr>
-						<!-- <tr>
-							<td colspan="2" align="right"><a href="javascript:collapseFilter('true')"><img border="0" src="<%=resource.getIcon("processManager.boxUp") %>"></a><img border="0" width="3" src="<%=resource.getIcon("processManager.px") %>"></td>
-						</tr> -->
 					</table>
-				<%
-				}
-				else
-				{
-				%>
-					<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"></td><img border="0" src="<%=resource.getIcon("processManager.px") %>"></tr></table>
-				<%
-				}
-				%>
+				<% } else { %>
+					<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"><img border="0" src="<%=resource.getIcon("processManager.px") %>"/></td></tr></table>
+				<% } %>
 	<% out.println(board.printAfter()); %>
    <INPUT type="hidden" name="collapse" value="<%=collapse%>">
 </FORM>
@@ -344,3 +349,4 @@ out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </BODY>
+</HTML>

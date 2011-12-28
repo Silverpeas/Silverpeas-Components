@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>delegatednews</artifactId>
-    <version>5.8-SNAPSHOT</version>
+    <version>5.9-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.delegatednews</groupId>
@@ -13,19 +13,19 @@
   <name>Lib delegatednews</name>
 
   <dependencies>
-      <dependency>
-        <groupId>javax.transaction</groupId>
-        <artifactId>jta</artifactId>
-        <scope>provided</scope>
-      </dependency>
-	<dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
       <artifactId>hibernate-jpa-2.0-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.synyx.hades</groupId>
-      <artifactId>org.synyx.hades</artifactId>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -44,13 +44,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>silverstatistics</artifactId>
-      <version>${core.version}</version>
-      <classifier>client</classifier>
-      <scope>provided</scope>
-    </dependency>
-	<dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
     </dependency>

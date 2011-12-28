@@ -39,6 +39,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
@@ -330,7 +331,7 @@ public class DefaultClassifiedService implements ClassifiedService {
         }
 
         notifMetaData.addUserRecipient(new UserRecipient(userId));
-        notifMetaData.setLink(classified.getURL());
+        notifMetaData.setLink(URLManager.getSearchResultURL(classified));
         notifMetaData.setComponentId(classified.getInstanceId());
         notifyUsers(notifMetaData, userIdWhoRefuse);
       }
@@ -362,7 +363,7 @@ public class DefaultClassifiedService implements ClassifiedService {
         for (String user : users) {
           notifMetaData.addUserRecipient(new UserRecipient(user));
         }
-        notifMetaData.setLink(classified.getURL());
+        notifMetaData.setLink(URLManager.getSearchResultURL(classified));
         notifMetaData.setComponentId(classified.getInstanceId());
         notifyUsers(notifMetaData, classified.getCreatorId());
       } catch (Exception e) {

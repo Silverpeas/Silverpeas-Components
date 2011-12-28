@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.kmelia.model;
 
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -50,10 +51,10 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -61,7 +62,7 @@ import java.util.List;
  * A publication in Kmelia can be positionned in the PDC, it can have
  * attachments and it can be commented.
  */
-public class KmeliaPublication implements Serializable {
+public class KmeliaPublication implements SilverpeasContent {
 
   private static final long serialVersionUID = 4861635754389280165L;
   private static final OrganizationController organisationService = new OrganizationController();
@@ -152,6 +153,7 @@ public class KmeliaPublication implements Serializable {
    * Gets the unique identifier of this publication.
    * @return the unique identifier of this publication.
    */
+  @Override
   public String getId() {
     return pk.getId();
   }
@@ -204,6 +206,7 @@ public class KmeliaPublication implements Serializable {
    * Gets the creator of this publication (the initial author).
    * @return the detail about the creator of this publication.
    */
+  @Override
   public UserDetail getCreator() {
     String creatorId = getDetail().getCreatorId();
     return getOrganizationController().getUserDetail(creatorId);
@@ -371,6 +374,31 @@ public class KmeliaPublication implements Serializable {
 
   private OrganizationController getOrganizationController() {
     return organisationService;
+  }
+
+  @Override
+  public String getComponentInstanceId() {
+    return getDetail().getComponentInstanceId();
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    return getDetail().getSilverpeasContentId();
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return getDetail().getCreationDate();
+  }
+
+  @Override
+  public String getTitle() {
+    return getDetail().getTitle();
+  }
+
+  @Override
+  public String getContributionType() {
+    return getDetail().getContributionType();
   }
 
 }

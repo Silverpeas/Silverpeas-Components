@@ -24,56 +24,55 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
-
-<ejb-jar>
+<ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>KmeliaJar</display-name>
   <enterprise-beans>
     <session>
       <description>no description</description>
-      <display-name>ejb/KmeliaBm</display-name>
-      <ejb-name>ejb/KmeliaBm</ejb-name>
+      <display-name>KmeliaBm</display-name>
+      <ejb-name>KmeliaBm</ejb-name>
       <home>com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome</home>
       <remote>com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm</remote>
       <ejb-class>com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmEJB</ejb-class>
       <session-type>Stateless</session-type>
       <transaction-type>Container</transaction-type>
       <ejb-ref>
-        <ejb-ref-name>ejb/NodeBm</ejb-ref-name>
+        <ejb-ref-name>NodeBm</ejb-ref-name>
         <ejb-ref-type>Session</ejb-ref-type>
         <home>com.stratelia.webactiv.util.node.control.NodeBmHome</home>
         <remote>com.stratelia.webactiv.util.node.control.NodeBm</remote>
-        <ejb-link>ejb/NodeBm</ejb-link>
+        <ejb-link>NodeBm</ejb-link>
       </ejb-ref>
       <ejb-ref>
-        <ejb-ref-name>ejb/PublicationBm</ejb-ref-name>
+        <ejb-ref-name>PublicationBm</ejb-ref-name>
         <ejb-ref-type>Session</ejb-ref-type>
         <home>com.stratelia.webactiv.util.publication.control.PublicationBmHome</home>
         <remote>com.stratelia.webactiv.util.publication.control.PublicationBm</remote>
-        <ejb-link>ejb/PublicationBm</ejb-link>
+        <ejb-link>PublicationBm</ejb-link>
       </ejb-ref>
       <ejb-ref>
-        <ejb-ref-name>ejb/StatisticBm</ejb-ref-name>
+        <ejb-ref-name>StatisticBm</ejb-ref-name>
         <ejb-ref-type>Session</ejb-ref-type>
         <home>com.stratelia.webactiv.util.statistic.control.StatisticBmHome</home>
         <remote>com.stratelia.webactiv.util.statistic.control.StatisticBm</remote>
-        <ejb-link>ejb/StatisticBm</ejb-link>
+        <ejb-link>StatisticBm</ejb-link>
       </ejb-ref>
       <ejb-ref>
-        <ejb-ref-name>ejb/FavoritBm</ejb-ref-name>
+        <ejb-ref-name>FavoritBm</ejb-ref-name>
         <ejb-ref-type>Session</ejb-ref-type>
         <home>com.stratelia.webactiv.util.favorit.control.FavoritBmHome</home>
         <remote>com.stratelia.webactiv.util.favorit.control.FavoritBm</remote>
-        <ejb-link>ejb/FavoritBm</ejb-link>
+        <ejb-link>FavoritBm</ejb-link>
       </ejb-ref>
       <ejb-ref>
-        <ejb-ref-name>ejb/Versioning</ejb-ref-name>
+        <ejb-ref-name>Versioning</ejb-ref-name>
         <ejb-ref-type>Session</ejb-ref-type>
         <home>com.stratelia.silverpeas.versioning.ejb.VersioningBmHome</home>
         <remote>com.stratelia.silverpeas.versioning.ejb.VersioningBm</remote>
-        <ejb-link>ejb/Versioning</ejb-link>
+        <ejb-link>Versioning</ejb-link>
       </ejb-ref>
       <resource-ref>
         <res-ref-name>jdbc/Silverpeas</res-ref-name>
@@ -85,7 +84,7 @@
   <assembly-descriptor>
     <container-transaction>
       <method>
-        <ejb-name>ejb/KmeliaBm</ejb-name>
+        <ejb-name>KmeliaBm</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>*</method-name>
       </method>
@@ -93,7 +92,7 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/KmeliaBm</ejb-name>
+        <ejb-name>KmeliaBm</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>addPublicationToTopicWithoutNotifications</method-name>
       </method>
@@ -101,7 +100,7 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/KmeliaBm</ejb-name>
+        <ejb-name>KmeliaBm</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>deleteTopic</method-name>
       </method>
@@ -109,7 +108,7 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/KmeliaBm</ejb-name>
+        <ejb-name>KmeliaBm</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>deletePublication</method-name>
       </method>
@@ -117,7 +116,7 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/KmeliaBm</ejb-name>
+        <ejb-name>KmeliaBm</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>addInfoLinks</method-name>
       </method>
@@ -125,36 +124,36 @@
     </container-transaction>
     <container-transaction>
       <method>
-        <ejb-name>ejb/KmeliaBm</ejb-name>
+        <ejb-name>KmeliaBm</ejb-name>
         <method-intf>Remote</method-intf>
         <method-name>deleteInfoLinks</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
-    	<method>
-    		<ejb-name>ejb/KmeliaBm</ejb-name>
-    		<method-intf>Remote</method-intf>
-    		<method-name>createPublicationIntoTopicWithoutNotifications</method-name>
-    		<method-params>
-    			<method-param>com.stratelia.webactiv.util.publication.model.PublicationDetail</method-param>
-    			<method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
-    		</method-params>
-    	</method>
-    	<trans-attribute>Required</trans-attribute>
+      <method>
+        <ejb-name>KmeliaBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>createPublicationIntoTopicWithoutNotifications</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.publication.model.PublicationDetail</method-param>
+          <method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
+        </method-params>
+      </method>
+      <trans-attribute>Required</trans-attribute>
     </container-transaction>
     <container-transaction>
-    	<method>
-    		<ejb-name>ejb/KmeliaBm</ejb-name>
-    		<method-intf>Remote</method-intf>
-    		<method-name>draftOutPublicationWithoutNotifications</method-name>
-    		<method-params>
-    			<method-param>com.stratelia.webactiv.util.publication.model.PublicationPK</method-param>
-    			<method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
-    			<method-param>java.lang.String</method-param>
-    		</method-params>
-    	</method>
-    	<trans-attribute>Required</trans-attribute>
+      <method>
+        <ejb-name>KmeliaBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>draftOutPublicationWithoutNotifications</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.publication.model.PublicationPK</method-param>
+          <method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
+          <method-param>java.lang.String</method-param>
+        </method-params>
+      </method>
+      <trans-attribute>Required</trans-attribute>
     </container-transaction>
   </assembly-descriptor>
 </ejb-jar>

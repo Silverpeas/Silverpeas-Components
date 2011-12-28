@@ -25,12 +25,12 @@ package com.silverpeas.blog;
 
 import com.silverpeas.blog.control.BlogService;
 import com.silverpeas.blog.control.BlogServiceFactory;
+import com.silverpeas.blog.model.PostDetail;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.silverpeas.blog.model.PostDetail;
-import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
-import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
 
 public class BlogStatistics implements ComponentStatisticsInterface {
 

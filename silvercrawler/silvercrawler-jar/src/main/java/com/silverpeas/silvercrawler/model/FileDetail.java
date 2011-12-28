@@ -73,8 +73,7 @@ public class FileDetail extends Object implements java.io.Serializable {
   }
 
   public String getFileURL(String userId, String componentId) {
-    return FileServerUtils.getUrl(name, path, getMimeType(), userId,
-        componentId);
+    return FileServerUtils.getUrl(name, path, getMimeType(), userId, componentId);
   }
 
   public boolean isIsDirectory() {
