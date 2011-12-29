@@ -46,7 +46,6 @@ import com.silverpeas.mailinglist.service.event.MessageEvent;
 import com.silverpeas.mailinglist.service.event.MessageListener;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import java.io.*;
 import javax.inject.Inject;
@@ -66,16 +65,16 @@ public class TestMessageChecker {
   @Inject
   MessageChecker messageChecker;
   private static int ATT_SIZE = 85922;
-  private static final String attachmentPath = BUILD_PATH + SEPARATOR
-          + "uploads" + SEPARATOR + "componentId" + SEPARATOR + "{0}" + SEPARATOR + "lemonde.html";
+  private static final String attachmentPath = BUILD_PATH + SEPARATOR +
+      "uploads" + SEPARATOR + "componentId" + SEPARATOR + "{0}" + SEPARATOR + "lemonde.html";
   private static final String textEmailContent =
-          "Bonjour famille Simpson, j'espère que vous allez bien. "
-          + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-          + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
-          + "l'homme canon dans la prochaine émission.\r\nBart";
-  private static final String htmlEmailSummary = "Politique Recherchez depuis sur Le Monde.fr A "
-          + "la Une Le Desk Vidéos International *Elections américaines Europe Politique "
-          + "*Municipales & Cantonales 2008 Société Carnet Economie Médias Météo Rendez-vou";
+      "Bonjour famille Simpson, j'espère que vous allez bien. " +
+      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
+      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
+      "l'homme canon dans la prochaine émission.\r\nBart";
+  private static final String htmlEmailSummary = "Politique Recherchez depuis sur Le Monde.fr A " +
+      "la Une Le Desk Vidéos International *Elections américaines Europe Politique " +
+      "*Municipales & Cantonales 2008 Société Carnet Economie Médias Météo Rendez-vou";
 
   protected String loadHtml() throws IOException {
     StringWriter buffer = null;
@@ -83,8 +82,8 @@ public class TestMessageChecker {
     try {
       buffer = new StringWriter();
       reader = new BufferedReader(new InputStreamReader(
-              TestMessageChecker.class.getResourceAsStream("lemonde.html"), "UTF-8"));
-      String line = null;
+          TestMessageChecker.class.getResourceAsStream("lemonde.html"), "UTF-8"));
+      String line;
       while ((line = reader.readLine()) != null) {
         buffer.write(line);
       }
@@ -101,7 +100,6 @@ public class TestMessageChecker {
 
   @Test
   public void testSpringLoading() {
-    MessageChecker messageChecker = getMessageChecker();
     assertNotNull(messageChecker);
     assertEquals("thesimpsons", messageChecker.getLogin());
     assertEquals("simpson", messageChecker.getPassword());
@@ -112,24 +110,16 @@ public class TestMessageChecker {
   }
 
   @Test
-  public void testGetAllRecipients() throws AddressException,
-          MessagingException {
-    MimeMessage mail = new MimeMessage(getMessageChecker().getMailSession());
-    mail.addFrom(new InternetAddress[]{new InternetAddress(
-              "bart.simpson@silverpeas.com")});
-    mail.addRecipient(RecipientType.TO, new InternetAddress(
-            "lisa.simpson@silverpeas.com"));
-    mail.addRecipient(RecipientType.TO, new InternetAddress(
-            "marge.simpson@silverpeas.com"));
-    mail.addRecipient(RecipientType.CC, new InternetAddress(
-            "homer.simpson@silverpeas.com"));
-    mail.addRecipient(RecipientType.CC, new InternetAddress(
-            "krusty.theklown@silverpeas.com"));
-    mail.addRecipient(RecipientType.BCC, new InternetAddress(
-            "ned.flanders@silverpeas.com"));
-    mail.addRecipient(RecipientType.BCC, new InternetAddress(
-            "ted.flanders@silverpeas.com"));
-    Set<String> recipients = getMessageChecker().getAllRecipients(mail);
+  public void testGetAllRecipients() throws AddressException, MessagingException {
+    MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
+    mail.addFrom(new InternetAddress[]{new InternetAddress("bart.simpson@silverpeas.com")});
+    mail.addRecipient(RecipientType.TO, new InternetAddress("lisa.simpson@silverpeas.com"));
+    mail.addRecipient(RecipientType.TO, new InternetAddress("marge.simpson@silverpeas.com"));
+    mail.addRecipient(RecipientType.CC, new InternetAddress("homer.simpson@silverpeas.com"));
+    mail.addRecipient(RecipientType.CC, new InternetAddress("krusty.theklown@silverpeas.com"));
+    mail.addRecipient(RecipientType.BCC, new InternetAddress("ned.flanders@silverpeas.com"));
+    mail.addRecipient(RecipientType.BCC, new InternetAddress("ted.flanders@silverpeas.com"));
+    Set<String> recipients = messageChecker.getAllRecipients(mail);
     assertNotNull(recipients);
     assertEquals(6, recipients.size());
     assertTrue(recipients.contains("lisa.simpson@silverpeas.com"));
@@ -141,21 +131,19 @@ public class TestMessageChecker {
   }
 
   @Test
-  public void testRecipientMailingList() throws AddressException,
-          MessagingException {
-    MessageChecker messageChecker = getMessageChecker();
+  public void testRecipientMailingList() throws AddressException, MessagingException {
     MessageListener mockListener1 = mock(MessageListener.class);
     MessageListener mockListener2 = mock(MessageListener.class);
     Map<String, MessageListener> listenersByEmail = new HashMap<String, MessageListener>(2);
     listenersByEmail.put("bart.simpson@silverpeas.com", mockListener1);
     listenersByEmail.put("ned.flanders@silverpeas.com", mockListener2);
     List<String> allRecipients = Arrays.asList(new String[]{
-              "lisa.simpson@silverpeas.com", "marge.simpson@silverpeas.com",
-              "homer.simpson@silverpeas.com", "bart.simpson@silverpeas.com",
-              "krusty.theklown@silverpeas.com", "ned.flanders@silverpeas.com",
-              "ted.flanders@silverpeas.com"});
+          "lisa.simpson@silverpeas.com", "marge.simpson@silverpeas.com",
+          "homer.simpson@silverpeas.com", "Bart.Simpson@silverpeas.com",
+          "krusty.theklown@silverpeas.com", "ned.flanders@silverpeas.com",
+          "ted.flanders@silverpeas.com"});
     Set<MessageListener> recipients = messageChecker.getRecipientMailingLists(allRecipients,
-            listenersByEmail);
+        listenersByEmail);
     assertNotNull(recipients);
     assertEquals(2, recipients.size());
     assertTrue(recipients.contains(mockListener1));
@@ -163,9 +151,7 @@ public class TestMessageChecker {
   }
 
   @Test
-  public void testProcessEmailSimpleText() throws MessagingException,
-          IOException {
-    MessageChecker messageChecker = getMessageChecker();
+  public void testProcessEmailSimpleText() throws MessagingException, IOException {
     MessageListener mockListener1 = mock(MessageListener.class);
     when(mockListener1.getComponentId()).thenReturn("componentId");
     when(mockListener1.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.TRUE);
@@ -177,7 +163,7 @@ public class TestMessageChecker {
     MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
     InternetAddress theSimpsons = new InternetAddress(
-            "thesimpsons@silverpeas.com");
+        "thesimpsons@silverpeas.com");
     mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Simple text Email test");
@@ -201,13 +187,12 @@ public class TestMessageChecker {
     assertEquals(0, message.getAttachments().size());
     assertEquals("componentId", message.getComponentId());
     assertEquals("text/plain; charset=" + System.getProperty("file.encoding"), message.
-            getContentType());
+        getContentType());
     verify(mockListener1, atLeastOnce()).checkSender("bart.simpson@silverpeas.com");
   }
 
   @Test
   public void testProcessEmailHtmlText() throws MessagingException, IOException {
-    MessageChecker messageChecker = getMessageChecker();
     MessageListener mockListener1 = mock(MessageListener.class);
     when(mockListener1.getComponentId()).thenReturn("componentId");
     when(mockListener1.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.TRUE);
@@ -218,7 +203,7 @@ public class TestMessageChecker {
     MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
     InternetAddress theSimpsons = new InternetAddress(
-            "thesimpsons@silverpeas.com");
+        "thesimpsons@silverpeas.com");
     mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Simple html Email test");
@@ -252,9 +237,7 @@ public class TestMessageChecker {
   }
 
   @Test
-  public void testProcessEmailHtmlTextWithAttachment()
-          throws MessagingException, IOException {
-    MessageChecker messageChecker = getMessageChecker();
+  public void testProcessEmailHtmlTextWithAttachment() throws MessagingException, IOException {
     MessageListener mockListener1 = mock(MessageListener.class);
     when(mockListener1.getComponentId()).thenReturn("componentId");
     when(mockListener1.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.TRUE);
@@ -267,13 +250,13 @@ public class TestMessageChecker {
     MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
     InternetAddress theSimpsons = new InternetAddress(
-            "thesimpsons@silverpeas.com");
+        "thesimpsons@silverpeas.com");
     mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Html Email test with attachment");
     String html = loadHtml();
     MimeBodyPart attachment = new MimeBodyPart(TestMessageChecker.class.getResourceAsStream(
-            "lemonde.html"));
+        "lemonde.html"));
     attachment.setDisposition(Part.ATTACHMENT);
     attachment.setFileName("lemonde.html");
     MimeBodyPart body = new MimeBodyPart();
@@ -300,8 +283,8 @@ public class TestMessageChecker {
     assertEquals(htmlEmailSummary, message.getSummary());
     assertEquals(ATT_SIZE, message.getAttachmentsSize());
     assertEquals(1, message.getAttachments().size());
-    String path = MessageFormat.format(attachmentPath, new String[]{
-              messageChecker.getMailProcessor().replaceSpecialChars(message.getMessageId())});
+    String path = MessageFormat.format(attachmentPath, messageChecker.getMailProcessor().
+        replaceSpecialChars(message.getMessageId()));
     Attachment attached = message.getAttachments().iterator().next();
     assertEquals(path, attached.getPath());
     assertEquals("lemonde.html", attached.getFileName());
@@ -311,9 +294,7 @@ public class TestMessageChecker {
   }
 
   @Test
-  public void testProcessEmailTextWithAttachment() throws MessagingException,
-          IOException {
-    MessageChecker messageChecker = getMessageChecker();
+  public void testProcessEmailTextWithAttachment() throws MessagingException, IOException {
     MessageListener mockListener1 = mock(MessageListener.class);
     when(mockListener1.getComponentId()).thenReturn("componentId");
     when(mockListener1.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.TRUE);
@@ -326,12 +307,12 @@ public class TestMessageChecker {
     MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
     InternetAddress theSimpsons = new InternetAddress(
-            "thesimpsons@silverpeas.com");
+        "thesimpsons@silverpeas.com");
     mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Plain text Email test with attachment");
     MimeBodyPart attachment = new MimeBodyPart(TestMessageChecker.class.getResourceAsStream(
-            "lemonde.html"));
+        "lemonde.html"));
     attachment.setDisposition(Part.INLINE);
     attachment.setFileName("lemonde.html");
     MimeBodyPart body = new MimeBodyPart();
@@ -360,9 +341,9 @@ public class TestMessageChecker {
     assertEquals(textEmailContent.substring(0, 200), message.getSummary());
     assertEquals(ATT_SIZE, message.getAttachmentsSize());
     assertEquals(1, message.getAttachments().size());
-    String path = MessageFormat.format(attachmentPath,
-            new String[]{messageChecker.getMailProcessor().replaceSpecialChars(
-              message.getMessageId())});
+    String path = MessageFormat.format(attachmentPath, messageChecker.getMailProcessor().
+        replaceSpecialChars(
+        message.getMessageId()));
     Attachment attached = message.getAttachments().iterator().next();
     assertEquals(path, attached.getPath());
     assertEquals("lemonde.html", attached.getFileName());
@@ -375,9 +356,7 @@ public class TestMessageChecker {
   }
 
   @Test
-  public void testProcessUnauthorizedEmailSimpleText()
-          throws MessagingException, IOException {
-    MessageChecker messageChecker = getMessageChecker();
+  public void testProcessUnauthorizedEmailSimpleText() throws MessagingException, IOException {
     MessageListener mockListener1 = mock(MessageListener.class);
     when(mockListener1.getComponentId()).thenReturn("componentId");
     when(mockListener1.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.FALSE);
@@ -389,8 +368,7 @@ public class TestMessageChecker {
     listenersByEmail.put("theflanders@silverpeas.com", mockListener2);
     MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
-    InternetAddress theSimpsons = new InternetAddress(
-            "thesimpsons@silverpeas.com");
+    InternetAddress theSimpsons = new InternetAddress("thesimpsons@silverpeas.com");
     mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Simple text Email test");
@@ -407,17 +385,9 @@ public class TestMessageChecker {
     verify(mockListener1, atLeastOnce()).checkSender("bart.simpson@silverpeas.com");
   }
 
-  protected MessageChecker getMessageChecker() {
-    return messageChecker;
-  }
-
   @After
   public void onTearDown() {
     Mailbox.clearAll();
-    try {
-      FileFolderManager.deleteFolder(BUILD_PATH + File.separatorChar + "uploads", false);
-    } catch (UtilException e) {
-      e.printStackTrace();
-    }
+    FileFolderManager.deleteFolder(BUILD_PATH + File.separatorChar + "uploads", false);
   }
 }
