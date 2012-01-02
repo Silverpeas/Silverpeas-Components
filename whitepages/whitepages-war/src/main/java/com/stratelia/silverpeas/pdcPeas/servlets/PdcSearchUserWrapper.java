@@ -24,31 +24,30 @@
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchUserWrapperSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
 /**
  * A simple wrapper for the userpanel.
  */
-public class PdcSearchUserWrapper extends ComponentRequestRouter {
+public class PdcSearchUserWrapper
+    extends ComponentRequestRouter<PdcSearchUserWrapperSessionController> {
 
   private static final long serialVersionUID = 3997262296536961121L;
 
   /**
    * Returns a new session controller
    */
-  public ComponentSessionController createComponentSessionController(
+  public PdcSearchUserWrapperSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcSearchUserWrapperSessionController(mainSessionCtrl,
         componentContext);
@@ -65,13 +64,9 @@ public class PdcSearchUserWrapper extends ComponentRequestRouter {
    * Do the requested function and return the destination url.
    */
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+      PdcSearchUserWrapperSessionController pdcSearchUserWrapperScc, HttpServletRequest request) {
     SilverTrace.info("pdcPeas", "PdcSearchUserWrapper.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", " Function=" + function);
-
-    PdcSearchUserWrapperSessionController pdcSearchUserWrapperScc =
-        (PdcSearchUserWrapperSessionController) componentSC;
-
     try {
       if (function.equals("Open")) {
         pdcSearchUserWrapperScc.setFormName(request.getParameter("formName"));
@@ -125,9 +120,7 @@ public class PdcSearchUserWrapper extends ComponentRequestRouter {
 
           request.setAttribute("userIds", ids.toString());
           request.setAttribute("userNames", names.toString());
-        }
-
-        else {
+        } else {
           request.setAttribute("userIds", "");
           request.setAttribute("userNames", "");
         }

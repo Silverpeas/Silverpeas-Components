@@ -23,23 +23,18 @@
  */
 package com.silverpeas.silvercrawler.servlets;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.servlet.http.HttpServletRequest;
-import com.silverpeas.silvercrawler.control.FolderZIPInfo;
 import com.silverpeas.silvercrawler.control.ProfileHelper;
 import com.silverpeas.silvercrawler.control.SilverCrawlerSessionController;
-import com.silverpeas.silvercrawler.model.FileFolder;
 import com.silverpeas.silvercrawler.servlets.handlers.FunctionHandler;
 import com.silverpeas.silvercrawler.servlets.handlers.HandlerProvider;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class SilverCrawlerRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+
+public class SilverCrawlerRequestRouter extends ComponentRequestRouter<SilverCrawlerSessionController> {
   /**
    * This method has to be implemented in the component request rooter class.
    * returns the session control bean name to be put in the request object ex :
@@ -60,7 +55,7 @@ public class SilverCrawlerRequestRouter extends ComponentRequestRouter {
    *
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public SilverCrawlerSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new SilverCrawlerSessionController(mainSessionCtrl, componentContext);
   }
@@ -75,18 +70,16 @@ public class SilverCrawlerRequestRouter extends ComponentRequestRouter {
    *
    * @param function
    *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
+   * @param silverCrawlerSC
    *          The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    *         "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+      SilverCrawlerSessionController silverCrawlerSC, HttpServletRequest request) {
     String destination = "";
-    SilverCrawlerSessionController silverCrawlerSC = (SilverCrawlerSessionController) componentSC;
-    SilverTrace.info("silverCrawler",
-        "SilverCrawlerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId()
+    SilverTrace.info("silverCrawler", "SilverCrawlerRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "User=" + silverCrawlerSC.getUserId()
             + " Function=" + function);
 
     String flag = getFlag(silverCrawlerSC.getUserRoles());

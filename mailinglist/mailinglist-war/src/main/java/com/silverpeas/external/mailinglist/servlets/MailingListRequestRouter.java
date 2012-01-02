@@ -24,16 +24,14 @@
 
 package com.silverpeas.external.mailinglist.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.mailinglist.control.MailingListSessionController;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 
-public class MailingListRequestRouter extends ComponentRequestRouter implements MailingListRoutage {
+import javax.servlet.http.HttpServletRequest;
+
+public class MailingListRequestRouter extends ComponentRequestRouter<MailingListSessionController> implements MailingListRoutage {
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -52,7 +50,7 @@ public class MailingListRequestRouter extends ComponentRequestRouter implements 
    * @see
    */
   @Override
-  public ComponentSessionController createComponentSessionController(
+  public MailingListSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new MailingListSessionController(mainSessionCtrl, componentContext);
   }
@@ -66,8 +64,7 @@ public class MailingListRequestRouter extends ComponentRequestRouter implements 
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, MailingListSessionController componentSC, HttpServletRequest request) {
     String type = request.getParameter("Type");
     try {
       RestRequest rest = new RestRequest(request);
@@ -89,8 +86,7 @@ public class MailingListRequestRouter extends ComponentRequestRouter implements 
       }
       boolean isModerator = false;
       boolean isAdmin = false;
-      boolean isModerated = ((MailingListSessionController) componentSC)
-          .isModerated();
+      boolean isModerated =componentSC.isModerated();
       String[] roles = componentSC.getUserRoles();
       for (int i = 0; i < roles.length; i++) {
         if ("admin".equalsIgnoreCase(roles[i])) {
@@ -100,8 +96,7 @@ public class MailingListRequestRouter extends ComponentRequestRouter implements 
         }
       }
 
-      request.setAttribute(RSS_URL_ATT,
-          ((AbstractComponentSessionController) componentSC).getRSSUrl());
+      request.setAttribute(RSS_URL_ATT, componentSC.getRSSUrl());
       request.setAttribute(IS_USER_ADMIN_ATT, Boolean.valueOf(isAdmin));
       request.setAttribute(IS_USER_MODERATOR_ATT, Boolean.valueOf(isModerator));
       request.setAttribute(IS_LIST_MODERATED_ATT, Boolean.valueOf(isModerated));
@@ -119,8 +114,7 @@ public class MailingListRequestRouter extends ComponentRequestRouter implements 
       } else if (rest.getElements().get(DESTINATION_PORTLET) != null) {
         return PortletProcessor.processActivities(rest, request, componentSC.getUserId());
       }
-      return ActivitiesProcessor.processActivities(rest, request, componentSC
-          .getUserId());
+      return ActivitiesProcessor.processActivities(rest, request, componentSC.getUserId());
 
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);

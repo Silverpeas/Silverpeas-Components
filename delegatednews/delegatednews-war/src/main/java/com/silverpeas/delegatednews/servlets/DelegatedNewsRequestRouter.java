@@ -24,24 +24,20 @@
 
 package com.silverpeas.delegatednews.servlets;
 
-import java.util.Date;
-
-
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
-import com.stratelia.webactiv.util.DateUtil;
 import com.silverpeas.delegatednews.control.DelegatedNewsSessionController;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
 
-public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.List;
+
+public class DelegatedNewsRequestRouter extends ComponentRequestRouter<DelegatedNewsSessionController> {
   /**
    * 
    */
@@ -62,7 +58,7 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public DelegatedNewsSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new DelegatedNewsSessionController(mainSessionCtrl, componentContext);
   }
@@ -71,31 +67,29 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param newsSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function, ComponentSessionController componentSC,
+  public String getDestination(String function, DelegatedNewsSessionController newsSC,
       HttpServletRequest request) {
 
     SilverTrace.info("delegatednews", "DelegatedNewsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "User=" + newsSC.getUserId() + " Function=" + function);
 
     String destination = "";
-    DelegatedNewsSessionController newsSC = (DelegatedNewsSessionController) componentSC;
-
     try {
-      if (function.equals("Main")) {
+      if ("Main".equals(function)) {
         List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();
         request.setAttribute("ListNews", list);
     	  destination = "/delegatednews/jsp/listNews.jsp";
       } 
-      else if (function.equals("OpenPublication")) {
+      else if ("OpenPublication".equals(function)) {
         String pubId = request.getParameter("PubId");
         String instanceId = request.getParameter("InstanceId");
         destination = "/Rkmelia/"+instanceId+"/ViewOnly?documentId="+pubId;
       } 
-      else if (function.equals("ValidateDelegatedNews")) {
+      else if ("ValidateDelegatedNews".equals(function)) {
         String pubId = request.getParameter("PubId");
         newsSC.validateDelegatedNews(Integer.parseInt(pubId));
         List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();
@@ -107,7 +101,7 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
         request.setAttribute("PubId", pubId);
         destination = "/delegatednews/jsp/editRefuseReason.jsp";
       } 
-      else if (function.equals("RefuseDelegatedNews")) {
+      else if ("RefuseDelegatedNews".equals(function)) {
         String pubId = request.getParameter("PubId");
         String refuseReasonText = request.getParameter("RefuseReasonText");
         newsSC.refuseDelegatedNews(Integer.parseInt(pubId), refuseReasonText);
@@ -115,7 +109,7 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
         request.setAttribute("ListNews", list);
         destination = "/delegatednews/jsp/listNews.jsp";
       } 
-      else if (function.equals("EditUpdateDate")) {
+      else if ("EditUpdateDate".equals(function)) {
         String pubId = request.getParameter("PubId");
         String beginDate = request.getParameter("BeginDate");
         String beginHour = request.getParameter("BeginHour");
@@ -128,7 +122,7 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
         request.setAttribute("EndHour", endHour);
         destination = "/delegatednews/jsp/editUpdateDate.jsp";
       } 
-      else if (function.equals("UpdateDateDelegatedNews")) {
+      else if ("UpdateDateDelegatedNews".equals(function)) {
         String pubId = request.getParameter("PubId");
         String beginDate = request.getParameter("BeginDate");
         String beginHour = request.getParameter("BeginHour");

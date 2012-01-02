@@ -24,20 +24,18 @@
 
 package com.silverpeas.rssAgregator.servlets;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.rssAgregator.control.RssAgregatorSessionController;
 import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class RssAgregatorRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+public class RssAgregatorRequestRouter extends ComponentRequestRouter<RssAgregatorSessionController> {
 
   private static final long serialVersionUID = -4056285757621649567L;
 
@@ -45,17 +43,15 @@ public class RssAgregatorRequestRouter extends ComponentRequestRouter {
     return "rssAgregator";
   }
 
-  public ComponentSessionController createComponentSessionController(
+  public RssAgregatorSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new RssAgregatorSessionController(mainSessionCtrl, componentContext);
   }
 
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, RssAgregatorSessionController rssSC, HttpServletRequest request) {
     String destination = "";
-    RssAgregatorSessionController rssSC = (RssAgregatorSessionController) componentSC;
     SilverTrace.info("rssAgregator", "rssAgregatorRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "User=" + rssSC.getUserId() + " Function=" + function);
 
     String role = getRole(rssSC.getUserRoles());
 
@@ -154,8 +150,7 @@ public class RssAgregatorRequestRouter extends ComponentRequestRouter {
             refreshRate + ", nbItems = " + nbItems + ", displayImage = " + displayImage);
 
     // Return object declaration
-    SPChannel channel = null;
-
+    SPChannel channel;
     if (StringUtil.isDefined(id)) {
       channel = new SPChannel(id, url);
     } else {

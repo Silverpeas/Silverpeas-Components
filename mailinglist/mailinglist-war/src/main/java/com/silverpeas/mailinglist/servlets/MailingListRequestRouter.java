@@ -24,16 +24,15 @@
 
 package com.silverpeas.mailinglist.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.silverpeas.mailinglist.control.MailingListSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-import com.silverpeas.mailinglist.control.*;
+import javax.servlet.http.HttpServletRequest;
 
-public class MailingListRequestRouter extends ComponentRequestRouter {
+public class MailingListRequestRouter extends ComponentRequestRouter<MailingListSessionController> {
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -44,12 +43,13 @@ public class MailingListRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
-  public ComponentSessionController createComponentSessionController(
+  public MailingListSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new MailingListSessionController(mainSessionCtrl, componentContext);
   }
@@ -57,16 +57,14 @@ public class MailingListRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   * @param function The entering request function (ex : "Main.jsp")
+   *
+   * @param function    The entering request function (ex : "Main.jsp")
    * @param componentSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, MailingListSessionController componentSC,
+      HttpServletRequest request) {
     String destination;
-    // MailingListSessionController mailingListSC =
-    // (MailingListSessionController)componentSC;
     SilverTrace.info("mailingList",
         "MailingListRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId()

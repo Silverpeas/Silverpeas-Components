@@ -74,16 +74,11 @@ public class MailCheckerInitialize {
     try {
       SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
           "mailinglist.initialization.start", " " + checker);
-      //@SuppressWarnings("unchecked")
-      //Collection<SchedulerJob> jobList = SimpleScheduler.getJobList(checker);
-      //SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
-      //    "mailinglist.initialization.joblist", " " + jobList);
       SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
       Scheduler scheduler = schedulerFactory.getScheduler();
       if (scheduler.isJobScheduled(MAILING_LIST_JOB_NAME)) {
         scheduler.unscheduleJob(MAILING_LIST_JOB_NAME);
       }
-      //SimpleScheduler.scheduleJob(checker, MAILING_LIST_JOB_NAME, getFrequency());
       JobTrigger trigger = JobTrigger.triggerEvery(getFrequency(), TimeUnit.MINUTE);
       scheduler.scheduleJob(MAILING_LIST_JOB_NAME, trigger, checker);
       List<MailingList> mailingLists = getMailingListService().listAllMailingLists();

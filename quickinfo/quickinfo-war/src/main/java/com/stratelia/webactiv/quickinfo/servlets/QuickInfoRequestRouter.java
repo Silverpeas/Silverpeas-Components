@@ -24,31 +24,28 @@
 
 package com.stratelia.webactiv.quickinfo.servlets;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationSelection;
-import com.silverpeas.util.clipboard.ClipboardSelection;
 
-public class QuickInfoRequestRouter extends ComponentRequestRouter {
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+
+public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -57,12 +54,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
     return "quickinfo";
   }
 
-  public ComponentSessionController createComponentSessionController(
+  public QuickInfoSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    ComponentSessionController component =
-        (ComponentSessionController) new QuickInfoSessionController(
-            mainSessionCtrl, componentContext);
-    return component;
+    return new QuickInfoSessionController(mainSessionCtrl, componentContext);
   }
 
   private void setGlobalInfo(QuickInfoSessionController quickInfo,
@@ -78,17 +72,13 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param quickInfo The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, QuickInfoSessionController quickInfo, HttpServletRequest request) {
     String destination = null;
-
-    QuickInfoSessionController quickInfo = (QuickInfoSessionController) componentSC;
-
     String flag = getFlag(quickInfo.getUserRoles());
     if (flag == null)
       return null;
@@ -178,7 +168,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
           } else if (action.equals("ReallyRemove")) {
             String id = request.getParameter("Id");
             quickInfo.remove(id);
-            destination = getDestination("Main", componentSC, request);
+            destination = getDestination("Main", quickInfo, request);
           } else if ((action.equals("ReallyAdd"))
               || (action.equals("ReallyUpdate"))) {
             String name = request.getParameter("Name");
@@ -204,11 +194,11 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
               String id = request.getParameter("Id");
               quickInfo.update(id, name, description, beginDate, endDate);
             }
-            destination = getDestination("quickInfoPublisher", componentSC,
+            destination = getDestination("quickInfoPublisher", quickInfo,
                 request);
           }
         } else if (flag.equals("user")) {
-          destination = getDestination("quickInfoUser", componentSC, request);
+          destination = getDestination("quickInfoUser", quickInfo, request);
         } else {
           destination = GeneralPropertiesManager.getGeneralResourceLocator()
               .getString("sessionTimeout");
@@ -224,16 +214,16 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
             if (paramName.startsWith("selectItem")) {
               Id = request.getParameter(paramName);
               if (Id != null) {
-                pubDetail = ((QuickInfoSessionController) componentSC)
+                pubDetail = ((QuickInfoSessionController) quickInfo)
                     .getDetail(Id);
                 pubSelect = new PublicationSelection(pubDetail);
-                componentSC.addClipboardSelection((ClipboardSelection) pubSelect);
+                quickInfo.addClipboardSelection((ClipboardSelection) pubSelect);
               }
             }
           }
         } catch (Exception e) {
           try {
-            componentSC.setClipboardError("copyError", e);
+            quickInfo.setClipboardError("copyError", e);
             // SilverTrace : mettre un warning
           } catch (Exception ee) {
             SilverTrace.error("quickinfo",
@@ -245,13 +235,13 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
             + "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("copy")) {
         try {
-          PublicationDetail pubDetail = ((QuickInfoSessionController) componentSC)
+          PublicationDetail pubDetail = ((QuickInfoSessionController) quickInfo)
               .getDetail(request.getParameter("Id"));
           PublicationSelection pubSelect = new PublicationSelection(pubDetail);
-          componentSC.addClipboardSelection((ClipboardSelection) pubSelect);
+          quickInfo.addClipboardSelection((ClipboardSelection) pubSelect);
         } catch (Exception e) {
           try {
-            componentSC.setClipboardError("copyError", e);
+            quickInfo.setClipboardError("copyError", e);
             // SilverTrace : mettre un warning
           } catch (Exception ee) {
             SilverTrace.error("quickinfo",
@@ -265,9 +255,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
         try {
           SilverTrace.debug("quickinfo",
               "QuickInfoRequestRouter.getDestination()", "clipboard '"
-              + componentSC.getClipboardName() + "' count="
-              + componentSC.getClipboardCount());
-          Collection clipObjects = componentSC.getClipboardSelectedObjects();
+              + quickInfo.getClipboardName() + "' count="
+              + quickInfo.getClipboardCount());
+          Collection clipObjects = quickInfo.getClipboardSelectedObjects();
           Iterator clipObjectIterator = clipObjects.iterator();
           while (clipObjectIterator.hasNext()) {
             ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator
@@ -282,14 +272,14 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
               String description = WysiwygController.load(pubDetail.getPK()
                   .getInstanceId(), pubDetail.getPK().getId(), null);
 
-              ((QuickInfoSessionController) componentSC).add(pubDetail
+              ((QuickInfoSessionController) quickInfo).add(pubDetail
                   .getName(), description, pubDetail.getBeginDate(), pubDetail
                   .getEndDate());
             }
           }
-          componentSC.clipboardPasteDone();
+          quickInfo.clipboardPasteDone();
         } catch (Exception e) {
-          componentSC.setClipboardError("pasteError", e);
+          quickInfo.setClipboardError("pasteError", e);
           SilverTrace.error("quickinfo",
               "QuickInfoRequestRouter.getDestination()",
               "quickinfo.PASTE_ERROR", e);
