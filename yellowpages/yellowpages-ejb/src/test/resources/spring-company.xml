@@ -4,14 +4,16 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:hades="http://schemas.synyx.org/hades"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
-	http://schemas.synyx.org/hades http://schemas.synyx.org/hades/hades.xsd">
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+    http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
     <context:annotation-config/>
 
@@ -23,8 +25,14 @@
     <bean name="companyServiceFactory"
           class="com.stratelia.webactiv.yellowpages.service.ServicesFactory" factory-method="getInstance"/>
 
-    <hades:dao-config base-package="com.stratelia.webactiv.yellowpages"
+    <jpa:repositories base-package="com.stratelia.webactiv.yellowpages"
                       transaction-manager-ref="jpaTransactionManager"/>
+
+    <import resource="spring-jpa.xml"/>
+
+    <util:list id="entities">
+        <value>com.stratelia.webactiv.yellowpages</value>
+    </util:list>
 
     <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
 
@@ -36,17 +44,4 @@
         <jdbc:script location="classpath:/com/stratelia/webactiv/yellowpages/dao/create-database.sql"/>
     </jdbc:embedded-database>
 
-    <bean id="entityManagerFactory"
-          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-          p:dataSource-ref="dataSource"
-          p:persistenceXmlLocation="classpath*:META-INF/persistence-yellowpages.xml"
-          p:persistenceUnitName="silverpeas-pu">
-        <property name="jpaVendorAdapter">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-                <property name="showSql" value="false"/>
-                <property name="generateDdl" value="true"/>
-                <property name="database" value="H2"/>
-            </bean>
-        </property>
-    </bean>
 </beans>
