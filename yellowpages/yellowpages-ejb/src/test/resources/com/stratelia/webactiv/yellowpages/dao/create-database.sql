@@ -1,4 +1,4 @@
-
+CREATE SEQUENCE hibernate_sequence;
 
 -- ================= UniqueId =================
 
@@ -18,7 +18,7 @@ CONSTRAINT PK_UniqueId PRIMARY KEY
 
 CREATE TABLE SB_Contact_Contact
 (
-	contactId		int		NOT NULL ,
+	contactId	      	int		        NOT NULL ,
 	contactFirstName	varchar (1000)	NULL ,
 	contactLastName		varchar (1000)	NULL ,
 	contactEmail		varchar (1000)	NULL ,
@@ -89,6 +89,8 @@ ADD CONSTRAINT FK_Contact_GenericContact_FKCompany FOREIGN KEY (companyId)
 
 CREATE TABLE sc_contact_genericcontact_rel
 (
+
+    relationid          int     NOT NULL,
 	genericContactId	int		NOT NULL,
 	genericCompanyId    int		NOT NULL,
 	relationType	    int		NOT NULL,

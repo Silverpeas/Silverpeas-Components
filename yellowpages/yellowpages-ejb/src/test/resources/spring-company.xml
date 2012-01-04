@@ -18,6 +18,7 @@
     <context:annotation-config/>
 
     <context:component-scan base-package="com.stratelia.webactiv.yellowpages"/>
+    <context:component-scan base-package="com.silverpeas.rest.mock"/>
 
     <bean name="companyService"
           class="com.stratelia.webactiv.yellowpages.service.CompanyServiceImpl"/>
@@ -34,14 +35,9 @@
         <value>com.stratelia.webactiv.yellowpages</value>
     </util:list>
 
-    <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
-
-    <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-    </bean>
-
     <jdbc:embedded-database id="dataSource" type="H2">
         <jdbc:script location="classpath:/com/stratelia/webactiv/yellowpages/dao/create-database.sql"/>
     </jdbc:embedded-database>
 
+    <import resource="spring-silverpeas.xml"/>
 </beans>
