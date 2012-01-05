@@ -37,6 +37,7 @@
 <%@ page import="java.text.ParsePosition"%>
 
 <%@ include file="checkSurvey.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
     List items = FileUploadUtil.parseRequest(request);
@@ -156,11 +157,9 @@
 <html>
   <head>
     <title></title>
-    <%
-        out.println(gef.getLookStyleSheet());
-    %>
+    <view:looknfeel/>
+    <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
   function sendData()
