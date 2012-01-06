@@ -48,8 +48,8 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
     SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = " + componentId +
+            ", userId =" + userId);
     SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -57,8 +57,8 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
     SilverTrace.info("formsOnline", "FormsOnlineInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = " + componentId +
+            ", userId =" + userId);
     deleteFormsData(con, componentId);
     deleteDataOfInstance(con, componentId, "UserRights");
     deleteDataOfInstance(con, componentId, "GroupRights");
@@ -83,14 +83,14 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
     } catch (SQLException se) {
       throw new InstanciationException("FormsOnlineInstanciator.deleteFormsData()",
           SilverpeasException.ERROR, "root.DELETING_DATA_OF_INSTANCE_FAILED", "componentId = "
-          + componentId + " deleteQuery = " + query, se);
+              + componentId + " deleteQuery = " + query, se);
     } finally {
       try {
         stmt.close();
       } catch (SQLException err_closeStatement) {
         throw new InstanciationException("FormsOnlineInstanciator.deleteFormsData()",
             SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "componentId = "
-            + componentId + " deleteQuery = " + query, err_closeStatement);
+                + componentId + " deleteQuery = " + query, err_closeStatement);
       }
     }
     try {
@@ -98,8 +98,8 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
       Iterator<String> it = xmlFormNames.iterator();
       while (it.hasNext()) {
         String xmlFormName = it.next();
-        String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.
-            indexOf('.'));
+        String xmlFormShortName =
+            xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
         PublicationTemplateManager.getInstance().removePublicationTemplate(
             componentId + ":" + xmlFormShortName);
       }
@@ -122,14 +122,14 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
     } catch (SQLException se) {
       throw new InstanciationException("FormsOnlineInstanciator.removeInstanceData()",
           SilverpeasException.ERROR, "root.DELETING_DATA_OF_INSTANCE_FAILED", "componentId = "
-          + componentId + " deleteQuery = " + query, se);
+              + componentId + " deleteQuery = " + query, se);
     } finally {
       try {
         stmt.close();
       } catch (SQLException err_closeStatement) {
         throw new InstanciationException("FormsOnlineInstanciator.removeInstanceData()",
             SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "componentId = "
-            + componentId + " deleteQuery = " + query, err_closeStatement);
+                + componentId + " deleteQuery = " + query, err_closeStatement);
       }
     }
   }
