@@ -23,11 +23,11 @@
  */
 package com.stratelia.webactiv.yellowpages.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroupDetail extends Group implements java.io.Serializable {
 

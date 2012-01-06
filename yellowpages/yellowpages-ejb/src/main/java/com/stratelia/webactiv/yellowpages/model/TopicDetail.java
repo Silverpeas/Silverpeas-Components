@@ -23,10 +23,10 @@
  */
 package com.stratelia.webactiv.yellowpages.model;
 
-import java.util.Collection;
-
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
+import java.util.Collection;
 
 /**
  * This object contains elements which are displayed in a yellowpages Topic

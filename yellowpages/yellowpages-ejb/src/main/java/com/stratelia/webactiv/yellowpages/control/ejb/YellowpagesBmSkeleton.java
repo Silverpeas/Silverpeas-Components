@@ -23,10 +23,6 @@
  */
 package com.stratelia.webactiv.yellowpages.control.ejb;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.List;
-
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
@@ -36,6 +32,10 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
+
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This is the Yellowpages EJB-tier controller of the MVC. It is implemented as

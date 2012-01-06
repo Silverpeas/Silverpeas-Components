@@ -22,12 +22,6 @@ package com.stratelia.webactiv.yellowpages;
 
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.EJBException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -43,6 +37,12 @@ import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBmHome;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
+
+import javax.ejb.EJBException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Class declaration

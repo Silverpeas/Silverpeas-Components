@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.yellowpages;
 
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class YellowpagesException extends SilverpeasException {
   

@@ -25,16 +25,16 @@ package com.stratelia.webactiv.yellowpages;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Date;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.contact.ContactInstanciator;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.util.DateUtil;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Date;
 
 public class YellowpagesInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 

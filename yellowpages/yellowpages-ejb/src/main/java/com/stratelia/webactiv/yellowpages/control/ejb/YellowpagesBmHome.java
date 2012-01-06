@@ -23,10 +23,9 @@
  */
 package com.stratelia.webactiv.yellowpages.control.ejb;
 
-import java.rmi.RemoteException;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBHome;
+import java.rmi.RemoteException;
 
 /**
  * The Home interface for YellowpagesBM EJB

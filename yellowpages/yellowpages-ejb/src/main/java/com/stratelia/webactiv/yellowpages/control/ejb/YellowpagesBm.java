@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.yellowpages.control.ejb;
 
-import javax.ejb.*;
+import javax.ejb.EJBObject;
 
 public interface YellowpagesBm extends YellowpagesBmSkeleton, EJBObject {
 

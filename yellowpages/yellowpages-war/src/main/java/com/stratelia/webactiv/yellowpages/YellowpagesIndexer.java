@@ -23,8 +23,6 @@
  */
 package com.stratelia.webactiv.yellowpages;
 
-import java.util.Collection;
-
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
@@ -33,6 +31,8 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.yellowpages.control.YellowpagesSessionController;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
+
+import java.util.Collection;
 
 public class YellowpagesIndexer implements ComponentIndexerInterface {
 
