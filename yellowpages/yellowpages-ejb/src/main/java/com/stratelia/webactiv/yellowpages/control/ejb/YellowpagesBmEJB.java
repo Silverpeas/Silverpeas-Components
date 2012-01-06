@@ -139,8 +139,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   public NodeBm getNodeBm() {
     if (currentNodeBm == null) {
       try {
-        NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+        NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
         currentNodeBm = nodeBmHome.create();
       } catch (Exception re) {
         throw new YellowpagesRuntimeException("YellowpagesBmEJB.getNodeBm()",
@@ -154,8 +153,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   public ContactBm getContactBm() {
     if (currentContactBm == null) {
       try {
-        ContactBmHome contactBmHome = (ContactBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.CONTACTBM_EJBHOME, ContactBmHome.class);
+        ContactBmHome contactBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.CONTACTBM_EJBHOME, ContactBmHome.class);
         currentContactBm = contactBmHome.create();
       } catch (Exception re) {
         throw new YellowpagesRuntimeException(
@@ -221,7 +219,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.yellowpages.model.TopicDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -250,10 +247,8 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       }
 
       if (contactDetails != null) {
-        Iterator<ContactDetail> it = contactDetails.iterator();
         OrganizationController orga = getOrganizationController();
-        while (it.hasNext()) {
-          ContactDetail contactDetail = (ContactDetail) it.next();
+       for( ContactDetail contactDetail : contactDetails) {
           if (contactDetail.getUserId() != null) {// contact de type user Silverpeas
             try {
               UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
@@ -277,7 +272,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       }
 
       if (currentTopic == null) {
-        if (nodeDetail.getNodePK().getId().equals("0")) {
+        if (nodeDetail.getNodePK().isRoot()) {
           newPath.add(nodeDetail);
         } else {
           newPath = getPathFromAToZ(nodeDetail);
@@ -325,7 +320,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
