@@ -41,7 +41,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -172,12 +171,9 @@ public class FileImport {
     List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
     try {
       String tempFolderPath = unzipUploadedFile();
-      String savePath =
-          tempFolderPath + File.separatorChar + FilenameUtils.getBaseName(fileUploaded.
-              getName());
       MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
       publicationDetails = massiveImporter
-          .importDocuments(kmeliaScc, savePath, Integer.parseInt(topicId), draftMode, true);
+          .importDocuments(kmeliaScc, tempFolderPath, Integer.parseInt(topicId), draftMode, true);
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "FileImport.importFilesMultiPubli()",
           "root.EX_LOAD_ATTACHMENT_FAILED", e);
