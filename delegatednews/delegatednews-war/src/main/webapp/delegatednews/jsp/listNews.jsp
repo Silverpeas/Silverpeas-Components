@@ -43,8 +43,8 @@
   <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
+    <view:includePlugin name="datepicker"/>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
     <script type="text/javascript">
     function openPublication(pubId, instanceId) {
