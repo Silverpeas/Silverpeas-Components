@@ -25,23 +25,23 @@
 package com.silverpeas.resourcesmanager.model;
 
 import com.stratelia.webactiv.util.DBUtil;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import javax.inject.Inject;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import javax.inject.Inject;
+import javax.sql.DataSource;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -50,20 +50,30 @@ import static org.junit.Assert.assertThat;
 @ContextConfiguration(locations = {"/spring-resource-manager-embbed-datasource.xml"})
 public class CategoryDaoTest {
 
+  private static ReplacementDataSet dataSet;
+  
+  @BeforeClass
+  public static void prepareDataSet() throws Exception {
+    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+    dataSet = new ReplacementDataSet(builder.build(
+            ResourcesManagerDAOTest.class.getClassLoader().getResourceAsStream(
+            "com/silverpeas/resourcesmanager/model/categories_dataset.xml")));
+    dataSet.addReplacementObject("[NULL]", null);
+  }
+  
   private CategoryDao dao = new CategoryDao();
+  
   @Inject
   private DataSource dataSource;
 
   public Connection getConnection() throws SQLException {
     return this.dataSource.getConnection();
   }
+  
+  
 
   @Before
-  public void generalSetUp() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-            ResourcesManagerDAOTest.class.getClassLoader().getResourceAsStream(
-            "com/silverpeas/resourcesmanager/model/categories_dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
+  public void generalSetUp() throws Exception {    
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
     DBUtil.getInstanceForTest(dataSource.getConnection());
