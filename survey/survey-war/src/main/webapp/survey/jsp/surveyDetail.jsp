@@ -203,8 +203,8 @@
     if (surveyScc.isAnonymousModeAuthorized()) {
 %>
 <script language="javascript">
-		        location.href = "/RecordParticipation?cid=<%=surveyScc.getComponentId()%>&sid=<%=surveyId%>&duration=<%=settings.getString("cookieDuration")%>";
-		       </script>
+  location.href = "/RecordParticipation?cid=<%=surveyScc.getComponentId()%>&sid=<%=surveyId%>&duration=<%=settings.getString("cookieDuration")%>";
+</script>
 <%
   }
     action = "ViewResult";
