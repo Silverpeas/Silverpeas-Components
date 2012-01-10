@@ -3583,8 +3583,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
       if (isCutted) {
         if (fromComponentId.equals(getComponentId())) {
-          getPublicationBm().removeAllFather(publi.getPK());
-          getPublicationBm().addFather(publi.getPK(), currentNodePK);
+          getKmeliaBm().movePublicationInSameApplication(publi, currentNodePK, getUserId());
         } else {
           movePublication(completePub, currentNodePK, publi, fromId, fromComponentId, fromForeignPK,
                   fromPubPK, toForeignPK, toPubPK, imagesSubDirectory, thumbnailsSubDirectory,
@@ -3761,12 +3760,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           String fromAbsolutePath)
           throws RemoteException, ThumbnailException, PublicationTemplateException, PdcException {
 
-
-    boolean indexIt = KmeliaHelper.isIndexable(publi);
-
-    getPublicationBm().movePublication(publi.getPK(), nodePK, false); // Change instanceId and
-    // unindex
-    // header+content
+    boolean indexIt = false;
 
     // move Vignette on disk
     int[] thumbnailSize = getThumbnailWidthAndHeight();
@@ -3797,12 +3791,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     // move attachments first (wysiwyg, wysiwyg images, formXML files and images, attachments)
-    // TODO : attachments to versioning
     try {
-      AttachmentController.moveAttachments(fromForeignPK, toForeignPK, indexIt); // Change
-      // instanceId
-      // + move
-      // files
+      // Change instanceId and move files
+      AttachmentController.moveAttachments(fromForeignPK, toForeignPK, indexIt); 
     } catch (AttachmentException e) {
       SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
               "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
@@ -3923,6 +3914,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
     // move statistics
     getStatisticBm().moveStat(toForeignPK, 1, "Publication");
+    
+    // move publication itself
+    getKmeliaBm().movePublicationInAnotherApplication(publi, nodePK, getUserId());
   }
 
   /**
