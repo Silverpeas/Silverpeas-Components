@@ -152,6 +152,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 }
 
                 request.setAttribute("Contacts", contacts);
+                request.setAttribute("Companies", scc.getAllCompanies());
                 request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
 
                 scc.setCurrentContacts(contacts);
@@ -205,8 +206,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                     List<ContactDetail> listContact = new ArrayList<ContactDetail>();
                     listContact.add(contactDetail);
 
-                    request.setAttribute("Contacts", scc.getListContactFather(
-                            listContact, true));
+                    request.setAttribute("Contacts", scc.getListContactFather(listContact, true));
+                    // TODO getAllCompanies parameter ?
+                    request.setAttribute("Companies", scc.getAllCompanies());
                     request.setAttribute("CurrentTopic", currentTopic);
                     request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
 
@@ -232,6 +234,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 scc.setCurrentContacts(searchResults);
 
                 request.setAttribute("Contacts", searchResults);
+                // TODO add search criterias on companies ?
+                request.setAttribute("Companies", scc.getAllCompanies());
                 request.setAttribute("CurrentTopic", currentTopic);
                 request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
                 request.setAttribute("TypeSearch", typeSearch);
@@ -244,6 +248,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 TopicDetail currentTopic = scc.getCurrentTopic();
 
                 request.setAttribute("Contacts", contacts);
+                request.setAttribute("Companies", scc.getAllCompanies());
+
                 request.setAttribute("CurrentTopic", currentTopic);
 
                 destination = "/yellowpages/jsp/printContactList.jsp";
@@ -526,6 +532,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 request.setAttribute("CurrentTopic", currentTopic);
 
                 request.setAttribute("Contacts", contacts);
+                request.setAttribute("Companies", scc.getAllCompanies());
+
                 scc.setCurrentContacts(contacts);
 
                 destination = "/yellowpages/jsp/annuaire.jsp?Action=GoTo&Profile=" + flag;

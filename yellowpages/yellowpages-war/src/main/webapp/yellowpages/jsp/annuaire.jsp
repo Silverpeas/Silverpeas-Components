@@ -72,6 +72,7 @@
 %>
 <%
     Collection contacts = (Collection) request.getAttribute("Contacts");
+    Collection companies = (Collection) request.getAttribute("Companies");
     TopicDetail currentTopic = (TopicDetail) request
             .getAttribute("CurrentTopic");
     GroupDetail group = (GroupDetail) request.getAttribute("Group");
@@ -369,7 +370,8 @@
     out.println(board.printAfter());
     out.println("<br/>");
     DisplayContactsHelper.displayContactsUser(yellowpagesScc, contacts, id, componentLabel, gef, request, session, resources, out);
-
+    out.println("<br/><br/>");
+    DisplayContactsHelper.displayContactsCompany(yellowpagesScc, companies, id, componentLabel, gef, request, session, resources, out);
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>

@@ -124,4 +124,9 @@ public class CompanyServiceImpl implements CompanyService {
         return returnList;
     }
 
+    @Override
+    public List<Company> findAllCompanies() {
+        return companyDao.findAll();
+    }
+
 }

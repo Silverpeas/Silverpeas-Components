@@ -282,7 +282,11 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
      */
     public synchronized TopicDetail getTopic(String id) throws RemoteException {
         try {
-            return kscEjb.goTo(id);
+            TopicDetail topicDetail = kscEjb.goTo(id);
+            // Recuperation de la liste des companies associees au topic
+            // TODO filtrer la liste pour ne récupérer que les companies du topic (pour l'instant on récupére tout)
+            topicDetail.setContactCompanyDetails(this.serviceCompany.findAllCompanies());
+            return topicDetail;
         } catch (NoSuchObjectException nsoe) {
             initEJB();
             return getTopic(id);
@@ -510,6 +514,10 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
             initEJB();
             return getAllContactDetails(fatherPK);
         }
+    }
+
+    public synchronized Collection<Company> getAllCompanies() throws RemoteException {
+        return serviceCompany.findAllCompanies();
     }
 
     public synchronized Collection<NodeDetail> getPathList(String contactId)
@@ -1404,6 +1412,26 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
                 // on recherche une propriété classique
                 nameHeader = getMultilang().getString("yellowpages.column." + nameProperty);
             }
+            arrayHeaders.add(nameHeader);
+        }
+        return arrayHeaders;
+    }
+
+    public List<String> getPropertiesCompanies() {
+        List<String> properties = new ArrayList<String>();
+        String columns = getSettings().getString("columnscompany");
+        String[] nameColumns = columns.split(",");
+        for (String nameProperty : nameColumns) {
+            properties.add(nameProperty);
+        }
+        return properties;
+    }
+
+    public List<String> getArrayHeadersCompanies() {
+        List<String> arrayHeaders = new ArrayList<String>();
+        List<String> properties = getPropertiesCompanies();
+        for (String nameProperty : properties) {
+            String nameHeader = getMultilang().getString("yellowpages.column." + nameProperty);
             arrayHeaders.add(nameHeader);
         }
         return arrayHeaders;

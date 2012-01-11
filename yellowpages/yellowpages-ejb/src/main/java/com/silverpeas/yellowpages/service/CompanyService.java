@@ -26,8 +26,6 @@ package com.silverpeas.yellowpages.service;
 
 import com.silverpeas.yellowpages.model.Company;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -46,5 +44,7 @@ public interface CompanyService {
     public void removeContactFromCompany(int companyId, int contactId) throws YellowpagesRuntimeException;
 
     public List<Company> findCompanyListByContactId(int contactId);
+
+    public List<Company> findAllCompanies();
 }
 

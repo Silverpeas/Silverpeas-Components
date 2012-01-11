@@ -192,11 +192,31 @@
             document.contactForm.submit();
         }
 
+        function contactCompanyGoTo(id) {
+            closeWindows();
+            windowName = "contactCompanyWindow";
+            windowParams = "directories=0,menubar=0,toolbar=0,height=400,width=600,alwaysRaised,scrollbars=yes";
+            if (!contactWindow.closed && contactWindow.name == "contactCompanyWindow")
+                contactWindow.close();
+            contactWindow = SP_openWindow("", windowName, '600', '400', windowParams);
+            document.contactForm.Action.value = "View";
+            document.contactForm.ContactId.value = id;
+            document.contactForm.submit();
+        }
+
         function contactDeleteConfirm(id) {
             if (window.confirm("<%=yellowpagesScc.getString("ConfirmDeleteContact")%> ?")) {
                 document.contactDeleteForm.action = "DeleteContact";
                 document.contactDeleteForm.ContactId.value = id;
                 document.contactDeleteForm.submit();
+            }
+        }
+
+        function contactCompanyDeleteConfirm(id) {
+            if (window.confirm("<%=yellowpagesScc.getString("ConfirmDeleteCompany")%> ?")) {
+                document.contactCompanyDeleteForm.action = "DeleteContactCompany";
+                document.contactCompanyDeleteForm.ContactCompanyId.value = id;
+                document.contactCompanyDeleteForm.submit();
             }
         }
 
@@ -307,6 +327,13 @@
             else
                 DisplayContactsHelper.displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc, profile, currentTopic.getContactDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.delete"), gef, request, session, resources, out);
 
+            out.println("<br/><br/>");
+
+            if (!id.equals(TRASHCAN_ID))
+                DisplayContactsHelper.displayContactsCompanyAdmin(resources.getIcon("yellowpages.group"), yellowpagesScc, profile, currentTopic.getContactCompanyDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.contactDelete"), gef, request, session, resources, out);
+            else
+                DisplayContactsHelper.displayContactsCompanyAdmin(resources.getIcon("yellowpages.group"), yellowpagesScc, profile, currentTopic.getContactCompanyDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.delete"), gef, request, session, resources, out);
+
             out.println(frame.printAfter());
             out.println(window.printAfter());
         %>
@@ -332,6 +359,11 @@
 <FORM NAME="contactDeleteForm" ACTION="topicManager.jsp" METHOD="POST">
     <input type="hidden" name="Action">
     <input type="hidden" name="ContactId">
+    <input type="hidden" name="Id" value="<%=id%>">
+</FORM>
+<FORM NAME="contactCompanyDeleteForm" ACTION="topicManager.jsp" METHOD="POST">
+    <input type="hidden" name="Action">
+    <input type="hidden" name="ContactCompanyId">
     <input type="hidden" name="Id" value="<%=id%>">
 </FORM>
 <form name="refreshList" action="topicManager"></form>
