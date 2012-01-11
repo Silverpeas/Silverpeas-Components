@@ -842,7 +842,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * @return the initialized connection.
    * @throws FormsOnlineDatabaseException if a database error occured while getting connection
    */
-  private final Connection getConnection() throws FormsOnlineDatabaseException {
+  protected Connection getConnection() throws FormsOnlineDatabaseException {
     try {
       return DBUtil.makeConnection(DB_NAME);
     } catch (UtilException e) {

@@ -175,4 +175,48 @@ public class FormDetail {
   public boolean isAlreadyUsed() {
     return alreadyUsed;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final FormDetail other = (FormDetail) obj;
+    if (this.id != other.id) {
+      return false;
+    }
+    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId
+        .equals(other.instanceId)) {
+      return false;
+    }
+    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+      return false;
+    }
+    if ((this.title == null) ? (other.title != null) : !this.title.equals(other.title)) {
+      return false;
+    }
+    if (this.creationDate != other.creationDate &&
+        (this.creationDate == null || !this.creationDate.equals(other.creationDate))) {
+      return false;
+    }
+    if (this.alreadyUsed != other.alreadyUsed) {
+      return false;
+    }
+    if ((this.xmlFormName == null) ? (other.xmlFormName != null) : !this.xmlFormName
+        .equals(other.xmlFormName)) {
+      return false;
+    }
+    if ((this.description == null) ? (other.description != null) : !this.description
+        .equals(other.description)) {
+      return false;
+    }
+    if (this.state != other.state) {
+      return false;
+    }
+
+    return true;
+  }
 }
