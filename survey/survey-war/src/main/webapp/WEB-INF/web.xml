@@ -54,7 +54,7 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>RecordParticipation</servlet-name>
-    <url-pattern>/RecordParticipation*</url-pattern>
+    <url-pattern>/RecordParticipation</url-pattern>
   </servlet-mapping>
 </web-app>
 

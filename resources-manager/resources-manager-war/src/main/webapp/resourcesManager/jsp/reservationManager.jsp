@@ -32,6 +32,7 @@
 <%@ page import="java.util.Date" %>
 
 <%@ include file="check.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
 	ReservationDetail 	reservation 			= (ReservationDetail)request.getAttribute("reservation");
@@ -73,11 +74,9 @@
 	%>
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+  <view:looknfeel/>
+  <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript">
 function validerNom(){
 	if(document.getElementById("evenement").value == 0){

@@ -36,6 +36,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <jsp:useBean id="questionsResponses" scope="session" class="java.util.Hashtable" />
 
 <%@ include file="checkQuizz.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
 //R�cup�ration des param�tres
@@ -123,10 +124,8 @@ if (action.equals("UpdateQuizzHeader")) {
 <HTML>
 <HEAD>
 <TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
+<view:looknfeel/>
+<view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function sendData() {

@@ -29,6 +29,7 @@
 <jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
 
 <%@ include file="checkQuizz.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
 //R�cup�ration des param�tres
@@ -74,10 +75,8 @@ if (action == null) {
 <HTML>
 <HEAD>
 <TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
+<view:looknfeel/>
+<view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript1.2">
 function sendData() {

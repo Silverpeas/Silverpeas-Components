@@ -92,6 +92,7 @@ import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -1382,8 +1383,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   private String getProfile(String userId, NodePK nodePK) throws RemoteException {
     String profile = null;
     OrganizationController orgCtrl = getOrganizationController();
-    if ("yes".equalsIgnoreCase(orgCtrl.getComponentParameterValue(nodePK.getInstanceId(),
-            "rightsOnTopics"))) {
+    if (StringUtil.getBooleanValue(orgCtrl.getComponentParameterValue(nodePK.getInstanceId(),
+        "rightsOnTopics"))) {
       NodeDetail topic = getNodeBm().getHeader(nodePK);
       if (topic.haveRights()) {
         profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId(),
@@ -1442,6 +1443,26 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             "root.MSG_GEN_EXIT_METHOD", "status = " + pubDetail.getStatus()
             + ", indexOperation = " + pubDetail.getIndexOperation());
     return pubDetail;
+  }
+  
+  private boolean changePublicationStatusOnMove(PublicationDetail pub, NodePK to) throws RemoteException {
+    SilverTrace.info("kmelia", "KmeliaBmEJB.changePublicationStatusOnMove()",
+        "root.MSG_GEN_ENTER_METHOD", "status = " + pub.getStatus());
+    String oldStatus = pub.getStatus();
+    String status = pub.getStatus();
+    if (!status.equals(PublicationDetail.DRAFT)) {
+      status = PublicationDetail.TO_VALIDATE;
+      String profile = getProfile(pub.getUpdaterId(), to);
+      if (SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.admin.isInRole(profile)) {
+        status = PublicationDetail.VALID;
+      }
+    }
+    pub.setStatus(status);
+    KmeliaHelper.checkIndex(pub);
+    SilverTrace.info("kmelia", "KmeliaBmEJB.changePublicationStatusOnMove()",
+        "root.MSG_GEN_EXIT_METHOD", "status = " + pub.getStatus()
+            + ", indexOperation = " + pub.getIndexOperation());
+    return !oldStatus.equals(status);
   }
 
   /**
@@ -1576,6 +1597,52 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             == null && old.getEndDate() != null) || (pubDetail.getEndDate() != null && old.
             getEndDate() != null && !pubDetail.getEndDate().equals(old.getEndDate())));
     return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
+  }
+  
+  public void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId)
+      throws RemoteException {
+    // update parent
+    getPublicationBm().removeAllFather(pub.getPK());
+    getPublicationBm().addFather(pub.getPK(), to);
+    
+    processPublicationAfterMove(pub, to, userId);
+  }
+  
+  public void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId)
+      throws RemoteException {
+    getPublicationBm().movePublication(pub.getPK(), to, false); // Change instanceId and unindex header+content
+    
+    processPublicationAfterMove(pub, to, userId);
+  }
+  
+  private void processPublicationAfterMove(PublicationDetail pub, NodePK to, String userId)
+      throws RemoteException {
+    // update last modifier
+    pub.setUpdaterId(userId);
+    
+    // status must be checked according to topic rights and last modifier (current user)
+    boolean statusChanged = changePublicationStatusOnMove(pub, to);
+
+    // update publication
+    getPublicationBm().setDetail(pub, statusChanged);
+
+    // check visibility on taxonomy
+    updateSilverContentVisibility(pub);
+
+    if (statusChanged) {
+      // creates todos for publishers
+      createTodosForPublication(pub, false);
+      
+      // index or unindex external elements
+      if (KmeliaHelper.isIndexable(pub)) {
+        indexExternalElementsOfPublication(pub);
+      } else {
+        unIndexExternalElementsOfPublication(pub.getPK());
+      }
+    }
+    
+    // send notifications like a creation
+    sendSubscriptionsNotification(pub, false);
   }
 
   /******************************************************************************************/
@@ -1926,7 +1993,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     // We alert subscribers only if publication is Valid
     if (!pubDetail.haveGotClone() && PublicationDetail.VALID.equals(pubDetail.getStatus())) {
       // topic subscriptions
-      List<NodePK> fathers = (ArrayList<NodePK>) getPublicationFathers(pubDetail.getPK());
+      Collection<NodePK> fathers = getPublicationFathers(pubDetail.getPK());
       if (fathers != null) {
         for (NodePK father : fathers) {
           oneFather = father;
@@ -1943,11 +2010,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
         PdcSubscriptionUtil pdc = new PdcSubscriptionUtil();
 
-        ClassifyPosition position = null;
-        for (int p = 0; positions != null && p < positions.size(); p++) {
-          position = positions.get(p);
-          pdc.checkSubscriptions(position.getValues(), pubDetail.getPK().getInstanceId(),
-                  silverObjectId);
+        if (positions != null) {
+          for (ClassifyPosition position : positions) {
+            pdc.checkSubscriptions(position.getValues(), pubDetail.getPK().getInstanceId(),
+                    silverObjectId);
+          }
         }
       } catch (RemoteException e) {
         SilverTrace.error("kmelia", "KmeliaBmEJB.sendSubscriptionsNotification",
