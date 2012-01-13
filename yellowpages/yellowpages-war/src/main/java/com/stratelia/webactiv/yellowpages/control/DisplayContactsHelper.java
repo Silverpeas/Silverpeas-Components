@@ -289,8 +289,7 @@ public class DisplayContactsHelper {
                 String icon;
                 String link;
                 icon = resources.getIcon("yellowpages.group");
-                // TODO javascript : lien sur page de visualisation d'une company
-                link = "javaScript:alert('Test !');";
+                link = "javaScript:goToCompany('" + company.getCompanyId() + "');";
                 IconPane iconPane = gef.getIconPane();
                 Icon carte = iconPane.addIcon();
                 carte.setProperties(icon, "", link);

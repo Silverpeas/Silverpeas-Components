@@ -32,6 +32,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.silverpeas.yellowpages.model.Company;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -89,7 +90,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         String destination = "";
         String rootDestination = "/yellowpages/jsp/";
 
-        try {
+            try {
 
             // the flag is the best user's profile
             String flag = scc.getProfile();
@@ -335,9 +336,16 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 // Delete contact
                 String contactId = (String) request.getParameter("ContactId");
                 scc.deleteContact(contactId);
-
                 // Back to topic
                 destination = getDestination("topicManager", scc, request);
+
+            } else if (function.equals("DeleteContactCompany")) {
+                // Delete company
+                String contactId = (String) request.getParameter("ContactCompanyId");
+                scc.deleteCompany(Integer.valueOf(contactId));
+                // Back to topic
+                destination = getDestination("topicManager", scc, request);
+
             } else if (function.equals("SelectModel")) {
                 Object o = request.getParameterValues("modelChoice");
                 if (o != null) {
@@ -512,21 +520,41 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 request.setAttribute("Result", scc.importCSV(fileItem, modelId));
                 destination = rootDestination + "importCSV.jsp";
 
+            } else if ("companyView".equals(function)) {
+                String companyId = request.getParameter("ContactCompanyId");
+                Company company = scc.getCompany(Integer.valueOf(companyId));
+                request.setAttribute("company", company);
+                request.setAttribute("viewMode", true);
+                destination = rootDestination + "companyForm.jsp";
+
             } else if ("companyAdd".equals(function)) {
+                request.setAttribute("viewMode", false);
+                destination = rootDestination + "companyForm.jsp";
+
+            } else if ("companyEdit".equals(function)) {
+                String companyId = request.getParameter("ContactCompanyId");
+                Company company = scc.getCompany(Integer.valueOf(companyId));
+                request.setAttribute("company", company);
+                request.setAttribute("viewMode", false);
                 destination = rootDestination + "companyForm.jsp";
 
             } else if ("companySave".equals(function)) {
-
-                // Recupere la liste des parametres de la form
+                // Récupère la liste des paramètres de la form
+                String companyId = request.getParameter("id");
                 String name = request.getParameter("Name");
                 String email = request.getParameter("Email");
                 String phone = request.getParameter("Phone");
                 String fax = request.getParameter("Fax");
 
                 // Enregistrement de la nouvelle company
-                scc.createCompany(name, email, phone, fax);
+                if (companyId == null) {
+                    scc.createCompany(name, email, phone, fax);
+                }
+                else {
+                    scc.saveCompany(Integer.valueOf(companyId), name, email, phone, fax);
+                }
 
-                // Reinitialise la liste des contacts
+                // Reinitialise la liste des contacts pour afficher les modifs
                 TopicDetail currentTopic = scc.getCurrentTopic();
                 Collection<ContactFatherDetail> contacts = scc.getAllContactDetails(currentTopic.getNodePK());
                 request.setAttribute("CurrentTopic", currentTopic);
@@ -535,8 +563,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 request.setAttribute("Companies", scc.getAllCompanies());
 
                 scc.setCurrentContacts(contacts);
-
-                destination = "/yellowpages/jsp/annuaire.jsp?Action=GoTo&Profile=" + flag;
+                destination = rootDestination + "topicManager.jsp?Profile=" + flag;
 
             } else {
                 destination = "/yellowpages/jsp/" + function;

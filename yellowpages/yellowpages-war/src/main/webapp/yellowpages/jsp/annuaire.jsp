@@ -165,6 +165,12 @@
             contactWindow = SP_openWindow("ViewUserFull?Id=" + id, windowName, width, height, windowParams);
         }
 
+        function goToCompany(id) {
+            document.companyForm.action = "companyView";
+            document.companyForm.ContactCompanyId.value = id;
+            document.companyForm.submit();
+        }
+
         function topicGoTo(id) {
             document.topicDetailForm.action = "GoTo";
             document.topicDetailForm.Id.value = id;
@@ -380,6 +386,9 @@
       target="contactWindow" method="POST"><input type="hidden"
                                                   name="Action"/> <input type="hidden" name="ContactId"/> <input
         type="hidden" name="TopicId"/> <input type="hidden" name="Path"/>
+</form>
+<form NAME="companyForm" ACTION="" METHOD="POST">
+    <input type="hidden" name="ContactCompanyId">
 </form>
 </body>
 </html>

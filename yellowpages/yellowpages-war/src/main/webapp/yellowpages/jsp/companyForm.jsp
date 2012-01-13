@@ -96,6 +96,7 @@
         <view:board>
             <center>
                 <form Name="companyForm" Action="companySave" Method="POST">
+                    <input type="hidden" name="id" value="${company.companyId}">
                     <table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%">
                         <tr>
                             <td NOWRAP>
@@ -104,10 +105,13 @@
                                         <td valign="baseline" align=left
                                             class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:
                                         </td>
+
                                         <td><input type="text" name="Name" value="${company.name}" size="60"
-                                                   maxlength="60">&nbsp;<img border="0"
-                                                                             src="<%=resources.getIcon("yellowpages.mandatory")%>"
-                                                                             width="5" height="5"></td>
+                                                   maxlength="60"
+                                                   <c:if test="${viewMode}">readonly</c:if> >&nbsp;<img border="0"
+                                                                                                        src="<%=resources.getIcon("yellowpages.mandatory")%>"
+                                                                                                        width="5"
+                                                                                                        height="5"></td>
                                     </tr>
                                     <tr>
 
@@ -115,7 +119,7 @@
                                             class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:
                                         </td>
                                         <td><input type="text" name="Email" value="${company.email}" size="60"
-                                                   maxlength="100"></td>
+                                                   maxlength="100" <c:if test="${viewMode}">readonly</c:if>></td>
                                     </tr>
                                     <tr>
                                         <td valign="baseline" align=left
@@ -123,7 +127,7 @@
                                         </td>
 
                                         <td><input type="text" name="Phone" value="${company.phone}" size="20"
-                                                   maxlength="20"></td>
+                                                   maxlength="20" <c:if test="${viewMode}">readonly</c:if>></td>
                                     </tr>
                                     <tr>
                                         <td valign="baseline" align=left
@@ -131,7 +135,7 @@
                                         </td>
 
                                         <td><input type="text" name="Fax" value="${company.fax}" size="20"
-                                                   maxlength="20"></td>
+                                                   maxlength="20" <c:if test="${viewMode}">readonly</c:if>></td>
                                     </tr>
                                     <tr>
                                         <td valign="baseline" align=left

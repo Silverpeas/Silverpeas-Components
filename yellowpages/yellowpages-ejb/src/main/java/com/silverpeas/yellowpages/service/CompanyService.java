@@ -32,8 +32,9 @@ import java.util.List;
 
 public interface CompanyService {
 
-    //@Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Company saveCompany(String instanceId, String name, String email, String phone, String fax) throws YellowpagesRuntimeException;
+    public Company createCompany(String instanceId, String name, String email, String phone, String fax) throws YellowpagesRuntimeException;
+
+    public Company saveCompany(int id, String name, String email, String phone, String fax) throws YellowpagesRuntimeException;
 
     public void deleteCompany(int id) throws YellowpagesRuntimeException;
 

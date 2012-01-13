@@ -29,13 +29,12 @@ public class CompanyServiceImpl implements CompanyService {
     private GenericContactRelationDao genericContactRelationDao;
 
     @Override
-    public Company saveCompany(String instanceId, String name, String email, String phone, String fax) {
+    public Company createCompany(String instanceId, String name, String email, String phone, String fax) {
         Company company = new Company(instanceId, name, email, phone, fax);
         Company savedCompany = null;
         try {
             savedCompany = companyDao.save(company);
             Company companyFromDb = companyDao.findOne(savedCompany.getCompanyId());
-
             GenericContact gc = new GenericContact(GenericContact.TYPE_COMPANY, null, companyFromDb.getCompanyId());
             genericContactDao.save(gc);
 
@@ -47,11 +46,23 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public Company saveCompany(int id, String name, String email, String phone, String fax) {
+        try {
+            Company company = companyDao.findOne(id);
+            company.setName(name);
+            company.setEmail(email);
+            company.setPhone(phone);
+            company.setFax(fax);
+            return companyDao.save(company);
+        } catch (Exception e) {
+            throw new YellowpagesRuntimeException("CompanyService.saveCompany()", SilverpeasRuntimeException.ERROR, "yellowpages.EX_UPDATE_COMPANY_FAILED", e);
+        }
+    }
+
+    @Override
     public void deleteCompany(int id) {
         Company companyToDelete = this.getCompany(id);
         try {
-            companyDao.delete(companyToDelete);
-
             // suppression du generic contact s'il existe
             GenericContact gc = genericContactDao.findGenericContactFromCompanyId(id);
             if (gc != null) {
@@ -62,6 +73,9 @@ public class CompanyServiceImpl implements CompanyService {
                     genericContactRelationDao.delete(relationList);
                 }
             }
+            // suppression finale de la company qui n'est plus liée à rien
+            companyDao.delete(companyToDelete);
+
         } catch (Exception e) {
             throw new YellowpagesRuntimeException("CompanyService.deleteCompany()", SilverpeasRuntimeException.ERROR, "yellowpages.EX_DELETE_COMPANY_FAILED", e);
         }

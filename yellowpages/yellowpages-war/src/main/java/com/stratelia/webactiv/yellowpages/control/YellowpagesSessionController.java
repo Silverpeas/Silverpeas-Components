@@ -516,10 +516,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         }
     }
 
-    public synchronized Collection<Company> getAllCompanies() throws RemoteException {
-        return serviceCompany.findAllCompanies();
-    }
-
     public synchronized Collection<NodeDetail> getPathList(String contactId)
             throws RemoteException {
         try {
@@ -572,6 +568,9 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
                 DataRecord data = recordSet.getRecord(contactId);
                 recordSet.delete(data);
             }
+
+            // TODO Delete du contact generique également (s'il existe)
+            // TODO et delete des relations contacts generique / company
 
             // delete contact
             kscEjb.deleteContact(contactId);
@@ -1737,9 +1736,56 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
      * @throws YellowpagesRuntimeException si erreur lors de la création de la company
      */
     public synchronized int createCompany(String name, String email, String phone, String fax) throws YellowpagesRuntimeException {
-
-        Company company = this.serviceCompany.saveCompany(this.getComponentId(), name, email, phone, fax);
+        Company company = this.serviceCompany.createCompany(this.getComponentId(), name, email, phone, fax);
         return company.getCompanyId();
+    }
+
+    /**
+     * Enregistre une company existante
+     *
+     * @param id    identifiant en DB de la company à enregistrer
+     * @param name  nom de la company
+     * @param email email de la company
+     * @param phone téléphone de la company
+     * @param fax   fax de la company
+     * @return id de la company enrregistrée
+     * @throws YellowpagesRuntimeException si erreur lors de la sauvegarde de la company
+     */
+    public synchronized int saveCompany(int id, String name, String email, String phone, String fax) throws YellowpagesRuntimeException {
+        Company company = this.serviceCompany.saveCompany(id, name, email, phone, fax);
+        return company.getCompanyId();
+    }
+
+    /**
+     * Récupère toutes les companies
+     *
+     * @return
+     * @throws RemoteException si erreur détectée
+     */
+    public synchronized Collection<Company> getAllCompanies() throws RemoteException {
+        return serviceCompany.findAllCompanies();
+    }
+
+    /**
+     * Supprime une company de la base
+     * Le contacts qui était liés à cette company ne seront plus lié à personne.
+     *
+     * @param id
+     * @throws YellowpagesRuntimeException Si erreur lors de la suppression
+     */
+    public synchronized void deleteCompany(int id) throws YellowpagesRuntimeException {
+        this.serviceCompany.deleteCompany(id);
+    }
+
+    /**
+     * Récupère un objet company à partir de son id
+     *
+     * @param companyId id à chercher
+     * @return l'objet company trouvé
+     * @throws RemoteException Si erreur lors de la récupération de la company
+     */
+    public synchronized Company getCompany(int companyId) throws RemoteException {
+        return this.serviceCompany.getCompany(companyId);
     }
 
 }

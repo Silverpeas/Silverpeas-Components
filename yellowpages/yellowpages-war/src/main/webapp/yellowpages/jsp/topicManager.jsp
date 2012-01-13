@@ -193,15 +193,9 @@
         }
 
         function contactCompanyGoTo(id) {
-            closeWindows();
-            windowName = "contactCompanyWindow";
-            windowParams = "directories=0,menubar=0,toolbar=0,height=400,width=600,alwaysRaised,scrollbars=yes";
-            if (!contactWindow.closed && contactWindow.name == "contactCompanyWindow")
-                contactWindow.close();
-            contactWindow = SP_openWindow("", windowName, '600', '400', windowParams);
-            document.contactForm.Action.value = "View";
-            document.contactForm.ContactId.value = id;
-            document.contactForm.submit();
+            document.companyForm.action = "companyEdit";
+            document.companyForm.ContactCompanyId.value = id;
+            document.companyForm.submit();
         }
 
         function contactDeleteConfirm(id) {
@@ -351,9 +345,8 @@
     <input type="hidden" name="ContactId">
 </FORM>
 
-<FORM NAME="companyForm" ACTION="companyForm.jsp" target="companyWindow" METHOD="POST">
-    <input type="hidden" name="Action">
-    <input type="hidden" name="ContactId">
+<FORM NAME="companyForm" ACTION="" METHOD="POST">
+    <input type="hidden" name="ContactCompanyId">
 </FORM>
 
 <FORM NAME="contactDeleteForm" ACTION="topicManager.jsp" METHOD="POST">
@@ -361,11 +354,13 @@
     <input type="hidden" name="ContactId">
     <input type="hidden" name="Id" value="<%=id%>">
 </FORM>
+
 <FORM NAME="contactCompanyDeleteForm" ACTION="topicManager.jsp" METHOD="POST">
     <input type="hidden" name="Action">
     <input type="hidden" name="ContactCompanyId">
     <input type="hidden" name="Id" value="<%=id%>">
 </FORM>
+
 <form name="refreshList" action="topicManager"></form>
 
 </BODY>
