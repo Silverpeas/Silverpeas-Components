@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.notification;
 
 import com.mockrunner.mock.jms.MockQueue;
@@ -39,8 +35,13 @@ import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
+import org.springframework.test.context.ContextConfiguration;
 
+import javax.inject.Inject;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.TextMessage;
 import javax.mail.internet.InternetAddress;
@@ -54,31 +55,21 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class TestNotificationHelper extends
-    AbstractSilverpeasDatasourceSpringContextTests {
+import static org.junit.Assert.*;
+
+@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
+  "/spring-hibernate.xml", "/spring-datasource.xml", "/spring-personalization.xml"})
+public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringContextTests {
 
   private static final String textEmailContent =
-      "Bonjour famille Simpson, j'espère que vous allez bien. "
-          + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-          + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
-          + "l'homme canon dans la prochaine émission.Bart";
-
+      "Bonjour famille Simpson, j'espère que vous allez bien. " +
+      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
+      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer " +
+      "l'homme canon dans la prochaine émission.Bart";
+  
+  @Inject
   private SimpleNotificationHelper notificationHelper;
 
-  public SimpleNotificationHelper getNotificationHelper() {
-    return notificationHelper;
-  }
-
-  public void setNotificationHelper(SimpleNotificationHelper notificationHelper) {
-    this.notificationHelper = notificationHelper;
-  }
-
-  @Override
-  protected String[] getConfigLocations() {
-    return new String[]{"spring-checker.xml", "spring-notification.xml",
-                        "spring-hibernate.xml", "spring-datasource.xml",
-                        "spring-personalization.xml"};
-  }
 
   protected void registerMockJMS() throws Exception {
     InitialContext ic = new InitialContext();
@@ -93,7 +84,7 @@ public class TestNotificationHelper extends
     queue.clear();
   }
 
-  @SuppressWarnings("unchecked")
+  @Test
   public void testNotifyInternals() throws Exception {
     registerMockJMS();
     Message message = ServicesFactory.getMessageService().getMessage("700");
@@ -106,32 +97,31 @@ public class TestNotificationHelper extends
     assertNotNull(list.getReaders());
     assertEquals(2, list.getReaders().size());
     List<String> userIds = Arrays.asList(new String[]{"200", "201", "202", "203",
-                                                      "204"});
+          "204"});
     notificationHelper.notifyInternals(message, list, userIds, null, false);
     List<TextMessage> messages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertNotNull(messages);
     assertEquals(5, messages.size());
     for (TextMessage alert : messages) {
       assertNotNull(alert.getText());
-      NotificationData data = NotificationServerUtil
-          .convertXMLToNotificationData(alert.getText());
+      NotificationData data = NotificationServerUtil.convertXMLToNotificationData(alert.getText());
       assertNotNull(data);
       String channel = data.getTargetChannel();
       assertEquals("SMTP", channel);
       String recipient = data.getTargetReceipt();
       assertNotNull(recipient);
       assertTrue("Erreur destinataire " + recipient,
-          "homer.simpson@silverpeas.com".equals(recipient)
-              || "marge.simpson@silverpeas.com".equals(recipient)
-              || "lisa.simpson@silverpeas.com".equals(recipient)
-              || "maggie.simpson@silverpeas.com".equals(recipient)
-              || "bart.simpson@silverpeas.com".equals(recipient));
+          "homer.simpson@silverpeas.com".equals(recipient) ||
+          "marge.simpson@silverpeas.com".equals(recipient) ||
+          "lisa.simpson@silverpeas.com".equals(recipient) ||
+          "maggie.simpson@silverpeas.com".equals(recipient) ||
+          "bart.simpson@silverpeas.com".equals(recipient));
       assertEquals(message.getSummary(), data.getMessage());
       String url = (String) data.getTargetParam().get("URL");
       assertNotNull(url);
       assertEquals(
-          "http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
-              + "goto=%2FRmailinglist%2F100%2Fmessage%2F700", url);
+          "http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&" +
+          "goto=%2FRmailinglist%2F100%2Fmessage%2F700", url);
       String source = (String) data.getTargetParam().get("SOURCE");
       assertNotNull(source);
       assertEquals("thesimpsons@silverpeas.com", source);
@@ -139,6 +129,7 @@ public class TestNotificationHelper extends
 
   }
 
+  @Test
   public void testNotifyExternals() throws Exception {
     Message message = ServicesFactory.getMessageService().getMessage("700");
     message.setContentType("text/plain; charset=\"UTF-8\"");
@@ -158,6 +149,7 @@ public class TestNotificationHelper extends
 
   }
 
+  @Test
   public void testSimpleSendMail() throws Exception {
     MimeMessage mail = new MimeMessage(notificationHelper.getSession());
     InternetAddress theSimpsons = new InternetAddress(
@@ -174,6 +166,7 @@ public class TestNotificationHelper extends
     checkSimpleEmail("bart.simpson@silverpeas.com", "Simple text Email test");
   }
 
+  @Test
   public void testMultiSendMail() throws Exception {
     MimeMessage mail = new MimeMessage(notificationHelper.getSession());
     InternetAddress theSimpsons = new InternetAddress(
@@ -251,8 +244,9 @@ public class TestNotificationHelper extends
     assertEquals(textEmailContent, alert.getContent());
   }
 
+  @Test
   public void testSpringLoading() {
-    SimpleNotificationHelper helper = getNotificationHelper();
+    SimpleNotificationHelper helper = notificationHelper;
     assertNotNull(helper);
     assertNotNull(helper.getSmtpConfig());
     assertEquals("localhost", helper.getSmtpConfig().getServer());
@@ -262,8 +256,8 @@ public class TestNotificationHelper extends
     assertFalse(helper.getSmtpConfig().isAuthenticate());
   }
 
-  @Override
-  protected void onTearDown() throws Exception {
+  @After
+  public void onTearDown() throws Exception {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
@@ -283,8 +277,8 @@ public class TestNotificationHelper extends
     super.onTearDown();
   }
 
-  @Override
-  protected void onSetUp() {
+  @Before
+  public void onSetUp() {
     super.onSetUp();
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
@@ -305,6 +299,7 @@ public class TestNotificationHelper extends
     }
   }
 
+  @Test
   public void testGetUsersIds() {
     MailingList list = ServicesFactory.getMailingListService().findMailingList(
         "100");
@@ -322,31 +317,32 @@ public class TestNotificationHelper extends
     }
   }
 
+  @Test
   public void testGetModeratorsIds() {
     MailingList list = ServicesFactory.getMailingListService().findMailingList(
         "100");
     Collection<String> userIds = notificationHelper.getModeratorsIds(list);
     assertEquals(3, userIds.size());
     for (String userId : userIds) {
-      assertTrue("Erreur userid " + userId, "200".equals(userId)
-          || "202".equals(userId) || "203".equals(userId));
+      assertTrue("Erreur userid " + userId, "200".equals(userId) ||
+          "202".equals(userId) || "203".equals(userId));
     }
     list.setModerated(false);
     userIds = notificationHelper.getModeratorsIds(list);
     assertEquals(3, userIds.size());
     for (String userId : userIds) {
-      assertTrue("Erreur userid " + userId, "200".equals(userId)
-          || "202".equals(userId) || "203".equals(userId));
+      assertTrue("Erreur userid " + userId, "200".equals(userId) ||
+          "202".equals(userId) || "203".equals(userId));
     }
   }
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
     if (isOracle()) {
-      return new FlatXmlDataSet(TestNotificationHelper.class
-          .getResourceAsStream("test-notification-helper-oracle-dataset.xml"));
+      return new FlatXmlDataSet(TestNotificationHelper.class.getResourceAsStream(
+          "test-notification-helper-oracle-dataset.xml"));
     }
-    return new FlatXmlDataSet(TestNotificationHelper.class
-        .getResourceAsStream("test-notification-helper-dataset.xml"));
+    return new FlatXmlDataSet(TestNotificationHelper.class.getResourceAsStream(
+        "test-notification-helper-dataset.xml"));
   }
 }

@@ -124,6 +124,7 @@ if ("UpdateSurveyHeader".equals(action))
 <head>
 <title></title>
 <view:looknfeel />
+<view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">

@@ -51,6 +51,7 @@
     <view:looknfeel />
     <script type="text/javascript" src="<c:url value='/util/javaScript/silverpeas-pdc-widgets.js'/>"></script>
     <script type="text/javascript">
+      //<![CDATA[
       var classifications = []; // will store the classification of all the imported publications
       var modified = false; // indicates if the classification of at least one publication is modified
       
@@ -398,6 +399,7 @@
             });
           });
         });
+        //]]
     </script>
   </head>
   <body>

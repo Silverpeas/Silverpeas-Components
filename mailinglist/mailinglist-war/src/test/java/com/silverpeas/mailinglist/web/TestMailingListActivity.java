@@ -40,12 +40,20 @@ import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
 
-public class TestMailingListActivity extends
-    AbstractSilverpeasDatasourceSpringContextTests {
+import static org.junit.Assert.*;
+
+@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
+        "/spring-hibernate.xml", "/spring-datasource.xml" })
+public class TestMailingListActivity extends AbstractSilverpeasDatasourceSpringContextTests {
 
   private static String MESSAGE_BASE = "destination/activity/message/";
 
+  @Test
   public void testSimpleUser() throws Exception {
     WebConversation connection = new WebConversation();
     WebResponse loginPage = connection.getResponse(buildUrl("silverpeas/"));
@@ -177,6 +185,7 @@ public class TestMailingListActivity extends
     assertFalse(activityPage.getText().indexOf("Abonnés Extérieurs") > 0);
   }
 
+  @Test
   public void testAdmin() throws Exception {
     WebConversation connection = new WebConversation();
     WebResponse loginPage = connection.getResponse(buildUrl("silverpeas/"));
@@ -311,12 +320,8 @@ public class TestMailingListActivity extends
   protected String buildUrl(String path) {
     return "http://localhost:8000/" + path;
   }
-
-  protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml" };
-  }
-
+  
+  @Override
   protected IDataSet getDataSet() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
         TestMailingListActivity.class
@@ -325,7 +330,9 @@ public class TestMailingListActivity extends
     return dataSet;
   }
 
-  protected void onSetUp() {
+  @Before
+  @Override
+  public void onSetUp() {
     super.onSetUp();
     HttpUnitOptions.setExceptionsThrownOnErrorStatus(true);
     HttpUnitOptions.setExceptionsThrownOnScriptError(false);
@@ -350,7 +357,8 @@ public class TestMailingListActivity extends
     }
   }
 
-  protected void onTearDown() {
+  @After
+  public void onTearDown() {
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();

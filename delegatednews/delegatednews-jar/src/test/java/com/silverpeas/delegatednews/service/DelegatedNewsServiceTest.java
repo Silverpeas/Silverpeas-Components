@@ -45,7 +45,7 @@ public class DelegatedNewsServiceTest {
     context = new ClassPathXmlApplicationContext(
         "spring-delegatednews.xml");
     service = (DelegatedNewsService) context.getBean("delegatedNewsService");
-    ds = (DataSource) context.getBean("dataSource");
+    ds = (DataSource) context.getBean("jpaDataSource");
     cleanDatabase();
   }
   

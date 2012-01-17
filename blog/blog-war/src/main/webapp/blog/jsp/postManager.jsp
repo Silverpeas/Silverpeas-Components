@@ -26,6 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <% 
 	// r�cup�ration des param�tres :
@@ -77,12 +78,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 		<head>
 		<title></title>
-		<%
-			out.println(gef.getLookStyleSheet());
-		%>
+        <view:looknfeel/>
+        <view:includePlugin name="datepicker"/>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-		<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
     <script type="text/javascript">
 			

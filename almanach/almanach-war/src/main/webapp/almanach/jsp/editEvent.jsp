@@ -79,15 +79,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
-<%
-out.println(graphicFactory.getLookStyleSheet());
-%>
+<view:looknfeel/>
+<view:includePlugin name="datepicker"/>
 <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
 <script type="text/javascript">
 <!--
 var oEditor;

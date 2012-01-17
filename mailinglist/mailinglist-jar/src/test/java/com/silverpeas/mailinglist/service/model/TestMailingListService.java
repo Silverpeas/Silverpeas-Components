@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.model;
 
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
@@ -42,29 +38,24 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.inject.Inject;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
+import static org.junit.Assert.*;
 
-public class TestMailingListService extends
-    AbstractSilverpeasDatasourceSpringContextTests {
+@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
+  "/spring-hibernate.xml", "/spring-datasource.xml"})
+public class TestMailingListService extends AbstractSilverpeasDatasourceSpringContextTests {
 
+  @Inject
   private MailingListService mailingListService;
+  @Inject
   private OrganizationController organizationController;
 
-  public OrganizationController getOrganizationController() {
-    return organizationController;
-  }
-
-  public void setOrganizationController(OrganizationController organizationController) {
-    this.organizationController = organizationController;
-  }
-
-  @Override
-  protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml" };
-  }
-
-  @Override
-  protected void onTearDown() throws Exception {
+  @After
+  public void onTearDown() throws Exception {
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
@@ -83,9 +74,8 @@ public class TestMailingListService extends
     super.onTearDown();
   }
 
-  @Override
-  protected void onSetUp() {
-    super.onSetUp();
+  @Before
+  public void onSetUp() {
     registerDatasource();
     IDatabaseConnection connection = null;
     try {
@@ -106,19 +96,20 @@ public class TestMailingListService extends
     organizationController.reloadAdminCache();
   }
 
+  @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
     if (isOracle()) {
       return new ReplacementDataSet(
           new FlatXmlDataSet(
-              TestMailingListService.class
-                  .getResourceAsStream("test-mailinglist-service-oracle-dataset.xml")));
+          TestMailingListService.class.getResourceAsStream(
+          "test-mailinglist-service-oracle-dataset.xml")));
     }
     return new ReplacementDataSet(new FlatXmlDataSet(
-        TestMailingListService.class
-            .getResourceAsStream("test-mailinglist-service-dataset.xml")));
+        TestMailingListService.class.getResourceAsStream("test-mailinglist-service-dataset.xml")));
   }
 
-  public void testCreateMailingList() {    
+  @Test
+  public void testCreateMailingList() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
     ExternalUser tahiti = new ExternalUser();
@@ -134,20 +125,19 @@ public class TestMailingListService extends
     assertNotNull(savedMailingList);
     assertEquals("100", savedMailingList.getComponentId());
     assertEquals("Liste de diffusion de test", savedMailingList.getName());
-    assertEquals("Gestion d'une liste de diffusion", savedMailingList
-        .getDescription());
+    assertEquals("Gestion d'une liste de diffusion", savedMailingList.getDescription());
     assertTrue(savedMailingList.isModerated());
     assertTrue(savedMailingList.isNotify());
     assertTrue(savedMailingList.isSupportRSS());
     assertFalse(savedMailingList.isOpen());
-    assertEquals("thesimpsons@silverpeas.com", savedMailingList
-        .getSubscribedAddress());
+    assertEquals("thesimpsons@silverpeas.com", savedMailingList.getSubscribedAddress());
     assertNotNull(savedMailingList.getExternalSubscribers());
     assertEquals(2, savedMailingList.getExternalSubscribers().size());
     assertTrue(savedMailingList.getExternalSubscribers().contains(skinner));
     assertTrue(savedMailingList.getExternalSubscribers().contains(tahiti));
   }
 
+  @Test
   public void testAddExternalUser() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -164,14 +154,12 @@ public class TestMailingListService extends
     assertNotNull(mailingList);
     assertEquals("100", mailingList.getComponentId());
     assertEquals("Liste de diffusion de test", mailingList.getName());
-    assertEquals("Gestion d'une liste de diffusion", mailingList
-        .getDescription());
+    assertEquals("Gestion d'une liste de diffusion", mailingList.getDescription());
     assertTrue(mailingList.isModerated());
     assertTrue(mailingList.isNotify());
     assertTrue(mailingList.isSupportRSS());
     assertFalse(mailingList.isOpen());
-    assertEquals("thesimpsons@silverpeas.com", mailingList
-        .getSubscribedAddress());
+    assertEquals("thesimpsons@silverpeas.com", mailingList.getSubscribedAddress());
     assertNotNull(mailingList.getExternalSubscribers());
     assertEquals(2, mailingList.getExternalSubscribers().size());
     assertTrue(mailingList.getExternalSubscribers().contains(skinner));
@@ -194,6 +182,7 @@ public class TestMailingListService extends
     assertEquals(3, mailingList.getExternalSubscribers().size());
   }
 
+  @Test
   public void testAddInternalSubscribers() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -208,14 +197,12 @@ public class TestMailingListService extends
     assertNotNull(mailingList);
     assertEquals("100", mailingList.getComponentId());
     assertEquals("Liste de diffusion de test", mailingList.getName());
-    assertEquals("Gestion d'une liste de diffusion", mailingList
-        .getDescription());
+    assertEquals("Gestion d'une liste de diffusion", mailingList.getDescription());
     assertTrue(mailingList.isModerated());
     assertTrue(mailingList.isNotify());
     assertTrue(mailingList.isSupportRSS());
     assertFalse(mailingList.isOpen());
-    assertEquals("thesimpsons@silverpeas.com", mailingList
-        .getSubscribedAddress());
+    assertEquals("thesimpsons@silverpeas.com", mailingList.getSubscribedAddress());
     assertNotNull(mailingList.getInternalSubscribers());
     assertEquals(2, mailingList.getInternalSubscribers().size());
     assertTrue(mailingList.getInternalSubscribers().contains(bart));
@@ -229,14 +216,12 @@ public class TestMailingListService extends
     assertNotNull(mailingList);
     assertEquals("100", mailingList.getComponentId());
     assertEquals("Liste de diffusion de test", mailingList.getName());
-    assertEquals("Gestion d'une liste de diffusion", mailingList
-        .getDescription());
+    assertEquals("Gestion d'une liste de diffusion", mailingList.getDescription());
     assertTrue(mailingList.isModerated());
     assertTrue(mailingList.isNotify());
     assertTrue(mailingList.isSupportRSS());
     assertFalse(mailingList.isOpen());
-    assertEquals("thesimpsons@silverpeas.com", mailingList
-        .getSubscribedAddress());
+    assertEquals("thesimpsons@silverpeas.com", mailingList.getSubscribedAddress());
     assertNotNull(mailingList.getInternalSubscribers());
     assertEquals(3, mailingList.getInternalSubscribers().size());
     assertTrue(mailingList.getInternalSubscribers().contains(bart));
@@ -249,14 +234,12 @@ public class TestMailingListService extends
     assertNotNull(mailingList);
     assertEquals("100", mailingList.getComponentId());
     assertEquals("Liste de diffusion de test", mailingList.getName());
-    assertEquals("Gestion d'une liste de diffusion", mailingList
-        .getDescription());
+    assertEquals("Gestion d'une liste de diffusion", mailingList.getDescription());
     assertTrue(mailingList.isModerated());
     assertTrue(mailingList.isNotify());
     assertTrue(mailingList.isSupportRSS());
     assertFalse(mailingList.isOpen());
-    assertEquals("thesimpsons@silverpeas.com", mailingList
-        .getSubscribedAddress());
+    assertEquals("thesimpsons@silverpeas.com", mailingList.getSubscribedAddress());
     assertNotNull(mailingList.getInternalSubscribers());
     assertEquals(3, mailingList.getInternalSubscribers().size());
     assertTrue(mailingList.getInternalSubscribers().contains(bart));
@@ -266,6 +249,7 @@ public class TestMailingListService extends
     assertEquals(0, mailingList.getGroupSubscribers().size());
   }
 
+  @Test
   public void testAddExternalUsers() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -282,14 +266,12 @@ public class TestMailingListService extends
     assertNotNull(mailingList);
     assertEquals("100", mailingList.getComponentId());
     assertEquals("Liste de diffusion de test", mailingList.getName());
-    assertEquals("Gestion d'une liste de diffusion", mailingList
-        .getDescription());
+    assertEquals("Gestion d'une liste de diffusion", mailingList.getDescription());
     assertTrue(mailingList.isModerated());
     assertTrue(mailingList.isNotify());
     assertTrue(mailingList.isSupportRSS());
     assertFalse(mailingList.isOpen());
-    assertEquals("thesimpsons@silverpeas.com", mailingList
-        .getSubscribedAddress());
+    assertEquals("thesimpsons@silverpeas.com", mailingList.getSubscribedAddress());
     assertNotNull(mailingList.getExternalSubscribers());
     assertEquals(2, mailingList.getExternalSubscribers().size());
     assertTrue(mailingList.getExternalSubscribers().contains(skinner));
@@ -319,6 +301,7 @@ public class TestMailingListService extends
     assertTrue(mailingList.getExternalSubscribers().contains(cheater));
   }
 
+  @Test
   public void testRemoveExternalUser() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -335,14 +318,12 @@ public class TestMailingListService extends
     assertNotNull(mailingList);
     assertEquals("100", mailingList.getComponentId());
     assertEquals("Liste de diffusion de test", mailingList.getName());
-    assertEquals("Gestion d'une liste de diffusion", mailingList
-        .getDescription());
+    assertEquals("Gestion d'une liste de diffusion", mailingList.getDescription());
     assertTrue(mailingList.isModerated());
     assertTrue(mailingList.isNotify());
     assertTrue(mailingList.isSupportRSS());
     assertFalse(mailingList.isOpen());
-    assertEquals("thesimpsons@silverpeas.com", mailingList
-        .getSubscribedAddress());
+    assertEquals("thesimpsons@silverpeas.com", mailingList.getSubscribedAddress());
     assertNotNull(mailingList.getExternalSubscribers());
     assertEquals(2, mailingList.getExternalSubscribers().size());
     assertTrue(mailingList.getExternalSubscribers().contains(skinner));
@@ -362,6 +343,7 @@ public class TestMailingListService extends
     assertEquals(0, mailingList.getExternalSubscribers().size());
   }
 
+  @Test
   public void testDeleteMailingList() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -378,14 +360,12 @@ public class TestMailingListService extends
     assertNotNull(mailingList);
     assertEquals("100", mailingList.getComponentId());
     assertEquals("Liste de diffusion de test", mailingList.getName());
-    assertEquals("Gestion d'une liste de diffusion", mailingList
-        .getDescription());
+    assertEquals("Gestion d'une liste de diffusion", mailingList.getDescription());
     assertTrue(mailingList.isModerated());
     assertTrue(mailingList.isNotify());
     assertTrue(mailingList.isSupportRSS());
     assertFalse(mailingList.isOpen());
-    assertEquals("thesimpsons@silverpeas.com", mailingList
-        .getSubscribedAddress());
+    assertEquals("thesimpsons@silverpeas.com", mailingList.getSubscribedAddress());
     assertNotNull(mailingList.getExternalSubscribers());
     assertEquals(2, mailingList.getExternalSubscribers().size());
     assertTrue(mailingList.getExternalSubscribers().contains(skinner));
@@ -395,6 +375,7 @@ public class TestMailingListService extends
     assertNull(mailingList);
   }
 
+  @Test
   public void testListMailingList() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -411,14 +392,12 @@ public class TestMailingListService extends
     assertNotNull(mailingList);
     assertEquals("100", mailingList.getComponentId());
     assertEquals("Liste de diffusion de test", mailingList.getName());
-    assertEquals("Gestion d'une liste de diffusion", mailingList
-        .getDescription());
+    assertEquals("Gestion d'une liste de diffusion", mailingList.getDescription());
     assertTrue(mailingList.isModerated());
     assertTrue(mailingList.isNotify());
     assertTrue(mailingList.isSupportRSS());
     assertFalse(mailingList.isOpen());
-    assertEquals("thesimpsons@silverpeas.com", mailingList
-        .getSubscribedAddress());
+    assertEquals("thesimpsons@silverpeas.com", mailingList.getSubscribedAddress());
     assertNotNull(mailingList.getExternalSubscribers());
     assertEquals(2, mailingList.getExternalSubscribers().size());
     assertTrue(mailingList.getExternalSubscribers().contains(skinner));
@@ -427,24 +406,24 @@ public class TestMailingListService extends
     assertEquals(3, mailingList.getModerators().size());
     for (InternalUser user : mailingList.getModerators()) {
       assertEquals("http://localhost:8000", user.getDomain());
-      assertTrue("200".equals(user.getId()) || "202".equals(user.getId())
-          || "203".equals(user.getId()));
-      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail())
-          || "marge.simpson@silverpeas.com".equals(user.getEmail())
-          || "bart.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("200".equals(user.getId()) || "202".equals(user.getId()) ||
+           "203".equals(user.getId()));
+      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail()) ||
+           "marge.simpson@silverpeas.com".equals(user.getEmail()) ||
+           "bart.simpson@silverpeas.com".equals(user.getEmail()));
     }
     assertNotNull(mailingList.getReaders());
     assertEquals(2, mailingList.getReaders().size());
     for (InternalUser user : mailingList.getReaders()) {
       assertTrue("201".equals(user.getId()) || "204".equals(user.getId()));
       assertEquals("http://localhost:8000", user.getDomain());
-      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail())
-          || "maggie.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail()) ||
+           "maggie.simpson@silverpeas.com".equals(user.getEmail()));
     }
 
   }
 
-  @SuppressWarnings("unchecked")
+  @Test
   public void testGetMailingList() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -467,8 +446,7 @@ public class TestMailingListService extends
     assertTrue(mailingList.isNotify());
     assertTrue(mailingList.isSupportRSS());
     assertFalse(mailingList.isOpen());
-    assertEquals("thesimpsons@silverpeas.com", mailingList
-        .getSubscribedAddress());
+    assertEquals("thesimpsons@silverpeas.com", mailingList.getSubscribedAddress());
     assertNotNull(mailingList.getExternalSubscribers());
     assertEquals(2, mailingList.getExternalSubscribers().size());
     assertTrue(mailingList.getExternalSubscribers().contains(skinner));
@@ -477,19 +455,19 @@ public class TestMailingListService extends
     assertEquals(3, mailingList.getModerators().size());
     for (InternalUser user : mailingList.getModerators()) {
       assertEquals("http://localhost:8000", user.getDomain());
-      assertTrue("200".equals(user.getId()) || "202".equals(user.getId())
-          || "203".equals(user.getId()));
-      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail())
-          || "marge.simpson@silverpeas.com".equals(user.getEmail())
-          || "bart.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("200".equals(user.getId()) || "202".equals(user.getId()) ||
+           "203".equals(user.getId()));
+      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail()) ||
+           "marge.simpson@silverpeas.com".equals(user.getEmail()) ||
+           "bart.simpson@silverpeas.com".equals(user.getEmail()));
     }
     assertNotNull(mailingList.getReaders());
     assertEquals(2, mailingList.getReaders().size());
     for (InternalUser user : mailingList.getReaders()) {
       assertEquals("http://localhost:8000", user.getDomain());
       assertTrue("201".equals(user.getId()) || "204".equals(user.getId()));
-      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail())
-          || "maggie.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail()) ||
+           "maggie.simpson@silverpeas.com".equals(user.getEmail()));
     }
 
   }

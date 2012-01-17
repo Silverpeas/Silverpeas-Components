@@ -55,9 +55,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>QuickInfo - Edition</title>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
+<view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <script type="text/javascript">

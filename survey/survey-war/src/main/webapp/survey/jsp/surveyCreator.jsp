@@ -33,7 +33,7 @@
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="checkSurvey.jsp" %>
 
@@ -76,8 +76,8 @@ if (action == null) {
 <html>
 <head>
 <title></title>
-<% out.println(gef.getLookStyleSheet()); %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
+<view:looknfeel/>
+<view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" language="JavaScript1.2">
 function sendData() {

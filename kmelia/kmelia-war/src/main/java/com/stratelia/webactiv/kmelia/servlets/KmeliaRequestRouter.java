@@ -1548,7 +1548,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("CurrentProfile", profile);
         request.setAttribute("Groups", kmelia.groupIds2Groups(profile.getAllGroups()));
         request.setAttribute("Users", kmelia.userIds2Users(profile.getAllUsers()));
-        request.setAttribute("Path", kmelia.getSessionPath());
+        List<NodeDetail> path = kmelia.getTopicPath(id);
+        request.setAttribute("Path", kmelia.displayPath(path, true, 3));
         request.setAttribute("NodeDetail", topic);
 
         destination = rootDestination + "topicProfiles.jsp";

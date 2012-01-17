@@ -55,7 +55,7 @@ public class DelegatedNewsDaoTest {
   public static void generalSetUp() throws IOException, NamingException, Exception {
     context = new ClassPathXmlApplicationContext("spring-delegatednews.xml");
     dao = (DelegatedNewsDao) context.getBean("delegatedNewsDao");
-    DataSource ds = (DataSource) context.getBean("dataSource");
+    DataSource ds = (DataSource) context.getBean("jpaDataSource");
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
     DelegatedNewsDaoTest.class.getClassLoader().getResourceAsStream(
     "com/silverpeas/delegatednews/dao/delegatednews-dataset.xml")));

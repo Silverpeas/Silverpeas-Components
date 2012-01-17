@@ -33,34 +33,39 @@ import java.util.List;
 
 public class MailingListDaoImpl extends HibernateDaoSupport implements MailingListDao {
 
+  @Override
   public String createMailingList(MailingList mailingList) {
     String id = (String) getSession().save(mailingList);
     mailingList.setId(id);
     return id;
   }
 
+  @Override
   public void deleteMailingList(MailingList mailingList) {
     getSession().delete(mailingList);
   }
 
+  @Override
   public MailingList findByComponentId(String componentId) {
     Criteria criteria = getSession().createCriteria(MailingList.class);
     criteria.add(Restrictions.eq("componentId", componentId));
     return (MailingList) criteria.uniqueResult();
   }
 
+  @Override
   public MailingList findById(String id) {
     Criteria criteria = getSession().createCriteria(MailingList.class);
     criteria.add(Restrictions.eq("id", id));
     return (MailingList) criteria.uniqueResult();
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
   public List<MailingList> listMailingLists() {
     Criteria criteria = getSession().createCriteria(MailingList.class);
     return criteria.list();
   }
 
+  @Override
   public void updateMailingList(MailingList mailingList) {
     getSession().update(mailingList);
   }
