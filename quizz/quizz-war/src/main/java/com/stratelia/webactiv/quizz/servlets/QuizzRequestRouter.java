@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 
 public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionController> {
+  private static final long serialVersionUID = -8909826089973730380L;
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -50,7 +51,6 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -64,16 +64,15 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param quizzSC  The component Session Control, build and initialised.
-   * @param request  The entering request. The request rooter need it to get parameters
+   * @param quizzSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex : "/quizz/jsp/quizz.jsp?flag=user")
    */
   public String getDestination(String function, QuizzSessionController quizzSC,
       HttpServletRequest request) {
-    SilverTrace
-        .info("Quizz", "QuizzRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", function);
+    SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+        function);
     String destination = "";
 
     String flag = quizzSC.getUserRoleLevel();
@@ -109,7 +108,6 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
           File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
           request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
           request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
-          file = null;
         }
         destination = "downloadCSV.jsp";
       } else if (function.equals("copy")) {
@@ -120,7 +118,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
           SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_COPY_FAILED",
               "function = " + function, e);
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD)
+        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
             + "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("paste")) {
         try {
@@ -129,19 +127,17 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
           SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_CUT_FAILED",
               "function = " + function, e);
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp";
+        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
 
-        SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()", "",
-            "id = " + id);
+        SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()", "", "id = " + id);
 
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = "quizzQuestionsNew.jsp?Action=ViewQuizz&QuizzId=" + id;
         } else {
           if (quizzSC.isParticipationAllowed(id)) {
-            destination = "quizzQuestionsNew.jsp?Action=ViewCurrentQuestions&QuizzId="
-                + id;
+            destination = "quizzQuestionsNew.jsp?Action=ViewCurrentQuestions&QuizzId=" + id;
           } else {
             destination = "quizzResultUser.jsp";
           }
@@ -149,7 +145,6 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
       } else {
         destination = function;
       }
-
       if (profileError) {
         String sessionTimeout =
             GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
@@ -162,7 +157,6 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpage.jsp";
     }
-
     return destination;
   }
 }

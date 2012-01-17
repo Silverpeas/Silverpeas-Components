@@ -40,18 +40,20 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHead
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 
 public class GoToQuizz extends GoTo {
-  public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
+  private static final long serialVersionUID = -25530750219633841L;
+
+  @Override
+  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
+      throws Exception {
     QuestionContainerPK questionContainerPK = new QuestionContainerPK(objectId);
-    QuestionContainerHeader quizz = getQuestionContainerBm()
-        .getQuestionContainerHeader(questionContainerPK);
+    QuestionContainerHeader quizz =
+        getQuestionContainerBm().getQuestionContainerHeader(questionContainerPK);
 
     if (quizz != null) {
       String componentId = quizz.getInstanceId();
 
-      SilverTrace.info("quizz", "GoToQuizz.getDestination",
-          "root.MSG_GEN_PARAM_VALUE", "quizz = " + quizz.getId()
-          + "componentId = " + componentId);
+      SilverTrace.info("quizz", "GoToQuizz.getDestination", "root.MSG_GEN_PARAM_VALUE", "quizz = " +
+          quizz.getId() + "componentId = " + componentId);
 
       String gotoURL = URLManager.getURL(null, componentId) + quizz.getURL();
 
@@ -63,9 +65,9 @@ public class GoToQuizz extends GoTo {
   private QuestionContainerBm getQuestionContainerBm() {
     QuestionContainerBm currentQuestionContainerBm = null;
     try {
-      QuestionContainerBmHome questionContainerBmHome = (QuestionContainerBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME,
-          QuestionContainerBmHome.class);
+      QuestionContainerBmHome questionContainerBmHome =
+          (QuestionContainerBmHome) EJBUtilitaire.getEJBObjectRef(
+              JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBmHome.class);
       currentQuestionContainerBm = questionContainerBmHome.create();
     } catch (Exception e) {
       displayError(null);

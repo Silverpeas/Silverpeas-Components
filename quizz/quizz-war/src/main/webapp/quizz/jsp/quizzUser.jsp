@@ -36,26 +36,26 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <jsp:useBean id="currentParticipationId" scope="session" class="java.lang.String" />
 
 <%!
-    String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzException
-    {
-	String Html_display = null;
-	try {
-		if (nb_user_votes >= nb_max_user_votes)
-			Html_display = "<img src=\"icons/feuRouge.gif\">&nbsp;";
-		else
-			Html_display = "<img src=\"icons/feuVert.gif\">&nbsp;";
-		for (int i=0; i<nb_max_user_votes; i++)
-		{
-			if (i < (nb_max_user_votes - nb_user_votes))
-				Html_display += "<img src=\"icons/creditOn.gif\">";
-			else
-				Html_display += "<img src=\"icons/creditOff.gif\">";
-		}
-	}catch (Exception e){
-		throw new QuizzException ("quizzUser_JSP.displayCredits",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_CREDITS",e);
-	}
-
-	return Html_display;
+String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzException
+{
+  String Html_display = null;
+  try {
+  	if (nb_user_votes >= nb_max_user_votes)
+  		Html_display = "<img src=\"icons/feuRouge.gif\">&nbsp;";
+  	else
+  		Html_display = "<img src=\"icons/feuVert.gif\">&nbsp;";
+  	for (int i=0; i<nb_max_user_votes; i++)
+  	{
+  		if (i < (nb_max_user_votes - nb_user_votes))
+  			Html_display += "<img src=\"icons/creditOn.gif\">";
+  		else
+  			Html_display += "<img src=\"icons/creditOff.gif\">";
+  	}
+  }catch (Exception e){
+  	throw new QuizzException ("quizzUser_JSP.displayCredits",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_CREDITS",e);
+  }
+  
+  return Html_display;
 }
 %>
 
@@ -65,9 +65,9 @@ String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 String linkIcon = iconsPath + "/util/icons/link.gif";
 %>
 
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -118,10 +118,11 @@ out.println(gef.getLookStyleSheet());
   while (i.hasNext()) {
     QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i.next();
     int nb_max_participations = quizzHeader.getNbMaxParticipations();
-    Collection scoreDetails = quizzHeader.getScores(); 
+    Collection<ScoreDetail> scoreDetails = quizzHeader.getScores(); 
     int nb_user_votes = 0;
-    if (scoreDetails != null)
+    if (scoreDetails != null) {
       nb_user_votes = scoreDetails.size();
+    }
     ArrayLine arrayLine = arrayPane.addArrayLine();
     arrayLine.addArrayCellLink("<img src=\"icons/palmares_30x15.gif\" border=0>","palmares.jsp?quizz_id="+quizzHeader.getPK().getId());
     //  gestion des permaliens sur les quizz
@@ -129,13 +130,14 @@ out.println(gef.getLookStyleSheet());
     String link = "&nbsp;<a href=\""+permalink+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"bottom\" alt=\""+resources.getString("quizz.CopyQuizzLink")+"\" title=\""+resources.getString("quizz.CopyQuizzLink")+"\"></a>";
 
     ArrayCellText arrayCellText2 = null;
-    if (nb_user_votes >= nb_max_participations)
+    if (nb_user_votes >= nb_max_participations) {
       arrayCellText2 = arrayLine.addArrayCellText(quizzHeader.getTitle() + link);
-    else
+    } else {
       arrayCellText2 = arrayLine.addArrayCellText("<A HREF=quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&ParticipationId="+nb_user_votes+"&Action=ViewCurrentQuestions>"+quizzHeader.getTitle()+"</A>" + link);
+    }
 
     arrayCellText2.setCompareOn(quizzHeader.getTitle().toLowerCase());
-    arrayLine.addArrayCellText(Encode.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
+    arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
     arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
     
     Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
@@ -154,5 +156,5 @@ out.println(gef.getLookStyleSheet());
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

@@ -27,8 +27,8 @@
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
 <%@ include file="checkQuizz.jsp"%>
@@ -38,33 +38,31 @@
 
 <%
   String m_context = GeneralPropertiesManager
-					.getGeneralResourceLocator().getString("ApplicationURL");
-			String iconsPath = GeneralPropertiesManager
-					.getGeneralResourceLocator().getString("ApplicationURL");
-
-			//Icons
-			String folderSrc = iconsPath + "/util/icons/delete.gif";
-			String linkIcon = iconsPath + "/util/icons/link.gif";
+  		.getGeneralResourceLocator().getString("ApplicationURL");
+  String iconsPath = GeneralPropertiesManager
+  		.getGeneralResourceLocator().getString("ApplicationURL");
+  
+  //Icons
+  String folderSrc = iconsPath + "/util/icons/delete.gif";
+  String linkIcon = iconsPath + "/util/icons/link.gif";
 %>
 
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer
-\__________________________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <%
   ResourceLocator settings = quizzScc.getSettings();
-			String space = quizzScc.getSpaceLabel();
-			String component = quizzScc.getComponentLabel();
-			session.removeAttribute("currentQuizz");
-
-			String pdcUtilizationSrc = m_context
-					+ "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
-
-			boolean isAdmin = false;
-
-			if ("admin".equals(quizzScc.getUserRoleLevel())) {
-				isAdmin = true;
-			}
+  String space = quizzScc.getSpaceLabel();
+  String component = quizzScc.getComponentLabel();
+  session.removeAttribute("currentQuizz");
+  
+  String pdcUtilizationSrc = m_context + "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
+  
+  boolean isAdmin = false;
+  
+  if ("admin".equals(quizzScc.getUserRoleLevel())) {
+  	isAdmin = true;
+  }
 %>
 <script language="javascript"
 	src="<%=m_context%>/util/javaScript/formUtil.js"></script>
@@ -84,12 +82,13 @@ function openSPWindow(fonction, windowName){
 function deleteQuizz(quizz_id)
 {
   var rep = confirm('<%=resources.getString("QuizzDeleteThisQuizz")%>');
-  if (rep==true)
-    self.location="deleteQuizz.jsp?quizz_id="+quizz_id
+  if (rep==true) {
+    self.location="deleteQuizz.jsp?quizz_id="+quizz_id;
+  }
 }
 
 function clipboardPaste() { 
-  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=Rquizz&SpaceFrom=<%=quizzScc.getSpaceId()%>&ComponentFrom=<%=quizzScc.getComponentId()%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("Main"))%>&TargetFrame=MyMain&message=REFRESH');
+  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)%>paste?compR=Rquizz&SpaceFrom=<%=quizzScc.getSpaceId()%>&ComponentFrom=<%=quizzScc.getComponentId()%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("Main"))%>&TargetFrame=MyMain&message=REFRESH');
   // forcer le rafraichissmeent de la page
   document.location.reload();   
 }
@@ -103,108 +102,103 @@ function clipboardPaste() {
 
 <%
   //objet window
-			Window window = gef.getWindow();
-			window.setWidth("100%");
-
-			//browse bar
-			BrowseBar browseBar = window.getBrowseBar();
-			browseBar.setDomainName(space);
-			browseBar.setComponentName(component, "Main");
-			browseBar.setExtraInformation(resources.getString("QuizzList"));
-
-			OperationPane operationPane = window.getOperationPane();
-			if (isAdmin && quizzScc.isPdcUsed()) {
-				operationPane.addOperation(pdcUtilizationSrc, resources
-						.getString("GML.PDC"),
-						"javascript:onClick=openSPWindow('" + m_context
-								+ "/RpdcUtilization/jsp/Main?ComponentId="
-								+ quizzScc.getComponentId()
-								+ "','utilizationPdc1')");
-				operationPane.addLine();
-			}
-			operationPane.addOperation(m_context
-					+ "/util/icons/quizz_to_add.gif", resources
-					.getString("QuizzNewQuizz"), "quizzCreator.jsp");
-			if (isAdmin) {
-				operationPane.addOperation(resources.getIcon("quizz.paste"),
-						resources.getString("GML.paste"),
-						"javascript:onClick=clipboardPaste()");
-			}
-			out.println(window.printBefore());
-
-			Frame frame = gef.getFrame();
-
-			//onglets
-			TabbedPane tabbedPane1 = gef.getTabbedPane();
-			tabbedPane1.addTab(resources.getString("QuizzOnglet1"),
-					"quizzAdmin.jsp", true);
-			tabbedPane1.addTab(resources.getString("QuizzSeeResult"),
-					"quizzResultAdmin.jsp", false);
-
-			out.println(tabbedPane1.print());
-			out.println(frame.printBefore());
-
-			//Tableau
-			ArrayPane arrayPane = gef.getArrayPane("QuizzList",
-					"quizzAdmin.jsp", request, session);
-
-			ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
-			arrayColumn0.setSortable(false);
-			arrayPane.addArrayColumn(resources.getString("GML.name"));
-			arrayPane.addArrayColumn(resources.getString("GML.description"));
-			arrayPane.addArrayColumn(resources.getString("QuizzCreationDate"));
-			arrayPane.addArrayColumn(resources.getString("GML.operation"));
-
-			Collection quizzList = quizzScc.getAdminQuizzList();
-			Iterator i = quizzList.iterator();
-			while (i.hasNext()) {
-				QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i
-						.next();
-				// gestion des permaliens sur les quizz
-				String permalink = quizzHeader.getPermalink();
-				String link = "&nbsp;<a href=\"" + permalink + "\"><img src=\""
-						+ linkIcon + "\" border=\"0\" align=\"bottom\" alt=\""
-						+ resources.getString("quizz.CopyQuizzLink")
-						+ "\" title=\""
-						+ resources.getString("quizz.CopyQuizzLink")
-						+ "\"></a>";
-				String name = "<a href=\"quizzQuestionsNew.jsp?QuizzId="
-						+ quizzHeader.getPK().getId() + "&Action=ViewQuizz"
-						+ "\">" + quizzHeader.getTitle() + "</a>";
-
-				IconPane folderPane1 = gef.getIconPane();
-				Icon folder1 = folderPane1.addIcon();
-				folder1.setProperties(folderSrc, "", "javascript:deleteQuizz("
-						+ quizzHeader.getPK().getId() + ");");
-				ArrayLine arrayLine = arrayPane.addArrayLine();
-				arrayLine.addArrayCellLink(
-						"<img src=\"icons/palmares_30x15.gif\" border=0>",
-						"palmaresAdmin.jsp?quizz_id="
-								+ quizzHeader.getPK().getId());
-				//arrayLine.addArrayCellLink(quizzHeader.getTitle(),"quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&Action=ViewQuizz");
-				arrayLine.addArrayCellText(name + link);
-				arrayLine.addArrayCellText(Encode
-						.javaStringToHtmlParagraphe(quizzHeader
-								.getDescription()));
-
-				Date creationDate = DateUtil.parse(quizzHeader
-						.getCreationDate());
-				ArrayCellText arrayCellText = arrayLine
-						.addArrayCellText(resources.getOutputDate(creationDate));
-				arrayCellText.setCompareOn(creationDate);
-
-				arrayLine.addArrayCellIconPane(folderPane1);
-			}
-			out.println(arrayPane.print());
+  Window window = gef.getWindow();
+  window.setWidth("100%");
+  
+  //browse bar
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(space);
+  browseBar.setComponentName(component, "Main");
+  browseBar.setExtraInformation(resources.getString("QuizzList"));
+  
+  OperationPane operationPane = window.getOperationPane();
+  if (isAdmin && quizzScc.isPdcUsed()) {
+  	operationPane.addOperation(pdcUtilizationSrc, resources
+  			.getString("GML.PDC"),
+  			"javascript:onClick=openSPWindow('" + m_context
+  					+ "/RpdcUtilization/jsp/Main?ComponentId="
+  					+ quizzScc.getComponentId()
+  					+ "','utilizationPdc1')");
+  	operationPane.addLine();
+  }
+  operationPane.addOperation(m_context
+  		+ "/util/icons/quizz_to_add.gif", resources
+  		.getString("QuizzNewQuizz"), "quizzCreator.jsp");
+  if (isAdmin) {
+  	operationPane.addOperation(resources.getIcon("quizz.paste"),
+  			resources.getString("GML.paste"),
+  			"javascript:onClick=clipboardPaste()");
+  }
+  out.println(window.printBefore());
+  
+  Frame frame = gef.getFrame();
+  
+  //onglets
+  TabbedPane tabbedPane1 = gef.getTabbedPane();
+  tabbedPane1.addTab(resources.getString("QuizzOnglet1"),
+  		"quizzAdmin.jsp", true);
+  tabbedPane1.addTab(resources.getString("QuizzSeeResult"),
+  		"quizzResultAdmin.jsp", false);
+  
+  out.println(tabbedPane1.print());
+  out.println(frame.printBefore());
+  
+  //Tableau
+  ArrayPane arrayPane = gef.getArrayPane("QuizzList",
+  		"quizzAdmin.jsp", request, session);
+  
+  ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
+  arrayColumn0.setSortable(false);
+  arrayPane.addArrayColumn(resources.getString("GML.name"));
+  arrayPane.addArrayColumn(resources.getString("GML.description"));
+  arrayPane.addArrayColumn(resources.getString("QuizzCreationDate"));
+  arrayPane.addArrayColumn(resources.getString("GML.operation"));
+  
+  Collection<QuestionContainerHeader> quizzList = quizzScc.getAdminQuizzList();
+  Iterator<QuestionContainerHeader> i = quizzList.iterator();
+  while (i.hasNext()) {
+  	QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i.next();
+  	// gestion des permaliens sur les quizz
+  	String permalink = quizzHeader.getPermalink();
+  	String link = "&nbsp;<a href=\"" + permalink + "\"><img src=\""
+  			+ linkIcon + "\" border=\"0\" align=\"bottom\" alt=\""
+  			+ resources.getString("quizz.CopyQuizzLink")
+  			+ "\" title=\""
+  			+ resources.getString("quizz.CopyQuizzLink")
+  			+ "\"></a>";
+  	String name = "<a href=\"quizzQuestionsNew.jsp?QuizzId="
+  			+ quizzHeader.getPK().getId() + "&Action=ViewQuizz"
+  			+ "\">" + quizzHeader.getTitle() + "</a>";
+  
+  	IconPane folderPane1 = gef.getIconPane();
+  	Icon folder1 = folderPane1.addIcon();
+  	folder1.setProperties(folderSrc, "", "javascript:deleteQuizz("
+  			+ quizzHeader.getPK().getId() + ");");
+  	ArrayLine arrayLine = arrayPane.addArrayLine();
+  	arrayLine.addArrayCellLink(
+  			"<img src=\"icons/palmares_30x15.gif\" border=0>",
+  			"palmaresAdmin.jsp?quizz_id="
+  					+ quizzHeader.getPK().getId());
+  	//arrayLine.addArrayCellLink(quizzHeader.getTitle(),"quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&Action=ViewQuizz");
+  	arrayLine.addArrayCellText(name + link);
+  	arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
+  
+  	Date creationDate = DateUtil.parse(quizzHeader
+  			.getCreationDate());
+  	ArrayCellText arrayCellText = arrayLine
+  			.addArrayCellText(resources.getOutputDate(creationDate));
+  	arrayCellText.setCompareOn(creationDate);
+  
+  	arrayLine.addArrayCellIconPane(folderPane1);
+  }
+  out.println(arrayPane.print());
 %>
 
 <!--  FIN TAG FORM-->
 <%
   out.println(frame.printMiddle());
-			out.println(frame.printAfter());
-			out.println(window.printAfter());
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
-
-
+</body>
+</html>
