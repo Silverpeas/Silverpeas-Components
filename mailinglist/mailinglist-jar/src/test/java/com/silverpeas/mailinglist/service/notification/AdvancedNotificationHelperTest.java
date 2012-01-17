@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.mailinglist.service.notification;
 
@@ -32,13 +29,19 @@ import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
+import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.JNDINames;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.jvnet.mock_javamail.Mailbox;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.TextMessage;
 import javax.mail.internet.InternetAddress;
@@ -51,24 +54,24 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-advanced-notification.xml",
+  "/spring-hibernate.xml", "/spring-datasource.xml", "/spring-personalization.xml"})
 public class AdvancedNotificationHelperTest extends AbstractTestDao {
 
-  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. "
-      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
-      + "l'homme canon dans la prochaine émission.Bart";
+  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. " +
+      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
+      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer " +
+      "l'homme canon dans la prochaine émission.Bart";
+  
+  @Inject
   private AdvancedNotificationHelper notificationHelper;
-  private ConfigurableApplicationContext context;
 
-
-  @Override
+  @Before
   public void setUp() throws Exception {
     super.setUp();
+    AdminReference.getAdminService().reloadCache();
     registerMockJMS();
-    context = new ClassPathXmlApplicationContext(new String[]{"spring-checker.xml",
-          "spring-advanced-notification.xml", "spring-hibernate.xml", "spring-datasource.xml",
-          "spring-personalization.xml"});
-    notificationHelper = (AdvancedNotificationHelper) context.getBean("notificationHelper");
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
@@ -100,7 +103,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     queue.clear();
   }
 
-  @SuppressWarnings("unchecked")
+  @Test
   public void testNotifyInternals() throws Exception {
     Message message = ServicesFactory.getMessageService().getMessage("700");
     assertNotNull(message);
@@ -125,20 +128,20 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
       String recipient = data.getTargetReceipt();
       assertNotNull(recipient);
       assertTrue("Erreur destinataire " + recipient,
-          "homer.simpson@silverpeas.com".equals(recipient)
-          || "marge.simpson@silverpeas.com".equals(recipient)
-          || "lisa.simpson@silverpeas.com".equals(recipient)
-          || "maggie.simpson@silverpeas.com".equals(recipient)
-          || "bart.simpson@silverpeas.com".equals(recipient));
-      String notificationMessage = "<html><head/><body>p><b>Message ["
-          + message.getTitle() + "] :</b></p><p>" + message.getSummary()
-          + " ...<br/><a href=\"/Rmailinglist/100/message/700\">Cliquer ici</a></p></body></html>";
+          "homer.simpson@silverpeas.com".equals(recipient) ||
+          "marge.simpson@silverpeas.com".equals(recipient) ||
+          "lisa.simpson@silverpeas.com".equals(recipient) ||
+          "maggie.simpson@silverpeas.com".equals(recipient) ||
+          "bart.simpson@silverpeas.com".equals(recipient));
+      String notificationMessage = "<html><head/><body>p><b>Message [" +
+          message.getTitle() + "] :</b></p><p>" + message.getSummary() +
+          " ...<br/><a href=\"/Rmailinglist/100/message/700\">Cliquer ici</a></p></body></html>";
       assertEquals(notificationMessage, data.getMessage());
       String url = (String) data.getTargetParam().get("URL");
       assertNotNull(url);
       assertEquals(
-          "http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
-          + "goto=%2FRmailinglist%2F100%2Fmessage%2F700", url);
+          "http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&" +
+          "goto=%2FRmailinglist%2F100%2Fmessage%2F700", url);
       String source = (String) data.getTargetParam().get("SOURCE");
       assertNotNull(source);
       assertEquals("thesimpsons@silverpeas.com", source);
@@ -146,6 +149,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
 
   }
 
+  @Test
   public void testNotifyExternals() throws Exception {
     Message message = ServicesFactory.getMessageService().getMessage("700");
     message.setContentType("text/plain; charset=\"UTF-8\"");
@@ -181,6 +185,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     checkSimpleEmail("bart.simpson@silverpeas.com", "Simple text Email test");
   }
 
+  @Test
   public void testMultiSendMail() throws Exception {
     MimeMessage mail = new MimeMessage(notificationHelper.getSession());
     InternetAddress theSimpsons = new InternetAddress(
@@ -268,7 +273,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     assertFalse(notificationHelper.getSmtpConfig().isAuthenticate());
   }
 
-  @Override
+  @After
   public void tearDown() throws Exception {
     InitialContext ic = new InitialContext();
     MockObjectFactory.clearAll();
@@ -291,6 +296,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     super.tearDown();
   }
 
+  @Test
   public void testGetUsersIds() {
     MailingList list = ServicesFactory.getMailingListService().findMailingList(
         "100");
@@ -310,6 +316,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     }
   }
 
+  @Test
   public void testGetModeratorsIds() {
     MailingList list = ServicesFactory.getMailingListService().findMailingList(
         "100");
@@ -317,16 +324,16 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     assertEquals(3, userIds.size());
     for (String userId :
         userIds) {
-      assertTrue("Erreur userid " + userId, "200".equals(userId)
-          || "202".equals(userId) || "203".equals(userId));
+      assertTrue("Erreur userid " + userId, "200".equals(userId) ||
+          "202".equals(userId) || "203".equals(userId));
     }
     list.setModerated(false);
     userIds = notificationHelper.getModeratorsIds(list);
     assertEquals(3, userIds.size());
     for (String userId :
         userIds) {
-      assertTrue("Erreur userid " + userId, "200".equals(userId)
-          || "202".equals(userId) || "203".equals(userId));
+      assertTrue("Erreur userid " + userId, "200".equals(userId) ||
+          "202".equals(userId) || "203".equals(userId));
     }
   }
 

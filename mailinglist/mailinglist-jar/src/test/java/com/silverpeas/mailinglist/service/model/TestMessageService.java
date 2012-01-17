@@ -1,40 +1,24 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.model;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.List;
-
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
 
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
@@ -43,34 +27,39 @@ import com.silverpeas.mailinglist.service.model.beans.MailingListActivity;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
 
-public class TestMessageService extends
-    AbstractSilverpeasDatasourceSpringContextTests {
+import javax.inject.Inject;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.List;
+
+import static org.junit.Assert.*;
+
+@ContextConfiguration(locations = {"/spring-notification.xml", "/spring-checker.xml",
+  "/spring-hibernate.xml", "/spring-datasource.xml"})
+public class TestMessageService extends AbstractSilverpeasDatasourceSpringContextTests {
 
   private static final OrderBy orderByDate = new OrderBy("sentDate", false);
-
-  private static final String textEmailContent = "Bonjour famille Simpson, "
-      + "j'espère que vous allez bien. Ici tout se passe bien et Krusty est très "
-      + "sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je "
-      + "dois remplacer l'homme canon dans la prochaine émission.\nBart";
-
+  private static final String textEmailContent = "Bonjour famille Simpson, " +
+       "j'espère que vous allez bien. Ici tout se passe bien et Krusty est très " +
+       "sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je " +
+       "dois remplacer l'homme canon dans la prochaine émission.\nBart";
   private static final String attachmentPath = "c:\\tmp\\uploads\\componentId\\mailId@silverpeas.com\\";
-
+  
+  @Inject
   private MessageService messageService;
 
-  public MessageService getMessageService() {
-    return messageService;
-  }
-
-  public void setMessageService(MessageService messageService) {
-    this.messageService = messageService;
-  }
-
-  protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml" };
-  }
-
+  @Test
   public void testGetMessage() {
     Message savedMessage = messageService.getMessage("1");
     assertNotNull(savedMessage);
@@ -100,6 +89,7 @@ public class TestMessageService extends
     assertEquals(attachmentPath + "lemonde.html", attached.getPath());
   }
 
+  @Test
   public void testSaveMessage() {
     Calendar sentDate = Calendar.getInstance();
     sentDate.set(Calendar.MILLISECOND, 0);
@@ -149,6 +139,7 @@ public class TestMessageService extends
     assertEquals(attachmentPath + "lemonde.html", attached.getPath());
   }
 
+  @Test
   public void testResaveMessage() {
     Calendar sentDate = Calendar.getInstance();
     sentDate.set(Calendar.MILLISECOND, 0);
@@ -214,6 +205,7 @@ public class TestMessageService extends
     assertNotSame(id, newId2);
   }
 
+  @Test
   public void testListMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
@@ -225,13 +217,14 @@ public class TestMessageService extends
     assertEquals("2", messages.get(2).getId());
   }
 
+  @Test
   public void testGetTotalNumberOfMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     assertEquals(3, messageService.getTotalNumberOfMessages(mailingList));
   }
 
-
+  @Test
   public void testListDisplayableMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
@@ -269,6 +262,7 @@ public class TestMessageService extends
     assertEquals("2", messages.get(1).getId());
   }
 
+  @Test
   public void testListUnmoderatedeMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
@@ -279,11 +273,11 @@ public class TestMessageService extends
     assertEquals("3", messages.get(0).getId());
   }
 
+  @Test
   public void testGetNumberOfPagesForUnmoderatedMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
-    int pages = messageService
-        .getNumberOfPagesForUnmoderatedMessages(mailingList);
+    int pages = messageService.getNumberOfPagesForUnmoderatedMessages(mailingList);
     assertEquals(1, pages);
     messageService.setElementsPerPage(1);
     pages = messageService.getNumberOfPagesForUnmoderatedMessages(mailingList);
@@ -291,11 +285,11 @@ public class TestMessageService extends
     messageService.setElementsPerPage(10);
   }
 
+  @Test
   public void testGetNumberOfPagesForDisplayableMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
-    int pages = messageService
-        .getNumberOfPagesForDisplayableMessages(mailingList);
+    int pages = messageService.getNumberOfPagesForDisplayableMessages(mailingList);
     assertEquals(1, pages);
     messageService.setElementsPerPage(1);
     pages = messageService.getNumberOfPagesForDisplayableMessages(mailingList);
@@ -303,6 +297,7 @@ public class TestMessageService extends
     messageService.setElementsPerPage(10);
   }
 
+  @Test
   public void testDeleteMessage() {
     Message savedMessage = messageService.getMessage("1");
     assertNotNull(savedMessage);
@@ -322,8 +317,7 @@ public class TestMessageService extends
     assertEquals(10000, savedMessage.getAttachmentsSize());
     assertNotNull(savedMessage.getAttachments());
     assertEquals(1, savedMessage.getAttachments().size());
-    Attachment attached = (Attachment) savedMessage.getAttachments().iterator()
-        .next();
+    Attachment attached = (Attachment) savedMessage.getAttachments().iterator().next();
     assertNotNull(attached);
     assertEquals("1", attached.getId());
     assertEquals(1, attached.getVersion());
@@ -336,6 +330,7 @@ public class TestMessageService extends
     assertNull(savedMessage);
   }
 
+  @Test
   public void testModerateMessage() {
     Message savedMessage = messageService.getMessage("3");
     assertNotNull(savedMessage);
@@ -374,6 +369,7 @@ public class TestMessageService extends
     assertNotNull(savedMessage.getAttachments());
   }
 
+  @Test
   public void testGetNumberOfPagesForAllMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
@@ -385,6 +381,7 @@ public class TestMessageService extends
     messageService.setElementsPerPage(10);
   }
 
+  @Test
   public void testGetActivity() {
     complexSetUp();
     MailingList mailingList = new MailingList();
@@ -419,30 +416,32 @@ public class TestMessageService extends
     }
   }
 
+  @Override
   protected IDataSet getDataSet() throws Exception {
-    if(isOracle()) {
-      return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class
-          .getResourceAsStream("test-message-service-oracle-dataset.xml")));
+    if (isOracle()) {
+      return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class.getResourceAsStream(
+          "test-message-service-oracle-dataset.xml")));
     }
-    return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class
-        .getResourceAsStream("test-message-service-dataset.xml")));
+    return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class.getResourceAsStream(
+        "test-message-service-dataset.xml")));
   }
 
   protected IDataSet getComplexDataSet() throws DataSetException, IOException {
-    if(isOracle()) {
-      return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class
-          .getResourceAsStream("test-message-service-complex-oracle-dataset.xml")));
+    if (isOracle()) {
+      return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class.getResourceAsStream(
+          "test-message-service-complex-oracle-dataset.xml")));
     }
-    return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class
-        .getResourceAsStream("test-message-service-complex-dataset.xml")));
+    return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class.getResourceAsStream(
+        "test-message-service-complex-dataset.xml")));
   }
 
-  protected void onTearDown() {
+  @After
+  public void onTearDown() throws Exception {
     try {
-      super.onTearDown();
       FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
     } catch (Exception ex) {
       ex.printStackTrace();
     }
+    super.onTearDown();
   }
 }

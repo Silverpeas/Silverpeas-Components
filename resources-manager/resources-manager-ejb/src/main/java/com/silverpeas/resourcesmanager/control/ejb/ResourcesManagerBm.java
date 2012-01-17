@@ -27,11 +27,10 @@ import com.silverpeas.resourcesmanager.model.CategoryDetail;
 import com.silverpeas.resourcesmanager.model.ReservationDetail;
 import com.silverpeas.resourcesmanager.model.ResourceDetail;
 import com.silverpeas.resourcesmanager.model.ResourceReservableDetail;
-
-import javax.ejb.EJBObject;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
+import javax.ejb.EJBObject;
 
 /**
  * @author

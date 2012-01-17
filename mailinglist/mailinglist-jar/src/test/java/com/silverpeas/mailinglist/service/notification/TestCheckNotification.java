@@ -38,45 +38,37 @@ import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
+import org.springframework.test.context.ContextConfiguration;
 
+import javax.inject.Inject;
 import javax.jms.TextMessage;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-public class TestCheckNotification extends
-    AbstractSilverpeasDatasourceSpringContextTests {
+import static org.junit.Assert.*;
 
+@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
+        "/spring-hibernate.xml", "/spring-datasource.xml", "/spring-personalization.xml"})
+public class TestCheckNotification extends AbstractSilverpeasDatasourceSpringContextTests {
+
+  @Inject
   private SimpleNotificationHelper notificationHelper;
 
-  public SimpleNotificationHelper getNotificationHelper() {
-    return notificationHelper;
-  }
-
-  public void setNotificationHelper(SimpleNotificationHelper notificationHelper) {
-    this.notificationHelper = notificationHelper;
-  }
-
-  @Override
-  protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml", "spring-personalization.xml" };
-  }
-
-  @SuppressWarnings("unchecked")
+  @Test
   public void testNotifyArchivageNotModeratedOpen() throws Exception {
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "101");
+    MailingList list = ServicesFactory.getMailingListService().findMailingList("101");
     Message message = ServicesFactory.getMessageService().getMessage("701");
     assertNotNull(message);
     assertNotNull(list);
     assertFalse(list.isModerated());
     assertTrue(list.isOpen());
     assertFalse(list.isNotify());
-    assertEquals(
-        "Liste archivage non modérée et ouverte avec un lecteur abonné", list
-            .getName());
+    assertEquals("Liste archivage non modérée et ouverte avec un lecteur abonné", list.getName());
     assertEquals("thesimpsons@silverpeas.com", list.getSubscribedAddress());
     assertNotNull(list.getInternalSubscribers());
     assertEquals(1, list.getInternalSubscribers().size());
@@ -93,13 +85,12 @@ public class TestCheckNotification extends
     assertNotNull(list.getGroupSubscribers());
     assertEquals(0, list.getGroupSubscribers().size());
     notificationHelper.notify(message, list);
-    List<TextMessage> messages = MockObjectFactory
-        .getMessages(JNDINames.JMS_QUEUE);
+    List<TextMessage> messages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertNotNull(messages);
     assertEquals(0, messages.size());
   }
 
-  @SuppressWarnings("unchecked")
+  @Test
   public void testNotifyArchivageModeratedOpen() throws Exception {
     MailingList list = ServicesFactory.getMailingListService().findMailingList("102");
     Message message = ServicesFactory.getMessageService().getMessage("702");
@@ -108,9 +99,7 @@ public class TestCheckNotification extends
     assertTrue(list.isModerated());
     assertFalse(list.isOpen());
     assertFalse(list.isNotify());
-    assertEquals(
-        "Liste archivage modérée et fermée avec un lecteur abonné", list
-            .getName());
+    assertEquals("Liste archivage modérée et fermée avec un lecteur abonné", list.getName());
     assertEquals("thesimpsons@silverpeas.com", list.getSubscribedAddress());
     assertNotNull(list.getInternalSubscribers());
     assertEquals(1, list.getInternalSubscribers().size());
@@ -154,8 +143,8 @@ public class TestCheckNotification extends
   }
 
 
-  @Override
-  protected void onTearDown() throws Exception {
+  @After
+  public void onTearDown() throws Exception {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
@@ -175,8 +164,8 @@ public class TestCheckNotification extends
     super.onTearDown();
   }
 
-  @Override
-  protected void onSetUp() {
+  @Before
+  public void onSetUp() {
     super.onSetUp();
     Mailbox.clearAll();
     IDatabaseConnection connection = null;

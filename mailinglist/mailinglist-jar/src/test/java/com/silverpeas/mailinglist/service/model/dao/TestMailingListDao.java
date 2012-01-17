@@ -1,55 +1,51 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.model.dao;
-
-import java.util.List;
-
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-public class TestMailingListDao extends
-    AbstractTransactionalDataSourceSpringContextTests {
+import javax.inject.Inject;
+import java.util.List;
 
-  protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml",
-        "spring-notification.xml", "spring-hibernate.xml",
-        "spring-datasource.xml" };
-  }
+import static org.junit.Assert.*;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
+  "/spring-hibernate.xml", "/spring-datasource.xml"})
+@Transactional
+@TransactionConfiguration(defaultRollback=true,transactionManager="txManager")
+public class TestMailingListDao extends AbstractTransactionalJUnit4SpringContextTests {
+
+  @Inject
   private MailingListDao mailingListDao;
 
-  public MailingListDao getMailingListDao() {
-    return mailingListDao;
-  }
-
-  public void setMailingListDao(MailingListDao mailingListDao) {
-    this.mailingListDao = mailingListDao;
-  }
-
+  @Test
   public void testCreateMailingList() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
@@ -71,6 +67,7 @@ public class TestMailingListDao extends
     assertNotNull("componentId", savedUser.getComponentId());
   }
 
+  @Test
   public void testUpdateMailingList() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
@@ -87,8 +84,7 @@ public class TestMailingListDao extends
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));
     assertNotNull(mailingList.getExternalSubscribers());
     assertEquals(1, mailingList.getExternalSubscribers().size());
-    ExternalUser savedUser = (ExternalUser) mailingList.getExternalSubscribers()
-        .iterator().next();
+    ExternalUser savedUser = (ExternalUser) mailingList.getExternalSubscribers().iterator().next();
     assertNotNull(savedUser.getId());
     assertNotNull("componentId", savedUser.getComponentId());
     user = new ExternalUser();
@@ -116,6 +112,7 @@ public class TestMailingListDao extends
     assertEquals(2, mailingList.getExternalSubscribers().size());
   }
 
+  @Test
   public void testDeleteMailingList() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
@@ -143,6 +140,7 @@ public class TestMailingListDao extends
     assertEquals(0, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));
   }
 
+  @Test
   public void testFindByComponentId() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
@@ -165,7 +163,7 @@ public class TestMailingListDao extends
     assertEquals(2, mailingList.getExternalSubscribers().size());
   }
 
-
+  @Test
   public void testListMailingList() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId1");
