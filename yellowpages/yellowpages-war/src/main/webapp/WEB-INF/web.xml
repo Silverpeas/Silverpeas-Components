@@ -24,16 +24,28 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<web-app>
-  <servlet>
-    <display-name>YellowpagesRequestRouter</display-name>
-    <servlet-name>YellowpagesRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.yellowpages.servlets.YellowpagesRequestRouter</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>YellowpagesRequestRouter</servlet-name>
-    <url-pattern>/Ryellowpages/*</url-pattern>
-  </servlet-mapping>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+    <servlet>
+        <display-name>YellowpagesRequestRouter</display-name>
+        <servlet-name>YellowpagesRequestRouter</servlet-name>
+        <servlet-class>com.stratelia.webactiv.yellowpages.servlets.YellowpagesRequestRouter</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>YellowpagesRequestRouter</servlet-name>
+        <url-pattern>/Ryellowpages/*</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>CompanyAutocompleteServlet</servlet-name>
+        <servlet-class>com.silverpeas.yellowpages.servlets.CompanyAutocompleteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CompanyAutocompleteServlet</servlet-name>
+        <url-pattern>/CompanyAutocompleteServlet</url-pattern>
+    </servlet-mapping>
 </web-app>
+
+
+
 

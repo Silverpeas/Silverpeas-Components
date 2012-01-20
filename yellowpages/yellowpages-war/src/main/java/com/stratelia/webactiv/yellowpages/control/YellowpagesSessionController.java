@@ -1788,4 +1788,69 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         return this.serviceCompany.getCompany(companyId);
     }
 
+
+    /**
+     * Recherche la liste des companies associée à un Contact
+     *
+     * @param contactId Id du contact sur lequel chercher id à
+     * @return la première company de la liste (possibilité de gérer une liste de companies par user par la suite). Renvoie null si non trouvé.
+     */
+    public synchronized Company getCompanyForUserId(int contactId) throws RemoteException {
+        List<Company> companyList = this.serviceCompany.findCompanyListByContactId(contactId);
+        if (companyList == null || companyList.isEmpty()) {
+            return null;
+        } else {
+            // On gère seulement une company pour l'instant => TODO retourner une liste de companies
+            return companyList.get(0);
+        }
+    }
+
+    /**
+     * Recherche la liste des companies associée à un Contact (à partir d'un id sous forme String)
+     * (permet de gérer la gestion de l'excption NumberFormatException (id n'est pas un entier) en dehors des JSP
+     *
+     * @param strContactId Id du contact sous forme String
+     * @return le résultat getComanyForUserId, ou null si id n'est pas un entier
+     */
+    public synchronized Company getCompanyForUserId(String strContactId) throws RemoteException {
+        int contactId;
+        try {
+            contactId = Integer.parseInt(strContactId);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        return this.getCompanyForUserId(contactId);
+    }
+
+    /**
+     * Ajout une companie à un contact
+     *
+     * @param companyId id de la companie à ajouter
+     * @param contactId contact existant
+     * @throws RemoteException
+     */
+    public synchronized void addCompanyToContact(int companyId, int contactId) throws YellowpagesRuntimeException {
+        this.serviceCompany.addContactToCompany(companyId, contactId);
+    }
+
+    /**
+     * Supprime le lien entre le contact et ses companies
+     *
+     * @param contactId id du contact à nettoyer
+     * @throws YellowpagesRuntimeException si erreur lors de la suppression
+     */
+    public synchronized void cleanCompaniesForContact(String contactId) throws YellowpagesRuntimeException {
+        int id;
+        try {
+            id = Integer.parseInt(contactId);
+            // récupération de la liste des companies associées au contact
+            List<Company> companyList = this.serviceCompany.findCompanyListByContactId(id);
+            for (Company company : companyList) {
+                this.serviceCompany.removeContactFromCompany(company.getCompanyId(), id);
+            }
+        } catch (NumberFormatException e) {
+            // nothing to do
+        }
+    }
+
 }

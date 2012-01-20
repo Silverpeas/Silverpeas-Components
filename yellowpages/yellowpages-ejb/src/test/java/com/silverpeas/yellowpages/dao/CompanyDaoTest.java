@@ -38,6 +38,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -59,6 +60,14 @@ public class CompanyDaoTest {
     @AfterClass
     public static void tearDownClass() throws Exception {
         context.close();
+    }
+
+    @Test
+    public void testSearchByPatternWithSpacesAndMajMin() throws Exception {
+        String searchPattern = "  wAl   "; // doit remonter 2 résultats : Walmart et Walt Disney
+        List<Company> result = dao.findCompanyListByPattern(searchPattern);
+        assertNotNull(result);
+        assertEquals(2, result.size());
     }
 
     @Test

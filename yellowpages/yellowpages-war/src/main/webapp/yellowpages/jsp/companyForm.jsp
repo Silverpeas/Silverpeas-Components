@@ -92,7 +92,7 @@
 <view:browseBar path="<%=resources.getString('ContactCreation')%>" componentId="<%=componentId%>"/>
 --%>
 <view:window>
-    <view:frame> s
+    <view:frame>
         <view:board>
             <center>
                 <form Name="companyForm" Action="companySave" Method="POST">
@@ -114,7 +114,6 @@
                                                                                                         height="5"></td>
                                     </tr>
                                     <tr>
-
                                         <td valign="baseline" align=left
                                             class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:
                                         </td>

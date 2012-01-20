@@ -47,5 +47,7 @@ public interface CompanyService {
     public List<Company> findCompanyListByContactId(int contactId);
 
     public List<Company> findAllCompanies();
+
+    public List<Company> findCompaniesByPattern(String pattern);
 }
 

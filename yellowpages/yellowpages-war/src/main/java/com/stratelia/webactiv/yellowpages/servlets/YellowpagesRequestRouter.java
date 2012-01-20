@@ -547,7 +547,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 String fax = request.getParameter("Fax");
 
                 // Enregistrement de la nouvelle company
-                if (companyId == null) {
+                if (StringUtil.isBlank(companyId)) {
                     scc.createCompany(name, email, phone, fax);
                 }
                 else {

@@ -93,12 +93,16 @@ public class CompanyServiceImpl implements CompanyService {
         try {
             GenericContact gcCompany = genericContactDao.findGenericContactFromCompanyId(companyId);
             if (gcCompany == null) {
-                GenericContact newGCCompany = new GenericContact(GenericContact.TYPE_COMPANY, 0, companyId);
+                GenericContact newGCCompany = new GenericContact(GenericContact.TYPE_COMPANY, null, companyId);
                 gcCompany = genericContactDao.save(newGCCompany);
             }
 
-            // Recuperation du contact dans la table generique
+            // Recuperation du contact dans la table generique (creation si il n'existe pas)
             GenericContact gcContact = genericContactDao.findGenericContactFromContactId(contactId);
+             if (gcContact == null) {
+                GenericContact newGcContact = new GenericContact(GenericContact.TYPE_CONTACT, contactId, null);
+                gcContact = genericContactDao.save(newGcContact);
+            }
 
             // Creation de la relation entre les deux
             GenericContactRelation relation = new GenericContactRelation(gcContact.getGenericcontactId(), gcCompany.getGenericcontactId(), GenericContactRelation.RELATION_TYPE_BELONGS_TO, GenericContactRelation.ENABLE_TRUE);
@@ -126,13 +130,15 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public List<Company> findCompanyListByContactId(int contactId) {
-        GenericContact gc = genericContactDao.findGenericContactFromContactId(contactId);
-        List<GenericContactRelation> listeRelations = genericContactRelationDao.findByGenericContactId(gc.getGenericcontactId());
         List<Company> returnList = new ArrayList<Company>();
-        for (GenericContactRelation relation : listeRelations) {
-            if (relation.getEnabled() == GenericContactRelation.ENABLE_TRUE) {
-                GenericContact gcCompany = genericContactDao.findOne(relation.getGenericCompanyId());
-                returnList.add(companyDao.findOne(gcCompany.getCompanyId()));
+        GenericContact gc = genericContactDao.findGenericContactFromContactId(contactId);
+        if (gc != null) {
+            List<GenericContactRelation> listeRelations = genericContactRelationDao.findByGenericContactId(gc.getGenericcontactId());
+            for (GenericContactRelation relation : listeRelations) {
+                if (relation.getEnabled() == GenericContactRelation.ENABLE_TRUE) {
+                    GenericContact gcCompany = genericContactDao.findOne(relation.getGenericCompanyId());
+                    returnList.add(companyDao.findOne(gcCompany.getCompanyId()));
+                }
             }
         }
         return returnList;
@@ -141,6 +147,11 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public List<Company> findAllCompanies() {
         return companyDao.findAll();
+    }
+
+    @Override
+    public List<Company> findCompaniesByPattern(String pattern) {
+        return companyDao.findCompanyListByPattern(pattern);
     }
 
 }

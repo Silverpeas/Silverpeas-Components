@@ -30,10 +30,7 @@ import com.silverpeas.yellowpages.model.GenericContactRelation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
 public interface CompanyDao extends JpaRepository<Company, Integer> {
@@ -45,7 +42,10 @@ public interface CompanyDao extends JpaRepository<Company, Integer> {
             "AND rel.enabled = " + GenericContactRelation.ENABLE_TRUE + " " +
             "AND rel.genericCompanyId = gccompany.companyId " +
             "AND gccompany.companyId = comp.companyId")
-
     List<Company> findCompanyListByContactId(@Param("contactId") int contactId);
+
+    @Query("FROM Company comp " +
+            "WHERE UPPER(comp.name) like UPPER(CONCAT(CONCAT('%',TRIM(:strPattern)),'%'))")
+    List<Company> findCompanyListByPattern(@Param("strPattern") String searchPattern);
 
 }
