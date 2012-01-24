@@ -25,9 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ReservationDetail"%>
+<%@ page import="com.silverpeas.resourcesmanager.model.Reservation"%>
 <%@ page import="com.stratelia.webactiv.util.DateUtil"%>
 <%@ page import="java.util.List" %>
 <%@ page import= "java.util.Date" %>
@@ -92,7 +92,7 @@ while(!listOfReservation.isEmpty()){
 	IconPane iconPane1 = gef.getIconPane();
 	Icon editIcon = iconPane1.addIcon();
 	Icon deleteIcon = iconPane1.addIcon();
-	ReservationDetail maReservation = (ReservationDetail)listOfReservation.get(0);
+	Reservation maReservation = (Reservation)listOfReservation.get(0);
 	String reservationId = maReservation.getId();
 	String event = maReservation.getEvent();
 	String place = maReservation.getPlace();

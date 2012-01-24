@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -18,34 +18,64 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.resourcesmanager.model;
+package org.silverpeas.resourcemanager.model;
 
-import java.io.Serializable;
+import com.silverpeas.resourcesmanager.model.ResourceDetail;
+import com.silverpeas.util.StringUtil;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.TableGenerator;
 
-public class CategoryDetail implements Serializable {
+@Entity
+@Table(name = "SC_Resources_Category")
+public class Category {
 
-  private static final long serialVersionUID = 1L;
-  private String id;
+  @Id
+  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
+      valueColumnName = "maxId", pkColumnValue = "SC_Resources_Category")
+  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
+  private Integer id;
+  @Column
   private String instanceId;
+  @Column
   private String name;
-  private Date creationDate;
-  private Date updateDate;
-  private boolean bookable;
+  @Column
+  private String creationDate;
+  @Column
+  private String updateDate;
+  @Column
+  private Integer bookable;
+  @Column
   private String form;
-  private String responsibleId;
+  @Column
+  private Integer responsibleId;
+  @Column
   private String createrId;
+  @Column
   private String updaterId;
+  @Column
   private String description;
+  @Transient
   private List<ResourceDetail> resources;
 
-  public boolean getBookable() {
-    return bookable;
+  public boolean isBookable() {
+    return 1 == bookable;
   }
 
   public void setBookable(boolean bookable) {
-    this.bookable = bookable;
+    if (bookable) {
+      this.bookable = 1;
+    } else {
+      this.bookable = 0;
+    }
   }
 
   public String getCreaterId() {
@@ -65,11 +95,11 @@ public class CategoryDetail implements Serializable {
   }
 
   public String getId() {
-    return id;
+    return String.valueOf(id);
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public final void setId(String id) {
+    this.id = Integer.parseInt(id);
   }
 
   public String getInstanceId() {
@@ -97,11 +127,11 @@ public class CategoryDetail implements Serializable {
   }
 
   public String getResponsibleId() {
-    return responsibleId;
+    return String.valueOf(responsibleId);
   }
 
   public void setResponsibleId(String responsibleId) {
-    this.responsibleId = responsibleId;
+    this.responsibleId = Integer.parseInt(responsibleId);
   }
 
   public String getUpdaterId() {
@@ -112,67 +142,92 @@ public class CategoryDetail implements Serializable {
     this.updaterId = updaterId;
   }
 
-  public CategoryDetail(String id, String instanceId, String name,
-          Date creationDate, Date updateDate, boolean bookable, String form,
-          String responsibleId, String createrId, String updaterId,
-          String description, List<ResourceDetail> resources) {
-    super();
-    this.id = id;
+  public Category() {
+    
+  }
+  
+  public Category(String id, String instanceId, String name,
+      Date creationDate, Date updateDate, boolean bookable, String form,
+      String responsibleId, String createrId, String updaterId,
+      String description, List<ResourceDetail> resources) {
+    setId(id);
     this.instanceId = instanceId;
     this.name = name;
-    this.creationDate = creationDate;
-    this.updateDate = updateDate;
-    this.bookable = bookable;
+    setCreationDate(creationDate);
+    setUpdateDate(updateDate);
+    setBookable(bookable);
     this.form = form;
-    this.responsibleId = responsibleId;
+    setResponsibleId(responsibleId);
     this.createrId = createrId;
     this.updaterId = updaterId;
     this.description = description;
     this.resources = resources;
   }
 
-  public CategoryDetail(String name, boolean bookable, String form,
-          String responsibleId, String description) {
-    super();
+  public Category(String name, boolean bookable, String form,
+      String responsibleId, String description) {
     this.name = name;
-    this.bookable = bookable;
+    setBookable(bookable);
     this.form = form;
-    this.responsibleId = responsibleId;
+    setResponsibleId(responsibleId);
     this.description = description;
   }
 
-  public CategoryDetail(String id, String instanceId, String name,
-          Date creationDate, Date updateDate, boolean bookable, String form,
-          String responsibleId, String createrId, String updaterId,
-          String description) {
-    super();
-    this.id = id;
+  public Category(String id, String instanceId, String name,
+      Date creationDate, Date updateDate, boolean bookable, String form,
+      String responsibleId, String createrId, String updaterId,
+      String description) {
+    setId(id);
     this.instanceId = instanceId;
     this.name = name;
-    this.creationDate = creationDate;
-    this.updateDate = updateDate;
-    this.bookable = bookable;
+    setCreationDate(creationDate);
+    setUpdateDate(updateDate);
+    setBookable(bookable);
     this.form = form;
-    this.responsibleId = responsibleId;
+    setResponsibleId(responsibleId);
     this.createrId = createrId;
     this.updaterId = updaterId;
     this.description = description;
   }
 
+  public Category(String id, String name, boolean bookable, String form,
+      String responsibleId, String description) {
+    setId(id);
+    this.name = name;
+    setBookable(bookable);
+    this.form = form;
+    setResponsibleId(responsibleId);
+    this.description = description;
+  }
+
   public Date getCreationDate() {
-    return creationDate;
+    if (StringUtil.isLong(creationDate)) {
+      Date create = new Date();
+      create.setTime(Long.parseLong(creationDate));
+      return create;
+    }
+    return null;
   }
 
   public void setCreationDate(Date creationDate) {
-    this.creationDate = creationDate;
+    if (creationDate != null) {
+      this.creationDate = String.valueOf(creationDate.getTime());
+    }
   }
 
   public Date getUpdateDate() {
-    return updateDate;
+    if (StringUtil.isLong(updateDate)) {
+      Date update = new Date();
+      update.setTime(Long.parseLong(updateDate));
+      return update;
+    }
+    return null;
   }
 
   public void setUpdateDate(Date updateDate) {
-    this.updateDate = updateDate;
+    if (updateDate != null) {
+      this.updateDate = String.valueOf(updateDate.getTime());
+    }
   }
 
   public String getDescription() {
@@ -180,17 +235,6 @@ public class CategoryDetail implements Serializable {
   }
 
   public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public CategoryDetail(String id, String name, boolean bookable, String form,
-          String responsibleId, String description) {
-    super();
-    this.id = id;
-    this.name = name;
-    this.bookable = bookable;
-    this.form = form;
-    this.responsibleId = responsibleId;
     this.description = description;
   }
 
@@ -202,23 +246,23 @@ public class CategoryDetail implements Serializable {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final CategoryDetail other = (CategoryDetail) obj;
+    final Category other = (Category) obj;
     if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
       return false;
     }
     if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
-            other.instanceId)) {
+        other.instanceId)) {
       return false;
     }
     if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
       return false;
     }
     if (this.creationDate != other.creationDate && (this.creationDate == null || !this.creationDate.
-            equals(other.creationDate))) {
+        equals(other.creationDate))) {
       return false;
     }
     if (this.updateDate != other.updateDate && (this.updateDate == null || !this.updateDate.equals(
-            other.updateDate))) {
+        other.updateDate))) {
       return false;
     }
     if (this.bookable != other.bookable) {
@@ -228,19 +272,19 @@ public class CategoryDetail implements Serializable {
       return false;
     }
     if ((this.responsibleId == null) ? (other.responsibleId != null) : !this.responsibleId.equals(
-            other.responsibleId)) {
+        other.responsibleId)) {
       return false;
     }
     if ((this.createrId == null) ? (other.createrId != null) : !this.createrId.equals(
-            other.createrId)) {
+        other.createrId)) {
       return false;
     }
     if ((this.updaterId == null) ? (other.updaterId != null) : !this.updaterId.equals(
-            other.updaterId)) {
+        other.updaterId)) {
       return false;
     }
     if ((this.description == null) ? (other.description != null) : !this.description.equals(
-            other.description)) {
+        other.description)) {
       return false;
     }
     return !(this.resources != other.resources && (this.resources == null || !this.resources.equals(
@@ -255,7 +299,7 @@ public class CategoryDetail implements Serializable {
     hash = 53 * hash + (this.name != null ? this.name.hashCode() : 0);
     hash = 53 * hash + (this.creationDate != null ? this.creationDate.hashCode() : 0);
     hash = 53 * hash + (this.updateDate != null ? this.updateDate.hashCode() : 0);
-    hash = 53 * hash + (this.bookable ? 1 : 0);
+    hash = 53 * hash + this.bookable;
     hash = 53 * hash + (this.form != null ? this.form.hashCode() : 0);
     hash = 53 * hash + (this.responsibleId != null ? this.responsibleId.hashCode() : 0);
     hash = 53 * hash + (this.createrId != null ? this.createrId.hashCode() : 0);
@@ -267,10 +311,10 @@ public class CategoryDetail implements Serializable {
 
   @Override
   public String toString() {
-    return "CategoryDetail{" + "id=" + id + ", instanceId=" + instanceId + ", name=" + name 
-            + ", creationDate=" + creationDate + ", updateDate=" + updateDate + ", bookable=" 
-            + bookable + ", form=" + form + ", responsibleId=" + responsibleId + ", createrId=" 
-            + createrId + ", updaterId=" + updaterId + ", description=" + description 
-            + ", resources=" + resources + '}';
+    return "CategoryDetail{" + "id=" + id + ", instanceId=" + instanceId + ", name=" + name +
+        ", creationDate=" + creationDate + ", updateDate=" + updateDate + ", bookable=" +
+        bookable + ", form=" + form + ", responsibleId=" + responsibleId + ", createrId=" +
+        createrId + ", updaterId=" + updaterId + ", description=" + description +
+        ", resources=" + resources + '}';
   }
 }

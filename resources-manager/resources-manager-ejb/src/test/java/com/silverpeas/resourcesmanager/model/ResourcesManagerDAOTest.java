@@ -28,7 +28,6 @@ import com.stratelia.webactiv.util.DBUtil;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +42,8 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.junit.BeforeClass;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -58,19 +59,26 @@ public class ResourcesManagerDAOTest {
   @Inject
   private DataSource dataSource;
 
+  private static ReplacementDataSet dataSet;
+  
   public ResourcesManagerDAOTest() {
   }
 
   public Connection getConnection() throws SQLException {
     return this.dataSource.getConnection();
   }
-
-  @Before
-  public void generalSetUp() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+  
+  @BeforeClass
+  public static void prepareDataSet() throws Exception {
+    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+    dataSet = new ReplacementDataSet(builder.build(
             ResourcesManagerDAOTest.class.getClassLoader().getResourceAsStream(
             "com/silverpeas/resourcesmanager/model/reservations_dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
+  }
+
+  @Before
+  public void generalSetUp() throws Exception {
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
     DBUtil.getInstanceForTest(dataSource.getConnection());
@@ -355,11 +363,11 @@ public class ResourcesManagerDAOTest {
     String instanceId = "resourcesManager42";
     try {
       String userid = "9";
-      List<ReservationDetail> result = ResourcesManagerDAO.getReservationUser(con, instanceId,
+      List<Reservation> result = ResourcesManagerDAO.getReservationUser(con, instanceId,
               userid);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(1));
-      assertThat(result, contains(new ReservationDetail("4", "Test réservation 20/12/2011",
+      assertThat(result, contains(new Reservation("4", "Test réservation 20/12/2011",
               new Date(1324368000000L), new Date(1324375200000L), "To test a reservzation",
               "at work", "9", new Date(1320225012008L), new Date(1320225012008L), instanceId, "A")));
       userid = "2";
@@ -367,7 +375,7 @@ public class ResourcesManagerDAOTest {
               userid);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(1));
-      assertThat(result, contains(new ReservationDetail("3", "Test de la Toussaint",
+      assertThat(result, contains(new Reservation("3", "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test")));
 
@@ -384,13 +392,13 @@ public class ResourcesManagerDAOTest {
     Connection con = getConnection();
     String instanceId = "resourcesManager42";
     try {
-      List<ReservationDetail> result = ResourcesManagerDAO.getReservations(con, instanceId);
+      List<Reservation> result = ResourcesManagerDAO.getReservations(con, instanceId);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(2));
-      assertThat(result, contains(new ReservationDetail("3", "Test de la Toussaint",
+      assertThat(result, contains(new Reservation("3", "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test"),
-              new ReservationDetail("4", "Test réservation 20/12/2011",
+              new Reservation("4", "Test réservation 20/12/2011",
               new Date(1324368000000L), new Date(1324375200000L), "To test a reservzation",
               "at work", "9", new Date(1320225012008L), new Date(1320225012008L), instanceId, "A")));
     } finally {
@@ -407,8 +415,8 @@ public class ResourcesManagerDAOTest {
     String reservationId = "3";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      ReservationDetail expectedResult = new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      Reservation expectedResult = new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test");
       assertThat(result, is(expectedResult));
@@ -431,11 +439,11 @@ public class ResourcesManagerDAOTest {
     calend.set(Calendar.MONTH, Calendar.NOVEMBER);
     calend.set(Calendar.YEAR, 2011);
     try {
-      List<ReservationDetail> result = ResourcesManagerDAO.getMonthReservation(con, instanceId,
+      List<Reservation> result = ResourcesManagerDAO.getMonthReservation(con, instanceId,
               calend.getTime(), userId);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(1));
-      assertThat(result, contains(new ReservationDetail("3", "Test de la Toussaint",
+      assertThat(result, contains(new Reservation("3", "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test")));
       assertThat(result.get(0).getListResourcesReserved(), is(notNullValue()));
@@ -463,12 +471,12 @@ public class ResourcesManagerDAOTest {
     calend.set(Calendar.YEAR, 2011);
     String categoryId = "2";
     try {
-      List<ReservationDetail> result = ResourcesManagerDAO.getMonthReservationOfCategory(con,
+      List<Reservation> result = ResourcesManagerDAO.getMonthReservationOfCategory(con,
               instanceId,
               calend.getTime(), categoryId);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(1));
-      assertThat(result, contains(new ReservationDetail("3", "Test de la Toussaint",
+      assertThat(result, contains(new Reservation("3", "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test")));
       assertThat(result.get(0).getListResourcesReserved(), is(notNullValue()));
@@ -492,8 +500,8 @@ public class ResourcesManagerDAOTest {
     String reservationId = "3";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      ReservationDetail expectedResult = new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      Reservation expectedResult = new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test");
       assertThat(result, is(expectedResult));

@@ -30,9 +30,10 @@ import com.stratelia.webactiv.util.DBUtil;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -49,10 +50,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Named;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author ehugonnet
@@ -62,7 +64,11 @@ import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
 public class ReservationsDaoTest {
 
   @Inject
+  @Named("dataSource")
+  
   private DataSource dataSource;
+
+  private static ReplacementDataSet dataSet;
 
   public ReservationsDaoTest() {
   }
@@ -71,12 +77,16 @@ public class ReservationsDaoTest {
     return this.dataSource.getConnection();
   }
 
+  @BeforeClass
+  public static void prepareDataset() throws Exception {
+    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+    dataSet = new ReplacementDataSet(builder.build(ReservationsDaoTest.class.getClassLoader().getResourceAsStream(
+                "com/silverpeas/resourcesmanager/model/reservations_validation_dataset.xml")));
+    dataSet.addReplacementObject("[NULL]", null);
+  }
+
   @Before
   public void generalSetUp() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-            ReservationsDaoTest.class.getClassLoader().getResourceAsStream(
-            "com/silverpeas/resourcesmanager/model/reservations_validation_dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
     DBUtil.getInstanceForTest(dataSource.getConnection());
@@ -91,11 +101,11 @@ public class ReservationsDaoTest {
     String resourceId = "3";
     String instanceId = "resourcesManager42";
     try {
-      List<ReservationDetail> result = ResourcesManagerDAO.getReservations(con, instanceId);
+      List<Reservation> result = ResourcesManagerDAO.getReservations(con, instanceId);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(4));
-      Map<String, ReservationDetail> reservations = new HashMap<String, ReservationDetail>(4);
-      for (ReservationDetail reservation : result) {
+      Map<String, Reservation> reservations = new HashMap<String, Reservation>(4);
+      for (Reservation reservation : result) {
         reservations.put(reservation.getId(), reservation);
       }
       assertThat(reservations.get("3"), is(notNullValue()));
@@ -115,8 +125,8 @@ public class ReservationsDaoTest {
       result = ResourcesManagerDAO.getReservations(con, instanceId);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(4));
-      reservations = new HashMap<String, ReservationDetail>(4);
-      for (ReservationDetail reservation : result) {
+      reservations = new HashMap<String, Reservation>(4);
+      for (Reservation reservation : result) {
         reservations.put(reservation.getId(), reservation);
       }
       assertThat(reservations.get("3"), is(notNullValue()));
@@ -145,8 +155,8 @@ public class ReservationsDaoTest {
     String reservationId = "3";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      ReservationDetail expectedResult = new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      Reservation expectedResult = new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test");
       assertThat(result, is(expectedResult));
@@ -179,8 +189,8 @@ public class ReservationsDaoTest {
     String userId = "2";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      ReservationDetail expectedResult = new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      Reservation expectedResult = new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test");
       assertThat(result, is(expectedResult));
@@ -204,8 +214,8 @@ public class ReservationsDaoTest {
     String userId = "2";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      ReservationDetail expectedResult = new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      Reservation expectedResult = new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test");
       assertThat(result, is(expectedResult));
@@ -278,8 +288,8 @@ public class ReservationsDaoTest {
     String userId = "2";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      ReservationDetail expectedResult = new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      Reservation expectedResult = new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test");
       assertThat(result, is(expectedResult));
@@ -567,11 +577,11 @@ public class ReservationsDaoTest {
     String instanceId = "resourcesManager42";
     try {
       String userid = "9";
-      List<ReservationDetail> result = ResourcesManagerDAO.getReservationUser(con, instanceId,
+      List<Reservation> result = ResourcesManagerDAO.getReservationUser(con, instanceId,
               userid);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(1));
-      assertThat(result, contains(new ReservationDetail("4", "Test réservation 20/12/2011",
+      assertThat(result, contains(new Reservation("4", "Test réservation 20/12/2011",
               new Date(1324368000000L), new Date(1324375200000L), "To test a reservzation",
               "at work", "9", new Date(1320225012008L), new Date(1320225012008L), instanceId, "A")));
       userid = "2";
@@ -579,13 +589,13 @@ public class ReservationsDaoTest {
               userid);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));
-      assertThat(result, contains(new ReservationDetail("3", "Test de la Toussaint",
+      assertThat(result, contains(new Reservation("3", "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test"),
-              new ReservationDetail("5", "Test réservation validée 20/12/2011",
+              new Reservation("5", "Test réservation validée 20/12/2011",
               new Date(1324368000000L), new Date(1324375200000L), "To test a reservzation validated",
               "at work", "2", new Date(1319811924467L), new Date(1319811924467L), instanceId, "V"),
-              new ReservationDetail("6", "Test réservation refusée 20/12/2011",
+              new Reservation("6", "Test réservation refusée 20/12/2011",
               new Date(1324375200000L), new Date(1324382400000L), "To test a reservzation refused",
               "at work", "2", new Date(1319811924467L), new Date(1319811924467L), instanceId, "R")));
 
@@ -602,19 +612,19 @@ public class ReservationsDaoTest {
     Connection con = getConnection();
     String instanceId = "resourcesManager42";
     try {
-      List<ReservationDetail> result = ResourcesManagerDAO.getReservations(con, instanceId);
+      List<Reservation> result = ResourcesManagerDAO.getReservations(con, instanceId);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(4));
-      assertThat(result, contains(new ReservationDetail("3", "Test de la Toussaint",
+      assertThat(result, contains(new Reservation("3", "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test"),
-              new ReservationDetail("4", "Test réservation 20/12/2011",
+              new Reservation("4", "Test réservation 20/12/2011",
               new Date(1324368000000L), new Date(1324375200000L), "To test a reservzation",
               "at work", "9", new Date(1320225012008L), new Date(1320225012008L), instanceId, "A"),
-              new ReservationDetail("5", "Test réservation validée 20/12/2011",
+              new Reservation("5", "Test réservation validée 20/12/2011",
               new Date(1324368000000L), new Date(1324375200000L), "To test a reservzation validated",
               "at work", "2", new Date(1319811924467L), new Date(1319811924467L), instanceId, "V"),
-              new ReservationDetail("6", "Test réservation refusée 20/12/2011",
+              new Reservation("6", "Test réservation refusée 20/12/2011",
               new Date(1324375200000L), new Date(1324382400000L), "To test a reservzation refused",
               "at work", "2", new Date(1319811924467L), new Date(1319811924467L), instanceId, "R")));
     } finally {
@@ -631,8 +641,8 @@ public class ReservationsDaoTest {
     String reservationId = "3";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      ReservationDetail expectedResult = new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      Reservation expectedResult = new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test");
       assertThat(result, is(expectedResult));
@@ -655,11 +665,11 @@ public class ReservationsDaoTest {
     calend.set(Calendar.MONTH, Calendar.NOVEMBER);
     calend.set(Calendar.YEAR, 2011);
     try {
-      List<ReservationDetail> result = ResourcesManagerDAO.getMonthReservation(con, instanceId,
+      List<Reservation> result = ResourcesManagerDAO.getMonthReservation(con, instanceId,
               calend.getTime(), userId);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(1));
-      assertThat(result, contains(new ReservationDetail("3", "Test de la Toussaint",
+      assertThat(result, contains(new Reservation("3", "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test")));
       assertThat(result.get(0).getListResourcesReserved(), is(notNullValue()));
@@ -685,7 +695,7 @@ public class ReservationsDaoTest {
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
     calend.set(Calendar.YEAR, 2011);
     try {
-      List<ReservationDetail> result = ResourcesManagerDAO.getReservationUser(con, instanceId,
+      List<Reservation> result = ResourcesManagerDAO.getReservationUser(con, instanceId,
               userId);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(1));
@@ -711,12 +721,12 @@ public class ReservationsDaoTest {
     calend.set(Calendar.YEAR, 2011);
     String categoryId = "2";
     try {
-      List<ReservationDetail> result = ResourcesManagerDAO.getMonthReservationOfCategory(con,
+      List<Reservation> result = ResourcesManagerDAO.getMonthReservationOfCategory(con,
               instanceId,
               calend.getTime(), categoryId);
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(1));
-      assertThat(result, contains(new ReservationDetail("3", "Test de la Toussaint",
+      assertThat(result, contains(new Reservation("3", "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test")));
       assertThat(result.get(0).getListResourcesReserved(), is(notNullValue()));
@@ -740,8 +750,8 @@ public class ReservationsDaoTest {
     String reservationId = "3";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      ReservationDetail expectedResult = new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      Reservation expectedResult = new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test");
       assertThat(result, is(expectedResult));
@@ -769,8 +779,8 @@ public class ReservationsDaoTest {
     String reservationId = "3";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      assertThat(result, is(new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      assertThat(result, is(new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test")));
       assertThat(result.getListResourcesReserved(), is(notNullValue()));
@@ -796,7 +806,7 @@ public class ReservationsDaoTest {
       result.setReason("Testing is cool");
       ResourcesManagerDAO.updateReservation(con, "1,2,3", result, false);
       con.commit();
-      ReservationDetail updatedResult = ResourcesManagerDAO.getReservation(con, instanceId,
+      Reservation updatedResult = ResourcesManagerDAO.getReservation(con, instanceId,
               reservationId);
       assertThat(updatedResult, is(notNullValue()));
       result.setUpdateDate(updatedResult.getUpdateDate());
@@ -818,8 +828,8 @@ public class ReservationsDaoTest {
     String reservationId = "3";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      assertThat(result, is(new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      assertThat(result, is(new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test")));
       assertThat(result.getListResourcesReserved(), is(notNullValue()));
@@ -845,7 +855,7 @@ public class ReservationsDaoTest {
       result.setReason("Testing is cool");
       ResourcesManagerDAO.updateReservation(con, "1,2,3", result, true);
       con.commit();
-      ReservationDetail updatedResult = ResourcesManagerDAO.getReservation(con, instanceId,
+      Reservation updatedResult = ResourcesManagerDAO.getReservation(con, instanceId,
               reservationId);
       assertThat(updatedResult, is(notNullValue()));
       result.setUpdateDate(updatedResult.getUpdateDate());
@@ -879,8 +889,8 @@ public class ReservationsDaoTest {
     String reservationId = "3";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      assertThat(result, is(new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      assertThat(result, is(new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test")));
       assertThat(result.getListResourcesReserved(), is(notNullValue()));
@@ -906,7 +916,7 @@ public class ReservationsDaoTest {
       result.setReason("Testing is cool");
       ResourcesManagerDAO.updateReservation(con, result);
       con.commit();
-      ReservationDetail updatedResult = ResourcesManagerDAO.getReservation(con, instanceId,
+      Reservation updatedResult = ResourcesManagerDAO.getReservation(con, instanceId,
               reservationId);
       assertThat(updatedResult, is(notNullValue()));
       result.setUpdateDate(updatedResult.getUpdateDate());
@@ -985,8 +995,8 @@ public class ReservationsDaoTest {
     String reservationId = "3";
     String instanceId = "resourcesManager42";
     try {
-      ReservationDetail result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-      assertThat(result, is(new ReservationDetail(reservationId, "Test de la Toussaint",
+      Reservation result = ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
+      assertThat(result, is(new Reservation(reservationId, "Test de la Toussaint",
               new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
               new Date(1319811924467L), new Date(1319811924467L), instanceId, "test")));
       assertThat(result.getListResourcesReserved(), is(notNullValue()));
@@ -1012,7 +1022,7 @@ public class ReservationsDaoTest {
       result.setReason("Testing is cool");
       ResourcesManagerDAO.updateIntoReservation(con, result);
       con.commit();
-      ReservationDetail updatedResult = ResourcesManagerDAO.getReservation(con, instanceId,
+      Reservation updatedResult = ResourcesManagerDAO.getReservation(con, instanceId,
               reservationId);
       assertThat(updatedResult, is(notNullValue()));
       result.setUpdateDate(updatedResult.getUpdateDate());

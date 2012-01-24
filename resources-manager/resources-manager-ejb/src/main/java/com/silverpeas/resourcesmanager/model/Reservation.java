@@ -24,7 +24,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class ReservationDetail implements Serializable, ResourceStatus {
+public class Reservation implements Serializable, ResourceStatus {
   private static final long serialVersionUID = 1L;
   private String id;
   private String event;
@@ -144,9 +144,8 @@ public class ReservationDetail implements Serializable, ResourceStatus {
     this.status = status;
   }
 
-  public ReservationDetail(String event, Date beginDate, Date endDate,
-          String reason, String place) {
-    super();
+  public Reservation(String event, Date beginDate, Date endDate,
+      String reason, String place) {
     this.event = event;
     this.beginDate = beginDate;
     this.endDate = endDate;
@@ -154,10 +153,9 @@ public class ReservationDetail implements Serializable, ResourceStatus {
     this.place = place;
   }
 
-  public ReservationDetail(String id, String event, Date beginDate,
-          Date endDate, String reason, String place, String userId,
-          Date creationDate, Date updateDate, String instanceId) {
-    super();
+  public Reservation(String id, String event, Date beginDate,
+      Date endDate, String reason, String place, String userId,
+      Date creationDate, Date updateDate, String instanceId) {
     this.id = id;
     this.event = event;
     this.beginDate = beginDate;
@@ -170,10 +168,9 @@ public class ReservationDetail implements Serializable, ResourceStatus {
     this.instanceId = instanceId;
   }
 
-  public ReservationDetail(String id, String event, Date beginDate,
-          Date endDate, String reason, String place, String userId,
-          Date creationDate, Date updateDate, String instanceId, String status) {
-    super();
+  public Reservation(String id, String event, Date beginDate,
+      Date endDate, String reason, String place, String userId,
+      Date creationDate, Date updateDate, String instanceId, String status) {
     this.id = id;
     this.event = event;
     this.beginDate = beginDate;
@@ -189,7 +186,7 @@ public class ReservationDetail implements Serializable, ResourceStatus {
 
   @Override
   public String toString() {
-    return "ReservationDetail{" + "id=" + id + ", event=" + event + ", beginDate=" + beginDate 
+    return "Reservation{" + "id=" + id + ", event=" + event + ", beginDate=" + beginDate
             + ", endDate=" + endDate + ", reason=" + reason + ", place=" + place + ", userId=" 
             + userId + ", creationDate=" + creationDate + ", updateDate=" + updateDate 
             + ", instanceId=" + instanceId + ", listResourcesReserved=" + listResourcesReserved 
@@ -204,7 +201,7 @@ public class ReservationDetail implements Serializable, ResourceStatus {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final ReservationDetail other = (ReservationDetail) obj;
+    final Reservation other = (Reservation) obj;
     if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
       return false;
     }

@@ -22,26 +22,28 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.silverpeas.resourcesmanager.model;
+package org.silverpeas.resourcemanager.services;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.silverpeas.resourcemanager.model.Category;
 
 /**
  *
  * @author ehugonnet
  */
-public class CategoryDetailMatcher extends BaseMatcher<CategoryDetail> {
-  private CategoryDetail category;
-  CategoryDetailMatcher(CategoryDetail detail) {
+public class CategoryMatcher extends BaseMatcher<Category> {
+  private Category category;
+  public CategoryMatcher(Category detail) {
+    super();
     this.category = detail;
   }
 
   @Override
   public boolean matches(Object item) {
     boolean match = false;
-    if (item instanceof CategoryDetail) {
-      CategoryDetail actual = (CategoryDetail) item;
+    if (item instanceof Category) {
+      Category actual = (Category) item;
       match = actual.equals(category);
     }
     return match;

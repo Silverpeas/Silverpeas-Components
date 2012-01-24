@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
@@ -51,7 +51,6 @@
 		else
 			context.setCurrentFieldIndex("6");
 	    context.setBorderPrinted(false);
-	    //context.setObjectId(idResource);
 	}
 	
 	String name = "";
@@ -71,7 +70,7 @@
 	//creation des boutons Valider et Annuler
 	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
 	Button cancelButton = null;
-	if(!idcategory.equals("noCategory"))
+	if(!"noCategory".equals(idcategory))
 		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "ViewResources?id="+idcategory,false);
 	else
 		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "ViewCategories",false);
@@ -169,7 +168,7 @@ buttonPane.addButton(cancelButton);
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.nomcategorie"));%> : </TD>
 		<TD width="100%">
 		<%for(int i=0;i< list.size();i++){
-			CategoryDetail category = (CategoryDetail)list.get(i);
+			Category category = (Category)list.get(i);
 			String categoryId = category.getId();
 		    String nameCategory = category.getName();
 			if (categoryId.equals(idcategory))

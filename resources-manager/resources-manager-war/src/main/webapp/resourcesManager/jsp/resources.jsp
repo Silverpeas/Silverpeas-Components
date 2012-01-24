@@ -41,7 +41,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
@@ -55,7 +55,7 @@ String idCategory = (String)request.getAttribute("categoryId");
 String categoryName ="";
 
 while(!listCategory.isEmpty()){
-	CategoryDetail maCategory = (CategoryDetail)listCategory.get(0);
+	Category maCategory = (Category)listCategory.get(0);
 	String categoryIdTemp = maCategory.getId();
 	if(categoryIdTemp.equals(idCategory)){
 		categoryName = maCategory.getName();

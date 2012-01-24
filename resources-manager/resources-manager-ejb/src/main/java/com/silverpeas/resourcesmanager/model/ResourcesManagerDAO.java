@@ -59,7 +59,7 @@ public class ResourcesManagerDAO {
   /**
    * Gestion des réservations *
    */
-  private static ReservationDetail returnReservationDetail(Connection con, ResultSet rs,
+  private static Reservation returnReservationDetail(Connection con, ResultSet rs,
           String instanceId) throws
           SQLException {
     Date creationDate = null;
@@ -84,7 +84,7 @@ public class ResourcesManagerDAO {
     String place = rs.getString("place");
     int userId = rs.getInt("userId");
     String status = rs.getString("status");
-    ReservationDetail reservation = new ReservationDetail(Integer.toString(id), evenement,
+    Reservation reservation = new Reservation(Integer.toString(id), evenement,
             begindate, enddate, reason, place, Integer.toString(userId),
             creationDate, updateDate, instanceId, status);
     List<ResourceDetail> listResourcesReserved = dao.getResourcesofReservation(con,
@@ -94,7 +94,7 @@ public class ResourcesManagerDAO {
   }
 
   public static String saveReservation(Connection con,
-          ReservationDetail reservation, String listReservationCurrent)
+          Reservation reservation, String listReservationCurrent)
           throws SQLException {
     String query =
             "INSERT INTO SC_Resources_Reservation "
@@ -102,7 +102,7 @@ public class ResourcesManagerDAO {
             + "begindate, enddate, reason, place, status) "
             + "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
     PreparedStatement prepStmt = null;
-    // on récupère les informations de ReservationDetail
+    // on récupère les informations de Reservation
     String instanceId = reservation.getInstanceId();
     String evenement = reservation.getEvent();
     String userId = reservation.getUserId();
@@ -141,7 +141,7 @@ public class ResourcesManagerDAO {
     return Integer.toString(id);
   }
 
-  private static String getStatus(Connection con, ReservationDetail reservation,
+  private static String getStatus(Connection con, Reservation reservation,
           String listReservationCurrent) throws SQLException {
     StringTokenizer tokenizer = new StringTokenizer(listReservationCurrent, ",");
     boolean refused = false;
@@ -394,9 +394,9 @@ public class ResourcesManagerDAO {
     return reservationIdProblem;
   }
 
-  public static List<ReservationDetail> getReservationUser(Connection con, String instanceId,
+  public static List<Reservation> getReservationUser(Connection con, String instanceId,
           String userId) throws SQLException {
-    List<ReservationDetail> list = new ArrayList<ReservationDetail>();
+    List<Reservation> list = new ArrayList<Reservation>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     String query =
@@ -418,9 +418,9 @@ public class ResourcesManagerDAO {
     return list;
   }
 
-  public static List<ReservationDetail> getReservations(Connection con, String instanceId)
+  public static List<Reservation> getReservations(Connection con, String instanceId)
           throws SQLException {
-    List<ReservationDetail> list = null;
+    List<Reservation> list = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     String query = "SELECT id, evenement, creationDate, updateDate, begindate, enddate, reason, "
@@ -429,7 +429,7 @@ public class ResourcesManagerDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
       rs = prepStmt.executeQuery();
-      list = new ArrayList<ReservationDetail>();
+      list = new ArrayList<Reservation>();
       while (rs.next()) {
         list.add(returnReservationDetail(con, rs, instanceId));
       }
@@ -439,7 +439,7 @@ public class ResourcesManagerDAO {
     return list;
   }
 
-  public static ReservationDetail getReservation(Connection con,
+  public static Reservation getReservation(Connection con,
           String instanceId, String reservationId) throws SQLException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -447,7 +447,7 @@ public class ResourcesManagerDAO {
             "select id,evenement,creationDate,updateDate,begindate,enddate,reason,userId,place, status "
             + "from SC_Resources_Reservation where instanceId=? AND id=?";
     int idReservation = Integer.parseInt(reservationId);
-    ReservationDetail reservation = null;
+    Reservation reservation = null;
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
@@ -462,12 +462,12 @@ public class ResourcesManagerDAO {
     return reservation;
   }
 
-  public static List<ReservationDetail> getMonthReservation(Connection con,
+  public static List<Reservation> getMonthReservation(Connection con,
           String instanceId, Date monthDate, String userId)
           throws SQLException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    List<ReservationDetail> list = null;
+    List<Reservation> list = null;
     Date monthBegin = getFirstDateOfMonth(monthDate);
     Date monthEnd = getEndDateOfMonth(monthDate);
     String query =
@@ -487,9 +487,9 @@ public class ResourcesManagerDAO {
       prepStmt.setString(7, Long.toString(monthBegin.getTime()));
       prepStmt.setString(8, Long.toString(monthEnd.getTime()));
       rs = prepStmt.executeQuery();
-      list = new ArrayList<ReservationDetail>();
+      list = new ArrayList<Reservation>();
       while (rs.next()) {
-        ReservationDetail reservation = returnReservationDetail(con, rs, instanceId);
+        Reservation reservation = returnReservationDetail(con, rs, instanceId);
         list.add(reservation);
       }
     } finally {
@@ -498,18 +498,18 @@ public class ResourcesManagerDAO {
     return list;
   }
 
-  public static List<ReservationDetail> getReservationForValidation(Connection con,
+  public static List<Reservation> getReservationForValidation(Connection con,
           String instanceId, Date monthDate, String userId)
           throws SQLException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    List<ReservationDetail> list = null;
+    List<Reservation> list = null;
     Date monthBegin = getFirstDateOfMonth(monthDate);
     Date monthEnd = getEndDateOfMonth(monthDate);
     // chercher les reservations dont une des ressources est à valider
     List<String> reservationIds = getReservationByUser(con, userId);
     if (reservationIds == null || reservationIds.isEmpty()) {
-      return new ArrayList<ReservationDetail>();
+      return new ArrayList<Reservation>();
     }
     String query =
             "select id,evenement,creationDate,updateDate,begindate,enddate,reason,"
@@ -540,9 +540,9 @@ public class ResourcesManagerDAO {
       prepStmt.setString(7, Long.toString(monthEnd.getTime()));
 
       rs = prepStmt.executeQuery();
-      list = new ArrayList<ReservationDetail>();
+      list = new ArrayList<Reservation>();
       while (rs.next()) {
-        ReservationDetail reservation = returnReservationDetail(con, rs, instanceId);
+        Reservation reservation = returnReservationDetail(con, rs, instanceId);
         list.add(reservation);
       }
     } finally {
@@ -607,11 +607,11 @@ public class ResourcesManagerDAO {
     return calendar.getTime();
   }
 
-  public static List<ReservationDetail> getMonthReservationOfCategory(Connection con,
+  public static List<Reservation> getMonthReservationOfCategory(Connection con,
       String instanceId, Date monthDate, String idCategory) throws SQLException{
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    List<ReservationDetail> list = new ArrayList<ReservationDetail>();
+    List<Reservation> list = new ArrayList<Reservation>();
     Date monthBegin = getFirstDateOfMonth(monthDate);
     Date monthEnd = getEndDateOfMonth(monthDate);
     String query =
@@ -634,7 +634,7 @@ public class ResourcesManagerDAO {
       prepStmt.setString(8, Long.toString(monthEnd.getTime()));
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        ReservationDetail reservation = returnReservationDetail(con, rs, instanceId);
+        Reservation reservation = returnReservationDetail(con, rs, instanceId);
         list.add(reservation);
       }
     } finally {
@@ -665,7 +665,7 @@ public class ResourcesManagerDAO {
   }
 
   public static void updateReservation(Connection con, String listReservation,
-          ReservationDetail reservationCourante, boolean updateDate) throws SQLException {
+          Reservation reservationCourante, boolean updateDate) throws SQLException {
     PreparedStatement prepStmt = null;
     List<ResourceDetail> oldResources = new ArrayList<ResourceDetail>();
     if (!updateDate) {
@@ -723,7 +723,7 @@ public class ResourcesManagerDAO {
     return null;
   }
 
-  public static void updateReservation(Connection con, ReservationDetail reservationCourante)
+  public static void updateReservation(Connection con, Reservation reservationCourante)
           throws SQLException {
     List<ResourceDetail> resources = reservationCourante.getListResourcesReserved();
     String reservationStatus = computeReservationStatus(resources);
@@ -753,13 +753,13 @@ public class ResourcesManagerDAO {
   }
 
   public static void updateIntoReservation(Connection con,
-          ReservationDetail reservationCourante) throws SQLException {
+          Reservation reservationCourante) throws SQLException {
     PreparedStatement prepStmt = null;
     String query =
             "UPDATE SC_Resources_Reservation SET "
             + "evenement=?, updatedate=?, begindate=?, enddate=?, reason=?, place=?, status=? "
             + "WHERE id=? and instanceId=?";
-    // on récupère les informations de ReservationDetail
+    // on récupère les informations de Reservation
     String instanceId = reservationCourante.getInstanceId();
     String evenement = reservationCourante.getEvent();
     Date updatedate = new Date();

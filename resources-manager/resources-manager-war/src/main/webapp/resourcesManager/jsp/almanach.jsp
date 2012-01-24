@@ -73,7 +73,7 @@ boolean isResponsible = ((Boolean) request.getAttribute("IsResponsible")).boolea
 function nextMonth(object)
 {
     document.almanachForm.action = "NextMonth";
-    <%if((idResourceFromRR != null) && (!idResourceFromRR.equals(""))){%>
+    <%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
 		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
 	<%}%>
     document.almanachForm.objectView.value = object;
@@ -83,7 +83,7 @@ function nextMonth(object)
 function previousMonth(object)
 {
 	document.almanachForm.action = "PreviousMonth";
-	<%if((idResourceFromRR != null) && (!idResourceFromRR.equals(""))){%>
+	<%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
 		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
 	<%}%>
 	document.almanachForm.objectView.value = object;
@@ -92,7 +92,7 @@ function previousMonth(object)
 function goToDay(object)
 {
 	document.almanachForm.action = "GoToday";
-	<%if((idResourceFromRR != null) && (!idResourceFromRR.equals(""))){%>
+	<%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
 		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
 	<%}%>
 	document.almanachForm.objectView.value = object;
@@ -136,7 +136,8 @@ function clickDay(day){
 
 function viewEvent(id)
 {
-	<% if(objectView.equals(personalReservation) || objectView.equals("PlanningOtherUser") || objectView.equals("viewForValidation")){%>
+	<% if(objectView.equals(personalReservation) || "PlanningOtherUser".equals(objectView) ||
+      "viewForValidation".equals(objectView)){%>
 		location.href="ViewReservation?reservationId="+id+"&objectView=<%=objectView%>";
 	<%}else {%>
 		location.href="ViewResource?resourceId="+id+"&provenance=calendar";
@@ -159,7 +160,7 @@ function viewOtherPlanning()
 	String link = "javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');";
 	
   	browseBar.setPath(resource.getString("resourcesManager.accueil"));
-	if(!flag.equals("user")){
+	if(!"user".equals(flag)){
 		operationPane.addOperation(resource.getIcon("resourcesManager.createReservation"), resource.getString("resourcesManager.creerReservation"),"NewReservation");
 		operationPane.addOperation(resource.getIcon("resourcesManager.viewMyReservations"), resource.getString("resourcesManager.Reservation"),"Calendar?objectView="+personalReservation);
 		operationPane.addOperation(resource.getIcon("resourcesManager.viewUserReservation"), resource.getString("resourcesManager.viewUserReservation"), "javascript:onClick=viewOtherPlanning()");
@@ -167,7 +168,7 @@ function viewOtherPlanning()
 			operationPane.addLine();
 			operationPane.addOperation(resource.getIcon("resourcesManager.viewReservationForValidation"), resource.getString("resourcesManager.viewReservationForValidation"),"Calendar?objectView=viewForValidation");
 		}
-		if(flag.equals("admin")){
+		if("admin".equals(flag)){
       		operationPane.addLine();
       		operationPane.addOperation(resource.getIcon("resourcesManager.gererCategorie"), resource.getString("resourcesManager.gererCategorieRessource"),"ViewCategories");
     	}
@@ -193,7 +194,7 @@ function viewOtherPlanning()
                         	<option value="">-----------------</option>
                         	<%
                         	for(int i=0; i<listOfCategories.size(); i++){
-                        		CategoryDetail myCategory = (CategoryDetail)listOfCategories.get(i);
+                        		Category myCategory = (Category)listOfCategories.get(i);
                         		String categoryName = myCategory.getName();%>
                         		<option value="<%=myCategory.getId()%>" <%if((myCategory.getId()).equals(objectView)){%>selected="selected"<%}%> ><%=categoryName%></option>
                         	<%}

@@ -25,14 +25,14 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
 <%@ page import="java.util.List" %>
 
 <%@ include file="check.jsp" %>
 <% 
 // Recuperation des details de l'ulisateur
-	CategoryDetail category = (CategoryDetail)request.getAttribute("category");
+	Category category = (Category)request.getAttribute("category");
 	String idcategory = category.getId();
 	ResourceDetail maResource = (ResourceDetail)request.getAttribute("resource");
 	String provenance = (String)request.getAttribute("provenance");
@@ -144,7 +144,7 @@ buttonPane.addButton(cancelButton);
 		<!--<tr>
 			<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.responsable"));%> :</td>
 			<td>
-				<% if ((responsibleId != null) && (responsibleId.equals("0")))
+				<% if ((responsibleId != null) && ("0".equals(responsibleId)))
 						out.println(resource.getString("resourcesManager.ressourceresponsable"));
 					else
 						out.println(responsibleId);

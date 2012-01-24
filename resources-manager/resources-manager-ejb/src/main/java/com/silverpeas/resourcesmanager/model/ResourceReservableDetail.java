@@ -64,7 +64,6 @@ public class ResourceReservableDetail implements Serializable {
 
   public ResourceReservableDetail(String categoryId, String resourceId,
           String categoryName, String resourceName) {
-    super();
     this.categoryId = categoryId;
     this.resourceId = resourceId;
     this.categoryName = categoryName;

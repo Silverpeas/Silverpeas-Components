@@ -76,8 +76,9 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
             listResource = listResource + "," + idResource;
           }
         }
-        Date dateDebut = DateUtil.stringToDate(beginDate, beginHour, sessionController.getLanguage());
-        Date dateFin = DateUtil.stringToDate(endDate, endHour, sessionController.getLanguage());
+        String currentLang = sessionController.getLanguage();
+        Date dateDebut = DateUtil.stringToDate(beginDate, beginHour, currentLang);
+        Date dateFin = DateUtil.stringToDate(endDate, endHour, currentLang);
         List<ResourceDetail> listResources = sessionController.getResourcesProblemDate(listResource,
                 dateDebut, dateFin, reservationId);
         String listResourceName = "";

@@ -147,7 +147,6 @@ public class ResourceDetail implements Serializable {
   }
 
   public ResourceDetail(String name, String categoryId, boolean bookable) {
-    super();
     this.name = name;
     this.categoryId = categoryId;
     this.bookable = bookable;
@@ -155,7 +154,6 @@ public class ResourceDetail implements Serializable {
 
   public ResourceDetail(String name, String categoryId, String responsibleId,
           String description, boolean bookable) {
-    super();
     this.categoryId = categoryId;
     this.name = name;
     this.description = description;
@@ -167,7 +165,6 @@ public class ResourceDetail implements Serializable {
           Date creationDate, Date updateDate, String description,
           String responsibleId, String createrId, String updaterId,
           String instanceId, boolean bookable) {
-    super();
     this.id = id;
     this.categoryId = categoryId;
     this.name = name;
@@ -185,7 +182,6 @@ public class ResourceDetail implements Serializable {
           Date creationDate, Date updateDate, String description,
           String responsibleId, String createrId, String updaterId,
           String instanceId, boolean bookable, String status) {
-    super();
     this.id = id;
     this.categoryId = categoryId;
     this.name = name;
@@ -202,7 +198,6 @@ public class ResourceDetail implements Serializable {
 
   public ResourceDetail(String id, String categoryId, String name,
           String description, String responsibleId, boolean bookable) {
-    super();
     this.id = id;
     this.categoryId = categoryId;
     this.name = name;

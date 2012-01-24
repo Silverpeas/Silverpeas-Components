@@ -26,26 +26,26 @@ package com.silverpeas.resourcesmanager.model;
 
 import com.google.common.collect.Lists;
 import com.stratelia.webactiv.util.DBUtil;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import javax.inject.Inject;
+import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.inject.Inject;
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author ehugonnet
@@ -58,6 +58,19 @@ public class ResourceDaoTest {
   @Inject
   private DataSource dataSource;
 
+  private static ReplacementDataSet dataSet;
+
+
+
+    @BeforeClass
+    public static void prepareDataset() throws Exception {
+      FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+      dataSet = new ReplacementDataSet(builder.build(ResourceDaoTest.class.getClassLoader().getResourceAsStream(
+          "com/silverpeas/resourcesmanager/model/resources_dataset.xml")));
+      dataSet.addReplacementObject("[NULL]", null);
+    }
+
+
   public ResourceDaoTest() {
   }
 
@@ -67,10 +80,6 @@ public class ResourceDaoTest {
 
   @Before
   public void generalSetUp() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-            ResourceDaoTest.class.getClassLoader().getResourceAsStream(
-            "com/silverpeas/resourcesmanager/model/resources_dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
     DBUtil.getInstanceForTest(dataSource.getConnection());

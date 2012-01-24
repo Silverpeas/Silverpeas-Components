@@ -25,17 +25,17 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
 <%@ page import="com.silverpeas.resourcesmanager.model.ResourceReservableDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ReservationDetail"%>
+<%@ page import="com.silverpeas.resourcesmanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
 //R�cup�ration des d�tails de l'ulisateur
 List 			list 						= (List) request.getAttribute("listResourcesReservable");
 int 				nbCategories 				= ((Integer)request.getAttribute("nbCategories")).intValue();
-ReservationDetail 	reservation 				= (ReservationDetail) request.getAttribute("reservation");
+Reservation reservation 				= (Reservation) request.getAttribute("reservation");
 List 			listResourcesProblem 		= (List) request.getAttribute("listResourcesProblem");
 List 			listResourceEverReserved 	= (List) request.getAttribute("listResourceEverReserved");
 String 				idModifiedReservation 		= (String)request.getAttribute("idReservation");
@@ -95,7 +95,9 @@ String idTemoin="";
 		{
 			ajouterRessource(resourceId, categoryId);			
 			if (isCategoryEmpty(categoryId))
-				addEmptyResource(categoryId);
+				{
+          addEmptyResource(categoryId);
+        }
 		}
 	}
 	
@@ -116,7 +118,9 @@ String idTemoin="";
 		for (var r=0; r<resources.length; r++)
 		{
 			if (resources[r].nodeName == 'DIV' && resources[r].id == "-1")
-				category.removeChild(resources[r]);
+				{
+          category.removeChild(resources[r]);
+        }
 		}
 	}
 	
@@ -127,7 +131,9 @@ String idTemoin="";
 		for (var r=0; r<resources.length; r++)
 		{
 			if (resources[r].nodeName == 'DIV')
-				return false;
+				{
+          return false;
+        }
 		}
 		return true;
 	}
@@ -139,7 +145,9 @@ String idTemoin="";
 		for (var r=0; r<resources.length; r++)
 		{
 			if (resources[r].nodeName == 'DIV' && resources[r].id == resourceId)
-				return true;
+				{
+          return true;
+        }
 		}
 		return false;
 	}
@@ -152,7 +160,9 @@ String idTemoin="";
 		for (var r=0; r<resources.length; r++)
 		{
 			if (resources[r].nodeName == 'DIV')
-				resourceIds += resources[r].id+",";
+				{
+          resourceIds += resources[r].id + ",";
+        }
 		}
 		resourceIds = resourceIds.substring(0, resourceIds.length-1);
 		return resourceIds;
@@ -255,7 +265,7 @@ String idTemoin="";
 						<div id="categ<%=maResource.getCategoryId()%>">
 					<%
 				}
-				if(!resourceId.equals("0")) {
+				if(!"0".equals(resourceId)) {
 					
 					//on entre dans ce if, donc il y a une ressource au moins disponible dans la category, donc on ne veut pas 
 					// afficher "pas de ressource disponible dans cette categorie"

@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
@@ -69,7 +69,7 @@
 		columnOp.setSortable(false);
 		
 		for(int i=0;i<list.size();i++){ 
-			CategoryDetail category = (CategoryDetail)list.get(i);
+			Category category = (Category)list.get(i);
 			IconPane iconPane = gef.getIconPane();
 			IconPane iconPane1 = gef.getIconPane();
 		    Icon reservableIcon = iconPane.addIcon();

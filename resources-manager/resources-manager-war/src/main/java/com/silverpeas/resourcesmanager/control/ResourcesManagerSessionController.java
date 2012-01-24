@@ -20,11 +20,11 @@
  */
 package com.silverpeas.resourcesmanager.control;
 
-import com.silverpeas.resourcesmanager.model.CategoryDetail;
-import com.silverpeas.resourcesmanager.model.ReservationDetail;
+import com.silverpeas.resourcesmanager.control.ejb.ResourcesManagerRuntimeException;
+import com.silverpeas.resourcesmanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.Category;
 import com.silverpeas.resourcesmanager.model.ResourceDetail;
 import com.silverpeas.resourcesmanager.model.ResourceReservableDetail;
-import com.silverpeas.resourcesmanager.model.ResourcesManagerRuntimeException;
 import com.silverpeas.resourcesmanager.util.ResourcesManagerFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -53,32 +53,32 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+
 import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
 
 public class ResourcesManagerSessionController extends AbstractComponentSessionController {
 
-  private ReservationDetail reservationCourante;
+  private Reservation reservationCourante;
   private Calendar currentDay = Calendar.getInstance();
   private List<ResourceReservableDetail> resourceReserved = new ArrayList<ResourceReservableDetail>();
   private List<ResourceReservableDetail> listReservableResource;
   private Date beginDateReservation;
   private Date endDateReservation;
   private String listReservationCurrent;
-  private String provenanceResource = null;
-  private String resourceIdForResource = null;
-  private String reservationIdForResource = null;
-  private String categoryIdForResource = null;
-  private String objectViewForCalandar = null;
-  private String firstNameUserCalandar = null;
-  private String lastNameUserCalandar = null;
+  private String provenanceResource;
+  private String resourceIdForResource;
+  private String reservationIdForResource;
+  private String categoryIdForResource;
+  private String objectViewForCalandar;
+  private String firstNameUserCalandar;
+  private String lastNameUserCalandar;
   private String currentCategory;
   private String currentResource;
   private String currentReservation;
-  private NotificationSender notifSender = null;
-  private ResourcesWrapper resources = null;
+  private NotificationSender notifSender;
+  private ResourcesWrapper resources;
 
   public String getCurrentCategory() {
     return currentCategory;
@@ -187,7 +187,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
    * Creating a new Category.
    * @param category the category to create.
    */
-  public void createCategory(CategoryDetail category) {
+  public void createCategory(Category category) {
     category.setInstanceId(getComponentId());
     category.setCreaterId(getUserId());
     category.setUpdaterId(getUserId());
@@ -203,7 +203,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
   }
 
-  public void updateCategory(CategoryDetail category) {
+  public void updateCategory(Category category) {
     category.setInstanceId(getComponentId());
     category.setCreaterId(getUserId());
     category.setUpdaterId(getUserId());
@@ -218,7 +218,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public List<CategoryDetail> getCategories() {
+  public List<Category> getCategories() {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getCategories(getComponentId());
     } catch (RemoteException e) {
@@ -228,7 +228,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
   }
 
-  public CategoryDetail getCategory(String id) {
+  public Category getCategory(String id) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getCategory(id);
     } catch (RemoteException e) {
@@ -334,7 +334,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public void createReservation(ReservationDetail reservation) {
+  public void createReservation(Reservation reservation) {
     reservation.setInstanceId(getComponentId());
     reservation.setUserId(getUserId());
     reservation.setCreationDate(new Date());
@@ -383,7 +383,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public List<ReservationDetail> getReservationUser() {
+  public List<Reservation> getReservationUser() {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getReservationUser(getComponentId(),
               getUserId());
@@ -394,9 +394,9 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public ReservationDetail getReservation(String reservationId) {
+  public Reservation getReservation(String reservationId) {
     try {
-      ReservationDetail reservation = ResourcesManagerFactory.getResourcesManagerBm().getReservation(
+      Reservation reservation = ResourcesManagerFactory.getResourcesManagerBm().getReservation(
               getComponentId(), reservationId);
       reservation.setUserName(getUserDetail(reservation.getUserId()).getDisplayedName());
       return reservation;
@@ -457,7 +457,6 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       List<UserRecipient> managers = new ArrayList<UserRecipient>(managerIds.size());
       if (!managerIds.contains(getUserId())) {
         // envoie de la notification seulement si le user courant n'est pas aussi responsable
-        Iterator<String> it = managerIds.iterator();
         for (String managerId : managerIds) {
           managers.add(new UserRecipient(managerId));
         }
@@ -600,11 +599,11 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
-  public ReservationDetail getReservationCourante() {
+  public Reservation getReservationCourante() {
     return reservationCourante;
   }
 
-  public void setReservationCourante(ReservationDetail reservationCourante) {
+  public void setReservationCourante(Reservation reservationCourante) {
     this.reservationCourante = reservationCourante;
   }
 
@@ -685,7 +684,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     currentDay = Calendar.getInstance();
   }
 
-  public List<ReservationDetail> getReservationForValidation() {
+  public List<Reservation> getReservationForValidation() {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getReservationForValidation(
               getComponentId(), getCurrentDay().getTime(), getUserId());
@@ -696,7 +695,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public List<ReservationDetail> getMonthReservation() {
+  public List<Reservation> getMonthReservation() {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getMonthReservation(getComponentId(),
               getCurrentDay().getTime(), getUserId());
@@ -707,7 +706,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public List<ReservationDetail> getMonthReservation(String idUser) {
+  public List<Reservation> getMonthReservation(String idUser) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getMonthReservation(getComponentId(),
               this.getCurrentDay().getTime(), idUser);
@@ -718,7 +717,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public List<ReservationDetail> getMonthReservationOfCategory(String idCategory) {
+  public List<Reservation> getMonthReservationOfCategory(String idCategory) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getMonthReservationOfCategory(
               getComponentId(), getCurrentDay().getTime(), getUserId(), idCategory);
@@ -810,7 +809,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
           NotificationManagerException {
     ResourcesManagerFactory.getResourcesManagerBm().updateResourceStatus(
             STATUS_VALIDATE, resourceId, reservationId, getComponentId());
-    ReservationDetail reservation = getReservation(Integer.toString(reservationId));
+    Reservation reservation = getReservation(Integer.toString(reservationId));
     reservation.setListResourcesReserved(getResourcesofReservation(Integer.toString(reservationId)));
     ResourcesManagerFactory.getResourcesManagerBm().updateReservation(reservation);
     // envoie d'une notification au créateur de la réservation quand cette dernière est totalement
@@ -824,7 +823,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
           throws RemoteException, NotificationManagerException {
     ResourcesManagerFactory.getResourcesManagerBm().updateResourceStatus(
             STATUS_REFUSED, resourceId, reservationId, getComponentId());
-    ReservationDetail reservation = getReservation(Integer.toString(reservationId));
+    Reservation reservation = getReservation(Integer.toString(reservationId));
     reservation.setListResourcesReserved(getResourcesofReservation(Integer.toString(reservationId)));
     ResourcesManagerFactory.getResourcesManagerBm().updateReservation(reservation);
     // envoie d'une notification au créateur de la réservation si cette desnière est refusée
@@ -833,7 +832,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public void sendNotificationValidateReservation(ReservationDetail reservation)
+  public void sendNotificationValidateReservation(Reservation reservation)
           throws NotificationManagerException {
     // envoyer une notification au créateur de la réservation
     OrganizationController orga = new OrganizationController();
@@ -872,7 +871,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     getNotificationSender().notifyUser(notifMetaData);
   }
 
-  public void sendNotificationRefuseReservation(ReservationDetail reservation, String resourceId,
+  public void sendNotificationRefuseReservation(Reservation reservation, String resourceId,
           String motive) throws NotificationManagerException {
     // envoyer une notification au créateur de la réservation
     OrganizationController orga = new OrganizationController();

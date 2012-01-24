@@ -23,7 +23,7 @@ package com.silverpeas.resourcesmanager.util;
 
 import com.silverpeas.resourcesmanager.control.ejb.ResourcesManagerBm;
 import com.silverpeas.resourcesmanager.control.ejb.ResourcesManagerBmHome;
-import com.silverpeas.resourcesmanager.model.ResourcesManagerRuntimeException;
+import com.silverpeas.resourcesmanager.control.ejb.ResourcesManagerRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 

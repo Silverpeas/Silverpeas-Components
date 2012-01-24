@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate" %>
 <%@ include file="check.jsp" %>
@@ -38,7 +38,7 @@
 	String description="";
 	boolean bookable = false;
 	String id="";
-	CategoryDetail category = (CategoryDetail)request.getAttribute("category");
+	Category category = (Category)request.getAttribute("category");
 	if (category != null){
 		id = category.getId();
 		name = category.getName();
@@ -57,16 +57,26 @@
 
 function validerNom(){
 	if(document.getElementById("name").value == 0)
-		document.getElementById('validationNom').innerHTML="Nom obligatoire";
+		{
+      document.getElementById('validationNom').innerHTML = "Nom obligatoire";
+    }
 	else
-		document.getElementById('validationNom').style.display='none';
+		{
+      document.getElementById('validationNom').style.display = 'none';
+    }
 }
 
 function verification(){
 	if(document.getElementById("name").value == 0 )
-		alert('<%=EncodeHelper.javaStringToJsString(resource.getString("resourcesManager.formulaireErreur")+" 1 "+ resource.getString("GML.error") +":"+ "\n" + "-" + "'" + resource.getString("GML.name")+ "'"+ " " + resource.getString("resourcesManager.renseigmentObligatoire"))%>');
+		{
+      alert('<%=EncodeHelper.javaStringToJsString(resource.getString("resourcesManager.formulaireErreur")+" 1 "+ resource.getString("GML.error") +":"+ "\n" + "-" + "'" + resource.getString("GML.name")+ "'"+ " " + resource.getString("resourcesManager.renseigmentObligatoire"))%>'
+    )
+      ;
+    }
 	else
-		document.createForm.submit();
+		{
+      document.createForm.submit();
+    }
 }
 
 </script>

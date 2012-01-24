@@ -23,10 +23,11 @@
  */
 package com.silverpeas.resourcesmanager.control.ejb;
 
-import com.silverpeas.resourcesmanager.model.CategoryDetail;
-import com.silverpeas.resourcesmanager.model.ReservationDetail;
+import com.silverpeas.resourcesmanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.Category;
 import com.silverpeas.resourcesmanager.model.ResourceDetail;
 import com.silverpeas.resourcesmanager.model.ResourceReservableDetail;
+
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -36,16 +37,16 @@ import javax.ejb.EJBObject;
  * @author
  */
 public interface ResourcesManagerBm extends EJBObject {
-  public List<CategoryDetail> getCategories(String instanceId) throws RemoteException;
+  public List<Category> getCategories(String instanceId) throws RemoteException;
 
-  public void createCategory(CategoryDetail category) throws RemoteException;
+  public void createCategory(Category category) throws RemoteException;
 
   public void deleteCategory(String id, String componentId)
       throws RemoteException;
 
-  public CategoryDetail getCategory(String id) throws RemoteException;
+  public Category getCategory(String id) throws RemoteException;
 
-  public void updateCategory(CategoryDetail category) throws RemoteException;
+  public void updateCategory(Category category) throws RemoteException;
 
   public String createResource(ResourceDetail resource) throws RemoteException;
 
@@ -65,13 +66,13 @@ public interface ResourcesManagerBm extends EJBObject {
       String listeReservation, Date startDate, Date endDate)
       throws RemoteException;
 
-  public void saveReservation(ReservationDetail reservation,
+  public void saveReservation(Reservation reservation,
       String listReservationCurrent) throws RemoteException;
 
-  public List<ReservationDetail> getReservationUser(String instanceId, String userId)
+  public List<Reservation> getReservationUser(String instanceId, String userId)
       throws RemoteException;
 
-  public List<ReservationDetail> getReservations(String instanceId) throws RemoteException;
+  public List<Reservation> getReservations(String instanceId) throws RemoteException;
 
   public List<ResourceDetail> getResourcesofReservation(String instanceId, String reservationId)
       throws RemoteException;
@@ -79,25 +80,25 @@ public interface ResourcesManagerBm extends EJBObject {
   public void deleteReservation(String id, String componentId)
       throws RemoteException;
 
-  public ReservationDetail getReservation(String instanceId,
+  public Reservation getReservation(String instanceId,
       String reservationId) throws RemoteException;
 
   public void updateReservation(String listReservation,
-      ReservationDetail reservationCourante, boolean updateDate) throws RemoteException;
+      Reservation reservationCourante, boolean updateDate) throws RemoteException;
 
-  public void updateReservation(ReservationDetail reservationCourante) throws RemoteException;
+  public void updateReservation(Reservation reservationCourante) throws RemoteException;
 
   public List<ResourceDetail> verificationNewDateReservation(String instanceId,
       String listeReservation, Date startDate, Date endDate,
       String reservationId) throws RemoteException;
 
-  public List<ReservationDetail> getMonthReservation(String instanceId, Date MonthDate,
+  public List<Reservation> getMonthReservation(String instanceId, Date MonthDate,
       String userId) throws RemoteException;
 
-  public List<ReservationDetail> getReservationForValidation(String instanceId, Date MonthDate,
+  public List<Reservation> getReservationForValidation(String instanceId, Date MonthDate,
       String userId) throws RemoteException;
 
-  public List<ReservationDetail> getMonthReservationOfCategory(String instanceId, Date MonthDate,
+  public List<Reservation> getMonthReservationOfCategory(String instanceId, Date MonthDate,
       String userId, String idCategory) throws RemoteException;
 
   public void indexResourceManager(String instanceId) throws RemoteException;

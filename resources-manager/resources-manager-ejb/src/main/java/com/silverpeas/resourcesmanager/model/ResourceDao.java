@@ -118,7 +118,7 @@ public class ResourceDao {
       prepStmt.executeUpdate();
       addManagers(con, id, resource.getManagers());
     } catch (UtilException e) {
-      throw new SQLException();
+      throw new SQLException(e);
     } finally {
       DBUtil.close(prepStmt);
     }
