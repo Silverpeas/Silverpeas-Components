@@ -63,7 +63,7 @@ function openSPWindow(fonction, windowName){
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
 
-function exportPublications() {
+function exportTopic() {
 	exportComponentWindow = SP_openWindow("exportTopic.jsp?TopicId="+getCurrentNodeId(),"exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
 }
 
@@ -240,9 +240,9 @@ function initOperations(id, op) {
 	
 	if (op.exporting) {
 		if (id == "0") {
-			menuItem = new YAHOO.widget.MenuItem(labels["operation.exportComponent"], {url: "javascript:onClick=exportPublications()"});
+			menuItem = new YAHOO.widget.MenuItem(labels["operation.exportComponent"], {url: "javascript:onClick=exportTopic()"});
 		} else {
-			menuItem = new YAHOO.widget.MenuItem(labels["operation.exportTopic"], {url: "javascript:onClick=exportPublications()"});
+			menuItem = new YAHOO.widget.MenuItem(labels["operation.exportTopic"], {url: "javascript:onClick=exportTopic()"});
 		}
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
@@ -351,6 +351,12 @@ function initOperations(id, op) {
 	if (!groupEmpty) {
 		groupIndex++;
 		groupEmpty = true;
+		menuEmpty = false;
+	}
+	
+	if (op.exportSelection) {
+		menuItem = new YAHOO.widget.MenuItem(labels["operation.exportSelection"], {url: "javascript:onclick=exportPublications()"});
+		oMenu.addItem(menuItem, groupIndex);
 		menuEmpty = false;
 	}
 	
@@ -574,8 +580,10 @@ function doPagination(index) {
 	var topicQuery = getSearchQuery();
 	var ieFix = new Date().getTime();
 	var componentId = getComponentId();
+	var selectedPublicationIds = getSelectedPublicationIds();
+	var notSelectedPublicationIds = getNotSelectedPublicationIds();
 	var url = getWebContext()+'/RAjaxPublicationsListServlet';
-	$.get(url, {Index:index,ComponentId:componentId,ToValidate:paramToValidate,Query:topicQuery,IEFix:ieFix},
+	$.get(url, {Index:index,ComponentId:componentId,ToValidate:paramToValidate,Query:topicQuery,SelectedPubIds:selectedPublicationIds,NotSelectedPubIds:notSelectedPublicationIds,IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
 							},"html");

@@ -51,9 +51,13 @@ if(request.getAttribute("NbLinks")!=null){
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="<%=m_context %>/kmelia/jsp/styleSheets/kmelia.css">
 <view:looknfeel />
+<link rel="stylesheet" type="text/css" href="<%=m_context %>/kmelia/jsp/styleSheets/kmelia.css">
+<style type="text/css">
+#pubList .selection input {
+	display: block;
+}
+</style>
 <%-- load the css and js file used by tree menu --%>
 <menuTree:head displayCssFile="true" displayJavascriptFile="true" displayIconsStyles="true" contextName="<%=m_context%>"></menuTree:head>
 <%-- personalizable Javascript for  YUI treeView menu --%>

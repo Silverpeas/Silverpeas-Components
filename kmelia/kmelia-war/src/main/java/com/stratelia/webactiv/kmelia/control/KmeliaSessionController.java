@@ -270,6 +270,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   Fields saveFields = new Fields();
   boolean isDragAndDropEnableByUser = false;
   boolean componentManageable = false;
+  
+  private List<String> selectedPublicationIds = new ArrayList<String>();
 
   /**
    * Creates new sessionClientController
@@ -4823,5 +4825,33 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     PdcClassification defaultClassification = classificationService.findAPreDefinedClassification(
             topicId, componentId);
     return defaultClassification != NONE_CLASSIFICATION && defaultClassification.isModifiable();
+  }
+  
+  public void resetSelectedPublicationIds() {
+    this.selectedPublicationIds.clear();
+  }
+  
+  public List<String> processSelectedPublicationIds(String selectedPublicationIds,
+      String notSelectedPublicationIds) {
+    StringTokenizer tokenizer = null;
+    if (selectedPublicationIds != null) {
+      tokenizer = new StringTokenizer(selectedPublicationIds, ",");
+      while (tokenizer.hasMoreTokens()) {
+        this.selectedPublicationIds.add(tokenizer.nextToken());
+      }
+    }
+
+    if (notSelectedPublicationIds != null) {
+      tokenizer = new StringTokenizer(notSelectedPublicationIds, ",");
+      while (tokenizer.hasMoreTokens()) {
+        this.selectedPublicationIds.remove(tokenizer.nextToken());
+      }
+    }
+    
+    return this.selectedPublicationIds;
+  }
+
+  public List<String> getSelectedPublicationIds() {
+    return selectedPublicationIds;
   }
 }

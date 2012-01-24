@@ -243,6 +243,7 @@ public class JSONServlet extends HttpServlet {
       operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.
               isTopicHaveUpdateChainDescriptor(id));
 
+      operations.put("exportSelection", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("favorites", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
     }
