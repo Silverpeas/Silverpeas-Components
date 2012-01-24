@@ -279,7 +279,16 @@ if (action.equals("Add")) {
 	newContactId = yellowpagesScc.createContact(contactDetail);
     userContactComplete = yellowpagesScc.getCompleteContact(newContactId);
     yellowpagesScc.setCurrentContact(userContactComplete);
-    // TODO gestion de la company saisie pour un nouveau contact
+
+    // Update company info for contact
+    if (StringUtil.isNotBlank(companyId) && StringUtil.isNotBlank(companyName)) {
+        // TODO : gerer un tableau de companies à rajouter
+        Company company = yellowpagesScc.getCompany(Integer.valueOf(companyId));
+        if (company != null && company.getName().equals(companyName) && newContactId != null) {
+            int contactId = Integer.valueOf(newContactId);
+            yellowpagesScc.addCompanyToContact(company.getCompanyId(), contactId);
+        }
+    }
 
 	if (yellowpagesScc.useForm())
 	{
