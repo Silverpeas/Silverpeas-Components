@@ -23,40 +23,30 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
-import java.util.ArrayList;
-import java.util.TimeZone;
-import com.stratelia.webactiv.util.ResourceLocator;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
 import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.Date;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
+import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import com.stratelia.webactiv.almanach.model.PeriodicityException;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import static com.stratelia.webactiv.util.DateUtil.extractHour;
+import static com.stratelia.webactiv.util.DateUtil.extractMinutes;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.TimeZone;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Component;
-import net.fortuna.ical4j.model.ComponentList;
-import net.fortuna.ical4j.model.DateList;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.Period;
-import net.fortuna.ical4j.model.PeriodList;
-import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.*;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Categories;
 import net.fortuna.ical4j.model.property.ExDate;
-import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
-import static com.silverpeas.util.StringUtil.*;
-import static com.stratelia.webactiv.util.DateUtil.*;
 
 /**
  * A generator of event occurrences built on the iCal4J library.
