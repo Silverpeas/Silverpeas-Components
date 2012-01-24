@@ -94,16 +94,30 @@ public class GenericContactRelationDaoTest {
     }
 
     @Test
+    public void testFindDisabledRelationShouldReturnNull() throws Exception {
+        // Generic contact à chercher
+        int genContactId = 217;
+        int genCompanyId = 114;
+        // Cette relation est flagguée à ENALBED=0, elle ne doit pas faire partie des résultat de recherche
+
+        GenericContactRelation relation = dao.findByGenericCompanyIdAndGenericContactId(genCompanyId, genContactId);
+        assertNull(relation);
+    }
+
+    @Test
     public void testDeleteGenericContactRelation() throws Exception {
         // Generic contact à supprimer
         int genContactId = 217;
-        int genCompanyId = 114;
+        int genCompanyId = 110;
 
         GenericContactRelation relation = dao.findByGenericCompanyIdAndGenericContactId(genCompanyId, genContactId);
         dao.delete(relation);
 
-        GenericContactRelation relationFromDb = dao.findOne(relation.getRelationId());
-        assertNull(relationFromDb);
+        GenericContactRelation relationDeleted = dao.findByGenericCompanyIdAndGenericContactId(genCompanyId, genContactId);
+        assertNull(relationDeleted);
+
+        GenericContactRelation relationReallyDelete = dao.findOne(relation.getRelationId());
+        assertNull(relationReallyDelete);
     }
 
     @Test
@@ -112,7 +126,9 @@ public class GenericContactRelationDaoTest {
         List<GenericContactRelation> liste = dao.findByGenericCompanyId(genericCompanyId);
         assertNotNull(liste);
         assertEquals(1, liste.size());
-        assertEquals(0, liste.get(0).getRelationId());
+        for (GenericContactRelation genericContactRelation : liste) {
+            assertEquals(1, genericContactRelation.getEnabled());
+        }
     }
 
     @Test
@@ -120,9 +136,10 @@ public class GenericContactRelationDaoTest {
         int genericContactId = 217;
         List<GenericContactRelation> liste = dao.findByGenericContactId(genericContactId);
         assertNotNull(liste);
-        assertEquals(3, liste.size());
-        assertEquals(2, liste.get(2).getRelationId());
-        assertEquals(0, liste.get(2).getEnabled());
+        assertEquals(2, liste.size());
+        for (GenericContactRelation genericContactRelation : liste) {
+            assertEquals(1, genericContactRelation.getEnabled());
+        }
     }
 
     @Test
@@ -131,7 +148,7 @@ public class GenericContactRelationDaoTest {
         int genericCompanyId = 110;
         GenericContactRelation relation = dao.findByGenericCompanyIdAndGenericContactId(genericCompanyId, genericContactId);
         assertNotNull(relation);
-        assertEquals(1, relation.getRelationId());
+        assertEquals(1, relation.getEnabled());
     }
 
 }

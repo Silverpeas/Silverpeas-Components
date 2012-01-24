@@ -24,16 +24,14 @@
 
 package com.silverpeas.yellowpages.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "sc_contact_genericcontact_rel")
 public class GenericContactRelation implements java.io.Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int relationId;
     @Column(name = "genericContactId")
     private int genericContactId;

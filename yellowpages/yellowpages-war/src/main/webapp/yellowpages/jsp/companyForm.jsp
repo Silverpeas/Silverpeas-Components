@@ -105,36 +105,61 @@
                                         <td valign="baseline" align=left
                                             class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:
                                         </td>
-
-                                        <td><input type="text" name="Name" value="${company.name}" size="60"
-                                                   maxlength="60"
-                                                   <c:if test="${viewMode}">readonly</c:if> >&nbsp;<img border="0"
-                                                                                                        src="<%=resources.getIcon("yellowpages.mandatory")%>"
-                                                                                                        width="5"
-                                                                                                        height="5"></td>
+                                        <c:choose>
+                                            <c:when test="${viewMode}">
+                                                <td class="txtnav"><c:out value="${company.name}"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <td><input type="text" name="Name" value="${company.name}" size="60"
+                                                           maxlength="60">&nbsp;<img border="0"
+                                                                                     src="<%=resources.getIcon("yellowpages.mandatory")%>"
+                                                                                     width="5" height="5">
+                                                </td>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </tr>
                                     <tr>
                                         <td valign="baseline" align=left
                                             class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:
                                         </td>
-                                        <td><input type="text" name="Email" value="${company.email}" size="60"
-                                                   maxlength="100" <c:if test="${viewMode}">readonly</c:if>></td>
+                                        <c:choose>
+                                            <c:when test="${viewMode}">
+                                                <td><c:out value="${company.email}"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <td><input type="text" name="Email" value="${company.email}" size="60"
+                                                           maxlength="100">
+                                                </td>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </tr>
                                     <tr>
                                         <td valign="baseline" align=left
                                             class="txtlibform"><%=resources.getString("GML.phoneNumber")%>&nbsp;:
                                         </td>
-
-                                        <td><input type="text" name="Phone" value="${company.phone}" size="20"
-                                                   maxlength="20" <c:if test="${viewMode}">readonly</c:if>></td>
+                                        <c:choose>
+                                            <c:when test="${viewMode}">
+                                                <td><c:out value="${company.phone}"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <td><input type="text" name="Phone" value="${company.phone}" size="20"
+                                                           maxlength="20"></td>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </tr>
                                     <tr>
                                         <td valign="baseline" align=left
                                             class="txtlibform"><%=resources.getString("GML.faxNumber")%>&nbsp;:
                                         </td>
-
-                                        <td><input type="text" name="Fax" value="${company.fax}" size="20"
-                                                   maxlength="20" <c:if test="${viewMode}">readonly</c:if>></td>
+                                        <c:choose>
+                                            <c:when test="${viewMode}">
+                                                <td><c:out value="${company.fax}"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <td><input type="text" name="Fax" value="${company.fax}" size="20"
+                                                           maxlength="20"</td>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </tr>
                                     <tr>
                                         <td valign="baseline" align=left
@@ -151,11 +176,13 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="2">(<img border="0"
-                                                              src="<%=resources.getIcon("yellowpages.mandatory")%>"
-                                                              width="5" height="5">
-                                            : <%=resources.getString("GML.requiredField")%>)
-                                        </td>
+                                        <c:if test="${!viewMode}">
+                                            <td colspan="2">(<img border="0"
+                                                                  src="<%=resources.getIcon("yellowpages.mandatory")%>"
+                                                                  width="5" height="5">
+                                                : <%=resources.getString("GML.requiredField")%>)
+                                            </td>
+                                        </c:if>
                                     </tr>
                                 </table>
                             </td>

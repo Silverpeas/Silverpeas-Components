@@ -26,15 +26,30 @@ package com.silverpeas.yellowpages.dao;
 
 import com.silverpeas.yellowpages.model.GenericContactRelation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface GenericContactRelationDao extends JpaRepository<GenericContactRelation, Integer> {
 
-    List<GenericContactRelation> findByGenericCompanyId(int genericCompanyId);
+    @Query("FROM GenericContactRelation GCR " +
+            "WHERE GCR.genericCompanyId = :genericCompanyId AND " +
+            "GCR.relationType = " + GenericContactRelation.RELATION_TYPE_BELONGS_TO + " AND " +
+            "GCR.enabled = " + GenericContactRelation.ENABLE_TRUE)
+    List<GenericContactRelation> findByGenericCompanyId(@Param("genericCompanyId") int genericCompanyId);
 
-    List<GenericContactRelation> findByGenericContactId(int genericContactId);
+     @Query("FROM GenericContactRelation GCR " +
+            "WHERE GCR.genericContactId = :genericContactId AND " +
+            "GCR.relationType = " + GenericContactRelation.RELATION_TYPE_BELONGS_TO + " AND " +
+            "GCR.enabled = " + GenericContactRelation.ENABLE_TRUE)
+    List<GenericContactRelation> findByGenericContactId(@Param("genericContactId") int genericContactId);
 
-    GenericContactRelation findByGenericCompanyIdAndGenericContactId(int genericCompanyId, int genericContactId);
+    @Query("FROM GenericContactRelation GCR " +
+           "WHERE GCR.genericContactId = :genericContactId AND " +
+           "GCR.genericCompanyId = :genericCompanyId AND " +
+           "GCR.relationType = " + GenericContactRelation.RELATION_TYPE_BELONGS_TO + " AND " +
+           "GCR.enabled = " + GenericContactRelation.ENABLE_TRUE)
+    GenericContactRelation findByGenericCompanyIdAndGenericContactId(@Param("genericCompanyId") int genericCompanyId, @Param("genericContactId") int genericContactId);
 }
 
