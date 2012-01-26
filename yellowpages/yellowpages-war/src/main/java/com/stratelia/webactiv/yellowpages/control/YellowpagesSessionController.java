@@ -786,7 +786,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
      *
      * @param
      * @throws
-     * @see setCurrentContact
      */
     public void setContactUserSelected() {
         String selUser = getSelection().getFirstSelectedElement();
@@ -1790,11 +1789,12 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
 
     /**
-     * Recherche la liste des companies associée à un Contact
+     * Recherche la company associée à un Contact
      *
      * @param contactId Id du contact sur lequel chercher id à
      * @return la première company de la liste (possibilité de gérer une liste de companies par user par la suite). Renvoie null si non trouvé.
      */
+    @Deprecated  // TODO à supprimer
     public synchronized Company getCompanyForUserId(int contactId) throws RemoteException {
         List<Company> companyList = this.serviceCompany.findCompanyListByContactId(contactId);
         if (companyList == null || companyList.isEmpty()) {
@@ -1802,6 +1802,21 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         } else {
             // On gère seulement une company pour l'instant => TODO retourner une liste de companies
             return companyList.get(0);
+        }
+    }
+
+    /**
+     * Recherche la liste des companies associées à un Contact
+     *
+     * @param contactId Id du contact sur lequel chercher id à
+     * @return la liste des companies qui ont une relation avec ce contact en tout bien tout honneur. Renvoie null si non trouvé.
+     */
+    public synchronized List<Company> getCompanyListForUserId(int contactId) throws RemoteException {
+        List<Company> companyList = this.serviceCompany.findCompanyListByContactId(contactId);
+        if (companyList == null || companyList.isEmpty()) {
+            return null;
+        } else {
+            return companyList;
         }
     }
 

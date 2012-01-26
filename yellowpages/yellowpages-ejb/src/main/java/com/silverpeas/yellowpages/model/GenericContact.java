@@ -32,13 +32,25 @@ public class GenericContact implements java.io.Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int genericcontactId;
+    private int genericContactId;
     @Column(name = "contactType")
     private int contactType;
     @Column(name = "contactId")
     private Integer contactId;
     @Column(name = "companyId")
     private Integer companyId;
+
+    /*private Company company;
+
+    @JoinColumn(name = "companyId", referencedColumnName = "companyId")
+    @ManyToOne (optional = true)
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }*/
 
     public static final int TYPE_CONTACT = 1;
     public static final int TYPE_COMPANY = 2;
@@ -53,12 +65,12 @@ public class GenericContact implements java.io.Serializable {
         this.companyId = companyId;
     }
 
-    public int getGenericcontactId() {
-        return genericcontactId;
+    public int getGenericContactId() {
+        return genericContactId;
     }
 
-    public void setGenericcontactId(int genericcontactId) {
-        this.genericcontactId = genericcontactId;
+    public void setGenericContactId(int genericContactId) {
+        this.genericContactId = genericContactId;
     }
 
     public int getContactType() {
@@ -84,4 +96,5 @@ public class GenericContact implements java.io.Serializable {
     public void setCompanyId(Integer companyId) {
         this.companyId = companyId;
     }
+
 }
