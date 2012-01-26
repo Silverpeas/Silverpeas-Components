@@ -170,11 +170,13 @@
 	float: left;
 	width: 95%;
 	white-space: normal;
-	padding-left: 5px;
+	padding: 5px 0px 0px 0px;
+	margin: 0px;
 }
 
 #pubList ul li {
-	margin-bottom: 10px;
+	margin: 0px 0px 10px 0px;
+	padding: 3px 0px 0px 0px;
 	float: left;
 	width: 100%;
 }
@@ -185,7 +187,8 @@
 
 #pubList .firstColumn {
 	float: left;
-	/*min-width: 30px;*/
+	padding-left: 30px;
+    position: relative;
 }
 
 #pubList .thumbnail {
@@ -197,10 +200,9 @@
 }*/
 
 #pubList .selection {
-	float: left;
-	vertical-align: top;
-	width: 30px;
-	min-width: 30px;
+	left: 3px;
+    position: absolute;
+    top: 0px;
 }
 
 #pubList .selection input {
