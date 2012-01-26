@@ -30,18 +30,16 @@ package com.stratelia.webactiv.quizz.control;
 
 import java.io.File;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
-import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
-import javax.naming.NamingException;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
@@ -65,7 +63,7 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDeta
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerSelection;
-import com.stratelia.webactiv.util.score.control.ScoreBm;
+import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
 
 /**
@@ -75,7 +73,6 @@ import com.stratelia.webactiv.util.score.model.ScoreDetail;
 public class QuizzSessionController extends AbstractComponentSessionController {
   private QuestionContainerBm questionContainerBm = null;
   private ResourceLocator settings = null;
-  private ScoreBm scoreBm = null;
   private int nbTopScores = 0;
   private boolean isAllowedTopScores = false;
 
@@ -87,8 +84,8 @@ public class QuizzSessionController extends AbstractComponentSessionController {
     setQuestionContainerBm();
     String nbTop = getSettings().getString("nbTopScores");
     String isAllowedTop = getSettings().getString("isAllowedTopScores");
-    setNbTopScores(new Integer(nbTop).intValue());
-    setIsAllowedTopScores(new Boolean(isAllowedTop).booleanValue());
+    setNbTopScores(Integer.parseInt(nbTop));
+    setIsAllowedTopScores(Boolean.valueOf(isAllowedTop));
   }
 
   public int getNbTopScores() {
@@ -116,7 +113,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
       try {
         QuestionContainerBmHome questionContainerBmHome = (QuestionContainerBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME,
-            QuestionContainerBmHome.class);
+                QuestionContainerBmHome.class);
 
         this.questionContainerBm = questionContainerBmHome.create();
       } catch (Exception e) {
@@ -134,13 +131,10 @@ public class QuizzSessionController extends AbstractComponentSessionController {
     if (settings == null) {
       try {
         String langue = getLanguage();
-
-        settings = new ResourceLocator(
-            "com.stratelia.webactiv.quizz.quizzSettings", langue);
+        settings = new ResourceLocator("com.stratelia.webactiv.quizz.quizzSettings", langue);
       } catch (Exception e) {
         if (settings == null) {
-          settings = new ResourceLocator(
-              "com.stratelia.webactiv.quizz.quizzSettings", "fr");
+          settings = new ResourceLocator("com.stratelia.webactiv.quizz.quizzSettings", "fr");
         }
       }
     }
@@ -154,19 +148,15 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   /**
    * Method declaration
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
-  public Collection getUserQuizzList() throws QuizzException {
+  public Collection<QuestionContainerHeader> getUserQuizzList() throws QuizzException {
     try {
-      QuestionContainerPK questionContainerPK = new QuestionContainerPK(null,
-          getSpaceId(), getComponentId());
+      QuestionContainerPK questionContainerPK =
+          new QuestionContainerPK(null, getSpaceId(), getComponentId());
 
-      return questionContainerBm.getOpenedQuestionContainersAndUserScores(
-          questionContainerPK, getUserId());
+      return questionContainerBm.getOpenedQuestionContainersAndUserScores(questionContainerPK,
+          getUserId());
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserQuizzList",
           QuizzException.WARNING, "Quizz.EX_PROBLEM_TO_OBTAIN_LIST_QUIZZ", e);
@@ -176,19 +166,14 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   /**
    * Method declaration
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
-  public Collection getAdminQuizzList() throws QuizzException {
+  public Collection<QuestionContainerHeader> getAdminQuizzList() throws QuizzException {
     try {
-      QuestionContainerPK questionContainerPK = new QuestionContainerPK(null,
-          getSpaceId(), getComponentId());
+      QuestionContainerPK questionContainerPK =
+          new QuestionContainerPK(null, getSpaceId(), getComponentId());
 
-      return questionContainerBm
-          .getNotClosedQuestionContainers(questionContainerPK);
+      return questionContainerBm.getNotClosedQuestionContainers(questionContainerPK);
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.getUserQuizzList",
           QuizzException.WARNING, "Quizz.EX_PROBLEM_TO_OBTAIN_LIST_QUIZZ", e);
@@ -197,19 +182,14 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   * @param id
+   * @param quizzId the quizz identifier
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
-  public QuestionContainerDetail getQuizzDetail(String id)
-      throws QuizzException {
+  public QuestionContainerDetail getQuizzDetail(String quizzId) throws QuizzException {
     try {
-      QuestionContainerPK questionContainerPK = new QuestionContainerPK(id,
-          getSpaceId(), getComponentId());
+      QuestionContainerPK questionContainerPK =
+          new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
 
       return questionContainerBm.getQuestionContainer(questionContainerPK,
           getUserId());
@@ -222,8 +202,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   /**
    * Method declaration
    * @param quizzDetail
-   * @throws QizzException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
   public void createQuizz(QuestionContainerDetail quizzDetail)
       throws QuizzException {
@@ -241,7 +220,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   /**
    * @param quizzDetail
    * @param componentId
-   * @throws QuizzException
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
   public void createQuizz(QuestionContainerDetail quizzDetail, String componentId)
       throws QuizzException {
@@ -258,62 +237,49 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * Method declaration
    * @param quizzId
    * @param reply
-   * @throws QuizzException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
-  public void recordReply(String quizzId, Hashtable reply)
+  public void recordReply(String quizzId, Hashtable<String, Vector<String>> reply)
       throws QuizzException {
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-          getComponentId());
+      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
 
-      questionContainerBm.recordReplyToQuestionContainerByUser(qcPK,
-          getUserId(), reply);
+      questionContainerBm.recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply);
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.recordReply",
-          QuizzException.ERROR, "Quizz.EX_RECORD_REPLY_FAILED", e);
+      throw new QuizzException("QuizzSessionController.recordReply", QuizzException.ERROR,
+          "Quizz.EX_RECORD_REPLY_FAILED", e);
     }
   }
 
   /**
    * Method declaration
-   * @param quizzId
+   * @param quizzId quizz identifier
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
-  public Collection getSuggestions(String quizzId) throws QuizzException {
+  public Collection<QuestionResult> getSuggestions(String quizzId) throws QuizzException {
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-          getComponentId());
-
+      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
       return questionContainerBm.getSuggestions(qcPK);
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.getSuggestions",
-          QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_RETURN_SUGGESTION", e);
+      throw new QuizzException("QuizzSessionController.getSuggestions", QuizzException.ERROR,
+          "Quizz.EX_PROBLEM_TO_RETURN_SUGGESTION", e);
     }
   }
 
   /**
-   * Method declaration
-   * @param quizzId
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * Method which close and delete a quizz
+   * @param quizzId the quizz identifier
+   * @throws QuizzException an exception if a problem occurs when closing the quizz
    */
   public void closeQuizz(String quizzId) throws QuizzException {
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-          getComponentId());
-
+      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
       questionContainerBm.deleteIndex(qcPK);
       questionContainerBm.closeQuestionContainer(qcPK);
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.closeQuizz",
-          QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_CLOSE_QUIZZ", e);
+      throw new QuizzException("QuizzSessionController.closeQuizz", QuizzException.ERROR,
+          "Quizz.EX_PROBLEM_TO_CLOSE_QUIZZ", e);
     }
   }
 
@@ -321,20 +287,15 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * Method declaration
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if a problem occurs
    */
   public int getNbVoters(String quizzId) throws QuizzException {
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-          getComponentId());
-
+      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
       return questionContainerBm.getNbVotersByQuestionContainer(qcPK);
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.getNbVoters",
-          QuizzException.ERROR, "Quizz.EX_PROBLEM_OBTAIN_NB_VOTERS", e);
+      throw new QuizzException("QuizzSessionController.getNbVoters", QuizzException.ERROR,
+          "Quizz.EX_PROBLEM_OBTAIN_NB_VOTERS", e);
     }
   }
 
@@ -342,84 +303,62 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * Method declaration
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if a problem occurs
    */
   public float getAveragePoints(String quizzId) throws QuizzException {
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-          getComponentId());
-
+      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
       return questionContainerBm.getAverageScoreByFatherId(qcPK);
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.getAveragePoints",
-          QuizzException.ERROR, "Quizz.EX_PROBLEM_OBTAIN_AVERAGE", e);
+      throw new QuizzException("QuizzSessionController.getAveragePoints", QuizzException.ERROR,
+          "Quizz.EX_PROBLEM_OBTAIN_AVERAGE", e);
     }
   }
 
   /**
    * Method declaration
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if a problem occurs in quizz module
    */
-  public Collection getAdminResults() throws QuizzException {
+  public Collection<QuestionContainerHeader> getAdminResults() throws QuizzException {
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK("unknown",
-          getSpaceId(), getComponentId());
-
+      QuestionContainerPK qcPK = new QuestionContainerPK("unknown", getSpaceId(), getComponentId());
       return questionContainerBm.getQuestionContainersWithScores(qcPK);
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.getAdminResults",
-          QuizzException.ERROR, "Quizz.EX_PROBLEM_OBTAIN_RESULT", e);
+      throw new QuizzException("QuizzSessionController.getAdminResults", QuizzException.ERROR,
+          "Quizz.EX_PROBLEM_OBTAIN_RESULT", e);
     }
   }
 
   /**
    * Method declaration
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if a problem occurs
    */
-  public Collection getUserResults() throws QuizzException {
+  public Collection<QuestionContainerHeader> getUserResults() throws QuizzException {
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK("unknown",
-          getSpaceId(), getComponentId());
-
-      return questionContainerBm.getQuestionContainersWithUserScores(qcPK,
-          getUserId());
+      QuestionContainerPK qcPK = new QuestionContainerPK("unknown", getSpaceId(), getComponentId());
+      return questionContainerBm.getQuestionContainersWithUserScores(qcPK, getUserId());
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.getUserResults",
-          QuizzException.ERROR, "Quizz.EX_PROBLEM_OBTAIN_RESULT", e);
+      throw new QuizzException("QuizzSessionController.getUserResults", QuizzException.ERROR,
+          "Quizz.EX_PROBLEM_OBTAIN_RESULT", e);
     }
   }
 
   /**
    * Method declaration
-   * @param quizzId
-   * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @param quizzId the quizz identifier
+   * @return a collection of ScoreDetail linked to the quizz identified by quizzId
+   * @throws QuizzException an exception if a problem occur when closing the quizz
    */
-  public Collection getUserScoresByFatherId(String quizzId)
-      throws QuizzException {
+  public Collection<ScoreDetail> getUserScoresByFatherId(String quizzId) throws QuizzException {
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-          getComponentId());
-
+      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
       return questionContainerBm.getUserScoresByFatherId(qcPK, getUserId());
     } catch (Exception e) {
       throw new QuizzException(
-          "QuizzSessionController.getUserScoresByFatherId",
-          QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_OBTAIN_SCORE", e);
+          "QuizzSessionController.getUserScoresByFatherId", QuizzException.ERROR,
+          "Quizz.EX_PROBLEM_TO_OBTAIN_SCORE", e);
     }
   }
 
@@ -427,61 +366,46 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * Method declaration
    * @param quizzId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
-  public Collection getUserPalmares(String quizzId) throws QuizzException {
+  public Collection<ScoreDetail> getUserPalmares(String quizzId) throws QuizzException {
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-          getComponentId());
-
+      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
       return questionContainerBm.getBestScoresByFatherId(qcPK, nbTopScores);
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.getUserPalmares",
-          QuizzException.ERROR, "Quizz.EX_PROBLEM_OBTAIN_USERPALMARES", e);
+      throw new QuizzException("QuizzSessionController.getUserPalmares", QuizzException.ERROR,
+          "Quizz.EX_PROBLEM_OBTAIN_USERPALMARES", e);
     }
   }
 
   /**
    * Method declaration
-   * @param quizzId
+   * @param quizzId the quizz identifier
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
-  public Collection getAdminPalmares(String quizzId) throws QuizzException {
-    Collection scores = null;
-
+  public Collection<ScoreDetail> getAdminPalmares(String quizzId) throws QuizzException {
+    Collection<ScoreDetail> scores = null;
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-          getComponentId());
-
+      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
       scores = questionContainerBm.getScoresByFatherId(qcPK);
-
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.getAdminPalmares",
-          QuizzException.ERROR, "Quizz.EX_PROBLEM_OBTAIN_PALMARES", e);
+      throw new QuizzException("QuizzSessionController.getAdminPalmares", QuizzException.ERROR,
+          "Quizz.EX_PROBLEM_OBTAIN_PALMARES", e);
     }
     return scores;
   }
 
   /**
    * Method declaration
-   * @param quizzId
-   * @param getUserId ()
+   * @param quizzId the quizz identifier
+   * @param userId the user identifier
    * @param participationId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
-  public QuestionContainerDetail getQuestionContainerByParticipationId(
-      String quizzId, String userId, int participationId) throws QuizzException {
+  public QuestionContainerDetail getQuestionContainerByParticipationId(String quizzId,
+      String userId, int participationId) throws QuizzException {
     QuestionContainerDetail questionContainerDetail = null;
     QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
         getComponentId());
@@ -502,21 +426,17 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * @param quizzId
    * @param participationId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
   public QuestionContainerDetail getQuestionContainerForCurrentUserByParticipationId(
       String quizzId, int participationId) throws QuizzException {
     QuestionContainerDetail questionContainerDetail = null;
-    QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-        getComponentId());
+    QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
 
     try {
       questionContainerDetail = questionContainerBm
           .getQuestionContainerByParticipationId(qcPK, getUserId(),
-          participationId);
+              participationId);
     } catch (Exception e) {
       throw new QuizzException(
           "QuizzSessionController.getQuestionContainerForCurrentUserByParticipationId",
@@ -530,15 +450,11 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * @param quizzId
    * @param getUserId ()
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
   public int getUserNbParticipationsByFatherId(String quizzId, String userId)
       throws QuizzException {
-    QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-        getComponentId());
+    QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
     int nbPart = 0;
 
     try {
@@ -558,21 +474,17 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * @param getUserId ()
    * @param participationId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
   public ScoreDetail getUserScoreByFatherIdAndParticipationId(String quizzId,
       String userId, int participationId) throws QuizzException {
-    QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-        getComponentId());
+    QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
     ScoreDetail scoreDetail = null;
 
     try {
       scoreDetail = questionContainerBm
           .getUserScoreByFatherIdAndParticipationId(qcPK, userId,
-          participationId);
+              participationId);
     } catch (Exception e) {
       throw new QuizzException(
           "QuizzSessionController.getUserScoreByFatherIdAndParticipationId",
@@ -586,21 +498,17 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * @param quizzId
    * @param participationId
    * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
   public ScoreDetail getCurrentUserScoreByFatherIdAndParticipationId(
       String quizzId, int participationId) throws QuizzException {
-    QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-        getComponentId());
+    QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
     ScoreDetail scoreDetail = null;
 
     try {
       scoreDetail = questionContainerBm
           .getUserScoreByFatherIdAndParticipationId(qcPK, getUserId(),
-          participationId);
+              participationId);
     } catch (Exception e) {
       throw new QuizzException(
           "QuizzSessionController.getCurrentUserScoreByFatherIdAndParticipationId",
@@ -612,16 +520,10 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   /**
    * Method declaration
    * @param scoreDetail
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
   public void updateScore(ScoreDetail scoreDetail) throws QuizzException {
-    QuestionContainerPK qcPK = new QuestionContainerPK("", getSpaceId(),
-        getComponentId());
-
+    QuestionContainerPK qcPK = new QuestionContainerPK("", getSpaceId(), getComponentId());
     try {
       questionContainerBm.updateScore(qcPK, scoreDetail);
     } catch (Exception e) {
@@ -634,16 +536,12 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * Method declaration
    * @param quizzHeader
    * @param quizzId
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
-  public void updateQuizzHeader(QuestionContainerHeader quizzHeader,
-      String quizzId) throws QuizzException {
+  public void updateQuizzHeader(QuestionContainerHeader quizzHeader, String quizzId)
+      throws QuizzException {
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-          getComponentId());
+      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
 
       quizzHeader.setPK(qcPK);
       questionContainerBm.updateQuestionContainerHeader(quizzHeader);
@@ -657,36 +555,29 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * Method declaration
    * @param questions
    * @param quizzId
-   * @throws CreateException
-   * @throws NamingException
-   * @throws SQLException
-   * @see
+   * @throws QuizzException an exception if problem occurs in quizz module
    */
-  public void updateQuestions(Collection questions, String quizzId)
-      throws QuizzException {
+  public void updateQuestions(Collection<Question> questions, String quizzId) throws QuizzException {
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(),
-          getComponentId());
-
+      QuestionContainerPK qcPK = new QuestionContainerPK(quizzId, getSpaceId(), getComponentId());
       questionContainerBm.updateQuestions(qcPK, questions);
     } catch (Exception e) {
-      throw new QuizzException("QuizzSessionController.updateQuestions",
-          QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_UPDATE_QUESTIONS", e);
+      throw new QuizzException("QuizzSessionController.updateQuestions", QuizzException.ERROR,
+          "Quizz.EX_PROBLEM_TO_UPDATE_QUESTIONS", e);
     }
   }
 
-  public List getGalleries() {
-    List galleries = null;
+  public List<ComponentInstLight> getGalleries() {
+    List<ComponentInstLight> galleries = null;
     OrganizationController orgaController = new OrganizationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (int c = 0; c < compoIds.length; c++) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue(
           "gallery" + compoIds[c], "viewInWysiwyg"))) {
-        if (galleries == null)
-          galleries = new ArrayList();
-
-        ComponentInstLight gallery = orgaController
-            .getComponentInstLight("gallery" + compoIds[c]);
+        if (galleries == null) {
+          galleries = new ArrayList<ComponentInstLight>();
+        }
+        ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoIds[c]);
         galleries.add(gallery);
       }
     }
@@ -708,15 +599,14 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   }
 
   public void paste() throws Exception {
-    Collection clipObjects = getClipboardSelectedObjects();
-    Iterator clipObjectIterator = clipObjects.iterator();
-    while (clipObjectIterator.hasNext()) {
-      ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator.next();
+    Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
+    for (ClipboardSelection clipObject : clipObjects) {
       if (clipObject != null) {
         if (clipObject
             .isDataFlavorSupported(QuestionContainerSelection.QuestionContainerDetailFlavor)) {
-          QuestionContainerDetail quizz = (QuestionContainerDetail) clipObject
-              .getTransferData(QuestionContainerSelection.QuestionContainerDetailFlavor);
+          QuestionContainerDetail quizz =
+              (QuestionContainerDetail) clipObject
+                  .getTransferData(QuestionContainerSelection.QuestionContainerDetailFlavor);
           pasteQuizz(quizz);
         }
       }
@@ -747,12 +637,12 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
         if (StringUtil.isDefined(physicalName)) {
           // copy image
-          ResourceLocator settings =
+          ResourceLocator surveySettings =
               new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", "");
           String type =
-              physicalName.substring(physicalName.indexOf(".") + 1, physicalName.length());
+              physicalName.substring(physicalName.indexOf('.') + 1, physicalName.length());
           String newPhysicalName =
-              new Long(new Date().getTime()).toString() + attachmentSuffix + "." + type;
+              Long.valueOf(new Date().getTime()).toString() + attachmentSuffix + "." + type;
           SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
               "newPhysicalName = " + newPhysicalName + " answer = " + answer.getLabel());
           attachmentSuffix = attachmentSuffix + 1;
@@ -760,25 +650,26 @@ public class QuizzSessionController extends AbstractComponentSessionController {
           if (quizz.getHeader().getInstanceId().equals(getComponentId())) {
             // in the same component
             String absolutePath = FileRepositoryManager.getAbsolutePath(componentId);
-            String dir = absolutePath + settings.getString("imagesSubDirectory") + File.separator;
+            String dir =
+                absolutePath + surveySettings.getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(dir + physicalName, dir + newPhysicalName);
             SilverTrace
                 .debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
-                " same component : from = " + dir + physicalName + " to = " + dir +
-                newPhysicalName);
+                    " same component : from = " + dir + physicalName + " to = " + dir +
+                        newPhysicalName);
           } else {
             // in other component
             String fromAbsolutePath =
                 FileRepositoryManager.getAbsolutePath(quizz.getHeader().getInstanceId());
             String toAbsolutePath = FileRepositoryManager.getAbsolutePath(componentId);
             String fromDir =
-                fromAbsolutePath + settings.getString("imagesSubDirectory") + File.separator;
+                fromAbsolutePath + surveySettings.getString("imagesSubDirectory") + File.separator;
             String toDir =
-                toAbsolutePath + settings.getString("imagesSubDirectory") + File.separator;
+                toAbsolutePath + surveySettings.getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(fromDir + physicalName, toDir + newPhysicalName);
             SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
                 " other component : from = " + fromDir + physicalName + " to = " + toDir +
-                newPhysicalName);
+                    newPhysicalName);
           }
           // update answer
           answer.setImage(newPhysicalName);
@@ -793,8 +684,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   public int getSilverObjectId(String objectId) {
     int silverObjectId = -1;
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(objectId,
-          getSpaceId(), getComponentId());
+      QuestionContainerPK qcPK = new QuestionContainerPK(objectId, getSpaceId(), getComponentId());
       silverObjectId = questionContainerBm.getSilverObjectId(qcPK);
     } catch (Exception e) {
       SilverTrace.error("quizz", "QuizzSessionController.getSilverObjectId()",
@@ -803,37 +693,42 @@ public class QuizzSessionController extends AbstractComponentSessionController {
     return silverObjectId;
   }
 
+  /**
+   * Export a quizz in Comma Separated Value format
+   * @param quizzId the quizz identifier
+   * @return a String representation of the quizz
+   */
   public String exportQuizzCSV(String quizzId) {
     QuestionContainerDetail quizz = null;
     try {
       quizz = getQuizzDetail(quizzId);
       return questionContainerBm.exportCSV(quizz, true);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverTrace.error("quizzSession", "QuizzSessionController.exportQuizzCSV", "", e);
     }
     return null;
   }
 
-  public boolean isParticipationAllowed(String id) throws QuizzException {
-    QuestionContainerDetail quizz = getQuizzDetail(id);
-    int nbParticipations = getUserNbParticipationsByFatherId(id, getUserId());
-
+  /**
+   * 
+   * @param quizzId the quizz identifier
+   * @return true if participation is allowed, false else if
+   * @throws QuizzException an exception if problem occurs in quizz module
+   */
+  public boolean isParticipationAllowed(String quizzId) throws QuizzException {
+    QuestionContainerDetail quizz = getQuizzDetail(quizzId);
+    int nbParticipations = getUserNbParticipationsByFatherId(quizzId, getUserId());
     return nbParticipations < quizz.getHeader().getNbMaxParticipations();
   }
 
+  /**
+   * 
+   */
   public void close() {
     try {
-      if (questionContainerBm != null)
+      if (questionContainerBm != null) {
         questionContainerBm.remove();
-    } catch (RemoteException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
-    }
-    try {
-      if (scoreBm != null)
-        scoreBm.remove();
+      }
     } catch (RemoteException e) {
       SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
     } catch (RemoveException e) {

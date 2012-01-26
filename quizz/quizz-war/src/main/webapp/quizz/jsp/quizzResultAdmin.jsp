@@ -34,47 +34,50 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 
 <%!
-    String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzException
-    {
-	String Html_display = null;
-	if (nb_user_votes == nb_max_user_votes)
-		Html_display = "<img src=\"icons/feuRouge.gif\">&nbsp;";
-	else
-		Html_display = "<img src=\"icons/feuVert.gif\">&nbsp;";
-	for (int i=0; i<nb_max_user_votes; i++)
-	{
-		if (i < (nb_max_user_votes - nb_user_votes))
-		  Html_display += "<img src=\"icons/creditOn.gif\">";
-		else
-		  Html_display += "<img src=\"icons/creditOff.gif\">";
-	}
-      return Html_display;
+String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzException
+{
+  String Html_display = null;
+  if (nb_user_votes == nb_max_user_votes) {
+  	Html_display = "<img src=\"icons/feuRouge.gif\">&nbsp;";
+  } else {
+  	Html_display = "<img src=\"icons/feuVert.gif\">&nbsp;";
+  }
+  for (int i=0; i<nb_max_user_votes; i++)
+  {
+  	if (i < (nb_max_user_votes - nb_user_votes)) {
+  	  Html_display += "<img src=\"icons/creditOn.gif\">";
+  	} else {
+  	  Html_display += "<img src=\"icons/creditOff.gif\">";
+  	}
+  }
+  return Html_display;
 }
 %>
-  <%
-  ResourceLocator settings = quizzScc.getSettings();
-  String m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-  String space = quizzScc.getSpaceLabel();
-  String component = quizzScc.getComponentLabel();
-
- %>
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<%
+ResourceLocator settings = quizzScc.getSettings();
+String m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String space = quizzScc.getSpaceLabel();
+String component = quizzScc.getComponentLabel();
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
 </head>
 
-<SCRIPT LANGUAGE="JAVASCRIPT">
+<script language="javascript">
 function notifyPopup2(context,compoId,users,groups)
 {
     SP_openWindow(context+'/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=' + compoId + '&theTargetsUsers='+users+'&theTargetsGroups='+groups, 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
 }
-</SCRIPT>
+</script>
 
-<body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
  <%
   //objet window
   Window window = gef.getWindow();
@@ -110,65 +113,65 @@ function notifyPopup2(context,compoId,users,groups)
   arrayPane.addArrayColumn(resources.getString("ScoreLib"));
   arrayPane.addArrayColumn(resources.getString("ScorePosition"));
 
-  Collection quizzList = quizzScc.getAdminResults();
-  Iterator i = quizzList.iterator();
-  while (i.hasNext()) {
-    QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i.next();
-    int nb_max_participations = quizzHeader.getNbMaxParticipations();
-    Collection scoreDetails = quizzHeader.getScores();
-    if (scoreDetails != null)
-    {
-      Iterator j = scoreDetails.iterator();
-      while (j.hasNext()) {
-        ScoreDetail scoreDetail = (ScoreDetail) j.next();
-	int nb_user_votes = quizzScc.getUserNbParticipationsByFatherId(quizzHeader.getPK().getId(), scoreDetail.getUserId());
-        UserDetail userDetail=quizzScc.getUserDetail(scoreDetail.getUserId());
-      String firstName = "";
-      String lastName = resources.getString("UserUnknown");
-      String recipient="";
-      if (userDetail != null)
+  Collection<QuestionContainerHeader> quizzList = quizzScc.getAdminResults();
+  Iterator<QuestionContainerHeader> qcIt = quizzList.iterator();
+  while (qcIt.hasNext()) {
+    QuestionContainerHeader quizzHeader = qcIt.next();
+    if (!quizzHeader.isClosed()) {
+      int nb_max_participations = quizzHeader.getNbMaxParticipations();
+      Collection<ScoreDetail> scoreDetails = quizzHeader.getScores();
+      if (scoreDetails != null)
       {
-	      firstName = userDetail.getFirstName();
-	      lastName = userDetail.getLastName();
-	      recipient=userDetail.getId();
-      }
+        Iterator<ScoreDetail> sdIt = scoreDetails.iterator();
+        while (sdIt.hasNext()) {
+          ScoreDetail scoreDetail = sdIt.next();
+          int nb_user_votes = quizzScc.getUserNbParticipationsByFatherId(quizzHeader.getPK().getId(), scoreDetail.getUserId());
+          UserDetail userDetail=quizzScc.getUserDetail(scoreDetail.getUserId());
+          String firstName = "";
+          String lastName = resources.getString("UserUnknown");
+          String recipient="";
+          if (userDetail != null) {
+            firstName = userDetail.getFirstName();
+            lastName = userDetail.getLastName();
+            recipient=userDetail.getId();
+          }
 
-        ArrayLine arrayLine = arrayPane.addArrayLine();
-    	arrayLine.addArrayCellLink("<img src=\"icons/palmares_30x15.gif\" border=0>","palmaresAdmin.jsp?quizz_id="+quizzHeader.getPK().getId());
-        arrayLine.addArrayCellText(quizzHeader.getTitle());
-        ArrayCellText arrayCellText2;
-        if (!recipient.equals(""))
-		{
-			arrayCellText2 = arrayLine.addArrayCellText("<A HREF=\"javascript:notifyPopup2('" + m_Context + "','" + quizzScc.getComponentId() + "','" + recipient + "','')\">" + lastName + " " + firstName +"</A>");
-		}
-        else
-	         arrayCellText2 = arrayLine.addArrayCellText(lastName + " " + firstName);
-        arrayCellText2.setCompareOn((String) (lastName + " " + firstName).toLowerCase());
-        
-        Date participationDate = DateUtil.parse(scoreDetail.getParticipationDate());
-        arrayLine.addArrayCellLink(resources.getOutputDate(participationDate),"quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&Action=ViewResultAdmin&Page=1"+"&UserId="+scoreDetail.getUserId()+"&ParticipationId="+new Integer(scoreDetail.getParticipationId()).toString());
-        
-        arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
-        ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(new Integer(scoreDetail.getScore()).toString()+"/"+quizzHeader.getNbMaxPoints());
-        arrayCellText1.setCompareOn(new Integer(scoreDetail.getScore()));
-        ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(new Integer(scoreDetail.getPosition()).toString());
-	arrayCellText3.setCompareOn(new Integer(scoreDetail.getPosition()));
-      }
+          ArrayLine arrayLine = arrayPane.addArrayLine();
+          arrayLine.addArrayCellLink("<img src=\"icons/palmares_30x15.gif\" border=0>","palmaresAdmin.jsp?quizz_id="+quizzHeader.getPK().getId());
+          arrayLine.addArrayCellText(quizzHeader.getTitle());
+          ArrayCellText arrayCellText2;
+          if (!recipient.equals("")) {
+            arrayCellText2 = arrayLine.addArrayCellText("<a href=\"javascript:notifyPopup2('" + m_Context + "','" + quizzScc.getComponentId() + "','" + recipient + "','')\">" + lastName + " " + firstName +"</A>");
+          } else {
+            arrayCellText2 = arrayLine.addArrayCellText(lastName + " " + firstName);
+          }
+          arrayCellText2.setCompareOn((String) (lastName + " " + firstName).toLowerCase());
+          
+          Date participationDate = DateUtil.parse(scoreDetail.getParticipationDate());
+          arrayLine.addArrayCellLink(resources.getOutputDate(participationDate),"quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&Action=ViewResultAdmin&Page=1"+"&UserId="+scoreDetail.getUserId()+"&ParticipationId="+new Integer(scoreDetail.getParticipationId()).toString());
+          
+          arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
+          ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(new Integer(scoreDetail.getScore()).toString()+"/"+quizzHeader.getNbMaxPoints());
+          arrayCellText1.setCompareOn(new Integer(scoreDetail.getScore()));
+          ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(new Integer(scoreDetail.getPosition()).toString());
+          arrayCellText3.setCompareOn(new Integer(scoreDetail.getPosition()));
+        }
+      }      
     }
   }
   out.println(arrayPane.print());
 %>
-  <blockquote> <img src="icons/feuVert.gif" width="10" height="10" align="absmiddle">&nbsp;<%=resources.getString("QuizzParticipateYes")%><br>
-      <img src="icons/feuRouge.gif" width="10" height="10" align="absmiddle">&nbsp;<%=resources.getString("QuizzParticipateNo")%><br>
-      <img src="icons/creditOff.gif" width="10" height="10" align="absmiddle">&nbsp;<%=resources.getString("QuizzCreditOver")%><br>
-      <img src="icons/creditOn.gif" width="10" height="10" align="absmiddle">&nbsp;<%=resources.getString("QuizzCreditAvailable")%>
+  <blockquote> <img src="icons/feuVert.gif" width="10" height="10" class="vertical_align">&nbsp;<%=resources.getString("QuizzParticipateYes")%><br>
+      <img src="icons/feuRouge.gif" width="10" height="10" class="vertical_align">&nbsp;<%=resources.getString("QuizzParticipateNo")%><br>
+      <img src="icons/creditOff.gif" width="10" height="10" class="vertical_align">&nbsp;<%=resources.getString("QuizzCreditOver")%><br>
+      <img src="icons/creditOn.gif" width="10" height="10" class="vertical_align">&nbsp;<%=resources.getString("QuizzCreditAvailable")%>
   </blockquote>
 <!--  FIN TAG FORM-->
 <% out.println(frame.printMiddle());
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 
 

@@ -27,6 +27,11 @@
 
 package com.stratelia.webactiv.quizz;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.ejb.EJBException;
 
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
@@ -37,14 +42,8 @@ import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 
-import javax.ejb.EJBException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 /**
  * Class declaration
- *
  * @author
  */
 public class QuizzStatistics implements ComponentStatisticsInterface {
@@ -55,7 +54,8 @@ public class QuizzStatistics implements ComponentStatisticsInterface {
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
     Collection<QuestionContainerHeader> headers = getQuizz(spaceId, componentId);
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList(headers.size());
+    List<UserIdCountVolumeCouple> myArrayList =
+        new ArrayList<UserIdCountVolumeCouple>(headers.size());
     for (QuestionContainerHeader qcHeader : headers) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(qcHeader.getCreatorId());

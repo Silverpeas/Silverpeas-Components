@@ -40,9 +40,9 @@ String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 String folderSrc = iconsPath + "/util/icons/delete.gif";
 %>
 
-<HTML>
-<HEAD>
-	<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+	<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
   <%
   ResourceLocator settings = quizzScc.getSettings();
   String space = quizzScc.getSpaceLabel();
@@ -233,7 +233,7 @@ else
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 
 

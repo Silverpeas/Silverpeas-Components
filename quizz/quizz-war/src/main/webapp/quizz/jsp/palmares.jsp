@@ -60,9 +60,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
 
-<HTML>
-<HEAD>
-	<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+	<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -264,7 +264,7 @@ else
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 
 

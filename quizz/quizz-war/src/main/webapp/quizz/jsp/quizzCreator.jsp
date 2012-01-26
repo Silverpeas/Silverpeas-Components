@@ -32,7 +32,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-//R�cup�ration des param�tres
+//Recuperation des parametres
 String action = "";
 String quizzId = "";
 String title = "";
@@ -72,11 +72,12 @@ if (action == null) {
 }
 
 %>
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript1.2">
 function sendData() {
@@ -201,59 +202,60 @@ function isCorrectForm() {
 }
 
 </script>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+</head>
+<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
 <%
 if (action.equals("SendNewQuizz")) {
-      if (beginDate != null) {
-          if (beginDate.length()>0)
-            beginDate = resources.getDBDate(beginDate);
-          else
-            beginDate = null;
-      }
-      if (endDate != null) {
-          if (endDate.length()>0)
-            endDate = resources.getDBDate(endDate);
-          else
-            endDate = null;
-      }
-
-      QuestionContainerHeader questionContainerHeader = new QuestionContainerHeader(null, title, description,notice, null, null, beginDate, endDate, false, 0, new Integer(nbQuestions).intValue(),new Integer(nbAnswersMax).intValue(),new Integer(nbAnswersNeeded).intValue(),0);
-      QuestionContainerDetail questionContainerDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
-      questionContainerDetail.setHeader(questionContainerHeader);
-      session.setAttribute("quizzUnderConstruction", questionContainerDetail);
+  if (beginDate != null) {
+      if (beginDate.length()>0)
+        beginDate = resources.getDBDate(beginDate);
+      else
+        beginDate = null;
+  }
+  if (endDate != null) {
+      if (endDate.length()>0)
+        endDate = resources.getDBDate(endDate);
+      else
+        endDate = null;
+  }
+  
+  QuestionContainerHeader questionContainerHeader = new QuestionContainerHeader(null, title, description,notice, null, null, beginDate, endDate, false, 0, new Integer(nbQuestions).intValue(),new Integer(nbAnswersMax).intValue(),new Integer(nbAnswersNeeded).intValue(),0);
+  QuestionContainerDetail questionContainerDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
+  questionContainerDetail.setHeader(questionContainerHeader);
+  session.setAttribute("quizzUnderConstruction", questionContainerDetail);
 } //End if action = ViewResult
 else if (action.equals("CreateQuizz")) {
-      cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
-      validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
-      session.removeAttribute("quizzUnderConstruction");
-      title = "";
-      creationDate = resources.getOutputDate(new Date());
-      beginDate = creationDate;
-      endDate = "";
-      nbQuestions = "1";
-      notice="";
-      description="";
-      nbAnswersNeeded = "1";
-      nbAnswersMax = "1";
-      nextAction="SendNewQuizz";
-
-      Window window = gef.getWindow();
-      Frame frame =gef.getFrame();
-      Board board = gef.getBoard();
-
-      BrowseBar browseBar = window.getBrowseBar();
-      browseBar.setDomainName(space);
-      browseBar.setComponentName(component);
-      browseBar.setExtraInformation(resources.getString("QuizzCreation"));
-
-      out.println(window.printBefore());
-      out.println(frame.printBefore());
-      out.println(board.printBefore());
+  cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
+  validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
+  session.removeAttribute("quizzUnderConstruction");
+  title = "";
+  creationDate = resources.getOutputDate(new Date());
+  beginDate = creationDate;
+  endDate = "";
+  nbQuestions = "1";
+  notice="";
+  description="";
+  nbAnswersNeeded = "1";
+  nbAnswersMax = "1";
+  nextAction="SendNewQuizz";
+  
+  Window window = gef.getWindow();
+  Frame frame =gef.getFrame();
+  Board board = gef.getBoard();
+  
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(space);
+  browseBar.setComponentName(component);
+  browseBar.setExtraInformation(resources.getString("QuizzCreation"));
+  
+  out.println(window.printBefore());
+  out.println(frame.printBefore());
+  out.println(board.printBefore());
 %>
 <center>
-<table CELLPADDING=5 width="100%">
-	<form name="quizzForm" Action="quizzCreator.jsp" method="POST">
+<form name="quizzForm" Action="quizzCreator.jsp" method="post">
+<table cellpadding="5" width="100%">
+  <tbody>
     <tr><td class="txtlibform" valign="baseline" align=left width="100"><%=resources.getString("GML.name")%> :</td>
 		<td><input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=EncodeHelper.javaStringToHtmlString(title)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
 	</tr>
@@ -287,14 +289,15 @@ else if (action.equals("CreateQuizz")) {
 	<tr><td class="intfdcolor4" valign="top" align=left colspan=2 nowrap><span class="txt">( <img src="<%=mandatoryField%>" width="5" height="5"> = <%=resources.getString("GML.requiredField")%> ) </span>
 		</td>
 	</tr>
-	</form>
+  </tbody>
 </table>
+</form>
 </center>
 <%
 	out.println(board.printAfter());
     out.println(frame.printMiddle());
 %>
-<BR>
+<br>
 <center>
 <%
       ButtonPane buttonPane = gef.getButtonPane();
@@ -311,18 +314,18 @@ else if (action.equals("CreateQuizz")) {
  } //End if action = ViewQuestion
 if (action.equals("SendNewQuizz")) {
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <script language="Javascript">
     function goToQuestionCreator() {
         document.questionForm.submit();
     }
 </script>
-</HEAD>
-<BODY onLoad="goToQuestionCreator()">
-<Form name="questionForm" Action="questionCreator.jsp" Method="POST" ENCTYPE="multipart/form-data">
-<input type="hidden" name="Action" value="FirstQuestion">
-</Form>
-</BODY>
-</HTML>
+</head>
+<body onLoad="goToQuestionCreator()">
+<form name="questionForm" action="questionCreator.jsp" method="post" enctype="multipart/form-data">
+<input type="hidden" name="Action" value="FirstQuestion" />
+</form>
+</body>
+</html>
 <% } %>
