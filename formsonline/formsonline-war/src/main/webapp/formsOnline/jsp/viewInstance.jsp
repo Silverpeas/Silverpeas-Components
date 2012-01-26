@@ -29,19 +29,22 @@
 <%@ include file="check.jsp" %>
 
 <%@page import="java.util.List"%>
-<%@page import="com.silverpeas.formsonline.model.FormDetail"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
-<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@page import="java.util.Iterator"%>
-<%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="com.stratelia.webactiv.beans.admin.Group"%>
+<%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
+<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@page import="com.silverpeas.formsonline.model.FormDetail"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.formsonline.model.FormInstance"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
+<%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
+<%@page import="com.silverpeas.util.StringUtil"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 
 <%
 	Form formView    = (Form) request.getAttribute("Form");
@@ -64,9 +67,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-	<%
-	out.println(gef.getLookStyleSheet());
-	%>
+<view:looknfeel />
 	<% formView.displayScripts(out, context); %>
 	
 	<script type="text/javascript">
@@ -103,7 +104,7 @@
 		<br/>
 	    <%=validationFrame.printBefore()%>
 	    <%=validationBoard.printBefore()%>
-		<form name="validationForm" action="EffectiveValideForm" method="POST">
+		<form name="validationForm" action="EffectiveValideForm" method="post">
 			<input type="hidden" name="formInstanceId" value="<%=currentFormInstance.getId()%>"/>
 			<input type="hidden" name="decision" value=""/>
 			<%=resource.getString("formsOnline.receiverComments")%><br/><textarea name="comment" rows="8" cols="80" <%=(currentFormInstance.getState() != FormInstance.STATE_READ) ? "disabled" : "" %>><%=(currentFormInstance.getComments() == null)? "" : currentFormInstance.getComments()%></textarea><br/>
