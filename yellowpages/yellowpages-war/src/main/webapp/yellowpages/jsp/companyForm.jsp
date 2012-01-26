@@ -97,17 +97,17 @@
             <center>
                 <form Name="companyForm" Action="companySave" Method="POST">
                     <input type="hidden" name="id" value="${company.companyId}">
-                    <table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%">
+                    <table cellpadding="0" cellspacing="2" border="0" width="98%">
                         <tr>
                             <td NOWRAP>
-                                <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
+                                <table cellpadding="5" cellspacing="0" border="0" width="100%" class="tableBoard">
                                     <tr>
                                         <td valign="baseline" align=left
                                             class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:
                                         </td>
                                         <c:choose>
                                             <c:when test="${viewMode}">
-                                                <td class="txtnav"><c:out value="${company.name}"/>
+                                                <td align="left" class="txtnav"><c:out value="${company.name}"/>
                                             </c:when>
                                             <c:otherwise>
                                                 <td><input type="text" name="Name" value="${company.name}" size="60"
@@ -124,7 +124,7 @@
                                         </td>
                                         <c:choose>
                                             <c:when test="${viewMode}">
-                                                <td><c:out value="${company.email}"/>
+                                                <td align="left"><c:out value="${company.email}"/>
                                             </c:when>
                                             <c:otherwise>
                                                 <td><input type="text" name="Email" value="${company.email}" size="60"
@@ -139,7 +139,7 @@
                                         </td>
                                         <c:choose>
                                             <c:when test="${viewMode}">
-                                                <td><c:out value="${company.phone}"/>
+                                                <td align="left"><c:out value="${company.phone}"/>
                                             </c:when>
                                             <c:otherwise>
                                                 <td><input type="text" name="Phone" value="${company.phone}" size="20"
@@ -153,27 +153,13 @@
                                         </td>
                                         <c:choose>
                                             <c:when test="${viewMode}">
-                                                <td><c:out value="${company.fax}"/>
+                                                <td align="left"><c:out value="${company.fax}"/>
                                             </c:when>
                                             <c:otherwise>
                                                 <td><input type="text" name="Fax" value="${company.fax}" size="20"
-                                                           maxlength="20"</td>
+                                                           maxlength="20"></td>
                                             </c:otherwise>
                                         </c:choose>
-                                    </tr>
-                                    <tr>
-                                        <td valign="baseline" align=left
-                                            class="txtlibform"><%=resources.getString("GML.publisher")%>&nbsp;:
-                                        </td>
-                                        <td><%=yellowpagesScc.getUserDetail().getDisplayedName()%>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td valign="baseline" align=left
-                                            class="txtlibform"><%=resources.getString("ContactDateCreation")%>&nbsp;:
-                                        </td>
-                                        <td><%=resources.getOutputDate(new Date())%>
-                                        </td>
                                     </tr>
                                     <tr>
                                         <c:if test="${!viewMode}">
@@ -188,14 +174,29 @@
                             </td>
                         </tr>
                     </table>
+                    <c:if test="${viewMode}">
+
+                        <table cellpadding="0" cellspacing="2" border="0">
+                            <tr>
+                                <td>Display contact list here...</td>
+                            </tr>
+                        </table>
+                    </c:if>
                 </form>
             </center>
         </view:board>
 
         <view:buttonPane>
             <center>
-                <view:button action="javascript:submitForm()" label='<%=resources.getString("GML.validate")%>'/>
-                <view:button action="topicManager.jsp" label='<%=resources.getString("GML.cancel")%>'/>
+                <c:choose>
+                    <c:when test="${viewMode}">
+                        <view:button action="Main" label='<%=resources.getString("GML.back")%>'/>
+                    </c:when>
+                    <c:otherwise>
+                        <view:button action="javascript:submitForm()" label='<%=resources.getString("GML.validate")%>'/>
+                        <view:button action="topicManager.jsp" label='<%=resources.getString("GML.cancel")%>'/>
+                    </c:otherwise>
+                </c:choose>
             </center>
         </view:buttonPane>
     </view:frame>

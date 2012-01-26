@@ -68,7 +68,7 @@ public class CompanyServiceImpl implements CompanyService {
             if (gc != null) {
                 genericContactDao.delete(gc);
                 // suppression des relations du generic contact s'il en a
-                List<GenericContactRelation> relationList = genericContactRelationDao.findByGenericCompanyId(gc.getGenericcontactId());
+                List<GenericContactRelation> relationList = genericContactRelationDao.findByGenericCompanyId(gc.getGenericContactId());
                 if (relationList != null && relationList.size() > 0) {
                     genericContactRelationDao.delete(relationList);
                 }
@@ -105,7 +105,7 @@ public class CompanyServiceImpl implements CompanyService {
             }
 
             // Creation de la relation entre les deux
-            GenericContactRelation relation = new GenericContactRelation(gcContact.getGenericcontactId(), gcCompany.getGenericcontactId(), GenericContactRelation.RELATION_TYPE_BELONGS_TO, GenericContactRelation.ENABLE_TRUE);
+            GenericContactRelation relation = new GenericContactRelation(gcContact.getGenericContactId(), gcCompany.getGenericContactId(), GenericContactRelation.RELATION_TYPE_BELONGS_TO, GenericContactRelation.ENABLE_TRUE);
             genericContactRelationDao.save(relation);
         } catch (Exception e) {
             throw new YellowpagesRuntimeException("CompanyService.addContactToCompany()", SilverpeasRuntimeException.ERROR, "yellowpages.EX_ADD_COMPANY_TO_CONTACT_FAILED", e);
@@ -120,7 +120,7 @@ public class CompanyServiceImpl implements CompanyService {
 
             if (gcCompany != null && gcContact != null) {
                 // TODO à la place de supprimer, set enabled = false sur la relation ?
-                GenericContactRelation relationToDelete = genericContactRelationDao.findByGenericCompanyIdAndGenericContactId(gcCompany.getGenericcontactId(), gcContact.getGenericcontactId());
+                GenericContactRelation relationToDelete = genericContactRelationDao.findByGenericCompanyIdAndGenericContactId(gcCompany.getGenericContactId(), gcContact.getGenericContactId());
                 if (relationToDelete != null) {
                     genericContactRelationDao.delete(relationToDelete.getRelationId());
                 }
@@ -135,7 +135,7 @@ public class CompanyServiceImpl implements CompanyService {
         List<Company> returnList = new ArrayList<Company>();
         GenericContact gc = genericContactDao.findGenericContactFromContactId(contactId);
         if (gc != null) {
-            List<GenericContactRelation> listeRelations = genericContactRelationDao.findByGenericContactId(gc.getGenericcontactId());
+            List<GenericContactRelation> listeRelations = genericContactRelationDao.findByGenericContactId(gc.getGenericContactId());
             for (GenericContactRelation relation : listeRelations) {
                 if (relation.getEnabled() == GenericContactRelation.ENABLE_TRUE) {
                     GenericContact gcCompany = genericContactDao.findOne(relation.getGenericCompanyId());
