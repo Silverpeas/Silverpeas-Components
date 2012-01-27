@@ -76,6 +76,7 @@ out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="javaScript/publications.js"></script>
 <script type="text/javascript" language="JavaScript1.2">
 <!--
 var subscriptionWindow = window;
@@ -154,10 +155,11 @@ function viewToValidate() {
 	document.managerForm.submit();
 }
 
-function doPagination(index)
-{
+function doPagination(index) {
+	var selectedPublicationIds = getSelectedPublicationIds();
+	var notSelectedPublicationIds = getNotSelectedPublicationIds();
 	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',IEFix:ieFix}, 
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',SelectedPubIds:selectedPublicationIds,NotSelectedPubIds:notSelectedPublicationIds,IEFix:ieFix}, 
 			function(data){
 				$('#pubList').html(data);
 			},"html");
@@ -229,11 +231,11 @@ if (action.equals("KmaxView")) {
 	        operationPane.addOperation(pubToValidateSrc, kmeliaScc.getString("ToValidate"), "javascript:onClick=viewToValidate()");
 	    }
 
-	    if (profile.equals("admin") && "yes".equals(settings.getString("kmax.exportComponentAllowed")) && kmeliaScc.isExportComponentAllowed())
-			{
-				operationPane.addLine();
-				operationPane.addOperation(exportComponentSrc, kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportComponent()");
-			}
+	    if (profile.equals("admin") && "yes".equals(settings.getString("kmax.exportComponentAllowed")) && kmeliaScc.isExportComponentAllowed()) {
+			operationPane.addLine();
+			operationPane.addOperation(exportComponentSrc, kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportComponent()");
+			operationPane.addOperation(exportComponentSrc, kmeliaScc.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
+		}
     }
 
     

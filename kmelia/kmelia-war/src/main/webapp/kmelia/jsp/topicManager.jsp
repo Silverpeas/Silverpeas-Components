@@ -89,11 +89,9 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
 <script type="text/javascript" src="<%=m_context%>/util/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/json/json-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/connection/connection-min.js"></script>
@@ -109,9 +107,10 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
+<script type="text/javascript" src="javaScript/publications.js"></script>
 
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/yui/treeview/assets/skins/sam/treeview.css" />
-<link rel="stylesheet" type="text/css" href="styleSheets/tree.css">
+<link rel="stylesheet" type="text/css" href="styleSheets/tree.css"/>
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/yui/resize/assets/skins/sam/resize.css" />
 
 <style type="text/css" >
@@ -282,6 +281,7 @@ labels["operation.subscribe"] = "<%=resources.getString("SubscriptionsAdd")%>";
 labels["operation.favorites"] = "<%=resources.getString("FavoritesAdd1")%> <%=resources.getString("FavoritesAdd2")%>";
 labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
 labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPredefinePositions")%>";
+labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.exportSelection")%>";
 
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
@@ -318,7 +318,6 @@ function getHeight() {
 	  }
 	  return (myHeight -20);
 }
-
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">

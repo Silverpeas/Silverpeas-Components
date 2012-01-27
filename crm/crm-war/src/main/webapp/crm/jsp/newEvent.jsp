@@ -35,11 +35,9 @@
 <head>
 	<title><fmt:message key="GML.popupTitle"/></title>
 	<view:looknfeel/>
+    <view:includePlugin name="datepicker"/>
 	<script type="text/javascript" src="${context}/util/javaScript/animation.js"></script>
 	<script type="text/javascript" src="${context}/util/javaScript/checkForm.js"></script>
-	<script type="text/javascript" src="${context}/util/javaScript/dateUtils.js"></script>
-	<script type="text/javascript" src="${context}/util/javaScript/jquery/jquery.ui.datepicker-fr.js"></script>
-	<script type="text/javascript" src="${context}/util/javaScript/silverpeas-defaultDatePicker.js"></script>
 	<script type="text/javascript">
 		function openSPWindow(url, windowName) {
 			var form = document.forms["newEvent"];

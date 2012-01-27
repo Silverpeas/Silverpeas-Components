@@ -270,6 +270,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   Fields saveFields = new Fields();
   boolean isDragAndDropEnableByUser = false;
   boolean componentManageable = false;
+  
+  private List<String> selectedPublicationIds = new ArrayList<String>();
 
   /**
    * Creates new sessionClientController
@@ -3583,8 +3585,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
       if (isCutted) {
         if (fromComponentId.equals(getComponentId())) {
-          getPublicationBm().removeAllFather(publi.getPK());
-          getPublicationBm().addFather(publi.getPK(), currentNodePK);
+          getKmeliaBm().movePublicationInSameApplication(publi, currentNodePK, getUserId());
         } else {
           movePublication(completePub, currentNodePK, publi, fromId, fromComponentId, fromForeignPK,
                   fromPubPK, toForeignPK, toPubPK, imagesSubDirectory, thumbnailsSubDirectory,
@@ -3761,12 +3762,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           String fromAbsolutePath)
           throws RemoteException, ThumbnailException, PublicationTemplateException, PdcException {
 
-
-    boolean indexIt = KmeliaHelper.isIndexable(publi);
-
-    getPublicationBm().movePublication(publi.getPK(), nodePK, false); // Change instanceId and
-    // unindex
-    // header+content
+    boolean indexIt = false;
 
     // move Vignette on disk
     int[] thumbnailSize = getThumbnailWidthAndHeight();
@@ -3797,12 +3793,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     // move attachments first (wysiwyg, wysiwyg images, formXML files and images, attachments)
-    // TODO : attachments to versioning
     try {
-      AttachmentController.moveAttachments(fromForeignPK, toForeignPK, indexIt); // Change
-      // instanceId
-      // + move
-      // files
+      // Change instanceId and move files
+      AttachmentController.moveAttachments(fromForeignPK, toForeignPK, indexIt); 
     } catch (AttachmentException e) {
       SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
               "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
@@ -3923,6 +3916,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
     // move statistics
     getStatisticBm().moveStat(toForeignPK, 1, "Publication");
+    
+    // move publication itself
+    getKmeliaBm().movePublicationInAnotherApplication(publi, nodePK, getUserId());
   }
 
   /**
@@ -4829,5 +4825,33 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     PdcClassification defaultClassification = classificationService.findAPreDefinedClassification(
             topicId, componentId);
     return defaultClassification != NONE_CLASSIFICATION && defaultClassification.isModifiable();
+  }
+  
+  public void resetSelectedPublicationIds() {
+    this.selectedPublicationIds.clear();
+  }
+  
+  public List<String> processSelectedPublicationIds(String selectedPublicationIds,
+      String notSelectedPublicationIds) {
+    StringTokenizer tokenizer = null;
+    if (selectedPublicationIds != null) {
+      tokenizer = new StringTokenizer(selectedPublicationIds, ",");
+      while (tokenizer.hasMoreTokens()) {
+        this.selectedPublicationIds.add(tokenizer.nextToken());
+      }
+    }
+
+    if (notSelectedPublicationIds != null) {
+      tokenizer = new StringTokenizer(notSelectedPublicationIds, ",");
+      while (tokenizer.hasMoreTokens()) {
+        this.selectedPublicationIds.remove(tokenizer.nextToken());
+      }
+    }
+    
+    return this.selectedPublicationIds;
+  }
+
+  public List<String> getSelectedPublicationIds() {
+    return selectedPublicationIds;
   }
 }

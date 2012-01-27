@@ -66,14 +66,14 @@ String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute)
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
+<script type="text/javascript" src="javaScript/publications.js"></script>
 
 <style type="text/css">
 .invisibleTopic {
@@ -254,6 +254,7 @@ labels["operation.subscribe"] = "<%=resources.getString("SubscriptionsAdd")%>";
 labels["operation.favorites"] = "<%=resources.getString("FavoritesAdd1")%> <%=resources.getString("FavoritesAdd2")%>";
 labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
 labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPredefinePositions")%>";
+labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.exportSelection")%>";
 
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";

@@ -1165,6 +1165,19 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           // Go to importExportPeas
           destination = "/RimportExportPeas/jsp/ExportItems";
         }
+      } else if (function.equals("ExportPublications")) {
+        String selectedIds = request.getParameter("SelectedIds");
+        String notSelectedIds = request.getParameter("NotSelectedIds");
+        List<String> ids = kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds);
+        
+        List<WAAttributeValuePair> publicationIds = new ArrayList<WAAttributeValuePair>();
+        for (String id : ids) {
+          publicationIds.add(new WAAttributeValuePair(id, kmelia.getComponentId()));
+        }
+        request.setAttribute("selectedResultsWa", publicationIds);
+        kmelia.resetSelectedPublicationIds();
+        // Go to importExportPeas
+        destination = "/RimportExportPeas/jsp/SelectExportMode";
       } else if (function.equals("ToPubliContent")) {
         CompletePublication completePublication =
                 kmelia.getSessionPubliOrClone().getCompleteDetail();
@@ -1548,7 +1561,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("CurrentProfile", profile);
         request.setAttribute("Groups", kmelia.groupIds2Groups(profile.getAllGroups()));
         request.setAttribute("Users", kmelia.userIds2Users(profile.getAllUsers()));
-        request.setAttribute("Path", kmelia.getSessionPath());
+        List<NodeDetail> path = kmelia.getTopicPath(id);
+        request.setAttribute("Path", kmelia.displayPath(path, true, 3));
         request.setAttribute("NodeDetail", topic);
 
         destination = rootDestination + "topicProfiles.jsp";

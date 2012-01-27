@@ -40,12 +40,22 @@ import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
 
+
+import static org.junit.Assert.*;
+
+@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
+        "/spring-hibernate.xml", "/spring-datasource.xml"})
 public class TestMailingListMessages extends
     AbstractSilverpeasDatasourceSpringContextTests {
 
   private static String MESSAGE_BASE = "/silverpeas/Rmailinglist/mailinglist45/destination/list/message/";
 
+  @Test
   public void testSimpleUser() throws Exception {
     WebConversation connection = new WebConversation();
     WebResponse loginPage = connection.getResponse(buildUrl("silverpeas/"));
@@ -182,6 +192,7 @@ public class TestMailingListMessages extends
     assertNull(listPage.getLinkWithID("Supprimer les messages"));
   }
 
+  @Test
   public void testAdmin() throws Exception {
     WebConversation connection = new WebConversation();
     WebResponse loginPage = connection.getResponse(buildUrl("silverpeas/"));
@@ -374,11 +385,7 @@ public class TestMailingListMessages extends
     return "http://localhost:8000/" + path;
   }
 
-  protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml" };
-  }
-
+  @Override
   protected IDataSet getDataSet() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
         TestMailingListActivity.class
@@ -387,7 +394,8 @@ public class TestMailingListMessages extends
     return dataSet;
   }
 
-  protected void onSetUp() {
+  @Before
+  public void onSetUp() {
     super.onSetUp();
     HttpUnitOptions.setExceptionsThrownOnErrorStatus(true);
     HttpUnitOptions.setExceptionsThrownOnScriptError(false);
@@ -412,7 +420,8 @@ public class TestMailingListMessages extends
     }
   }
 
-  protected void onTearDown() {
+  @After
+  public void onTearDown() {
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();

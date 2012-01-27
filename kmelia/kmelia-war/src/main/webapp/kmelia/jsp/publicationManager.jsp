@@ -386,9 +386,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title></title>
-    <%
-        out.println(gef.getLookStyleSheet());
-    %>
+    <view:looknfeel/>
+    <view:includePlugin name="datepicker"/>
     <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
     <style type="text/css">
       #thumbnailPreviewAndActions {
@@ -398,7 +397,6 @@
       }
     </style>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
     <script type="text/javascript">
