@@ -45,6 +45,7 @@ import com.silverpeas.formsonline.model.FormsOnlineRuntimeException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -309,8 +310,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   private void notifyReceivers(int formId, int formInstanceId) throws FormsOnlineDatabaseException {
 
     FormDetail form = dao.getForm(getComponentId(), formId);
-    String emetteur = getUserDetail().getFirstName() + " "
-        + getUserDetail().getLastName();
+    String emetteur = getUserDetail().getDisplayedName();
 
     // french notifications
     String subject = messagesFr.getString("formsOnline.msgFormToValid");
@@ -370,28 +370,34 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     }
 
     // sender
-    String sender = getUserDetail().getFirstName() + " " + getUserDetail().getLastName();
+    String sender = getUserDetail().getDisplayedName();
 
     // message
-    String messageText = sender + " ";
-    String messageText_en = sender + " ";
+    StringBuffer messageText = new StringBuffer(sender).append(" ");
+    StringBuffer messageText_en = new StringBuffer(sender).append(" ");
     if (formInstance.getState() == FormInstance.STATE_VALIDATED) {
-      messageText += messagesFr.getString("formsOnline.msgHasValidatedYourForm");
-      messageText_en += messagesEn.getString("formsOnline.msgHasValidatedYourForm");
+      messageText.append(messagesFr.getString("formsOnline.msgHasValidatedYourForm"));
+      messageText_en.append(messagesEn.getString("formsOnline.msgHasValidatedYourForm"));
     } else {
-      messageText += messagesFr.getString("formsOnline.msgHasRefusedYourForm");
-      messageText_en += messagesEn.getString("formsOnline.msgHasValidatedYourForm");
+      messageText.append(messagesFr.getString("formsOnline.msgHasRefusedYourForm"));
+      messageText_en.append(messagesEn.getString("formsOnline.msgHasValidatedYourForm"));
+      if (StringUtil.isDefined(formInstance.getComments())) {
+        messageText.append(" ").append(messagesFr.getString("formsOnline.notif.comment"))
+            .append(formInstance.getComments());
+        messageText_en.append(" ").append(messagesEn.getString("formsOnline.notif.comment"))
+            .append(formInstance.getComments());
+      }
     }
 
     NotificationMetaData notifMetaData = new NotificationMetaData(
-        NotificationParameters.NORMAL, subject, messageText);
+        NotificationParameters.NORMAL, subject, messageText.toString());
     notifMetaData.setSender(getUserId());
     notifMetaData.addUserRecipient(new UserRecipient(formInstance.getCreatorId()));
     notifMetaData.setSource(getSpaceLabel() + " - " + form.getName());
     notifMetaData.setLink("/RformsOnline/" + getComponentId()
         + "/ViewFormInstance?formInstanceId=" + formInstance.getId());
-    notifMetaData.addLanguage("en", subject_en, messageText_en);
-    notifMetaData.addLanguage("fr", subject, messageText);
+    notifMetaData.addLanguage("en", subject_en, messageText_en.toString());
+    notifMetaData.addLanguage("fr", subject, messageText.toString());
 
     try {
       getNotificationSender().notifyUser(notifMetaData);

@@ -529,10 +529,10 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
   /* getFlag */
   private String getFlag(String[] profiles) {
     String flag = "SenderReceiver";
-    for (int i = 0; i < profiles.length; i++) {
+    for (String profile : profiles) {
       // if Administrator, return it, we won't find a better profile
-      if (profiles[i].equals("Administrator")) {
-        return profiles[i];
+      if (profile.equals("Administrator")) {
+        return profile;
       }
     }
     return flag;
