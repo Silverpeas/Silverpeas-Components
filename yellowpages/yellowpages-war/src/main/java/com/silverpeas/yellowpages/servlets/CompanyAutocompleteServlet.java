@@ -46,7 +46,6 @@ public class CompanyAutocompleteServlet extends HttpServlet {
         response.setContentType(MimeTypes.SERVLET_HTML_CONTENT_TYPE);
         //response.setContentType(SERVLET_JSON_CONTENT_TYPE);
         PrintWriter out = response.getWriter();
-        // TODO ne pas utiliser le service directement mais le scc
         CompanyService service = ServicesFactory.getCompanyService();
         String searchParameter = request.getParameter("q");
         try {

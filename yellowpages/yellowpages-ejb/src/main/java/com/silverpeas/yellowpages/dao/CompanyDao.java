@@ -38,7 +38,7 @@ public interface CompanyDao extends JpaRepository<Company, Integer> {
     @Query("select comp FROM GenericContact gccontact, GenericContact gccompany, GenericContactRelation rel, Company comp " +
             "WHERE gccontact.contactId = :contactId " +
             "AND gccontact.contactType = " + GenericContact.TYPE_COMPANY + " " +
-            "AND gccontact.genericContactId = rel.genericContactId " +
+            "AND gccontact.genericcontactId = rel.genericContactId " +
             "AND rel.enabled = " + GenericContactRelation.ENABLE_TRUE + " " +
             "AND rel.genericCompanyId = gccompany.companyId " +
             "AND gccompany.companyId = comp.companyId")
