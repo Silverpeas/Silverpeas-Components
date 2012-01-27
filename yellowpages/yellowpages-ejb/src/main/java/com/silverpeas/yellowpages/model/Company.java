@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.yellowpages.model;
 
 import javax.persistence.*;
@@ -44,11 +43,22 @@ public class Company implements java.io.Serializable {
     @Column(name = "instanceId")
     private String instanceId;
 
+/*    private Collection<GenericContact> genericContacts;
+
+    @OneToMany(mappedBy = "company")
+    public Collection<GenericContact> getGenericContacts() {
+        return genericContacts;
+    }
+
+    public void setGenericContacts(Collection<GenericContact> genericContacts) {
+        this.genericContacts = genericContacts;
+    }*/
+
     public Company() {
     }
 
     public Company(String instanceId, String name, String email, String phone, String fax) {
-        super();
+        //super();
         this.instanceId = instanceId;
         this.name = name;
         this.email = email;
