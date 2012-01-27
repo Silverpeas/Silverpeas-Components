@@ -45,6 +45,7 @@ import com.silverpeas.formsonline.model.FormsOnlineRuntimeException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -74,9 +75,9 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   private SelectionUsersGroups sugReceivers = null;
   private FormDetail choosenForm;
   private NotificationSender notifSender;
-  private ResourceLocator messages_en =
+  private ResourceLocator messagesEn =
       new ResourceLocator("com.silverpeas.formsonline.multilang.formsOnlineBundle", "en");
-  private ResourceLocator messages_fr =
+  private ResourceLocator messagesFr =
       new ResourceLocator("com.silverpeas.formsonline.multilang.formsOnlineBundle", "fr");
 
   /**
@@ -140,9 +141,9 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     m_Selection.setSelectedElements(userIds);
     m_Selection.setSelectedSets(groupIds);
 
-    // bien que le up s'affiche en popup, le m�canisme de fermeture est
-    // assur� par le composant=> il est donc n�cessaire d'indiquer
-    // � l'UserPanelPeas de ne pas s'occuper de cette fermeture!
+    // bien que le up s'affiche en popup, le mecanisme de fermeture est
+    // assure par le composant=> il est donc necessaire d'indiquer
+    // a l'UserPanelPeas de ne pas s'occuper de cette fermeture!
     m_Selection.setHostPath(null);
     PairObject hostComponentName = new PairObject(getComponentLabel(), null);
     m_Selection.setHostComponentName(hostComponentName);
@@ -269,10 +270,10 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     instance = dao.createInstance(instance);
 
     String xmlFormName = choosenForm.getXmlFormName();
-    String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.
-        indexOf("."));
+    String xmlFormShortName =
+        xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
 
-    // r�cup�ration des donn�es du formulaire (via le DataRecord)
+    // Retrieve data form (with DataRecord object)
     PublicationTemplate pub =
         PublicationTemplateManager.getInstance().getPublicationTemplate(getComponentId() + ":"
             + xmlFormShortName);
@@ -281,14 +282,14 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     DataRecord data = set.getEmptyRecord();
     data.setId(String.valueOf(instance.getId()));
 
-    // sauvegarde des donn�es du formulaire
+    // Save data form
     PagesContext context = new PagesContext("newInstanceForm", "0",
         getLanguage(), false, getComponentId(), getUserId());
     context.setObjectId(String.valueOf(instance.getId()));
     form.update(items, data, context);
     set.save(data);
 
-    // notification des r�ceptionnnaires
+    // Notify receivers
     notifyReceivers(choosenForm.getId(), instance.getId());
   }
 
@@ -309,17 +310,16 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   private void notifyReceivers(int formId, int formInstanceId) throws FormsOnlineDatabaseException {
 
     FormDetail form = dao.getForm(getComponentId(), formId);
-    String emetteur = getUserDetail().getFirstName() + " "
-        + getUserDetail().getLastName();
+    String emetteur = getUserDetail().getDisplayedName();
 
     // french notifications
-    String subject = messages_fr.getString("formsOnline.msgFormToValid");
-    String messageText = emetteur + " " + messages_fr.getString(
+    String subject = messagesFr.getString("formsOnline.msgFormToValid");
+    String messageText = emetteur + " " + messagesFr.getString(
         "formsOnline.msgUserHasSentAForm") + "  \n \n";
 
     // english notifications
-    String subject_en = messages_en.getString("formsOnline.msgFormToValid");
-    String messageText_en = emetteur + " " + messages_en.getString(
+    String subject_en = messagesEn.getString("formsOnline.msgFormToValid");
+    String messageText_en = emetteur + " " + messagesEn.getString(
         "formsOnline.msgUserHasSentAForm") + "  \n \n";
 
     NotificationMetaData notifMetaData = new NotificationMetaData(
@@ -345,8 +345,8 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       SilverTrace.error("formManager", "FormManagerSessionController.notifyReceivers()",
           "root.MSG_GEN_PARAM_VALUE", "formInstanceId = " + formInstanceId,
           new FormsOnlineRuntimeException(
-          "com.silverpeas.formsonline.control.FormsOnlineSessionController",
-          SilverpeasRuntimeException.ERROR, ""));
+              "com.silverpeas.formsonline.control.FormsOnlineSessionController",
+              SilverpeasRuntimeException.ERROR, ""));
     }
   }
 
@@ -362,36 +362,42 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     String subject = null;
     String subject_en = null;
     if (formInstance.getState() == FormInstance.STATE_VALIDATED) {
-      subject = messages_fr.getString("formsOnline.msgFormValidated");
-      subject_en = messages_en.getString("formsOnline.msgFormValidated");
+      subject = messagesFr.getString("formsOnline.msgFormValidated");
+      subject_en = messagesEn.getString("formsOnline.msgFormValidated");
     } else {
-      subject = messages_fr.getString("formsOnline.msgFormRefused");
-      subject_en = messages_en.getString("formsOnline.msgFormRefused");
+      subject = messagesFr.getString("formsOnline.msgFormRefused");
+      subject_en = messagesEn.getString("formsOnline.msgFormRefused");
     }
 
     // sender
-    String sender = getUserDetail().getFirstName() + " " + getUserDetail().getLastName();
+    String sender = getUserDetail().getDisplayedName();
 
     // message
-    String messageText = sender + " ";
-    String messageText_en = sender + " ";
+    StringBuffer messageText = new StringBuffer(sender).append(" ");
+    StringBuffer messageText_en = new StringBuffer(sender).append(" ");
     if (formInstance.getState() == FormInstance.STATE_VALIDATED) {
-      messageText += messages_fr.getString("formsOnline.msgHasValidatedYourForm");
-      messageText_en += messages_en.getString("formsOnline.msgHasValidatedYourForm");
+      messageText.append(messagesFr.getString("formsOnline.msgHasValidatedYourForm"));
+      messageText_en.append(messagesEn.getString("formsOnline.msgHasValidatedYourForm"));
     } else {
-      messageText += messages_fr.getString("formsOnline.msgHasRefusedYourForm");
-      messageText_en += messages_en.getString("formsOnline.msgHasValidatedYourForm");
+      messageText.append(messagesFr.getString("formsOnline.msgHasRefusedYourForm"));
+      messageText_en.append(messagesEn.getString("formsOnline.msgHasValidatedYourForm"));
+      if (StringUtil.isDefined(formInstance.getComments())) {
+        messageText.append(" ").append(messagesFr.getString("formsOnline.notif.comment"))
+            .append(formInstance.getComments());
+        messageText_en.append(" ").append(messagesEn.getString("formsOnline.notif.comment"))
+            .append(formInstance.getComments());
+      }
     }
 
     NotificationMetaData notifMetaData = new NotificationMetaData(
-        NotificationParameters.NORMAL, subject, messageText);
+        NotificationParameters.NORMAL, subject, messageText.toString());
     notifMetaData.setSender(getUserId());
     notifMetaData.addUserRecipient(new UserRecipient(formInstance.getCreatorId()));
     notifMetaData.setSource(getSpaceLabel() + " - " + form.getName());
     notifMetaData.setLink("/RformsOnline/" + getComponentId()
         + "/ViewFormInstance?formInstanceId=" + formInstance.getId());
-    notifMetaData.addLanguage("en", subject_en, messageText_en);
-    notifMetaData.addLanguage("fr", subject, messageText);
+    notifMetaData.addLanguage("en", subject_en, messageText_en.toString());
+    notifMetaData.addLanguage("fr", subject, messageText.toString());
 
     try {
       getNotificationSender().notifyUser(notifMetaData);
@@ -399,8 +405,8 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       SilverTrace.error("formManager", "FormManagerSessionController.notifySender()",
           "root.MSG_GEN_PARAM_VALUE", "formInstanceId = " + formInstance.getId(),
           new FormsOnlineRuntimeException(
-          "com.silverpeas.formsonline.control.FormsOnlineSessionController",
-          SilverpeasRuntimeException.ERROR, ""));
+              "com.silverpeas.formsonline.control.FormsOnlineSessionController",
+              SilverpeasRuntimeException.ERROR, ""));
     }
   }
 
@@ -468,10 +474,10 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       FormDetail form = dao.getForm(getComponentId(), instance.getFormId());
       String xmlFormName = form.getXmlFormName();
       String xmlFormShortName =
-          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+          xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
       PublicationTemplate pubTemplate =
           PublicationTemplateManager.getInstance().getPublicationTemplate(getComponentId() + ":"
-          + xmlFormShortName);
+              + xmlFormShortName);
       RecordSet set = pubTemplate.getRecordSet();
       DataRecord data = set.getRecord(formInstanceIds[i]);
       set.delete(data);
