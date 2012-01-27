@@ -33,11 +33,17 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 
 public class TitleHelper {
   private static OrganizationController controller = new OrganizationController();
+  
+  /**
+   * Hide Utility Class Constructor with a private constuctor...
+   */
+  private TitleHelper() {
+  }
 
   public static String computeTitle(FormInstance instance, String title) {
     while (title.indexOf("${") != -1) {
       int begin = title.indexOf("${");
-      int end = title.indexOf("}");
+      int end = title.indexOf('}');
       String keyword = title.substring(begin + 2, end);
       title =
           title.substring(0, begin) + computeKeyword(instance, keyword) +

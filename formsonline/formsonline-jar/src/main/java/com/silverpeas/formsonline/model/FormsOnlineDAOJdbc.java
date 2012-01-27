@@ -478,7 +478,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         " where creatorId = '").append(userId).append("')")
         .append(" )");
 
-    /* 3rd criteria : user has reveiver rights (directly or from a group) */
+    /* 3rd criteria : user has receiver rights (directly or from a group) */
     query.append(" and (")
         .append(" id in (select formId from ").append(USER_RIGHTS_TABLENAME).append(
         " where rightType='S' and userId = '").append(userId).append("') ");
@@ -526,8 +526,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   public List<FormDetail> getForms(List<String> formIds) throws FormsOnlineDatabaseException {
 
     List<FormDetail> forms = new ArrayList<FormDetail>();
-    if ((formIds == null) || (formIds.isEmpty()))
+    if ((formIds == null) || (formIds.isEmpty())) {
       return forms;
+    }
 
     /* Build query */
     StringBuffer query = new StringBuffer("select * from " + FORMS_TABLENAME + " where id in (");
@@ -841,10 +842,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * @return the initialized connection.
    * @throws FormsOnlineDatabaseException if a database error occured while getting connection
    */
-  private final Connection getConnection() throws FormsOnlineDatabaseException {
+  protected Connection getConnection() throws FormsOnlineDatabaseException {
     try {
-      Connection con = DBUtil.makeConnection(DB_NAME);
-      return con;
+      return DBUtil.makeConnection(DB_NAME);
     } catch (UtilException e) {
       throw new FormsOnlineDatabaseException(
           "FormsOnlineDAOJdbc.getConnection()",
