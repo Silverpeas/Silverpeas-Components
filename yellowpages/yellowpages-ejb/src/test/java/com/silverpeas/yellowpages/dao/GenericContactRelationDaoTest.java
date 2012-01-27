@@ -53,7 +53,7 @@ public class GenericContactRelationDaoTest {
     public static void setUpClass() throws Exception {
         context = new ClassPathXmlApplicationContext("spring-company.xml");
         dao = (GenericContactRelationDao) context.getBean("genericContactRelationDao");
-        ds = (DataSource) context.getBean("dataSource");
+        ds = (DataSource) context.getBean("jpaDataSource");
         cleanDatabase();
     }
 

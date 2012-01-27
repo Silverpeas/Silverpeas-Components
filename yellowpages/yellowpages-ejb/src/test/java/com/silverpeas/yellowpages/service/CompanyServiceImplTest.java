@@ -31,7 +31,7 @@ public class CompanyServiceImplTest {
     public static void setUpClass() throws Exception {
         context = new ClassPathXmlApplicationContext("spring-company.xml");
         service = (CompanyService) context.getBean("companyService");
-        ds = (DataSource) context.getBean("dataSource");
+        ds = (DataSource) context.getBean("jpaDataSource");
         cleanDatabase();
     }
 

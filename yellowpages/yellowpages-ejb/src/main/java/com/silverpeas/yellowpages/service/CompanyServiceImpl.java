@@ -66,12 +66,12 @@ public class CompanyServiceImpl implements CompanyService {
             // suppression du generic contact s'il existe
             GenericContact gc = genericContactDao.findGenericContactFromCompanyId(id);
             if (gc != null) {
-                genericContactDao.delete(gc);
                 // suppression des relations du generic contact s'il en a
                 List<GenericContactRelation> relationList = genericContactRelationDao.findByGenericCompanyId(gc.getGenericContactId());
                 if (relationList != null && relationList.size() > 0) {
                     genericContactRelationDao.delete(relationList);
                 }
+                genericContactDao.delete(gc);
             }
             // suppression finale de la company qui n'est plus liée à rien
             companyDao.delete(companyToDelete);

@@ -52,7 +52,7 @@ public class GenericContactDaoTest {
     public static void setUpClass() throws Exception {
         context = new ClassPathXmlApplicationContext("spring-company.xml");
         dao = (GenericContactDao) context.getBean("genericContactDao");
-        ds = (DataSource) context.getBean("dataSource");
+        ds = (DataSource) context.getBean("jpaDataSource");
         cleanDatabase();
     }
 
@@ -84,7 +84,7 @@ public class GenericContactDaoTest {
         assertNotNull(result);
 
         // relecture de la company dans la base
-        GenericContact gcFromDb = dao.findOne(result.getGenericcontactId());
+        GenericContact gcFromDb = dao.findOne(result.getGenericContactId());
         // comparaison des deux objets
         assertNotNull(gcFromDb);
         assertEquals(companyId, gcFromDb.getCompanyId().intValue());
@@ -112,7 +112,7 @@ public class GenericContactDaoTest {
 
         GenericContact gc = dao.findGenericContactFromContactId(idWashingTon);
         assertNotNull(gc);
-        assertEquals(idGCWashingTon, gc.getGenericcontactId());
+        assertEquals(idGCWashingTon, gc.getGenericContactId());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class GenericContactDaoTest {
 
         GenericContact gc = dao.findGenericContactFromCompanyId(idBoing);
         assertNotNull(gc);
-        assertEquals(idGCBoing, gc.getGenericcontactId());
+        assertEquals(idGCBoing, gc.getGenericContactId());
     }
 
 }

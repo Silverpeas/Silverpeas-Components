@@ -51,7 +51,7 @@ public class CompanyDaoTest {
     public static void generalSetUp() throws IOException, NamingException, Exception {
         context = new ClassPathXmlApplicationContext("spring-company.xml");
         dao = (CompanyDao) context.getBean("companyDao");
-        DataSource ds = (DataSource) context.getBean("dataSource");
+        DataSource ds = (DataSource) context.getBean("jpaDataSource");
         IDataSet dataSet = new FlatXmlDataSetBuilder().setColumnSensing(true).build(CompanyDaoTest.class.getClassLoader().getResourceAsStream("com/silverpeas/yellowpages/dao/company-dataset.xml"));
         IDatabaseConnection connection = new DatabaseConnection(ds.getConnection());
         DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);

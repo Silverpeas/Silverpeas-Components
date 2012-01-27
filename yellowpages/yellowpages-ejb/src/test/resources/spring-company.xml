@@ -31,7 +31,7 @@
         <value>com.silverpeas.yellowpages</value>
     </util:list>
 
-    <jdbc:embedded-database id="dataSource" type="H2">
+    <jdbc:embedded-database id="jpaDataSource" type="H2">
         <jdbc:script location="classpath:/com/silverpeas/yellowpages/dao/create-database.sql"/>
     </jdbc:embedded-database>
 
