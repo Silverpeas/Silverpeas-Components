@@ -23,7 +23,7 @@
  */
 package com.silverpeas.resourcesmanager;
 
-import com.silverpeas.resourcesmanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.Reservation;
 import com.silverpeas.resourcesmanager.util.ResourcesManagerFactory;
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
 import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;

@@ -20,22 +20,22 @@
  */
 package org.silverpeas.resourcemanager.model;
 
-import com.silverpeas.resourcesmanager.model.ResourceDetail;
 import com.silverpeas.util.StringUtil;
+import java.util.ArrayList;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import java.util.Date;
-import java.util.List;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.OneToMany;
 
 @Entity
-@Table(name = "SC_Resources_Category")
+@Table(name = "sc_resources_category")
 public class Category {
 
   @Id
@@ -63,8 +63,8 @@ public class Category {
   private String updaterId;
   @Column
   private String description;
-  @Transient
-  private List<ResourceDetail> resources;
+  @OneToMany(mappedBy="category", orphanRemoval=false)
+  private List<Resource> resources = new ArrayList<Resource>();
 
   public boolean isBookable() {
     return 1 == bookable;
@@ -99,7 +99,9 @@ public class Category {
   }
 
   public final void setId(String id) {
-    this.id = Integer.parseInt(id);
+    if (StringUtil.isInteger(id)) {
+      this.id = Integer.parseInt(id);
+    }
   }
 
   public String getInstanceId() {
@@ -118,11 +120,11 @@ public class Category {
     this.name = name;
   }
 
-  public List<ResourceDetail> getResources() {
+  public List<Resource> getResources() {
     return resources;
   }
 
-  public void setResources(List<ResourceDetail> resources) {
+  public void setResources(List<Resource> resources) {
     this.resources = resources;
   }
 
@@ -149,7 +151,7 @@ public class Category {
   public Category(String id, String instanceId, String name,
       Date creationDate, Date updateDate, boolean bookable, String form,
       String responsibleId, String createrId, String updaterId,
-      String description, List<ResourceDetail> resources) {
+      String description, List<Resource> resources) {
     setId(id);
     this.instanceId = instanceId;
     this.name = name;
@@ -173,6 +175,20 @@ public class Category {
     this.description = description;
   }
 
+  /**
+   * For tests purpose only.
+   * @param id
+   * @param instanceId
+   * @param name
+   * @param creationDate
+   * @param updateDate
+   * @param bookable
+   * @param form
+   * @param responsibleId
+   * @param createrId
+   * @param updaterId
+   * @param description
+   */
   public Category(String id, String instanceId, String name,
       Date creationDate, Date updateDate, boolean bookable, String form,
       String responsibleId, String createrId, String updaterId,
@@ -190,15 +206,6 @@ public class Category {
     this.description = description;
   }
 
-  public Category(String id, String name, boolean bookable, String form,
-      String responsibleId, String description) {
-    setId(id);
-    this.name = name;
-    setBookable(bookable);
-    this.form = form;
-    setResponsibleId(responsibleId);
-    this.description = description;
-  }
 
   public Date getCreationDate() {
     if (StringUtil.isLong(creationDate)) {
@@ -247,74 +254,65 @@ public class Category {
       return false;
     }
     final Category other = (Category) obj;
-    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+    if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
       return false;
     }
-    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
-        other.instanceId)) {
+    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(other.instanceId)) {
       return false;
     }
     if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
       return false;
     }
-    if (this.creationDate != other.creationDate && (this.creationDate == null || !this.creationDate.
-        equals(other.creationDate))) {
+    if ((this.creationDate == null) ? (other.creationDate != null) : !this.creationDate.equals(other.creationDate)) {
       return false;
     }
-    if (this.updateDate != other.updateDate && (this.updateDate == null || !this.updateDate.equals(
-        other.updateDate))) {
+    if ((this.updateDate == null) ? (other.updateDate != null) : !this.updateDate.equals(other.updateDate)) {
       return false;
     }
-    if (this.bookable != other.bookable) {
+    if (this.bookable != other.bookable && (this.bookable == null || !this.bookable.equals(other.bookable))) {
       return false;
     }
     if ((this.form == null) ? (other.form != null) : !this.form.equals(other.form)) {
       return false;
     }
-    if ((this.responsibleId == null) ? (other.responsibleId != null) : !this.responsibleId.equals(
-        other.responsibleId)) {
+    if (this.responsibleId != other.responsibleId && (this.responsibleId == null || !this.responsibleId.equals(other.responsibleId))) {
       return false;
     }
-    if ((this.createrId == null) ? (other.createrId != null) : !this.createrId.equals(
-        other.createrId)) {
+    if ((this.createrId == null) ? (other.createrId != null) : !this.createrId.equals(other.createrId)) {
       return false;
     }
-    if ((this.updaterId == null) ? (other.updaterId != null) : !this.updaterId.equals(
-        other.updaterId)) {
+    if ((this.updaterId == null) ? (other.updaterId != null) : !this.updaterId.equals(other.updaterId)) {
       return false;
     }
-    if ((this.description == null) ? (other.description != null) : !this.description.equals(
-        other.description)) {
+    if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
       return false;
     }
-    return !(this.resources != other.resources && (this.resources == null || !this.resources.equals(
-        other.resources)));
+    return true;
   }
 
   @Override
   public int hashCode() {
     int hash = 7;
-    hash = 53 * hash + (this.id != null ? this.id.hashCode() : 0);
-    hash = 53 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
-    hash = 53 * hash + (this.name != null ? this.name.hashCode() : 0);
-    hash = 53 * hash + (this.creationDate != null ? this.creationDate.hashCode() : 0);
-    hash = 53 * hash + (this.updateDate != null ? this.updateDate.hashCode() : 0);
-    hash = 53 * hash + this.bookable;
-    hash = 53 * hash + (this.form != null ? this.form.hashCode() : 0);
-    hash = 53 * hash + (this.responsibleId != null ? this.responsibleId.hashCode() : 0);
-    hash = 53 * hash + (this.createrId != null ? this.createrId.hashCode() : 0);
-    hash = 53 * hash + (this.updaterId != null ? this.updaterId.hashCode() : 0);
-    hash = 53 * hash + (this.description != null ? this.description.hashCode() : 0);
-    hash = 53 * hash + (this.resources != null ? this.resources.hashCode() : 0);
+    hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
+    hash = 97 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
+    hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
+    hash = 97 * hash + (this.creationDate != null ? this.creationDate.hashCode() : 0);
+    hash = 97 * hash + (this.updateDate != null ? this.updateDate.hashCode() : 0);
+    hash = 97 * hash + (this.bookable != null ? this.bookable.hashCode() : 0);
+    hash = 97 * hash + (this.form != null ? this.form.hashCode() : 0);
+    hash = 97 * hash + (this.responsibleId != null ? this.responsibleId.hashCode() : 0);
+    hash = 97 * hash + (this.createrId != null ? this.createrId.hashCode() : 0);
+    hash = 97 * hash + (this.updaterId != null ? this.updaterId.hashCode() : 0);
+    hash = 97 * hash + (this.description != null ? this.description.hashCode() : 0);
     return hash;
   }
 
+  
   @Override
   public String toString() {
     return "CategoryDetail{" + "id=" + id + ", instanceId=" + instanceId + ", name=" + name +
         ", creationDate=" + creationDate + ", updateDate=" + updateDate + ", bookable=" +
         bookable + ", form=" + form + ", responsibleId=" + responsibleId + ", createrId=" +
-        createrId + ", updaterId=" + updaterId + ", description=" + description +
-        ", resources=" + resources + '}';
+        createrId + ", updaterId=" + updaterId + ", description=" + description + '}';
   }
 }

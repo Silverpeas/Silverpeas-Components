@@ -30,9 +30,9 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
-import com.silverpeas.resourcesmanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Category;
-import com.silverpeas.resourcesmanager.model.ResourceDetail;
+import org.silverpeas.resourcemanager.model.Resource;
 import com.silverpeas.resourcesmanager.model.ResourceReservableDetail;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
@@ -102,14 +102,14 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     return category;
   }
 
-  private ResourceDetail request2ResourceDetail(List<FileItem> items) {
+  private Resource request2ResourceDetail(List<FileItem> items) {
     String name = FileUploadUtil.getParameter(items, "SPRM_name");
     String bookable = FileUploadUtil.getParameter(items, "SPRM_bookable");
     String responsible = FileUploadUtil.getParameter(items, "SPRM_responsible");
     String description = FileUploadUtil.getParameter(items, "SPRM_description");
     String categoryid = FileUploadUtil.getParameter(items, "SPRM_categoryChoice");
     boolean book = "on".equals(bookable);
-    ResourceDetail resource = new ResourceDetail(name, categoryid, responsible, description, book);
+    Resource resource = new Resource(name, categoryid, responsible, description, book);
     String resourceId = FileUploadUtil.getParameter(items, "SPRM_resourceId");
     if (StringUtil.isDefined(resourceId)) {
       resource.setId(resourceId);
@@ -210,7 +210,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         // récupération des données saisies dans le formulaire
         List<FileItem> items = FileUploadUtil.parseRequest(request);
 
-        ResourceDetail resource = request2ResourceDetail(items);
+        Resource resource = request2ResourceDetail(items);
         String idResource = resourcesManagerSC.createResource(resource);
         List<String> managers = getManagers(items);
         resourcesManagerSC.addManagers(idResource, managers);
@@ -227,7 +227,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         if (!StringUtil.isDefined(resourceId)) {
           resourceId = resourcesManagerSC.getCurrentResource();
         }
-        ResourceDetail resource = resourcesManagerSC.getResource(resourceId);
+        Resource resource = resourcesManagerSC.getResource(resourceId);
 
         // on récupère l'ensemble des catégories pour la liste déroulante
         List<Category> list = resourcesManagerSC.getCategories();
@@ -250,7 +250,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         // récupération des données saisies dans le formulaire
         List<FileItem> items = FileUploadUtil.parseRequest(request);
 
-        ResourceDetail resource = request2ResourceDetail(items);
+        Resource resource = request2ResourceDetail(items);
         List<String> managers = getManagers(items);
         resourcesManagerSC.addManagers(resource.getId(), managers);
         resourcesManagerSC.updateResource(resource);
@@ -266,7 +266,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         } else if (request.getParameter("id") != null) {
           categoryId = request.getParameter("id");
         }
-        List<ResourceDetail> list = resourcesManagerSC.getResourcesByCategory(categoryId);
+        List<Resource> list = resourcesManagerSC.getResourcesByCategory(categoryId);
         List<Category> listcategories = resourcesManagerSC.getCategories();
         request.setAttribute("listCategories", listcategories);
         request.setAttribute("list", list);
@@ -296,7 +296,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         } else {
           resourceId = resourcesManagerSC.getResourceIdForResource();
         }
-        ResourceDetail resource = resourcesManagerSC.getResource(resourceId);
+        Resource resource = resourcesManagerSC.getResource(resourceId);
         List<UserDetail> managers = resourcesManagerSC.getManagers(resourceId);
         request.setAttribute("Managers", managers);
         Category category = resourcesManagerSC.getCategory(resource.getCategoryId());
@@ -333,9 +333,9 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         } else if (request.getAttribute("reservationId") != null) {
           idReservation = (String) request.getAttribute("reservationId");
         }
-        List<ResourceDetail> listResourcesProblem = (List<ResourceDetail>) request.getAttribute(
+        List<Resource> listResourcesProblem = (List<Resource>) request.getAttribute(
                 "listeResourcesProblem");
-        List<ResourceDetail> listResourceEverReserved = null;
+        List<Resource> listResourceEverReserved = null;
         // si listResourcesProblem c'est qu'il n y a pas eu de problème
         // d'enregistrement
         if ((listResourcesProblem == null)) {
@@ -354,9 +354,9 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
             // boucle permettant de supprimer les réservations déjà réservées
             // qui posent problème, car elles ont déjà été réservées
             for (int i = 0; i < listResourceEverReserved.size(); i++) {
-              ResourceDetail resourceReserved = listResourceEverReserved.get(i);
+              Resource resourceReserved = listResourceEverReserved.get(i);
               if (listResourcesProblem != null) {
-                for (ResourceDetail resourceProblem : listResourcesProblem) {
+                for (Resource resourceProblem : listResourcesProblem) {
                   if (resourceReserved.equals(resourceProblem)) {
                     listResourceEverReserved.remove(i);
                     break;
@@ -399,7 +399,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         if (idModifiedReservation != null) {
           // on vérifie que les nouvelles ressources que l'on veut réserver ne
           // sont pas déjà prises.
-          List<ResourceDetail> listeResourcesProblemeReservationTotal =
+          List<Resource> listeResourcesProblemeReservationTotal =
                   resourcesManagerSC.getResourcesProblemDate(listeReservation,
                   resourcesManagerSC.getBeginDateReservation(),
                   resourcesManagerSC.getEndDateReservation(), idModifiedReservation);
@@ -425,7 +425,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
           }
         } else {
           resourcesManagerSC.setListReservationCurrent(listeReservation);
-          List<ResourceDetail> listeResourcesProblem = resourcesManagerSC.verificationReservation(
+          List<Resource> listeResourcesProblem = resourcesManagerSC.verificationReservation(
                   listeReservation);
           if (listeResourcesProblem.isEmpty()) {
             resourcesManagerSC.saveReservation();
@@ -468,7 +468,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
           reservationId = resourcesManagerSC.getReservationIdForResource();
         }
         Reservation reservation = resourcesManagerSC.getReservation(reservationId);
-        List<ResourceDetail> listResourcesofReservation = resourcesManagerSC.
+        List<Resource> listResourcesofReservation = resourcesManagerSC.
                 getResourcesofReservation(reservationId);
         request.setAttribute("listResourcesofReservation",
                 listResourcesofReservation);
@@ -498,7 +498,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
       } else if ("Comments".equals(function)) {
         String provenance = resourcesManagerSC.getProvenanceResource();
         String idResource = resourcesManagerSC.getResourceIdForResource();
-        ResourceDetail myResource = resourcesManagerSC.getResource(idResource);
+        Resource myResource = resourcesManagerSC.getResource(idResource);
         ResourcesWrapper resources = resourcesManagerSC.getResources();
         String chemin = "";
         if ("resources".equals(provenance)) {
@@ -656,7 +656,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     // on regarde le planning d'une catégorie ou d'une ressource
     if ((myObjectView != null) && isNotAnUserView(myObjectView)) {
       listReservationsOfCategory = sessionController.getMonthReservationOfCategory(myObjectView);
-      List<ResourceDetail> listResourcesofCategory = sessionController.getResourcesByCategory(
+      List<Resource> listResourcesofCategory = sessionController.getResourcesByCategory(
               myObjectView);
       currentResourceId = request.getParameter("resourceId");
       if (StringUtil.isDefined(currentResourceId)) {
@@ -768,7 +768,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     }
   }
 
-  private void putXMLDisplayerIntoRequest(ResourceDetail resource,
+  private void putXMLDisplayerIntoRequest(Resource resource,
           HttpServletRequest request,
           ResourcesManagerSessionController resourcesManagerSC)
           throws PublicationTemplateException, FormException {
@@ -901,11 +901,11 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     } // on affiche le planning d'une catégorie ou d'une ressource
     else if (listReservationsOfCategory != null) {
       for (Reservation maReservation : listReservationsOfCategory) {
-        List<ResourceDetail> listResourcesReserved = maReservation.getListResourcesReserved();
+        List<Resource> listResourcesReserved = maReservation.getListResourcesReserved();
         // listResourcesReserved contient la liste des ressources r�serv�es de la r�servation pour
         // la cat�gorie
         if (listResourcesReserved != null) {
-          for (ResourceDetail myResource : listResourcesReserved) {
+          for (Resource myResource : listResourcesReserved) {
             String categoryId = myResource.getCategoryId();
             // on affiche les ressources de la réservation qui possèdent la même categoryId que la
             // catégorie sélectionnée

@@ -30,16 +30,16 @@
   <sc_resources_reservedresource reservationid="3" resourceid="1" status="V" />
   <sc_resources_reservedresource reservationid="3" resourceid="2" status="R" />
   <sc_resources_reservedresource reservationid="3" resourceid="3" status="test" />
- <!-- <sc_resources_reservation id="3" instanceId="resourcesManager42" evenement="Test de la Toussaint"
+  <sc_resources_reservation id="3" instanceId="resourcesManager42" evenement="Test de la Toussaint"
                             userId="2" creationdate="1319811924467" updatedate="1319811924467" 
                             begindate="1320134400000"  enddate="1320163200000"
-                            reason="To test" place="at work" status="test" /> -->
+                            reason="To test" place="at work" status="test" />
   <sc_resources_managers resourceid="1" managerid="0" />
   <sc_resources_managers resourceid="1" managerid="1" />
   <sc_resources_managers resourceid="1" managerid="2" />  
   <sc_resources_managers resourceid="2" managerid="0" />  
   <sc_resources_managers resourceid="3" managerid="0" />  
 
-  <uniqueId maxId="20" tablename="SC_Resources_Resource"/>
+  <uniqueId maxId="20" tablename="sc_resources_resource"/>
 
 </dataset>

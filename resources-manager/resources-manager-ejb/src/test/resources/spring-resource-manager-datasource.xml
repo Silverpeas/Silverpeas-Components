@@ -7,7 +7,7 @@
 
 
   <jdbc:embedded-database id="jpaDataSource" type="H2" >
-    <jdbc:script location="classpath:/com/silverpeas/resourcesmanager/model/create-database.sql" />
+    <jdbc:script location="classpath:/org/silverpeas/resourcemanager/services/create-database.sql" />
   </jdbc:embedded-database>
 
 </beans>

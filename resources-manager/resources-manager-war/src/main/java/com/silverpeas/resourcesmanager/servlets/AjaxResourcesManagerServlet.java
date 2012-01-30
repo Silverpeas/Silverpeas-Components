@@ -21,7 +21,7 @@
 package com.silverpeas.resourcesmanager.servlets;
 
 import com.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
-import com.silverpeas.resourcesmanager.model.ResourceDetail;
+import org.silverpeas.resourcemanager.model.Resource;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
@@ -64,11 +64,11 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
         String endDate = req.getParameter("endDate");
         String endHour = req.getParameter("endHour");
 
-        List<ResourceDetail> listResourceEverReserved = sessionController.getResourcesofReservation(
+        List<Resource> listResourceEverReserved = sessionController.getResourcesofReservation(
                 reservationId);
         String listResource = "";
         for (int i = 0; i < listResourceEverReserved.size(); i++) {
-          ResourceDetail myResource = listResourceEverReserved.get(i);
+          Resource myResource = listResourceEverReserved.get(i);
           String idResource = myResource.getId();
           if (i == 0) {
             listResource = idResource;
@@ -79,11 +79,11 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
         String currentLang = sessionController.getLanguage();
         Date dateDebut = DateUtil.stringToDate(beginDate, beginHour, currentLang);
         Date dateFin = DateUtil.stringToDate(endDate, endHour, currentLang);
-        List<ResourceDetail> listResources = sessionController.getResourcesProblemDate(listResource,
+        List<Resource> listResources = sessionController.getResourcesProblemDate(listResource,
                 dateDebut, dateFin, reservationId);
         String listResourceName = "";
         for (int i = 0; i < listResources.size(); i++) {
-          ResourceDetail myResource = listResources.get(i);
+          Resource myResource = listResources.get(i);
           String resourceName = myResource.getName();
           if (i == 0) {
             listResourceName = resourceName;

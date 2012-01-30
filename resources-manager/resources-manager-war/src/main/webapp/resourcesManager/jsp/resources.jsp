@@ -42,7 +42,7 @@
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
@@ -103,9 +103,9 @@ ArrayCellText arrayCellText2;
 			Icon editIcon = iconPane1.addIcon();
 			Icon deleteIcon = iconPane1.addIcon();
 			
-			ResourceDetail maResource = (ResourceDetail)list.get(i);
+			Resource maResource = (Resource)list.get(i);
 			String name = maResource.getName();
-			boolean bookable = maResource.getBookable();
+			boolean bookable = maResource.isBookable();
 			String resourceId = maResource.getId();
 			arrayLine = arrayPane.addArrayLine();
 			if(bookable)

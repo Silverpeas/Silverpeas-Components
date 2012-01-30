@@ -23,29 +23,27 @@ package com.silverpeas.resourcesmanager.control.ejb;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.resourcesmanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.Category;
-import com.silverpeas.resourcesmanager.model.ResourceDao;
-import com.silverpeas.resourcesmanager.model.ResourceDetail;
-import com.silverpeas.resourcesmanager.model.ResourceReservableDetail;
-import com.silverpeas.resourcesmanager.model.ResourcesManagerDAO;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import org.silverpeas.resourcemanager.model.Category;
+import org.silverpeas.resourcemanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.ReservedResource;
+import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcemanager.model.ResourceValidator;
 import org.silverpeas.resourcemanager.services.ServicesLocator;
 
 /**
@@ -54,7 +52,6 @@ import org.silverpeas.resourcemanager.services.ServicesLocator;
 public class ResourcesManagerBmEJB implements SessionBean {
 
   private static final long serialVersionUID = 1L;
-  private ResourceDao resourceDao = new ResourceDao();
 
   public void ejbCreate() {
     // not implemented
@@ -86,41 +83,33 @@ public class ResourcesManagerBmEJB implements SessionBean {
    * @param category
    */
   public void createCategory(Category category) {
-    String id = ServicesLocator.getInstance().getCategoryService().createCategory(category);
+    String id = ServicesLocator.getCategoryService().createCategory(category);
     category.setId(id);
     createCategoryIndex(category);
   }
 
   public List<Category> getCategories(String instanceId) {
-    return ServicesLocator.getInstance().getCategoryService().getCategories(instanceId);
+    return ServicesLocator.getCategoryService().getCategories(instanceId);
   }
 
   public Category getCategory(String id) {
-      return ServicesLocator.getInstance().getCategoryService().getCategory(id);
+    return ServicesLocator.getCategoryService().getCategory(id);
   }
 
   public void updateCategory(Category category) {
-      ServicesLocator.getInstance().getCategoryService().updateCategory(category);
+    ServicesLocator.getCategoryService().updateCategory(category);
   }
 
   public void deleteCategory(String id, String componentId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      // First delete all resources of category
-      List<ResourceDetail> resources = getResourcesByCategory(id);
-      for (ResourceDetail resource : resources) {
-        resourceDao.deleteResource(con, resource.getId());
-        deleteIndex("Resource", resource.getId(), componentId);
-      }
-      // Then delete category itself
-      ServicesLocator.getInstance().getCategoryService().deleteCategory(id);
-      deleteIndex(id, "Category", componentId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.deleteCategory()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_DELETE_CATEGORY", e);
-    } finally {
-      DBUtil.close(con);
+    // First delete all resources of category
+    List<Resource> resources = getResourcesByCategory(id);
+    for (Resource resource : resources) {
+      ServicesLocator.getResourceService().deleteResource(Integer.parseInt(resource.getId()));
+      deleteIndex("Resource", resource.getId(), componentId);
     }
+    // Then delete category itself
+    ServicesLocator.getCategoryService().deleteCategory(id);
+    deleteIndex(id, "Category", componentId);
   }
 
   /**
@@ -128,96 +117,43 @@ public class ResourcesManagerBmEJB implements SessionBean {
    * @param resource
    * @return
    */
-  public String createResource(ResourceDetail resource) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      String id = resourceDao.createResource(con, resource);
-      resource.setId(id);
-      createResourceIndex(resource);
-      return id;
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.createResource()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_CREATE_RESOURCE", e);
-    } finally {
-      DBUtil.close(con);
-    }
+  public String createResource(Resource resource) {
+    String id = ServicesLocator.getResourceService().createResource(resource);
+    resource.setId(id);
+    createResourceIndex(resource);
+    return id;
   }
 
-  public void updateResource(ResourceDetail resource) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      resourceDao.updateResource(con, resource);
-      createResourceIndex(resource);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.updateResource()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_UPDATE_RESOURCE", e);
-    } finally {
-      DBUtil.close(con);
-    }
+  public void updateResource(Resource resource) {
+    ServicesLocator.getResourceService().updateResource(resource);
+    createResourceIndex(resource);
   }
 
-  public ResourceDetail getResource(String id) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      ResourceDetail resource = resourceDao.getResource(con, id);
-      return resource;
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.getResource()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_RESOURCE", e);
-    } finally {
-      DBUtil.close(con);
-    }
+  public Resource getResource(String id) {
+    return ServicesLocator.getResourceService().getResource(Integer.parseInt(id));
   }
 
-  public List<ResourceDetail> getResourcesByCategory(String categoryId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return resourceDao.getResourcesByCategory(con, categoryId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.getResourcesByCategory()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_RESOURCES_BY_CATEGORY", e);
-    } finally {
-      DBUtil.close(con);
-    }
+  public List<Resource> getResourcesByCategory(String categoryId) {
+    return ServicesLocator.getResourceService().getResourcesByCategory(Integer.parseInt(categoryId));
   }
 
   public void deleteResource(String id, String componentId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      resourceDao.deleteResource(con, id);
-      deleteIndex(id, "Resource", componentId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.deleteResource()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_DELETE_RESOURCE", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    ServicesLocator.getResourceService().deleteResource(Integer.parseInt(id));
   }
 
-  public List<ResourceReservableDetail> getResourcesReservable(String instanceId, Date startDate,
-      Date endDate) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return ResourcesManagerDAO.getResourcesReservable(con, instanceId, startDate, endDate);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.getResourcesReservable()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_RESOURCES_RESERVABLE", e);
-    } finally {
-      DBUtil.close(con);
-    }
+  public List<Resource> getResourcesReservable(String instanceId, Date startDate, Date endDate) {
+    return ServicesLocator.getResourceService().listAvailableResources(instanceId,
+        String.valueOf(startDate.getTime()), String.valueOf(endDate.getTime()));
   }
 
-  public List<ResourceDetail> getResourcesofReservation(String instanceId, String reservationId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return resourceDao.getResourcesofReservation(con,
-          instanceId, reservationId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.getResourcesofReservation()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_RESOURCES_RESERVATION", e);
-    } finally {
-      DBUtil.close(con);
+  public List<Resource> getResourcesofReservation(String instanceId, String reservationId) {
+    Reservation reservation = ServicesLocator.getReservationService().getReservation(Integer.
+        parseInt(reservationId));
+    List<Resource> resources = new ArrayList<Resource>(reservation.getListResourcesReserved().size());
+    for (ReservedResource reservedResource : reservation.getListResourcesReserved()) {
+      resources.add(reservedResource.getResource());
     }
+    return resources;
   }
 
   /**
@@ -225,52 +161,20 @@ public class ResourcesManagerBmEJB implements SessionBean {
    * @param reservation
    * @param listReservationCurrent
    */
-  public void saveReservation(Reservation reservation, String listReservationCurrent) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      String idReservation = ResourcesManagerDAO.saveReservation(con, reservation,
-          listReservationCurrent);
-      reservation.setId(idReservation);
-      createReservationIndex(reservation);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.saveReservation()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_SAVE_RESERVATION", e);
-    } finally {
-      DBUtil.close(con);
+  public void saveReservation(Reservation reservation, List<Integer> resources) {
+    for (Integer resourceId : resources) {
+      Resource resource = ServicesLocator.getResourceService().getResource(resourceId);
+      ReservedResource reserved = new ReservedResource();
+      reserved.setReservation(reservation);
+      reserved.setResource(resource);
+      reserved.setStatus(reservation.getStatus());
+      reservation.getListResourcesReserved().add(reserved);
     }
-  }
-
-  /**
-   *
-   * @param listReservation
-   * @param reservationCourante
-   * @param updateDate
-   */
-  public void updateReservation(String listReservation, Reservation reservationCourante,
-      boolean updateDate) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      ResourcesManagerDAO.updateReservation(con, listReservation, reservationCourante, updateDate);
-      createReservationIndex(reservationCourante);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.updateReservation()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_UPDATE_RESERVATION", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    ServicesLocator.getReservationService().createReservation(reservation);
   }
 
   public void updateReservation(Reservation reservationCourante) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      ResourcesManagerDAO.updateReservation(con, reservationCourante);
-      createReservationIndex(reservationCourante);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.updateReservation()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_UPDATE_RESERVATION", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    ServicesLocator.getReservationService().updateReservation(reservationCourante);
   }
 
   /**
@@ -281,17 +185,9 @@ public class ResourcesManagerBmEJB implements SessionBean {
    * @param endDate
    * @return
    */
-  public List<ResourceDetail> verificationReservation(String instanceId, String listeReservation,
+  public List<Resource> verificationReservation(String instanceId, String listeReservation,
       Date startDate, Date endDate) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return ResourcesManagerDAO.verificationReservation(con, listeReservation, startDate, endDate);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.verificationReservation()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_CHECK_RESERVATIONS", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    return verificationNewDateReservation(instanceId, listeReservation, startDate, endDate, "-1");
   }
 
   /**
@@ -303,131 +199,70 @@ public class ResourcesManagerBmEJB implements SessionBean {
    * @param reservationId
    * @return
    */
-  public List<ResourceDetail> verificationNewDateReservation(String instanceId,
+  public List<Resource> verificationNewDateReservation(String instanceId,
       String listeReservation, Date startDate, Date endDate, String reservationId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return ResourcesManagerDAO.verificationNewDateReservation(con, listeReservation, startDate,
-          endDate, reservationId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerBmEJB.verificationNewDateReservation()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_CHECK_DATE_RESERVATION", e);
-    } finally {
-      DBUtil.close(con);
+    StringTokenizer tokenizer = new StringTokenizer(listeReservation, ",");
+    int currentReservationId = -1;
+    String startPeriod = String.valueOf(startDate.getTime());
+    String endPeriod = String.valueOf(endDate.getTime());
+    if (StringUtil.isInteger(reservationId)) {
+      currentReservationId = Integer.parseInt(reservationId);
     }
-  }
-
-  /**
-   *
-   * @param instanceId
-   * @param userId
-   * @return
-   */
-  public List<Reservation> getReservationUser(String instanceId, String userId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return ResourcesManagerDAO.getReservationUser(con, instanceId, userId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.getReservationUser()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_RESERVATIONS_USER", e);
-    } finally {
-      DBUtil.close(con);
+    List<Integer> futureReservedResourceIds = new ArrayList<Integer>();
+    while (tokenizer.hasMoreTokens()) {
+      futureReservedResourceIds.add(Integer.parseInt(tokenizer.nextToken()));
     }
+    List<ReservedResource> alreadyReservedResources = ServicesLocator.getReservedResourceService().
+        findAllReservedResourcesWithProblem(
+        currentReservationId, futureReservedResourceIds, startPeriod, endPeriod);
+    List resources = new ArrayList(alreadyReservedResources.size());
+    for (ReservedResource reservedResource : alreadyReservedResources) {
+      resources.add(reservedResource.getResource());
+    }
+    return resources;
   }
 
   public List<Reservation> getReservations(String instanceId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return ResourcesManagerDAO.getReservations(con, instanceId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.getReservations()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_RESERVATIONS", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    return ServicesLocator.getReservationService().findAllReservations(instanceId);
   }
 
   public Reservation getReservation(String instanceId, String reservationId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return ResourcesManagerDAO.getReservation(con, instanceId, reservationId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.getReservation()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_RESERVATION", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    return ServicesLocator.getReservationService().getReservation(Integer.parseInt(reservationId));
   }
 
   public void deleteReservation(String id, String componentId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      deleteIndex(id, "Reservation", componentId);
-      // delete attached file 
-      AttachmentController.deleteAttachmentByCustomerPK(new ForeignPK(id, componentId));
-      ResourcesManagerDAO.deleteReservation(con, id);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.deleteReservation()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_DELETE_RESERVATION", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    deleteIndex(id, "Reservation", componentId);
+    AttachmentController.deleteAttachmentByCustomerPK(new ForeignPK(id, componentId));
+    ServicesLocator.getReservationService().deleteReservation(Integer.parseInt(id));
   }
 
   public List<Reservation> getMonthReservation(String instanceId, Date monthDate,
       String userId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return ResourcesManagerDAO.getMonthReservation(con, instanceId, monthDate, userId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.getMonthReservation()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_MONTHLY_RESERVATIONS", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
+    String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
+    return ServicesLocator.getReservationService().findAllReservationsForValidation(instanceId,
+        Integer.parseInt(userId), beginDate, endDate);
   }
 
   public List<Reservation> getReservationForValidation(String instanceId, Date monthDate,
       String userId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return ResourcesManagerDAO.getReservationForValidation(con, instanceId, monthDate, userId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.getMonthReservation()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_MONTHLY_RESERVATIONS", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
+    String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
+    return ServicesLocator.getReservationService().findAllReservationsForValidation(instanceId,
+        Integer.parseInt(userId), beginDate, endDate);
   }
 
-  public List<Reservation> getMonthReservationOfCategory(String instanceId, Date monthDate,
-      String userId, String idCategory) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return ResourcesManagerDAO.getMonthReservationOfCategory(con, instanceId, monthDate,
-          idCategory);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerBmEJB.getMonthReservationOfCategory()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_MONTHLY_RESERVATIONS", e);
-    } finally {
-      DBUtil.close(con);
-    }
+  public List<Reservation> getMonthReservationOfCategory(Date monthDate, String idCategory) {
+    String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
+    String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
+    return ServicesLocator.getReservationService().findAllReservationsForCategoryInRange(Integer.
+        parseInt(idCategory), beginDate, endDate);
   }
 
   public String getStatusResourceOfReservation(String resourceId, String reservationId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return ResourcesManagerDAO.getStatusResourceOfReservation(con, Integer.parseInt(resourceId),
-          Integer.parseInt(reservationId));
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerBmEJB.getMonthReservationOfCategory()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_MONTHLY_RESERVATIONS", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    ReservedResource reserved = ServicesLocator.getReservedResourceService().getReservedResource(
+        Integer.parseInt(resourceId), Integer.parseInt(reservationId));
+    return reserved.getStatus();
   }
 
   private void createCategoryIndex(Category category) {
@@ -448,7 +283,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  private void createResourceIndex(ResourceDetail resource) {
+  private void createResourceIndex(Resource resource) {
     if (resource != null) {
       SilverTrace.info("resourceManager", "resourceManagerBmEJB.createIndex_Resource()",
           "root.MSG_GEN_ENTER_METHOD", "resource = " + resource.toString());
@@ -478,7 +313,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  private void indexResourceForm(ResourceDetail resource, FullIndexEntry indexEntry,
+  private void indexResourceForm(Resource resource, FullIndexEntry indexEntry,
       String xmlFormName) {
     String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1,
         xmlFormName.indexOf('.'));
@@ -530,67 +365,33 @@ public class ResourcesManagerBmEJB implements SessionBean {
   }
 
   public void addManager(int resourceId, int managerId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      resourceDao.addManager(con, resourceId, managerId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.addManager()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_ADD_MANAGER", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    ServicesLocator.getResourceService().addManager(new ResourceValidator(resourceId, managerId));
   }
 
-  public void addManagers(int resourceId, List<String> managers) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      resourceDao.removeAllManagers(con, resourceId);
-      for (String manager : managers) {
-        String managerId = manager.split("/")[0];
-        addManager(resourceId, Integer.parseInt(managerId));
-      }
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.addManagers()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_ADD_MANAGER", e);
-    } finally {
-      DBUtil.close(con);
+  public void addManagers(int resourceId, List<Integer> managers) {
+    List<ResourceValidator> validators = new ArrayList<ResourceValidator>(managers.size());
+    for (Integer managerId : managers) {
+      validators.add(new ResourceValidator(resourceId, managerId));
     }
+    ServicesLocator.getResourceService().addManagers(resourceId, validators);
   }
 
   public void removeManager(int resourceId, int managerId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      resourceDao.removeManager(con, resourceId, managerId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.removeManager()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_REMOVE_MANAGER", e);
-    } finally {
-      DBUtil.close(con);
-    }
+    ServicesLocator.getResourceService().removeManager(new ResourceValidator(resourceId, managerId));
   }
 
-  public List<String> getManagers(int resourceId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      return resourceDao.getManagers(con, resourceId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.getManagers()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_GET_MANAGERS", e);
-    } finally {
-      DBUtil.close(con);
+  public List<ResourceValidator> getManagers(int resourceId) {
+    Resource resource = ServicesLocator.getResourceService().getResource(resourceId);
+    if (resource != null) {
+      return resource.getManagers();
     }
+    return Collections.EMPTY_LIST;
   }
 
-  public void updateResourceStatus(String status, int resourceId, int reservationId,
-      String componentId) {
-    Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    try {
-      ResourcesManagerDAO.updateResourceStatus(con, status, resourceId, reservationId);
-    } catch (SQLException e) {
-      throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.updateResourceStatus()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_UPDATE_RESOURCE", e);
-    } finally {
-      DBUtil.close(con);
-    }
+  public void updateResourceStatus(String status, int resourceId, int reservationId) {
+    ReservedResource reserved = ServicesLocator.getReservedResourceService().getReservedResource(
+        resourceId, reservationId);
+    reserved.setStatus(status);
+    ServicesLocator.getReservedResourceService().update(reserved);
   }
 }

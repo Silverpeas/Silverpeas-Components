@@ -21,9 +21,9 @@
 package com.silverpeas.resourcesmanager.control;
 
 import com.silverpeas.resourcesmanager.control.ejb.ResourcesManagerRuntimeException;
-import com.silverpeas.resourcesmanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Category;
-import com.silverpeas.resourcesmanager.model.ResourceDetail;
+import org.silverpeas.resourcemanager.model.Resource;
 import com.silverpeas.resourcesmanager.model.ResourceReservableDetail;
 import com.silverpeas.resourcesmanager.util.ResourcesManagerFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -252,7 +252,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
    * @param resource
    * @return 
    */
-  public String createResource(ResourceDetail resource) {
+  public String createResource(Resource resource) {
     resource.setInstanceId(getComponentId());
     resource.setCreaterId(getUserId());
     resource.setUpdaterId(getUserId());
@@ -267,7 +267,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public void updateResource(ResourceDetail resource) {
+  public void updateResource(Resource resource) {
     resource.setInstanceId(getComponentId());
     resource.setUpdaterId(getUserId());
     resource.setUpdateDate(new Date());
@@ -280,9 +280,9 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public ResourceDetail getResource(String id) {
+  public Resource getResource(String id) {
     try {
-      ResourceDetail resource = ResourcesManagerFactory.getResourcesManagerBm().getResource(id);
+      Resource resource = ResourcesManagerFactory.getResourcesManagerBm().getResource(id);
       resource.setManagers(getManagerIds(id));
       return resource;
     } catch (RemoteException e) {
@@ -301,7 +301,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public List<ResourceDetail> getResourcesByCategory(String categoryId) {
+  public List<Resource> getResourcesByCategory(String categoryId) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getResourcesByCategory(categoryId);
     } catch (RemoteException e) {
@@ -323,7 +323,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public List<ResourceDetail> getResourcesofReservation(String reservationId) {
+  public List<Resource> getResourcesofReservation(String reservationId) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().getResourcesofReservation(
               getComponentId(), reservationId);
@@ -360,7 +360,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public List<ResourceDetail> verificationReservation(String listeReservation) {
+  public List<Resource> verificationReservation(String listeReservation) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().verificationReservation(
               getComponentId(), listeReservation, beginDateReservation, endDateReservation);
@@ -371,7 +371,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public List<ResourceDetail> getResourcesProblemDate(String listeReservation, Date beginDate,
+  public List<Resource> getResourcesProblemDate(String listeReservation, Date beginDate,
           Date endDate, String reservationId) {
     try {
       return ResourcesManagerFactory.getResourcesManagerBm().verificationNewDateReservation(
@@ -436,7 +436,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
   public void sendNotificationForValidation(String resourceId, String reservationId)
           throws RemoteException, NotificationManagerException {
-    ResourceDetail resource = getResource(resourceId);
+    Resource resource = getResource(resourceId);
     String status = ResourcesManagerFactory.getResourcesManagerBm().getStatusResourceOfReservation(
             resourceId, reservationId);
     if (STATUS_FOR_VALIDATION.equals(status)) {
@@ -884,7 +884,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
             new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
             "en");
 
-    ResourceDetail resource = getResource(resourceId);
+    Resource resource = getResource(resourceId);
     StringBuilder messageBody = new StringBuilder(512);
     StringBuilder messageBody_en = new StringBuilder(512);
 

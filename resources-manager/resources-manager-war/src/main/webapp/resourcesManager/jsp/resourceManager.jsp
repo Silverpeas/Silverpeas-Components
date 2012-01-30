@@ -26,13 +26,13 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
 	String 			idcategory 	= (String) request.getAttribute("categoryId");
 	List 			list 		= (List) request.getAttribute("listCategories");
-	ResourceDetail 	details 	= (ResourceDetail) request.getAttribute("resource");
+	Resource details 	= (Resource) request.getAttribute("resource");
 	List managers  = (List) request.getAttribute("Managers");
 	
 	Form 			formUpdate  = (Form) request.getAttribute("Form");
@@ -62,7 +62,7 @@
 	if (details != null){
 		resourceId 		= details.getId();
 		name 			= details.getName();
-		bookable 		= details.getBookable();
+		bookable 		= details.isBookable();
 		//reponsibleId 	= details.getResponsibleId();
 		description 	= details.getDescription();
 	}

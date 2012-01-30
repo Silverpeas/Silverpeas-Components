@@ -18,27 +18,59 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.resourcesmanager.model;
+package org.silverpeas.resourcemanager.model;
 
-import java.io.Serializable;
+import com.silverpeas.resourcesmanager.model.ResourceStatus;
+import com.silverpeas.util.StringUtil;
+import java.util.ArrayList;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
 
-public class Reservation implements Serializable, ResourceStatus {
-  private static final long serialVersionUID = 1L;
-  private String id;
+@Entity
+@Table(name = "sc_resources_reservation")
+public class Reservation implements ResourceStatus {
+
+  private static final long serialVersionUID = -1410243488372828193L;
+  @Id
+  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
+  valueColumnName = "maxId", pkColumnValue = "sc_resources_reservation")
+  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
+  private Integer id;
+  @Column(name="evenement", length = 128, nullable = false)
   private String event;
-  private Date beginDate;
-  private Date endDate;
+  @Column(length = 20, nullable = false)
+  private String beginDate;
+  @Column(length = 20, nullable = false)
+  private String endDate;
+  @Column(length = 2000, nullable = true)
   private String reason;
+  @Column(length = 128, nullable = true)
   private String place;
-  private String userId;
-  private Date creationDate;
-  private Date updateDate;
+  @Column
+  private int userId;
+  @Column(length = 20, nullable = false)
+  private String creationDate;
+  @Column(length = 20, nullable = false)
+  private String updateDate;
+  @Column
   private String instanceId;
-  private List<ResourceDetail> listResourcesReserved;
+  @Column
   private String status;
+  @Transient
   private String userName;
+  @OneToMany(cascade= CascadeType.ALL, mappedBy="reservation", orphanRemoval=true)
+  private List<ReservedResource> reservedResources = new ArrayList<ReservedResource>();
 
   public String getUserName() {
     return userName;
@@ -48,28 +80,39 @@ public class Reservation implements Serializable, ResourceStatus {
     this.userName = userName;
   }
 
-  public List<ResourceDetail> getListResourcesReserved() {
-    return listResourcesReserved;
+  public List<ReservedResource> getListResourcesReserved() {
+    return reservedResources;
   }
 
-  public void setListResourcesReserved(List<ResourceDetail> listResourcesReserved) {
-    this.listResourcesReserved = listResourcesReserved;
+  public void setListResourcesReserved(List<ReservedResource> listResourcesReserved) {
+    this.reservedResources = listResourcesReserved;
   }
 
   public Date getCreationDate() {
-    return creationDate;
+    if (StringUtil.isLong(creationDate)) {
+      Date creation = new Date();
+      creation.setTime(Long.parseLong(creationDate));
+      return creation;
+    }
+    return null;
   }
 
   public void setCreationDate(Date creationDate) {
-    this.creationDate = creationDate;
+    if (creationDate != null) {
+      this.creationDate = String.valueOf(creationDate.getTime());
+    } else {
+      this.creationDate = null;
+    }
   }
 
   public String getId() {
-    return id;
+    return String.valueOf(id);
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public final void setId(String id) {
+    if (StringUtil.isInteger(id)) {
+      this.id = Integer.parseInt(id);
+    }
   }
 
   public String getInstanceId() {
@@ -81,35 +124,58 @@ public class Reservation implements Serializable, ResourceStatus {
   }
 
   public Date getUpdateDate() {
-    return updateDate;
+    if (StringUtil.isLong(updateDate)) {
+      Date update = new Date();
+      update.setTime(Long.parseLong(updateDate));
+      return update;
+    }
+    return null;
   }
 
   public void setUpdateDate(Date updateDate) {
-    this.updateDate = updateDate;
+    if (updateDate != null) {
+      this.updateDate = String.valueOf(updateDate.getTime());
+    }
   }
 
   public String getUserId() {
-    return userId;
+    return String.valueOf(userId);
   }
 
   public void setUserId(String userId) {
-    this.userId = userId;
+    if (StringUtil.isInteger(userId)) {
+      this.userId = Integer.parseInt(userId);
+    }
   }
 
   public Date getBeginDate() {
-    return beginDate;
+    if (StringUtil.isLong(beginDate)) {
+      Date begin = new Date();
+      begin.setTime(Long.parseLong(beginDate));
+      return begin;
+    }
+    return null;
   }
 
   public void setBeginDate(Date beginDate) {
-    this.beginDate = beginDate;
+    if (beginDate != null) {
+      this.beginDate = String.valueOf(beginDate.getTime());
+    }
   }
 
   public Date getEndDate() {
-    return endDate;
+    if (StringUtil.isLong(endDate)) {
+      Date end = new Date();
+      end.setTime(Long.parseLong(endDate));
+      return end;
+    }
+    return null;
   }
 
   public void setEndDate(Date endDate) {
-    this.endDate = endDate;
+    if (endDate != null) {
+      this.endDate = String.valueOf(endDate.getTime());
+    }
   }
 
   public String getEvent() {
@@ -142,13 +208,19 @@ public class Reservation implements Serializable, ResourceStatus {
 
   public void setStatus(String status) {
     this.status = status;
+    for(ReservedResource reserved : reservedResources) {
+      reserved.setStatus(status);
+    }
+  }
+
+  public Reservation() {
   }
 
   public Reservation(String event, Date beginDate, Date endDate,
       String reason, String place) {
     this.event = event;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
+    setBeginDate(beginDate);
+    setEndDate(endDate);
     this.reason = reason;
     this.place = place;
   }
@@ -156,41 +228,41 @@ public class Reservation implements Serializable, ResourceStatus {
   public Reservation(String id, String event, Date beginDate,
       Date endDate, String reason, String place, String userId,
       Date creationDate, Date updateDate, String instanceId) {
-    this.id = id;
+    setId(id);
     this.event = event;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
+    setBeginDate(beginDate);
+    setEndDate(endDate);
     this.reason = reason;
     this.place = place;
-    this.userId = userId;
-    this.creationDate = creationDate;
-    this.updateDate = updateDate;
+    setUserId(userId);
+    setCreationDate(creationDate);
+    setUpdateDate(updateDate);
     this.instanceId = instanceId;
   }
 
   public Reservation(String id, String event, Date beginDate,
       Date endDate, String reason, String place, String userId,
       Date creationDate, Date updateDate, String instanceId, String status) {
-    this.id = id;
+    setId(id);
     this.event = event;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
+    setBeginDate(beginDate);
+    setEndDate(endDate);
     this.reason = reason;
     this.place = place;
-    this.userId = userId;
-    this.creationDate = creationDate;
-    this.updateDate = updateDate;
+    setUserId(userId);
+    setCreationDate(creationDate);
+    setUpdateDate(updateDate);
     this.instanceId = instanceId;
     this.status = status;
   }
 
   @Override
   public String toString() {
-    return "Reservation{" + "id=" + id + ", event=" + event + ", beginDate=" + beginDate
-            + ", endDate=" + endDate + ", reason=" + reason + ", place=" + place + ", userId=" 
-            + userId + ", creationDate=" + creationDate + ", updateDate=" + updateDate 
-            + ", instanceId=" + instanceId + ", listResourcesReserved=" + listResourcesReserved 
-            + ", status=" + status + ", userName=" + userName + '}';
+    return "Reservation{" + "id=" + id + ", event=" + event + ", beginDate=" + beginDate +
+        ", endDate=" + endDate + ", reason=" + reason + ", place=" + place + ", userId=" +
+        userId + ", creationDate=" + creationDate + ", updateDate=" + updateDate +
+        ", instanceId=" + instanceId + ", listResourcesReserved=" + reservedResources +
+        ", status=" + status + ", userName=" + userName + '}';
   }
 
   @Override
@@ -209,7 +281,7 @@ public class Reservation implements Serializable, ResourceStatus {
       return false;
     }
     if (this.beginDate != other.beginDate && (this.beginDate == null || !this.beginDate.equals(
-            other.beginDate))) {
+        other.beginDate))) {
       return false;
     }
     if (this.endDate != other.endDate && (this.endDate == null || !this.endDate.equals(other.endDate))) {
@@ -221,19 +293,19 @@ public class Reservation implements Serializable, ResourceStatus {
     if ((this.place == null) ? (other.place != null) : !this.place.equals(other.place)) {
       return false;
     }
-    if ((this.userId == null) ? (other.userId != null) : !this.userId.equals(other.userId)) {
+    if (this.userId != (other.userId)) {
       return false;
     }
     if (this.creationDate != other.creationDate && (this.creationDate == null || !this.creationDate.
-            equals(other.creationDate))) {
+        equals(other.creationDate))) {
       return false;
     }
     if (this.updateDate != other.updateDate && (this.updateDate == null || !this.updateDate.equals(
-            other.updateDate))) {
+        other.updateDate))) {
       return false;
     }
     if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
-            other.instanceId)) {
+        other.instanceId)) {
       return false;
     }
     if ((this.status == null) ? (other.status != null) : !this.status.equals(other.status)) {
@@ -252,7 +324,7 @@ public class Reservation implements Serializable, ResourceStatus {
     hash = 97 * hash + (this.endDate != null ? this.endDate.hashCode() : 0);
     hash = 97 * hash + (this.reason != null ? this.reason.hashCode() : 0);
     hash = 97 * hash + (this.place != null ? this.place.hashCode() : 0);
-    hash = 97 * hash + (this.userId != null ? this.userId.hashCode() : 0);
+    hash = 97 * hash + this.userId;
     hash = 97 * hash + (this.creationDate != null ? this.creationDate.hashCode() : 0);
     hash = 97 * hash + (this.updateDate != null ? this.updateDate.hashCode() : 0);
     hash = 97 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
@@ -260,15 +332,15 @@ public class Reservation implements Serializable, ResourceStatus {
     hash = 97 * hash + (this.userName != null ? this.userName.hashCode() : 0);
     return hash;
   }
-  
+
   public boolean isValidated() {
     return STATUS_VALIDATE.equals(status);
   }
-  
+
   public boolean isRefused() {
     return STATUS_REFUSED.equals(status);
   }
-  
+
   public boolean isValidationRequired() {
     return STATUS_FOR_VALIDATION.equals(status);
   }

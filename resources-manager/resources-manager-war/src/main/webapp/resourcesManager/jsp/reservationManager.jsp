@@ -26,8 +26,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.Reservation"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Date" %>
 

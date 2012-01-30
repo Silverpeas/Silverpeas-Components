@@ -26,9 +26,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="com.silverpeas.resourcesmanager.model.ResourceReservableDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.Reservation"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
@@ -197,7 +197,7 @@ String idTemoin="";
 			out.println("<h4>"+resource.getString("resourcesManager.resourceUnReservable")+"</h4>");
 			for(int i=0;i<listResourcesProblem.size();i++)
 			{ 
-				ResourceDetail resourceProblem = (ResourceDetail)listResourcesProblem.get(i);
+				Resource resourceProblem = (Resource)listResourcesProblem.get(i);
 				out.println(resource.getString("resourcesManager.ressourceNom")+" : "+resourceProblem.getName()+"<br/>");
 			}
 			out.println(board.printAfter());
@@ -298,7 +298,7 @@ String idTemoin="";
 		    	  
 		  			// la suppression ayant ete faite, cette boucle permet d'afficher les resources qui n'ont pas pose probleme
 		  			for (int i=0;i<listResourceEverReserved.size();i++){
-		  						ResourceDetail maRessource =(ResourceDetail)listResourceEverReserved.get(i);
+		  						Resource maRessource =(Resource)listResourceEverReserved.get(i);
 		  		  				String NomResource = maRessource.getName();
 		  		  				String resourceId = maRessource.getId();
 		  		  				String categoryId = maRessource.getCategoryId();

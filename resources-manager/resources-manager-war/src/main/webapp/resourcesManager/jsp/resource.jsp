@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
 
 <%@ include file="check.jsp" %>
@@ -34,7 +34,7 @@
 // Recuperation des details de l'ulisateur
 	Category category = (Category)request.getAttribute("category");
 	String idcategory = category.getId();
-	ResourceDetail maResource = (ResourceDetail)request.getAttribute("resource");
+	Resource maResource = (Resource)request.getAttribute("resource");
 	String provenance = (String)request.getAttribute("provenance");
 	String flag = (String)request.getAttribute("Profile");
 //	 recuperation des parametres du formulaire
@@ -48,7 +48,7 @@
 	String name=maResource.getName();
 	String responsibleId=maResource.getResponsibleId();
 	String description=EncodeHelper.javaStringToHtmlParagraphe(maResource.getDescription());
-	boolean bookable=maResource.getBookable();
+	boolean bookable=maResource.isBookable();
 	String resourceId=maResource.getId();
 	Button cancelButton = null;
 	
