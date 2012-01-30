@@ -125,6 +125,7 @@ public class CompanyServiceImplTest {
 
         List<Company> list = service.findCompanyListByContactId(contactId);
         assertNotNull(list);
+        assertFalse(list.isEmpty());
         assertTrue(list.size() == 1);
         assertEquals(name, list.get(0).getName());
         assertEquals(email, list.get(0).getEmail());
@@ -135,6 +136,7 @@ public class CompanyServiceImplTest {
         int contactId = 17; // Barak Obama
         List<Company> list = service.findCompanyListByContactId(contactId);
         assertNotNull(list);
+        assertFalse(list.isEmpty());
         // nombre d'élements avec ENABLED = true
         assertTrue(list.size() == 2);
     }

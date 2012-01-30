@@ -32,6 +32,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.Variant;
 import com.silverpeas.yellowpages.model.Company;
+import com.silverpeas.yellowpages.model.GenericContact;
 import com.silverpeas.yellowpages.service.CompanyService;
 import com.silverpeas.yellowpages.service.ServicesFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -1865,6 +1866,29 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
             }
         } catch (NumberFormatException e) {
             // nothing to do
+        }
+    }
+
+    /**
+     * Récupère la liste des contacts associés à une company
+     *
+     * @param companyId
+     * @return
+     * @throws RemoteException
+     */
+    public synchronized List<ContactDetail> getContactDetailListForCompanyId(int companyId) throws RemoteException {
+        List<GenericContact> genericContactList = this.serviceCompany.findContactListByCompanyId(companyId);
+        if (genericContactList == null || genericContactList.isEmpty() || genericContactList.size() == 0) {
+            return null;
+        } else {
+            List<ContactDetail> contactDetailList = new ArrayList<ContactDetail>();
+            for (GenericContact contactDetail : genericContactList) {
+                ContactDetail detail = this.kscEjb.getContactDetail(String.valueOf(contactDetail.getContactId()));
+                if (detail != null) {
+                    contactDetailList.add(detail);
+                }
+            }
+            return contactDetailList;
         }
     }
 

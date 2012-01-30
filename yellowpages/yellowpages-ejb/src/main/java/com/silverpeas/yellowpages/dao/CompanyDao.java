@@ -35,6 +35,7 @@ import java.util.List;
 
 public interface CompanyDao extends JpaRepository<Company, Integer> {
 
+    // TODO check this request...
     @Query("select comp FROM GenericContact gccontact, GenericContact gccompany, GenericContactRelation rel, Company comp " +
             "WHERE gccontact.contactId = :contactId " +
             "AND gccontact.contactType = " + GenericContact.TYPE_COMPANY + " " +
@@ -47,5 +48,13 @@ public interface CompanyDao extends JpaRepository<Company, Integer> {
     @Query("FROM Company comp " +
             "WHERE UPPER(comp.name) like UPPER(CONCAT(CONCAT('%',TRIM(:strPattern)),'%'))")
     List<Company> findCompanyListByPattern(@Param("strPattern") String searchPattern);
+
+    @Query("select gccontact FROM GenericContact gccontact, GenericContact gccompany, GenericContactRelation rel " +
+            "WHERE gccontact.genericContactId = rel.genericContactId " +
+            "AND rel.genericCompanyId = gccompany.genericContactId " +
+            "AND rel.enabled = " + GenericContactRelation.ENABLE_TRUE + " " +
+            "AND gccompany.contactType = " + GenericContact.TYPE_COMPANY + " "  +
+            "AND gccompany.companyId = :companyId")
+    List<GenericContact> findContactListByCompanyId(@Param("companyId") int companyId);
 
 }

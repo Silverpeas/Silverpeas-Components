@@ -174,12 +174,25 @@
                             </td>
                         </tr>
                     </table>
-                    <c:if test="${viewMode}">
-
-                        <table cellpadding="0" cellspacing="2" border="0">
+                    <c:if test="${viewMode && !empty contactList}" >
+                        <table width="98%" cellspacing="2" border="0" summary="null">
+                            <tbody>
                             <tr>
-                                <td>Display contact list here...</td>
+                                <td colspan="2"><tr>Liste des contacts associés à cette entreprise :</tr></td>
+                                <td nowrap>
+                                    <table cellpadding="5" cellspacing="0" border="0" width="50%" class="tableArrayPane">
+                                        <tbody>
+                                        <c:forEach var="contact" items="${contactList}">
+                                            <tr>
+                                                <td class="ArrayCell">${contact.firstName}</td>
+                                                <td class="ArrayCell">${contact.lastName}</td>
+                                            </tr>
+                                        </c:forEach>
+                                        </tbody>
+                                    </table>
+                                </td>
                             </tr>
+                            </tbody>
                         </table>
                     </c:if>
                 </form>

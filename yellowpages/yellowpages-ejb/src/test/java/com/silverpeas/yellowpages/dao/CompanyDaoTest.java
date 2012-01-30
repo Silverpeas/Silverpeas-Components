@@ -24,6 +24,7 @@
 package com.silverpeas.yellowpages.dao;
 
 import com.silverpeas.yellowpages.model.Company;
+import com.silverpeas.yellowpages.model.GenericContact;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
@@ -134,6 +135,16 @@ public class CompanyDaoTest {
         // relecture de la company en base
         Company companyFromDb = dao.findOne(id);
         assertNull(companyFromDb);
+    }
+
+    @Test
+    public void testFindContactListByCompanyId() throws Exception {
+        // Liste des contacts associés à : Microsoft
+        int id = 2;
+        List<GenericContact> contactList = dao.findContactListByCompanyId(id);
+        assertNotNull(contactList);
+        assertFalse(contactList.isEmpty());
+        assertEquals(1,contactList.size());
     }
 
 }

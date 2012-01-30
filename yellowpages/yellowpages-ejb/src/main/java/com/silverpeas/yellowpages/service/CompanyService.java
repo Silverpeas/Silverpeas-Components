@@ -25,6 +25,7 @@
 package com.silverpeas.yellowpages.service;
 
 import com.silverpeas.yellowpages.model.Company;
+import com.silverpeas.yellowpages.model.GenericContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
 
 import java.util.List;
@@ -49,5 +50,7 @@ public interface CompanyService {
     public List<Company> findAllCompanies();
 
     public List<Company> findCompaniesByPattern(String pattern);
+
+    public List<GenericContact> findContactListByCompanyId(int companyId);
 }
 

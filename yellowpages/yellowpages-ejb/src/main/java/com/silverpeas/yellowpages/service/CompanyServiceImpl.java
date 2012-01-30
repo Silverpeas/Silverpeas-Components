@@ -99,7 +99,7 @@ public class CompanyServiceImpl implements CompanyService {
 
             // Recuperation du contact dans la table generique (creation si il n'existe pas)
             GenericContact gcContact = genericContactDao.findGenericContactFromContactId(contactId);
-             if (gcContact == null) {
+            if (gcContact == null) {
                 GenericContact newGcContact = new GenericContact(GenericContact.TYPE_CONTACT, contactId, null);
                 gcContact = genericContactDao.save(newGcContact);
             }
@@ -154,6 +154,11 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public List<Company> findCompaniesByPattern(String pattern) {
         return companyDao.findCompanyListByPattern(pattern);
+    }
+
+    @Override
+    public List<GenericContact> findContactListByCompanyId(int companyId) {
+        return companyDao.findContactListByCompanyId(companyId);
     }
 
 }

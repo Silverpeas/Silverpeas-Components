@@ -524,6 +524,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 String companyId = request.getParameter("ContactCompanyId");
                 Company company = scc.getCompany(Integer.valueOf(companyId));
                 request.setAttribute("company", company);
+                request.setAttribute("contactList", scc.getContactDetailListForCompanyId(company.getCompanyId()));
                 request.setAttribute("viewMode", true);
                 destination = rootDestination + "companyForm.jsp";
 

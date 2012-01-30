@@ -125,6 +125,7 @@ public class GenericContactRelationDaoTest {
         int genericCompanyId = 113;
         List<GenericContactRelation> liste = dao.findByGenericCompanyId(genericCompanyId);
         assertNotNull(liste);
+        assertFalse(liste.isEmpty());
         assertEquals(1, liste.size());
         for (GenericContactRelation genericContactRelation : liste) {
             assertEquals(1, genericContactRelation.getEnabled());
