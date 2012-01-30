@@ -149,6 +149,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       String sToPortlet = req.getParameter("ToPortlet");
       String pubIdToHighlight = req.getParameter("PubIdToHighLight");
       String query = req.getParameter("Query");
+      
+      String selectedPublicationIds = req.getParameter("SelectedPubIds");
+      String notSelectedPublicationIds = req.getParameter("NotSelectedPubIds");      
+      List<String> selectedIds = kmeliaSC.processSelectedPublicationIds(selectedPublicationIds, notSelectedPublicationIds);
 
       boolean toValidate = "1".equals(sToValidate);
       boolean toPortlet = "1".equals(sToPortlet);
@@ -168,8 +172,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       boolean sortAllowed = true;
       boolean linksAllowed = true;
-      boolean checkboxAllowed = false;
-      List<String> selectedIds = new ArrayList<String>();
+      boolean seeAlso = false;
       List<KmeliaPublication> publications;
       TopicDetail currentTopic = null;
       boolean subTopics = false;
@@ -178,7 +181,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         currentTopic = kmeliaSC.getSessionTopicToLink();
         sortAllowed = false;
         linksAllowed = false;
-        checkboxAllowed = true;
+        seeAlso = true;
         // get selected publication ids from session
         selectedIds = processPublicationsToLink(req);
         String currentPubId = req.getParameter("PubId");
@@ -209,7 +212,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (attachmentToLink) {
         sortAllowed = false;
         linksAllowed = false;
-        checkboxAllowed = false;
+        seeAlso = false;
         toSearch = false;
       }
 
@@ -241,15 +244,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         for (KmeliaPublication aPublication : currentTopic.getKmeliaPublications()) {
           if (!kmeliaSC.isPublicationDeleted(aPublication.getPk().getId())
               && kmeliaSecurity.isObjectAvailable(componentId, kmeliaSC.getUserId(), aPublication.
-              getPk().
-              getId(), "Publication")) {
+              getPk().getId(), "Publication")) {
             publicationsToDisplay.add(aPublication);
           }
         }
         displayLastPublications(publicationsToDisplay, kmeliaSC, resources, gef, writer);
       } else {
         if(publications != null) {
-        displayPublications(publications, subTopics, sortAllowed, linksAllowed, checkboxAllowed,
+        displayPublications(publications, subTopics, sortAllowed, linksAllowed, seeAlso,
             toSearch, kmeliaSC, role, gef, context, resources, selectedIds, pubIdToHighlight,
             writer, attachmentToLink);
         }
@@ -278,7 +280,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
    * @throws NumberFormatException 
    */
   private void displayPublications(List<KmeliaPublication> allPubs, boolean subtopicsExist,
-      boolean sortAllowed, boolean linksAllowed, boolean checkboxAllowed, boolean toSearch,
+      boolean sortAllowed, boolean linksAllowed, boolean seeAlso, boolean toSearch,
       KmeliaSessionController kmeliaScc, String profile,
       GraphicElementFactory gef, String context, ResourcesWrapper resources,
       List<String> selectedIds, String pubIdToHighlight, Writer out, boolean linkAttachment)
@@ -394,22 +396,20 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           pubState = resources.getString("kmelia.Shortcut");
         }
 
-        out.write("<li>");
+        out.write("<li onmouseover=\"showPublicationOperations(this);\" onmouseout=\"hidePublicationOperations(this);\">");
         out.write("<div class=\"firstColumn\">");
-        if (checkboxAllowed) {
-          String checked = "";
-          if (selectedIds != null && selectedIds.contains(pub.getPK().getId())) {
-            checked = "checked=\"checked\"";
-          }
-          out.write("<span class=\"selection\">");
-          out.write("<input type=\"checkbox\" name=\"C1\" value=\""
-              + pub.getPK().getId() + "/" + pub.getPK().getInstanceId() + "\" " + checked
-              + " onclick=\"sendPubId(this.value, this.checked);\"/>");
-          out.write("</span>");
-        } else {
+        String checked = "";
+        if (selectedIds != null && selectedIds.contains(pub.getPK().getId())) {
+          checked = "checked=\"checked\"";
+        }
+        out.write("<span class=\"selection\">");
+        out.write("<input type=\"checkbox\" name=\"C1\" value=\""
+            + pub.getPK().getId() + "/" + pub.getPK().getInstanceId() + "\" " + checked
+            + " onclick=\"sendPubId(this.value, this.checked);\"/>");
+        out.write("</span>");
+        if (!seeAlso) {
           ThumbnailDetail thumbnail = pub.getThumbnail();
-          if (thumbnail != null
-              && Boolean.valueOf(resources.getSetting("isVignetteVisible"))) {
+          if (thumbnail != null && Boolean.valueOf(resources.getSetting("isVignetteVisible"))) {
             out.write("<span class=\"thumbnail\">");
             try {
               displayThumbnail(pub, kmeliaScc, publicationSettings, out);
@@ -428,7 +428,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
         out.write("<div class=\"publication\">");
         out.write("<div class=\"line1\">");
-        out.write("<span class=\"bullet\">&#8226;</span><a name=\"");
+        out.write("<span class=\"bullet\">&#8226;</span>");
+        out.write("<a name=\"");
         out.write(pub.getPK().getId());
         out.write("\"></a>");
         if (linksAllowed) {
@@ -443,7 +444,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write("</b></a></font>");
         } else {
           String ref = "";
-          if (checkboxAllowed && resources.getSetting("linkManagerShowPubId", false)) {
+          if (seeAlso && resources.getSetting("linkManagerShowPubId", false)) {
             ref = " [ " + pub.getPK().getId() + " ] ";
           }
           out.write("<font color=\"");
@@ -470,7 +471,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
         //Gestion actualités décentralisées
         if (kmeliaScc.isNewsManage() && !user.isInRole(profile)) {
-
           DelegatedNews delegatedNews = kmeliaScc.getDelegatedNews(pub.getPK().getId());
           if (delegatedNews != null) {
             out.write("<span class=\"actualite\"><nobr>");
@@ -533,7 +533,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write(")</span>");
         }
         // displays permalink
-        if (displayLinks && (!checkboxAllowed && !linkAttachment)) {
+        if (displayLinks && (!seeAlso && !linkAttachment)) {
           out.write("<span class=\"permalink\">");
           displayPermalink(pub, kmeliaScc, resources, out);
           out.write("</span>");
@@ -551,7 +551,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
         out.write("</font>");
         if ((KmeliaHelper.isToolbox(kmeliaScc.getComponentId()) || kmeliaScc.attachmentsInPubList())
-            && !checkboxAllowed || linkAttachment) {
+            && !seeAlso || linkAttachment) {
           out.write("<span class=\"files\">");
           // Can be a shortcut. Must check attachment mode according to publication source.
           boolean isAlias = !kmeliaScc.getComponentId().equalsIgnoreCase(pub.getPK().getInstanceId());
@@ -564,6 +564,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write("</span>");
         }
         out.write("</div>");
+        
+        // print publication operations
+        //out.write("<div class=\"unit-operation\">");
+        //out.write("<a href=\"javascript:onclick=removePublication('"+pub.getPK().getId()+"');\">Supprimer</a>");
+        //out.write("</div>");
 
       } // End while
       out.write("</ul>");
@@ -747,11 +752,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   @SuppressWarnings("unchecked")
-  private List<String> processPublicationsToLink(
-      HttpServletRequest request) {
+  private List<String> processPublicationsToLink(HttpServletRequest request) {
     // get from session the list of publications to link with current publication
     HashSet<String> list =
-        (HashSet) request.getSession().getAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
+        (HashSet<String>) request.getSession().getAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
 
     // store the publication identifiers in an array list
     List<String> publicationsToLink = new ArrayList<String>();

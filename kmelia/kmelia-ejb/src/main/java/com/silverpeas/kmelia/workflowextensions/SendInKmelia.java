@@ -38,6 +38,7 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.fieldType.ExplorerField;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
@@ -51,6 +52,7 @@ import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
 import com.silverpeas.workflow.api.model.Action;
+import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.external.impl.ExternalActionImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -96,7 +98,7 @@ public class SendInKmelia extends ExternalActionImpl {
   private String role = "unknown";
   private String xmlFormName = null;
   private boolean addPDFHistory = true;
-  //Add pdf history before instance attachments 
+  // Add pdf history before instance attachments
   private boolean addPDFHistoryFirst = true;
   private OrganizationController orga = null;
   private String userId = null;
@@ -109,8 +111,25 @@ public class SendInKmelia extends ExternalActionImpl {
   @Override
   public void execute() {
     setRole(getEvent().getUserRoleName());
-    targetId = getTriggerParameter("targetComponentId").getValue();
-    topicId = getTriggerParameter("targetTopicId").getValue();
+
+    Parameter parameter = getTriggerParameter("explorerFieldName");
+    if (parameter != null && StringUtil.isDefined(parameter.getValue())) {
+      String explorerFieldName = parameter.getValue();
+      // getting place to create publication from explorer field
+      ExplorerField explorer = null;
+      try {
+        explorer = (ExplorerField) getProcessInstance().getField(explorerFieldName);
+      } catch (WorkflowException e1) {
+        SilverTrace.error("processManager", "SendInKmelia.execute", "err.CANT_GET_TOPIC", e1);
+      }
+      ForeignPK pk = (ForeignPK) explorer.getObjectValue();
+
+      targetId = pk.getInstanceId();
+      topicId = pk.getId();
+    } else {
+      targetId = getTriggerParameter("targetComponentId").getValue();
+      topicId = getTriggerParameter("targetTopicId").getValue();
+    }
     pubTitle = getTriggerParameter("pubTitle").getValue();
     if (getTriggerParameter("pubDescription") != null) {
       pubDesc = getTriggerParameter("pubDescription").getValue();
@@ -363,7 +382,8 @@ public class SendInKmelia extends ExternalActionImpl {
         workingProfiles);
     for (int u = 0; u < userIds.length; u++) {
       String userId = userIds[u];
-      Worker worker = new Worker(Integer.parseInt(userId), -1, u, false, true, pubPK.getInstanceId(),
+      Worker worker =
+          new Worker(Integer.parseInt(userId), -1, u, false, true, pubPK.getInstanceId(),
               "U", false, true, 0);
       workers.add(worker);
     }
@@ -374,7 +394,7 @@ public class SendInKmelia extends ExternalActionImpl {
   public void pasteDocumentsAsAttachments(ForeignPK fromPK, ForeignPK toPK) throws RemoteException {
     SilverTrace.info("workflowEngine", "SendInKmelia.pasteDocumentsAsAttachments()",
         "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + fromPK.toString() + ", toPK = " +
-        toPK.toString());
+            toPK.toString());
 
     // paste versioning documents attached to publication
     List<Document> documents = getVersioningBm().getDocuments(new ForeignPK(fromPK));
@@ -419,8 +439,8 @@ public class SendInKmelia extends ExternalActionImpl {
           AttachmentDetail attachment =
               new AttachmentDetail(new AttachmentPK("unknown", toPK.getInstanceId()),
                   newVersionFile, version.getLogicalName(), "", version.getMimeType(), version
-                  .getSize(), "Images", new Date(), toPK, document.getName(), document
-                  .getDescription(), 0);
+                      .getSize(), "Images", new Date(), toPK, document.getName(), document
+                      .getDescription(), 0);
           AttachmentController.createAttachment(attachment, false);
         }
       }
@@ -472,11 +492,13 @@ public class SendInKmelia extends ExternalActionImpl {
             "", toPK.getInstanceId(), workers, new ArrayList(), 0, 0);
 
         // Version creation
-        DocumentVersion version = new DocumentVersion(null, null, 1, 0, Integer.parseInt(userId),
-            new Date(), "", DocumentVersion.TYPE_PUBLIC_VERSION,
-            DocumentVersion.STATUS_VALIDATION_NOT_REQ, newPhysicalName, attachment.getLogicalName(),
-            attachment.getType(), Long.valueOf(attachment.getSize()).intValue(),
-            toPK.getInstanceId());
+        DocumentVersion version =
+            new DocumentVersion(null, null, 1, 0, Integer.parseInt(userId),
+                new Date(), "", DocumentVersion.TYPE_PUBLIC_VERSION,
+                DocumentVersion.STATUS_VALIDATION_NOT_REQ, newPhysicalName,
+                attachment.getLogicalName(),
+                attachment.getType(), Long.valueOf(attachment.getSize()).intValue(),
+                toPK.getInstanceId());
 
         getVersioningBm().createDocument(document, version);
       }
@@ -620,7 +642,7 @@ public class SendInKmelia extends ExternalActionImpl {
 
         // Force simpletext displayers because itext cannot display HTML Form fields (select,
         // radio...)
-        float[] colsWidth = {25, 75};
+        float[] colsWidth = { 25, 75 };
         PdfPTable tableContent = new PdfPTable(colsWidth);
         tableContent.setWidthPercentage(100);
 
@@ -638,24 +660,24 @@ public class SendInKmelia extends ExternalActionImpl {
           field = data.getField(fieldTemplate.getFieldName());
           String componentId = step.getProcessInstance().getProcessModel().getModelId();
 
-//          fieldValue = data.getField(fieldTemplate.getFieldName()).getValue();
-          //wysiwyg field
+          // fieldValue = data.getField(fieldTemplate.getFieldName()).getValue();
+          // wysiwyg field
           if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
             String file = WysiwygFCKFieldDisplayer.getFile(componentId,
                 getProcessInstance().getInstanceId(), fieldTemplate.getFieldName(), getLanguage());
 
-            //Extract the text content of the html code
+            // Extract the text content of the html code
             Source source = new Source(file);
             if (source != null) {
               fieldValue = source.getTextExtractor().toString();
             }
           }
-          //Field file type
+          // Field file type
           else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) &&
               StringUtil.isDefined(field.getValue())) {
             boolean fromCompoVersion = "yes".equals(getOrganizationController()
                 .getComponentParameterValue(componentId, "versionControl"));
-            //Versioning Used
+            // Versioning Used
             if (fromCompoVersion) {
               DocumentVersion documentVersion = versioningUtil.getDocumentVersion(
                   new DocumentVersionPK(Integer.parseInt(field.getValue())));
@@ -670,11 +692,11 @@ public class SendInKmelia extends ExternalActionImpl {
               }
             }
           }
-          //Field date type
+          // Field date type
           else if (fieldTemplate.getTypeName().equals("date")) {
             fieldValue = DateUtil.getOutputDate(fieldValue, "fr");
           }
-          //Others fields type
+          // Others fields type
           else {
             fieldTemplate.setDisplayerName("simpletext");
             fieldValue = field.getValue(getLanguage());
@@ -743,12 +765,11 @@ public class SendInKmelia extends ExternalActionImpl {
 
   /**
    * Get actor if exist, admin otherwise
-   *
    * @return UserDetail
    */
   private UserDetail getBestUserDetail() {
     String userId = ADMIN_ID;
-    //For a manual action (event) 
+    // For a manual action (event)
     if (getEvent().getUser() != null) {
       userId = getEvent().getUser().getUserId();
     }

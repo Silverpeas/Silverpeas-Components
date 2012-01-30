@@ -24,19 +24,20 @@
 package com.stratelia.webactiv.almanach.control.ejb;
 
 import com.silverpeas.calendar.Date;
-import org.junit.Before;
 import com.stratelia.webactiv.almanach.BaseAlmanachTest;
+import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.NON_PERIODIC_EVENTS;
+import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.PERIODIC_EVENTS;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
+import static com.stratelia.webactiv.almanach.model.EventOccurrenceMatcher.*;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import java.util.Calendar;
 import java.util.List;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.property.RRule;
-import org.junit.Test;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.*;
-import static com.stratelia.webactiv.almanach.model.EventOccurrenceMatcher.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Unit tests on the implementation of some almanach EJB business operations.
