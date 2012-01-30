@@ -1165,6 +1165,19 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           // Go to importExportPeas
           destination = "/RimportExportPeas/jsp/ExportItems";
         }
+      } else if (function.equals("ExportPublications")) {
+        String selectedIds = request.getParameter("SelectedIds");
+        String notSelectedIds = request.getParameter("NotSelectedIds");
+        List<String> ids = kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds);
+        
+        List<WAAttributeValuePair> publicationIds = new ArrayList<WAAttributeValuePair>();
+        for (String id : ids) {
+          publicationIds.add(new WAAttributeValuePair(id, kmelia.getComponentId()));
+        }
+        request.setAttribute("selectedResultsWa", publicationIds);
+        kmelia.resetSelectedPublicationIds();
+        // Go to importExportPeas
+        destination = "/RimportExportPeas/jsp/SelectExportMode";
       } else if (function.equals("ToPubliContent")) {
         CompletePublication completePublication =
                 kmelia.getSessionPubliOrClone().getCompleteDetail();

@@ -107,6 +107,7 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
+<script type="text/javascript" src="javaScript/publications.js"></script>
 
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/yui/treeview/assets/skins/sam/treeview.css" />
 <link rel="stylesheet" type="text/css" href="styleSheets/tree.css"/>
@@ -280,6 +281,7 @@ labels["operation.subscribe"] = "<%=resources.getString("SubscriptionsAdd")%>";
 labels["operation.favorites"] = "<%=resources.getString("FavoritesAdd1")%> <%=resources.getString("FavoritesAdd2")%>";
 labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
 labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPredefinePositions")%>";
+labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.exportSelection")%>";
 
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
@@ -316,7 +318,6 @@ function getHeight() {
 	  }
 	  return (myHeight -20);
 }
-
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">

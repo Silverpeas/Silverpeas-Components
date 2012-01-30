@@ -75,9 +75,8 @@ boolean userCanValidatePublications = SilverpeasRole.admin.isInRole(profile) || 
 
 %>
 
-<HTML>
-<HEAD>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<html>
+<head>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -86,10 +85,10 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
+<script type="text/javascript" src="javaScript/publications.js"></script>
 <script type="text/javascript">
 <% if (!profile.equals("user")) { %>
-function updateChain()
-{
+function updateChain() {
     document.updateChain.submit();
 }
 <% } %>
@@ -106,8 +105,7 @@ function getComponentId() {
 	return "<%=componentId%>";
 }
 
-function showDnD()
-{
+function showDnD() {
 	<%
 	ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
 	String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
@@ -115,13 +113,11 @@ function showDnD()
 	showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeNormal_<%=language%>.html','<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 }
 
-function fileUpload()
-{
+function fileUpload() {
     document.fupload.submit();
 }
 
-function displayPublications(id)
-{
+function displayPublications(id) {
 	//display publications of topic
 	var pubIdToHighlight = "<%=pubIdToHighlight%>";
 	var ieFix = new Date().getTime();
@@ -131,22 +127,7 @@ function displayPublications(id)
 			},"html");
 }
 
-function doPagination(index)
-{
-	var paramToValidate = "0";
-	if (getCurrentNodeId() == "tovalidate") {
-		paramToValidate = "1";
-	}
-	var topicQuery = getSearchQuery();
-	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToValidate:paramToValidate,Query:topicQuery,IEFix:ieFix},
-							function(data){
-								$('#pubList').html(data);
-							},"html");
-}
-
-function topicWysiwyg()
-{
+function topicWysiwyg() {
 	closeWindows();
 	document.topicDetailForm.action = "ToTopicWysiwyg";
 	document.topicDetailForm.ChildId.value = "0";
@@ -168,8 +149,8 @@ $(document).ready(function() {
 	displayTopicDescription("0");
 });
 </script>
-</HEAD>
-<BODY id="kmelia" onUnload="closeWindows()" class="yui-skin-sam">
+</head>
+<body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
 <div id="<%=componentId %>">
 <%
         urlTopic = nodeDetail.getLink();
@@ -197,7 +178,7 @@ $(document).ready(function() {
 				operationPane.addOperation("useless", kmeliaScc.getString("TopicWysiwyg"), "javascript:onClick=topicWysiwyg('"+id+"')");
 			}
           	if (kmeliaScc.isExportComponentAllowed() && kmeliaScc.isExportZipAllowed()) {
-	        	operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportPublications()");
+	        	operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportTopic()");
           	}
           	if (kmeliaScc.isExportComponentAllowed() && kmeliaScc.isExportPdfAllowed()) {
 	        	operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ExportPDF"), "javascript:openExportPDFPopup()");
@@ -224,6 +205,7 @@ $(document).ready(function() {
         }
                     	
     	if (!isGuest) {
+    	  	operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
     		operationPane.addOperation("useless", resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
       		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(description))+"','"+urlTopic+"')");
     	}
@@ -255,8 +237,7 @@ $(document).ready(function() {
 					} %>
 					<div id="topicDescription"></div>
 				<%
-					  if (dragAndDropEnable && userCanCreatePublications)
-					  {
+					  if (dragAndDropEnable && userCanCreatePublications) {
 						%>
 						<div id="DnD">
 						<table width="98%" cellpadding="0" cellspacing="0"><tr><td align="right">
@@ -266,13 +247,10 @@ $(document).ready(function() {
 						<tr>
 						<%
 							boolean appletDisplayed = false;
-							if (kmeliaScc.isDraftEnabled() && kmeliaScc.isPdcUsed() && kmeliaScc.isPDCClassifyingMandatory())
-							{
+							if (kmeliaScc.isDraftEnabled() && kmeliaScc.isPdcUsed() && kmeliaScc.isPDCClassifyingMandatory()) {
 								//Do not display applet in normal mode.
 								//Only display applet in draft mode
-							}
-							else
-							{
+							} else {
 								appletDisplayed = true;
 						%>
 								<td>
@@ -305,25 +283,25 @@ $(document).ready(function() {
 		out.println(window.printAfter());
 	%>
 
-<FORM NAME="topicDetailForm" METHOD="POST">
-	<input type="hidden" name="Id" value="<%=id%>">
-	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>">
-	<input type="hidden" name="ChildId">
-	<input type="hidden" name="Status"><input type="hidden" name="Recursive">
-</FORM>
+<form name="topicDetailForm" method="post">
+	<input type="hidden" name="Id" value="<%=id%>"/>
+	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"/>
+	<input type="hidden" name="ChildId"/>
+	<input type="hidden" name="Status"/><input type="hidden" name="Recursive"/>
+</form>
 
-<FORM NAME="pubForm" action="ViewPublication" METHOD="POST">
-	<input type="hidden" name="PubId">
-	<input type="hidden" name="CheckPath" value="1">
-</FORM>
+<form name="pubForm" action="ViewPublication" method="post">
+	<input type="hidden" name="PubId"/>
+	<input type="hidden" name="CheckPath" value="1"/>
+</form>
 
-<FORM NAME="fupload" ACTION="fileUpload.jsp" METHOD="POST" enctype="multipart/form-data" accept-charset="UTF-8">
-	<input type="hidden" name="Action" value="initial">
-</FORM>
+<form name="fupload" action="fileUpload.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+	<input type="hidden" name="Action" value="initial"/>
+</form>
 
 <form name="updateChain" action="UpdateChainInit">
 </form>
 </div>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>
