@@ -24,11 +24,13 @@
 package org.silverpeas.resourcemanager.model;
 
 import java.io.Serializable;
+import javax.persistence.Embeddable;
 
 /**
  *
  * @author ehugonnet
  */
+@Embeddable
 public class ReservedResourcePk implements Serializable {
 
   private static final long serialVersionUID = -5550864318148567106L;

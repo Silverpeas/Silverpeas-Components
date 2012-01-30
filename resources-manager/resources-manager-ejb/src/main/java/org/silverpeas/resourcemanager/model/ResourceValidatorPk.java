@@ -24,11 +24,13 @@
 package org.silverpeas.resourcemanager.model;
 
 import java.io.Serializable;
+import javax.persistence.Embeddable;
 
 /**
  *
  * @author ehugonnet
  */
+@Embeddable
 public class ResourceValidatorPk  implements Serializable{
   private static final long serialVersionUID = 5687541398796291824L;
 

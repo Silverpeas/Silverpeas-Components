@@ -24,6 +24,7 @@
 package org.silverpeas.resourcemanager.services;
 
 import com.silverpeas.resourcesmanager.model.ResourceStatus;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
@@ -54,8 +55,8 @@ public class ReservationService {
     Date now = new Date();
     reservation.setCreationDate(now);
     reservation.setUpdateDate(now);
-    Reservation savedReservation = repository.saveAndFlush(reservation);
-    return savedReservation.getId();
+    List<ReservedResource> reservedResources = reservedResourceRepository.save(reservation.getListResourcesReserved());
+    return reservedResources.iterator().next().getReservation().getId();
   }
 
   String computeReservationStatus(Reservation reservation) {
@@ -85,10 +86,6 @@ public class ReservationService {
 
   public void updateReservation(Reservation reservation) {
     repository.saveAndFlush(reservation);
-  }
-
-  public List<Reservation> getReservations() {
-    return repository.findAll();
   }
 
   public Reservation getReservation(int id) {

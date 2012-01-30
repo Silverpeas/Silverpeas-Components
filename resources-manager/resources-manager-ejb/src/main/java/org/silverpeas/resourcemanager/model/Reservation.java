@@ -69,7 +69,7 @@ public class Reservation implements ResourceStatus {
   private String status;
   @Transient
   private String userName;
-  @OneToMany(cascade= CascadeType.ALL, mappedBy="reservation", orphanRemoval=true)
+  @OneToMany(mappedBy="reservation")
   private List<ReservedResource> reservedResources = new ArrayList<ReservedResource>();
 
   public String getUserName() {
@@ -304,15 +304,8 @@ public class Reservation implements ResourceStatus {
         other.updateDate))) {
       return false;
     }
-    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
-        other.instanceId)) {
-      return false;
-    }
-    if ((this.status == null) ? (other.status != null) : !this.status.equals(other.status)) {
-      return false;
-    }
-    return !((this.userName == null) ? (other.userName != null) :
-        !this.userName.equals(other.userName));
+    return ! ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
+        other.instanceId));
   }
 
   @Override

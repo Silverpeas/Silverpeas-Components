@@ -27,10 +27,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.IdClass;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import com.silverpeas.util.StringUtil;
 
 /**
  *
@@ -44,10 +45,10 @@ public class ReservedResource {
   private ReservedResourcePk reservedResourcePk = new ReservedResourcePk();
   @Column(name = "status")
   private String status;
-  @ManyToOne(optional=false, cascade= CascadeType.REFRESH)
+  @ManyToOne(optional = false, cascade = CascadeType.REFRESH)
   @JoinColumn(name = "resourceId", updatable = false, insertable = false, referencedColumnName = "id")
   private Resource resource;
-  @ManyToOne(optional=false, cascade= CascadeType.ALL)
+  @ManyToOne(optional = false, cascade = CascadeType.ALL)
   @JoinColumn(name = "reservationId", updatable = false, insertable = false, referencedColumnName = "id")
   private Reservation reservation;
 
@@ -60,6 +61,9 @@ public class ReservedResource {
 
   public void setReservation(Reservation reservation) {
     this.reservation = reservation;
+    if (reservation != null && StringUtil.isInteger(reservation.getId())) {
+      this.reservedResourcePk.setReservationId(Integer.parseInt(reservation.getId()));
+    }
   }
 
   public int getReservationId() {
@@ -76,6 +80,9 @@ public class ReservedResource {
 
   public void setResource(Resource resource) {
     this.resource = resource;
+    if (resource != null && StringUtil.isInteger(resource.getId())) {
+      this.reservedResourcePk.setResourceId(Integer.parseInt(resource.getId()));
+    }
   }
 
   public int getResourceId() {

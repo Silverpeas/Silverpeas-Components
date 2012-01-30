@@ -24,12 +24,11 @@
  */
 package org.silverpeas.resourcemanager.repository;
 
+import java.util.List;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 public interface ResourceRepository extends JpaRepository<Resource, Integer> {
 
@@ -38,6 +37,8 @@ public interface ResourceRepository extends JpaRepository<Resource, Integer> {
 
   @Query("from Resource resource WHERE resource.instanceId = :instanceId AND resource.bookable = 1 AND resource.category.bookable = 1")
   public List<Resource> findAllBookableResources(@Param("instanceId") String instanceId);
+  
+  
 
 
 }

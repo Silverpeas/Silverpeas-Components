@@ -24,7 +24,9 @@
 package org.silverpeas.resourcemanager.services;
 
 import com.silverpeas.resourcesmanager.model.ResourceStatus;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.DBUtil;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
@@ -96,6 +98,7 @@ public class ReservationServiceTest {
     String instanceId = "resourcesManager42";
     Reservation reservation = new Reservation("Test de la Toussaint", new Date(1320134400000L),
         new Date(1320163200000L), "To test", "at work");
+    reservation.setInstanceId(instanceId);
     ReservedResource reservedResource = new ReservedResource();
     reservedResource.setReservation(reservation);
     reservedResource.setResource(resourceService.getResource(1));
@@ -145,26 +148,12 @@ public class ReservationServiceTest {
    */
   @Test
   public void testUpdateReservation() {
-    System.out.println("updateReservation");
-    Reservation reservation = null;
-    ReservationService instance = new ReservationService();
-    instance.updateReservation(reservation);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of getReservations method, of class ReservationService.
-   */
-  @Test
-  public void testGetReservations() {
-    System.out.println("getReservations");
-    ReservationService instance = new ReservationService();
-    List expResult = null;
-    List result = instance.getReservations();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    int reservationId = 3;
+    Reservation reservation = service.getReservation(reservationId);
+    reservation.setEvent("Updating event");
+    service.updateReservation(reservation);
+    Reservation updateReservation = service.getReservation(reservationId);
+    assertThat(updateReservation, is(reservation));
   }
 
   /**
@@ -215,19 +204,19 @@ public class ReservationServiceTest {
     List<Reservation> reservations = service.findAllReservations("resourcesManager42");
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(4));
-    assertThat(reservations, containsInAnyOrder(new Reservation("3", "Test de la Toussaint", new Date(1320134400000L),
-        new Date(1320163200000L),"To test","at work", "2",new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42")/*,
+    assertThat(reservations, containsInAnyOrder(new Reservation("3", "Test de la Toussaint",
+        new Date(1320134400000L),
+        new Date(1320163200000L), "To test", "at work", "2", new Date(1319811924467L), new Date(
+        1319811924467L), "resourcesManager42"),
         new Reservation("4", "Test réservation 20/12/2011", new Date(1324368000000L),
-        new Date(1324375200000L),"To test a reservzation","at work", "9",new Date(1320225012008L), new Date(1320225012008L), "resourcesManager42")*/));
-/*
-  <sc_resources_reservation id="5" instanceId="resourcesManager42" evenement="Test réservation validée 20/12/2011"
-                            userId="2" creationdate="1319811924467" updatedate="1319811924467" 
-                            begindate="1324368000000"  enddate="1324375200000"
-                            reason="To test a reservzation validated" place="at work" status="V" />
-  <sc_resources_reservation id="6" instanceId="resourcesManager42" evenement="Test réservation refusée 20/12/2011"
-                            userId="2" creationdate="1319811924467" updatedate="1319811924467" 
-                            begindate="1324375200000"  enddate="1324382400000"
-                            reason="To test a reservzation refused" place="at work" status="R" />*/
+        new Date(1324375200000L), "To test a reservzation", "at work", "9", new Date(1320225012008L),
+        new Date(1320225012008L), "resourcesManager42"),
+        new Reservation("5", "Test réservation validée 20/12/2011", new Date(1324368000000L),
+        new Date(1324375200000L), "To test a reservzation validated", "at work", "2", new Date(
+        1319811924467L), new Date(1319811924467L), "resourcesManager42"),
+        new Reservation("6", "Test réservation refusée 20/12/2011", new Date(1324375200000L),
+        new Date(1324382400000L), "To test a reservzation refused", "at work", "2", new Date(
+        1319811924467L), new Date(1319811924467L), "resourcesManager42")));
   }
 
   /**
@@ -235,18 +224,42 @@ public class ReservationServiceTest {
    */
   @Test
   public void testFindAllReservationsForValidation() {
-    System.out.println("findAllReservationsForValidation");
-    String instanceId = "";
-    Integer userId = null;
-    String startPeriod = "";
-    String endPeriod = "";
-    ReservationService instance = new ReservationService();
-    List expResult = null;
-    List result = instance.findAllReservationsForValidation(instanceId, userId, startPeriod,
-        endPeriod);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    String instanceId = "resourcesManager42";
+    Integer userId = 2;
+    Calendar calend = Calendar.getInstance();
+    calend.set(Calendar.MONTH, Calendar.NOVEMBER);
+    calend.set(Calendar.YEAR, 2011);
+    calend.set(Calendar.DAY_OF_MONTH, 10);
+    String endPeriod = String.valueOf(DateUtil.getEndDateOfMonth(calend.getTime()).getTime());
+    String startPeriod = String.valueOf(DateUtil.getFirstDateOfMonth(calend.getTime()).getTime());
+    List<Reservation> reservations = service.findAllReservationsForValidation(instanceId, userId,
+        startPeriod, endPeriod);
+    assertThat(reservations, is(notNullValue()));
+    assertThat(reservations, hasSize(1));
+    assertThat(reservations, containsInAnyOrder(new Reservation("3", "Test de la Toussaint",
+        new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2", new Date(
+        1319811924467L), new Date(
+        1319811924467L), "resourcesManager42")));
+
+    calend = Calendar.getInstance();
+    calend.set(Calendar.MONTH, Calendar.DECEMBER);
+    calend.set(Calendar.YEAR, 2011);
+    calend.set(Calendar.DAY_OF_MONTH, 10);
+    endPeriod = String.valueOf(DateUtil.getEndDateOfMonth(calend.getTime()).getTime());
+    startPeriod = String.valueOf(DateUtil.getFirstDateOfMonth(calend.getTime()).getTime());
+    reservations = service.findAllReservationsForValidation(instanceId, userId,
+        startPeriod, endPeriod);
+    assertThat(reservations, is(notNullValue()));
+    assertThat(reservations, hasSize(2));
+
+    assertThat(reservations, containsInAnyOrder(new Reservation("5",
+        "Test réservation validée 20/12/2011", new Date(1324368000000L), new Date(1324375200000L),
+        "To test a reservzation validated", "at work", "2", new Date(1319811924467L), new Date(
+        1319811924467L), "resourcesManager42"), new Reservation("6",
+        "Test réservation refusée 20/12/2011", new Date(1324375200000L), new Date(1324382400000L),
+        "To test a reservzation refused", "at work", "2", new Date(1319811924467L), new Date(
+        1319811924467L), "resourcesManager42")));
+
   }
 
   /**
@@ -254,15 +267,21 @@ public class ReservationServiceTest {
    */
   @Test
   public void testFindAllReservationsForCategoryInRange() {
-    System.out.println("findAllReservationsForCategoryInRange");
-    Integer categoryId = null;
-    String startPeriod = "";
-    String endPeriod = "";
-    ReservationService instance = new ReservationService();
-    List expResult = null;
-    List result = instance.findAllReservationsForCategoryInRange(categoryId, startPeriod, endPeriod);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    Calendar calend = Calendar.getInstance();
+    calend.set(Calendar.MONTH, Calendar.DECEMBER);
+    calend.set(Calendar.YEAR, 2011);
+    String endPeriod = String.valueOf(DateUtil.getEndDateOfMonth(calend.getTime()).getTime());
+    String startPeriod = String.valueOf(DateUtil.getFirstDateOfMonth(calend.getTime()).getTime());
+    List<Reservation> reservations = service.findAllReservationsForCategoryInRange(1, startPeriod,
+        endPeriod);
+    assertThat(reservations, is(notNullValue()));
+    assertThat(reservations, hasSize(2));
+    assertThat(reservations, containsInAnyOrder(new Reservation("5",
+        "Test réservation validée 20/12/2011", new Date(1324368000000L), new Date(1324375200000L),
+        "To test a reservzation validated", "at work", "2", new Date(1319811924467L), new Date(
+        1319811924467L), "resourcesManager42"), new Reservation("6",
+        "Test réservation refusée 20/12/2011", new Date(
+        1324375200000L), new Date(1324382400000L), "To test a reservzation refused", "at work",
+        "2", new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42")));
   }
 }
