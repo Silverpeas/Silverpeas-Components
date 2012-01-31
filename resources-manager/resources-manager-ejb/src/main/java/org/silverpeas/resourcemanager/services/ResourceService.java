@@ -63,16 +63,14 @@ public class ResourceService {
   }
 
   public void deleteResource(int id) {
-    Resource resource = repository.findOne(id);
-    reservedResourceRepository.delete(resource.getReservedResources());
-    resource.getReservedResources().clear();
-    repository.delete(resource);
+    reservedResourceRepository.deleteAllReservedResourcesForResource(id);
+    repository.delete(id);
   }
 
   public void deleteResourcesFromCategory(Integer categoryId) {
     List<Resource> listOfResources = repository.findAllResourcesByCategory(categoryId);
     for (Resource resource : listOfResources) {
-      repository.delete(resource);
+      deleteResource(resource.getIntegerId());
     }
   }
 
@@ -123,5 +121,9 @@ public class ResourceService {
       }
     }
     return availableBookableResources;
+  }
+  
+  public List<Resource> listResourcesOfReservation(Integer reservationId) {
+    return repository.findAllResourcesForReservation(reservationId);
   }
 }

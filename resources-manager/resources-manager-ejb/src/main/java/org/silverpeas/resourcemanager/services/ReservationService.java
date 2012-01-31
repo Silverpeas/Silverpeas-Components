@@ -55,15 +55,17 @@ public class ReservationService {
     Date now = new Date();
     reservation.setCreationDate(now);
     reservation.setUpdateDate(now);
-    List<ReservedResource> reservedResources = reservedResourceRepository.save(reservation.getListResourcesReserved());
-    return reservedResources.iterator().next().getReservation().getId();
+    Reservation savedReservation = repository.save(reservation);
+    return savedReservation.getId();
   }
 
   String computeReservationStatus(Reservation reservation) {
     boolean refused = false;
     boolean validated = true;
     String reservationStatus = ResourceStatus.STATUS_FOR_VALIDATION;
-    for (ReservedResource reservedResource : reservation.getListResourcesReserved()) {
+    List<ReservedResource> reservedResources = reservedResourceRepository.
+        findAllReservedResourcesForReservation(reservation.getIntegerId());
+    for (ReservedResource reservedResource : reservedResources) {
       String status = reservedResource.getStatus();
       refused = false;
       if (ResourceStatus.STATUS_FOR_VALIDATION.equals(status)) {
@@ -93,9 +95,7 @@ public class ReservationService {
   }
 
   public void deleteReservation(int id) {
-    Reservation reservation = repository.findOne(id);
-    reservedResourceRepository.delete(reservation.getListResourcesReserved());
-    reservation.getListResourcesReserved().clear();
+    reservedResourceRepository.deleteAllReservedResourcesForResource(id);
     repository.delete(id);
   }
 

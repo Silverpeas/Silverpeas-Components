@@ -27,6 +27,7 @@ import java.util.List;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.ReservedResourcePk;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -46,4 +47,17 @@ public interface ReservedResourceRepository extends
       @Param("currentReservationId") Integer currentReservationId,
       @Param("futureReservedResourceIds") List<Integer> futureReservedResourceIds,
       @Param("startPeriod") String startPeriod, @Param("endPeriod") String endPeriod);
+
+  @Query("SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
+  "WHERE reservedResource.reservation.id = :currentReservationId")
+  public List<ReservedResource> findAllReservedResourcesForReservation(
+      @Param("currentReservationId") Integer currentReservationId);
+
+  @Modifying
+  @Query("DELETE ReservedResource reservedResource WHERE reservedResource.reservedResourcePk.reservationId = :currentReservationId")
+  public void deleteAllReservedResourcesForReservation(@Param("currentReservationId") Integer currentReservationId);
+
+  @Modifying
+  @Query("DELETE ReservedResource reservedResource WHERE reservedResource.reservedResourcePk.resourceId = :currentResourceId")
+  public void deleteAllReservedResourcesForResource(@Param("currentResourceId") Integer currentResourceId);
 }

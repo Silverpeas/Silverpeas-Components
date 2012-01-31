@@ -147,13 +147,9 @@ public class ResourcesManagerBmEJB implements SessionBean {
   }
 
   public List<Resource> getResourcesofReservation(String instanceId, String reservationId) {
-    Reservation reservation = ServicesLocator.getReservationService().getReservation(Integer.
-        parseInt(reservationId));
-    List<Resource> resources = new ArrayList<Resource>(reservation.getListResourcesReserved().size());
-    for (ReservedResource reservedResource : reservation.getListResourcesReserved()) {
-      resources.add(reservedResource.getResource());
-    }
-    return resources;
+    return ServicesLocator.getResourceService().listResourcesOfReservation(Integer.parseInt(
+        reservationId));
+
   }
 
   /**
@@ -162,15 +158,15 @@ public class ResourcesManagerBmEJB implements SessionBean {
    * @param listReservationCurrent
    */
   public void saveReservation(Reservation reservation, List<Integer> resources) {
+    ServicesLocator.getReservationService().createReservation(reservation);
     for (Integer resourceId : resources) {
       Resource resource = ServicesLocator.getResourceService().getResource(resourceId);
       ReservedResource reserved = new ReservedResource();
       reserved.setReservation(reservation);
       reserved.setResource(resource);
       reserved.setStatus(reservation.getStatus());
-      reservation.getListResourcesReserved().add(reserved);
+      ServicesLocator.getReservedResourceService().create(reserved);
     }
-    ServicesLocator.getReservationService().createReservation(reservation);
   }
 
   public void updateReservation(Reservation reservationCourante) {

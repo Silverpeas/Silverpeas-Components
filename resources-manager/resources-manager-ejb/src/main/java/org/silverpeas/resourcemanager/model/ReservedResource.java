@@ -27,11 +27,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import com.silverpeas.util.StringUtil;
+import java.io.Serializable;
 
 /**
  *
@@ -39,13 +39,14 @@ import com.silverpeas.util.StringUtil;
  */
 @Entity
 @Table(name = "sc_resources_reservedresource")
-public class ReservedResource {
+public class ReservedResource implements Serializable {
+  private static final long serialVersionUID = -4233541745596218664L;
 
   @EmbeddedId
   private ReservedResourcePk reservedResourcePk = new ReservedResourcePk();
   @Column(name = "status")
   private String status;
-  @ManyToOne(optional = false, cascade = CascadeType.REFRESH)
+  @ManyToOne(optional = false, cascade = CascadeType.ALL)
   @JoinColumn(name = "resourceId", updatable = false, insertable = false, referencedColumnName = "id")
   private Resource resource;
   @ManyToOne(optional = false, cascade = CascadeType.ALL)

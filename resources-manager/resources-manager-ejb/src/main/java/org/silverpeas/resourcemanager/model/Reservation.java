@@ -47,7 +47,7 @@ public class Reservation implements ResourceStatus {
   valueColumnName = "maxId", pkColumnValue = "sc_resources_reservation")
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   private Integer id;
-  @Column(name="evenement", length = 128, nullable = false)
+  @Column(name = "evenement", length = 128, nullable = false)
   private String event;
   @Column(length = 20, nullable = false)
   private String beginDate;
@@ -69,8 +69,6 @@ public class Reservation implements ResourceStatus {
   private String status;
   @Transient
   private String userName;
-  @OneToMany(mappedBy="reservation")
-  private List<ReservedResource> reservedResources = new ArrayList<ReservedResource>();
 
   public String getUserName() {
     return userName;
@@ -78,14 +76,6 @@ public class Reservation implements ResourceStatus {
 
   public void setUserName(String userName) {
     this.userName = userName;
-  }
-
-  public List<ReservedResource> getListResourcesReserved() {
-    return reservedResources;
-  }
-
-  public void setListResourcesReserved(List<ReservedResource> listResourcesReserved) {
-    this.reservedResources = listResourcesReserved;
   }
 
   public Date getCreationDate() {
@@ -107,6 +97,10 @@ public class Reservation implements ResourceStatus {
 
   public String getId() {
     return String.valueOf(id);
+  }
+
+  public Integer getIntegerId() {
+    return id;
   }
 
   public final void setId(String id) {
@@ -208,9 +202,6 @@ public class Reservation implements ResourceStatus {
 
   public void setStatus(String status) {
     this.status = status;
-    for(ReservedResource reserved : reservedResources) {
-      reserved.setStatus(status);
-    }
   }
 
   public Reservation() {
@@ -261,8 +252,7 @@ public class Reservation implements ResourceStatus {
     return "Reservation{" + "id=" + id + ", event=" + event + ", beginDate=" + beginDate +
         ", endDate=" + endDate + ", reason=" + reason + ", place=" + place + ", userId=" +
         userId + ", creationDate=" + creationDate + ", updateDate=" + updateDate +
-        ", instanceId=" + instanceId + ", listResourcesReserved=" + reservedResources +
-        ", status=" + status + ", userName=" + userName + '}';
+        ", instanceId=" + instanceId + ", status=" + status + ", userName=" + userName + '}';
   }
 
   @Override
@@ -304,7 +294,7 @@ public class Reservation implements ResourceStatus {
         other.updateDate))) {
       return false;
     }
-    return ! ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
+    return !((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
         other.instanceId));
   }
 

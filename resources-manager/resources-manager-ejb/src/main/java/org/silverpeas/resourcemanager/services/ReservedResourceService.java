@@ -44,6 +44,10 @@ public class ReservedResourceService {
   @Inject
   ReservedResourceRepository repository;
 
+  public void create(ReservedResource resource) {
+    repository.saveAndFlush(resource);
+  }
+
   public ReservedResource getReservedResource(int resourceId, int reservationId) {
     return repository.findOne(new ReservedResourcePk(resourceId, reservationId));
   }
@@ -51,7 +55,7 @@ public class ReservedResourceService {
   public void update(ReservedResource resource) {
     repository.saveAndFlush(resource);
   }
-  
+
   public void delete(ReservedResource reservedResource) {
     repository.delete(reservedResource);
   }

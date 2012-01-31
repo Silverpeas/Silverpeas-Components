@@ -99,36 +99,9 @@ public class ReservationServiceTest {
     Reservation reservation = new Reservation("Test de la Toussaint", new Date(1320134400000L),
         new Date(1320163200000L), "To test", "at work");
     reservation.setInstanceId(instanceId);
-    ReservedResource reservedResource = new ReservedResource();
-    reservedResource.setReservation(reservation);
-    reservedResource.setResource(resourceService.getResource(1));
-    reservation.getListResourcesReserved().add(reservedResource);
-    reservedResource.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
-    reservedResource = new ReservedResource();
-    reservedResource.setReservation(reservation);
-    reservedResource.setResource(resourceService.getResource(2));
-    reservedResource.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
-    reservation.getListResourcesReserved().add(reservedResource);
     int id = Integer.parseInt(service.createReservation(reservation));
-
-
     Reservation createdReservation = service.getReservation(id);
-
-    ReservedResource resource1 = new ReservedResource();
-    resource1.setReservationId(id);
-    resource1.setResourceId(1);
-    resource1.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
-    ReservedResource resource2 = new ReservedResource();
-    resource2.setReservationId(2);
-    resource2.setResourceId(3);
-    resource2.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
-
     reservation.setId(String.valueOf(id));
-
-    assertThat(createdReservation.getListResourcesReserved(), is(notNullValue()));
-    assertThat(createdReservation.getListResourcesReserved(), hasSize(2));
-    assertThat(createdReservation.getListResourcesReserved(), containsInAnyOrder(resource1,
-        resource2));
     assertThat(reservation, is(createdReservation));
   }
 
@@ -168,8 +141,9 @@ public class ReservationServiceTest {
         new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
         new Date(1319811924467L), new Date(1319811924467L), instanceId, "test");
     assertThat(reservation, is(expectedResult));
-    assertThat(reservation.getListResourcesReserved(), is(notNullValue()));
-    assertThat(reservation.getListResourcesReserved(), hasSize(3));
+    List<Resource> resources = resourceService.listResourcesOfReservation(reservationId);
+    assertThat(resources, is(notNullValue()));
+    assertThat(resources, hasSize(3));
   }
 
   /**
@@ -183,17 +157,15 @@ public class ReservationServiceTest {
         new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
         new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42", "test");
     assertThat(reservation, is(expectedResult));
-    assertThat(reservation.getListResourcesReserved(), is(notNullValue()));
-    assertThat(reservation.getListResourcesReserved(), hasSize(3));
-    Resource resource = resourceService.getResource(1);
-    assertThat(resource.getReservedResources(), is(notNullValue()));
-    assertThat(resource.getReservedResources(), hasSize(2));
+    List<Resource> resources = resourceService.listResourcesOfReservation(reservationId);
+    assertThat(resources, is(notNullValue()));
+    assertThat(resources, hasSize(3));
     service.deleteReservation(reservationId);
     reservation = service.getReservation(reservationId);
     assertThat(reservation, is(nullValue()));
-    resource = resourceService.getResource(1);
-    assertThat(resource.getReservedResources(), is(notNullValue()));
-    assertThat(resource.getReservedResources(), hasSize(1));
+    resources = resourceService.listResourcesOfReservation(reservationId);
+    assertThat(resources, is(notNullValue()));
+    assertThat(resources, hasSize(0));
   }
 
   /**

@@ -72,8 +72,6 @@ public class Resource {
   private String instanceId;
   @OneToMany(cascade= CascadeType.ALL, orphanRemoval=true, mappedBy="resource")
   private List<ResourceValidator> managers = new ArrayList<ResourceValidator>();
-  @OneToMany(cascade= CascadeType.ALL, mappedBy="resource", orphanRemoval=true)
-  private List<ReservedResource> reservedResources = new ArrayList<ReservedResource>();
   @Transient
   private String status;
 
@@ -139,6 +137,10 @@ public class Resource {
 
   public String getId() {
     return String.valueOf(id);
+  }
+  
+  public Integer getIntegerId() {
+    return id;
   }
 
   public final void setId(String id) {
@@ -307,10 +309,4 @@ public class Resource {
   public void setStatus(String status) {
     this.status = status;
   }
-
-  public List<ReservedResource> getReservedResources() {
-    return reservedResources;
-  }
-  
-  
 }

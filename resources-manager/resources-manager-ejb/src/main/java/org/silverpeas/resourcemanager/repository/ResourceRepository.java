@@ -37,8 +37,7 @@ public interface ResourceRepository extends JpaRepository<Resource, Integer> {
 
   @Query("from Resource resource WHERE resource.instanceId = :instanceId AND resource.bookable = 1 AND resource.category.bookable = 1")
   public List<Resource> findAllBookableResources(@Param("instanceId") String instanceId);
-  
-  
 
-
+  @Query("SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource WHERE reservedResource.reservedResourcePk.reservationId = :currentReservationId")
+  public List<Resource> findAllResourcesForReservation(@Param("currentReservationId") Integer currentReservationId);
 }
