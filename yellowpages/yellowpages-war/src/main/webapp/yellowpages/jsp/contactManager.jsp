@@ -43,27 +43,61 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%!
 
-void displayUserView(GraphicElementFactory gef, CompleteContact contactComplete, String companyName, UserDetail owner, ResourcesWrapper resources, ResourceLocator contactSettings, JspWriter out) throws IOException
-{
-   ContactDetail detail = contactComplete.getContactDetail();
-   out.println("<table>");
-   out.println("<tr><td class=\"txtlibform\">"+resources.getString("Contact")+" :</td>");
-   out.println("<td align=\"left\" class=\"txtnav\">"+EncodeHelper.javaStringToHtmlString(detail.getFirstName())+" "+Encode.javaStringToHtmlString(detail.getLastName())+"</td>");
-   out.println("</tr>");
-   out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.company")+" :</td>");
-   out.println("<td align=\"left\">"+EncodeHelper.javaStringToHtmlString(companyName)+"</td>");
-   out.println("</tr>");
-   out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.phoneNumber")+" :</td>");
-   out.println("<td align=\"left\">"+EncodeHelper.javaStringToHtmlString(detail.getPhone())+"</td>");
-   out.println("</tr>");
-   out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.faxNumber")+" :</td>");
-   out.println("<td align=\"left\">"+EncodeHelper.javaStringToHtmlString(detail.getFax())+"</td>");
-   out.println("</tr>");
-   out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.eMail")+" :</td>");
-   out.println("<td align=\"left\"><a href=mailto:"+EncodeHelper.javaStringToHtmlString(detail.getEmail())+">"+Encode.javaStringToHtmlString(Encode.javaStringToHtmlString(detail.getEmail()))+"</A></td>");
-   out.println("</tr>");
-   out.println("</table>");
-}
+    void displayUserView(GraphicElementFactory gef, CompleteContact contactComplete, List<Company> companyList, UserDetail owner, ResourcesWrapper resources, ResourceLocator contactSettings, JspWriter out) throws IOException {
+        ContactDetail detail = contactComplete.getContactDetail();
+        out.println("<table>");
+        out.println("<tr><td class=\"txtlibform\">" + resources.getString("Contact") + " :</td>");
+        out.println("<td align=\"left\" class=\"txtnav\">" + EncodeHelper.javaStringToHtmlString(detail.getFirstName()) + " " + Encode.javaStringToHtmlString(detail.getLastName()) + "</td>");
+        out.println("</tr>");
+        out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">" + resources.getString("GML.company") + " :</td>");
+        displayCompanyList(out, companyList);
+        out.println("</tr>");
+        out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">" + resources.getString("GML.phoneNumber") + " :</td>");
+        out.println("<td align=\"left\">" + EncodeHelper.javaStringToHtmlString(detail.getPhone()) + "</td>");
+        out.println("</tr>");
+        out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">" + resources.getString("GML.faxNumber") + " :</td>");
+        out.println("<td align=\"left\">" + EncodeHelper.javaStringToHtmlString(detail.getFax()) + "</td>");
+        out.println("</tr>");
+        out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">" + resources.getString("GML.eMail") + " :</td>");
+        out.println("<td align=\"left\"><a href=mailto:" + EncodeHelper.javaStringToHtmlString(detail.getEmail()) + ">" + Encode.javaStringToHtmlString(Encode.javaStringToHtmlString(detail.getEmail())) + "</A></td>");
+        out.println("</tr>");
+        out.println("</table>");
+    }
+
+    void displayCompanyList(JspWriter out, List<Company> companyList) throws IOException {
+        if (companyList != null && companyList.size() > 0) {
+            for (int i = 0; i < companyList.size(); i++) {
+                Company company = companyList.get(i);
+                if (i == 0) {
+                    // premier element de la liste affiché sur la même ligne que le label
+                    //out.println("<td align='left'>" + EncodeHelper.javaStringToHtmlString(company.getName()) + "</td>");
+                    out.println("<td align='left'><ul><li>" + EncodeHelper.javaStringToHtmlString(company.getName()));
+                } else {
+                    // les autres éléments affichés sur une ligne complète
+                    //out.println("</tr><tr><td/><td align='left'>" + EncodeHelper.javaStringToHtmlString(company.getName()) + "</td>");
+                    out.println("</li><li>" + EncodeHelper.javaStringToHtmlString(company.getName()));
+                }
+            }
+            out.println("</li></ul></td>");
+        }
+    }
+
+    void displayCompanyListWithActionButtons(JspWriter out, List<Company> companyList, ContactDetail contactDetail) throws IOException {
+        if (companyList != null && companyList.size() > 0) {
+            for (int i = 0; i < companyList.size(); i++) {
+                Company company = companyList.get(i);
+                out.println("<tr><td/><td align='left'>");
+                out.println("<input readonly id='company-" + company.getCompanyId() + "' value='" + EncodeHelper.javaStringToHtmlString(company.getName()) + "' size='60'</input>");
+                out.println("&nbsp;");
+                out.println("<a href='javaScript:companyRemoveFromList(" + company.getCompanyId() + ","+ contactDetail.getPK().getId() + ")' title='Retirer cette company de la liste'>");
+                // TODO icone...
+                //icon = resources.getIcon("yellowpages.contact");
+                out.println("<img border=0 src='/silverpeas/util/icons/mandatoryField.gif' width=10 height=10>");
+                out.println("</a>");
+                out.println("</td></tr>");
+            }
+        }
+    }
 
 %>
 
@@ -103,6 +137,7 @@ out.println(gef.getLookStyleSheet());
 
   String companyName = null;
   String companyId = null;
+  List<Company> companyList = null;
 
 //R�cup�ration des param�tres
 String action = (String) request.getAttribute("Action"); //Delete || Add || Update ||
@@ -229,6 +264,10 @@ function autoSubmit(){
 	document.enctypeForm.submit();
 };
 
+function companyRemoveFromList(idCompany, idContact) {
+    alert("remove company = " + idCompany + " / contact = " + idContact);
+};
+
 $(document).ready(function() {
     $("#CompanyName").autocomplete("<%=m_context%>/CompanyAutocompleteServlet", {
         minChars: 1,
@@ -353,12 +392,10 @@ if (action.equals("View") || action.equals("UpdateView") || action.equals("ViewC
       contactComplete = userContactComplete.getContact();
       contactDetail = contactComplete.getContactDetail();
       ownerDetail = userContactComplete.getOwner();
-      // get company value if any
-      Company company = yellowpagesScc.getCompanyForUserId(id);
-      if (company != null) {
-          companyId = Integer.toString(company.getCompanyId());
-          companyName = company.getName();
-      }
+      // get company list if any
+      companyList = yellowpagesScc.getCompanyListForUserId(id);
+      companyId = "";
+      companyName = "";
 
       if ((profile.equals("admin")) || ((ownerDetail!=null)&&(yellowpagesScc.getUserId().equals(ownerDetail.getId()))))
           isOwner = true;
@@ -525,6 +562,10 @@ else if (action.equals("New") || action.equals("UpdateView")) {
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.company")%>&nbsp;:</TD>
       <TD><input type="text" id="CompanyName" name="CompanyName" value="<%=Encode.javaStringToHtmlString(companyName)%>" size="60" maxlength="100" readonly></TD>
       <TD><input type="hidden" id="CompanyId" name="CompanyId" value="<%= companyId %>"></TD></TR>
+                <%
+                    // Liste des companies déjà affectées au contact
+                    displayCompanyListWithActionButtons(out, companyList, contactDetail);
+                %>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</TD>
       <TD><input type="text" name="Email" value="<%=Encode.javaStringToHtmlString(email)%>" size="60" maxlength="100" readonly></TD></TR>
 <%
@@ -537,8 +578,12 @@ else if (action.equals("New") || action.equals("UpdateView")) {
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.surname")%>&nbsp;:</TD>
       <TD><input type="text" name="FirstName" value="<%=Encode.javaStringToHtmlString(firstName)%>" size="60" maxlength="60">&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.company")%>&nbsp;:</TD>
-      <TD><input type="text" id="CompanyName" name="CompanyName" value="<%=Encode.javaStringToHtmlString(companyName)%>" size="60" maxlength="100"></TD>
-      <TD><input type="hidden" id="CompanyId" name="CompanyId" value="<%= companyId %>"></TD></TR>
+      <TD><input type="text" id="CompanyName" name="CompanyName" value="" size="60" maxlength="100"></TD>
+      <TD><input type="hidden" id="CompanyId" name="CompanyId" value=""></TD></TR>
+                <%
+                    // Liste des companies déjà affectées au contact
+                    displayCompanyListWithActionButtons(out, companyList, contactDetail);
+                %>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</TD>
       <TD><input type="text" name="Email" value="<%=Encode.javaStringToHtmlString(email)%>" size="60" maxlength="100"></TD></TR>
 <%
@@ -592,7 +637,7 @@ else if (action.equals("ViewContact")) {
 		out.println(frame.printBefore());
 		out.println(board.printBefore());
 
-		displayUserView(gef, contactComplete, companyName, ownerDetail, resources, contactSettings, out);
+		displayUserView(gef, contactComplete, companyList, ownerDetail, resources, contactSettings, out);
 
 		if (formView != null)
 			formView.display(out, context, data);

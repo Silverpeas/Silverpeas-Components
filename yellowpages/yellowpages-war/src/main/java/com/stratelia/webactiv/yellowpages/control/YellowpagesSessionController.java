@@ -1809,15 +1809,23 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     /**
      * Recherche la liste des companies associées à un Contact
      *
-     * @param contactId Id du contact sur lequel chercher id à
-     * @return la liste des companies qui ont une relation avec ce contact en tout bien tout honneur. Renvoie null si non trouvé.
+     * @param strContactId Id du contact sur lequel chercher
+     * @return la liste des companies qui ont une relation avec ce contact. Renvoie null si non trouvé ou si strContactId n'est pas un entier.
      */
-    public synchronized List<Company> getCompanyListForUserId(int contactId) throws RemoteException {
-        List<Company> companyList = this.serviceCompany.findCompanyListByContactId(contactId);
-        if (companyList == null || companyList.isEmpty()) {
+    public synchronized List<Company> getCompanyListForUserId(String strContactId) throws RemoteException {
+        int contactId;
+        try {
+            contactId = Integer.parseInt(strContactId);
+
+            List<Company> companyList = this.serviceCompany.findCompanyListByContactId(contactId);
+            if ((companyList == null) || (companyList.isEmpty()) || (companyList.size() == 0)) {
+                return null;
+            } else {
+                return companyList;
+            }
+
+        } catch (NumberFormatException e) {
             return null;
-        } else {
-            return companyList;
         }
     }
 
