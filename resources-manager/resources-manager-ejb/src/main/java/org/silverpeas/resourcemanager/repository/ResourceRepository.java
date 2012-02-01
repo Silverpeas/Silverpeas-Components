@@ -24,20 +24,39 @@
  */
 package org.silverpeas.resourcemanager.repository;
 
-import java.util.List;
 import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcemanager.model.ResourceValidator;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ResourceRepository extends JpaRepository<Resource, Integer> {
+import java.util.List;
+
+public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
   @Query("from Resource resource WHERE resource.category.id = :categoryId")
-  public List<Resource> findAllResourcesByCategory(@Param("categoryId") Integer categoryId);
+  public List<Resource> findAllResourcesByCategory(@Param("categoryId") Long categoryId);
 
   @Query("from Resource resource WHERE resource.instanceId = :instanceId AND resource.bookable = 1 AND resource.category.bookable = 1")
   public List<Resource> findAllBookableResources(@Param("instanceId") String instanceId);
 
   @Query("SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource WHERE reservedResource.reservedResourcePk.reservationId = :currentReservationId")
-  public List<Resource> findAllResourcesForReservation(@Param("currentReservationId") Integer currentReservationId);
+  public List<Resource> findAllResourcesForReservation(
+      @Param("currentReservationId") Long currentReservationId);
+
+  @Query("SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource " +
+  "WHERE reservedResource.reservation.id != :currentReservationId AND reservedResource.status != 'R'" +
+  "AND reservedResource.resource.id IN :futureReservedResourceIds " +
+  "AND (( reservedResource.reservation.endDate > :startPeriod AND  reservedResource.reservation.beginDate <= :startPeriod)" +
+  "OR ( reservedResource.reservation.endDate >= :endPeriod  AND  reservedResource.reservation.beginDate < :endPeriod))")
+  public List<Resource> findAllResourcesWithProblem(
+      @Param("currentReservationId") Long currentReservationId,
+      @Param("futureReservedResourceIds") List<Long> futureReservedResourceIds,
+      @Param("startPeriod") String startPeriod, @Param("endPeriod") String endPeriod);
+  
+  
+  @Query("SELECT DISTINCT resourceValidator FROM ResourceValidator resourceValidator " +
+  "WHERE resourceValidator.resourceValidatorPk.managerId = :currentUserId AND resourceValidator.resourceValidatorPk.resourceId = :currentReservationId")
+  public ResourceValidator getResourceValidator(
+      @Param("currentReservationId") Long currentResourceId, @Param("currentUserId") Long currentUserId);
 }

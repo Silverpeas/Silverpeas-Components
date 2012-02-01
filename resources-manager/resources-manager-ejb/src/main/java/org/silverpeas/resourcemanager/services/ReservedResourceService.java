@@ -48,7 +48,7 @@ public class ReservedResourceService {
     repository.saveAndFlush(resource);
   }
 
-  public ReservedResource getReservedResource(int resourceId, int reservationId) {
+  public ReservedResource getReservedResource(long resourceId, long reservationId) {
     return repository.findOne(new ReservedResourcePk(resourceId, reservationId));
   }
 
@@ -60,9 +60,13 @@ public class ReservedResourceService {
     repository.delete(reservedResource);
   }
 
-  public List<ReservedResource> findAllReservedResourcesWithProblem(int currentReservationId,
-      List<Integer> futureReservedResourceIds, String startPeriod, String endPeriod) {
+  public List<ReservedResource> findAllReservedResourcesWithProblem(long currentReservationId,
+      List<Long> futureReservedResourceIds, String startPeriod, String endPeriod) {
     return repository.findAllReservedResourcesWithProblem(currentReservationId,
         futureReservedResourceIds, startPeriod, endPeriod);
+  }
+  
+  public List<ReservedResource> findAllReservedResourcesOfReservation(long currentReservationId) {
+    return repository.findAllReservedResourcesOfReservation(currentReservationId);
   }
 }

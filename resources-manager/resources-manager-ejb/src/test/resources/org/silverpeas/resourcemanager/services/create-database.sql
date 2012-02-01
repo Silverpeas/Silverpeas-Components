@@ -5,7 +5,7 @@ CREATE TABLE UniqueId (
 
 CREATE TABLE SC_Resources_Category
 (
-	id 				INT 		NOT NULL,
+	id 				BIGINT 		NOT NULL,
 	instanceId 		VARCHAR(50) NOT NULL,
 	name 			VARCHAR(50) NOT NULL,
 	creationdate 	VARCHAR(20) NOT NULL,
@@ -21,9 +21,9 @@ CREATE TABLE SC_Resources_Category
 
 CREATE TABLE SC_Resources_Resource
 (
-	id 				INT NOT NULL,
+	id 				BIGINT NOT NULL,
 	instanceId 		VARCHAR(50) NOT NULL,
-	categoryid  	INT NOT NULL,
+	categoryid  	BIGINT NOT NULL,
 	name 			VARCHAR(128) NOT NULL,
 	creationdate 	VARCHAR(20) NOT NULL,
 	updatedate 		VARCHAR(20) NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE SC_Resources_Resource
 
 CREATE TABLE SC_Resources_Reservation
 (
-	id 				INT NOT NULL,
+	id 				BIGINT NOT NULL,
 	instanceId 		VARCHAR(50) NOT NULL,
 	evenement 		VARCHAR(128) NOT NULL,
 	userId 			INT NOT NULL,
@@ -53,16 +53,16 @@ CREATE TABLE SC_Resources_Reservation
 
 CREATE TABLE SC_Resources_ReservedResource
 (
-	reservationId 	INT NOT NULL,
-	resourceId 		INT NOT NULL,
+	reservationId 	BIGINT NOT NULL,
+	resourceId 		BIGINT NOT NULL,
 	status          VARCHAR(50)	NULL
 ) 
 ;
 
 CREATE TABLE SC_Resources_Managers
 (
-	resourceId 	INT	NOT NULL, 
-	managerId	INT	NOT NULL
+	resourceId 	BIGINT	NOT NULL, 
+	managerId	BIGINT	NOT NULL
 ) 
 ;
 

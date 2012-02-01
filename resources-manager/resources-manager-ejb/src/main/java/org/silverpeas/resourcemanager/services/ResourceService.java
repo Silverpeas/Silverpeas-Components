@@ -25,6 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.silverpeas.resourcemanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceValidator;
 import org.silverpeas.resourcemanager.repository.ReservationRepository;
@@ -41,7 +42,7 @@ public class ResourceService {
   @Inject
   ResourceRepository repository;
   @Inject
-  ReservationRepository reservationRepository;  
+  ReservationRepository reservationRepository;
   @Inject
   private ReservedResourceRepository reservedResourceRepository;
 
@@ -58,23 +59,23 @@ public class ResourceService {
     return repository.findAll();
   }
 
-  public Resource getResource(int id) {
+  public Resource getResource(long id) {
     return repository.findOne(id);
   }
 
-  public void deleteResource(int id) {
+  public void deleteResource(long id) {
     reservedResourceRepository.deleteAllReservedResourcesForResource(id);
     repository.delete(id);
   }
 
-  public void deleteResourcesFromCategory(Integer categoryId) {
+  public void deleteResourcesFromCategory(Long categoryId) {
     List<Resource> listOfResources = repository.findAllResourcesByCategory(categoryId);
     for (Resource resource : listOfResources) {
       deleteResource(resource.getIntegerId());
     }
   }
 
-  public void addManagers(int resourceId, List<ResourceValidator> managerIds) {
+  public void addManagers(long resourceId, List<ResourceValidator> managerIds) {
     Resource resource = repository.findOne(resourceId);
     for (ResourceValidator manager : managerIds) {
       resource.getManagers().add(manager);
@@ -88,12 +89,12 @@ public class ResourceService {
     repository.saveAndFlush(resource);
   }
 
-  public List<ResourceValidator> getManagers(int resourceId) {
+  public List<ResourceValidator> getManagers(long resourceId) {
     Resource resource = repository.findOne(resourceId);
     return resource.getManagers();
   }
 
-  public void removeAllManagers(int resourceId) {
+  public void removeAllManagers(long resourceId) {
     Resource resource = repository.findOne(resourceId);
     resource.getManagers().clear();
     repository.saveAndFlush(resource);
@@ -105,7 +106,7 @@ public class ResourceService {
     repository.saveAndFlush(resource);
   }
 
-  public List<Resource> getResourcesByCategory(Integer categoryId) {
+  public List<Resource> getResourcesByCategory(Long categoryId) {
     return repository.findAllResourcesByCategory(categoryId);
   }
 
@@ -114,7 +115,7 @@ public class ResourceService {
     List<Resource> availableBookableResources = new ArrayList<Resource>(bookableResources.size());
     for (Resource resource : bookableResources) {
       List<Reservation> reservations = reservationRepository.
-          findAllReservationsForValidatedResourceInRange(Integer.parseInt(resource.getId()),
+          findAllReservationsForValidatedResourceInRange(resource.getIntegerId(),
           startDate, endDate);
       if (reservations == null || reservations.isEmpty()) {
         availableBookableResources.add(resource);
@@ -123,7 +124,17 @@ public class ResourceService {
     return availableBookableResources;
   }
   
-  public List<Resource> listResourcesOfReservation(Integer reservationId) {
+  public boolean isManager(Long userId, Long resourceId) {
+    return repository.getResourceValidator(resourceId, userId) != null;
+  }
+
+  public List<Resource> listResourcesOfReservation(Long reservationId) {
     return repository.findAllResourcesForReservation(reservationId);
+  }
+
+  public List<Resource> findAllResourcesWithProblem(long currentReservationId,
+      List<Long> futureReservedResourceIds, String startPeriod, String endPeriod) {
+    return repository.findAllResourcesWithProblem(currentReservationId,
+        futureReservedResourceIds, startPeriod, endPeriod);
   }
 }

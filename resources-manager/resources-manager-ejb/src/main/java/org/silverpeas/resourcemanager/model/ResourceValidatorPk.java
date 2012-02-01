@@ -23,8 +23,8 @@
  */
 package org.silverpeas.resourcemanager.model;
 
-import java.io.Serializable;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 /**
  *
@@ -34,30 +34,30 @@ import javax.persistence.Embeddable;
 public class ResourceValidatorPk  implements Serializable{
   private static final long serialVersionUID = 5687541398796291824L;
 
-  private int resourceId;
-  private int managerId;
+  private long resourceId;
+  private long managerId;
 
   public ResourceValidatorPk() {
   }
   
-  public ResourceValidatorPk(int resourceId, int managerId) {
+  public ResourceValidatorPk(long resourceId, long managerId) {
     this.resourceId = resourceId;
     this.managerId = managerId;
   }
 
-  public int getManagerId() {
+  public long getManagerId() {
     return managerId;
   }
 
-  public void setManagerId(int managerId) {
+  public void setManagerId(long managerId) {
     this.managerId = managerId;
   }
 
-  public int getResourceId() {
+  public long getResourceId() {
     return resourceId;
   }
 
-  public void setResourceId(int resourceId) {
+  public void setResourceId(long resourceId) {
     this.resourceId = resourceId;
   }
 
@@ -79,12 +79,12 @@ public class ResourceValidatorPk  implements Serializable{
     return true;
   }
 
+
   @Override
   public int hashCode() {
-    int hash = 3;
-    hash = 97 * hash + this.resourceId;
-    hash = 97 * hash + this.managerId;
-    return hash;
+    int result = (int) (resourceId ^ (resourceId >>> 32));
+    result = 31 * result + (int) (managerId ^ (managerId >>> 32));
+    return result;
   }
 
   @Override

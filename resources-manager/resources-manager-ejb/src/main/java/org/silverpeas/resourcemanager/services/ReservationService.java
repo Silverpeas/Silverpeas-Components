@@ -50,16 +50,23 @@ public class ReservationService {
   @Inject
   private ReservedResourceRepository reservedResourceRepository;
 
-  public String createReservation(Reservation reservation) {
+  public String createReservation(Reservation reservation, List<Long> resourceIds) {
     reservation.setStatus(computeReservationStatus(reservation));
     Date now = new Date();
     reservation.setCreationDate(now);
     reservation.setUpdateDate(now);
     Reservation savedReservation = repository.save(reservation);
+    for (Long resourceId : resourceIds) {
+      ReservedResource reservedResource = new ReservedResource();
+      reservedResource.setResourceId(resourceId);
+      reservedResource.setReservationId(savedReservation.getIntegerId());
+      reservedResource.setStatus(reservation.getStatus());
+      reservedResourceRepository.save(reservedResource);
+    }
     return savedReservation.getId();
   }
 
-  String computeReservationStatus(Reservation reservation) {
+  public String computeReservationStatus(Reservation reservation) {
     boolean refused = false;
     boolean validated = true;
     String reservationStatus = ResourceStatus.STATUS_FOR_VALIDATION;
@@ -90,12 +97,12 @@ public class ReservationService {
     repository.saveAndFlush(reservation);
   }
 
-  public Reservation getReservation(int id) {
+  public Reservation getReservation(long id) {
     return repository.findOne(id);
   }
 
-  public void deleteReservation(int id) {
-    reservedResourceRepository.deleteAllReservedResourcesForResource(id);
+  public void deleteReservation(long id) {
+    reservedResourceRepository.deleteAllReservedResourcesForReservation(id);
     repository.delete(id);
   }
 
@@ -103,12 +110,16 @@ public class ReservationService {
     return repository.findAllReservations(instanceId);
   }
 
+  public List<Reservation> findAllReservationsForUser(String instanceId, Integer userId) {
+    return repository.findAllReservationsForUser(instanceId, userId);
+  }
+
   public List<Reservation> findAllReservationsForValidation(String instanceId, Integer userId,
       String startPeriod, String endPeriod) {
     return repository.findAllReservationsForValidation(instanceId, userId, startPeriod, endPeriod);
   }
 
-  public List<Reservation> findAllReservationsForCategoryInRange(Integer categoryId,
+  public List<Reservation> findAllReservationsForCategoryInRange(Long categoryId,
       String startPeriod, String endPeriod) {
     return repository.findAllReservationsForCategoryInRange(categoryId, startPeriod, endPeriod);
   }

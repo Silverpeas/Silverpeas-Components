@@ -26,6 +26,9 @@ package org.silverpeas.resourcemanager.services;
 import com.silverpeas.resourcesmanager.model.ResourceStatus;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.DBUtil;
+import edu.emory.mathcs.backport.java.util.Arrays;
+import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -99,10 +102,28 @@ public class ReservationServiceTest {
     Reservation reservation = new Reservation("Test de la Toussaint", new Date(1320134400000L),
         new Date(1320163200000L), "To test", "at work");
     reservation.setInstanceId(instanceId);
-    int id = Integer.parseInt(service.createReservation(reservation));
+    int id = Integer.parseInt(service.createReservation(reservation, Collections.<Integer>emptyList()));
     Reservation createdReservation = service.getReservation(id);
     reservation.setId(String.valueOf(id));
     assertThat(reservation, is(createdReservation));
+  }
+  
+  /**
+   * Test of createReservation method, of class ReservationService.
+   */
+  @Test
+  public void testCreateReservationWithResources() {
+    String instanceId = "resourcesManager42";
+    Reservation reservation = new Reservation("Test de la Toussaint", new Date(1320134400000L),
+        new Date(1320163200000L), "To test", "at work");
+    reservation.setInstanceId(instanceId);
+    long id = Long.parseLong(service.createReservation(reservation, Arrays.<Long>asList(new Long[]{1L, 2L})));
+    Reservation createdReservation = service.getReservation(id);
+    reservation.setId(String.valueOf(id));
+    assertThat(reservation, is(createdReservation));
+    List<Resource> resources = resourceService.listResourcesOfReservation(id);
+    assertThat(resources, is(notNullValue()));
+    assertThat(resources, hasSize(2));
   }
 
   /**
@@ -134,7 +155,7 @@ public class ReservationServiceTest {
    */
   @Test
   public void testGetReservation() {
-    int reservationId = 3;
+    long reservationId = 3L;
     String instanceId = "resourcesManager42";
     Reservation reservation = service.getReservation(reservationId);
     Reservation expectedResult = new Reservation("3", "Test de la Toussaint",
@@ -151,7 +172,7 @@ public class ReservationServiceTest {
    */
   @Test
   public void testDeleteReservation() {
-    int reservationId = 3;
+    long reservationId = 3L;
     Reservation reservation = service.getReservation(reservationId);
     Reservation expectedResult = new Reservation("3", "Test de la Toussaint",
         new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
@@ -190,6 +211,27 @@ public class ReservationServiceTest {
         new Date(1324382400000L), "To test a reservzation refused", "at work", "2", new Date(
         1319811924467L), new Date(1319811924467L), "resourcesManager42")));
   }
+  
+  /**
+   * Test of findAllReservations method, of class ReservationService.
+   */
+  @Test
+  public void testFindAllReservationsForUser() {
+    List<Reservation> reservations = service.findAllReservationsForUser("resourcesManager42", 2);
+    assertThat(reservations, is(notNullValue()));
+    assertThat(reservations, hasSize(3));
+    assertThat(reservations, containsInAnyOrder(new Reservation("3", "Test de la Toussaint",
+        new Date(1320134400000L),
+        new Date(1320163200000L), "To test", "at work", "2", new Date(1319811924467L), new Date(
+        1319811924467L), "resourcesManager42"),
+        new Reservation("5", "Test réservation validée 20/12/2011", new Date(1324368000000L),
+        new Date(1324375200000L), "To test a reservzation validated", "at work", "2", new Date(
+        1319811924467L), new Date(1319811924467L), "resourcesManager42"),
+        new Reservation("6", "Test réservation refusée 20/12/2011", new Date(1324375200000L),
+        new Date(1324382400000L), "To test a reservzation refused", "at work", "2", new Date(
+        1319811924467L), new Date(1319811924467L), "resourcesManager42")));
+  }
+
 
   /**
    * Test of findAllReservationsForValidation method, of class ReservationService.
@@ -244,7 +286,7 @@ public class ReservationServiceTest {
     calend.set(Calendar.YEAR, 2011);
     String endPeriod = String.valueOf(DateUtil.getEndDateOfMonth(calend.getTime()).getTime());
     String startPeriod = String.valueOf(DateUtil.getFirstDateOfMonth(calend.getTime()).getTime());
-    List<Reservation> reservations = service.findAllReservationsForCategoryInRange(1, startPeriod,
+    List<Reservation> reservations = service.findAllReservationsForCategoryInRange(1L, startPeriod,
         endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(2));

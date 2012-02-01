@@ -54,10 +54,10 @@ public class CategoryService {
   }
 
   public Category getCategory(String id) {
-    return repository.findOne(Integer.parseInt(id));
+    return repository.findOne(Long.parseLong(id));
   }
 
   public void deleteCategory(String id) {
-    repository.delete(Integer.parseInt(id));
+    repository.delete(Long.parseLong(id));
   }
 }

@@ -21,18 +21,18 @@
 package org.silverpeas.resourcemanager.model;
 
 import com.silverpeas.util.StringUtil;
-import java.util.ArrayList;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.OneToMany;
 
 @Entity
 @Table(name = "sc_resources_category")
@@ -42,7 +42,7 @@ public class Category {
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
       valueColumnName = "maxId", pkColumnValue = "SC_Resources_Category")
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
-  private Integer id;
+  private Long id;
   @Column
   private String instanceId;
   @Column
@@ -99,8 +99,8 @@ public class Category {
   }
 
   public final void setId(String id) {
-    if (StringUtil.isInteger(id)) {
-      this.id = Integer.parseInt(id);
+    if (StringUtil.isLong(id)) {
+      this.id = Long.parseLong(id);
     }
   }
 

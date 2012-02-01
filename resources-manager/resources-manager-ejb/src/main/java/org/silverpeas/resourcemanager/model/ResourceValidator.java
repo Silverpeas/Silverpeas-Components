@@ -23,12 +23,12 @@
  */
 package org.silverpeas.resourcemanager.model;
 
-import java.io.Serializable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  *
@@ -50,19 +50,19 @@ public class ResourceValidator implements Serializable {
   public ResourceValidator() {
   }
 
-  public ResourceValidator(int resourceId, int managerId) {
+  public ResourceValidator(long resourceId, long managerId) {
     this.resourceValidatorPk = new ResourceValidatorPk(resourceId, managerId);
   }
 
-  public int getManagerId() {
+  public long getManagerId() {
     return this.resourceValidatorPk.getManagerId();
   }
 
-  public void setManagerId(int managerId) {
+  public void setManagerId(long managerId) {
     this.resourceValidatorPk.setManagerId(managerId);
   }
 
-  public int getResourceId() {
+  public long getResourceId() {
     return this.resourceValidatorPk.getResourceId();
   }
 
@@ -89,7 +89,7 @@ public class ResourceValidator implements Serializable {
     return hash;
   }
 
-  public void setResourceId(int resourceId) {
+  public void setResourceId(long resourceId) {
     this.resourceValidatorPk.setResourceId(resourceId);
   }
 

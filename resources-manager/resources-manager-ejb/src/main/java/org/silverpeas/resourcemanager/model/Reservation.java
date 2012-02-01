@@ -22,7 +22,6 @@ package org.silverpeas.resourcemanager.model;
 
 import com.silverpeas.resourcesmanager.model.ResourceStatus;
 import com.silverpeas.util.StringUtil;
-import java.util.ArrayList;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,9 +32,6 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import java.util.Date;
-import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.OneToMany;
 
 @Entity
 @Table(name = "sc_resources_reservation")
@@ -46,7 +42,7 @@ public class Reservation implements ResourceStatus {
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
   valueColumnName = "maxId", pkColumnValue = "sc_resources_reservation")
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
-  private Integer id;
+  private Long id;
   @Column(name = "evenement", length = 128, nullable = false)
   private String event;
   @Column(length = 20, nullable = false)
@@ -99,13 +95,13 @@ public class Reservation implements ResourceStatus {
     return String.valueOf(id);
   }
 
-  public Integer getIntegerId() {
+  public Long getIntegerId() {
     return id;
   }
 
   public final void setId(String id) {
-    if (StringUtil.isInteger(id)) {
-      this.id = Integer.parseInt(id);
+    if (StringUtil.isLong(id)) {
+      this.id = Long.parseLong(id);
     }
   }
 

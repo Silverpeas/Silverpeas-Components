@@ -23,13 +23,14 @@
  */
 package org.silverpeas.resourcemanager.repository;
 
-import java.util.List;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.ReservedResourcePk;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 /**
  *
@@ -44,20 +45,25 @@ public interface ReservedResourceRepository extends
   "AND (( reservedResource.reservation.endDate > :startPeriod AND  reservedResource.reservation.beginDate <= :startPeriod)" +
   "OR ( reservedResource.reservation.endDate >= :endPeriod  AND  reservedResource.reservation.beginDate < :endPeriod))")
   public List<ReservedResource> findAllReservedResourcesWithProblem(
-      @Param("currentReservationId") Integer currentReservationId,
-      @Param("futureReservedResourceIds") List<Integer> futureReservedResourceIds,
+      @Param("currentReservationId") Long currentReservationId,
+      @Param("futureReservedResourceIds") List<Long> futureReservedResourceIds,
       @Param("startPeriod") String startPeriod, @Param("endPeriod") String endPeriod);
 
-  @Query("SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
-  "WHERE reservedResource.reservation.id = :currentReservationId")
+  @Query("SELECT DISTINCT reservedResource FROM ReservedResource reservedResource WHERE reservedResource.reservation.id = :currentReservationId")
   public List<ReservedResource> findAllReservedResourcesForReservation(
-      @Param("currentReservationId") Integer currentReservationId);
+      @Param("currentReservationId") Long currentReservationId);
 
   @Modifying
   @Query("DELETE ReservedResource reservedResource WHERE reservedResource.reservedResourcePk.reservationId = :currentReservationId")
-  public void deleteAllReservedResourcesForReservation(@Param("currentReservationId") Integer currentReservationId);
+  public void deleteAllReservedResourcesForReservation(
+      @Param("currentReservationId") Long currentReservationId);
 
   @Modifying
   @Query("DELETE ReservedResource reservedResource WHERE reservedResource.reservedResourcePk.resourceId = :currentResourceId")
-  public void deleteAllReservedResourcesForResource(@Param("currentResourceId") Integer currentResourceId);
+  public void deleteAllReservedResourcesForResource(
+      @Param("currentResourceId") Long currentResourceId);
+
+  @Query("SELECT DISTINCT reservedResource FROM ReservedResource reservedResource WHERE reservedResource.reservedResourcePk.reservationId = :currentReservationId")
+  public List<ReservedResource> findAllReservedResourcesOfReservation(
+      @Param("currentReservationId") Long currentReservationId);
 }

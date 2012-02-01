@@ -116,9 +116,34 @@ public class ReservedResourceServiceTest {
    * Test of findAllReservedResourcesWithProblem method, of class ReservedResourceService.
    */
   @Test
+  public void testFindAllReservedResourcesOfReservation() {
+    int currentReservationId = 3;
+    List<ReservedResource> result = service.findAllReservedResourcesOfReservation(
+        currentReservationId);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(3));
+    ReservedResource resource1 = new ReservedResource();
+    resource1.setReservationId(3);
+    resource1.setResourceId(1);
+    resource1.setStatus("V");
+    ReservedResource resource2 = new ReservedResource();
+    resource2.setReservationId(3);
+    resource2.setResourceId(3);
+    resource2.setStatus("test");
+    ReservedResource resource3 = new ReservedResource();
+    resource3.setReservationId(3);
+    resource3.setResourceId(2);
+    resource3.setStatus("R");
+    assertThat(result, containsInAnyOrder(resource1, resource2, resource3));
+  }
+
+  /**
+   * Test of findAllReservedResourcesWithProblem method, of class ReservedResourceService.
+   */
+  @Test
   public void testFindAllReservedResourcesWithProblem() {
     int currentReservationId = -1;
-    List<Integer> futureReservedResourceIds = Arrays.asList(new Integer[]{1, 2, 3, 5, 8});
+    List<Long> futureReservedResourceIds = Arrays.asList(new Long[]{1L, 2L, 3L, 5L, 8L});
     String startPeriod = "1320134400000";
     String endPeriod = "1320163200000";
     List<ReservedResource> result = service.findAllReservedResourcesWithProblem(currentReservationId,
@@ -127,7 +152,7 @@ public class ReservedResourceServiceTest {
     assertThat(result, hasSize(2));
     ReservedResource resource1 = new ReservedResource();
     resource1.setReservationId(3);
-    resource1.setResourceId(1);    
+    resource1.setResourceId(1);
     resource1.setStatus("V");
     ReservedResource resource2 = new ReservedResource();
     resource2.setReservationId(3);

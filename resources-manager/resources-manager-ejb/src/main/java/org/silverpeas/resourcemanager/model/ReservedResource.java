@@ -23,6 +23,8 @@
  */
 package org.silverpeas.resourcemanager.model;
 
+import com.silverpeas.util.StringUtil;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -30,8 +32,9 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import com.silverpeas.util.StringUtil;
 import java.io.Serializable;
+
+import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
 
 /**
  *
@@ -40,8 +43,8 @@ import java.io.Serializable;
 @Entity
 @Table(name = "sc_resources_reservedresource")
 public class ReservedResource implements Serializable {
-  private static final long serialVersionUID = -4233541745596218664L;
 
+  private static final long serialVersionUID = -4233541745596218664L;
   @EmbeddedId
   private ReservedResourcePk reservedResourcePk = new ReservedResourcePk();
   @Column(name = "status")
@@ -67,11 +70,11 @@ public class ReservedResource implements Serializable {
     }
   }
 
-  public int getReservationId() {
+  public long getReservationId() {
     return reservedResourcePk.getReservationId();
   }
 
-  public void setReservationId(int reservationId) {
+  public void setReservationId(long reservationId) {
     reservedResourcePk.setReservationId(reservationId);
   }
 
@@ -86,11 +89,11 @@ public class ReservedResource implements Serializable {
     }
   }
 
-  public int getResourceId() {
+  public long getResourceId() {
     return reservedResourcePk.getResourceId();
   }
 
-  public void setResourceId(int resourceId) {
+  public void setResourceId(long resourceId) {
     reservedResourcePk.setResourceId(resourceId);
   }
 
@@ -100,6 +103,18 @@ public class ReservedResource implements Serializable {
 
   public void setStatus(String status) {
     this.status = status;
+  }
+
+  public boolean isValidated() {
+    return STATUS_VALIDATE.equals(status);
+  }
+
+  public boolean isRefused() {
+    return STATUS_REFUSED.equals(status);
+  }
+
+  public boolean isValidationRequired() {
+    return STATUS_FOR_VALIDATION.equals(status);
   }
 
   @Override

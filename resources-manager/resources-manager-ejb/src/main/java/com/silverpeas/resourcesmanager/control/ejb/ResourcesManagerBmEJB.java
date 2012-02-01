@@ -23,6 +23,7 @@ package com.silverpeas.resourcesmanager.control.ejb;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.resourcesmanager.model.ResourceStatus;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -32,10 +33,13 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
@@ -49,7 +53,7 @@ import org.silverpeas.resourcemanager.services.ServicesLocator;
 /**
  * @author
  */
-public class ResourcesManagerBmEJB implements SessionBean {
+public class ResourcesManagerBmEJB implements SessionBean, ResourcesManager {
 
   private static final long serialVersionUID = 1L;
 
@@ -82,24 +86,29 @@ public class ResourcesManagerBmEJB implements SessionBean {
    *
    * @param category
    */
+  @Override
   public void createCategory(Category category) {
     String id = ServicesLocator.getCategoryService().createCategory(category);
     category.setId(id);
     createCategoryIndex(category);
   }
 
+  @Override
   public List<Category> getCategories(String instanceId) {
     return ServicesLocator.getCategoryService().getCategories(instanceId);
   }
 
+  @Override
   public Category getCategory(String id) {
     return ServicesLocator.getCategoryService().getCategory(id);
   }
 
+  @Override
   public void updateCategory(Category category) {
     ServicesLocator.getCategoryService().updateCategory(category);
   }
 
+  @Override
   public void deleteCategory(String id, String componentId) {
     // First delete all resources of category
     List<Resource> resources = getResourcesByCategory(id);
@@ -117,6 +126,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
    * @param resource
    * @return
    */
+  @Override
   public String createResource(Resource resource) {
     String id = ServicesLocator.getResourceService().createResource(resource);
     resource.setId(id);
@@ -124,53 +134,100 @@ public class ResourcesManagerBmEJB implements SessionBean {
     return id;
   }
 
+  @Override
   public void updateResource(Resource resource) {
     ServicesLocator.getResourceService().updateResource(resource);
     createResourceIndex(resource);
   }
 
+  @Override
   public Resource getResource(String id) {
     return ServicesLocator.getResourceService().getResource(Integer.parseInt(id));
   }
 
+  @Override
   public List<Resource> getResourcesByCategory(String categoryId) {
-    return ServicesLocator.getResourceService().getResourcesByCategory(Integer.parseInt(categoryId));
+    return ServicesLocator.getResourceService().getResourcesByCategory(Long.parseLong(categoryId));
   }
 
+  @Override
   public void deleteResource(String id, String componentId) {
     ServicesLocator.getResourceService().deleteResource(Integer.parseInt(id));
+    deleteIndex(id, "Resource", componentId);
   }
 
+  @Override
   public List<Resource> getResourcesReservable(String instanceId, Date startDate, Date endDate) {
     return ServicesLocator.getResourceService().listAvailableResources(instanceId,
         String.valueOf(startDate.getTime()), String.valueOf(endDate.getTime()));
   }
 
+  @Override
   public List<Resource> getResourcesofReservation(String instanceId, String reservationId) {
-    return ServicesLocator.getResourceService().listResourcesOfReservation(Integer.parseInt(
+    return ServicesLocator.getResourceService().listResourcesOfReservation(Long.parseLong(
         reservationId));
 
   }
 
-  /**
-   *
-   * @param reservation
-   * @param listReservationCurrent
-   */
-  public void saveReservation(Reservation reservation, List<Integer> resources) {
-    ServicesLocator.getReservationService().createReservation(reservation);
-    for (Integer resourceId : resources) {
-      Resource resource = ServicesLocator.getResourceService().getResource(resourceId);
-      ReservedResource reserved = new ReservedResource();
-      reserved.setReservation(reservation);
-      reserved.setResource(resource);
-      reserved.setStatus(reservation.getStatus());
-      ServicesLocator.getReservedResourceService().create(reserved);
-    }
+  public void saveReservation(Reservation reservation, List<Long> resources) {
+    ServicesLocator.getReservationService().createReservation(reservation, resources);
+    createReservationIndex(reservation);
   }
 
-  public void updateReservation(Reservation reservationCourante) {
+  @Override
+  public void updateReservation(Reservation reservationCourante, String listReservation,
+      boolean updateDate) {
+    List<ReservedResource> reservedResources = ServicesLocator.getReservedResourceService().
+        findAllReservedResourcesOfReservation(reservationCourante.getIntegerId());
+    Map<Long, ReservedResource> oldReservedResources = new HashMap<Long, ReservedResource>(reservedResources.
+        size());
+    for (ReservedResource reservedResource : reservedResources) {
+      oldReservedResources.put(reservedResource.getResourceId(), reservedResource);
+    }
+    StringTokenizer tokenizer = new StringTokenizer(listReservation, ",");
+    boolean refused = false;
+    boolean forValidation = false;
+    String reservationStatus = ResourceStatus.STATUS_VALIDATE;
+    while (tokenizer.hasMoreTokens()) {
+      Long idResource = Long.parseLong(tokenizer.nextToken());
+      ReservedResource reservedResource = null;
+      if (!updateDate && oldReservedResources.containsKey(idResource)) {
+        reservedResource = oldReservedResources.get(idResource);
+        oldReservedResources.remove(idResource);
+      }
+      if (reservedResource == null) {
+        reservedResource = new ReservedResource();
+        reservedResource.setReservationId(reservationCourante.getIntegerId());
+        reservedResource.setResourceId(idResource);
+        if (ServicesLocator.getResourceService().isManager(Long.parseLong(reservationCourante.
+            getUserId()), idResource)) {
+          reservedResource.setStatus(ResourceStatus.STATUS_VALIDATE);
+        } else if (ServicesLocator.getResourceService().getManagers(idResource).isEmpty()) {
+          reservedResource.setStatus(ResourceStatus.STATUS_VALIDATE);
+        } else {
+          reservedResource.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
+        }
+        ServicesLocator.getReservedResourceService().create(reservedResource);
+      }
+      if (reservedResource.isValidationRequired()) {
+        forValidation = true;
+      }
+      if (reservedResource.isRefused()) {
+        refused = true;
+      }
+    }
+    if (forValidation) {
+      reservationStatus = ResourceStatus.STATUS_FOR_VALIDATION;
+    }
+    if (refused) {
+      reservationStatus = ResourceStatus.STATUS_REFUSED;
+    }
+    for (ReservedResource oldReservedResource : oldReservedResources.values()) {
+      ServicesLocator.getReservedResourceService().delete(oldReservedResource);
+    }
+    reservationCourante.setStatus(reservationStatus);
     ServicesLocator.getReservationService().updateReservation(reservationCourante);
+    createReservationIndex(reservationCourante);
   }
 
   /**
@@ -181,6 +238,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
    * @param endDate
    * @return
    */
+  @Override
   public List<Resource> verificationReservation(String instanceId, String listeReservation,
       Date startDate, Date endDate) {
     return verificationNewDateReservation(instanceId, listeReservation, startDate, endDate, "-1");
@@ -195,6 +253,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
    * @param reservationId
    * @return
    */
+  @Override
   public List<Resource> verificationNewDateReservation(String instanceId,
       String listeReservation, Date startDate, Date endDate, String reservationId) {
     StringTokenizer tokenizer = new StringTokenizer(listeReservation, ",");
@@ -204,58 +263,79 @@ public class ResourcesManagerBmEJB implements SessionBean {
     if (StringUtil.isInteger(reservationId)) {
       currentReservationId = Integer.parseInt(reservationId);
     }
-    List<Integer> futureReservedResourceIds = new ArrayList<Integer>();
+    List<Long> futureReservedResourceIds = new ArrayList<Long>();
     while (tokenizer.hasMoreTokens()) {
-      futureReservedResourceIds.add(Integer.parseInt(tokenizer.nextToken()));
+      futureReservedResourceIds.add(Long.parseLong(tokenizer.nextToken()));
     }
-    List<ReservedResource> alreadyReservedResources = ServicesLocator.getReservedResourceService().
-        findAllReservedResourcesWithProblem(
+    return ServicesLocator.getResourceService().findAllResourcesWithProblem(
         currentReservationId, futureReservedResourceIds, startPeriod, endPeriod);
-    List resources = new ArrayList(alreadyReservedResources.size());
-    for (ReservedResource reservedResource : alreadyReservedResources) {
-      resources.add(reservedResource.getResource());
-    }
-    return resources;
   }
 
+  @Override
   public List<Reservation> getReservations(String instanceId) {
-    return ServicesLocator.getReservationService().findAllReservations(instanceId);
+    List<Reservation> reservations = ServicesLocator.getReservationService().findAllReservations(
+        instanceId);
+    return reservations;
   }
 
+  @Override
+  public List<Reservation> getUserReservations(String instanceId, String userId) {
+    List<Reservation> reservations = ServicesLocator.getReservationService().findAllReservations(
+        instanceId);
+    return reservations;
+  }
+
+  @Override
   public Reservation getReservation(String instanceId, String reservationId) {
-    return ServicesLocator.getReservationService().getReservation(Integer.parseInt(reservationId));
+    Reservation reservation = ServicesLocator.getReservationService().getReservation(Integer.
+        parseInt(reservationId));
+    return reservation;
   }
 
+  @Override
   public void deleteReservation(String id, String componentId) {
     deleteIndex(id, "Reservation", componentId);
     AttachmentController.deleteAttachmentByCustomerPK(new ForeignPK(id, componentId));
     ServicesLocator.getReservationService().deleteReservation(Integer.parseInt(id));
   }
 
+  @Override
   public List<Reservation> getMonthReservation(String instanceId, Date monthDate,
       String userId) {
     String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
     String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
-    return ServicesLocator.getReservationService().findAllReservationsForValidation(instanceId,
-        Integer.parseInt(userId), beginDate, endDate);
+    List<Reservation> reservations = ServicesLocator.getReservationService().
+        findAllReservationsForValidation(instanceId, Integer.parseInt(userId), beginDate, endDate);
+    return reservations;
   }
 
+  @Override
   public List<Reservation> getReservationForValidation(String instanceId, Date monthDate,
       String userId) {
     String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
     String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
-    return ServicesLocator.getReservationService().findAllReservationsForValidation(instanceId,
-        Integer.parseInt(userId), beginDate, endDate);
+    List<Reservation> reservations = ServicesLocator.getReservationService().
+        findAllReservationsForValidation(instanceId, Integer.parseInt(userId), beginDate, endDate);
+    return reservations;
   }
 
+  @Override
   public List<Reservation> getMonthReservationOfCategory(Date monthDate, String idCategory) {
     String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
     String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
-    return ServicesLocator.getReservationService().findAllReservationsForCategoryInRange(Integer.
-        parseInt(idCategory), beginDate, endDate);
+    return ServicesLocator.getReservationService().findAllReservationsForCategoryInRange(Long.parseLong(idCategory), beginDate, endDate);
   }
 
-  public String getStatusResourceOfReservation(String resourceId, String reservationId) {
+  @Override
+  public List<Reservation> listReservationsOfMonthInCategoryForUser(Date monthDate,
+      String idCategory, String userId) {
+    String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
+        String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
+        return ServicesLocator.getReservationService().findAllReservationsForCategoryInRange(Long.parseLong(idCategory), beginDate, endDate);
+  }
+
+  @Override
+  public String getResourceOfReservationStatus(String resourceId, String reservationId) {
     ReservedResource reserved = ServicesLocator.getReservedResourceService().getReservedResource(
         Integer.parseInt(resourceId), Integer.parseInt(reservationId));
     return reserved.getStatus();
@@ -346,6 +426,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
+  @Override
   public void indexResourceManager(String instanceId) {
     List<Reservation> listOfReservation = getReservations(instanceId);
     if (listOfReservation != null) {
@@ -360,34 +441,63 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  public void addManager(int resourceId, int managerId) {
+  @Override
+  public void addManager(long resourceId, long managerId) {
     ServicesLocator.getResourceService().addManager(new ResourceValidator(resourceId, managerId));
   }
 
-  public void addManagers(int resourceId, List<Integer> managers) {
+  @Override
+  public void addManagers(long resourceId, List<Long> managers) {
     List<ResourceValidator> validators = new ArrayList<ResourceValidator>(managers.size());
-    for (Integer managerId : managers) {
+    for (Long managerId : managers) {
       validators.add(new ResourceValidator(resourceId, managerId));
     }
     ServicesLocator.getResourceService().addManagers(resourceId, validators);
   }
 
-  public void removeManager(int resourceId, int managerId) {
+  @Override
+  public void removeManager(long resourceId, long managerId) {
     ServicesLocator.getResourceService().removeManager(new ResourceValidator(resourceId, managerId));
   }
 
-  public List<ResourceValidator> getManagers(int resourceId) {
+  @Override
+  public List<ResourceValidator> getManagers(long resourceId) {
     Resource resource = ServicesLocator.getResourceService().getResource(resourceId);
     if (resource != null) {
       return resource.getManagers();
     }
-    return Collections.EMPTY_LIST;
+    return Collections.<ResourceValidator>emptyList();
   }
 
-  public void updateResourceStatus(String status, int resourceId, int reservationId) {
-    ReservedResource reserved = ServicesLocator.getReservedResourceService().getReservedResource(
-        resourceId, reservationId);
-    reserved.setStatus(status);
-    ServicesLocator.getReservedResourceService().update(reserved);
+  @Override
+  public void saveReservation(Reservation reservation, String listReservationCurrent) throws
+      RemoteException {
+    StringTokenizer tokenizer = new StringTokenizer(listReservationCurrent, ",");
+    List<Long> resourcesIds = new ArrayList<Long>(tokenizer.countTokens());
+    while (tokenizer.hasMoreTokens()) {
+      String id = tokenizer.nextToken();
+      if (StringUtil.isLong(id)) {
+        resourcesIds.add(Long.parseLong(id));
+      }
+    }
+    String reservationId = ServicesLocator.getReservationService().createReservation(reservation,
+        resourcesIds);
+    reservation.setId(reservationId);
+    createReservationIndex(reservation);
+  }
+
+  @Override
+  public void updateReservedResourceStatus(long reservationId, long resourceId, String status) throws
+      RemoteException {
+    ReservedResource reservedResource = ServicesLocator.getReservedResourceService().
+        getReservedResource(resourceId, reservationId);
+    if (reservedResource != null) {
+      reservedResource.setStatus(status);
+      ServicesLocator.getReservedResourceService().update(reservedResource);
+    }
+    Reservation reservation = reservedResource.getReservation();
+    reservation.setStatus(ServicesLocator.getReservationService().computeReservationStatus(
+        reservation));
+    ServicesLocator.getReservationService().updateReservation(reservation);
   }
 }

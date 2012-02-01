@@ -25,6 +25,7 @@ package org.silverpeas.resourcemanager.services;
 
 import com.google.common.collect.Lists;
 import com.stratelia.webactiv.util.DBUtil;
+import edu.emory.mathcs.backport.java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
@@ -48,7 +49,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -174,7 +175,7 @@ public class ResourceServiceTest {
    */
   @Test
   public void testDeleteResourcesFromCategory() {
-    int categoryId = 1;
+    long categoryId = 1L;
     List<Resource> result = service.getResourcesByCategory(categoryId);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));
@@ -200,14 +201,34 @@ public class ResourceServiceTest {
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(1));
     assertThat(result, containsInAnyOrder(new ResourceValidator(id, 0)));
-    service.addManagers(id, Lists.newArrayList(new ResourceValidator(id, 1), new ResourceValidator(
-        id, 5), new ResourceValidator(id, 10)));
+    service.addManagers(id,
+        Arrays.<ResourceValidator>asList(new ResourceValidator[]{new ResourceValidator(id, 1),
+          new ResourceValidator(id, 5), new ResourceValidator(id, 10)}));
     result = service.getResource(id).getManagers();
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(4));
     assertThat(result, containsInAnyOrder(new ResourceValidator(id, 0), new ResourceValidator(id, 1),
         new ResourceValidator(id, 5), new ResourceValidator(id, 10)));
   }
+  
+  /**
+   * Test of addManagers method, of class ResourceService.
+   */
+  @Test
+  public void testIsManager() {
+    long resourceId = 1L;
+    long userId = 2L;
+    boolean isManager = service.isManager(userId, resourceId);
+    assertThat(isManager, is(true));
+    resourceId = 3L;
+    isManager = service.isManager(userId, resourceId);
+    assertThat(isManager, is(false));
+    resourceId = 1L;
+    userId = 5L;
+    isManager = service.isManager(userId, resourceId);
+    assertThat(isManager, is(false));
+  }
+
 
   /**
    * Test of addManager method, of class ResourceService.
@@ -268,7 +289,7 @@ public class ResourceServiceTest {
    */
   @Test
   public void testGetResourcesByCategory() {
-    int categoryId = 1;
+    long categoryId = 1L;
     List<Resource> result = service.getResourcesByCategory(categoryId);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));

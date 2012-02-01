@@ -23,8 +23,8 @@
  */
 package org.silverpeas.resourcemanager.model;
 
-import java.io.Serializable;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 /**
  *
@@ -34,30 +34,30 @@ import javax.persistence.Embeddable;
 public class ReservedResourcePk implements Serializable {
 
   private static final long serialVersionUID = -5550864318148567106L;
-  private int resourceId;
-  private int reservationId;
+  private long resourceId;
+  private long reservationId;
 
   public ReservedResourcePk() {
   }
 
-  public ReservedResourcePk(int resourceId, int reservationId) {
+  public ReservedResourcePk(long resourceId, long reservationId) {
     this.resourceId = resourceId;
     this.reservationId = reservationId;
   }
 
-  public int getReservationId() {
+  public long getReservationId() {
     return reservationId;
   }
 
-  public void setReservationId(int reservationId) {
+  public void setReservationId(long reservationId) {
     this.reservationId = reservationId;
   }
 
-  public int getResourceId() {
+  public long getResourceId() {
     return resourceId;
   }
 
-  public void setResourceId(int resourceId) {
+  public void setResourceId(long resourceId) {
     this.resourceId = resourceId;
   }
 
@@ -79,12 +79,12 @@ public class ReservedResourcePk implements Serializable {
     return true;
   }
 
+
   @Override
   public int hashCode() {
-    int hash = 3;
-    hash = 53 * hash + this.resourceId;
-    hash = 53 * hash + this.reservationId;
-    return hash;
+    int result = (int) (resourceId ^ (resourceId >>> 32));
+    result = 31 * result + (int) (reservationId ^ (reservationId >>> 32));
+    return result;
   }
 
   @Override

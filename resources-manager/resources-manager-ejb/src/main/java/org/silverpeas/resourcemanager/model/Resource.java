@@ -21,13 +21,10 @@
 package org.silverpeas.resourcemanager.model;
 
 import com.silverpeas.util.StringUtil;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,6 +34,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
 
@@ -48,7 +48,7 @@ public class Resource {
   @TableGenerator(name = "UNIQUE_RESOURCE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
   valueColumnName = "maxId", pkColumnValue = "sc_resources_resource")
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_RESOURCE_ID_GEN")
-  private Integer id;
+  private Long id;
   @ManyToOne(optional = true)
   @JoinColumn(name = "categoryid", nullable = true, updatable = true)
   private Category category;
@@ -139,13 +139,13 @@ public class Resource {
     return String.valueOf(id);
   }
   
-  public Integer getIntegerId() {
+  public Long getIntegerId() {
     return id;
   }
 
   public final void setId(String id) {
-    if (StringUtil.isInteger(id)) {
-      this.id = Integer.parseInt(id);
+    if (StringUtil.isLong(id)) {
+      this.id = Long.parseLong(id);
     }
   }
 
