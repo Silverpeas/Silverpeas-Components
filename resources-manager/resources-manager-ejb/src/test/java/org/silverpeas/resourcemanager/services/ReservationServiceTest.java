@@ -102,7 +102,7 @@ public class ReservationServiceTest {
     Reservation reservation = new Reservation("Test de la Toussaint", new Date(1320134400000L),
         new Date(1320163200000L), "To test", "at work");
     reservation.setInstanceId(instanceId);
-    int id = Integer.parseInt(service.createReservation(reservation, Collections.<Integer>emptyList()));
+    long id = Long.parseLong(service.createReservation(reservation, Collections.emptyList()));
     Reservation createdReservation = service.getReservation(id);
     reservation.setId(String.valueOf(id));
     assertThat(reservation, is(createdReservation));
@@ -117,7 +117,7 @@ public class ReservationServiceTest {
     Reservation reservation = new Reservation("Test de la Toussaint", new Date(1320134400000L),
         new Date(1320163200000L), "To test", "at work");
     reservation.setInstanceId(instanceId);
-    long id = Long.parseLong(service.createReservation(reservation, Arrays.<Long>asList(new Long[]{1L, 2L})));
+    long id = Long.parseLong(service.createReservation(reservation, Arrays.asList(new Long[]{1L, 2L})));
     Reservation createdReservation = service.getReservation(id);
     reservation.setId(String.valueOf(id));
     assertThat(reservation, is(createdReservation));

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import com.google.common.collect.Lists;
 import com.stratelia.webactiv.util.DBUtil;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import java.util.Date;
@@ -201,8 +200,7 @@ public class ResourceServiceTest {
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(1));
     assertThat(result, containsInAnyOrder(new ResourceValidator(id, 0)));
-    service.addManagers(id,
-        Arrays.<ResourceValidator>asList(new ResourceValidator[]{new ResourceValidator(id, 1),
+    service.addManagers(id, Arrays.asList(new ResourceValidator[]{new ResourceValidator(id, 1),
           new ResourceValidator(id, 5), new ResourceValidator(id, 10)}));
     result = service.getResource(id).getManagers();
     assertThat(result, is(notNullValue()));
