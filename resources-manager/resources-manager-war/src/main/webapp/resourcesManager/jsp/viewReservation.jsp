@@ -42,8 +42,6 @@ String place = maReservation.getPlace();
 String reason = EncodeHelper.javaStringToHtmlParagraphe(maReservation.getReason());
 String dateEnd = resource.getOutputDateAndHour(maReservation.getEndDate());
 String dateBegin = resource.getOutputDateAndHour(maReservation.getBeginDate());
-String minuteHourDateBegin = DateUtil.getFormattedTime(maReservation.getBeginDate());
-String minuteHourDateEnd = DateUtil.getFormattedTime(maReservation.getEndDate());
 String flag = (String)request.getAttribute("Profile");
 
 Board	board		 = gef.getBoard();

@@ -287,9 +287,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
       String userId) {
     String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
     String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
-    List<Reservation> reservations = reservationService.findAllReservationsForValidation(instanceId,
-        Integer.parseInt(userId), beginDate, endDate);
-    return reservations;
+    return reservationService.findAllReservationsInRange(instanceId, beginDate, endDate);
   }
 
   @Override
@@ -298,8 +296,17 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
     String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
     String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
     List<Reservation> reservations = reservationService.findAllReservationsForValidation(instanceId,
-        Integer.parseInt(userId), beginDate, endDate);
+        Long.parseLong(userId), beginDate, endDate);
     return reservations;
+  }
+
+  @Override
+  public List<Reservation> getMonthReservationOfUser(String instanceId, Date monthDate,
+      Integer userId) {
+    String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
+    String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
+    return reservationService.findAllReservationsForUserInRange(instanceId, userId,
+        beginDate, endDate);
   }
 
   @Override

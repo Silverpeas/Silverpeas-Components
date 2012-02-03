@@ -340,8 +340,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         List<Resource> listResourcesProblem = (List<Resource>) request.getAttribute(
             "listeResourcesProblem");
         List<Resource> listResourceEverReserved = null;
-        // si listResourcesProblem c'est qu'il n y a pas eu de problème
-        // d'enregistrement
+        // si listResourcesProblem c'est qu'il n y a pas eu de problème d'enregistrement
         if ((listResourcesProblem == null)) {
           Reservation reservation = request2ReservationDetail(request, resourcesManagerSC);
           resourcesManagerSC.createReservation(reservation);

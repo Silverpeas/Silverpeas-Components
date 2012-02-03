@@ -82,6 +82,9 @@ public interface ResourcesManager {
   public List<Reservation> getMonthReservation(String instanceId, Date monthDate, String userId);
 
   public List<Reservation> getUserReservations(String instanceId, String userId);
+  
+  public List<Reservation> getMonthReservationOfUser(String instanceId, Date monthDate,
+      Integer userId);
 
   public List<Reservation> getReservationForValidation(String instanceId, Date monthDate,
       String userId);

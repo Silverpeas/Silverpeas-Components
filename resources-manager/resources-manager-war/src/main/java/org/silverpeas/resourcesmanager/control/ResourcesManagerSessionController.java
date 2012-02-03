@@ -574,13 +574,13 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public List<Reservation> getMonthReservation() {
-    return ResourcesManagerFactory.getResourcesManager().getMonthReservation(getComponentId(),
-        getCurrentDay().getTime(), getUserId());
+    return ResourcesManagerFactory.getResourcesManager().getMonthReservationOfUser(getComponentId(),
+        getCurrentDay().getTime(),  Integer.parseInt(getUserId()));
   }
 
   public List<Reservation> getMonthReservation(String idUser) {
-    return ResourcesManagerFactory.getResourcesManager().getMonthReservation(getComponentId(),
-        this.getCurrentDay().getTime(), idUser);
+    return ResourcesManagerFactory.getResourcesManager().getMonthReservationOfUser(getComponentId(),
+        this.getCurrentDay().getTime(), Integer.parseInt(idUser));
   }
 
   public List<Reservation> getMonthReservationOfCategory(String idCategory) {

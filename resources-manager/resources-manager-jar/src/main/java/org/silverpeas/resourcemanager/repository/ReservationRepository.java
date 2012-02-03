@@ -38,21 +38,22 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
   @Query("from Reservation reservation WHERE reservation.instanceId = :instanceId AND reservation.userId= :userId " +
   "AND ((reservation.endDate > :startPeriod AND reservation.beginDate <= :startPeriod)" +
-  "OR (reservation.endDate >= :endPeriod  AND reservation.beginDate < :endPeriod))")
-  public List<Reservation> findAllReservationsForUserInPeriod(@Param("instanceId") String instanceId,
+  "OR (reservation.beginDate >= :startPeriod  AND reservation.beginDate < :endPeriod))")
+  public List<Reservation> findAllReservationsForUserInRange(@Param("instanceId") String instanceId,
       @Param("userId") Integer userId, @Param("startPeriod") String startPeriod,
       @Param("endPeriod") String endPeriod);
-  
-  
+
   @Query("from Reservation reservation WHERE reservation.instanceId = :instanceId AND reservation.userId= :userId")
   public List<Reservation> findAllReservationsForUser(@Param("instanceId") String instanceId,
       @Param("userId") Integer userId);
 
-  @Query("from Reservation reservation WHERE reservation.instanceId = :instanceId AND reservation.userId= :userId " +
-  "AND ((reservation.endDate > :startPeriod AND reservation.beginDate <= :startPeriod)" +
-  "OR (reservation.beginDate >= :startPeriod  AND reservation.beginDate < :endPeriod))")
+  @Query("SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+  "JOIN reservedResource.resource.managers manager WHERE reservedResource.status = 'A' " +
+  "AND manager.resourceValidatorPk.managerId = :managerId AND reservedResource.reservation.instanceId = :instanceId " +
+  "AND ((reservedResource.reservation.endDate > :startPeriod AND reservedResource.reservation.beginDate <= :startPeriod)" +
+  "OR (reservedResource.reservation.beginDate >= :startPeriod  AND reservedResource.reservation.beginDate < :endPeriod))")
   public List<Reservation> findAllReservationsForValidation(@Param("instanceId") String instanceId,
-      @Param("userId") Integer userId, @Param("startPeriod") String startPeriod,
+      @Param("managerId") Long managerId, @Param("startPeriod") String startPeriod,
       @Param("endPeriod") String endPeriod);
 
   @Query("SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
@@ -78,6 +79,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
   public List<Reservation> findAllReservationsForCategoryInRange(
       @Param("categoryId") Long categoryId, @Param("startPeriod") String startPeriod,
       @Param("endPeriod") String endPeriod);
+
+  @Query("SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+  "WHERE reservedResource.resource.instanceId = :instanceId " +
+  "AND ((reservedResource.reservation.endDate > :startPeriod AND reservedResource.reservation.beginDate <= :startPeriod)" +
+  "OR (reservedResource.reservation.beginDate >= :startPeriod  AND reservedResource.reservation.beginDate < :endPeriod))")
+  public List<Reservation> findAllReservationsInRange(@Param("instanceId") String instanceId,
+      @Param("startPeriod") String startPeriod, @Param("endPeriod") String endPeriod);
 
   @Query("SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
   "JOIN reservedResource.resource.managers manager WHERE reservedResource.status = 'A' AND manager.resourceValidatorPk.managerId = :managerId")

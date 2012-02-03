@@ -130,9 +130,18 @@ public class ReservationService {
     return repository.findAllReservationsForUser(instanceId, userId);
   }
 
-  public List<Reservation> findAllReservationsForValidation(String instanceId, Integer userId,
+  public List<Reservation> findAllReservationsForValidation(String instanceId, Long userId,
       String startPeriod, String endPeriod) {
     return repository.findAllReservationsForValidation(instanceId, userId, startPeriod, endPeriod);
+  }
+  
+   public List<Reservation> findAllReservationsInRange(String instanceId, String startPeriod, String endPeriod) {
+    return repository.findAllReservationsInRange(instanceId, startPeriod, endPeriod);
+   }
+  
+  public List<Reservation> findAllReservationsForUserInRange(String instanceId, Integer userId,
+      String startPeriod, String endPeriod) {
+    return repository.findAllReservationsForUserInRange(instanceId, userId, startPeriod, endPeriod);
   }
 
   public List<Reservation> findAllReservationsForCategoryInRange(Long categoryId,
