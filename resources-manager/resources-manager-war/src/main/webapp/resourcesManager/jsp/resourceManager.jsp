@@ -33,7 +33,7 @@
 	String 			idcategory 	= (String) request.getAttribute("categoryId");
 	List 			list 		= (List) request.getAttribute("listCategories");
 	Resource details 	= (Resource) request.getAttribute("resource");
-	List managers  = (List) request.getAttribute("Managers");
+	List<UserDetail> managers  = (List<UserDetail>) request.getAttribute("Managers");
 	
 	Form 			formUpdate  = (Form) request.getAttribute("Form");
 	DataRecord 		data    	= (DataRecord) request.getAttribute("Data"); 
@@ -54,7 +54,6 @@
 	}
 	
 	String name = "";
-	String reponsibleId = "";
 	String description = "";
 	boolean bookable = false;
 	String resourceId = "";
@@ -63,7 +62,6 @@
 		resourceId 		= details.getId();
 		name 			= details.getName();
 		bookable 		= details.isBookable();
-		//reponsibleId 	= details.getResponsibleId();
 		description 	= details.getDescription();
 	}
 	
@@ -202,14 +200,11 @@ buttonPane.addButton(cancelButton);
 	   
 	   <TD id="managers"> 
 			<%
-		    String managerNames = "";
-			  if (managers != null) {
-			    Iterator it = managers.iterator();
-			    while(it.hasNext())
-			    {
-			      UserDetail manager = (UserDetail) it.next();
+		    StringBuilder managerNames = new StringBuilder("");
+			  if (managers != null && ! managers.isEmpty()) {
+			    for(UserDetail manager : managers) {
 			      managerIds += manager.getId()+ ",";
-			      managerNames += manager.getDisplayedName()+"<br/>";
+			      managerNames.append(manager.getDisplayedName()).append("<br/>");
 			    }
 			  } %>
 			  <%=managerNames %>

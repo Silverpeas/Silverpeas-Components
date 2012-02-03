@@ -33,7 +33,7 @@
 <%@ page import= "java.util.Date" %>
 <%@ include file="check.jsp" %>
 <% 
-//Recuperation des details de l'ulisateur
+//Recuperation des details de l'utilisateur
 
 List listOfReservation = (List)request.getAttribute("listOfReservation");
 

@@ -34,9 +34,8 @@
 	List listTemplates =(List)request.getAttribute("listTemplates"); 
 	String name="";
 	String form="";
-	String reponsibleId="";
 	String description="";
-	boolean bookable = false;
+	boolean bookable = true;
 	String id="";
 	Category category = (Category)request.getAttribute("category");
 	if (category != null){
@@ -44,7 +43,6 @@
 		name = category.getName();
 		bookable = category.isBookable();
 		form = category.getForm();
-		reponsibleId = category.getResponsibleId();
 		description = category.getDescription();
 	}
 %>

@@ -27,45 +27,40 @@
 <%@ include file="check.jsp"%>
 
 <%
-Collection managers = (Collection) request.getAttribute("Managers");
+  Collection<UserDetail> managers = (Collection<UserDetail>) request.getAttribute("Managers");
 %>
 
 <HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-<script language="JavaScript">
+  <HEAD>
+    <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+    <%
+      out.println(gef.getLookStyleSheet());
+    %>
+    <script language="JavaScript">
 
-function refresh() 
-{
-	var tdManagers = window.opener.document.getElementById("managers");
-	tdManagers.innerHTML = "";
+      function refresh() 
+      {
+        var tdManagers = window.opener.document.getElementById("managers");
+        tdManagers.innerHTML = "";
 	
-	var inputManagerIds = window.opener.document.getElementById("managerIds");
+        var inputManagerIds = window.opener.document.getElementById("managerIds");
 	
-	<%
-	if (managers != null) {
-		Iterator it = managers.iterator();
-		String managerNames = "";
-		String managerIds = "";
-		while(it.hasNext())
-		{
-		  UserDetail manager = (UserDetail) it.next();
-      managerNames += manager.getDisplayedName()+"<br/>";
-      managerIds += manager.getId()+",";
-		}
-		%>
-		  tdManagers.innerHTML = "<%=managerNames%>";
-		  inputManagerIds.value = "<%=managerIds%>";
-		<%
-	}
-	%>
-	window.close();
-}
-</script>
-</HEAD>
-<BODY onLoad="refresh()">
-</BODY>
+      <%
+        String managerNames = "";
+        String managerIds = "";
+        if (managers != null) {
+          for (UserDetail manager : managers) {
+            managerNames += manager.getDisplayedName() + "<br/>";
+            managerIds += manager.getId() + ",";
+          }
+        }
+      %>
+          tdManagers.innerHTML = "<%=managerNames%>";
+          inputManagerIds.value = "<%=managerIds%>";
+          window.close();
+        }
+    </script>
+  </HEAD>
+  <BODY onLoad="refresh()">
+  </BODY>
 </HTML>

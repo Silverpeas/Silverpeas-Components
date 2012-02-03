@@ -50,12 +50,12 @@
 //list est la liste des ressources de la categorie
 //listCategory est la liste de l'ensemble des categories
 List list = (List)request.getAttribute("list");
-List listCategory = (List)request.getAttribute("listCategories");
+List<Category> listCategory = (List<Category>)request.getAttribute("listCategories");
 String idCategory = (String)request.getAttribute("categoryId");
 String categoryName ="";
 
 while(!listCategory.isEmpty()){
-	Category maCategory = (Category)listCategory.get(0);
+	Category maCategory = listCategory.get(0);
 	String categoryIdTemp = maCategory.getId();
 	if(categoryIdTemp.equals(idCategory)){
 		categoryName = maCategory.getName();

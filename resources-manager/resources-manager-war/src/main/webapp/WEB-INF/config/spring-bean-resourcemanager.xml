@@ -37,6 +37,6 @@
   <ctx:annotation-config/>
   <ctx:component-scan base-package="org.silverpeas.resourcemanager"/>
 
-    <bean id="resourceManagerServicesLocator" class="org.silverpeas.resourcemanager.services.ServicesLocator"
-        factory-method="getInstance"/>
+  <bean name="resourceManagerFactory"
+        class="org.silverpeas.resourcemanager.ResourcesManagerFactory" factory-method="getInstance"/>
 </beans>

@@ -27,18 +27,17 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceReservableDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
 //R�cup�ration des d�tails de l'ulisateur
-List 			list 						= (List) request.getAttribute("listResourcesReservable");
-int 				nbCategories 				= ((Integer)request.getAttribute("nbCategories")).intValue();
-Reservation reservation 				= (Reservation) request.getAttribute("reservation");
-List 			listResourcesProblem 		= (List) request.getAttribute("listResourcesProblem");
-List 			listResourceEverReserved 	= (List) request.getAttribute("listResourceEverReserved");
-String 				idModifiedReservation 		= (String)request.getAttribute("idReservation");
+List<Resource> list = (List<Resource>) request.getAttribute("listResourcesReservable");
+int  nbCategories = ((Integer)request.getAttribute("nbCategories")).intValue();
+Reservation reservation = (Reservation) request.getAttribute("reservation");
+List<Resource> listResourcesProblem = (List<Resource>) request.getAttribute("listResourcesProblem");
+List<Resource> listResourceEverReserved = (List<Resource>) request.getAttribute("listResourceEverReserved");
+String idModifiedReservation = (String)request.getAttribute("idReservation");
 
 String evenement = reservation.getEvent();
 String raison = EncodeHelper.javaStringToHtmlParagraphe(reservation.getReason());
@@ -242,14 +241,11 @@ String idTemoin="";
 		  <div class="titrePanier"><center><%=resource.getString("resourcesManager.clickReservation")%></center></div>
 		  <div id="accordion">
 			<%
-			for (int r=0; r<list.size(); r++)
-			{
-				ResourceReservableDetail maResource = (ResourceReservableDetail)list.get(r);
-				String resourceId = maResource.getResourceId();
-				if(!idTemoin.equals(maResource.getCategoryId()))
-				{
-					if (r != 0)
-					{
+            boolean first = true;
+			for (Resource maResource : list) {
+				String resourceId = maResource.getId();
+				if(!idTemoin.equals(maResource.getCategoryId())) {
+					if (!first) {
 						if (noResource)
 						{%>
 							<div id="-1" class="noRessource">
@@ -261,7 +257,7 @@ String idTemoin="";
 						noResource = true;
 					}
 					%>
-					<h3><a href="#"><%=maResource.getCategoryName()%></a></h3>
+					<h3><a href="#"><%=maResource.getCategory().getName()%></a></h3>
 						<div id="categ<%=maResource.getCategoryId()%>">
 					<%
 				}
@@ -273,7 +269,7 @@ String idTemoin="";
 					<div id="<%=resourceId%>" onClick="switchResource(<%=resourceId%>,'categ<%=maResource.getCategoryId()%>');" style="cursor: pointer;">
  						<table width="100%" cellspacing="0" cellpadding="0" border="0">
  							<tr>
- 								<td width="80%" nowrap>&nbsp;-&nbsp;<%=maResource.getResourceName()%></td>
+ 								<td width="80%" nowrap>&nbsp;-&nbsp;<%=maResource.getName()%></td>
  								<td><img src="<%=m_context %>/util/icons/ok.gif" id="image<%=resourceId%>" align="middle"/></td>
  							</tr>
  						</table>
@@ -297,11 +293,10 @@ String idTemoin="";
 		      <%if (listResourceEverReserved != null){ 
 		    	  
 		  			// la suppression ayant ete faite, cette boucle permet d'afficher les resources qui n'ont pas pose probleme
-		  			for (int i=0;i<listResourceEverReserved.size();i++){
-		  						Resource maRessource =(Resource)listResourceEverReserved.get(i);
-		  		  				String NomResource = maRessource.getName();
-		  		  				String resourceId = maRessource.getId();
-		  		  				String categoryId = maRessource.getCategoryId();
+		  			for (Resource maRessourceAlreadyReserved : listResourceEverReserved) {
+		  		  				String NomResource = maRessourceAlreadyReserved.getName();
+		  		  				String resourceId = maRessourceAlreadyReserved.getId();
+		  		  				String categoryId = maRessourceAlreadyReserved.getCategoryId();
 		  		  			%>
 			  					<div id="<%=resourceId%>" onClick="switchResource(<%=resourceId%>,'categ<%=categoryId%>');" style="cursor: pointer;">
 			  						<table width="100%" cellspacing="0" cellpadding="0" border="0">

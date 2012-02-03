@@ -31,7 +31,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
 import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.model.Resource;
 
@@ -39,7 +38,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
@@ -60,6 +58,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import org.silverpeas.resourcemanager.model.ResourceValidator;
 
 public class ResourcesManagerRequestRouter extends ComponentRequestRouter<ResourcesManagerSessionController> {
 
@@ -89,35 +88,38 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     return new ResourcesManagerSessionController(mainSessionCtrl, componentContext);
   }
 
-  private Category request2CategoryDetail(HttpServletRequest request) {
-    String name = request.getParameter("name");
-    String bookable = request.getParameter("bookable");
-    String form = request.getParameter("form");
-    String responsible = request.getParameter("responsible");
-    String description = request.getParameter("description");
-    boolean book = (bookable != null && "on".equals(bookable));
-    Category category = new Category(name, book, form, responsible, description);
-    if (request.getParameter("id") != null) {
-      String categoryId = request.getParameter("id");
-      category.setId(categoryId);
+  private Category request2CategoryDetail(ResourcesManagerSessionController controller,
+      HttpServletRequest request) {
+    Category category;
+    if (StringUtil.isDefined(request.getParameter("id"))) {
+      category = controller.getCategory(request.getParameter("id"));
+    } else {
+      category = new Category();
     }
+    category.setName(request.getParameter("name"));
+    category.setForm(request.getParameter("form"));
+    category.setDescription(request.getParameter("description"));
+    category.setBookable("on".equals(request.getParameter("bookable")));
     return category;
   }
 
-  private Resource request2ResourceDetail(ResourcesManagerSessionController sessionController,
+  private Resource request2ResourceDetail(ResourcesManagerSessionController controller,
       List<FileItem> items) {
-    String name = FileUploadUtil.getParameter(items, "SPRM_name");
-    String bookable = FileUploadUtil.getParameter(items, "SPRM_bookable");
-    String responsible = FileUploadUtil.getParameter(items, "SPRM_responsible");
-    String description = FileUploadUtil.getParameter(items, "SPRM_description");
-    String categoryid = FileUploadUtil.getParameter(items, "SPRM_categoryChoice");
-    boolean book = "on".equals(bookable);
-    Category category = sessionController.getCategory(categoryid);
-    Resource resource = new Resource(name, category, responsible, description, book);
     String resourceId = FileUploadUtil.getParameter(items, "SPRM_resourceId");
+    Resource resource;
     if (StringUtil.isDefined(resourceId)) {
-      resource.setId(resourceId);
+      resource = controller.getResource(resourceId);
+    } else {
+      resource = new Resource();
     }
+    String categoryid = FileUploadUtil.getParameter(items, "SPRM_categoryChoice");
+     if (StringUtil.isDefined(categoryid)) {
+      Category category = controller.getCategory(categoryid);
+      resource.setCategory(category);
+    }
+    resource.setName(FileUploadUtil.getParameter(items, "SPRM_name"));
+    resource.setBookable("on".equalsIgnoreCase(FileUploadUtil.getParameter(items, "SPRM_bookable")));
+    resource.setDescription(FileUploadUtil.getParameter(items, "SPRM_description"));
     return resource;
   }
 
@@ -178,7 +180,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         request.setAttribute("listTemplates", listTemplates);
         destination = root + "categoryManager.jsp";
       } else if ("SaveCategory".equals(function)) {
-        Category category = request2CategoryDetail(request);
+        Category category = request2CategoryDetail(resourcesManagerSC, request);
         resourcesManagerSC.createCategory(category);
         destination = getDestination("ViewCategories", resourcesManagerSC, request);
       } else if ("EditCategory".equals(function)) {
@@ -190,7 +192,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         request.setAttribute("category", category);
         destination = root + "categoryManager.jsp";
       } else if ("ModifyCategory".equals(function)) {
-        Category category = request2CategoryDetail(request);
+        Category category = request2CategoryDetail(resourcesManagerSC, request);
         resourcesManagerSC.updateCategory(category);
         destination = getDestination("ViewCategories", resourcesManagerSC, request);
       } else if ("ViewCategories".equals(function)) {
@@ -220,7 +222,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         Resource resource = request2ResourceDetail(resourcesManagerSC, items);
         String idResource = resourcesManagerSC.createResource(resource);
         List<Long> managers = getManagers(items);
-        resourcesManagerSC.addManagers(idResource, managers);
+        resourcesManagerSC.updateResource(resource, managers);
 
         request.setAttribute("resourceId", idResource);
         request.setAttribute("provenance", "resources");
@@ -259,8 +261,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
 
         Resource resource = request2ResourceDetail(resourcesManagerSC, items);
         List<Long> managers = getManagers(items);
-        resourcesManagerSC.addManagers(resource.getId(), managers);
-        resourcesManagerSC.updateResource(resource);
+        resourcesManagerSC.updateResource(resource, managers);
 
         resourcesManagerSC.setResourceIdForResource(resource.getId());
         updateXMLForm(resourcesManagerSC, items);

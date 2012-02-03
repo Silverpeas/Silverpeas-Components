@@ -33,7 +33,7 @@
 <%@ include file="check.jsp" %>
 <% 
 //Recuperation des details de l'ulisateur
-List listResourcesofReservation = (List)request.getAttribute("listResourcesofReservation");
+List<Resource> listResourcesofReservation = (List<Resource>)request.getAttribute("listResourcesofReservation");
 String reservationId = (String)request.getAttribute("reservationId");
 Reservation maReservation = (Reservation)request.getAttribute("reservation");
 String objectView = (String) request.getAttribute("objectView");

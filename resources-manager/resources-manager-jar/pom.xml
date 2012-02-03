@@ -8,21 +8,20 @@
   </parent>
 
   <groupId>com.silverpeas.components.resources-manager</groupId>
-  <artifactId>resources-manager-war</artifactId>
-  <packaging>war</packaging>
-  <name>resources-manager Webapp</name>
+  <artifactId>resources-manager-jar</artifactId>
+  <packaging>jar</packaging>
+  <name>Lib resources-manager</name>
 
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.components.resources-manager</groupId>
-      <artifactId>resources-manager-jar</artifactId>
-      <version>${project.version}</version>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>publication</artifactId>
+      <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -30,9 +29,7 @@
       <artifactId>formtemplate</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
-      <classifier>client</classifier>
     </dependency>
   </dependencies>
-
 </project>
 

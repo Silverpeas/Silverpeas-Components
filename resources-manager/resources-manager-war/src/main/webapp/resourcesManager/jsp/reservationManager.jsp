@@ -35,9 +35,9 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-	Reservation reservation 			= (Reservation)request.getAttribute("reservation");
-	List 				listResourcesProblem 	= (List)request.getAttribute("listResourcesProblem");
-	String				defaultDate				= (String) request.getAttribute("DefaultDate");
+	Reservation reservation = (Reservation)request.getAttribute("reservation");
+	List<Resource> listResourcesProblem = (List<Resource>)request.getAttribute("listResourcesProblem");
+	String defaultDate = (String) request.getAttribute("DefaultDate");
 
 	String dateBegin = "";
 	String dateEnd = "";
