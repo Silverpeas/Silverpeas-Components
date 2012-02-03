@@ -157,15 +157,13 @@ if (!isOwner) {
         <tr>
           <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%> :</td>
           <td width="100%"><%
-          for(int i=0;i<listResourcesofReservation.size();i++){
-            Resource maResource = (Resource)listResourcesofReservation.get(i);
+          for(Resource maResource : listResourcesofReservation){
             String resourceId = maResource.getId();
-            String resourceName = maResource.getName();%>
-            <%
+            String resourceName = maResource.getName();
             // afficher les icones de validation et refus si la ressource est en etat a valider
             // et si l'utilisateur est le responsable de cette ressource
             String currentUser = resourcesManagerSC.getUserId() ;
-            List managers = maResource.getManagers();
+            List<String> managers = resourcesManagerSC.getManagerIds(resourceId);
             if (maResource.isValidationRequired()) { %>
              <a style="color:red" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
             <% } else if (maResource.isRefused()) { %>
@@ -173,7 +171,7 @@ if (!isOwner) {
             <% } else {%>
               <a style="color:black" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
              <% } 
-            if (maResource.isValidationRequired() &&  managers != null && managers.contains(currentUser)) { %>
+            if (maResource.isValidationRequired() &&  managers != null && !managers.isEmpty() && managers.contains(currentUser)) { %>
               <a href="javascript:valideResource(<%=resourceId%>, '<%=objectView%>')">
               <img src="<%=m_context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.valideResource")%>" title="<%=resource.getString("resourcesManager.valideResource")%>">
               </a>&nbsp;

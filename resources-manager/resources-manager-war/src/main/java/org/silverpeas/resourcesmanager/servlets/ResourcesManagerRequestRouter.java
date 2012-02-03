@@ -29,11 +29,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
-import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.Category;
-import org.silverpeas.resourcemanager.model.Resource;
-
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
@@ -48,9 +43,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
-import org.apache.commons.fileupload.FileItem;
-
-import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +50,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.resourcemanager.model.Category;
+import org.silverpeas.resourcemanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
 
 public class ResourcesManagerRequestRouter extends ComponentRequestRouter<ResourcesManagerSessionController> {
 
@@ -474,8 +472,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         Reservation reservation = resourcesManagerSC.getReservation(reservationId);
         List<Resource> listResourcesofReservation = resourcesManagerSC.getResourcesofReservation(
             reservationId);
-        request.setAttribute("listResourcesofReservation",
-            listResourcesofReservation);
+        request.setAttribute("listResourcesofReservation", listResourcesofReservation);
         request.setAttribute("reservationId", reservationId);
         request.setAttribute("reservation", reservation);
         request.setAttribute("objectView", objectView);
