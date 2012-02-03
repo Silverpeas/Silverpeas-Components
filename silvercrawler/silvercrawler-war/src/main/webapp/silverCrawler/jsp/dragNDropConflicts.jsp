@@ -59,8 +59,8 @@
 	<fmt:message key="silverCrawler.alreadyExists" var="alreadyExistsLabel"/>
 	<fmt:message key="silverCrawler.ignore" var="ignoreLabel"/>
 	<fmt:message key="silverCrawler.replace" var="replaceLabel"/>
-	<fmt:message key="silverCrawler.validateConflicts" var="validateLabel"/>
-	<fmt:message key="silverCrawler.cancelConflicts" var="cancelLabel"/>
+	<fmt:message key="GML.validate" var="validateLabel"/>
+	<fmt:message key="GML.cancel" var="cancelLabel"/>
 	<view:window>
 		<view:board>
 			<form name="conflictsForm" action="ResolveConflicts" method="POST">
