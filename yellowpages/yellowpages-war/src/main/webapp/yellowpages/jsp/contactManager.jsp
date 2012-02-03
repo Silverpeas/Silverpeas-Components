@@ -82,21 +82,31 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         }
     }
 
-    void displayCompanyListWithActionButtons(JspWriter out, List<Company> companyList, ContactDetail contactDetail) throws IOException {
+    // TODO ajouter la classe company_list dans les CSS
+    void displayCompanyListWithActionButtons(JspWriter out, List<Company> companyList, ContactDetail contactDetail, ResourcesWrapper resources) throws IOException {
+        out.println("<div id='CompanyList' class='company_list'>");
         if (companyList != null && companyList.size() > 0) {
+
             for (int i = 0; i < companyList.size(); i++) {
                 Company company = companyList.get(i);
-                out.println("<tr><td/><td align='left'>");
-                out.println("<input readonly id='company-" + company.getCompanyId() + "' value='" + EncodeHelper.javaStringToHtmlString(company.getName()) + "' size='60'</input>");
-                out.println("&nbsp;");
-                out.println("<a href='javaScript:companyRemoveFromList(" + company.getCompanyId() + ","+ contactDetail.getPK().getId() + ")' title='Retirer cette company de la liste'>");
-                // TODO icone...
-                //icon = resources.getIcon("yellowpages.contact");
-                out.println("<img border=0 src='/silverpeas/util/icons/mandatoryField.gif' width=10 height=10>");
-                out.println("</a>");
-                out.println("</td></tr>");
+                out.println(generateCompanyLineHtml(company.getCompanyId(), company.getName(), resources));
             }
         }
+        out.println("</div>");
+    }
+
+    // TODO : duplicated with the javascript version... how to factorize this ?
+    String generateCompanyLineHtml(int companyId, String companyName, ResourcesWrapper resources) {
+        StringBuffer result = new StringBuffer("");
+        result.append("<div id='company_").append(companyId).append("'>");
+        result.append("<input type='hidden' id='companyId_").append(companyId).append("' name='companyIdList' value='").append(companyId).append("' />");
+        result.append("<input readonly type='text' value='" + EncodeHelper.javaStringToHtmlString(companyName)).append("' size='50'/>");
+        result.append("<span><a href='javaScript:companyRemoveFromList(").append(companyId).append(")' title='").append(resources.getString("CompanyUnlink")).append("'>");
+        String iconPath = resources.getIcon("yellowpages.delete");
+        result.append("<img border=0 src='").append(iconPath).append("' width=15 height=15>");
+        result.append("</a></span>");
+        result.append("</div>");
+        return result.toString();
     }
 
 %>
@@ -135,8 +145,7 @@ out.println(gef.getLookStyleSheet());
   CompleteContact contactComplete = null;
   ContactDetail contactDetail = null;
 
-  String companyName = null;
-  String companyId = null;
+  String[] companyIdList = null;
   List<Company> companyList = null;
 
 //R�cup�ration des param�tres
@@ -264,12 +273,24 @@ function autoSubmit(){
 	document.enctypeForm.submit();
 };
 
-function companyRemoveFromList(idCompany, idContact) {
-    alert("remove company = " + idCompany + " / contact = " + idContact);
+function companyRemoveFromList(companyId) {
+    $("#company_" + companyId).remove();
+
+};
+
+function createCompanyLineHtml(companyId, companyName) {
+    result = "<div id='company_" + companyId + "'>";
+    result = result + "<input type='hidden' id='companyId_" + companyId + "' name='companyIdList' value='" + companyId + "' />";
+    result = result + "<input readonly type='text' value='" + companyName + "' size='50'/>";
+    result = result + "<span><a href='javaScript:companyRemoveFromList(" + companyId + ")'";
+    result = result + " title='<%= resources.getString("CompanyUnlink")%>'>";
+    result = result + "<img border=0 src='<%=resources.getIcon("yellowpages.delete")%>' width=15 height=15>";
+    result = result + "</a></span></div>";
+    return result;
 };
 
 $(document).ready(function() {
-    $("#CompanyName").autocomplete("<%=m_context%>/CompanyAutocompleteServlet", {
+    $('#CompanyName').autocomplete("<%=m_context%>/CompanyAutocompleteServlet", {
         minChars: 1,
         max: 50,
         autoFill: false,
@@ -285,12 +306,18 @@ $(document).ready(function() {
             //$('#CompanyId').val(company[0]);
             return company[1];
         }
-     }).result(function(e,rowdata) {
+    }).result(function(e, rowdata) {
         var company = rowdata[0].split(":");
-        $('#CompanyId').val(company[0]);
-     });
+        companyId = company[0];
+        companyName = company[1];
+        if (!$("#company_" + companyId).length > 0) {
+            // not already in the list
+            $('#CompanyList').append(createCompanyLineHtml(companyId, companyName));
+        }
+        // empty the search field
+        $('#CompanyName').val("");
+    });
 });
-
 
 </script>
 </HEAD>
@@ -302,8 +329,7 @@ if (action.equals("Add")) {
 	//Ajout du contact
 	firstName = request.getParameter("FirstName");
 	lastName = request.getParameter("LastName");
-    companyName = request.getParameter("CompanyName");
-    companyId = request.getParameter("CompanyId");
+    companyIdList = request.getParameterValues("companyIdList");
 	email = request.getParameter("Email");
 	phone = request.getParameter("Phone");
 	fax = request.getParameter("Fax");
@@ -320,12 +346,11 @@ if (action.equals("Add")) {
     yellowpagesScc.setCurrentContact(userContactComplete);
 
     // Update company info for contact
-    if (StringUtil.isNotBlank(companyId) && StringUtil.isNotBlank(companyName)) {
-        // TODO : gerer un tableau de companies à rajouter
-        Company company = yellowpagesScc.getCompany(Integer.valueOf(companyId));
-        if (company != null && company.getName().equals(companyName) && newContactId != null) {
+    if (companyIdList != null && (companyIdList.length > 0)) {
+        for (String strCompanyId : companyIdList) {
             int contactId = Integer.valueOf(newContactId);
-            yellowpagesScc.addCompanyToContact(company.getCompanyId(), contactId);
+            int companyId = Integer.valueOf(strCompanyId);
+            yellowpagesScc.addCompanyToContact(companyId, contactId);
         }
     }
 
@@ -345,8 +370,7 @@ else if (action.equals("Update")) {
       //Mise a jour du contact
       firstName = request.getParameter("FirstName");
       lastName = request.getParameter("LastName");
-      companyName = request.getParameter("CompanyName");
-      companyId = request.getParameter("CompanyId");
+      companyIdList = request.getParameterValues("companyIdList");
       email = request.getParameter("Email");
       phone = request.getParameter("Phone");
       fax = request.getParameter("Fax");
@@ -365,16 +389,16 @@ else if (action.equals("Update")) {
       // Suppression des anciennes companies liées à ce contact
       yellowpagesScc.cleanCompaniesForContact(id);
 
-      // Update company info for contact
-      if (StringUtil.isNotBlank(companyId) && StringUtil.isNotBlank(companyName)) {
-          // TODO : gerer un tableau de companies à rajouter
-          Company company = yellowpagesScc.getCompany(Integer.valueOf(companyId));
-          if (company != null && company.getName().equals(companyName) && id != null) {
-            int contactId = Integer.valueOf(id);
-            yellowpagesScc.addCompanyToContact(company.getCompanyId(), contactId);
+      // Update company info for contact if needed
+      if (companyIdList != null) {
+          for (String s : companyIdList) {
+              if (!StringUtil.isEmpty(s)) {
+                  int contactId = Integer.valueOf(id);
+                  int companyId = Integer.valueOf(s);
+                  yellowpagesScc.addCompanyToContact(companyId, contactId);
+              }
           }
       }
-
 }
 else if (action.equals("ViewContactInTopic"))
 {
@@ -394,8 +418,6 @@ if (action.equals("View") || action.equals("UpdateView") || action.equals("ViewC
       ownerDetail = userContactComplete.getOwner();
       // get company list if any
       companyList = yellowpagesScc.getCompanyListForUserId(id);
-      companyId = "";
-      companyName = "";
 
       if ((profile.equals("admin")) || ((ownerDetail!=null)&&(yellowpagesScc.getUserId().equals(ownerDetail.getId()))))
           isOwner = true;
@@ -431,14 +453,9 @@ else if (action.equals("SaveUser")) {
 	  userContactComplete = yellowpagesScc.getCurrentContact();
       contactComplete = userContactComplete.getContact();
       contactDetail = contactComplete.getContactDetail();
-      Company company = yellowpagesScc.getCompanyForUserId(Integer.valueOf(contactDetail.getUserId()));
-
+      companyList = yellowpagesScc.getCompanyListForUserId(id);
       firstName = contactDetail.getFirstName();
       lastName = contactDetail.getLastName();
-      if (company != null) {
-        companyId = String.valueOf(company.getCompanyId());
-        companyName = company.getName();
-      }
       email = contactDetail.getEmail();
       phone = contactDetail.getPhone();
       fax = contactDetail.getFax();
@@ -454,14 +471,13 @@ else if (action.equals("SaveUser")) {
 else if (action.equals("New") || action.equals("SelectUser")) {
       firstName = (String) request.getParameter("FirstName");
       lastName = (String) request.getParameter("LastName");
-      companyName = request.getParameter("CompanyName");
-      companyId = request.getParameter("CompanyId");
+      companyIdList = request.getParameterValues("companyIdList");
       email = (String) request.getParameter("Email");
       phone = (String) request.getParameter("Phone");
       fax = (String) request.getParameter("Fax");
       userId = (String) request.getParameter("UserId");
 
-		  id = null;
+	  id = null;
       TopicDetail currentTopic = yellowpagesScc.getCurrentTopic();
       Collection pathColl = currentTopic.getPath();
       linkedPathString = displayPath(yellowpagesScc,pathColl, true, 3);
@@ -472,7 +488,7 @@ else if (action.equals("New") || action.equals("SelectUser")) {
 
       if (action.equals("SelectUser")) {
 	    	action = "New";
-       	contactDetail = new ContactDetail("X", firstName, lastName, email, phone, fax, null, null, null);
+       	    contactDetail = new ContactDetail("X", firstName, lastName, email, phone, fax, null, null, null);
      		userContactComplete = new UserCompleteContact(null, new CompleteContact(contactDetail, null));
      		yellowpagesScc.setCurrentContact(userContactComplete);
 
@@ -559,13 +575,6 @@ else if (action.equals("New") || action.equals("UpdateView")) {
       <TD><input type="text" name="LastName" value="<%=Encode.javaStringToHtmlString(lastName)%>" size="60" maxlength="60" readonly>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.surname")%>&nbsp;:</TD>
       <TD><input type="text" name="FirstName" value="<%=Encode.javaStringToHtmlString(firstName)%>" size="60" maxlength="60" readonly>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.company")%>&nbsp;:</TD>
-      <TD><input type="text" id="CompanyName" name="CompanyName" value="<%=Encode.javaStringToHtmlString(companyName)%>" size="60" maxlength="100" readonly></TD>
-      <TD><input type="hidden" id="CompanyId" name="CompanyId" value="<%= companyId %>"></TD></TR>
-                <%
-                    // Liste des companies déjà affectées au contact
-                    displayCompanyListWithActionButtons(out, companyList, contactDetail);
-                %>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</TD>
       <TD><input type="text" name="Email" value="<%=Encode.javaStringToHtmlString(email)%>" size="60" maxlength="100" readonly></TD></TR>
 <%
@@ -577,13 +586,6 @@ else if (action.equals("New") || action.equals("UpdateView")) {
       <TD><input type="text" name="LastName" value="<%=Encode.javaStringToHtmlString(lastName)%>" size="60" maxlength="60">&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.surname")%>&nbsp;:</TD>
       <TD><input type="text" name="FirstName" value="<%=Encode.javaStringToHtmlString(firstName)%>" size="60" maxlength="60">&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.company")%>&nbsp;:</TD>
-      <TD><input type="text" id="CompanyName" name="CompanyName" value="" size="60" maxlength="100"></TD>
-      <TD><input type="hidden" id="CompanyId" name="CompanyId" value=""></TD></TR>
-                <%
-                    // Liste des companies déjà affectées au contact
-                    displayCompanyListWithActionButtons(out, companyList, contactDetail);
-                %>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</TD>
       <TD><input type="text" name="Email" value="<%=Encode.javaStringToHtmlString(email)%>" size="60" maxlength="100"></TD></TR>
 <%
@@ -593,6 +595,17 @@ else if (action.equals("New") || action.equals("UpdateView")) {
       <TD><input type="text" name="Phone" value="<%=Encode.javaStringToHtmlString(phone)%>" size="20" maxlength="20"></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.faxNumber")%>&nbsp;:</TD>
       <TD><input type="text" name="Fax" value="<%=Encode.javaStringToHtmlString(fax)%>" size="20" maxlength="20"></TD></TR>
+  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.company")%>&nbsp;:</TD>
+      <TD><input type="text" id="CompanyName" name="CompanyName" value="" size="60" maxlength="100"></TD></TR>
+                <tr>
+                    <td/>
+                    <td>
+                        <%
+                            // Liste des companies déjà affectées au contact
+                            displayCompanyListWithActionButtons(out, companyList, contactDetail, resources);
+                        %>
+                    </td>
+                </tr>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.publisher")%>&nbsp;:</TD>
       <TD><%=creatorName%></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("ContactDateCreation")%>&nbsp;:</TD>
