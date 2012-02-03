@@ -23,21 +23,22 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import com.silverpeas.resourcesmanager.model.ResourceStatus;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.ReservedResource;
+import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcemanager.model.ResourceStatus;
 import org.silverpeas.resourcemanager.repository.ReservationRepository;
 import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
+import org.silverpeas.resourcemanager.repository.ResourceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Date;
+import java.util.List;
+
 /**
- *
  * @author ehugonnet
  */
 @Named
@@ -50,6 +51,9 @@ public class ReservationService {
   @Inject
   private ReservedResourceRepository reservedResourceRepository;
 
+  @Inject
+  private ResourceRepository resourceRepository;
+
   public String createReservation(Reservation reservation, List<Long> resourceIds) {
     reservation.setStatus(computeReservationStatus(reservation));
     Date now = new Date();
@@ -60,9 +64,21 @@ public class ReservationService {
       ReservedResource reservedResource = new ReservedResource();
       reservedResource.setResourceId(resourceId);
       reservedResource.setReservationId(savedReservation.getIntegerId());
-      reservedResource.setStatus(reservation.getStatus());
+      Resource resource = resourceRepository.findOne(resourceId);
+      if (!resource.getManagers().isEmpty()) {
+        if (resourceRepository
+            .getResourceValidator(resourceId, Long.parseLong(savedReservation.getUserId())) ==
+            null) {
+          reservedResource.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
+        }
+      } else {
+        reservedResource.setStatus(reservation.getStatus());
+      }
       reservedResourceRepository.save(reservedResource);
     }
+    savedReservation = repository.findOne(savedReservation.getIntegerId());
+    savedReservation.setStatus(computeReservationStatus(savedReservation));
+    repository.save(savedReservation);
     return savedReservation.getId();
   }
 

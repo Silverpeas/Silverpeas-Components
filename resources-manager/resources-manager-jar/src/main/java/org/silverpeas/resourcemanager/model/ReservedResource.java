@@ -34,7 +34,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
 
-import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
+import static org.silverpeas.resourcemanager.model.ResourceStatus.*;
 
 /**
  *

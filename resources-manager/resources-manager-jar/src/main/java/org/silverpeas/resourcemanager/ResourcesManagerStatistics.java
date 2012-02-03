@@ -18,23 +18,35 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.resourcesmanager;
+package org.silverpeas.resourcemanager;
 
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import org.silverpeas.resourcemanager.ResourcesManagerFactory;
+import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
+import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
+import org.silverpeas.resourcemanager.model.Reservation;
 
-public class ResourcesManagerIndexer implements ComponentIndexerInterface {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class ResourcesManagerStatistics implements ComponentStatisticsInterface {
 
   @Override
-  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
-      Exception {
-    SilverTrace.info("resourcesManager", "ResourcesManagerIndexer.index()",
-        "root.MSG_GEN_PARAM_VALUE", "index, context.getCurrentComponentId() = " +
-         context.getCurrentComponentId());
-    ResourcesManagerFactory.getResourcesManager().indexResourceManager(
-        context.getCurrentComponentId());
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
+      throws Exception {
+    List<Reservation> allReservations = ResourcesManagerFactory.getResourcesManager().
+        getReservations(componentId);
+
+    List<UserIdCountVolumeCouple> volumes = new ArrayList<UserIdCountVolumeCouple>(
+        allReservations.size());
+    for (Reservation reservationDetail : allReservations) {
+      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+
+      myCouple.setUserId(reservationDetail.getUserId());
+      myCouple.setCountVolume(1);
+      volumes.add(myCouple);
+    }
+
+    return volumes;
+
   }
 }

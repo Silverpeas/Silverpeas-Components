@@ -23,7 +23,7 @@ package org.silverpeas.resourcemanager.control;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.resourcesmanager.model.ResourceStatus;
+import org.silverpeas.resourcemanager.model.ResourceStatus;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -157,11 +157,6 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
     return resourceService.listResourcesOfReservation(Long.parseLong(
         reservationId));
 
-  }
-
-  public void saveReservation(Reservation reservation, List<Long> resources) {
-    reservationService.createReservation(reservation, resources);
-    createReservationIndex(reservation);
   }
 
   @Override
@@ -458,8 +453,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
         resourcesIds.add(Long.parseLong(id));
       }
     }
-    String reservationId = reservationService.createReservation(reservation,
-        resourcesIds);
+    String reservationId = reservationService.createReservation(reservation, resourcesIds);
     reservation.setId(reservationId);
     createReservationIndex(reservation);
   }

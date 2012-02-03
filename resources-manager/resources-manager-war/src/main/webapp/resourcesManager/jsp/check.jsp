@@ -68,7 +68,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.*"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
-<%@ page import="com.silverpeas.resourcesmanager.control.ResourcesManagerSessionController"%>
+<%@ page import="org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController"%>
 <%@ page import="java.util.Calendar"%>
 <%@ page import="java.util.List"%>
 

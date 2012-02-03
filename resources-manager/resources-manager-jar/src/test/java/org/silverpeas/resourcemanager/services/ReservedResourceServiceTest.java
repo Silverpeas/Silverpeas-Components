@@ -23,7 +23,7 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import com.silverpeas.resourcesmanager.model.ResourceStatus;
+import org.silverpeas.resourcemanager.model.ResourceStatus;
 import com.stratelia.webactiv.util.DBUtil;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import java.util.List;

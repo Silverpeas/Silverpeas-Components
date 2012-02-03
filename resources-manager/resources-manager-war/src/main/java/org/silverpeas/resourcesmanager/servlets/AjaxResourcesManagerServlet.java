@@ -18,9 +18,9 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.resourcesmanager.servlets;
+package org.silverpeas.resourcesmanager.servlets;
 
-import com.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
+import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
 import org.silverpeas.resourcemanager.model.Resource;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.resourcesmanager.control;
+package org.silverpeas.resourcesmanager.control;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -40,13 +40,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendarWA1;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
 import org.silverpeas.resourcemanager.ResourcesManagerFactory;
 import org.silverpeas.resourcemanager.control.ResourcesManagerRuntimeException;
 import org.silverpeas.resourcemanager.model.Category;
@@ -55,7 +48,15 @@ import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceValidator;
 
-import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import static org.silverpeas.resourcemanager.model.ResourceStatus.*;
 
 public class ResourcesManagerSessionController extends AbstractComponentSessionController {
   

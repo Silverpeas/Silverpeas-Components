@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.resourcesmanager.servlets;
+package org.silverpeas.resourcesmanager.servlets;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -29,7 +29,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
+import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.model.Resource;
@@ -58,7 +58,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.silverpeas.resourcemanager.model.ResourceValidator;
 
 public class ResourcesManagerRequestRouter extends ComponentRequestRouter<ResourcesManagerSessionController> {
 

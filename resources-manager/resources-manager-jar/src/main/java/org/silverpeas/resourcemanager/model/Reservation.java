@@ -20,7 +20,6 @@
  */
 package org.silverpeas.resourcemanager.model;
 
-import com.silverpeas.resourcesmanager.model.ResourceStatus;
 import com.silverpeas.util.StringUtil;
 
 import javax.persistence.Column;

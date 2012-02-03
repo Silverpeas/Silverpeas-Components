@@ -23,12 +23,12 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import com.silverpeas.resourcesmanager.model.ResourceStatus;
+import org.silverpeas.resourcemanager.model.ResourceStatus;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import edu.emory.mathcs.backport.java.util.Collections;
-import java.util.ArrayList;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +45,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

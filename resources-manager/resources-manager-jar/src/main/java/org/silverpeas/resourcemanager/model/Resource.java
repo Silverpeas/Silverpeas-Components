@@ -38,7 +38,7 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 
-import static com.silverpeas.resourcesmanager.model.ResourceStatus.*;
+import static org.silverpeas.resourcemanager.model.ResourceStatus.*;
 
 @Entity
 @Table(name = "sc_resources_resource")
