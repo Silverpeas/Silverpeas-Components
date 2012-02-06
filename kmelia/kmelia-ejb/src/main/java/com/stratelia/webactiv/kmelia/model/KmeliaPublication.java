@@ -71,6 +71,7 @@ public class KmeliaPublication implements SilverpeasContent {
   private boolean versioned = false;
   private boolean alias = false;
   private final PublicationPK pk;
+  private int rank;
   
   /**
    * Gets the Kmelia publication with the specified primary key identifying it uniquely.
@@ -91,7 +92,11 @@ public class KmeliaPublication implements SilverpeasContent {
    * @return the Kmelia publication matching the specified publication detail.
    */
   public static KmeliaPublication aKmeliaPublicationFromDetail(final PublicationDetail detail) {
-    KmeliaPublication publication = new KmeliaPublication(detail.getPK());
+    return aKmeliaPublicationFromDetail(detail, 0);
+  }
+  
+  public static KmeliaPublication aKmeliaPublicationFromDetail(final PublicationDetail detail, int rank) {
+    KmeliaPublication publication = new KmeliaPublication(detail.getPK(), rank);
     publication.setPublicationDetail(detail);
     return publication;
   }
@@ -323,9 +328,14 @@ public class KmeliaPublication implements SilverpeasContent {
     hash = 67 * hash + (this.pk != null ? this.pk.hashCode() : 0);
     return hash;
   }
-
+  
   private KmeliaPublication(PublicationPK id) {
     this.pk = id;
+  }
+
+  private KmeliaPublication(PublicationPK id, int rank) {
+    this.pk = id;
+    this.rank = rank;
   }
   
   private void setPublicationDetail(final PublicationDetail detail) {
@@ -399,6 +409,14 @@ public class KmeliaPublication implements SilverpeasContent {
   @Override
   public String getContributionType() {
     return getDetail().getContributionType();
+  }
+
+  public void setRank(int rank) {
+    this.rank = rank;
+  }
+
+  public int getRank() {
+    return rank;
   }
 
 }

@@ -682,6 +682,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("<option value=\"4\" id=\"sort4\" "+isSelectedSort(ksc, "4")+">" + resources.getString("PubTitre") + "</option>");
     out.write("<option value=\"7\" id=\"sort7\" "+isSelectedSort(ksc, "7")+">" + resources.getString("PubDescription")
         + "</option>");
+    out.write("<option value=\"8\" id=\"sort8\" "+isSelectedSort(ksc, "8")+">" + resources.getString("kmelia.publis.sort.8")
+        + "</option>");
     out.write("</select>");
   }
   

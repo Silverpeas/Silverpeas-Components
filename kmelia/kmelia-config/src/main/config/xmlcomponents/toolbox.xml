@@ -764,6 +764,14 @@
           </name>
           <value>7</value>
         </option>
+		<option>
+          <name>
+            <message lang="fr">Défini par le gestionnaire</message>
+            <message lang="en">Defined by the administrator</message>
+            <message lang="de">Defined by the administrator</message>
+          </name>
+          <value>8</value>
+        </option>
       </options>
       <help>
         <message lang="fr">Permet de définir l'ordre d'affichage des publications par défaut.</message>
