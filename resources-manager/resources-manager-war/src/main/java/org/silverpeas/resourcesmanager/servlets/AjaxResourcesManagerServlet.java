@@ -20,21 +20,20 @@
  */
 package org.silverpeas.resourcesmanager.servlets;
 
-import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
-import org.silverpeas.resourcemanager.model.Resource;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Date;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Date;
-import java.util.List;
+import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
 
 public class AjaxResourcesManagerServlet extends HttpServlet {
 

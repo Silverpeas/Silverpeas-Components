@@ -49,7 +49,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.resourcemanager.model.Category;
@@ -110,7 +112,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
       resource = new Resource();
     }
     String categoryid = FileUploadUtil.getParameter(items, "SPRM_categoryChoice");
-     if (StringUtil.isDefined(categoryid)) {
+    if (StringUtil.isDefined(categoryid)) {
       Category category = controller.getCategory(categoryid);
       resource.setCategory(category);
     }
@@ -337,9 +339,10 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         } else if (request.getAttribute("reservationId") != null) {
           idReservation = (String) request.getAttribute("reservationId");
         }
+        @SuppressWarnings("unchecked")
         List<Resource> listResourcesProblem = (List<Resource>) request.getAttribute(
             "listeResourcesProblem");
-        List<Resource> listResourceEverReserved = null;
+        List<Resource> listResourceAlreadyReserved = null;
         // si listResourcesProblem c'est qu'il n y a pas eu de problème d'enregistrement
         if ((listResourcesProblem == null)) {
           Reservation reservation = request2ReservationDetail(request, resourcesManagerSC);
@@ -347,20 +350,26 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
           resourcesManagerSC.setBeginDateReservation(reservation.getBeginDate());
           resourcesManagerSC.setEndDateReservation(reservation.getEndDate());
         }
+        List<Category> categories = resourcesManagerSC.getCategories();
+        Reservation reservation = resourcesManagerSC.getReservationCourante();
+        List<Resource> maListResourcesReservable = resourcesManagerSC.getResourcesReservable(
+            reservation.getBeginDate(), reservation.getEndDate());
         if (idReservation != null) {
+          maListResourcesReservable.removeAll(resourcesManagerSC.getResourcesofReservation(
+              idReservation));
           SilverTrace.info("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "dans le if,idReservation=" +
               idReservation);
-          listResourceEverReserved = resourcesManagerSC.getResourcesofReservation(idReservation);
-          if (listResourceEverReserved != null) {
+          listResourceAlreadyReserved = resourcesManagerSC.getResourcesofReservation(idReservation);
+          if (listResourceAlreadyReserved != null) {
             // boucle permettant de supprimer les réservations déjà réservées
             // qui posent problème, car elles ont déjà été réservées
-            for (int i = 0; i < listResourceEverReserved.size(); i++) {
-              Resource resourceReserved = listResourceEverReserved.get(i);
+            for (int i = 0; i < listResourceAlreadyReserved.size(); i++) {
+              Resource resourceReserved = listResourceAlreadyReserved.get(i);
               if (listResourcesProblem != null) {
                 for (Resource resourceProblem : listResourcesProblem) {
                   if (resourceReserved.equals(resourceProblem)) {
-                    listResourceEverReserved.remove(i);
+                    listResourceAlreadyReserved.remove(i);
                     break;
                   }
                 }
@@ -368,22 +377,30 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
             }
           }
         }
-        int nbCategories = resourcesManagerSC.getCategories().size();
-        Reservation reservation = resourcesManagerSC.getReservationCourante();
-        List<Resource> maListResourcesReservable = resourcesManagerSC.getResourcesReservable(
-            reservation.getBeginDate(), reservation.getEndDate());
+        Map<String, List<Resource>> resourcesAvailablePerCategory = new HashMap<String, List<Resource>>(categories.
+            size());
+        for (Resource resourceReservable : maListResourcesReservable) {
+          if (resourcesAvailablePerCategory.containsKey(resourceReservable.getCategoryId())) {
+            resourcesAvailablePerCategory.get(resourceReservable.getCategoryId()).add(
+                resourceReservable);
+          } else {
+            List<Resource> resourceReservables = new ArrayList<Resource>();
+            resourceReservables.add(resourceReservable);
+            resourcesAvailablePerCategory.put(resourceReservable.getCategoryId(),
+                resourceReservables);
+          }
+        }
         SilverTrace.info("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "listResourcesReservable=" +
             maListResourcesReservable.size());
         // on envoie l'id de la réservation et l'ensemble des resources
         // associées à celles -ci
         request.setAttribute("idReservation", idReservation);
-        request.setAttribute("listResourceEverReserved", listResourceEverReserved);
-
-        request.setAttribute("listResourcesReservable", maListResourcesReservable);
+        request.setAttribute("listResourceEverReserved", listResourceAlreadyReserved);
+        request.setAttribute("mapResourcesReservable", resourcesAvailablePerCategory);
         request.setAttribute("reservation", reservation);
         request.setAttribute("listResourcesProblem", listResourcesProblem);
-        request.setAttribute("nbCategories", nbCategories);
+        request.setAttribute("categories", categories);
         destination = root + "cart.jsp";
       } else if ("FinalReservation".equals(function)) {
         // listeReservation est la liste complète des ressources réservées lors
