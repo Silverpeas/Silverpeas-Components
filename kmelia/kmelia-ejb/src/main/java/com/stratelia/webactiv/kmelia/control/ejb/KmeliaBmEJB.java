@@ -461,7 +461,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
               "pubBm.getDetailsByFatherPK(pk) BEGIN");
       try {
         // get the publication details linked to this topic
-        pubDetails = pubBm.getDetailsByFatherPK(pk, "P.pubUpdateDate desc", false);
+        pubDetails = pubBm.getDetailsByFatherPK(pk, null, false);
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()", ERROR,
                 "kmelia.EX_IMPOSSIBLE_DAVOIR_LA_LISTE_DES_PUBLICATIONS", e);
@@ -1243,8 +1243,9 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   /**************************************************************************************/
   private List<KmeliaPublication> pubDetails2userPubs(Collection<PublicationDetail> pubDetails) {
     List<KmeliaPublication> publications = new ArrayList<KmeliaPublication>();
+    int i = -1;
     for (PublicationDetail publicationDetail : pubDetails) {
-      publications.add(aKmeliaPublicationFromDetail(publicationDetail));
+      publications.add(aKmeliaPublicationFromDetail(publicationDetail, i++));
     }
     return publications;
   }

@@ -141,6 +141,7 @@ import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.PubliAuthorComparatorAsc;
 import com.stratelia.webactiv.kmelia.model.PubliCreationDateComparatorAsc;
 import com.stratelia.webactiv.kmelia.model.PubliImportanceComparatorDesc;
+import com.stratelia.webactiv.kmelia.model.PubliRankComparatorAsc;
 import com.stratelia.webactiv.kmelia.model.PubliUpdateDateComparatorAsc;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.kmelia.model.Treeview;
@@ -1387,7 +1388,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   private void applyVisibilityFilter() throws RemoteException {
     List<KmeliaPublication> publications = getSessionPublicationsList();
-    List<KmeliaPublication> orderedPublications = new ArrayList<KmeliaPublication>();
+    List<KmeliaPublication> filteredPublications = new ArrayList<KmeliaPublication>();
 
     Calendar calendar = Calendar.getInstance();
 
@@ -1411,11 +1412,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             detail.setNoMoreVisible(true);
           }
           if (detail.isVisible()) {
-            orderedPublications.add(userPub);
+            filteredPublications.add(userPub);
           } else {
             if (getProfile().equals("admin") || getUserId().equals(detail.getUpdaterId())
                     || (!getProfile().equals("user") && isCoWritingEnable())) {
-              orderedPublications.add(userPub);
+              filteredPublications.add(userPub);
             }
           }
         } else {
@@ -1426,7 +1427,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             if (getUserId().equals(detail.getUpdaterId())
                     || (isCoWritingEnable() && isDraftVisibleWithCoWriting() && !getProfile().equals(
                     "user"))) {
-              orderedPublications.add(userPub);
+              filteredPublications.add(userPub);
             }
           } else {
             // si le thème est en co-rédaction, toutes les publications sont visibles par tous,
@@ -1434,14 +1435,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             if (getProfile().equals("admin") || getProfile().equals("publisher")
                     || getUserId().equals(detail.getUpdaterId())
                     || (!getProfile().equals("user") && isCoWritingEnable())) {
-              orderedPublications.add(userPub);
+              filteredPublications.add(userPub);
             }
           }
         }
       }
     }
 
-    setSessionPublicationsList(orderedPublications);
+    setSessionPublicationsList(filteredPublications);
   }
 
   private synchronized void orderPubs(int sortType) {
@@ -1491,9 +1492,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         publicationsToSort = sortByDescription(publicationsToSort);
         break;
       default:
-        Collections.sort(publicationsToSort, new PubliUpdateDateComparatorAsc());
-        Collections.reverse(publicationsToSort);
-        break;
+        // display publications according to manual order defined by admin
+        Collections.sort(publicationsToSort, new PubliRankComparatorAsc());
     }
 
     return publicationsToSort;
@@ -2188,7 +2188,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public void setSessionTopic(TopicDetail topicDetail) {
     this.sessionTopic = topicDetail;
     if (topicDetail != null) {
-      setSessionPublicationsList((List<KmeliaPublication>) topicDetail.getKmeliaPublications());
+      Collection<KmeliaPublication> publications = topicDetail.getKmeliaPublications();
+      setSessionPublicationsList((List<KmeliaPublication>) publications);
     }
   }
 
