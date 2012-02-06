@@ -24,14 +24,21 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
-<% 
-//R�cup�ration des d�tails de l'ulisateur
+
+<fmt:setLocale value="${requestScope.resources.language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<%
 List<Resource> list = (List<Resource>) request.getAttribute("listResourcesReservable");
 int  nbCategories = ((Integer)request.getAttribute("nbCategories")).intValue();
 Reservation reservation = (Reservation) request.getAttribute("reservation");
@@ -59,9 +66,7 @@ String idTemoin="";
 %>
 <html>
 	<head>
-	<%
-		out.println(gef.getLookStyleSheet());
-	%>
+      <view:looknfeel />
 	
 	<script language=JavaScript>
 	
@@ -69,8 +74,7 @@ String idTemoin="";
 		var elementResource = document.getElementById(resourceId);
 		var elementlisteReservation = document.getElementById("listeReservation");
 		var theImage = "image"+resourceId ;
-		document.images[theImage].src = "<%=m_context%>/util/icons/delete.gif";
-		
+		document.images[theImage].src = "<c:url value="/util/icons/delete.gif" />";
 		elementlisteReservation.appendChild(elementResource);
 	}
 	
@@ -78,25 +82,21 @@ String idTemoin="";
 		var elementResource = document.getElementById(resourceId);
 		var elementCategory = document.getElementById(categoryId);
 		var theImage = "image"+resourceId ;
-		document.images[theImage].src = "<%=m_context%>/util/icons/ok.gif";		
+		document.images[theImage].src = "<c:url value="/util/icons/ok.gif" />";		
 
 		elementCategory.appendChild(elementResource);
 	}
 	
-	function switchResource(resourceId, categoryId)
-	{
-		if (isResourceReservee(resourceId))
-		{
+	function switchResource(resourceId, categoryId) {
+		if (isResourceReservee(resourceId)) {
 			clearCategory(categoryId);			
 			enleverRessource(resourceId, categoryId);			
 		}
-		else
-		{
+		else {
 			ajouterRessource(resourceId, categoryId);			
-			if (isCategoryEmpty(categoryId))
-				{
-          addEmptyResource(categoryId);
-        }
+			if (isCategoryEmpty(categoryId)) {
+              addEmptyResource(categoryId);
+            }
 		}
 	}
 	
@@ -104,7 +104,7 @@ String idTemoin="";
 	{
 		var emptyElement = document.createElement("div");
 		emptyElement.id = "-1";
-		emptyElement.innerHTML = "<span class=\"noRessource\"><center><%=resource.getString("resourcesManager.noResource")%></center></span>";
+		emptyElement.innerHTML = "<span class=\"noRessource\"><center><fmt:message key="resourcesManager.noResource" /></center></span>";
 		var elementCategory = document.getElementById(categoryId);
 		elementCategory.appendChild(emptyElement);
 	}
@@ -123,17 +123,14 @@ String idTemoin="";
 		}
 	}
 	
-	function isCategoryEmpty(categoryId)
-	{
+	function isCategoryEmpty(categoryId) {
 		var category = document.getElementById(categoryId);
 		var resources = category.childNodes;
-		for (var r=0; r<resources.length; r++)
-		{
-			if (resources[r].nodeName == 'DIV')
-				{
-          return false;
+		for (var r=0; r<resources.length; r++) {
+			if (resources[r].nodeName == 'DIV') {
+              return false;
+            }
         }
-		}
 		return true;
 	}
 	
@@ -141,43 +138,54 @@ String idTemoin="";
 	{
 		var listeReservation = document.getElementById("listeReservation");
 		var resources = listeReservation.childNodes;
-		for (var r=0; r<resources.length; r++)
-		{
-			if (resources[r].nodeName == 'DIV' && resources[r].id == resourceId)
-				{
-          return true;
-        }
+		for (var r=0; r<resources.length; r++) {
+			if (resources[r].nodeName == 'DIV' && resources[r].id == resourceId) {
+              return true;
+            }
 		}
 		return false;
 	}
 	
-	function getResourcesReservees()
-	{
+	function getResourcesReservees() {
 		var listeReservation = document.getElementById("listeReservation");
 		var resources = listeReservation.childNodes;
 		var resourceIds = "";
-		for (var r=0; r<resources.length; r++)
-		{
-			if (resources[r].nodeName == 'DIV')
-				{
-          resourceIds += resources[r].id + ",";
+		for (var r=0; r<resources.length; r++) {
+          if (resources[r].nodeName == 'DIV') {
+            resourceIds += resources[r].id + ",";
+          }
         }
-		}
 		resourceIds = resourceIds.substring(0, resourceIds.length-1);
 		return resourceIds;
 	}
 	
 	function verification(){
 		document.frmResa.listeResa.value = getResourcesReservees();
-		document.frmResa.submit();
+        if(getResourcesReservees() == "") {
+           $( "#dialog-message" ).dialog( "open" );
+        } else {
+          document.frmResa.submit();
+        }
 	}
+    
 	function retour() {
 		window.history.back();
-		}
-
-	$(document).ready(function(){
-		$('#accordion').accordion();
-	});
+	}
+    
+    $(function() {
+        $('#accordion').accordion();
+  		$("#dialog-message" ).dialog({
+  			modal: true,
+  			autoOpen: false,
+  			width: 350,
+  			resizable: false,
+  			buttons: {
+  				Ok: function() {
+  					$( this ).dialog( "close" );
+  				}
+  			}
+  		});
+  	});
 
 	</script>
  	</head>
@@ -190,13 +198,10 @@ String idTemoin="";
 		out.println(tabbedPane.print());
 		out.println(frame.printBefore());
 		
-		if(listResourcesProblem != null)
-		{
+		if(listResourcesProblem != null) {
 			out.println(board.printBefore());
 			out.println("<h4>"+resource.getString("resourcesManager.resourceUnReservable")+"</h4>");
-			for(int i=0;i<listResourcesProblem.size();i++)
-			{ 
-				Resource resourceProblem = (Resource)listResourcesProblem.get(i);
+			for(Resource resourceProblem : listResourcesProblem) { 
 				out.println(resource.getString("resourcesManager.ressourceNom")+" : "+resourceProblem.getName()+"<br/>");
 			}
 			out.println(board.printAfter());
@@ -302,7 +307,7 @@ String idTemoin="";
 			  						<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			  							<tr>
 			  								<td width="80%" nowrap>&nbsp;-&nbsp;<%=NomResource%> </td>
-			  								<td><img src="<%=m_context %>/util/icons/delete.gif" id="image<%=resourceId%>" align="middle"/></td>
+                                            <td><img src="<c:url value="/util/icons/delete.gif" />" id="image<%=resourceId%>" align="middle"/></td>
 			  							</tr>
 			  						</table>
 			  					</div>
@@ -324,5 +329,8 @@ String idTemoin="";
 		<input type="hidden" name="idModifiedReservation" value="<%=idModifiedReservation%>">
 	<%}%>
 </form>	
+<div id="dialog-message" title="<fmt:message key="resourcesManager.form.validation.error.title" />">
+		<fmt:message key="resourcesManager.noReservedResource" />
+	</div>
 </body>
 </html>

@@ -49,10 +49,10 @@ public class ReservedResource implements Serializable {
   private ReservedResourcePk reservedResourcePk = new ReservedResourcePk();
   @Column(name = "status")
   private String status;
-  @ManyToOne(optional = false, cascade = CascadeType.ALL)
+  @ManyToOne(optional = false)
   @JoinColumn(name = "resourceId", updatable = false, insertable = false, referencedColumnName = "id")
   private Resource resource;
-  @ManyToOne(optional = false, cascade = CascadeType.ALL)
+  @ManyToOne(optional = false)
   @JoinColumn(name = "reservationId", updatable = false, insertable = false, referencedColumnName = "id")
   private Reservation reservation;
 
