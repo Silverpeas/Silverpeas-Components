@@ -47,7 +47,7 @@
   
    <upgrade version="004">
     <create_table>
-      <file name="postgres\resourcesManager\up004\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="postgres\resourcesManager\up004\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
     

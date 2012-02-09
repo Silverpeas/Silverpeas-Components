@@ -13,3 +13,7 @@ ALTER TABLE sc_resources_resource ALTER COLUMN categoryid TYPE BIGINT;
 
 ALTER TABLE sc_resources_category ALTER COLUMN id TYPE BIGINT;
 ALTER TABLE sc_resources_category ALTER COLUMN responsibleid TYPE INTEGER;
+
+UPDATE uniqueid SET TABLENAME='sc_resources_reservation' WHERE TABLENAME='SC_Resources_Reservation';
+UPDATE uniqueid SET TABLENAME='sc_resources_resource' WHERE TABLENAME='SC_Resources_Resource';
+UPDATE uniqueid SET TABLENAME='sc_resources_category' WHERE TABLENAME='SC_Resources_Category';
