@@ -12,7 +12,7 @@
   <packaging>pom</packaging>
   <name>resources-manager Component</name>
   <modules>
-    <module>resources-manager-ejb</module>
+    <module>resources-manager-jar</module>
     <module>resources-manager-war</module>
     <module>resources-manager-config</module>
   </modules>

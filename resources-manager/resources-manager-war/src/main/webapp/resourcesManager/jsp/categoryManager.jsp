@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate" %>
 <%@ include file="check.jsp" %>
@@ -34,17 +34,15 @@
 	List listTemplates =(List)request.getAttribute("listTemplates"); 
 	String name="";
 	String form="";
-	String reponsibleId="";
 	String description="";
-	boolean bookable = false;
+	boolean bookable = true;
 	String id="";
-	CategoryDetail category = (CategoryDetail)request.getAttribute("category");
+	Category category = (Category)request.getAttribute("category");
 	if (category != null){
 		id = category.getId();
 		name = category.getName();
-		bookable = category.getBookable();
+		bookable = category.isBookable();
 		form = category.getForm();
-		reponsibleId = category.getResponsibleId();
 		description = category.getDescription();
 	}
 %>
@@ -57,16 +55,26 @@
 
 function validerNom(){
 	if(document.getElementById("name").value == 0)
-		document.getElementById('validationNom').innerHTML="Nom obligatoire";
+		{
+      document.getElementById('validationNom').innerHTML = "Nom obligatoire";
+    }
 	else
-		document.getElementById('validationNom').style.display='none';
+		{
+      document.getElementById('validationNom').style.display = 'none';
+    }
 }
 
 function verification(){
 	if(document.getElementById("name").value == 0 )
-		alert('<%=EncodeHelper.javaStringToJsString(resource.getString("resourcesManager.formulaireErreur")+" 1 "+ resource.getString("GML.error") +":"+ "\n" + "-" + "'" + resource.getString("GML.name")+ "'"+ " " + resource.getString("resourcesManager.renseigmentObligatoire"))%>');
+		{
+      alert('<%=EncodeHelper.javaStringToJsString(resource.getString("resourcesManager.formulaireErreur")+" 1 "+ resource.getString("GML.error") +":"+ "\n" + "-" + "'" + resource.getString("GML.name")+ "'"+ " " + resource.getString("resourcesManager.renseigmentObligatoire"))%>'
+    )
+      ;
+    }
 	else
-		document.createForm.submit();
+		{
+      document.createForm.submit();
+    }
 }
 
 </script>
@@ -132,12 +140,6 @@ buttonPane.addButton(cancelButton);
 		</select>
 		</td>
 	</tr>
-
-	<!--<tr>
-		<TD class="txtlibform"><% out.println(resource.getString("resourcesManager.responsable"));%> : </TD>
-		<TD><input type="text" name="responsible" size="60" maxlength="20" value="<%=reponsibleId%>">&nbsp;</TD>
-	</tr>-->
-	
 	<tr>
 		<td colspan="2">( <img border="0" src=<%=resource.getIcon("resourcesManager.obligatoire")%> width="5" height="5"> : <%=resource.getString("GML.requiredField")%> )</td>
 	</tr>
