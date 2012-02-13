@@ -41,5 +41,5 @@
     
     
   
-  <uniqueId maxId="209" tablename="SC_Gallery_Order" />
+  <uniqueId maxId="209" tablename="sc_gallery_order" />
 </dataset>
