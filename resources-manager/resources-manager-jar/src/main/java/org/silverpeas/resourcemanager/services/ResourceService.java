@@ -112,7 +112,7 @@ public class ResourceService {
     List<Resource> availableBookableResources = new ArrayList<Resource>(bookableResources.size());
     for (Resource resource : bookableResources) {
       List<Reservation> reservations = reservationRepository.
-          findAllReservationsForValidatedResourceInRange(resource.getIntegerId(),
+          findAllReservationsNotRefusedForResourceInRange(resource.getIntegerId(),
           startDate, endDate);
       if (reservations == null || reservations.isEmpty()) {
         availableBookableResources.add(resource);

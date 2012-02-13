@@ -67,8 +67,16 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
   @Query("SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
   "WHERE reservedResource.resource.id = :resourceId AND reservedResource.status = 'V' " +
   "AND ((reservedResource.reservation.endDate > :startPeriod AND reservedResource.reservation.beginDate <= :startPeriod)" +
-  "OR (reservedResource.reservation.endDate >= :endPeriod  AND reservedResource.reservation.beginDate < :endPeriod))")
+  "OR (reservedResource.reservation.beginDate >= :startPeriod  AND reservedResource.reservation.beginDate < :endPeriod))")
   public List<Reservation> findAllReservationsForValidatedResourceInRange(
+      @Param("resourceId") Long resourceId, @Param("startPeriod") String startPeriod,
+      @Param("endPeriod") String endPeriod);
+  
+  @Query("SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+  "WHERE reservedResource.resource.id = :resourceId AND reservedResource.status != 'R' " +
+  "AND ((reservedResource.reservation.endDate > :startPeriod AND reservedResource.reservation.beginDate < :endPeriod)"+
+  "OR (reservedResource.reservation.endDate = :endPeriod  AND reservedResource.reservation.beginDate = :startPeriod))")
+  public List<Reservation> findAllReservationsNotRefusedForResourceInRange(
       @Param("resourceId") Long resourceId, @Param("startPeriod") String startPeriod,
       @Param("endPeriod") String endPeriod);
 
