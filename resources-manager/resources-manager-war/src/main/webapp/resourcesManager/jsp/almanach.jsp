@@ -219,7 +219,7 @@ function viewOtherPlanning()
                       <option value=""><%=resource.getString("resourcesManager.allResources")%></option>
                       	<option value="">-----------------</option>
                       	<% for(int i=0; i<listResourcesofCategory.size(); i++){
-                      			ResourceDetail myReservation = (ResourceDetail)listResourcesofCategory.get(i);
+                      			Resource myReservation = (Resource)listResourcesofCategory.get(i);
                       			String resourceName = myReservation.getName();%>
                       			<option value="<%=myReservation.getId()%>" <%if((myReservation.getId() != null) && (myReservation.getId()).equals(idResourceFromRR)){%>selected="selected"<%}%> ><%=resourceName%></option>
                       	<% } %>

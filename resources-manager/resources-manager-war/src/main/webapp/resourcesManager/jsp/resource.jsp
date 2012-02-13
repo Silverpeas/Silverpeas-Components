@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
 
 <%@ include file="check.jsp" %>
@@ -34,7 +34,7 @@
 // Recuperation des details de l'ulisateur
 	Category category = (Category)request.getAttribute("category");
 	String idcategory = category.getId();
-	ResourceDetail maResource = (ResourceDetail)request.getAttribute("resource");
+	Resource maResource = (Resource)request.getAttribute("resource");
 	String provenance = (String)request.getAttribute("provenance");
 	String flag = (String)request.getAttribute("Profile");
 //	 recuperation des parametres du formulaire
@@ -42,13 +42,12 @@
 	DataRecord	xmlData = (DataRecord) request.getAttribute("XMLData");
 	PagesContext context = (PagesContext) request.getAttribute("context"); 
 	Boolean showComments = (Boolean) request.getAttribute("ShowComments");
-	List managers  = (List) request.getAttribute("Managers");
+	List<UserDetail> managers  = (List<UserDetail>) request.getAttribute("Managers");
 	String objectView = request.getParameter("objectView");
 	
 	String name=maResource.getName();
-	String responsibleId=maResource.getResponsibleId();
 	String description=EncodeHelper.javaStringToHtmlParagraphe(maResource.getDescription());
-	boolean bookable=maResource.getBookable();
+	boolean bookable=maResource.isBookable();
 	String resourceId=maResource.getId();
 	Button cancelButton = null;
 	
@@ -140,33 +139,17 @@ buttonPane.addButton(cancelButton);
 			<td><%=resource.getOutputDateAndHour(maResource.getUpdateDate())%></td>
 		</tr>
 		<% } %>
-		
-		<!--<tr>
-			<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.responsable"));%> :</td>
-			<td>
-				<% if ((responsibleId != null) && ("0".equals(responsibleId)))
-						out.println(resource.getString("resourcesManager.ressourceresponsable"));
-					else
-						out.println(responsibleId);
-				%>
-			</td>
-		</tr>-->
 		<tr>
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.responsable"));%> : </TD>
      
      <TD id="managers"> 
-      <%
-        
-        String managerNames = "";
-        if (managers != null) {
-          Iterator it = managers.iterator();
-          while(it.hasNext())
-          {
-            UserDetail manager = (UserDetail) it.next();
-            managerNames += manager.getDisplayedName()+"<br/>";
+      <%        
+        if (managers != null  && !managers.isEmpty()) {
+          for(UserDetail manager : managers){
+            out.print(manager.getDisplayedName());
+            out.println("<br/>");
           }
         } %>
-        <%=managerNames %>
       </TD>
       </tr>
 		<input type="HIDDEN" name="resourceId" value="<%=resourceId%>"/>
