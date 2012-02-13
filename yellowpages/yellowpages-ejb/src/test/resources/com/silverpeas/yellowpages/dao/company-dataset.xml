@@ -77,7 +77,6 @@
     <sc_contact_genericcontact genericContactId="115" contactType="2" companyId="6"/>
 
     <!-- Generic Contact Rel -->
-    <!-- Exemple : Obama => CocaCola + WaltDisney + General Electrics (disabled) -->
     <sc_contact_genericcontact_rel relationId="0" genericContactId="217" genericCompanyId="113" relationType="0"
                                    enabled="1"/>
     <sc_contact_genericcontact_rel relationId="1" genericContactId="217" genericCompanyId="110" relationType="0"

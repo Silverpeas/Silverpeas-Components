@@ -45,6 +45,8 @@ public interface CompanyService {
 
     public void removeContactFromCompany(int companyId, int contactId) throws YellowpagesRuntimeException;
 
+    public void deleteGenericContactMatchingContact(int contactId);
+
     public List<Company> findCompanyListByContactId(int contactId);
 
     public List<Company> findAllCompanies();

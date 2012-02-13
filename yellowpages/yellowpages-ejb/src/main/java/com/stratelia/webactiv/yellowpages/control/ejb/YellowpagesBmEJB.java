@@ -1042,9 +1042,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @since 1.0
    */
   public void deleteContact(String ContactId) {
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteContact()",
+    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteGenericContactMatchingContact()",
         "root.MSG_GEN_ENTER_METHOD");
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteContact()",
+    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteGenericContactMatchingContact()",
         "root.MSG_GEN_PARAM_VALUE", "ContactId = " + ContactId);
     // if the contact is in the basket or in the DZ
     // this contact is deleted from the database
@@ -1061,7 +1061,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         contactBm.removeContact(contactPK);
       } catch (Exception re) {
         throw new YellowpagesRuntimeException(
-            "YellowpagesBmEJB.deleteContact()",
+            "YellowpagesBmEJB.deleteGenericContactMatchingContact()",
             SilverpeasRuntimeException.ERROR,
             "yellowpages.EX_DELETE_CONTACT_FAILED", re);
       }
@@ -1071,7 +1071,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       // but only send to the basket
       sendContactToBasket(ContactId);
     }
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteContact()",
+    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteGenericContactMatchingContact()",
         "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -1088,7 +1088,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   private void sendContactToBasket(String ContactId) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.sendContactToBasket()",
         "root.MSG_GEN_ENTER_METHOD");
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteContact()",
+    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteGenericContactMatchingContact()",
         "root.MSG_GEN_PARAM_VALUE", "ContactId = " + ContactId);
     ContactPK contactPK = new ContactPK(ContactId, this.space, this.componentId);
     try {

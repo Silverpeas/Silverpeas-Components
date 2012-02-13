@@ -570,15 +570,16 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
                 recordSet.delete(data);
             }
 
-            // TODO Delete du contact generique également (s'il existe)
-            // TODO et delete des relations contacts generique / company
+            int intContactId = Integer.valueOf(contactId);
 
-            // delete contact
+            // Delete genericContact (if any)
+            this.serviceCompany.deleteGenericContactMatchingContact(intContactId);
+
+            // Finally delete contact
             kscEjb.deleteContact(contactId);
             resetCurrentFullCompleteUsers();
         } catch (NoSuchObjectException nsoe) {
             initEJB();
-            deleteContact(contactId);
         }
     }
 
@@ -1788,24 +1789,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         return this.serviceCompany.getCompany(companyId);
     }
 
-
-    /**
-     * Recherche la company associée à un Contact
-     *
-     * @param contactId Id du contact sur lequel chercher id à
-     * @return la première company de la liste (possibilité de gérer une liste de companies par user par la suite). Renvoie null si non trouvé.
-     */
-    @Deprecated  // TODO à supprimer
-    public synchronized Company getCompanyForUserId(int contactId) throws RemoteException {
-        List<Company> companyList = this.serviceCompany.findCompanyListByContactId(contactId);
-        if (companyList == null || companyList.isEmpty()) {
-            return null;
-        } else {
-            // On gère seulement une company pour l'instant => TODO retourner une liste de companies
-            return companyList.get(0);
-        }
-    }
-
     /**
      * Recherche la liste des companies associées à un Contact
      *
@@ -1827,23 +1810,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         } catch (NumberFormatException e) {
             return null;
         }
-    }
-
-    /**
-     * Recherche la liste des companies associée à un Contact (à partir d'un id sous forme String)
-     * (permet de gérer la gestion de l'excption NumberFormatException (id n'est pas un entier) en dehors des JSP
-     *
-     * @param strContactId Id du contact sous forme String
-     * @return le résultat getComanyForUserId, ou null si id n'est pas un entier
-     */
-    public synchronized Company getCompanyForUserId(String strContactId) throws RemoteException {
-        int contactId;
-        try {
-            contactId = Integer.parseInt(strContactId);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        return this.getCompanyForUserId(contactId);
     }
 
     /**

@@ -46,6 +46,11 @@ public interface GenericContactRelationDao extends JpaRepository<GenericContactR
     List<GenericContactRelation> findByGenericContactId(@Param("genericContactId") int genericContactId);
 
     @Query("FROM GenericContactRelation GCR " +
+            "WHERE GCR.genericContactId = :genericContactId AND " +
+            "GCR.relationType = " + GenericContactRelation.RELATION_TYPE_BELONGS_TO)
+    List<GenericContactRelation> findAllByGenericContactId(@Param("genericContactId") int genericContactId);
+
+    @Query("FROM GenericContactRelation GCR " +
            "WHERE GCR.genericContactId = :genericContactId AND " +
            "GCR.genericCompanyId = :genericCompanyId AND " +
            "GCR.relationType = " + GenericContactRelation.RELATION_TYPE_BELONGS_TO + " AND " +

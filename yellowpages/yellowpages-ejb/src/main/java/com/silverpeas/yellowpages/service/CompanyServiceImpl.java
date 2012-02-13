@@ -131,16 +131,27 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public void deleteGenericContactMatchingContact(int contactId) {
+        // delete generic contact associated with this contactId
+        GenericContact gcContact = genericContactDao.findGenericContactFromContactId(contactId);
+        if (gcContact != null) {
+            List<GenericContactRelation> listeRelations = genericContactRelationDao.findAllByGenericContactId(gcContact.getGenericContactId());
+            for (GenericContactRelation relation : listeRelations) {
+                genericContactRelationDao.delete(relation);
+            }
+            genericContactDao.delete(gcContact);
+        }
+    }
+
+    @Override
     public List<Company> findCompanyListByContactId(int contactId) {
         List<Company> returnList = new ArrayList<Company>();
         GenericContact gc = genericContactDao.findGenericContactFromContactId(contactId);
         if (gc != null) {
             List<GenericContactRelation> listeRelations = genericContactRelationDao.findByGenericContactId(gc.getGenericContactId());
             for (GenericContactRelation relation : listeRelations) {
-                if (relation.getEnabled() == GenericContactRelation.ENABLE_TRUE) {
-                    GenericContact gcCompany = genericContactDao.findOne(relation.getGenericCompanyId());
-                    returnList.add(companyDao.findOne(gcCompany.getCompanyId()));
-                }
+                GenericContact gcCompany = genericContactDao.findOne(relation.getGenericCompanyId());
+                returnList.add(companyDao.findOne(gcCompany.getCompanyId()));
             }
         }
         return returnList;

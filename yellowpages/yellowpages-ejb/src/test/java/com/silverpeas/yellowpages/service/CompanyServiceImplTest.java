@@ -1,7 +1,9 @@
 package com.silverpeas.yellowpages.service;
 
 import com.silverpeas.yellowpages.dao.CompanyDaoTest;
+import com.silverpeas.yellowpages.dao.GenericContactDao;
 import com.silverpeas.yellowpages.model.Company;
+import com.silverpeas.yellowpages.model.GenericContact;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -24,6 +26,7 @@ import static org.junit.Assert.*;
 public class CompanyServiceImplTest {
 
     private static CompanyService service;
+    private static GenericContactDao genericContactDao;
     private static DataSource ds;
     private static ClassPathXmlApplicationContext context;
 
@@ -31,6 +34,7 @@ public class CompanyServiceImplTest {
     public static void setUpClass() throws Exception {
         context = new ClassPathXmlApplicationContext("spring-company.xml");
         service = (CompanyService) context.getBean("companyService");
+        genericContactDao = (GenericContactDao) context.getBean("genericContactDao");
         ds = (DataSource) context.getBean("jpaDataSource");
         cleanDatabase();
     }
@@ -139,5 +143,19 @@ public class CompanyServiceImplTest {
         assertFalse(list.isEmpty());
         // nombre d'élements avec ENABLED = true
         assertTrue(list.size() == 2);
+    }
+
+    @Test
+    public void testDeleteGenericContact() {
+        int contactId = 17; // Barak Obama
+
+        GenericContact gcContact = genericContactDao.findGenericContactFromContactId(contactId);
+        int genericContactId = gcContact.getGenericContactId();
+
+        // Suppression du contactGenerique et de ses relations avec les companies
+        service.deleteGenericContactMatchingContact(contactId);
+
+        GenericContact gcContactResult = genericContactDao.findOne(genericContactId);
+        assertNull(gcContactResult);
     }
 }
