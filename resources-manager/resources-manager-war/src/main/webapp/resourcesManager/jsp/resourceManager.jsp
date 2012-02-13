@@ -25,15 +25,15 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
 	String 			idcategory 	= (String) request.getAttribute("categoryId");
 	List 			list 		= (List) request.getAttribute("listCategories");
-	ResourceDetail 	details 	= (ResourceDetail) request.getAttribute("resource");
-	List managers  = (List) request.getAttribute("Managers");
+	Resource details 	= (Resource) request.getAttribute("resource");
+	List<UserDetail> managers  = (List<UserDetail>) request.getAttribute("Managers");
 	
 	Form 			formUpdate  = (Form) request.getAttribute("Form");
 	DataRecord 		data    	= (DataRecord) request.getAttribute("Data"); 
@@ -51,11 +51,9 @@
 		else
 			context.setCurrentFieldIndex("6");
 	    context.setBorderPrinted(false);
-	    //context.setObjectId(idResource);
 	}
 	
 	String name = "";
-	String reponsibleId = "";
 	String description = "";
 	boolean bookable = false;
 	String resourceId = "";
@@ -63,15 +61,14 @@
 	if (details != null){
 		resourceId 		= details.getId();
 		name 			= details.getName();
-		bookable 		= details.getBookable();
-		//reponsibleId 	= details.getResponsibleId();
+		bookable 		= details.isBookable();
 		description 	= details.getDescription();
 	}
 	
 	//creation des boutons Valider et Annuler
 	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
 	Button cancelButton = null;
-	if(!idcategory.equals("noCategory"))
+	if(!"noCategory".equals(idcategory))
 		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "ViewResources?id="+idcategory,false);
 	else
 		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "ViewCategories",false);
@@ -169,7 +166,7 @@ buttonPane.addButton(cancelButton);
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.nomcategorie"));%> : </TD>
 		<TD width="100%">
 		<%for(int i=0;i< list.size();i++){
-			CategoryDetail category = (CategoryDetail)list.get(i);
+			Category category = (Category)list.get(i);
 			String categoryId = category.getId();
 		    String nameCategory = category.getName();
 			if (categoryId.equals(idcategory))
@@ -203,14 +200,11 @@ buttonPane.addButton(cancelButton);
 	   
 	   <TD id="managers"> 
 			<%
-		    String managerNames = "";
-			  if (managers != null) {
-			    Iterator it = managers.iterator();
-			    while(it.hasNext())
-			    {
-			      UserDetail manager = (UserDetail) it.next();
+		    StringBuilder managerNames = new StringBuilder("");
+			  if (managers != null && ! managers.isEmpty()) {
+			    for(UserDetail manager : managers) {
 			      managerIds += manager.getId()+ ",";
-			      managerNames += manager.getDisplayedName()+"<br/>";
+			      managerNames.append(manager.getDisplayedName()).append("<br/>");
 			    }
 			  } %>
 			  <%=managerNames %>

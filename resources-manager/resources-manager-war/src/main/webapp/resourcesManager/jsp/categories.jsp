@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="java.util.List" %>
 <%@ include file="check.jsp" %>
 <% 
@@ -69,7 +69,7 @@
 		columnOp.setSortable(false);
 		
 		for(int i=0;i<list.size();i++){ 
-			CategoryDetail category = (CategoryDetail)list.get(i);
+			Category category = (Category)list.get(i);
 			IconPane iconPane = gef.getIconPane();
 			IconPane iconPane1 = gef.getIconPane();
 		    Icon reservableIcon = iconPane.addIcon();
@@ -79,15 +79,15 @@
 		    //recuperation des donnees de la liste
 		    String id = category.getId();
 		    String name = category.getName();
-		    boolean bookable = category.getBookable();
+		    boolean bookable = category.isBookable();
 			String form = category.getForm();
 
 			arrayLine = arrayPane.addArrayLine();
-			if (bookable)
+			if (bookable) {
 				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredGreen"),resource.getString("resourcesManager.categoriereservable"),"");
-			else
+            } else {
 				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredRed"),resource.getString("resourcesManager.categorieirreservable"),"");
-			
+                		}
 			arrayLine.addArrayCellIconPane(iconPane);
 			arrayLine.addArrayCellLink(name,"ViewResources?id="+id);
 			arrayCellText2 = arrayLine.addArrayCellText(form);

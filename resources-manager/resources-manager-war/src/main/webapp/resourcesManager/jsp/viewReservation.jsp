@@ -25,25 +25,23 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ReservationDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceStatus" %>
+<%@ page import="org.silverpeas.resourcemanager.model.ResourceStatus" %>
 <%@ include file="check.jsp" %>
 <% 
 //Recuperation des details de l'ulisateur
-List listResourcesofReservation = (List)request.getAttribute("listResourcesofReservation");
+List<Resource> listResourcesofReservation = (List<Resource>)request.getAttribute("listResourcesofReservation");
 String reservationId = (String)request.getAttribute("reservationId");
-ReservationDetail maReservation = (ReservationDetail)request.getAttribute("reservation");
+Reservation maReservation = (Reservation)request.getAttribute("reservation");
 String objectView = (String) request.getAttribute("objectView");
 String event = maReservation.getEvent();
 String place = maReservation.getPlace();
 String reason = EncodeHelper.javaStringToHtmlParagraphe(maReservation.getReason());
 String dateEnd = resource.getOutputDateAndHour(maReservation.getEndDate());
 String dateBegin = resource.getOutputDateAndHour(maReservation.getBeginDate());
-String minuteHourDateBegin = DateUtil.getFormattedTime(maReservation.getBeginDate());
-String minuteHourDateEnd = DateUtil.getFormattedTime(maReservation.getEndDate());
 String flag = (String)request.getAttribute("Profile");
 
 Board	board		 = gef.getBoard();
@@ -157,23 +155,21 @@ if (!isOwner) {
         <tr>
           <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%> :</td>
           <td width="100%"><%
-          for(int i=0;i<listResourcesofReservation.size();i++){
-            ResourceDetail maResource = (ResourceDetail)listResourcesofReservation.get(i);
+          for(Resource maResource : listResourcesofReservation){
             String resourceId = maResource.getId();
-            String resourceName = maResource.getName();%>
-            <%
+            String resourceName = maResource.getName();
             // afficher les icones de validation et refus si la ressource est en etat a valider
             // et si l'utilisateur est le responsable de cette ressource
             String currentUser = resourcesManagerSC.getUserId() ;
-            List managers = maResource.getManagers();
-            if (STATUS_FOR_VALIDATION.equals(maResource.getStatus())) { %>
+            List<String> managers = resourcesManagerSC.getManagerIds(resourceId);
+            if (maResource.isValidationRequired()) { %>
              <a style="color:red" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
-            <% } else if (STATUS_REFUSED.equals(maResource.getStatus())) { %>
+            <% } else if (maResource.isRefused()) { %>
               <a style="color:grey" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
             <% } else {%>
               <a style="color:black" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
              <% } 
-            if (STATUS_FOR_VALIDATION.equals(maResource.getStatus()) &&  managers != null && managers.contains(currentUser)) { %>
+            if (maResource.isValidationRequired() &&  managers != null && !managers.isEmpty() && managers.contains(currentUser)) { %>
               <a href="javascript:valideResource(<%=resourceId%>, '<%=objectView%>')">
               <img src="<%=m_context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.valideResource")%>" title="<%=resource.getString("resourcesManager.valideResource")%>">
               </a>&nbsp;
