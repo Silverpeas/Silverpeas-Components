@@ -64,10 +64,11 @@ boolean noResource = true;
 // Permet de recuperer l'id de la categorie courante
 String idTemoin="";
 %>
+
 <html>
   <head>
     <view:looknfeel />
-    <script language=JavaScript>
+    <script type="text/javascript">
 	
       function ajouterRessource(resourceId, categoryId) {
         var elementResource = document.getElementById(resourceId);
@@ -86,24 +87,6 @@ String idTemoin="";
         elementCategory.appendChild(elementResource);
       }
 	
-<<<<<<< HEAD
-	function switchResource(resourceId, categoryId)
-	{
-		if (isResourceReservee(resourceId))
-		{
-			clearCategory(categoryId);			
-			enleverRessource(resourceId, categoryId);			
-		}
-		else
-		{
-			ajouterRessource(resourceId, categoryId);			
-			if (isCategoryEmpty(categoryId))
-				{
-          addEmptyResource(categoryId);
-        }
-		}
-	}
-=======
       function switchResource(resourceId, categoryId) {
         if (isResourceReservee(resourceId)) {
           clearCategory(categoryId);			
@@ -116,7 +99,6 @@ String idTemoin="";
           }
         }
       }
->>>>>>> bug2874
 	
       function addEmptyResource(categoryId)
       {
@@ -126,66 +108,7 @@ String idTemoin="";
         var elementCategory = document.getElementById(categoryId);
         elementCategory.appendChild(emptyElement);
       }
-			
-	
-<<<<<<< HEAD
-	function clearCategory(categoryId)
-	{
-		var category = document.getElementById(categoryId);
-		var resources = category.childNodes;
-		for (var r=0; r<resources.length; r++)
-		{
-			if (resources[r].nodeName == 'DIV' && resources[r].id == "-1")
-				{
-          category.removeChild(resources[r]);
-        }
-		}
-	}
-	
-	function isCategoryEmpty(categoryId)
-	{
-		var category = document.getElementById(categoryId);
-		var resources = category.childNodes;
-		for (var r=0; r<resources.length; r++)
-		{
-			if (resources[r].nodeName == 'DIV')
-				{
-          return false;
-        }
-		}
-		return true;
-	}
-	
-	function isResourceReservee(resourceId)
-	{
-		var listeReservation = document.getElementById("listeReservation");
-		var resources = listeReservation.childNodes;
-		for (var r=0; r<resources.length; r++)
-		{
-			if (resources[r].nodeName == 'DIV' && resources[r].id == resourceId)
-				{
-          return true;
-        }
-		}
-		return false;
-	}
-	
-	function getResourcesReservees()
-	{
-		var listeReservation = document.getElementById("listeReservation");
-		var resources = listeReservation.childNodes;
-		var resourceIds = "";
-		for (var r=0; r<resources.length; r++)
-		{
-			if (resources[r].nodeName == 'DIV')
-				{
-          resourceIds += resources[r].id + ",";
-        }
-		}
-		resourceIds = resourceIds.substring(0, resourceIds.length-1);
-		return resourceIds;
-	}
-=======
+
       function clearCategory(categoryId)
       {
         var category = document.getElementById(categoryId);
@@ -232,7 +155,6 @@ String idTemoin="";
         resourceIds = resourceIds.substring(0, resourceIds.length-1);
         return resourceIds;
       }
->>>>>>> bug2874
 	
       function verification(){
         document.frmResa.listeResa.value = getResourcesReservees();
@@ -285,30 +207,30 @@ String idTemoin="";
     %>
     <view:board>
 
-      <table ALIGN="CENTER" CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
+      <table align="center" cellpadding="3" cellspacing="0" border="0" width="100%">
         <tr>
           <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.evenement"));%> :</td>
           <td width="100%"><%=evenement%></td>
         </tr>
 
         <tr>
-          <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateBegin"));%> :</TD>
+          <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateBegin"));%> :</td>
           <td><%=resource.getOutputDateAndHour(reservation.getBeginDate())%></td>
         </tr>
 
         <tr>
-          <TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateEnd"));%> :</td> 
+          <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateEnd"));%> :</td> 
           <td><%=resource.getOutputDateAndHour(reservation.getEndDate())%></td>	
         </tr>
 
         <tr>
-          <TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> :</td> 
-          <td><%=raison%></TD>
+          <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> :</td> 
+          <td><%=raison%></td>
         </tr>
 
         <tr>
           <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.lieuReservation"));%> :</td>
-          <td><%=lieu%></TD>
+          <td><%=lieu%></td>
         </tr>
       </table></view:board>
       <br />
@@ -374,10 +296,10 @@ String idTemoin="";
         out.println(window.printAfter());		
         %>
     <form name="frmResa" method="post" action="FinalReservation">
-      <input type="hidden" name="listeResa" value="">
-      <input type="hidden" name="newResourceReservation" value="">
+      <input type="hidden" name="listeResa" value=""/>
+      <input type="hidden" name="newResourceReservation" value=""/>
       <%if(idModifiedReservation != null){ %>	
-      <input type="hidden" name="idModifiedReservation" value="<%=idModifiedReservation%>">
+      <input type="hidden" name="idModifiedReservation" value="<%=idModifiedReservation%>"/>
       <%}%>
     </form>	
     <div id="dialog-message" title="<fmt:message key="resourcesManager.form.validation.error.title" />">
