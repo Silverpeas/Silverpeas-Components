@@ -112,9 +112,9 @@ public class CategoryServiceTest {
     category.setUpdaterId("10");
 
     String result = service.createCategory(category);
-    assertThat(result, is("250"));
-    category.setId("250");
-    Category savedCategory = service.getCategory("250");
+    assertThat(result, is("5"));
+    category.setId("5");
+    Category savedCategory = service.getCategory("5");
     assertThat(savedCategory, is(category));
 
   }

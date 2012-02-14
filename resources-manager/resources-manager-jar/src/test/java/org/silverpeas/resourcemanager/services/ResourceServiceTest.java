@@ -97,7 +97,7 @@ public class ResourceServiceTest {
    */
   @Test
   public void testCreateResource() {
-    String id = "1000";
+    String id = "20";
     Resource resource = new Resource(null, firstCategory, "Salle Vercors",
         new Date(1315232852398L), new Date(1315232852398L),
         "Salle de réunion jusqu'à 4 personnes avec vidéoprojecteur", "5", "5",

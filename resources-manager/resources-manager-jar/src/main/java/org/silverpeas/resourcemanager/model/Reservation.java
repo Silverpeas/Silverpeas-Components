@@ -21,7 +21,7 @@
 package org.silverpeas.resourcemanager.model;
 
 import com.silverpeas.util.StringUtil;
-
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,7 +30,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
-import java.util.Date;
 
 @Entity
 @Table(name = "sc_resources_reservation")
@@ -39,7 +38,7 @@ public class Reservation implements ResourceStatus {
   private static final long serialVersionUID = -1410243488372828193L;
   @Id
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-  valueColumnName = "maxId", pkColumnValue = "sc_resources_reservation")
+  valueColumnName = "maxId", pkColumnValue = "sc_resources_reservation", allocationSize=1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   private Long id;
   @Column(name = "evenement", length = 128, nullable = false)

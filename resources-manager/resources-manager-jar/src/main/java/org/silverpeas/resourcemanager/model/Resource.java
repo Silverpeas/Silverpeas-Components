@@ -46,7 +46,7 @@ public class Resource {
 
   @Id
   @TableGenerator(name = "UNIQUE_RESOURCE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-  valueColumnName = "maxId", pkColumnValue = "sc_resources_resource")
+  valueColumnName = "maxId", pkColumnValue = "sc_resources_resource",allocationSize=1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_RESOURCE_ID_GEN")
   private Long id;
   @ManyToOne(optional = true, fetch = FetchType.EAGER)

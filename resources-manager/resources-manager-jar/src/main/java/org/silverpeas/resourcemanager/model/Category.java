@@ -40,7 +40,7 @@ public class Category {
 
   @Id
   @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-  valueColumnName = "maxId", pkColumnValue = "SC_Resources_Category")
+  valueColumnName = "maxId", pkColumnValue = "sc_resources_category", allocationSize=1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   private Long id;
   @Column
