@@ -25,9 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
-<%@ page import="com.silverpeas.resourcesmanager.model.ReservationDetail"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
+<%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Date" %>
 
@@ -35,9 +35,9 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-	ReservationDetail 	reservation 			= (ReservationDetail)request.getAttribute("reservation");
-	List 				listResourcesProblem 	= (List)request.getAttribute("listResourcesProblem");
-	String				defaultDate				= (String) request.getAttribute("DefaultDate");
+	Reservation reservation = (Reservation)request.getAttribute("reservation");
+	List<Resource> listResourcesProblem = (List<Resource>)request.getAttribute("listResourcesProblem");
+	String defaultDate = (String) request.getAttribute("DefaultDate");
 
 	String dateBegin = "";
 	String dateEnd = "";
@@ -158,7 +158,9 @@ function isCorrectForm()
 function verification(){
 	if (isCorrectForm()){
 		if(isCorrectDateOrder(document.getElementById("startDate").value,document.getElementById("startHour").value,document.getElementById("endDate").value,document.getElementById("endHour").value))
-			document.createForm.submit();
+			{
+        document.createForm.submit();
+      }
 	}
 }
 
@@ -233,10 +235,9 @@ buttonPane.addButton(cancelButton);
 	<tr>
 		<td colspan="2">( <img border="0" src=<%=resource.getIcon("resourcesManager.obligatoire")%> width="5" height="5"/> : <%=resource.getString("GML.requiredField")%> )</td>
 	</tr>
-	<!-- si le champs cach� n est pas vide, cela signifie qu on est en train de modifier la reservation -->
+	<!-- si le champs cache n est pas vide, cela signifie qu on est en train de modifier la reservation -->
 	<%if (reservation != null)
 	{
-		//out.println(reservationId);
 		%><input type="HIDDEN" name="reservationId" value="<%=reservationId%>"/>
   <%}%>
 </TABLE>
