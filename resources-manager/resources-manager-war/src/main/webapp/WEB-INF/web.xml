@@ -30,12 +30,12 @@
   <servlet>
     <display-name>ResourcesManagerRequestRouter</display-name>
     <servlet-name>ResourcesManagerRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.resourcesmanager.servlets.ResourcesManagerRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.resourcesmanager.servlets.ResourcesManagerRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>AjaxResourcesManagerServlet</display-name>
     <servlet-name>AjaxResourcesManagerServlet</servlet-name>
-    <servlet-class>com.silverpeas.resourcesmanager.servlets.AjaxResourcesManagerServlet</servlet-class>
+    <servlet-class>org.silverpeas.resourcesmanager.servlets.AjaxResourcesManagerServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ResourcesManagerRequestRouter</servlet-name>

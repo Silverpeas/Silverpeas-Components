@@ -29,7 +29,7 @@
 %>
 
 <SCRIPT LANGUAGE="JavaScript">
-<% if (url != null && url.length() > 0) { %>
+<% if (url != null && !url.isEmpty()) { %>
 	self.opener.location = '<%=url%>';
 <% } %>
 	self.close();

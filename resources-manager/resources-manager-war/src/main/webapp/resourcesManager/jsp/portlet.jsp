@@ -62,7 +62,7 @@ String personalReservation = "myReservation";
 function nextMonth(object)
 {
     document.almanachForm.action = "NextMonth";
-    <%if((idResourceFromRR != null) && (!idResourceFromRR.equals(""))){%>
+    <%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
 		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
 	<%}%>
     document.almanachForm.objectView.value = object;
@@ -81,7 +81,7 @@ function previousMonth(object)
 function goToDay(object)
 {
 	document.almanachForm.action = "GoToday";
-	<%if((idResourceFromRR != null) && (!idResourceFromRR.equals(""))){%>
+	<%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
 		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
 	<%}%>
 	document.almanachForm.objectView.value = object;
