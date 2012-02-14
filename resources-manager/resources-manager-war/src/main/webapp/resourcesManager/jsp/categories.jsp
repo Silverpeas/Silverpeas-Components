@@ -63,7 +63,7 @@
 		ArrayPane arrayPane = gef.getArrayPane("categoryList", "ViewCategories", request, session);
 		ArrayColumn colreservable = arrayPane.addArrayColumn(resource.getString("resourcesManager.reservable"));
 		colreservable.setWidth("20");
-		arrayPane.addArrayColumn(resource.getString("GML.lastName"));
+		arrayPane.addArrayColumn(resource.getString("GML.name"));
 		arrayPane.addArrayColumn(resource.getString("resourcesManager.formulaire"));
 		ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("resourcesManager.operations"));
 		columnOp.setSortable(false);
@@ -79,15 +79,15 @@
 		    //recuperation des donnees de la liste
 		    String id = category.getId();
 		    String name = category.getName();
-		    boolean bookable = category.getBookable();
+		    boolean bookable = category.isBookable();
 			String form = category.getForm();
 
 			arrayLine = arrayPane.addArrayLine();
-			if (bookable)
+			if (bookable) {
 				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredGreen"),resource.getString("resourcesManager.categoriereservable"),"");
-			else
+            } else {
 				reservableIcon.setProperties(resource.getIcon("resourcesManager.buletColoredRed"),resource.getString("resourcesManager.categorieirreservable"),"");
-			
+                		}
 			arrayLine.addArrayCellIconPane(iconPane);
 			arrayLine.addArrayCellLink(name,"ViewResources?id="+id);
 			arrayCellText2 = arrayLine.addArrayCellText(form);

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dataset>
+  <sc_resources_category id="1" instanceId="resourcesManager42" name="Salles" creationdate="1315232752398" updatedate="1315232752398" bookable="1" form="model1.xml" 
+                         responsibleid="5"  createrid="5" updaterid="5" description="Salles de réunion" />                                
+  <sc_resources_category id="2" instanceId="resourcesManager42" name="Voitures" creationdate="1315232752398" updatedate="1315232752398" bookable="1" form="[NULL]" 
+                                                       responsibleid="6"  createrid="6" updaterid="6" description="Véhicules utilitaires" />
+  <sc_resources_category id="3" instanceId="resourcesManager50" name="Restaurants" creationdate="1315232752398" updatedate="1315232752398" bookable="0" form="model1.xml" 
+                         responsibleid="5"  createrid="5" updaterid="5" description="Salles de réunion" />
+                         
+                           
+  <uniqueId maxId="5" tablename="sc_resources_category" />
+
+</dataset>
