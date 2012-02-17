@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
+
     <!-- Contacts (Présidents des USA) -->
     <sb_contact_contact contactId="10" contactfirstname="George" contactlastname="Washington"
                         contactemail="George.Washington@oosphere.com" contactphone="" contactfax="" userid=""
@@ -88,5 +89,23 @@
                                    enabled="1"/>
     <sc_contact_genericcontact_rel relationId="4" genericContactId="213" genericCompanyId="111" relationType="0"
                                    enabled="0"/>
+
+    <!-- generic contacts topics -->
+    <sc_contact_genericcontact_topic relationId="100" genericContactId="217" nodeId="5" />
+    <sc_contact_genericcontact_topic relationId="101" genericContactId="113" nodeId="5" />
+    <sc_contact_genericcontact_topic relationId="102" genericContactId="110" nodeId="5" />
+    <sc_contact_genericcontact_topic relationId="103" genericContactId="114" nodeId="5" />
+
+    <sc_contact_genericcontact_topic relationId="104" genericContactId="212" nodeId="6" />
+    <sc_contact_genericcontact_topic relationId="105" genericContactId="213" nodeId="6" />
+    <sc_contact_genericcontact_topic relationId="106" genericContactId="111" nodeId="6" />
+
+    <sc_contact_genericcontact_topic relationId="107" genericContactId="112" nodeId="0" />
+    <sc_contact_genericcontact_topic relationId="108" genericContactId="115" nodeId="0" />
+    <sc_contact_genericcontact_topic relationId="109" genericContactId="210" nodeId="0" />
+    <sc_contact_genericcontact_topic relationId="110" genericContactId="211" nodeId="0" />
+    <sc_contact_genericcontact_topic relationId="111" genericContactId="214" nodeId="0" />
+    <sc_contact_genericcontact_topic relationId="112" genericContactId="215" nodeId="0" />
+    <sc_contact_genericcontact_topic relationId="113" genericContactId="216" nodeId="0" />
 
 </dataset>

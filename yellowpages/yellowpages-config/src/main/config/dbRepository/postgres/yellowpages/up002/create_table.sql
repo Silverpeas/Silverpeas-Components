@@ -36,3 +36,10 @@ CREATE TABLE SC_Contact_GenericContact_Rel
 )
 ;
 
+CREATE TABLE SC_Contact_GenericContact_Topic
+(
+    relationId          int     NOT NULL,
+    genericContactId    int     NOT NULL,
+    nodeId              int     NOT NULL
+);
+

@@ -33,3 +33,11 @@ DROP CONSTRAINT FK_Contact_GenericContact_FKContact
 ALTER TABLE SC_Contact_GenericContact
 DROP CONSTRAINT FK_Contact_GenericContact_FKCompany
 ;
+
+ALTER TABLE SC_Contact_GenericContact_Topic
+DROP CONSTRAINT PK_SC_Contact_GenericContact_Topic
+;
+
+ALTER TABLE SC_Contact_GenericContact_Topic
+DROP CONSTRAINT FK_Contact_GenericContact_Topic_FKGContact
+;

@@ -90,7 +90,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         String destination = "";
         String rootDestination = "/yellowpages/jsp/";
 
-            try {
+        try {
 
             // the flag is the best user's profile
             String flag = scc.getProfile();
@@ -105,6 +105,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
 
                 TopicDetail currentTopic = null;
                 Collection<ContactFatherDetail> contacts = null;
+                Collection<Company> companies = null;
+
                 if (id == null || (id != null && !id.startsWith("group_"))) {
                     String rootId = "0";
                     if (id == null) {
@@ -123,6 +125,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                         }
 
                         contacts = scc.getAllContactDetails(currentTopic.getNodePK());
+                        companies = scc.getAllCompanies(currentTopic.getNodePK().getId());
                         scc.resetCurrentTypeSearchCriteria();
                     } else {// id != null
                         currentTopic = scc.getTopic(id);
@@ -131,11 +134,12 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                         if (id.equals("0") && action == null) {// racine : affiche les
                             // contacts courants
                             contacts = scc.getCurrentContacts();
+                            companies = scc.getCurrentCompanies();
                             request.setAttribute("TypeSearch", scc.getCurrentTypeSearch());
-                            request.setAttribute("SearchCriteria", scc
-                                    .getCurrentSearchCriteria());
+                            request.setAttribute("SearchCriteria", scc.getCurrentSearchCriteria());
                         } else {// réinitialise la liste
                             contacts = scc.getAllContactDetails(currentTopic.getNodePK());
+                            companies = scc.getAllCompanies(currentTopic.getNodePK().getId());
                             scc.resetCurrentTypeSearchCriteria();
                         }
                     }
@@ -149,14 +153,17 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                     request.setAttribute("Group", group);
 
                     contacts = scc.getAllUsersOfGroup(id);
+                    // TODO gestion des groupes pour les companies ? Pour l'instant on renvoie toute la liste
+                    companies = scc.getAllCompanies();
                     scc.resetCurrentTypeSearchCriteria();
                 }
 
                 request.setAttribute("Contacts", contacts);
-                request.setAttribute("Companies", scc.getAllCompanies());
+                request.setAttribute("Companies", companies);
                 request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
 
                 scc.setCurrentContacts(contacts);
+                scc.setCurrentCompanies(companies);
 
                 destination = "/yellowpages/jsp/annuaire.jsp?Action=GoTo&Profile="
                         + flag;
@@ -208,7 +215,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                     listContact.add(contactDetail);
 
                     request.setAttribute("Contacts", scc.getListContactFather(listContact, true));
-                    // TODO getAllCompanies parameter ?
+                    // TODO getAllCompanies : rajouter parametres pour la recherche
                     request.setAttribute("Companies", scc.getAllCompanies());
                     request.setAttribute("CurrentTopic", currentTopic);
                     request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
@@ -233,10 +240,12 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 List<ContactFatherDetail> searchResults = scc.search(typeSearch, searchCriteria);
 
                 scc.setCurrentContacts(searchResults);
+                // TODO set current companies en fonction du searchResults
+                Collection<Company> companies = scc.getAllCompanies();
+                scc.setCurrentCompanies(companies);
 
                 request.setAttribute("Contacts", searchResults);
-                // TODO add search criterias on companies ?
-                request.setAttribute("Companies", scc.getAllCompanies());
+                request.setAttribute("Companies", companies);
                 request.setAttribute("CurrentTopic", currentTopic);
                 request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
                 request.setAttribute("TypeSearch", typeSearch);
@@ -245,11 +254,10 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile="
                         + flag;
             } else if (function.equals("PrintList")) {
-                Collection<ContactFatherDetail> contacts = scc.getCurrentContacts();
                 TopicDetail currentTopic = scc.getCurrentTopic();
 
-                request.setAttribute("Contacts", contacts);
-                request.setAttribute("Companies", scc.getAllCompanies());
+                request.setAttribute("Contacts", scc.getCurrentContacts());
+                request.setAttribute("Companies", scc.getCurrentCompanies());
 
                 request.setAttribute("CurrentTopic", currentTopic);
 
@@ -547,23 +555,28 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
                 String phone = request.getParameter("Phone");
                 String fax = request.getParameter("Fax");
 
+                // Récupération du topicId
+                TopicDetail currentTopic = scc.getCurrentTopic();
+                int topicId = Integer.valueOf(currentTopic.getNodePK().getId());
+
                 // Enregistrement de la nouvelle company
                 if (StringUtil.isBlank(companyId)) {
-                    scc.createCompany(name, email, phone, fax);
-                }
-                else {
+                    scc.createCompany(name, email, phone, fax, topicId);
+                } else {
                     scc.saveCompany(Integer.valueOf(companyId), name, email, phone, fax);
                 }
 
-                // Reinitialise la liste des contacts pour afficher les modifs
-                TopicDetail currentTopic = scc.getCurrentTopic();
+                // Reinitialise la liste des contacts du topic pour afficher les modifs
                 Collection<ContactFatherDetail> contacts = scc.getAllContactDetails(currentTopic.getNodePK());
                 request.setAttribute("CurrentTopic", currentTopic);
 
                 request.setAttribute("Contacts", contacts);
-                request.setAttribute("Companies", scc.getAllCompanies());
+
+                Collection<Company> companies = scc.getAllCompanies(currentTopic.getNodePK().getId());
+                request.setAttribute("Companies", companies);
 
                 scc.setCurrentContacts(contacts);
+                scc.setCurrentCompanies(companies);
                 destination = rootDestination + "topicManager.jsp?Profile=" + flag;
 
             } else {

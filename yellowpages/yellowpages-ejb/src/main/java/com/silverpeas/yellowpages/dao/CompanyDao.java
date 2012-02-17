@@ -57,4 +57,9 @@ public interface CompanyDao extends JpaRepository<Company, Integer> {
             "AND gccompany.companyId = :companyId")
     List<GenericContact> findContactListByCompanyId(@Param("companyId") int companyId);
 
+    @Query("select comp FROM Company comp, GenericContact gccompany, GenericContactTopicRelation topicrel " +
+            "WHERE :topicId = topicrel.nodeId " +
+            "AND topicrel.genericContactId = gccompany.genericContactId " +
+            "AND gccompany.companyId = comp.companyId")
+    List<Company> findContactListByTopicId(@Param("topicId") int topicId);
 }

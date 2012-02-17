@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+@Transactional
 public class CompanyServiceImplTest {
 
     private static CompanyService service;
@@ -36,7 +38,6 @@ public class CompanyServiceImplTest {
         service = (CompanyService) context.getBean("companyService");
         genericContactDao = (GenericContactDao) context.getBean("genericContactDao");
         ds = (DataSource) context.getBean("jpaDataSource");
-        cleanDatabase();
     }
 
     @AfterClass
@@ -62,8 +63,9 @@ public class CompanyServiceImplTest {
         String email = "steve.jobs@apple.test";
         String phone = "+ 00000000";
         String fax = "+ 11111111";
+        int topicId = 5;
 
-        Company result = service.createCompany(instanceId, name, email, phone, fax);
+        Company result = service.createCompany(instanceId, name, email, phone, fax, topicId);
         Company companyFromDb = service.getCompany(result.getCompanyId());
         assertNotNull(result);
         assertNotNull(companyFromDb);
@@ -121,7 +123,8 @@ public class CompanyServiceImplTest {
         String instanceId = "yellowpages6";
         String phone = "911";
         String fax = "911";
-        Company newCompany = service.createCompany(instanceId, name, email, phone, fax);
+        int topicId = 5;
+        Company newCompany = service.createCompany(instanceId, name, email, phone, fax, topicId);
 
         int contactId = 14; // Abraham Lincoln
 
@@ -157,5 +160,14 @@ public class CompanyServiceImplTest {
 
         GenericContact gcContactResult = genericContactDao.findOne(genericContactId);
         assertNull(gcContactResult);
+    }
+
+    @Test
+    public void testFindCompaniesByTopicId() {
+        int topicId = 5;
+
+        List<Company> companies = service.findAllCompaniesForTopic(topicId);
+        assertNotNull(companies);
+        assertEquals(3,companies.size());
     }
 }

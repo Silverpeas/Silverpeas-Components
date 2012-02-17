@@ -33,7 +33,7 @@ import java.util.List;
 
 public interface CompanyService {
 
-    public Company createCompany(String instanceId, String name, String email, String phone, String fax) throws YellowpagesRuntimeException;
+    public Company createCompany(String instanceId, String name, String email, String phone, String fax, int topicId) throws YellowpagesRuntimeException;
 
     public Company saveCompany(int id, String name, String email, String phone, String fax) throws YellowpagesRuntimeException;
 
@@ -54,5 +54,7 @@ public interface CompanyService {
     public List<Company> findCompaniesByPattern(String pattern);
 
     public List<GenericContact> findContactListByCompanyId(int companyId);
+
+    public List<Company> findAllCompaniesForTopic(int topicId);
 }
 

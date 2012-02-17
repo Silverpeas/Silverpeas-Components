@@ -3,9 +3,11 @@ package com.silverpeas.yellowpages.service;
 import com.silverpeas.yellowpages.dao.CompanyDao;
 import com.silverpeas.yellowpages.dao.GenericContactDao;
 import com.silverpeas.yellowpages.dao.GenericContactRelationDao;
+import com.silverpeas.yellowpages.dao.GenericContactTopicRelationDao;
 import com.silverpeas.yellowpages.model.Company;
 import com.silverpeas.yellowpages.model.GenericContact;
 import com.silverpeas.yellowpages.model.GenericContactRelation;
+import com.silverpeas.yellowpages.model.GenericContactTopicRelation;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
 import org.springframework.stereotype.Service;
@@ -28,15 +30,24 @@ public class CompanyServiceImpl implements CompanyService {
     @Inject
     private GenericContactRelationDao genericContactRelationDao;
 
+    @Inject
+    private GenericContactTopicRelationDao genericContactTopicRelationDao;
+
     @Override
-    public Company createCompany(String instanceId, String name, String email, String phone, String fax) {
+    public Company createCompany(String instanceId, String name, String email, String phone, String fax, int topicId) {
         Company company = new Company(instanceId, name, email, phone, fax);
         Company savedCompany = null;
         try {
             savedCompany = companyDao.save(company);
             Company companyFromDb = companyDao.findOne(savedCompany.getCompanyId());
+
+            // Generic contact
             GenericContact gc = new GenericContact(GenericContact.TYPE_COMPANY, null, companyFromDb.getCompanyId());
-            genericContactDao.save(gc);
+            GenericContact savedGc = genericContactDao.save(gc);
+
+            // Relation avec le topic
+            GenericContactTopicRelation gcTopicRelation = new GenericContactTopicRelation(topicId, savedGc.getGenericContactId());
+            genericContactTopicRelationDao.save(gcTopicRelation);
 
         } catch (Exception e) {
             throw new YellowpagesRuntimeException("CompanyService.createCompany()", SilverpeasRuntimeException.ERROR, "yellowpages.EX_CREATE_COMPANY_FAILED", e);
@@ -63,7 +74,7 @@ public class CompanyServiceImpl implements CompanyService {
     public void deleteCompany(int id) {
         Company companyToDelete = this.getCompany(id);
         try {
-            // suppression du generic contact s'il existe
+            // recherche du generic contact s'il existe
             GenericContact gc = genericContactDao.findGenericContactFromCompanyId(id);
             if (gc != null) {
                 // suppression des relations du generic contact s'il en a
@@ -71,6 +82,12 @@ public class CompanyServiceImpl implements CompanyService {
                 if (relationList != null && relationList.size() > 0) {
                     genericContactRelationDao.delete(relationList);
                 }
+                // Suppression des relations avec les topics
+                List<GenericContactTopicRelation> relationTopicList = genericContactTopicRelationDao.findAllByGenericContactId(gc.getGenericContactId());
+                if (relationTopicList != null && relationTopicList.size() > 0) {
+                    genericContactTopicRelationDao.delete(relationTopicList);
+                }
+                // suppression du contact generique
                 genericContactDao.delete(gc);
             }
             // suppression finale de la company qui n'est plus liée à rien
@@ -89,24 +106,31 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public void addContactToCompany(int companyId, int contactId) {
-        // Recuperation de la company dans la table generique (creation si elle n'existe pas encore)
+
         try {
+            // Recuperation du generic contact associé à la COMPANY (creation si il n'existe pas)
+
             GenericContact gcCompany = genericContactDao.findGenericContactFromCompanyId(companyId);
             if (gcCompany == null) {
+                // Creation de la company
                 GenericContact newGCCompany = new GenericContact(GenericContact.TYPE_COMPANY, null, companyId);
                 gcCompany = genericContactDao.save(newGCCompany);
             }
 
-            // Recuperation du contact dans la table generique (creation si il n'existe pas)
+            // Recuperation du generic contact associé au CONTACT (creation si il n'existe pas encore)
             GenericContact gcContact = genericContactDao.findGenericContactFromContactId(contactId);
             if (gcContact == null) {
                 GenericContact newGcContact = new GenericContact(GenericContact.TYPE_CONTACT, contactId, null);
                 gcContact = genericContactDao.save(newGcContact);
             }
 
-            // Creation de la relation entre les deux
-            GenericContactRelation relation = new GenericContactRelation(gcContact.getGenericContactId(), gcCompany.getGenericContactId(), GenericContactRelation.RELATION_TYPE_BELONGS_TO, GenericContactRelation.ENABLE_TRUE);
-            genericContactRelationDao.save(relation);
+            // Recuperation de la relation entre les deux si elle existe, ou creation sinon
+            GenericContactRelation relation = genericContactRelationDao.findByGenericCompanyIdAndGenericContactId(gcCompany.getGenericContactId(), gcContact.getGenericContactId());
+            if (relation == null) {
+                relation = new GenericContactRelation(gcContact.getGenericContactId(), gcCompany.getGenericContactId(), GenericContactRelation.RELATION_TYPE_BELONGS_TO, GenericContactRelation.ENABLE_TRUE);
+                genericContactRelationDao.saveAndFlush(relation);
+            }
+
         } catch (Exception e) {
             throw new YellowpagesRuntimeException("CompanyService.addContactToCompany()", SilverpeasRuntimeException.ERROR, "yellowpages.EX_ADD_COMPANY_TO_CONTACT_FAILED", e);
         }
@@ -132,12 +156,18 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public void deleteGenericContactMatchingContact(int contactId) {
-        // delete generic contact associated with this contactId
+        // find generic contact associated with this contactId
         GenericContact gcContact = genericContactDao.findGenericContactFromContactId(contactId);
         if (gcContact != null) {
+            // Delete relations with companies
             List<GenericContactRelation> listeRelations = genericContactRelationDao.findAllByGenericContactId(gcContact.getGenericContactId());
             for (GenericContactRelation relation : listeRelations) {
                 genericContactRelationDao.delete(relation);
+            }
+            // Delete relations with topics
+            List<GenericContactTopicRelation> listeRelTopics = genericContactTopicRelationDao.findAllByGenericContactId(gcContact.getGenericContactId());
+            for (GenericContactTopicRelation topicRelation : listeRelTopics) {
+                genericContactTopicRelationDao.delete(topicRelation);
             }
             genericContactDao.delete(gcContact);
         }
@@ -170,6 +200,11 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public List<GenericContact> findContactListByCompanyId(int companyId) {
         return companyDao.findContactListByCompanyId(companyId);
+    }
+
+    @Override
+    public List<Company> findAllCompaniesForTopic(int topicId) {
+        return companyDao.findContactListByTopicId(topicId);
     }
 
 }

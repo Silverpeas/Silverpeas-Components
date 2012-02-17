@@ -12,3 +12,6 @@ drop table SC_Contact_Company
 
 drop table SC_Contact_GenericContact
 ;
+
+drop table SC_Contact_GenericContact_Topic
+;

@@ -83,6 +83,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     private List<GroupDetail> groupPath = new ArrayList<GroupDetail>();
     private boolean portletMode = false;
     private Collection<ContactFatherDetail> currentContacts = null;
+    private Collection<Company> currentCompanies = null;
     private Collection<UserFull> currentFullUsers = null; // liste de UserFull
     private Collection<UserCompleteContact> currentCompleteUsers = null;
     private String currentTypeSearch;
@@ -285,8 +286,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         try {
             TopicDetail topicDetail = kscEjb.goTo(id);
             // Recuperation de la liste des companies associees au topic
-            // TODO filtrer la liste pour ne récupérer que les companies du topic (pour l'instant on récupére tout)
-            topicDetail.setContactCompanyDetails(this.serviceCompany.findAllCompanies());
+            int topicId = Integer.valueOf(topicDetail.getNodePK().getId());
+            topicDetail.setContactCompanyDetails(this.serviceCompany.findAllCompaniesForTopic(topicId));
             return topicDetail;
         } catch (NoSuchObjectException nsoe) {
             initEJB();
@@ -1325,6 +1326,14 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         this.currentContacts = currentContacts;
     }
 
+    public Collection<Company> getCurrentCompanies() {
+        return currentCompanies;
+    }
+
+    public void setCurrentCompanies(Collection<Company> currentCompanies) {
+        this.currentCompanies = currentCompanies;
+    }
+
     public boolean isPortletMode() {
         return portletMode;
     }
@@ -1736,8 +1745,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
      * @return id de la company créée
      * @throws YellowpagesRuntimeException si erreur lors de la création de la company
      */
-    public synchronized int createCompany(String name, String email, String phone, String fax) throws YellowpagesRuntimeException {
-        Company company = this.serviceCompany.createCompany(this.getComponentId(), name, email, phone, fax);
+    public synchronized int createCompany(String name, String email, String phone, String fax, int topicId) throws YellowpagesRuntimeException {
+        Company company = this.serviceCompany.createCompany(this.getComponentId(), name, email, phone, fax, topicId);
         return company.getCompanyId();
     }
 
@@ -1759,12 +1768,25 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
     /**
      * Récupère toutes les companies
-     *
-     * @return
+     * @return Liste de company
      * @throws RemoteException si erreur détectée
      */
     public synchronized Collection<Company> getAllCompanies() throws RemoteException {
         return serviceCompany.findAllCompanies();
+    }
+
+    /**
+     * Récupère seulement les companies du topic
+     * @return Liste de company
+     * @throws RemoteException si erreur détectée
+     */
+    public synchronized Collection<Company> getAllCompanies(String strTopicId) throws RemoteException {
+        int topicId;
+        if (StringUtil.isNotEmpty(strTopicId)) {
+            topicId = Integer.valueOf(strTopicId);
+            return serviceCompany.findAllCompaniesForTopic(topicId);
+        } else
+            return null;
     }
 
     /**
@@ -1813,22 +1835,12 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     }
 
     /**
-     * Ajout une companie à un contact
-     *
-     * @param companyId id de la companie à ajouter
-     * @param contactId contact existant
-     * @throws RemoteException
-     */
-    public synchronized void addCompanyToContact(int companyId, int contactId) throws YellowpagesRuntimeException {
-        this.serviceCompany.addContactToCompany(companyId, contactId);
-    }
-
-    /**
      * Supprime le lien entre le contact et ses companies
      *
      * @param contactId id du contact à nettoyer
      * @throws YellowpagesRuntimeException si erreur lors de la suppression
      */
+    @Deprecated
     public synchronized void cleanCompaniesForContact(String contactId) throws YellowpagesRuntimeException {
         int id;
         try {
@@ -1866,4 +1878,45 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         }
     }
 
+    /**
+     * Met à jour la nouvelle liste des companies pour un contact
+     *
+     * @param companyStrIdList Tableau des ids (String) des companies à ajouter au contact
+     * @param strContactId     contactId (sous forme de String)
+     *                         TODO : bidouille a supprimer dès que JPA fonctionne correctement
+     */
+    public synchronized void updateCompanyListForContact(String[] companyStrIdList, String strContactId) {
+
+        int contactId = Integer.parseInt(strContactId);
+        Map<Integer, Company> newCompanyList = new HashMap<Integer, Company>();
+        if (companyStrIdList != null) {
+            for (int i = 0; i < companyStrIdList.length; i++) {
+                Integer companyId = Integer.parseInt(companyStrIdList[i]);
+                Company company = this.serviceCompany.getCompany(companyId);
+                newCompanyList.put(companyId, company);
+            }
+        }
+
+        // récupération de la liste des companies actuellement associées au contact
+        List<Company> currentCompanyList = this.serviceCompany.findCompanyListByContactId(contactId);
+
+        // Parcours de la liste courante
+        for (Company company : currentCompanyList) {
+            Company c = newCompanyList.get(company.getCompanyId());
+            if (c == null) {
+                // si la company n'est pas dans la nouvelle liste => suppression de la DB (entrées supprimées)
+                this.serviceCompany.removeContactFromCompany(company.getCompanyId(), contactId);
+            } else {
+                // enlever de la nouvelle liste car déjà associée à ce contact en DB
+                newCompanyList.remove(c);
+                // ne rien faire en DB
+            }
+        }
+
+        // S'il reste des companies dans la new list, alors il faut les ajouter en DB (nouvelles entrées)
+        for (Company company : newCompanyList.values()) {
+            this.serviceCompany.addContactToCompany(company.getCompanyId(), contactId);
+        }
+
+    }
 }

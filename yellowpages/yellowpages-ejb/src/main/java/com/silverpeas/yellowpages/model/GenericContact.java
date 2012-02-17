@@ -40,6 +40,11 @@ public class GenericContact implements java.io.Serializable {
     @Column(name = "companyId")
     private Integer companyId;
 
+//    @OneToMany(targetEntity = GenericContactTopicRelation.class, fetch=FetchType.LAZY, cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+//    @JoinColumn(name = "nodeId")
+//    private Set topicIds;
+
+
     /*private Company company;
 
     @JoinColumn(name = "companyId", referencedColumnName = "companyId")
@@ -59,10 +64,10 @@ public class GenericContact implements java.io.Serializable {
     }
 
     public GenericContact(int contactType, Integer contactId, Integer companyId) {
-        super();
         this.contactType = contactType;
         this.contactId = contactId;
         this.companyId = companyId;
+        //this.topicIds = new HashSet();
     }
 
     public int getGenericContactId() {
@@ -96,5 +101,13 @@ public class GenericContact implements java.io.Serializable {
     public void setCompanyId(Integer companyId) {
         this.companyId = companyId;
     }
+
+/*    public Set getTopicIds() {
+        return topicIds;
+    }
+
+    public void setTopicIds(Set topicIds) {
+        this.topicIds = topicIds;
+    }*/
 
 }

@@ -117,3 +117,26 @@ ADD	CONSTRAINT FK_Contact_GenericContact_Rel_FKCompany FOREIGN KEY (genericCompa
     REFERENCES SC_Contact_GenericContact (genericContactId)
     ON UPDATE NO ACTION ON DELETE NO ACTION
 ;
+
+
+-- =============== Relations entre GenericContact et Rubriques (topics) ===================
+
+CREATE TABLE SC_Contact_GenericContact_Topic
+(
+    relationId          int     NOT NULL,
+    genericContactId    int     NOT NULL,
+    nodeId              int     NOT NULL
+);
+
+ALTER TABLE SC_Contact_GenericContact_Topic
+ADD CONSTRAINT PK_SC_Contact_GenericContact_Topic PRIMARY KEY
+	(
+		relationId
+	)
+;
+
+ALTER TABLE SC_Contact_GenericContact_Topic
+ADD	CONSTRAINT FK_Contact_GenericContact_Topic_FKGContact FOREIGN KEY (genericContactId)
+    REFERENCES SC_Contact_GenericContact (genericContactId)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+;

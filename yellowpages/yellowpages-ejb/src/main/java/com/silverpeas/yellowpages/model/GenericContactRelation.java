@@ -51,7 +51,6 @@ public class GenericContactRelation implements java.io.Serializable {
     }
 
     public GenericContactRelation(int genericContactId, int genericCompanyId, int relationType, int enabled) {
-        super();
         this.genericContactId = genericContactId;
         this.genericCompanyId = genericCompanyId;
         this.relationType = relationType;
