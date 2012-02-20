@@ -154,7 +154,7 @@ $(document).ready(function() {
     </c:otherwise>
   </c:choose>
   <c:if test="${param.questionId != null}">
-    $("#q<c:out value="${param.questionId}"/>").trigger($.Event("click"));
+    setTimeout("$('#q<c:out value="${param.questionId}"/>').trigger($.Event('click'))", 250);
   </c:if>
 
   $('.category').hover(function() {
