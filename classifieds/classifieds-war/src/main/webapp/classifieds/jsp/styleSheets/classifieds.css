@@ -79,9 +79,13 @@
 }
 
 #classifieds #categories .categoryContent {
-	height: 70px;
+	min-height: 70px;
+	/*pour ie7 et ie8*/
+	height: 70px !ie;
 	position: relative;
 }
+/*retablit pour ie9*/
+:root .color {height:auto\9;}
 
 #classifieds #categories #ViewAllClassifiedsByCategory {
 	float: left;
@@ -94,7 +98,7 @@
 }
 
 #classifieds #categories .categoryContent ul {
-	height: 70px;
+	min-height: 70px;
 	/*list-style-type: disc;*/
 	margin-left: 10px;
 	list-style-type: inherit;
