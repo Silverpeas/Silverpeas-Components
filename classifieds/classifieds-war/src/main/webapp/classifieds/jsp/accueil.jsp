@@ -54,7 +54,9 @@
 <c:set var="isWysiwygHeaderEnabled" value="${requestScope.isWysiwygHeaderEnabled}"/>
 <c:set var="wysiwygHeader" value="${requestScope.wysiwygHeader}"/>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 <script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
@@ -76,7 +78,6 @@
 </head>
 
 <body id="classifieds">
-	<center>
 		<div id="${componentInstanceId}">
 
 			<view:browseBar />
@@ -134,7 +135,7 @@
 
 			<view:window>
 
-				<div id="header">
+				<div id="header_classifieds">
 				${wysiwygHeader}
 				</div>
 
@@ -142,8 +143,7 @@
 					<jsp:include page="subscriptionManager.jsp"/>
 					<form name="classifiedForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
 						<c:if test="${not empty formSearch}">
-							<center>
-								<div id="search">
+								<div id="search" >
 									<!-- Search Form -->
 									<view:board>
 										<%
@@ -159,7 +159,7 @@
 											formSearch.display(out, context, data);
 										%>
 										<br/>
-										<center>
+										<div class="center">
 										<view:buttonPane>
 											<fmt:message var="searchLabel" key="classifieds.searchButton">
 												<fmt:param value="${nbTotal}" />
@@ -167,10 +167,10 @@
 											<view:button label="${searchLabel}"
 												action="javascript:onClick=sendData();" />
 										</view:buttonPane>
-										</center>
+										</div>
 									</view:board>
 								</div>
-							</center>
+							
 						</c:if>
 					</form>
 
@@ -179,8 +179,8 @@
 							<c:forEach items="${categories}" var="category"
 								varStatus="loopStatus">
 								<div
-									id="category${((loopStatus.index % 2) == 0) ? 'left' : 'right'}"
-									class="category${category.key}">
+									id="category${category.key}"
+									class="category${((loopStatus.index % 2) == 0) ? 'left' : 'right'}">
 									<div class="categoryTitle">
 										<a
 											href="ViewAllClassifiedsByCategory?CategoryName=${category.value}&FieldKey=${category.key}">
@@ -198,10 +198,10 @@
 													<li><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
 														<span class="date">
 															<c:if test="${not empty classified.updateDate}">
-																<view:formatDateTime value="${classified.updateDate}" language="${language}"/>
+																<span class="sep"> - </span><view:formatDate value="${classified.updateDate}" language="${language}"/>
 															</c:if>
 															<c:if test="${empty classified.updateDate}">
-																<view:formatDateTime value="${classified.creationDate}" language="${language}"/>
+																<span class="sep"> - </span><view:formatDate value="${classified.creationDate}" language="${language}"/>
 															</c:if>
 														</span>
 													</li>
@@ -209,7 +209,7 @@
 											</ul>
 										</c:if>
 									</div>
-									<div id="ViewAllClassifiedsByCategory">
+									<div class="ViewAllClassifiedsByCategory">
 										<a
 											href="ViewAllClassifiedsByCategory?CategoryName=${category.value}&FieldKey=${category.key}">
 											<fmt:message key="classifieds.viewAllClassifiedsByCategory" />
@@ -217,7 +217,7 @@
 									</div>
 									<c:if
 										test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
-										<div id="newClassified">
+										<div class="newClassified">
 											<a href="NewClassified?FieldKey=${category.key}"> <fmt:message
 													key="classifieds.newClassified" /> </a>
 										</div>
