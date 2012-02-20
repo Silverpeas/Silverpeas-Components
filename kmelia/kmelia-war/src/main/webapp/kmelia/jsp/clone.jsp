@@ -143,10 +143,9 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 		}
 	}
 %>
-<HTML>
-<HEAD>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -243,8 +242,8 @@ function pubDraftOut() {
 	}
 }
 </script>
-</HEAD>
-<BODY class="yui-skin-sam" onUnload="closeWindows()" onLoad="openSingleAttachment()">
+</head>
+<body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()">
 <%
         Window window = gef.getWindow();
         Frame frame = gef.getFrame();
@@ -382,7 +381,7 @@ function pubDraftOut() {
 	    out.println("</TR>");
 		out.println("</TABLE>");
 
-    	out.println("<CENTER>");
+    	out.println("<center>");
     	out.print("<span class=\"txtBaseline\">");
     	if (kmeliaScc.isAuthorUsed() && pubDetail.getAuthor() != null && !pubDetail.getAuthor().equals("")) {
 			out.print("<br/>");
@@ -394,25 +393,28 @@ function pubDraftOut() {
 			out.print(" | ");
 			out.print(resources.getString("kmelia.LastModification")+" : "+updaterName+" - "+resources.getOutputDate(pubDetail.getUpdateDate()));
 		}
-		out.println("</CENTER>");
+		out.println("</center>");
 
 		out.flush();
 
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>
-<FORM NAME="pubForm" ACTION="<%=routerUrl%>clone.jsp" METHOD="POST">
-	<input type="hidden" name="Action">
-	<input type="hidden" name="PubId">
-	<input type="hidden" name="Profile" value="<%=profile%>">
-</FORM>
-<FORM NAME="refusalForm" action="<%=routerUrl%>Unvalidate">
-  	<input type="hidden" name="PubId" value="<%=id%>">
-  	<input type="hidden" name="Motive" value="">
-</FORM>
-<FORM NAME="defermentForm" ACTION="<%=routerUrl%>SuspendPublication" METHOD="POST">
-  	<input type="hidden" name="PubId" value="<%=id%>">
-  	<input type="hidden" name="Motive" value="">
-</FORM>
-</BODY>
-</HTML>
+<form name="pubForm" action="<%=routerUrl%>clone.jsp" method="post">
+	<input type="hidden" name="Action"/>
+	<input type="hidden" name="PubId"/>
+	<input type="hidden" name="Profile" value="<%=profile%>"/>
+</form>
+<form name="refusalForm" action="<%=routerUrl%>Unvalidate">
+  	<input type="hidden" name="PubId" value="<%=id%>"/>
+  	<input type="hidden" name="Motive" value=""/>
+</form>
+<form name="defermentForm" action="<%=routerUrl%>SuspendPublication" method="post">
+  	<input type="hidden" name="PubId" value="<%=id%>"/>
+  	<input type="hidden" name="Motive" value=""/>
+</form>
+<form name="toRouterForm" method="post">
+	<input type="hidden" name="PubId"/>
+</form>
+</body>
+</html>
