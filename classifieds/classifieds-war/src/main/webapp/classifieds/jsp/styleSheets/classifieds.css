@@ -80,8 +80,12 @@
 
 #classifieds #categories .categoryContent {
 	min-height: 70px;
+	/*pour ie7 et ie8*/
+	height: 70px !ie;
 	position: relative;
 }
+/*retablit pour ie9*/
+:root .color {height:auto\9;}
 
 #classifieds #categories #ViewAllClassifiedsByCategory {
 	float: left;
