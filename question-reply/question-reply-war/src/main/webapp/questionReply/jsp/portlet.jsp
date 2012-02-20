@@ -224,18 +224,9 @@ $(document).ready(function() {
   }
 -->
 </script>
-<script type="text/javascript">
-
-function openSPWindow(fonction, windowName)
-{
-	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
-}
-</script>
 </head>
-<body>
+<body id="portlet-faq">
   <view:window browseBarVisible="false">
-    <view:frame>
-<form method="post" action="">
   <ul>
     <c:forEach items="${requestScope.Categories}" var="category">
       <li class="category">
@@ -255,10 +246,7 @@ function openSPWindow(fonction, windowName)
         </div>
         <ul class="questions" id="qcnull" ></ul>
     </li>
-</ul>
-</form>
-  
-    </view:frame>
+  </ul>
   </view:window>
 </body>
 </html>

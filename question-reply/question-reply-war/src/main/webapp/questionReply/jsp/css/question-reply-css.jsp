@@ -9,7 +9,8 @@ ul, li, h4, h3, h5{
 }
 
 .category {
-  margin-top:10px;}
+  margin-top:10px;
+}
 
 .categoryTitle{
   position:relative;
@@ -167,4 +168,13 @@ div.question{
 
 * html .attachments  {
  width:30%;
+}
+
+#portlet-faq .cellBrowseBar,
+#portlet-faq .cellOperation {
+  display: none;
+}
+
+#portlet-faq .questionTitle {
+  margin: 6px 25px 5px 25px;
 }
