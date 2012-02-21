@@ -102,6 +102,7 @@
 											</c:when>
 										</c:choose>
 									</span>
+									<span class="creatorName_result_classifieds">${classified.creatorName}</span><span class="sep_creatorName_result_classifieds"> - </span>
 									<c:if test="${not empty classified.validateDate}">
 										<span class="date_result_classifieds"><view:formatDateTime value="${classified.validateDate}" language="${language}"/></span>
 									</c:if>

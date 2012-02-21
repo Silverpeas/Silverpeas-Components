@@ -198,10 +198,10 @@
 													<li><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
 														<span class="date">
 															<c:if test="${not empty classified.updateDate}">
-																<span class="sep"> - </span><view:formatDate value="${classified.updateDate}" language="${language}"/>
+																<span class="sep"> - </span><view:formatDateTime value="${classified.updateDate}" language="${language}"/>
 															</c:if>
 															<c:if test="${empty classified.updateDate}">
-																<span class="sep"> - </span><view:formatDate value="${classified.creationDate}" language="${language}"/>
+																<span class="sep"> - </span><view:formatDateTime value="${classified.creationDate}" language="${language}"/>
 															</c:if>
 														</span>
 													</li>
