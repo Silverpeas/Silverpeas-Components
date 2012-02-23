@@ -52,7 +52,7 @@
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
-  <instanceClassName>com.stratelia.silverpeas.connecteurJDBC.control.ConnecteurJDBCInstanciator</instanceClassName>
+  <instanceClassName>org.silverpeas.connecteurJDBC.control.ConnecteurJDBCInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
       <label>
