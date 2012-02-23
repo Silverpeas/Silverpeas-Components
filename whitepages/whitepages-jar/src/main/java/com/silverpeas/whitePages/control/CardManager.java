@@ -24,21 +24,17 @@
 
 package com.silverpeas.whitePages.control;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.model.Card;
+import com.silverpeas.whitePages.model.SilverCard;
 import com.silverpeas.whitePages.model.WhitePagesCard;
 import com.silverpeas.whitePages.record.UserRecord;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -60,6 +56,13 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 public class CardManager {
   private static CardManager instance;
@@ -81,7 +84,7 @@ public class CardManager {
     return instance;
   }
 
-  public long create(Card card, String spaceId, String creatorId)
+  public long create(Card card, String creatorId, PdcClassification classification)
       throws WhitePagesException {
     long id = -1;
 
@@ -96,13 +99,22 @@ public class CardManager {
       card.setCreatorId(new Integer(creatorId).intValue());
 
       WAPrimaryKey pk = dao.add(con, card);
-      id = new Long(pk.getId()).longValue();
+      id = Long.parseLong(pk.getId());
       card.setPK(pk);
 
-      getWhitePagesContentManager().createSilverContent(con, card);
+      int silverContentId = getWhitePagesContentManager().createSilverContent(con, card);
 
       indexCard(card);
       con.commit();
+      
+      // classify the contribution on the PdC if its classification is defined
+      if (classification != null && !classification.isEmpty()) {
+        PdcClassificationService service = PdcServiceFactory.getFactory().getPdcClassificationService();
+        SilverCard silverCard = new SilverCard(card, silverContentId);
+        classification.ofContent(Long.toString(id));
+        service.classifyContent(silverCard, classification);
+      }
+      
     } catch (Exception e) {
       rollback(con, e);
     } finally {
@@ -112,7 +124,7 @@ public class CardManager {
     return id;
   }
 
-  public void delete(Collection<String> ids, String spaceId) throws WhitePagesException {
+  public void delete(Collection<String> ids) throws WhitePagesException {
     Connection con = null;
 
     if (ids != null) {
@@ -146,7 +158,7 @@ public class CardManager {
           getWhitePagesContentManager().deleteSilverContent(con, pk);
 
           con.commit();
-          deleteIndex(pk, spaceId);
+          deleteIndex(pk);
         }
       } catch (Exception e) {
         rollback(con, e);
@@ -455,7 +467,7 @@ public class CardManager {
     IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
-  private void deleteIndex(WAPrimaryKey pk, String spaceId) {
+  private void deleteIndex(WAPrimaryKey pk) {
     IndexEngineProxy.removeIndexEntry(new IndexEntryPK(pk.getComponentName(),
         "card", pk.getId()));
   }

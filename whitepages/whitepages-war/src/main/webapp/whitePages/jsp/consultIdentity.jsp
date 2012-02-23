@@ -42,7 +42,6 @@
 
 	tabbedPane.addTab(resource.getString("whitePages.id"), routerUrl+"consultIdentity", true, false);
 	tabbedPane.addTab(resource.getString("whitePages.fiche"), routerUrl+"consultCard?userCardId="+userCardId, false, true);
-	tabbedPane.addTab(resource.getString("whitePages.PdcClassification"), routerUrl+"ViewPdcPositions?userCardId="+userCardId, false, true);
 	
 	Form userForm = (Form) request.getAttribute("Form");
 	PagesContext context = (PagesContext) request.getAttribute("context"); 

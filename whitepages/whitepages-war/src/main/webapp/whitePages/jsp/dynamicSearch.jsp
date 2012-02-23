@@ -42,21 +42,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" var="LML" />
-<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
+<fmt:setLocale value="${requestScope.resources.language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 <%
 boolean main = false;
 if(request.getAttribute("Main") != null){
@@ -141,55 +138,8 @@ function dynamicSearchLaunch(){
 }
 
 function OpenPopup(userId, name){
-    $("#directoryDialog").dialog("option", "title", name);
-    targetUserId = userId;
-	$("#directoryDialog").dialog("open");
-  }
-
-function sendNotification(userId) {
-      var title = stripInitialWhitespace($("#txtTitle").val());
-      var errorMsg = "";
-      if (isWhitespace(title)) {
-          errorMsg = "<fmt:message key="GML.thefield" bundle="${GML}"/>"+ " <fmt:message key="whitePages.object" bundle="${LML}"/>"+ " <fmt:message key="GML.isRequired" bundle="${GML}"/>";
-      }
-      if (errorMsg == "") {
-      	$.getJSON("<%=m_context%>/DirectoryJSON",
-              	{ 
-      				IEFix: new Date().getTime(),
-      				Action: "SendMessage",
-      				Title: $("#txtTitle").val(),
-      				Message: $("#txtMessage").val(),
-      				TargetUserId: targetUserId
-              	},
-      			function(data){
-          			if (data.success) {
-              			closeDialog();
-          			} else {
-              			alert(data.error);
-          			}
-      			});
-      } else {
-        window.alert(errorMsg);
-      }
-  }
-
-function closeDialog() {
-  	$("#directoryDialog").dialog("close");
-  	$("#txtTitle").val("");
-  	$("#txtMessage").val("");
-  }
-
-$(document).ready(function(){
-
-    var dialogOpts = {
-            modal: true,
-            autoOpen: false,
-            height: 250,
-            width: 600
-    };
-
-    $("#directoryDialog").dialog(dialogOpts);    //end dialog
-});
+	initNotification(userId, name);
+}
 </script>
 <script type="text/javascript">
      
@@ -218,12 +168,9 @@ if(isAdmin){
 	operationPane.addOperation(pdcUtilizationSrc, resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+scc.getComponentId()+"','utilizationPdc1')");
 	operationPane.addLine();
 	operationPane.addOperation(resource.getIcon("whitePages.newCard"), resource.getString("whitePages.op.createUser"), "javascript:onClick=B_CREATE_ONCLICK();");
-	operationPane.addLine();
 	if(cards != null && cards.size() > 0){
 		operationPane.addOperation(resource.getIcon("whitePages.delCard"), resource.getString("whitePages.op.deleteUser"), "javascript:onClick=B_DELETE_ONCLICK('"+cards.size()+"');");
-		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("whitePages.hideCard"), resource.getString("whitePages.op.hideCard"), "javascript:onClick=B_HIDE_ONCLICK('"+cards.size()+"');");
-		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("whitePages.showCard"), resource.getString("whitePages.op.showCard"), "javascript:onClick=B_SHOW_ONCLICK('"+cards.size()+"');");
 	}
 }
@@ -244,14 +191,14 @@ String queryValue = request.getAttribute("query") != null ?  (String)request.get
 if(!main){
   // no form search in Main
 %>
-<br/><fmt:message key="whitePages.op.searchCard" bundle="${LML}"/><br/>
+<br/><fmt:message key="whitePages.op.searchCard"/><br/>
 <div class="zoneNavAndSearch">
           <div id="search">
 <form id="searchform" name="searchform" method="post" action="<%=routerUrl + "getSearchResult"%>" >
 	<div>
-    	<label class="txtlibform" for="query"><fmt:message key="whitePages.keywords" bundle="${LML}"/></label>
+    	<label class="txtlibform" for="query"><fmt:message key="whitePages.keywords"/></label>
         <input type="text" id="query" value="<%=queryValue%>" size="60" name="query" class="ac_input champTexte"/>
-        <p class="txtexform"><fmt:message key="whitePages.keywordssample" bundle="${LML}"/></p>
+        <p class="txtexform"><fmt:message key="whitePages.keywordssample"/></p>
     </div>
 <%
 if (primaryPdcFields != null && !primaryPdcFields.isEmpty()) {   
@@ -267,13 +214,13 @@ if (primaryPdcFields != null && !primaryPdcFields.isEmpty()) {
 if (secondaryPdcFields != null && !secondaryPdcFields.isEmpty()) {   
 %>
 <a href="#" id="link_secondaryAxe" 
-                			title="<fmt:message key="whitePages.secondary" bundle="${LML}"/>" 
+                			title="<fmt:message key="whitePages.secondary"/>" 
                             class="linkMore">
-              		<fmt:message key="whitePages.secondary" bundle="${LML}"/>
+              		<fmt:message key="whitePages.secondary"/>
 </a>
 
 <div  id="secondaryAxe" class="arbre">
-<img title="<fmt:message key="whitePages.secondary"  bundle="${LML}"/>" alt="<fmt:message key="whitePages.secondary"  bundle="${LML}"/>" src="<%=m_context%>/pdcPeas/jsp/icons/secondary.gif"/> 	
+<img title="<fmt:message key="whitePages.secondary" />" alt="<fmt:message key="whitePages.secondary" />" src="<%=m_context%>/pdcPeas/jsp/icons/secondary.gif"/> 	
 <%
 	out.println(WhitePagesHtmlTools.generateHtmlForPdc(secondaryPdcFields, language, request));
 %> 
@@ -283,19 +230,17 @@ if (secondaryPdcFields != null && !secondaryPdcFields.isEmpty()) {
 if (searchFields != null && !searchFields.isEmpty()) {
 %>
 <a href="#" id="link_additionalElements" 
-            title="<fmt:message key="whitePages.suppl" bundle="${LML}"/>" 
+            title="<fmt:message key="whitePages.suppl"/>" 
             class="linkMore">
-<fmt:message key="whitePages.suppl" bundle="${LML}"/>
+<fmt:message key="whitePages.suppl"/>
 </a>
 
 <div id="additionalElements" class="arbre">
-  <img title="<fmt:message key="whitePages.suppl" bundle="${LML}"/>" alt="<fmt:message key="whitePages.suppl" bundle="${LML}"/>" src="<%=m_context%>/whitePages/jsp/icons/contactCard.gif"/> 
+  <img title="<fmt:message key="whitePages.suppl"/>" alt="<fmt:message key="whitePages.suppl"/>" src="<%=m_context%>/whitePages/jsp/icons/contactCard.gif"/> 
 <%
-  ArrayPane arrayPaneSearchFields = gef.getArrayPane("SearchFields", routerUrl + "Main", request, session);
 	Iterator i = searchFields.iterator();
 	while (i.hasNext()) {
 		SearchField searchField = (SearchField) i.next();
-		ArrayLine arrayLine = arrayPaneSearchFields.addArrayLine();
 		String fieldName = searchField.getFieldId().substring(4,searchField.getFieldId().length());
 		String fieldId = searchField.getFieldId();
 		String fieldValue = request.getAttribute(fieldId) != null ?  (String)request.getAttribute(fieldId) : "";
@@ -315,7 +260,7 @@ if (searchFields != null && !searchFields.isEmpty()) {
   <table cellspacing="0" cellpadding="0" border="0">
       <tbody><tr>
           <td align="left" class="gaucheBoutonV5"><img src="<%=m_context%>/util/viewGenerator/icons/px.gif" alt="" /></td>
-          <td nowrap="nowrap" class="milieuBoutonV5"><a href="javascript:dynamicSearchLaunch()"><fmt:message key="whitePages.button.search" bundle="${LML}"/></a></td>
+          <td nowrap="nowrap" class="milieuBoutonV5"><a href="javascript:dynamicSearchLaunch()"><fmt:message key="whitePages.button.search"/></a></td>
           <td align="right" class="droiteBoutonV5"><img src="<%=m_context%>/util/viewGenerator/icons/px.gif" alt="" /></td>
        </tr></tbody>
   </table>  
@@ -381,7 +326,7 @@ if(cards != null && cards.size() > 0){
                    </ul>
                  </div>
                 <div class="action">
-                	  <a onclick="OpenPopup(<%=card.getPK().getId()%>,'admin ')" class="link notification" href="#"><fmt:message key="whitePages.sendNotif" bundle="${LML}"/></a> <a onclick="javascript:consult(<%=card.getPK().getId()%>)" class="link goToWhitepages" href="javascript:consult(<%=card.getPK().getId()%>)"><fmt:message key="whitePages.seeCard" bundle="${LML}"/></a>
+                	  <a onclick="OpenPopup(<%=card.getPK().getId()%>,'admin ')" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a> <a onclick="javascript:consult(<%=card.getPK().getId()%>)" class="link goToWhitepages" href="javascript:consult(<%=card.getPK().getId()%>)"><fmt:message key="whitePages.seeCard"/></a>
                 </div>
                <br clear="all" />
             </li><%
@@ -389,7 +334,7 @@ if(cards != null && cards.size() > 0){
 }else if(searchDone){
 %>
 <li class="intfdcolor">
-	<fmt:message key="whitePages.nosearchresults" bundle="${LML}"/>
+	<fmt:message key="whitePages.nosearchresults"/>
 </li>
 <%
 }
@@ -401,45 +346,7 @@ if(cards != null && cards.size() > 0){
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-<!-- Dialog to notify a user -->
-	<div id="directoryDialog">
-		<view:board>
-        <form name="notificationSenderForm" action="SendMessage" method="post">
-        	<table>
-          <tr>
-            <td class="txtlibform">
-              <fmt:message key="whitePages.object" bundle="${LML}" /> :
-            </td>
-            <td>
-              <input type="text" name="txtTitle" id="txtTitle" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" size="50" value=""/>
-              <img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" />
-            </td>
-          </tr>
-          <tr>
-            <td class="txtlibform">
-              <fmt:message key="whitePages.message" bundle="${LML}" /> :
-            </td>
-            <td>
-              <textarea name="txtMessage" id="txtMessage" cols="49" rows="4"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-	    (<img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" /> <fmt:message key="GML.requiredField" bundle="${GML}"/>)
-            </td>
-          </tr>
-          </table>
-        </form>
-        </view:board>
-        <div align="center">
-          <%
-			ButtonPane buttonPane = gef.getButtonPane();
-			buttonPane.addButton((Button) gef.getFormButton("Envoyer", "javascript:sendNotification()", false));
-			buttonPane.addButton((Button) gef.getFormButton("Cancel", "javascript:closeDialog()", false));
-			out.println(buttonPane.print());
-          %>
-        </div>
-	</div>
+	<%@include file="../../socialNetwork/jsp/notificationDialog.jsp" %>
 	<view:progressMessage/>
 </body>
 </html>

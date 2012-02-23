@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.silverpeas.whitePages.servlets;
 
 import java.util.ArrayList;
@@ -152,32 +149,23 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
             request.setAttribute("Main", "true");
             destination = getDestination("searchInWhitePage", componentSC, request);
           }
-        } else
+        } else {
           destination = "/admin/jsp/errorpage.jsp";
+        }
       }
 
       /*
        * User is forced to create his own card and classify it.
        */
       else if (function.startsWith("ForceCardCreation")) {
-        if (flag.equals("admin") || flag.equals("user")) {
+        if ("admin".equals(flag) || "user".equals(flag)) {
           scc.initCurrentUserCards(); // re init combo des fiches
 
           /*
            * 1st case : user card has not been created
            */
           if (!scc.existCard(scc.getUserId())) {
-            destination = getDestination("createIdentity", componentSC, request);
-
-          }
-
-          /*
-           * 2nd case : user card is not classified
-           */
-          else if (!scc.isCardClassifiedOnPdc()) {
-            request.setAttribute("FirstVisite", "1");
-            destination = getDestination("ViewPdcPositions", componentSC,
-                request);
+            destination = getDestination("createIdentity", scc, request);
           }
 
           /*
@@ -188,34 +176,20 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
                 LoginFilter.ATTRIBUTE_FORCE_CARD_CREATION);
             destination = getDestination("Main", componentSC, request);
           }
-        } else
+        } else {
           destination = "/admin/jsp/errorpage.jsp";
+        }
       }
-
-      /*
-       * Card list.
-       */
-      /*else if (function.equals("search")) {
-        request.setAttribute("IsEmailHidden", scc.isEmailHidden());
-
-        if (flag.equals("admin")) {
-          request.setAttribute("listCards", scc.getCards());
-          destination = "/whitePages/jsp/listCards.jsp";
-        } else if (flag.equals("user")) {
-          request.setAttribute("listCards", scc.getVisibleCards());
-          destination = "/whitePages/jsp/listCardsUser.jsp";
-        } else
-          destination = "/admin/jsp/errorpage.jsp";
-      }*/
 
       /*
        * New card (administrator only) : redirects to user panel.
        */
-      else if (function.equals("createQuery")) {
-        if (flag.equals("admin")) {
+      else if ("createQuery".equals(function)) {
+        if ("admin".equals(flag)) {
           destination = scc.initUserPanel();
-        } else
+        } else {
           destination = "/admin/jsp/errorpage.jsp";
+        }
       }
 
       /*
@@ -306,21 +280,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
        */
       else if (function.equals("effectiveCreate")) {
         /*
-         * Stores card, identity and data record.
-         */
-        scc.insertCard();
-
-        /*
          * Updates record object with new values.
          */
-        scc.setCardRecord(request);
-        scc.saveCard();
-
-        /*
-         * If user has been forced to create his own card and done it, removes forced redirection.
-         */
-        // HttpSession session = request.getSession(true);
-        // session.removeAttribute(LoginFilter.ATTRIBUTE_FORCE_CARD_CREATION);
+        scc.createCard(request);
 
         /*
          * Go back to main page.
@@ -396,8 +358,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
           request.setAttribute("context", context);
           request.setAttribute("data", data);
           destination = "/whitePages/jsp/updateCard.jsp";
-        } else
+        } else {
           destination = "/admin/jsp/errorpage.jsp";
+        }
       }
 
       else if (function.equals("effectiveUpdate")) {
@@ -418,8 +381,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
 
           request.setAttribute("userCardId", userCardIdString);
           destination = getDestination(retour, componentSC, request);
-        } else
+        } else {
           destination = "/admin/jsp/errorpage.jsp";
+        }
       }
 
       else if (function.equals("delete")) {
@@ -434,8 +398,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
           scc.delete(listToDelete);
 
           destination = getDestination("Main", componentSC, request);
-        } else
+        } else {
           destination = "/admin/jsp/errorpage.jsp";
+        }
       }
 
       else if (function.equals("hide")) {
@@ -449,8 +414,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
           }
           scc.hide(listToMask);
           destination = getDestination("Main", componentSC, request);
-        } else
+        } else {
           destination = "/admin/jsp/errorpage.jsp";
+        }
       }
 
       else if (function.equals("unHide")) {
@@ -464,157 +430,16 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
           }
           scc.unHide(listToUnMask);
           destination = getDestination("Main", componentSC, request);
-        } else
+        } else {
           destination = "/admin/jsp/errorpage.jsp";
+        }
       }
-
-      /*
-       * Acces externe via d'autres composants ou Acces interne role User
-       */
-      /*else if (function.equals("viewIdentity")) {
-        String userCardIdString = request.getParameter("userCardId");
-        if (!StringUtil.isDefined(userCardIdString)) {
-          // on vient de pdc search
-          userCardIdString = request.getParameter("documentId");
-        }
-        if (!StringUtil.isDefined(userCardIdString)) {
-          // on vient de search
-          userCardIdString = request.getParameter("id");
-        }
-
-        String hostComponentName = request.getParameter("HostComponentName");
-        String hostUrl = request.getParameter("HostUrl");
-        String hostSpaceName = request.getParameter("HostSpaceName");
-        String hostPath = request.getParameter("HostPath");
-
-        if (hostComponentName != null)
-          scc.setHostParameters(hostSpaceName, hostComponentName, hostUrl,
-              hostPath);
-        else {
-          String hostParameters[] = scc.getHostParameters();
-          if (hostParameters != null) {
-            hostComponentName = hostParameters[0];
-            hostUrl = hostParameters[1];
-            hostSpaceName = hostParameters[2];
-            hostPath = hostParameters[3];
-          }
-        }
-
-        Card card = null;
-        // interne rôle user
-        if (userCardIdString != null) {
-          // retourne un objet Card contenant les infos de la fiche y compris le
-          // form et le dataRecord.
-          long userCardId = new Long(userCardIdString).longValue();
-          card = scc.getCardReadOnly(userCardId);
-
-        }
-        // externe
-        else {
-          String userId = request.getParameter("userId");
-          SilverTrace.info("whitePages",
-              "WhitePagesRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
-          card = scc.getUserCard(userId);
-        }
-        if (card == null) {
-          destination = "/whitePages/jsp/errorIdentity.jsp";
-        } else {
-          Form userForm = card.readUserForm();
-          PagesContext context = new PagesContext("myForm", "0", scc
-              .getLanguage());
-          context.setComponentId(card.getInstanceId());
-          context.setObjectId(card.getPK().getId());
-          context.setUserId(scc.getUserId());
-          UserRecord data = card.readUserRecord();
-
-          // retourne un objet Card contenant les infos de la fiche y compris le
-          // form et le dataRecord.
-          request.setAttribute("card", card);
-          request.setAttribute("whitePagesCards", scc.getCurrentUserCards());
-          request.setAttribute("Form", userForm);
-          request.setAttribute("context", context);
-          request.setAttribute("data", data);
-          request.setAttribute("HostSpaceName", hostSpaceName);
-          request.setAttribute("HostPath", hostPath);
-          request.setAttribute("IsFicheVisible", scc.isFicheVisible());
-
-          destination = "/whitePages/jsp/viewIdentity.jsp";
-        }
-      }*/
-
-      /*else if (function.equals("viewCard")) {
-        String userCardIdString = request.getParameter("userCardId");
-
-        String hostComponentName = null;
-        String hostUrl = null;
-        String hostSpaceName = null;
-        String hostPath = null;
-        String hostParameters[] = scc.getHostParameters();
-        if (hostParameters != null) {
-          hostComponentName = hostParameters[0];
-          hostUrl = hostParameters[1];
-          hostSpaceName = hostParameters[2];
-          hostPath = hostParameters[3];
-        }
-
-        long userCardId = new Long(userCardIdString).longValue();
-        Card card = scc.getCardReadOnly(userCardId);
-        if (card == null) {
-          destination = "/whitePages/jsp/errorIdentity.jsp";
-        } else {
-          Form viewForm = card.readCardViewForm();
-          PagesContext context = new PagesContext("myForm", "0", scc
-              .getLanguage());
-          context.setComponentId(card.getInstanceId());
-          context.setObjectId(card.getPK().getId());
-          context.setUserId(scc.getUserId());
-          DataRecord data = card.readCardRecord();
-
-          // retourne un objet Card contenant les infos de la fiche y compris le
-          // form et le dataRecord.
-          request.setAttribute("card", card);
-          request.setAttribute("whitePagesCards", scc.getCurrentUserCards());
-          request.setAttribute("Form", viewForm);
-          request.setAttribute("context", context);
-          request.setAttribute("data", data);
-          request.setAttribute("HostComponentName", hostComponentName);
-          request.setAttribute("HostUrl", hostUrl);
-          request.setAttribute("HostSpaceName", hostSpaceName);
-          request.setAttribute("HostPath", hostPath);
-
-          destination = "/whitePages/jsp/viewCard.jsp";
-        }
-      }*/
 
       else if (function.equals("searchResult") || function.equals("Consult")) // pdc
       // search
       // result
       {
-        destination = getDestination("consultCard", componentSC, request);
-      }
-
-      else if (function.equals("ViewPdcPositions")) {
-        String userCardId = (String) request.getParameter("userCardId");
-
-        request.setAttribute("UserCardId", userCardId);
-        // NEWD DLE
-        // request.setAttribute("ReturnURL",
-        // "/RwhitePages/"+scc.getSpaceId()+"_"+scc.getComponentId()+"/ViewPdcPositions?userCardId="+userCardId);
-        request.setAttribute("ReturnURL", "/RwhitePages/"
-            + scc.getComponentId() + "/ViewPdcPositions?userCardId="
-            + userCardId);
-        // NEWF DLE
-        request.setAttribute("SilverContentId", new Integer(scc
-            .getSilverObjectId(userCardId)).toString());
-
-        // paramètre pour ouvrir directement la création d'une position du pdc
-        String firstVisite = "0";
-        if (StringUtil.isDefined((String) request.getAttribute("FirstVisite")))
-          firstVisite = (String) request.getAttribute("FirstVisite");
-        request.setAttribute("FirstVisite", firstVisite);
-
-        destination = "/whitePages/jsp/pdcPositions.jsp";
+        destination = getDestination("consultCard", scc, request);
       }
 
       /*
@@ -626,8 +451,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
         /*
          * if no card id defined, redirects to main page.
          */
-        if (cardId == null)
+        if (cardId == null) {
           return getDestination("Main", scc, request);
+        }
 
         /*
          * Retrieves notified user card and store it in request
