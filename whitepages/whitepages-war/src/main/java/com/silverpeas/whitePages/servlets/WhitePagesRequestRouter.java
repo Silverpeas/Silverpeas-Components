@@ -156,15 +156,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
            */
           if (!scc.existCard(scc.getUserId())) {
             destination = getDestination("createIdentity", scc, request);
-
-          }
-
-          /*
-           * 2nd case : user card is not classified
-           */
-          else if (!scc.isCardClassifiedOnPdc()) {
-            request.setAttribute("FirstVisite", "1");
-            destination = getDestination("ViewPdcPositions", scc, request);
           }
 
           /*
@@ -295,15 +286,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
        */
       else if (function.equals("effectiveCreate")) {
         /*
-         * Stores card, identity and data record.
-         */
-        scc.insertCard();
-
-        /*
          * Updates record object with new values.
          */
-        scc.setCardRecord(request);
-        scc.saveCard();
+        scc.createCard(request);
 
         /*
          * If user has been forced to create his own card and done it, removes forced redirection.
@@ -455,23 +440,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
       // result
       {
         destination = getDestination("consultCard", scc, request);
-      } else if (function.equals("ViewPdcPositions")) {
-        String userCardId = (String) request.getParameter("userCardId");
-
-        request.setAttribute("UserCardId", userCardId);
-        request.setAttribute("ReturnURL", "/RwhitePages/"
-            + scc.getComponentId() + "/ViewPdcPositions?userCardId="
-            + userCardId);
-
-        request.setAttribute("SilverContentId", String.valueOf(scc.getSilverObjectId(userCardId)));
-        // paramètre pour ouvrir directement la création d'une position du pdc
-        String firstVisite = "0";
-        if (StringUtil.isDefined((String) request.getAttribute("FirstVisite"))) {
-          firstVisite = (String) request.getAttribute("FirstVisite");
-        }
-        request.setAttribute("FirstVisite", firstVisite);
-
-        destination = "/whitePages/jsp/pdcPositions.jsp";
       }
 
       /*

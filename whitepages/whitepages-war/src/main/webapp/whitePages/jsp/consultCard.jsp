@@ -62,7 +62,7 @@
 		operationPane.addOperation(resource.getIcon("whitePages.editCard"), resource.getString("whitePages.op.editUser"), "javascript:onClick=B_UPDATE_ONCLICK('"+userCardId+"');");
 		operationPane.addLine();
 		
-		operationPane.addOperation(resource.getString("whitePages.PdcClassification"), resource.getString("whitePages.op.editPdc"), routerUrl+"ViewPdcPositions?userCardId="+userCardId);
+		operationPane.addOperation(resource.getString("whitePages.PdcClassification"), resource.getString("whitePages.op.editPdc"), "javascript:onclick=displayPDC()");
 		operationPane.addLine();
 
 		if (isAdmin) {
@@ -96,27 +96,23 @@
 	}
 	
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.back"), routerUrl+"Main", false));
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.back"), routerUrl+"Main", false));
 %>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" var="LML" />
-<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
+<fmt:setLocale value="${requestScope.resources.language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-
-var targetUserId = -1;
-
 function openSPWindow(fonction,windowName){
 		SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
@@ -151,48 +147,16 @@ function openSPWindow(fonction,windowName){
 /*****************************************************************************/
 	function B_REVERSEHIDE_ONCLICK(idCard) {
 		location.href = "<%=routerUrl%>reverseHide?returnPage=consultCard&userCardId="+idCard;
-	}	
+	}
+	
+	function displayPDC() {
+		$(".divSee").hide();
+		$("#expert-classification").show();
+	}
 
 	function OpenPopup(userId, name){
-	    $("#directoryDialog").dialog("option", "title", name);
-	    targetUserId = userId;
-		$("#directoryDialog").dialog("open");
-	  }
-
-	var targetUserId = -1;  
-
-	function sendNotification(userId) {
-	      var title = stripInitialWhitespace($("#txtTitle").val());
-	      var errorMsg = "";
-	      if (isWhitespace(title)) {
-	          errorMsg = "<fmt:message key="GML.thefield" bundle="${GML}"/>"+ " <fmt:message key="whitePages.object" bundle="${LML}"/>"+ " <fmt:message key="GML.isRequired" bundle="${GML}"/>";
-	      }
-	      if (errorMsg == "") {
-	      	$.getJSON("<%=m_context%>/DirectoryJSON",
-	              	{ 
-	      				IEFix: new Date().getTime(),
-	      				Action: "SendMessage",
-	      				Title: $("#txtTitle").val(),
-	      				Message: $("#txtMessage").val(),
-	      				TargetUserId: targetUserId
-	              	},
-	      			function(data){
-	          			if (data.success) {
-	              			closeDialog();
-	          			} else {
-	              			alert(data.error);
-	          			}
-	      			});
-	      } else {
-	        window.alert(errorMsg);
-	      }
-	  }
-
-	function closeDialog() {
-	  	$("#directoryDialog").dialog("close");
-	  	$("#txtTitle").val("");
-	  	$("#txtMessage").val("");
-	  }
+		initNotification(userId, name);
+	}
    
     $(document).ready(function(){
 			
@@ -207,16 +171,6 @@ function openSPWindow(fonction,windowName){
 			$(".divSee").hide();
 			$('#'+divAAfficher).show();
 			});
-
-		    var dialogOpts = {
-	                modal: true,
-	                autoOpen: false,
-	                height: 250,
-	                width: 600
-	        };
-	
-	        $("#directoryDialog").dialog(dialogOpts);    //end dialog
-	       
       });
 </script>
 </head>
@@ -246,7 +200,7 @@ String firstName = userRecord.getField("FirstName").getValue(language);
                
 	    <!-- action  -->
         <div class="action">
-        	<a onclick="OpenPopup(<%=card.getUserId()%>,'<%=lastName + " " + firstName%>');" class="link notification" href="#"><fmt:message key="whitePages.sendNotif" bundle="${LML}"/></a>
+        	<a onclick="OpenPopup(<%=card.getUserId()%>,'<%=lastName + " " + firstName%>');" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a>
         </div> <!-- /action  -->              
 
         <!-- profilPhoto  -->  
@@ -273,7 +227,7 @@ String firstName = userRecord.getField("FirstName").getValue(language);
     
     <!-- pdcPosition  -->        
     <div class="pdcPosition">
-        <h3><fmt:message key="whitePages.pdc" bundle="${LML}"/></h3>
+        <h3><fmt:message key="whitePages.pdc"/></h3>
         <ul>
         <%
         if(pdcPositions != null && !pdcPositions.isEmpty()){
@@ -330,20 +284,20 @@ String firstName = userRecord.getField("FirstName").getValue(language);
 
 	<!-- sousNav  --> 
 	<div class="sousNavBulle">
-		<p><fmt:message key="whitePages.showPart" bundle="${LML}"/> : 
+		<p><fmt:message key="whitePages.showPart"/> : 
         	<a href="#" 
                id="link_sheetIdentity"
                class="active linkSee">
-             <fmt:message key="whitePages.idpart" bundle="${LML}"/>
+             <fmt:message key="whitePages.idpart"/>
              </a>  
              
             <a href="#" 
             	id="link_sheetExpert" 
                 class="linkSee">
-             <fmt:message key="whitePages.expertpart" bundle="${LML}"/>
+             <fmt:message key="whitePages.expertpart"/>
              </a>
              
-        &nbsp;&nbsp;-&nbsp;&nbsp; <img alt="Annuaire" title="Autres annuaires" src="<%=m_context%>/util/icons/component/whitePagesSmall.gif"/><fmt:message key="whitePages.others" bundle="${LML}"/> :
+        &nbsp;&nbsp;-&nbsp;&nbsp; <img alt="Annuaire" title="Autres annuaires" src="<%=m_context%>/util/icons/component/whitePagesSmall.gif"/><fmt:message key="whitePages.others"/> :
         
         <%
         if (whitePagesCards != null) {
@@ -390,7 +344,7 @@ if (userFull != null) {
 }
 %>
 </tbody>
-</table>                
+</table>
 
 </div>
 
@@ -404,9 +358,15 @@ if (userFull != null) {
 
 <br/>
 
-</div><!-- /theSheets  -->
+<div class="divSee" id="expert-classification">
+	<view:pdcClassification componentId="<%= componentId %>" contentId="<%= card.getPK().getId() %>" editable="true" />
+</div>
 
+</div><!-- /theSheets  -->
+<br clear="all"/>
+<center>
 <%=buttonPane.print()%>
+</center>
 
 <%
 out.println(frame.printAfter());
@@ -416,45 +376,8 @@ out.println(window.printAfter());
 <form name="choixFiche" method="post">
 	<input type="hidden" name="userCardId" />
 </form>
-<!-- Dialog to notify a user -->
-	<div id="directoryDialog">
-		<view:board>
-        <form name="notificationSenderForm" action="SendMessage" method="post">
-        	<table>
-          <tr>
-            <td class="txtlibform">
-              <fmt:message key="whitePages.object" bundle="${LML}" /> :
-            </td>
-            <td>
-              <input type="text" name="txtTitle" id="txtTitle" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" size="50" value=""/>
-              <img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" />
-            </td>
-          </tr>
-          <tr>
-            <td class="txtlibform">
-              <fmt:message key="whitePages.message" bundle="${LML}" /> :
-            </td>
-            <td>
-              <textarea name="txtMessage" id="txtMessage" cols="49" rows="4"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-	    (<img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" /> <fmt:message key="GML.requiredField" bundle="${GML}"/>)
-            </td>
-          </tr>
-          </table>
-        </form>
-        </view:board>
-        <div align="center">
-          <%
-			ButtonPane buttonPanePopup = gef.getButtonPane();
-          	buttonPanePopup.addButton((Button) gef.getFormButton("Envoyer", "javascript:sendNotification('" + card.getUserId() + "')", false));
-          	buttonPanePopup.addButton((Button) gef.getFormButton("Cancel", "javascript:closeDialog()", false));
-			out.println(buttonPanePopup.print());
-          %>
-        </div>
-	</div>
+
+	<%@include file="../../socialNetwork/jsp/notificationDialog.jsp" %>
 	<view:progressMessage/>
 </body>
 </html>

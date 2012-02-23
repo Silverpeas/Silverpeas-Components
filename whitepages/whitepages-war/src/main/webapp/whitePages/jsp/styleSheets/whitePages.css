@@ -488,6 +488,10 @@ html > body #whitePagesSheet .profilPhoto img{
 
 .sheet table.oneSheet { margin-bottom:10px;}
 .sheet table.oneSheet td { border-bottom:1px solid #E5E5E5; padding-right:60px;}
+
+#expert-classification {
+	width: 98%;
+}
 	
 /*- [ whitePages END ] --------------------------- */
 
