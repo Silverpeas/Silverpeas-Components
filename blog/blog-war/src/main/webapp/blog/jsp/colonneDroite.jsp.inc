@@ -24,96 +24,112 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 	}
 </script>
 
-  <div class="zoneRecherche">
-	   <div class="titreRecherche">
-	       <%=resource.getString("GML.search")%>
-	   </div>
-	   <form name="searchForm" action="Search" method="post">
-	   <table width="100%" border="0" cellspacing="0" cellpadding="0">
-		      <tr>
-		        <td>
-		          <input type="text" name="WordSearch" class="inputRecherche"/>
-		        </td>
-		        <td valign="top">
-				      <%
-				      ButtonPane buttonPane = gef.getButtonPane();
-				      buttonPane.addButton(searchButton);
-				      out.print(buttonPane.print());
-				      %>
-				    </td>
-				  </tr>
-		    
-		  </table>
-		  </form>
+  
+<div id="zoneRecherche" class="bgDegradeGris">
+	<div id="titreRecherche" class="bgDegradeGris header">
+	    <h4><%=resource.getString("GML.search")%></h4>
+   </div>
+   <form name="searchForm" action="Search" method="post">
+		<input type="text" name="WordSearch" class="inputRecherche"/>
+		<%
+		ButtonPane buttonPane = gef.getButtonPane();
+		buttonPane.addButton(searchButton);
+		out.print(buttonPane.print());
+		%>
+	</form>
+</div>
+
+<div id="operationBlog">
+	<%=myOperations%>
+</div>
+	
+<div id="topics" class="bgDegradeGris">
+	<div id="titreTopics" class="bgDegradeGris  header">
+		<h4 class="clean">
+			<%
+			  if ("admin".equals(profile)) {
+				out.println("<a href=\"ViewCategory\">"+resource.getString("GML.categories")+"</a>");
+			  }
+			  else {
+				out.println(resource.getString("GML.categories"));
+			  }
+			%>
+		</h4>
 	</div>
-	<br />
-	<div id="operationBlog">
-      <%=myOperations%>
-	</div>
-	<br />
-	<div id="titreTopics">
-		  <%
-		  if ("admin".equals(profile)) {
-		    out.println("<a href=\"ViewCategory\">"+resource.getString("GML.categories")+"</a>");
-		  }
-		  else {
-		    out.println(resource.getString("GML.categories"));
-		  }
-		  %>
-	</div>
-	<div id="topics">
-	   <%
-		 if (categories != null) {
-        Iterator itCat = (Iterator) categories.iterator();
-		    while (itCat.hasNext()) {
-		        NodeDetail uneCategory = (NodeDetail) itCat.next();
-		      	%>
-		        <a href="<%="PostByCategory?CategoryId=" + uneCategory.getNodePK().getId()%>"><%=uneCategory.getName()%></a><br />
-		        <%
+	
+	<%
+		if (categories != null) {
+			%>
+			<ul>
+			<%
+				Iterator itCat = (Iterator) categories.iterator();
+				while (itCat.hasNext()) {
+					NodeDetail uneCategory = (NodeDetail) itCat.next();
+					%>
+					<li><a title="<%=uneCategory.getDescription()%>" href="<%="PostByCategory?CategoryId=" + uneCategory.getNodePK().getId()%>"><%=uneCategory.getName()%></a></li>
+				<%
 				}
-		 }
-		 %>
-	</div>
-	<div class="separateur">&nbsp;</div>
-	<div class="intfdcolor6">
-	   <%
-	   Calendar calendar = gef.getCalendar(m_context+"/agenda/jsp/", resource.getLanguage(), dateCalendar);
-		 calendar.setEmptyDayNonSelectable(true);
-		 calendar.setEvents(events);
-		 %>
-		 <br/><center><%=calendar.print()%></center><br/>
-	</div>
-	<br />
-	<div id="titreArchive"><%=resource.getString("blog.archives")%></div>
-	<div id="archives">
+			%>
+			</ul>
+			<%
+		}
+	%>
+</div>
+
+
+	
+<div id="archives" class="bgDegradeGris" >
+		<div id="titreArchive" class="bgDegradeGris header">
+			<h4 class="clean"><%=resource.getString("blog.archives")%></h4>
+		</div>
+	
 	   <%
 		 if (archives != null) {
-		    Iterator itAr = (Iterator) archives.iterator();
-		    while (itAr.hasNext())  {
-		        Archive uneArchive = (Archive) itAr.next();
-		      	%>
-		        <a href="<%="PostByArchive?BeginDate=" + uneArchive.getBeginDate() + "&amp;EndDate=" + uneArchive.getEndDate()%>"><%=resource.getString("GML.mois"+uneArchive.getMonthId())%> <%=uneArchive.getYear()%></a><br />
-		        <%
-				 }
+			%>
+			<ul>
+			<%
+				Iterator itAr = (Iterator) archives.iterator();
+				while (itAr.hasNext())  {
+					Archive uneArchive = (Archive) itAr.next();
+					%>
+					<li><a href="<%="PostByArchive?BeginDate=" + uneArchive.getBeginDate() + "&amp;EndDate=" + uneArchive.getEndDate()%>"><%=resource.getString("GML.mois"+uneArchive.getMonthId())%> <%=uneArchive.getYear()%></a></li>
+					<%
+				}
+			%>
+			</ul>
+			<%
 		 }
 		 %>
 	</div>
-	<div class="separateur">&nbsp;</div>
-	<div id="titreLiens"> 
+	<div id="calendar" class="bgDegradeGris">
 	   <%
-		 if ("admin".equals(profile)) {
-		    String url = m_context + blogUrl + "Main";
-				String lien = m_context + URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
-				out.println("<a href=\""+lien+"\">"+resource.getString("blog.links")+"</a>");
-		 }
-		 else {
-		    out.println(resource.getString("blog.links"));
-		 }
-		 %>
-	</div>
-	<div id="liens">
+			Calendar calendar = gef.getCalendar(m_context+"/agenda/jsp/", resource.getLanguage(), dateCalendar);
+			calendar.setEmptyDayNonSelectable(true);
+			calendar.setEvents(events);
+		%>
+		<%=calendar.print()%>
+</div>
+	<div id="liens" class="bgDegradeGris">
+		<div id="titreLiens" class="bgDegradeGris  header"> 
+			<h4 class="clean">
+				<%
+				if ("admin".equals(profile)) {
+					String url = m_context + blogUrl + "Main";
+						String lien = m_context + URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
+						out.println("<a href=\""+lien+"\">"+resource.getString("blog.links")+"</a>");
+				}
+				else {
+					out.println(resource.getString("blog.links"));
+				}
+				%>
+			</h4>
+		</div>
+	
 	   <%
 		 if (links != null)  {
+			%>
+			<ul>
+			<%
 		    Iterator itL = (Iterator) links.iterator();
 		    while (itL.hasNext()) {
 		        LinkDetail unLink = (LinkDetail) itL.next();
@@ -122,25 +138,26 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 		      	if (nameLink.equals(""))
 		      	   nameLink = unLink.getUrl();
 		      	String lien = unLink.getUrl();
+		      	String description = unLink.getDescription();
 		      	if (lien.indexOf("://") == -1) {
-               lien = m_context + lien;
-            }
+					lien = m_context + lien;
+				}
 		      	String target = "";
 		      	if (unLink.isPopup())
 		      	   target = "target=\"_blank\"";
 		      	%>
-		        <a href="<%=lien%>" <%=target%>><%=nameLink%></a><br />
+		        <li><a title="<%=description%>" href="<%=lien%>" <%=target%>><%=nameLink%></a></li>
 		        <%
-				}
+			}
+			
+			%>
+			</ul>
+			<%
 		 }
 		 %>
   </div>
-	<div class="separateur">&nbsp;</div>
+	<div class="separateur"><hr /></div>
 	
 	<% if (StringUtil.isDefined(rssURL)) { %>
-	   <table>
-	       	<tr>
-	        	<td><a href="<%=m_context+rssURL%>"><img src="<%=m_context+"/util/icons/rss.gif" %>" border="0" alt="rss"/></a></td>
-			</tr>
-	   </table>
+	   <a href="<%=m_context+rssURL%>"><img src="<%=m_context+"/util/icons/rss.gif" %>" border="0" alt="rss"/></a>
 	<% } %>
