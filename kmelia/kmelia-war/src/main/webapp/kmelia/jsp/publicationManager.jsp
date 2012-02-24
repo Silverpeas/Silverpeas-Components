@@ -738,7 +738,6 @@
 
         Frame frame = gef.getFrame();
         Board board = gef.getBoard();
-        Board boardHelp = gef.getBoard();
 
         // added by LBE : importance field can be hidden (depends on settings file)
         boolean showImportance = !"no".equalsIgnoreCase(resources.getSetting("showImportance"));
@@ -800,14 +799,13 @@
         out.println(frame.printBefore());
         if ("finish".equals(wizard)) {
           // cadre d'aide
-          out.println(boardHelp.printBefore());
-          out.println("<table border=\"0\"><tr>");
-          out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\"" + resources.getIcon("kmelia.info") + "\"></td>");
-          out.println("<td>" + resources.getString("kmelia.HelpView") + "</td>");
-          out.println("</tr></table>");
-          out.println(boardHelp.printAfter());
-          out.println("<br/>");
-        }
+%>
+			<div class="inlineMessage">
+				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+				<%=resources.getString("kmelia.HelpView") %>
+			</div>
+			<br clear="all"/>
+<%        }
   %>
   <div id="header">
   <form name="pubForm" action="publicationManager.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">

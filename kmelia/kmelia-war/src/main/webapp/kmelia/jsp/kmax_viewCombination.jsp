@@ -38,19 +38,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="tabManager.jsp.inc" %>
 
 <%!
-CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String translation, KmeliaSessionController kmeliaScc)
-{
+CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String translation, KmeliaSessionController kmeliaScc) {
 	Iterator pointsIt 	= points.iterator();
 	while (pointsIt.hasNext()) {
 		CoordinatePoint point = (CoordinatePoint) pointsIt.next();
-		if (point.getPath().contains("/" + nodeDetail.getNodePK().getId() + "/"))
-		{
-			try
-			{
+		if (point.getPath().contains("/" + nodeDetail.getNodePK().getId() + "/")) {
+			try {
 				NodeDetail pointDetail = kmeliaScc.getNodeHeader(Integer.toString(point.getNodeId()));
 				point.setName(pointDetail.getName(translation));
-			}  catch (Exception e)
-			{
+			}  catch (Exception e) {
 				SilverTrace.error( "kmax", "kmax_viewCombination.jsp", "kmelia.EX_IMPOSSIBLE_DACCEDER_AU_THEME", e );
 			}
 			return point;
@@ -61,37 +57,17 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 %>
 
 <%
-	String deleteSrc			= m_context + "/util/icons/delete.gif";
-	String alertSrc			= m_context + "/util/icons/alert.gif";
-	String deletePubliSrc		= m_context + "/util/icons/publicationDelete.gif";
-	String hLineSrc			= m_context + "/util/icons/colorPix/1px.gif";
-
-	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
+	String deleteSrc = m_context + "/util/icons/delete.gif";
+	String hLineSrc	 = m_context + "/util/icons/colorPix/1px.gif";
 	
-	KmeliaPublication kmeliaPublication = null;
-	UserDetail ownerDetail = null;
-	boolean isOwner = false;
-	
-	CompletePublication pubComplete = null;
-	PublicationDetail pubDetail = null;
-	InfoDetail infos = null;
-	ModelDetail model = null;
-	String vignette_url = null;
-	
-	String 	profile 	= (String) request.getParameter("Profile");
 	String	currentLang = (String) request.getAttribute("Language");
 	
-	String	wizardLast		= (String) request.getAttribute("WizardLast");
 	String 	wizard			= (String) request.getAttribute("Wizard");
 	String 	wizardRow		= (String) request.getAttribute("WizardRow");
 
-	if (!StringUtil.isDefined(wizardLast))
-		wizardLast = "4";
-
-	if (wizardRow == null)
+	if (wizardRow == null) {
 		wizardRow = "4";
-
-	boolean isEnd = true;
+	}
 	
 	String action = "KmaxViewCombination";
 %>
@@ -103,7 +79,7 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 	function search() {
 	    z = "";
 	    nbSelectedAxis = 0;
@@ -150,29 +126,28 @@ out.println(gef.getLookStyleSheet());
 	
     out.println(window.printBefore());
 
-	if ("progress".equals(wizard))
+	if ("progress".equals(wizard)) {
 		displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources, out, kmaxMode);
-	else
+	} else {
 		displayAllOperations(id, kmeliaScc, gef, action, resources, out, true);
+	}
     	
     out.println(frame.printBefore());
-    if ("finish".equals(wizard) || "progress".equals(wizard))
-	{
-		//cadre d'aide
-    	Board boardHelp = gef.getBoard();
-	    out.println(boardHelp.printBefore());
-		out.println("<table border=\"0\"><tr>");
-		out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resources.getIcon("kmelia.info")+"\"></td>");
-		out.println("<td>"+Encode.javaStringToHtmlParagraphe(resources.getString("kmelia.HelpKmaxClassification"))+"</td>");
-		out.println("</tr></table>");
-	    out.println(boardHelp.printAfter());
-	    out.println("<br />");
+    if ("finish".equals(wizard) || "progress".equals(wizard)) {
+    %>
+    	<!-- cadre d'aide -->
+		<div class="inlineMessage">
+			<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+			<%=Encode.javaStringToHtmlParagraphe(resources.getString("kmelia.HelpKmaxClassification")) %>
+		</div>
+		<br clear="all"/>
+    <%
 	}
     
 	out.println(displayAxisToPublish(kmeliaScc, gef, currentLang));
     
 	Collection coordinates = kmeliaScc.getPublicationCoordinates(id);
-	out.println("<br>");
+	out.println("<br/>");
 	out.println(board.printBefore());
 
 	out.println("<table align=\"center\" cellpading=\"0\" cellspacing=\"3\" border=\"0 \" width=\"100%\">");
@@ -234,19 +209,13 @@ out.println(gef.getLookStyleSheet());
     out.println("</center>");
     out.println(board.printAfter());
     
-    if ("progress".equals(wizard))
-	{
-    	Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "DeletePublication?PubId="+id, false);
-    	Button nextButton;
-    	if (isEnd)
-    		nextButton = (Button) gef.getFormButton(resources.getString("kmelia.End"), "WizardNext?Position=KmaxClassification", false);
-    	else
-    		nextButton = (Button) gef.getFormButton(resources.getString("GML.next"), "WizardNext?Position=KmaxClassification", false);
+    if ("progress".equals(wizard)) {
+    	Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "DeletePublication?PubId="+id, false);
+    	Button nextButton = gef.getFormButton(resources.getString("kmelia.End"), "WizardNext?Position=KmaxClassification", false);
     	
 		ButtonPane buttonPane = gef.getButtonPane();
 		buttonPane.addButton(nextButton);
 		buttonPane.addButton(cancelButton);
-		buttonPane.setHorizontalPosition();
 		out.println("<br /><center>"+buttonPane.print()+"</center><br />");
 	}
     

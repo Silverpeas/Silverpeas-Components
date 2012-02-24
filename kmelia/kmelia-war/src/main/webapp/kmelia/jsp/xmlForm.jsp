@@ -161,17 +161,17 @@
           }
 
           out.println(frame.printBefore());
-          out.println(board.printBefore());
+          
           if (("finish".equals(wizard)) || ("progress".equals(wizard))) {
             //  cadre d'aide
-            out.println(boardHelp.printBefore());
-            out.println("<table border=\"0\"><tr>");
-            out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\"" + resources.getIcon("kmelia.info") + "\"></td>");
-            out.println("<td>" + kmeliaScc.getString("kmelia.HelpContentXml") + "</td>");
-            out.println("</tr></table>");
-            out.println(boardHelp.printAfter());
-            out.println("<BR>");
-          }
+%>
+            <div class="inlineMessage">
+				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+				<%=resources.getString("kmelia.HelpContentXml") %>
+			</div>
+<%
+		}
+          out.println(board.printBefore());
     %>
     <form name="myForm" method="post" action="UpdateXMLForm" enctype="multipart/form-data" accept-charset="UTF-8">
       <%
