@@ -621,3 +621,9 @@
 .publicationManager .classification .legende {
 	display: none;
 }
+
+#addOrUpdateNode #deleteTranslation img {
+	vertical-align: text-bottom;
+	border: 0px;
+	margin-left: 3px;
+}

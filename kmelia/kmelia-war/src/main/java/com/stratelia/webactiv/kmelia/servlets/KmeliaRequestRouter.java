@@ -387,13 +387,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("Path", kmelia.displayPath(path, false, 3));
           request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
           request.setAttribute("Translation", kmelia.getCurrentLanguage());
-          request.setAttribute("PopupDisplay", Boolean.TRUE);
-          request.setAttribute("NotificationAllowed",
-                  kmelia.isNotificationAllowed());
+          request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
           request.setAttribute("Parent", kmelia.getNodeHeader(topicId));
 
           if (kmelia.isRightsOnTopicsEnabled()) {
-            request.setAttribute("PopupDisplay", Boolean.FALSE);
             request.setAttribute("Profiles", kmelia.getTopicProfiles());
 
             // Rights of the component
@@ -416,12 +413,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("Path", kmelia.displayPath(path, false, 3));
           request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
           request.setAttribute("Translation", kmelia.getCurrentLanguage());
-          request.setAttribute("PopupDisplay", Boolean.TRUE);
-          request.setAttribute("NotificationAllowed",
-                  kmelia.isNotificationAllowed());
+          request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
 
           if (kmelia.isRightsOnTopicsEnabled()) {
-            request.setAttribute("PopupDisplay", Boolean.FALSE);
             request.setAttribute("Profiles", kmelia.getTopicProfiles(id));
 
             if (node.haveInheritedRights()) {
@@ -474,8 +468,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             destination = getDestination("GoToCurrentTopic", kmelia, request);
           }
         } else {
-          request.setAttribute("urlToReload", "GoToCurrentTopic");
-          destination = rootDestination + "closeWindow.jsp";
+          destination = getDestination("GoToCurrentTopic", kmelia, request);
         }
       } else if ("UpdateTopic".equals(function)) {
         String name = request.getParameter("Name");
@@ -510,8 +503,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             destination = getDestination("GoToCurrentTopic", kmelia, request);
           }
         } else {
-          request.setAttribute("urlToReload", "GoToCurrentTopic");
-          destination = rootDestination + "closeWindow.jsp";
+          destination = getDestination("GoToCurrentTopic", kmelia, request);
         }
       } else if (function.equals("DeleteTopic")) {
         String id = request.getParameter("Id");

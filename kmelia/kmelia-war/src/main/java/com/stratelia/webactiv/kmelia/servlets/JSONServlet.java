@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -39,6 +40,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
@@ -152,6 +155,21 @@ public class JSONServlet extends HttpServlet {
     } else {
       jsonObject.put("name", node.getName(language));
       jsonObject.put("description", node.getDescription(language));
+      // translations
+      if (I18NHelper.isI18N) {
+        Map<String, Translation> translations = node.getTranslations();
+        JSONArray jsonTranslations = new JSONArray();
+        for (Translation translation : translations.values()) {
+          JSONObject jsonTranslation = new JSONObject();
+          jsonTranslation.put("language", translation.getLanguage());
+          jsonTranslation.put("name", node.getName(translation.getLanguage()));
+          jsonTranslation.put("description", node.getDescription(translation.getLanguage()));
+          jsonTranslation.put("id", translation.getId());
+          jsonTranslations.put(jsonTranslation);
+        }
+        jsonObject.put("translations", jsonTranslations);
+      }
+      
       try {
         jsonObject.put("date", DateUtil.getOutputDate(node.getCreationDate(), language));
       } catch (ParseException e) {
