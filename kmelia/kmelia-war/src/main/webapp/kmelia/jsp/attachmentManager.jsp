@@ -56,50 +56,49 @@ if (wizardRow == null)
 	wizardRow = "3";
 
 boolean isEnd = false;
-if ("3".equals(wizardLast))
+if ("3".equals(wizardLast)) {
 	isEnd = true;
+}
 
 String linkedPathString = kmeliaScc.getSessionPath();
 
 String url = kmeliaScc.getComponentUrl()+"ViewAttachments";
 
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "DeletePublication?PubId="+pubId, false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "DeletePublication?PubId="+pubId, false);
 Button nextButton;
-if (isEnd)
-	nextButton = (Button) gef.getFormButton(resources.getString("kmelia.End"), "WizardNext?Position=Attachment", false);
-else
-	nextButton = (Button) gef.getFormButton(resources.getString("GML.next"), "WizardNext?Position=Attachment", false);
+if (isEnd) {
+	nextButton = gef.getFormButton(resources.getString("kmelia.End"), "WizardNext?Position=Attachment", false);
+} else {
+	nextButton =  gef.getFormButton(resources.getString("GML.next"), "WizardNext?Position=Attachment", false);
+}
 
 boolean openUrl = false;
 if (request.getParameter("OpenUrl") != null)  {
 	openUrl = Boolean.parseBoolean(request.getParameter("OpenUrl"));
 }
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
-function showTranslation(lang)
-{
+<script type="text/javascript">
+function showTranslation(lang) {
 	location.href="ViewAttachments?SwitchLanguage="+lang;
 }
 
-function topicGoTo(id) 
-{
+function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;
 }
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
 	Window window = gef.getWindow();
 	Frame frame = gef.getFrame();
-	Board boardHelp = gef.getBoard();
 	
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setDomainName(spaceLabel);
@@ -110,28 +109,26 @@ function topicGoTo(id)
 
 	out.println(window.printBefore());
 	
-	if ("progress".equals(wizard))
+	if ("progress".equals(wizard)) {
 		displayWizardOperations(wizardRow, pubId, kmeliaScc, gef, "ViewAttachments", resources, out, kmaxMode);
-	else
-	{
-		if (isOwner)
+	} else {
+		if (isOwner) {
 			displayAllOperations(pubId, kmeliaScc, gef, "ViewAttachments", resources, out, kmaxMode);
-		else
+		} else {
 			displayUserOperations(pubId, kmeliaScc, gef, "ViewAttachments", resources, out, kmaxMode);
+		}
 	}
 	
 	out.println(frame.printBefore());
-	if ("progress".equals(wizard) || "finish".equals(wizard))
-	{
+	if ("progress".equals(wizard) || "finish".equals(wizard)) {
 		//  cadre d'aide
-	    out.println(boardHelp.printBefore());
-		out.println("<table border=\"0\"><tr>");
-		out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resources.getIcon("kmelia.info")+"\"></td>");
-		out.println("<td>"+kmeliaScc.getString("kmelia.HelpAttachment")+"</td>");
-		out.println("</tr></table>");
-	    out.println(boardHelp.printAfter());
-	    out.println("<BR>");
-	}
+%>
+	    <div class="inlineMessage">
+			<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+			<%=resources.getString("kmelia.HelpAttachment") %>
+		</div>
+		<br clear="all"/>
+<%	}
 	out.flush();
 
 	if (kmeliaScc.isVersionControlled()) 
@@ -144,17 +141,16 @@ function topicGoTo(id)
 		//Attachments links
 		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+pubId+"&ComponentId="+componentId+"&Context=Images&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+kmeliaScc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+kmeliaScc.getProfile()+"&Language="+currentLang+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
 	}
+	out.flush();
 	
-	if ("progress".equals(wizard))
-	{
+	if ("progress".equals(wizard) || "finish".equals(wizard)) {
 		ButtonPane buttonPane = gef.getButtonPane();
 		buttonPane.addButton(nextButton);
 		buttonPane.addButton(cancelButton);
-		buttonPane.setHorizontalPosition();
-		out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+		out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
 	}
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

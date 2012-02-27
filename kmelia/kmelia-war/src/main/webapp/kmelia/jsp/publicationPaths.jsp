@@ -57,9 +57,10 @@ Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel
 
 %>
 
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -91,7 +92,7 @@ out.println(gef.getLookStyleSheet());
 }
 </style>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type='text/javascript'>
+<script type="text/javascript">
 	$(document).ready(function(){
 		$('#accordion').accordion({   
 			clearStyle: false,  
@@ -119,34 +120,26 @@ out.println(gef.getLookStyleSheet());
 
 	var loadedPanes = ",<%=componentId%>,";
 </script>
-<script language="javascript">
-
-function sendData() 
-{
+<script type="text/javascript">
+function sendData() {
 	var selectedPaths = getSelectedOjects();
-	if (selectedPaths.indexOf(',<%=componentId%>,') == -1)
-	{
+	if (selectedPaths.indexOf(',<%=componentId%>,') == -1) {
 		alert('<%=Encode.javaStringToHtmlString(Encode.javaStringToJsString(resources.getString("kmelia.LocalPathMandatory")))%>');
-	}
-	else
-	{
+	} else {
 		document.getElementById("LoadedComponentIds").value=","+loadedPanes+",";
 		document.paths.submit();
 	}
 }
 
-function topicGoTo(id) 
-{
+function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;
 }
 
-function getSelectedOjects()
-{
+function getSelectedOjects() {
 	return getObjects(true);
 }
 
-function getObjects(selected)
-{
+function getObjects(selected) {
 	var  items = "";
 	var boxItems = document.paths.topicChoice;
 	if (boxItems != null){
@@ -168,14 +161,13 @@ function getObjects(selected)
 }
 
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <% 		
         Window window = gef.getWindow();
         Frame frame = gef.getFrame();
 
         BrowseBar browseBar = window.getBrowseBar();
-        Board boardHelp = gef.getBoard();
         
         browseBar.setDomainName(spaceLabel);
         browseBar.setComponentName(componentLabel, "javascript:onClick=topicGoTo('0')");
@@ -187,16 +179,15 @@ function getObjects(selected)
         displayAllOperations(id, kmeliaScc, gef, "ViewPath", resources, out);
         
         out.println(frame.printBefore());
-        if ("finish".equals(wizard))
-    	{
+        if ("finish".equals(wizard)) {
     		//  cadre d'aide
-    	    out.println(boardHelp.printBefore());
-    		out.println("<table border=\"0\"><tr>");
-    		out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resources.getIcon("kmelia.info")+"\"></td>");
-    		out.println("<td>"+kmeliaScc.getString("kmelia.HelpPubPath")+"</td>");
-    		out.println("</tr></table>");
-    	    out.println(boardHelp.printAfter());
-    	    out.println("<BR>");
+    %>
+    		<div class="inlineMessage">
+				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+				<%=resources.getString("kmelia.HelpPubPath") %>
+			</div>
+			<br clear="all"/>
+    <%
     	}
         
         Board board	= gef.getBoard();
@@ -205,18 +196,16 @@ function getObjects(selected)
         
      	//regarder si la publication est dans la corbeille
 		Iterator itB = pathList.iterator();
-		while (itB.hasNext()) 
-    	{
+		while (itB.hasNext()) {
     		NodePK node = (NodePK) itB.next();
     		String nodeId = node.getId();
-    		if (nodeId.equals("1"))
-    		{
+    		if (nodeId.equals("1")) {
     			//la publi est dans la corbeille
-        		out.println(kmeliaScc.getString("kmelia.PubInBasket")+"<BR><BR>");
+        		out.println(kmeliaScc.getString("kmelia.PubInBasket")+"<br/><br/>");
     		}
     	}
         %>
-        <form name="paths" action="SetPath" method="POST">
+        <form name="paths" action="SetPath" method="post">
         	<input type="hidden" name="PubId" value="<%=id%>"/>
         	<input type="hidden" name="LoadedComponentIds" id="LoadedComponentIds" value=""/> 
         	
@@ -372,10 +361,10 @@ function getObjects(selected)
     	ButtonPane buttonPane = gef.getButtonPane();
     	buttonPane.addButton(validateButton);
     	buttonPane.addButton(cancelButton);
-    	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+    	out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
     	
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

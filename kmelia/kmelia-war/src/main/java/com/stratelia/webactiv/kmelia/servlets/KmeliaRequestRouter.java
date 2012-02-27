@@ -387,13 +387,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("Path", kmelia.displayPath(path, false, 3));
           request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
           request.setAttribute("Translation", kmelia.getCurrentLanguage());
-          request.setAttribute("PopupDisplay", Boolean.TRUE);
-          request.setAttribute("NotificationAllowed",
-                  kmelia.isNotificationAllowed());
+          request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
           request.setAttribute("Parent", kmelia.getNodeHeader(topicId));
 
           if (kmelia.isRightsOnTopicsEnabled()) {
-            request.setAttribute("PopupDisplay", Boolean.FALSE);
             request.setAttribute("Profiles", kmelia.getTopicProfiles());
 
             // Rights of the component
@@ -416,12 +413,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("Path", kmelia.displayPath(path, false, 3));
           request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
           request.setAttribute("Translation", kmelia.getCurrentLanguage());
-          request.setAttribute("PopupDisplay", Boolean.TRUE);
-          request.setAttribute("NotificationAllowed",
-                  kmelia.isNotificationAllowed());
+          request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
 
           if (kmelia.isRightsOnTopicsEnabled()) {
-            request.setAttribute("PopupDisplay", Boolean.FALSE);
             request.setAttribute("Profiles", kmelia.getTopicProfiles(id));
 
             if (node.haveInheritedRights()) {
@@ -474,8 +468,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             destination = getDestination("GoToCurrentTopic", kmelia, request);
           }
         } else {
-          request.setAttribute("urlToReload", "GoToCurrentTopic");
-          destination = rootDestination + "closeWindow.jsp";
+          destination = getDestination("GoToCurrentTopic", kmelia, request);
         }
       } else if ("UpdateTopic".equals(function)) {
         String name = request.getParameter("Name");
@@ -510,8 +503,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             destination = getDestination("GoToCurrentTopic", kmelia, request);
           }
         } else {
-          request.setAttribute("urlToReload", "GoToCurrentTopic");
-          destination = rootDestination + "closeWindow.jsp";
+          destination = getDestination("GoToCurrentTopic", kmelia, request);
         }
       } else if (function.equals("DeleteTopic")) {
         String id = request.getParameter("Id");
@@ -2194,9 +2186,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       // recherche du dernier onglet
       String wizardLast = "1";
       List<String> invisibleTabs = kmeliaSC.getInvisibleTabs();
-      if ((kmeliaSC.isPDCClassifyingMandatory() && invisibleTabs.indexOf(
-              KmeliaSessionController.TAB_PDC) == -1)
-              || kmeliaSC.isKmaxMode) {
+      if (kmeliaSC.isKmaxMode) {
         wizardLast = "4";
       } else if (invisibleTabs.indexOf(KmeliaSessionController.TAB_ATTACHMENTS) == -1) {
         wizardLast = "3";
@@ -2257,14 +2247,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           } else if (numRow < Integer.parseInt(wizardRow)) {
             wizardRow = Integer.toString(numRow);
           }
-        } else if (kmeliaSC.isPDCClassifyingMandatory()
-                && invisibleTabs.indexOf(KmeliaSessionController.TAB_PDC) == -1) {
-          if (numRow <= 4) {
-            wizardRow = "4";
-          } else if (numRow < Integer.parseInt(wizardRow)) {
-            wizardRow = Integer.toString(numRow);
-          }
-          next = "Pdc";
         } else if (kmeliaSC.isKmaxMode) {
           if (numRow <= 4) {
             wizardRow = "4";
@@ -2281,14 +2263,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           } else if (numRow < Integer.parseInt(wizardRow)) {
             wizardRow = Integer.toString(numRow);
           }
-        } else if (kmeliaSC.isPDCClassifyingMandatory()
-                && invisibleTabs.indexOf(KmeliaSessionController.TAB_PDC) == -1) {
-          if (numRow <= 4) {
-            wizardRow = "4";
-          } else if (numRow < Integer.parseInt(wizardRow)) {
-            wizardRow = Integer.toString(numRow);
-          }
-          next = "Pdc";
         } else if (kmeliaSC.isKmaxMode) {
           if (numRow <= 4) {
             wizardRow = "4";
@@ -2298,10 +2272,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           next = "KmaxClassification";
         }
       } else if (position.equals("Attachment")) {
-        if (kmeliaSC.isPDCClassifyingMandatory()
-                && invisibleTabs.indexOf(KmeliaSessionController.TAB_PDC) == -1) {
-          next = "Pdc";
-        } else if (kmeliaSC.isKmaxMode) {
+        if (kmeliaSC.isKmaxMode) {
           next = "KmaxClassification";
         } else {
           next = "End";
@@ -2314,8 +2285,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             wizardRow = Integer.toString(numRow);
           }
         }
-      } else if (position.equals("Pdc")
-              || position.equals("KmaxClassification")) {
+      } else if (position.equals("KmaxClassification")) {
         if (numRow <= 4) {
           wizardRow = "4";
         } else if (numRow < Integer.parseInt(wizardRow)) {
@@ -2336,8 +2306,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = getDestination("ToPubliContent", kmeliaSC, request);
       } else if (next.equals("Attachment")) {
         destination = getDestination("ViewAttachments", kmeliaSC, request);
-      } else if (next.equals("Pdc")) {
-        destination = getDestination("ViewPdcPositions", kmeliaSC, request);
       } else if (next.equals("KmaxClassification")) {
         destination = getDestination("KmaxViewCombination", kmeliaSC, request);
       } else if (next.equals("End")) {

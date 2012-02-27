@@ -140,10 +140,22 @@ function bindCategoryEvent() {
 $(document).ready(function() {
   bindCategoryEvent();
   bindQuestionsEvent();
-  $('.questions').hide();
-  $("ul li:first-child .questions").show();
-  $("ul li:first-child").addClass('select');
-  $("ul li:first-child .categoryTitle").trigger($.Event("click"));
+  $('.questions').hide(); 
+  <c:choose>
+    <c:when test="${param.categoryId != null}">
+      $("#qc<c:out value="${param.categoryId}"/>").show();
+      $("#c<c:out value="${param.categoryId}"/>").parent().addClass('select');
+      $("#c<c:out value="${param.categoryId}"/>").trigger($.Event("click"));
+    </c:when>
+    <c:otherwise>
+      $("ul li:first-child .questions").show();
+      $("ul li:first-child").addClass('select');
+      $("ul li:first-child .categoryTitle").trigger($.Event("click"));
+    </c:otherwise>
+  </c:choose>
+  <c:if test="${param.questionId != null}">
+    setTimeout("$('#q<c:out value="${param.questionId}"/>').trigger($.Event('click'))", 250);
+  </c:if>
 
   $('.category').hover(function() {
       $(this).addClass('hover');

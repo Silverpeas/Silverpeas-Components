@@ -114,15 +114,16 @@ String					instanceId		= pubComplete.getPublicationDetail().getPK().getInstanceI
 if (profile.equals("admin") || profile.equals("publisher") || profile.equals("supervisor") || (ownerDetail != null && kmeliaScc.getUserDetail().getId().equals(ownerDetail.getId()) && profile.equals("writer")))
 	isOwner = true;
 %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 function seeAlsoDeleteConfirm() {
 	if (document.seeAlsoForm.PubIds != null){
 	    if(window.confirm("<%=kmeliaScc.getString("kmelia.ConfirmDeleteSeeAlso")%>")){
@@ -152,11 +153,10 @@ function closeWindows() {
 }
 </script>
 </head>
-<body onUnload="closeWindows()">
+<body onunload="closeWindows()">
 <%
         Window window = gef.getWindow();
         Frame frame = gef.getFrame();
-        Board boardHelp = gef.getBoard();
         
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setDomainName(spaceLabel);
@@ -175,23 +175,22 @@ function closeWindows() {
         
         out.println(window.printBefore());
 
-        if (isOwner)
+        if (isOwner) {
             displayAllOperations(id, kmeliaScc, gef, action, resources, out);
-        else
+        } else {
             displayUserOperations(id, kmeliaScc, gef, action, resources, out);
+        }
 
         out.println(frame.printBefore());
 
-        if ("finish".equals(wizard))
-    	{
-    		//  cadre d'aide
-    	    out.println(boardHelp.printBefore());
-    		out.println("<table border=\"0\"><tr>");
-    		out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resources.getIcon("kmelia.info")+"\"></td>");
-    		out.println("<td>"+kmeliaScc.getString("kmelia.HelpSeeAlso")+"</td>");
-    		out.println("</tr></table>");
-    	    out.println(boardHelp.printAfter());
-    	    out.println("<BR>");
+        if ("finish".equals(wizard)) {
+          %>
+          	<div class="inlineMessage">
+				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+				<%=resources.getString("kmelia.HelpSeeAlso") %>
+			</div>
+			<br clear="all"/>
+    	  <%
     	}
         
         if (action.equals("LinkAuthorView")) {
@@ -238,9 +237,9 @@ function closeWindows() {
         out.println(window.printAfter());
 %>
 <form name="pubForm" action="<%=routerUrl%>publicationManager.jsp" method="post">
-  <input type="hidden" name="Action">
-  <input type="hidden" name="PubId">
-  <input type="hidden" name="CheckPath">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="PubId"/>
+  <input type="hidden" name="CheckPath"/>
 </form>
 </body>
 </html>

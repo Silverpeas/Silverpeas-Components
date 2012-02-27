@@ -56,7 +56,9 @@
 <c:set var="instanceId" value="${requestScope.InstanceId}" />
 <c:set var="nbTotal" value="${requestScope.NbTotal}" />
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 <script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
@@ -85,7 +87,7 @@
 			<br />
 			<form name="classifiedForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
 				<c:if test="${not empty formSearch}">
-					<center>
+					
 						<div id="search">
 							<!-- AFFICHAGE du formulaire -->
 							<view:board>
@@ -102,7 +104,7 @@
 								formSearch.display(out, context, data);
 								%>
 								<br/>
-								<center>
+								<div class="center">
 								<view:buttonPane>
 									<fmt:message var="searchLabel" key="classifieds.searchButton">
 										<fmt:param value="${nbTotal}" />
@@ -110,48 +112,38 @@
 									<view:button label="${searchLabel}"
 										action="javascript:onClick=sendData();" />
 								</view:buttonPane>
-								</center>
+								</div>
 							</view:board>
 						</div>
-					</center>
+					
 				</c:if>
 			</form>
 			<br />
 
 			<view:board>
-				<table>
+				
 					<c:if test="${not empty classifieds}">
+						<ul class="list_result_classifieds">
 						<c:forEach items="${classifieds}" var="classified">
-							<tr>
-								<td>
-									<p>
-										&nbsp; &#149; &nbsp;&nbsp;
-										<b>
-											<a href="ViewClassified?ClassifiedId=${classified.classifiedId}">
-												${classified.title}
-											</a>
-										</b> <br />
-										&nbsp;&nbsp;&nbsp;${classified.creatorName} - 
-										<c:if test="${not empty classified.updateDate}">
-											<view:formatDateTime value="${classified.updateDate}" language="${language}"/>
-										</c:if>
-										<c:if test="${empty classified.updateDate}">
-											<view:formatDateTime value="${classified.creationDate}" language="${language}"/>
-										</c:if>
-									</p>
-								</td>
-							</tr>
+							<li>
+								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
+								<span class="creatorName_result_classifieds">${classified.creatorName}</span><span class="sep_creatorName_result_classifieds"> - </span>
+								<c:if test="${not empty classified.updateDate}">
+									<span class="date_result_classifieds updateDate"><view:formatDateTime value="${classified.updateDate}" language="${language}"/></span>
+								</c:if>
+								<c:if test="${empty classified.updateDate}">
+									<span class="date_result_classifieds creationDate"><view:formatDateTime value="${classified.creationDate}" language="${language}"/></span>
+								</c:if>
+							</li>
 						</c:forEach>
+						</ul>
 					</c:if>
 					<c:if test="${empty classifieds}">
-						<tr>
-							<td colspan="5" valign="middle" align="center" width="100%">
-								<br />
-								<fmt:message key="classifieds.noResult" /> <br />
-							</td>
-						</tr>
+						<p class="message_noResult">
+								<fmt:message key="classifieds.noResult" />
+						</p>
 					</c:if>
-				</table>
+			
 			</view:board>
 		</view:frame>
 	</view:window>

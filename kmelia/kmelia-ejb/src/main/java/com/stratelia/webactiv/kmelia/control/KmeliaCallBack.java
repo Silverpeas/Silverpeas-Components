@@ -28,14 +28,17 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -44,8 +47,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  * @author neysseri
  */
 public class KmeliaCallBack implements CallBack {
-
-  private KmeliaBmHome kmeliaHome = null;
 
   public KmeliaCallBack() {
   }
@@ -92,8 +93,20 @@ public class KmeliaCallBack implements CallBack {
             // Remove topic which has been cut and paste
             getKmeliaBm().deleteTopic(nodePK);
           }
-        } else if (extraParam instanceof String) {
-          String pubId = (String) extraParam;
+        } else if (extraParam instanceof String || extraParam instanceof AttachmentDetail ||
+            extraParam instanceof Document) {
+          String pubId = null;
+          if (extraParam instanceof String) {
+            pubId = (String) extraParam;
+          } else if (extraParam instanceof AttachmentDetail) {
+            AttachmentDetail attachment = (AttachmentDetail) extraParam;
+            if (attachment.getContext().equalsIgnoreCase("images")) {
+              pubId = attachment.getForeignKey().getId();
+            }
+          } else if (extraParam instanceof Document) {
+            Document document = (Document) extraParam;
+            pubId = document.getForeignKey().getId();
+          }
 
           if (isPublicationModified(pubId, action)) {
             getKmeliaBm().externalElementsOfPublicationHaveChanged(
@@ -132,8 +145,7 @@ public class KmeliaCallBack implements CallBack {
   }
 
   private boolean isPublicationModified(String pubId, int action) {
-    if (!pubId.startsWith("Node")
-        &&
+    if (StringUtil.isDefined(pubId) && !pubId.startsWith("Node") &&
         (action == CallBackManager.ACTION_ON_WYSIWYG
             || action == CallBackManager.ACTION_ATTACHMENT_ADD
             || action == CallBackManager.ACTION_ATTACHMENT_UPDATE
@@ -148,25 +160,12 @@ public class KmeliaCallBack implements CallBack {
   private KmeliaBm getKmeliaBm() {
     KmeliaBm kmeliaBm = null;
     try {
-      kmeliaBm = getKmeliaHome().create();
+      kmeliaBm =
+          EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBmHome.class).create();
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.setKmeliaBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return kmeliaBm;
-  }
-
-  private KmeliaBmHome getKmeliaHome() {
-    if (kmeliaHome == null) {
-      try {
-        kmeliaHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.KMELIABM_EJBHOME, KmeliaBmHome.class);
-      } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaCallback.getKmeliaHome()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
-            e);
-      }
-    }
-    return kmeliaHome;
   }
 }

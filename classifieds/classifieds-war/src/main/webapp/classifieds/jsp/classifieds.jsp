@@ -45,7 +45,10 @@
 <c:set var="extra" value="${requestScope.Extra}" />
 <c:set var="profile" value="${requestScope.Profile}" />
 
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 <script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
@@ -59,7 +62,7 @@
 	}
 </script>
 </head>
-<body>
+<body id="classifieds">
 	<fmt:message var="classifiedPath" key="${ (empty title) ? 'classifieds.myClassifieds' : title}" />
 	<view:browseBar extraInformations="${extra}">
 		<view:browseBarElt label="${classifiedPath}" link="#" />
@@ -77,45 +80,51 @@
 	<view:window>
 		<view:frame>
 			<view:board>
-				<table>
 					<c:if test="${not empty classifieds}">
+					<ul class="list_result_classifieds">
 						<c:forEach items="${classifieds}" var="classified">
-							<tr>
-								<td>
-									<p>
-										&nbsp; &#149; &nbsp;&nbsp;<b><a
-											href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
-										</b>
+						<li class="status_${classified.status}">
+								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
+									<span class="status_result_classifieds">
 										<c:choose>
 											<c:when test="${classified.status == 'Draft'}">
-												<fmt:message key="classifieds.draft" />
+												<fmt:message key="classifieds.draft" /><span class="sep_status"> - </span>
 											</c:when>
 
 											<c:when test="${classified.status == 'ToValidate'}">
-												<fmt:message key="classifieds.toValidate" />
+												<fmt:message key="classifieds.toValidate" /><span class="sep_status"> - </span>
 											</c:when>
 											<c:when test="${classified.status == 'Unvalidate'}">
-												<fmt:message key="classifieds.refuse" />
+												<fmt:message key="classifieds.refuse" /><span class="sep_status"> - </span>
 											</c:when>
 											<c:when test="${classified.status == 'Unpublished'}">
-												<fmt:message key="classifieds.unpublished" />
+												<fmt:message key="classifieds.unpublished" /><span class="sep_status"> - </span>
 											</c:when>
 										</c:choose>
-
-										<br /> &nbsp;&nbsp;&nbsp;
-										<c:out value="${classified.validateDate}" />
-									</p></td>
-							</tr>
+									</span>
+									<span class="creatorName_result_classifieds">${classified.creatorName}</span><span class="sep_creatorName_result_classifieds"> - </span>
+									<c:if test="${not empty classified.validateDate}">
+										<span class="date_result_classifieds"><view:formatDateTime value="${classified.validateDate}" language="${language}"/></span>
+									</c:if>
+									<c:if test="${empty classified.validateDate}">
+										
+										<c:if test="${not empty classified.updateDate}">
+										<span class="date_result_classifieds updateDate"><view:formatDateTime value="${classified.updateDate}" language="${language}"/></span>
+										</c:if>
+										<c:if test="${empty classified.updateDate}">
+											<span class="date_result_classifieds creationDate"><view:formatDateTime value="${classified.creationDate}" language="${language}"/></span>
+										</c:if>
+									</c:if>
 						</c:forEach>
+					</ul>
 					</c:if>
 
 					<c:if test="${empty classifieds}">
-						<tr>
-							<td colspan="5" valign="middle" align="center" width="100%">
-								<br /> <fmt:message key="classifieds.CategoryEmpty" /> <br /></td>
-						</tr>
+					<p class="message_noResult">
+								<fmt:message key="classifieds.CategoryEmpty" /> 
+					</p>
 					</c:if>
-				</table>
+				
 			</view:board>
 		</view:frame>
 	</view:window>

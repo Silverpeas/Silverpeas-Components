@@ -23,13 +23,37 @@
  */
 package com.silverpeas.whitePages.control;
 
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBException;
+
+import org.apache.commons.fileupload.FileItem;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.model.Card;
@@ -73,21 +97,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
-import org.apache.commons.fileupload.FileItem;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
 
 public class WhitePagesSessionController extends AbstractComponentSessionController {
 
@@ -349,10 +358,30 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   /*
    * Rempli le DataRecord de la fiche courante en cours de création à partir de la request
    */
-  public void setCardRecord(HttpServletRequest request)
-          throws WhitePagesException {
+  public void createCard(HttpServletRequest request)
+          throws WhitePagesException, JAXBException {
+    
+    List<FileItem> items = FileUploadUtil.parseRequest(request);
+    
+    // get PDC classification
+    String positions = FileUploadUtil.getParameter(items, "Positions");
+    PdcClassification withClassification = null;
+    PdcClassificationEntity classification = PdcClassificationEntity.undefinedClassification();
+    if (StringUtil.isDefined(positions)) {
+      classification = PdcClassificationEntity.fromJSON(positions);
+      
+      List<PdcPosition> pdcPositions = classification.getPdcPositions();
+      withClassification = aPdcClassificationOfContent(getCurrentCard().getPK().getId(),
+              getComponentId()).withPositions(pdcPositions);
+    }
+    
+    /*
+     * Stores card, identity and data record.
+     */
+    insertCard(withClassification);
+    
+    // update form
     try {
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
       PagesContext pageContext = new PagesContext("", getLanguage());
       pageContext.setComponentId(getComponentId());
       pageContext.setObjectId(getCurrentCard().getPK().getId());
@@ -369,6 +398,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
               "WhitePagesSessionController.setCardRecord",
               SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
+    
+    // save form
+    saveCard();
   }
 
   /*
@@ -403,10 +435,10 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * de l'id de la fiche courante Enregistre les données du modèle de la fiche :
    * currentCard.readCardRecord().setId(userCardId), saveCard()
    */
-  public void insertCard() throws WhitePagesException {
+  private void insertCard(PdcClassification classification) throws WhitePagesException {
     try {
-      String userCardId = new Long(getCardManager().create(
-              getCurrentCreateCard(), getSpaceId(), getUserId())).toString();
+      String userCardId = Long.toString(getCardManager().create(
+              getCurrentCreateCard(), getUserId(), classification));
       getCurrentCreateCard().readCardRecord().setId(userCardId);
       getCardTemplate().getRecordSet().save(
               getCurrentCreateCard().readCardRecord());
@@ -556,14 +588,13 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     try {
       if (userCardIds != null) {
         for (String userCardId : userCardIds) {
-          DataRecord data = getCardTemplate().getRecordSet().getRecord(
-                  userCardId);
+          DataRecord data = getCardTemplate().getRecordSet().getRecord(userCardId);
           getCardTemplate().getRecordSet().delete(data);
           SilverTrace.spy("whitePages", "WhitePagesSessionController.delete",
                   getSpaceId(), getComponentId(), userCardId, getUserDetail().getId(),
                   SilverTrace.SPY_ACTION_DELETE);
         }
-        getCardManager().delete(userCardIds, getSpaceId());
+        getCardManager().delete(userCardIds);
       }
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException("WhitePagesSessionController.delete",
@@ -694,7 +725,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public UserDetail getUserDetailSelected() {
     UserDetail user = null;
     String selUser = getSelection().getFirstSelectedElement();
-    if ((selUser != null) && (selUser.length() > 0)) {
+    if (StringUtil.isDefined(selUser)) {
       user = getOrganizationController().getUserDetail(selUser);
     }
     return user;

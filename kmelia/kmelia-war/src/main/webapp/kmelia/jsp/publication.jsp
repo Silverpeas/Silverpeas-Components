@@ -512,14 +512,12 @@
         out.println(frame.printBefore());
 
         if ("finish".equals(wizard)) {
-          out.println(boardHelp.printBefore());
-          out.println("<table border=\"0\"><tr>");
-          out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\"" + resources.getIcon(
-              "kmelia.info") + "\"></td>");
-          out.println("<td>" + kmeliaScc.getString("kmelia.HelpPubli") + "</td>");
-          out.println("</tr></table>");
-          out.println(boardHelp.printAfter());
-          out.println("<br/>");
+%>
+	<div class="inlineMessage">
+		<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+		<%=resources.getString("kmelia.HelpPubli") %>
+	</div>
+<%
         }
         if (screenMessage != null && screenMessage.length() > 0) {
           out.println("<center>" + screenMessage + "</center>");
