@@ -37,7 +37,6 @@ public class HandlerProvider {
     handlerMap.put("DraftOut", new DraftOutHandler());
 
     handlerMap.put("ValidateClassified", new ClassifiedValidateHandler());
-    handlerMap.put("WantToRefuseClassified", new ClassifiedRefuseFormHandler());
     handlerMap.put("RefusedClassified", new ClassifiedRefuseHandler());
 
     handlerMap.put("NewSubscription", new SubscriptionCreateFormHandler());
