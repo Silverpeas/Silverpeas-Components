@@ -33,8 +33,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
-	prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -72,8 +71,6 @@
 <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
 <fmt:message var="deletionConfirm" key="classifieds.confirmDeleteClassified" />
 <script type="text/javascript">
-	var refusalMotiveWindow = window;
-
 	function deleteConfirm(id) {
 		// confirmation de suppression de l'annonce
 		if (window.confirm("<c:out value='${deletionConfirm}'/>")) {
@@ -90,31 +87,66 @@
 	}
 
 	function draftIn(id) {
-		location.href = "<view:componentUrl componentId='${instanceId}'/>DraftIn?ClassifiedId="
-				+ id;
+		location.href = "<view:componentUrl componentId='${instanceId}'/>DraftIn?ClassifiedId=" + id;
 	}
 
 	function draftOut(id) {
-		location.href = "<view:componentUrl componentId='${instanceId}'/>DraftOut?ClassifiedId="
-				+ id;
+		location.href = "<view:componentUrl componentId='${instanceId}'/>DraftOut?ClassifiedId=" + id;
 	}
 
 	function validate(id) {
-		location.href = "<view:componentUrl componentId='${instanceId}'/>ValidateClassified?ClassifiedId="
-				+ id;
+		location.href = "<view:componentUrl componentId='${instanceId}'/>ValidateClassified?ClassifiedId=" + id;
 	}
 
 	function refused(id) {
-		url = "WantToRefuseClassified?ClassifiedId=" + id;
-		windowName = "refusalMotiveWindow";
-		larg = "550";
-		haut = "350";
-		windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-		if (!refusalMotiveWindow.closed
-				&& refusalMotiveWindow.name == "refusalMotiveWindow")
-			refusalMotiveWindow.close();
-		refusalMotiveWindow = SP_openWindow(url, windowName, larg, haut,
-				windowParams);
+		// open modal dialog
+		$("#refusalModalDialog").dialog({
+			modal: true,
+			resizable: false,
+			width: 600,
+			buttons: {
+				"<fmt:message key="GML.ok"/>": function() {
+					sendRefusalForm();
+				},
+				"<fmt:message key="GML.cancel"/>": function() {
+					$( this ).dialog( "close" );
+				}
+			}
+		});
+	}
+	
+	function sendRefusalForm() {
+		if (isRefusalFormOK()) {
+			document.refusalForm.submit();
+		}
+	}
+
+	function isRefusalFormOK() {
+		var errorMsg = "";
+		var errorNb = 0;
+		var motive = stripInitialWhitespace(document.refusalForm.Motive.value);
+		if (isWhitespace(motive)) {
+			errorMsg += "  - '<fmt:message key="classifieds.refusalMotive"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+			errorNb++;
+		}
+		switch (errorNb) {
+		case 0:
+			result = true;
+			break;
+		case 1:
+			errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n"
+					+ errorMsg;
+			window.alert(errorMsg);
+			result = false;
+			break;
+		default:
+			errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb
+					+ " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+			window.alert(errorMsg);
+			result = false;
+			break;
+		}
+		return result;
 	}
 </script>
 </head>
@@ -252,5 +284,31 @@
 	<form name="classifiedForm" action="" method="post">
 		<input type="hidden" name="ClassifiedId" />
 	</form>
+	<div id="refusalModalDialog" title="${refuseOp}" style="display: none;">
+		<form name="refusalForm" action="RefusedClassified" method="post">
+			<table>
+				<tr>
+					<td>
+						<table>
+							<tr>
+								<td class="txtlibform"><fmt:message key="classifieds.number" /> :</td>
+								<td>${classified.classifiedId} <input type="hidden" name="ClassifiedId" value="${classified.classifiedId}"/></td>
+							</tr>
+							<tr>
+								<td class="txtlibform"><fmt:message key="GML.title" /> :</td>
+								<td valign="top">${classified.title}</td>
+							</tr>
+							<tr>
+								<td class="txtlibform" valign="top"><fmt:message key="classifieds.refusalMotive" /> :</td>
+								<td><textarea name="Motive" rows="5" cols="55"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
+							</tr>
+							<tr>
+								<td colspan="2">( <img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /> )</td>
+							</tr>
+						</table></td>
+				</tr>
+			</table>
+		</form>
+	</div>
 </body>
 </html>
