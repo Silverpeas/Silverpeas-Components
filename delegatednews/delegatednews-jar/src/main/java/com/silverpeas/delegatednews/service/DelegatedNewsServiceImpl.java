@@ -195,10 +195,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    * @param senderId
    */
   private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
-    Connection con = null;
     try {
-      con = getConnection();
-      notifMetaData.setConnection(con);
       if (!StringUtil.isDefined(notifMetaData.getSender())) {
         notifMetaData.setSender(senderId);
       }
@@ -206,8 +203,6 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
     } catch (NotificationManagerException e) {
       SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyUsers()",
               "delegatednews.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
-    } finally {
-      freeConnection(con);
     }
   }
 

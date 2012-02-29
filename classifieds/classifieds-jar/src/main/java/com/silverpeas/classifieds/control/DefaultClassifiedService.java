@@ -400,10 +400,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
-    Connection con = null;
     try {
-      con = openConnection();
-      notifMetaData.setConnection(con);
       if (notifMetaData.getSender() == null || notifMetaData.getSender().length() == 0) {
         notifMetaData.setSender(senderId);
       }
@@ -411,8 +408,6 @@ public class DefaultClassifiedService implements ClassifiedService {
     } catch (NotificationManagerException e) {
       SilverTrace.warn("classifieds", "classifiedsBmEJB.notifyUsers()",
           "classifieds.EX_ERR_ALERT_USERS", e);
-    } finally {
-      closeConnection(con);
     }
   }
 
