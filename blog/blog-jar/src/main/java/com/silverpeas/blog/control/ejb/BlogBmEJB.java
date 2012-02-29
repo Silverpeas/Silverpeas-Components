@@ -234,10 +234,7 @@ public class BlogBmEJB implements SessionBean {
   }
 
   private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
-    Connection con = null;
     try {
-      con = initCon();
-      notifMetaData.setConnection(con);
       if (notifMetaData.getSender() == null || notifMetaData.getSender().length() == 0) {
         notifMetaData.setSender(senderId);
       }
@@ -246,8 +243,6 @@ public class BlogBmEJB implements SessionBean {
     } catch (NotificationManagerException e) {
       SilverTrace.warn("blog", "BlogBmEJB.notifyUsers()",
               "blog.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
-    } finally {
-      fermerCon(con);
     }
   }
 

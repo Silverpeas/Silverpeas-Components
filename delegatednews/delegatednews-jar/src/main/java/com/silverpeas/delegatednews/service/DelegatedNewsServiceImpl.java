@@ -34,10 +34,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -185,9 +182,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    * @param senderId
    */
   private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
-    Connection con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
     try {
-      notifMetaData.setConnection(con);
       if (!StringUtil.isDefined(notifMetaData.getSender())) {
         notifMetaData.setSender(senderId);
       }
@@ -195,8 +190,6 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
     } catch (NotificationManagerException e) {
       SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyUsers()",
           "delegatednews.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 

@@ -572,10 +572,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
-    Connection con = null;
     try {
-      con = getConnection();
-      notifMetaData.setConnection(con);
       if (!isDefined(notifMetaData.getSender())) {
         notifMetaData.setSender(senderId);
       }
@@ -583,8 +580,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     } catch (NotificationManagerException e) {
       SilverTrace.warn("kmelia", "KmeliaBmEJB.notifyUsers()",
               "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
-    } finally {
-      freeConnection(con);
     }
   }
 
