@@ -76,7 +76,7 @@ function openPredefinedPdCClassification(nodeId) {
   if (nodeId != 0) {
         uri += "&nodeId=" + nodeId;
   }
-  SP_openWindow(uri, "Classification", '600', '400','scrollbars=yes, resizable, alwaysRaised');
+  SP_openWindow(uri, "Classification", '650', '600','scrollbars=yes, resizable, alwaysRaised');
 }
 
 function displayTopicDescription(id)
