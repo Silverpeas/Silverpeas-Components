@@ -27,12 +27,12 @@ package org.silverpeas.resourcemanager.repository;
 import java.util.List;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceValidator;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.synyx.hades.dao.GenericDao;
+import org.synyx.hades.dao.Modifying;
+import org.synyx.hades.dao.Param;
+import org.synyx.hades.dao.Query;
 
-public interface ResourceRepository extends JpaRepository<Resource, Long> {
+public interface ResourceDao extends GenericDao<Resource, Long> {
 
   @Query("from Resource resource WHERE resource.category.id = :categoryId")
   public List<Resource> findAllResourcesByCategory(@Param("categoryId") Long categoryId);

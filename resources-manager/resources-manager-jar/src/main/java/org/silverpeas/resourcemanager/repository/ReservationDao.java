@@ -23,18 +23,17 @@
  */
 package org.silverpeas.resourcemanager.repository;
 
-import org.silverpeas.resourcemanager.model.Reservation;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import java.util.List;
+import org.silverpeas.resourcemanager.model.Reservation;
+import org.synyx.hades.dao.GenericDao;
+import org.synyx.hades.dao.Param;
+import org.synyx.hades.dao.Query;
 
 /**
  *
  * @author ehugonnet
  */
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+public interface ReservationDao extends GenericDao<Reservation, Long> {
 
   @Query("from Reservation reservation WHERE reservation.instanceId = :instanceId AND reservation.userId= :userId " +
   "AND ((reservation.endDate > :startPeriod AND reservation.beginDate <= :startPeriod)" +

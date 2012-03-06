@@ -34,9 +34,6 @@
         http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <ctx:annotation-config/>
-  <ctx:component-scan base-package="org.silverpeas.resourcemanager"/>
-
   <bean name="resourceManagerFactory"
         class="org.silverpeas.resourcemanager.ResourcesManagerFactory" factory-method="getInstance"/>
 </beans>

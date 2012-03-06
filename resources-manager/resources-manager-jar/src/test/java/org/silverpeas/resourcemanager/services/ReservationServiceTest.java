@@ -23,12 +23,10 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import org.silverpeas.resourcemanager.model.ResourceStatus;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import edu.emory.mathcs.backport.java.util.Collections;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -46,21 +44,21 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcemanager.model.ResourceStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  *
  * @author ehugonnet
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-resource-manager-datasource.xml",
-  "/spring-resource-manager.xml"})
+@ContextConfiguration(locations = {"/spring-resource-manager.xml"})
 @Transactional
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class ReservationServiceTest {
@@ -73,7 +71,7 @@ public class ReservationServiceTest {
   @Inject
   private ResourceService resourceService;
   @Inject
-  @Named("jpaDataSource")
+  @Named("dataSource")
   private DataSource dataSource;
 
   @BeforeClass

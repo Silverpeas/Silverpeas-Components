@@ -52,8 +52,7 @@ import static org.hamcrest.Matchers.*;
  * @author ehugonnet
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-resource-manager-datasource.xml",
-  "/spring-resource-manager.xml"})
+@ContextConfiguration(locations = {"/spring-resource-manager.xml"})
 @Transactional
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class ReservedResourceServiceTest {
@@ -64,14 +63,14 @@ public class ReservedResourceServiceTest {
   @Inject
   private ReservedResourceService service;
   @Inject
-  @Named("jpaDataSource")
+  @Named("dataSource")
   private DataSource dataSource;
 
   @BeforeClass
   public static void prepareDataset() throws Exception {
     FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-    dataSet = new ReplacementDataSet(builder.build(ReservedResourceServiceTest.class.getClassLoader().
-        getResourceAsStream(
+    dataSet = new ReplacementDataSet(builder.build(ReservedResourceServiceTest.class.
+        getClassLoader().getResourceAsStream(
         "org/silverpeas/resourcemanager/services/reservations_validation_dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
   }
@@ -146,7 +145,8 @@ public class ReservedResourceServiceTest {
     List<Long> futureReservedResourceIds = Arrays.asList(new Long[]{1L, 2L, 3L, 5L, 8L});
     String startPeriod = "1320134400000";
     String endPeriod = "1320163200000";
-    List<ReservedResource> result = service.findAllReservedResourcesWithProblem(currentReservationId,
+    List<ReservedResource> result = service.
+        findAllReservedResourcesWithProblem(currentReservationId,
         futureReservedResourceIds, startPeriod, endPeriod);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));

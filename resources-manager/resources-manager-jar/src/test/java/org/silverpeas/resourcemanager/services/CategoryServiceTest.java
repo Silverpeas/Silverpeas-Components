@@ -36,7 +36,6 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,8 +54,7 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-resource-manager-datasource.xml",
-  "/spring-resource-manager.xml"})
+@ContextConfiguration(locations = {"/spring-resource-manager.xml"})
 @Transactional
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class CategoryServiceTest {
@@ -75,7 +73,7 @@ public class CategoryServiceTest {
   @Inject
   private CategoryService service;
   @Inject
-  @Named("jpaDataSource")
+  @Named("dataSource")
   private DataSource dataSource;
 
   public Connection getConnection() throws SQLException {

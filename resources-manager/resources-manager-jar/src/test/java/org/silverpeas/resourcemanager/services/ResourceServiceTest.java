@@ -55,8 +55,7 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-resource-manager-datasource.xml",
-  "/spring-resource-manager.xml"})
+@ContextConfiguration(locations = {"/spring-resource-manager.xml"})
 @Transactional
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class ResourceServiceTest {
@@ -71,7 +70,7 @@ public class ResourceServiceTest {
   @Inject
   private ResourceService service;
   @Inject
-  @Named("jpaDataSource")
+  @Named("dataSource")
   private DataSource dataSource;
 
   public ResourceServiceTest() {

@@ -27,9 +27,9 @@ import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceStatus;
-import org.silverpeas.resourcemanager.repository.ReservationRepository;
-import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
-import org.silverpeas.resourcemanager.repository.ResourceRepository;
+import org.silverpeas.resourcemanager.repository.ReservationDao;
+import org.silverpeas.resourcemanager.repository.ReservedResourceDao;
+import org.silverpeas.resourcemanager.repository.ResourceDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,12 +47,12 @@ import java.util.List;
 public class ReservationService {
 
   @Inject
-  private ReservationRepository repository;
+  private ReservationDao repository;
   @Inject
-  private ReservedResourceRepository reservedResourceRepository;
+  private ReservedResourceDao reservedResourceRepository;
 
   @Inject
-  private ResourceRepository resourceRepository;
+  private ResourceDao resourceRepository;
 
   public String createReservation(Reservation reservation, List<Long> resourceIds) {
     reservation.setStatus(computeReservationStatus(reservation));
@@ -64,7 +64,7 @@ public class ReservationService {
       ReservedResource reservedResource = new ReservedResource();
       reservedResource.setResourceId(resourceId);
       reservedResource.setReservationId(savedReservation.getIntegerId());
-      Resource resource = resourceRepository.findOne(resourceId);
+      Resource resource = resourceRepository.readByPrimaryKey(resourceId);
       if (!resource.getManagers().isEmpty()) {
         if (resourceRepository
             .getResourceValidator(resourceId, Long.parseLong(savedReservation.getUserId())) ==
@@ -76,7 +76,7 @@ public class ReservationService {
       }
       reservedResourceRepository.save(reservedResource);
     }
-    savedReservation = repository.findOne(savedReservation.getIntegerId());
+    savedReservation = repository.readByPrimaryKey(savedReservation.getIntegerId());
     savedReservation.setStatus(computeReservationStatus(savedReservation));
     repository.save(savedReservation);
     return savedReservation.getId();
@@ -114,12 +114,12 @@ public class ReservationService {
   }
 
   public Reservation getReservation(long id) {
-    return repository.findOne(id);
+    return repository.readByPrimaryKey(id);
   }
 
   public void deleteReservation(long id) {
     reservedResourceRepository.deleteAllReservedResourcesForReservation(id);
-    repository.delete(id);
+    repository.delete(repository.readByPrimaryKey(id));
   }
 
   public List<Reservation> findAllReservations(String instanceId) {

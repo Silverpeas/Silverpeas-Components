@@ -26,11 +26,11 @@ package org.silverpeas.resourcemanager.repository;
 
 import java.util.List;
 import org.silverpeas.resourcemanager.model.Category;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.synyx.hades.dao.GenericDao;
+import org.synyx.hades.dao.Param;
+import org.synyx.hades.dao.Query;
 
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface CategoryDao extends GenericDao<Category, Long> {
 
   @Query(value = "from Category category WHERE category.instanceId = :instanceId")
   public List<Category> findCategoriesByInstanceId(@Param("instanceId")String instanceId);

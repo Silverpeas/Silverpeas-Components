@@ -27,9 +27,9 @@ import javax.inject.Named;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcemanager.model.ResourceValidator;
-import org.silverpeas.resourcemanager.repository.ReservationRepository;
-import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
-import org.silverpeas.resourcemanager.repository.ResourceRepository;
+import org.silverpeas.resourcemanager.repository.ReservationDao;
+import org.silverpeas.resourcemanager.repository.ReservedResourceDao;
+import org.silverpeas.resourcemanager.repository.ResourceDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +39,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ResourceService {
 
   @Inject
-  ResourceRepository repository;
+  ResourceDao repository;
   @Inject
-  ReservationRepository reservationRepository;
+  ReservationDao reservationRepository;
   @Inject
-  private ReservedResourceRepository reservedResourceRepository;
+  private ReservedResourceDao reservedResourceRepository;
 
   public String createResource(Resource resource) {
     Resource savedResource = repository.saveAndFlush(resource);
@@ -55,16 +55,16 @@ public class ResourceService {
   }
 
   public List<Resource> getResources() {
-    return repository.findAll();
+    return repository.readAll();
   }
 
   public Resource getResource(long id) {
-    return repository.findOne(id);
+    return repository.readByPrimaryKey(id);
   }
 
   public void deleteResource(long id) {
     reservedResourceRepository.deleteAllReservedResourcesForResource(id);
-    repository.delete(id);
+    repository.delete(repository.readByPrimaryKey(id));
   }
 
   public void deleteResourcesFromCategory(Long categoryId) {
@@ -72,7 +72,7 @@ public class ResourceService {
   }
 
   public void addManagers(long resourceId, List<ResourceValidator> managerIds) {
-    Resource resource = repository.findOne(resourceId);
+    Resource resource = repository.readByPrimaryKey(resourceId);
     for (ResourceValidator manager : managerIds) {
       manager.setResource(resource);
       resource.getManagers().add(manager);
@@ -81,24 +81,24 @@ public class ResourceService {
   }
 
   public void addManager(ResourceValidator manager) {
-    Resource resource = repository.findOne(manager.getResourceId());
+    Resource resource = repository.readByPrimaryKey(manager.getResourceId());
     resource.getManagers().add(manager);
     repository.saveAndFlush(resource);
   }
 
   public List<ResourceValidator> getManagers(long resourceId) {
-    Resource resource = repository.findOne(resourceId);
+    Resource resource = repository.readByPrimaryKey(resourceId);
     return new ArrayList<ResourceValidator>(resource.getManagers());
   }
 
   public void removeAllManagers(long resourceId) {
-    Resource resource = repository.findOne(resourceId);
+    Resource resource = repository.readByPrimaryKey(resourceId);
     resource.getManagers().clear();
     repository.saveAndFlush(resource);
   }
 
   public void removeManager(ResourceValidator manager) {
-    Resource resource = repository.findOne(manager.getResourceId());
+    Resource resource = repository.readByPrimaryKey(manager.getResourceId());
     resource.getManagers().remove(manager);
     repository.saveAndFlush(resource);
   }

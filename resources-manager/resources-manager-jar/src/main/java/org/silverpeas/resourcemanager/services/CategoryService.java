@@ -24,7 +24,7 @@
 package org.silverpeas.resourcemanager.services;
 
 import org.silverpeas.resourcemanager.model.Category;
-import org.silverpeas.resourcemanager.repository.CategoryRepository;
+import org.silverpeas.resourcemanager.repository.CategoryDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +37,7 @@ import java.util.List;
 @Transactional
 public class CategoryService {
   @Inject
-  CategoryRepository repository;
+  CategoryDao repository;
 
 
   public String createCategory(Category category) {
@@ -54,10 +54,10 @@ public class CategoryService {
   }
 
   public Category getCategory(String id) {
-    return repository.findOne(Long.parseLong(id));
+    return repository.readByPrimaryKey(Long.parseLong(id));
   }
 
   public void deleteCategory(String id) {
-    repository.delete(Long.parseLong(id));
+    repository.delete( repository.readByPrimaryKey(Long.parseLong(id)));
   }
 }

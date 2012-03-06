@@ -33,6 +33,7 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
@@ -59,7 +60,7 @@ import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
 
-public class ResourcesManagerRequestRouter extends ComponentRequestRouter<ResourcesManagerSessionController> {
+public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = 1L;
   private static final String root = "/resourcesManager/jsp/";
@@ -158,8 +159,9 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ResourcesManagerSessionController resourcesManagerSC,
+  public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
+     ResourcesManagerSessionController resourcesManagerSC = (ResourcesManagerSessionController)componentSC;
     String categoryId = "";
     String reservationId;
     String resourceId;

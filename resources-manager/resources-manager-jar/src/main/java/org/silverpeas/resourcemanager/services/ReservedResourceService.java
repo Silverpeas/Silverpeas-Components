@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.ReservedResourcePk;
-import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
+import org.silverpeas.resourcemanager.repository.ReservedResourceDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,14 +42,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReservedResourceService {
 
   @Inject
-  ReservedResourceRepository repository;
+  ReservedResourceDao repository;
 
   public void create(ReservedResource resource) {
     repository.saveAndFlush(resource);
   }
 
   public ReservedResource getReservedResource(long resourceId, long reservationId) {
-    return repository.findOne(new ReservedResourcePk(resourceId, reservationId));
+    return repository.readByPrimaryKey(new ReservedResourcePk(resourceId, reservationId));
   }
 
   public void update(ReservedResource resource) {

@@ -23,21 +23,20 @@
  */
 package org.silverpeas.resourcemanager.repository;
 
+import java.util.List;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.ReservedResourcePk;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import java.util.List;
+import org.synyx.hades.dao.GenericDao;
+import org.synyx.hades.dao.Modifying;
+import org.synyx.hades.dao.Param;
+import org.synyx.hades.dao.Query;
 
 /**
  *
  * @author ehugonnet
  */
-public interface ReservedResourceRepository extends
-    JpaRepository<ReservedResource, ReservedResourcePk> {
+public interface ReservedResourceDao extends
+    GenericDao<ReservedResource, ReservedResourcePk> {
 
   @Query("SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
   "WHERE reservedResource.reservation.id != :currentReservationId AND reservedResource.status != 'R'" +
