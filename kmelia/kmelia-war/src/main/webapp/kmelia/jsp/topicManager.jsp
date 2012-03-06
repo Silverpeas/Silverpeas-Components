@@ -706,7 +706,7 @@ function loadNodeData(node, fnLoadComplete)  {
       if (nodeId != 0) {
         atUri += "&nodeId=" + nodeId;
       }
-      SP_openWindow(atUri, "Classification", '600', '400','scrollbars=yes, resizable, alwaysRaised');
+      SP_openWindow(atUri, "Classification", '650', '600','scrollbars=yes, resizable, alwaysRaised');
     }
 	
 	/*
