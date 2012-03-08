@@ -11,7 +11,7 @@ ALTER TABLE sc_resources_reservedresource WITH NOCHECK ADD  CONSTRAINT PK_Resour
 ALTER TABLE sc_resources_reservation DROP CONSTRAINT PK_Resources_Reservation;
 ALTER TABLE sc_resources_reservation ALTER COLUMN userId INTEGER;
 ALTER TABLE sc_resources_reservation ALTER COLUMN id BIGINT NOT NULL;
-ALTER TABLE sc_resources_reservationWITH NOCHECK ADD CONSTRAINT PK_Resources_Reservation PRIMARY KEY CLUSTERED (id);
+ALTER TABLE sc_resources_reservation WITH NOCHECK ADD CONSTRAINT PK_Resources_Reservation PRIMARY KEY CLUSTERED (id);
 
 ALTER TABLE sc_resources_resource DROP CONSTRAINT PK_Resources_Resource;
 ALTER TABLE sc_resources_resource ALTER COLUMN id BIGINT NOT NULL;
