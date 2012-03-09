@@ -172,22 +172,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
       }
 
       /*
-       * Card list.
-       */
-      /*else if (function.equals("search")) {
-        request.setAttribute("IsEmailHidden", scc.isEmailHidden());
-
-        if (flag.equals("admin")) {
-          request.setAttribute("listCards", scc.getCards());
-          destination = "/whitePages/jsp/listCards.jsp";
-        } else if (flag.equals("user")) {
-          request.setAttribute("listCards", scc.getVisibleCards());
-          destination = "/whitePages/jsp/listCardsUser.jsp";
-        } else
-          destination = "/admin/jsp/errorpage.jsp";
-      }*/
-
-      /*
        * New card (administrator only) : redirects to user panel.
        */
       else if (function.equals("createQuery")) {
@@ -339,8 +323,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
 
           destination = "/whitePages/jsp/consultCard.jsp";
         }
-        /*} else
-          destination = "/admin/jsp/errorpage.jsp";*/
       } else if (function.equals("updateCard")) {
         String userCardIdString = request.getParameter("userCardId");
 
@@ -433,12 +415,8 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
         }
       }
 
-
-
-      else if (function.equals("searchResult") || function.equals("Consult")) // pdc
-      // search
-      // result
-      {
+      else if (function.equals("searchResult") || function.equals("Consult")) {
+        request.setAttribute("userCardId", request.getParameter("Id"));
         destination = getDestination("consultCard", scc, request);
       }
 
