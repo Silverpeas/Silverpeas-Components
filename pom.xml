@@ -35,7 +35,7 @@
   <name>Silverpeas Components</name>
 
   <properties>
-    <core.version>5.8.1-SNAPSHOT</core.version>
+    <core.version>5.8.1</core.version>
   </properties>
 
   <dependencies>
