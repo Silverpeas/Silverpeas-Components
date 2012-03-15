@@ -98,10 +98,23 @@ public class KmeliaSecurity implements ComponentSecurity {
       cache.put(objectId + objectType + componentId, available);
     }
   }
-
+  
   private Boolean readFromCache(String objectId, String objectType, String componentId) {
     if (cacheEnabled) {
       return cache.get(objectId + objectType + componentId);
+    }
+    return null;
+  }
+  
+  private void writeInCache(String componentId, boolean available) {
+    if (cacheEnabled) {
+      cache.put(componentId, available);
+    }
+  }
+  
+  private Boolean readFromCache(String componentId) {
+    if (cacheEnabled) {
+      return cache.get(componentId);
     }
     return null;
   }
@@ -115,7 +128,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   public boolean isAccessAuthorized(String componentId, String userId, String objectId,
       String objectType) {
     // first, check if user is able to access to component
-    if (!controller.isComponentAvailable(componentId, userId)) {
+    if (!isComponentAvailable(componentId, userId)) {
       return false;
     }
 
@@ -208,6 +221,17 @@ public class KmeliaSecurity implements ComponentSecurity {
     return StringUtil.getBooleanValue(param);
   }
 
+  private boolean isComponentAvailable(String componentId, String userId) {
+    Boolean fromCache = readFromCache(componentId);
+    if (fromCache != null) {
+      // Availabily already processed
+      return fromCache;
+    }
+    
+    boolean available = controller.isComponentAvailable(componentId, userId);
+    writeInCache(componentId, available);
+    return available;
+  }
 
   protected boolean isPublicationAvailable(PublicationPK pk, String userId) {
     Boolean fromCache = readFromCache(pk.getId(), PUBLICATION_TYPE, pk.getInstanceId());
