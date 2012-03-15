@@ -487,7 +487,7 @@
 
       function sendPublicationDataToRouter(func) {
         if (isCorrectForm()) {
-          <% if("New".equals(action)) { %>
+          <% if(!kmaxMode && "New".equals(action)) { %>
                 <view:pdcPositions setIn="document.pubForm.Positions.value"/>
           <% } %>
           document.pubForm.action = func;
@@ -594,7 +594,7 @@
                  
              }
              
-             <% if("New".equals(action)) { %>
+             <% if(!kmaxMode && "New".equals(action)) { %>
              	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
              <% } %>
              
