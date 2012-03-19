@@ -27,7 +27,7 @@ package com.stratelia.webactiv.kmelia;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
@@ -159,7 +159,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
   }
 
   private boolean isVisible(PublicationDetail pubDetail) {
-    return "Valid".equals(pubDetail.getStatus());
+    return PublicationDetail.VALID.equals(pubDetail.getStatus());
   }
 
   /**
@@ -168,17 +168,13 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
    * @param peasId the id of the instance
    * @return a list of publicationPK
    */
-  private ArrayList makePKArray(List idList, String peasId) {
-    ArrayList pks = new ArrayList();
-    PublicationPK pubPK = null;
-    Iterator iter = idList.iterator();
-    String id = null;
+  private ArrayList<PublicationPK> makePKArray(List<Integer> idList, String peasId) {
+    ArrayList<PublicationPK> pks = new ArrayList<PublicationPK>();
     // for each silverContentId, we get the corresponding publicationId
-    while (iter.hasNext()) {
-      int contentId = (Integer) iter.next();
+    for (int contentId : idList) {
       try {
-        id = getContentManager().getInternalContentId(contentId);
-        pubPK = new PublicationPK(id, peasId);
+        String id = getContentManager().getInternalContentId(contentId);
+        PublicationPK pubPK = new PublicationPK(id, peasId);
         pks.add(pubPK);
       } catch (ClassCastException ignored) {
         // ignore unknown item
@@ -194,14 +190,13 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
    * @param ids a list of publicationPK
    * @return a list of publicationDetail
    */
-  private List<PublicationDetail> getHeaders(List ids, String componentId, String userId) {
+  private List<PublicationDetail> getHeaders(List<PublicationPK> ids, String componentId, String userId) {
     List<PublicationDetail> headers = new ArrayList<PublicationDetail>();
     try {
       KmeliaSecurity security = new KmeliaSecurity();
       boolean checkRights = security.isRightsOnTopicsEnabled(componentId);
 
-      ArrayList<PublicationDetail> publicationDetails = (ArrayList) getPublicationBm().getPublications(
-          ids);
+      Collection<PublicationDetail> publicationDetails = getPublicationBm().getPublications(ids);
       for (PublicationDetail pubDetail : publicationDetails) {
         if (!checkRights || security.isPublicationAvailable(pubDetail.getPK(), userId)) {
           pubDetail.setIconUrl("kmeliaSmall.gif");

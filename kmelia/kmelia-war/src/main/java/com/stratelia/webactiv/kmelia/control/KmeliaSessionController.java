@@ -95,6 +95,8 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
@@ -273,6 +275,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   boolean componentManageable = false;
 
   private List<String> selectedPublicationIds = new ArrayList<String>();
+  private boolean customPublicationTemplateUsed = false;
+  private String customPublicationTemplateName = null;
 
   /**
    * Creates new sessionClientController
@@ -303,6 +307,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (!StringUtil.isDefined(sortValue)) {
       sortValue = getSettings().getString("publications.sort.default", "2");
     }
+    // check if this instance use a specific template of publication
+    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
+    customPublicationTemplateName = "publication_" + getComponentId();
+    customPublicationTemplateUsed =
+        template.isCustomTemplateExists("kmelia", customPublicationTemplateName);
   }
 
   /**
@@ -4007,7 +4016,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
           if (instanceId.startsWith("kmelia")) {
             String[] profiles =
-                    getOrganizationController().getUserProfiles(getUserId(), instanceId);
+                getOrganizationController().getUserProfiles(getUserId(), instanceId);
             String bestProfile = KmeliaHelper.getProfile(profiles);
             if ("admin".equalsIgnoreCase(bestProfile) || "publisher".equalsIgnoreCase(bestProfile)) {
               instanceIds.add(instanceId);
@@ -4021,13 +4030,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
               if (!StringUtil.isDefined(path)) {
                 List<SpaceInst> sPath = getOrganizationController().getSpacePath(space.getFullId());
-                SpaceInst spaceInPath = null;
-                for (int i = 0; i < sPath.size(); i++) {
-                  spaceInPath = sPath.get(i);
-                  if (i > 0) {
+                boolean first = true;
+                for (SpaceInst spaceInPath : sPath) {
+                  if (!first) {
                     path += " > ";
                   }
                   path += spaceInPath.getName();
+                  first = false;
                 }
               }
 
@@ -4795,4 +4804,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public List<String> getSelectedPublicationIds() {
     return selectedPublicationIds;
   }
+  
+  public boolean isCustomPublicationTemplateUsed() {
+    return customPublicationTemplateUsed;
+  }
+  
+  public String getCustomPublicationTemplateName() {
+    return customPublicationTemplateName;
+  }
+
 }
