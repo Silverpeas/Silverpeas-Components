@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.connecteurJDBC.control.ConnecteurJDBCSessionController" %>
 <%--
 
     Copyright (C) 2000 - 2011 Silverpeas

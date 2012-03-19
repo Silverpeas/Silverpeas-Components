@@ -35,8 +35,7 @@
     </dependency>
     <dependency>
       <groupId>com.silverpeas.components.jdbc-connector</groupId>
-      <artifactId>jdbc-connector-ejb</artifactId>
-      <classifier>client</classifier>
+      <artifactId>jdbc-connector-jar</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
