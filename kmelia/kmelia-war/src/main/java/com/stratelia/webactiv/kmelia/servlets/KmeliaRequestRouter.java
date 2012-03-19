@@ -1787,7 +1787,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         // Go to importExportPeas
         destination = "/RimportExportPeas/jsp/KmaxExportPublications";
       }/************ End Kmax Mode *****************/
-      else {
+      else if ("statistics".equals(function)) {
+        destination = rootDestination + "statisticsTopic.jsp";
+      } else {
         destination = rootDestination + function;
       }
 

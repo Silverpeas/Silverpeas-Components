@@ -351,20 +351,32 @@ function initOperations(id, op) {
 	if (op.exportSelection) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.exportSelection"], {url: "javascript:onclick=exportPublications()"});
 		oMenu.addItem(menuItem, groupIndex);
-		menuEmpty = false;
+    groupEmpty = false;
 	}
 	
 	if (op.subscriptions) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.subscribe"], {url: "javascript:onclick=addSubscription()"});
 		oMenu.addItem(menuItem, groupIndex);
-		menuEmpty = false;
+    groupEmpty = false;
 	}
 	if (op.favorites) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.favorites"], {url: "javascript:onclick=addCurrentNodeAsFavorite()"});
 		oMenu.addItem(menuItem, groupIndex);
-		menuEmpty = false;
+    groupEmpty = false;
 	}
-			
+  
+  if (!groupEmpty) {
+    groupIndex++;
+    groupEmpty = true;
+    menuEmpty = false;
+  }
+  
+  if (op.statistics) {
+    menuItem = new YAHOO.widget.MenuItem(labels["operation.statistics"], {url: "javascript:onclick=showStats()"});
+    oMenu.addItem(menuItem, groupIndex);
+    menuEmpty = false;
+  }
+
 	oMenu.render();
 	
 	if (menuEmpty) {
@@ -724,4 +736,13 @@ function doPagination(index) {
 							function(data){
 								$('#pubList').html(data);
 							},"html");
+}
+
+function showStats() {
+  //alert("Current componentId = " + getComponentId() + " and topicId=" + getCurrentNodeId());
+  //TODO call how to update HTML from this page with new Ajax call
+  //var url = getWebContext() + "/Rkmelia/statistic?componentId=" + getComponentId() + "&topicId=" + getCurrentNodeId();
+  var url = "statistics?componentId=" + getComponentId() + "&topicId=" + getCurrentNodeId();
+  //alert("loading url " + url);
+  location.href = url;
 }

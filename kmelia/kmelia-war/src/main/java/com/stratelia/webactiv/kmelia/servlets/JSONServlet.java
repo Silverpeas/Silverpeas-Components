@@ -264,6 +264,8 @@ public class JSONServlet extends HttpServlet {
       operations.put("exportSelection", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("favorites", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
+      //TODO do we have to filter statistics display
+      operations.put("statistics", true);
     }
 
     return new JSONObject(operations);
