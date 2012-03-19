@@ -239,9 +239,7 @@
 #pubList .publication .line3,
 #pubList .publication .files {
 	margin-left: 15px;
-	width: 95%;
 	white-space: normal;
-	/*float: left;*/
 }
 
 #pubList .publication .line3 {
