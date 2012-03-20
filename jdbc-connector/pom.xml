@@ -13,7 +13,7 @@
   <name>jdbc-connector Component</name>
 
   <modules>
-    <module>jdbc-connector-ejb</module>
+    <module>jdbc-connector-jar</module>
     <module>jdbc-connector-war</module>
     <module>jdbc-connector-config</module>
   </modules>
