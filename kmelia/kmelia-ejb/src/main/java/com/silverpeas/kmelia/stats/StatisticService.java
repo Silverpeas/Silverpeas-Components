@@ -1,7 +1,6 @@
 package com.silverpeas.kmelia.stats;
 
 import com.silverpeas.kmelia.model.StatsFilterVO;
-import com.silverpeas.kmelia.model.TopicSearchStatsVO;
 
 public interface StatisticService {
 
@@ -17,6 +16,6 @@ public interface StatisticService {
    * @param statFilter
    * @return
    */
-  public TopicSearchStatsVO getStatisticActivityByPeriod(StatsFilterVO statFilter);
+  public Integer getStatisticActivityByPeriod(StatsFilterVO statFilter);
 
 }

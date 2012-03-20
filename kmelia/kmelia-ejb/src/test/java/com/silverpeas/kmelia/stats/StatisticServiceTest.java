@@ -1,16 +1,15 @@
 package com.silverpeas.kmelia.stats;
 
-import com.silverpeas.kmelia.model.StatsFilterVO;
-import com.silverpeas.kmelia.model.TopicSearchStatsVO;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import com.silverpeas.kmelia.model.StatsFilterVO;
+import com.silverpeas.kmelia.model.TopicSearchStatsVO;
 
 /**
  *
@@ -59,7 +58,7 @@ public class StatisticServiceTest {
     StatsFilterVO statFilter = null;
     StatisticService instance = new StatisticServiceImpl();
     TopicSearchStatsVO expResult = null;
-    TopicSearchStatsVO result = instance.getStatisticActivityByPeriod(statFilter);
+    Integer result = instance.getStatisticActivityByPeriod(statFilter);
     assertEquals(expResult, result);
   }
 
@@ -69,7 +68,7 @@ public class StatisticServiceTest {
       return null;
     }
 
-    public TopicSearchStatsVO getStatisticActivityByPeriod(StatsFilterVO statFilter) {
+    public Integer getStatisticActivityByPeriod(StatsFilterVO statFilter) {
       return null;
     }
   }
