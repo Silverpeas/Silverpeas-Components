@@ -140,7 +140,7 @@ out.println(gef.getLookStyleSheet());
 		document.sqlReqForm.submit();
 	}
 </Script>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<BODY>
 
 <%
 	browseBar.setExtraInformation(connecteurJDBC.getString("titreExecution")) ;
@@ -166,6 +166,7 @@ out.println(gef.getLookStyleSheet());
 	  ArrayPane arrayPane = gef.getArrayPane("ResultSet","",request,session);
 	  arrayPane.setSortable(true);
 	  arrayPane.setExportData(true);
+	  arrayPane.setVisibleLineNumber(15);
 	
 	if (lastValidSqlReq!=null)
 	{	
