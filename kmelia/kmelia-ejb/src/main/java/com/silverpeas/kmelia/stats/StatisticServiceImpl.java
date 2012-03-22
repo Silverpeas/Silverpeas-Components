@@ -12,8 +12,11 @@ import java.util.List;
 import javax.inject.Named;
 
 import com.silverpeas.kmelia.model.StatsFilterVO;
-import com.silverpeas.kmelia.model.TopicSearchStatsVO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -68,21 +71,57 @@ public class StatisticServiceImpl implements StatisticService {
     }
     int nbPubli = 0;
     if (publis != null && publis.size() > 0) {
+      Integer groupId = statFilter.getGroupId();
       List<WAPrimaryKey> publiPKs = new ArrayList<WAPrimaryKey>();
       // Check access for each publication
       for (PublicationDetail publi : publis) {
         publiPKs.add(publi.getPK());
       }
-      try {
-        nbPubli =
-            getStatisticBm().getCountByPeriod(publiPKs, 1, "Publication",
-                statFilter.getStartDate(), statFilter.getEndDate());
-      } catch (RemoteException e) {
-        SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNbConsultedPublication",
-            "Error when loading the list of Node publications", e);
+      if (groupId != null) {
+        // Retrieve the group and the list of user identifiers
+        try {
+          List<String> userIds = getListUserIds(groupId);
+          nbPubli =
+              getStatisticBm().getCountByPeriodAndUser(publiPKs, "Publication",
+                  statFilter.getStartDate(), statFilter.getEndDate(), userIds);
+
+        } catch (AdminException e) {
+          SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNbConsultedPublication",
+              "Error when getting group before counting access groupId=" + groupId, e);
+        } catch (RemoteException e) {
+          SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNbConsultedPublication",
+              "Error when counting number of access (getCountByPeriodAndUser)", e);
+        }
+
+      } else {
+        try {
+          nbPubli =
+              getStatisticBm().getCountByPeriod(publiPKs, 1, "Publication",
+                  statFilter.getStartDate(), statFilter.getEndDate());
+        } catch (RemoteException e) {
+          SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNbConsultedPublication",
+              "Error when counting number of access (getCountByPeriod)", e);
+        }
+
       }
     }
     return nbPubli;
+  }
+
+  /**
+   * @param groupId the group identifier
+   * @return the list of user identifiers which are linked to a group given in parameter
+   * @throws AdminException
+   */
+  private List<String> getListUserIds(Integer groupId) throws AdminException {
+    Admin admin = AdminReference.getAdminService();
+    Group selectedGroup = admin.getGroup(Integer.toString(groupId));
+    String[] arrayUserIds = selectedGroup.getUserIds();
+    List<String> userIds = new ArrayList<String>();
+    for (String userId : arrayUserIds) {
+      userIds.add(userId);
+    }
+    return userIds;
   }
 
   @Override
@@ -102,22 +141,65 @@ public class StatisticServiceImpl implements StatisticService {
                 new PublicationPK("", statFilter.getInstanceId()));
       }
     } catch (RemoteException e) {
-      SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNbConsultedPublication",
+      SilverTrace.error("kmelia", getClass().getSimpleName() + ".getStatisticActivityByPeriod",
           "Error when loading the list of Node publications", e);
     }
     int nbPubli = 0;
     if (publis != null && publis.size() > 0) {
       Date startTime = statFilter.getStartDate();
       Date endTime = statFilter.getEndDate();
-      // Check activity for each publication
-      for (PublicationDetail publi : publis) {
-        if ((publi.getCreationDate().after(startTime) && publi.getCreationDate().before(endTime)) ||
-            (publi.getUpdateDate().after(startTime) && publi.getUpdateDate().before(endTime))) {
-          nbPubli++;
+      Integer groupId = statFilter.getGroupId();
+
+      if (groupId != null) {
+        List<String> userIds = new ArrayList<String>();
+        try {
+          userIds = getListUserIds(groupId);
+        } catch (AdminException e) {
+          SilverTrace.error("kmelia", getClass().getSimpleName() + ".getStatisticActivityByPeriod",
+              "Error when loading the list of filtered users", e);
+        }
+        if (!userIds.isEmpty()) {
+          for (PublicationDetail publi : publis) {
+            for (String userId : userIds) {
+              if (isPubliActivityInsideTimeInterval(startTime, endTime, publi) &&
+                  isUserRelatedWithPubli(publi, userId)) {
+                nbPubli++;
+              }
+            }
+          }
+        }
+      } else {
+        // Check activity for each publication
+        for (PublicationDetail publi : publis) {
+          if (isPubliActivityInsideTimeInterval(startTime, endTime, publi)) {
+            nbPubli++;
+          }
         }
       }
     }
     return nbPubli;
+  }
+
+  /**
+   * @param publi the publication detail
+   * @param userId the user identifier
+   * @return true if user has created, modified or validate this publication
+   */
+  private boolean isUserRelatedWithPubli(PublicationDetail publi, String userId) {
+    return (userId.equals(publi.getCreatorId()) || userId.equals(publi.getUpdaterId()) || userId
+        .equals(publi.getValidatorId()));
+  }
+
+  /**
+   * @param startTime the start time interval
+   * @param endTime the end time interval
+   * @param publi the publication detail
+   * @return true if publication creation date or modification date is between startTime and endTime
+   */
+  private boolean isPubliActivityInsideTimeInterval(Date startTime, Date endTime,
+      PublicationDetail publi) {
+    return (publi.getCreationDate().after(startTime) && publi.getCreationDate().before(endTime)) ||
+        (publi.getUpdateDate().after(startTime) && publi.getUpdateDate().before(endTime));
   }
 
   private PublicationBm getPublicationBm() {

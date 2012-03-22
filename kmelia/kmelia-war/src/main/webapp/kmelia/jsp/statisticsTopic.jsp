@@ -26,9 +26,6 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ page import="com.silverpeas.kmelia.stats.StatisticServiceImpl" %>
-<%@ page import="com.silverpeas.kmelia.model.StatsFilterVO" %>
-
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -37,11 +34,20 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
+<c:set var="filterGroups" value="${requestScope.filterGroups}" />
+<c:set var="querySearchs" value="${requestScope.mostInterestedSearch}" />
+<c:set var="startDate" value="${requestScope.startDate}" />
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title><fmt:message key="kmelia.stat.title" /></title>
 <view:looknfeel />
+<script type="text/javascript">
+function filterStat() {
+  document.statForm.submit();
+}
+</script>
 </head>
 <body>
 <fmt:message key="kmelia.stat.browsebar" var="browseBarLabel" />
@@ -49,12 +55,72 @@
 <view:window>
 <view:frame>
 <view:board>
-<h1> Statistiques à afficher iciiiiiiiiiii :)</h1>
-<%
-StatsFilterVO stat = new StatsFilterVO("kmelia111", 55, new Date(), new Date());
+<h1><fmt:message key="kmelia.stat.title" /></h1>
+<%--
+<%@ page import="com.silverpeas.kmelia.stats.StatisticServiceImpl" %>
+<%@ page import="com.silverpeas.kmelia.model.StatsFilterVO" %>
+Date endDate = new Date();
+Calendar cal = Calendar.getInstance();
+cal.add(Calendar.DATE, -9);
+
+Date beginDate = cal.getTime();
+
+cal.add(Calendar.DATE, 11);
+endDate = cal.getTime();
+StatsFilterVO stat = new StatsFilterVO("kmelia111", 0, beginDate, endDate);
 StatisticServiceImpl statService = new StatisticServiceImpl();
-statService.getNbConsultedPublication(stat);
-%>
+int nbPubli = statService.getNbConsultedPublication(stat);
+
+--%>
+<div id="filterStats">
+  <fmt:message key="kmelia.stat.filter.title"/>
+  <br/>
+  Liste des groupes lecteurs ou rédacteurs:<br/>
+  <ul>
+    <c:forEach var="group" items="${filterGroups}" >
+      <li><c:out value="${group.id}" /> - <c:out value="${group.name}" /> - <c:out value="${group.description}" /></li>
+    </c:forEach>
+  </ul>
+  <form action="statistics" method="get" name="statForm">
+    <input name="groupId" type="hidden" value="7" />
+    
+  </form>  
+</div>
+
+
+<p>
+
+<fmt:formatDate var="startDateStr" value="${startDate}" pattern="dd/MM/yyyy" />
+<fmt:formatDate var="endDateStr" value="${requestScope.endDate}" pattern="dd/MM/yyyy"/> 
+<fmt:message key="kmelia.stat.consulted.publications">
+  <fmt:param value="${startDateStr}" />
+  <fmt:param value="${endDateStr}" />
+</fmt:message>
+<c:out value="${requestScope.nbConsultedPublication}"></c:out>
+<br/>
+<fmt:message key="kmelia.stat.activity.publications">
+  <fmt:param value="${startDateStr}" />
+  <fmt:param value="${endDateStr}" />
+</fmt:message>
+<c:out value="${requestScope.nbActivity}"></c:out>
+</p>
+
+<c:if test="${not empty querySearchs}">
+<div id="mostImportantQuerySearch">
+  <ul>
+    <li>Termes recherchés - Nombre d'occurrences</li>
+    <c:forEach var="query" items="${querySearchs}" >
+      <li><c:out value="${query.query}" /> - <c:out value="${query.occurrences}" /></li>
+    </c:forEach>
+  </ul>
+</div>
+</c:if>
+
+<fmt:message var="filterStatButtonLabel" key="kmelia.stat.filter.button" />
+<view:buttonPane>
+  <view:button action="javascript:onClick=filterStat();" label="${filterStatButtonLabel}" disabled="false" />
+</view:buttonPane>
+
 </view:board>
 </view:frame>
 </view:window>

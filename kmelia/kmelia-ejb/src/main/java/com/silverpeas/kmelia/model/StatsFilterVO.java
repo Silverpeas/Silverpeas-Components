@@ -4,13 +4,26 @@ import java.util.Date;
 
 public class StatsFilterVO {
 
+  /**
+   * the application identifier
+   */
   private String instanceId;
-
+  /**
+   * the topic identifier
+   */
   private Integer topicId;
-
+  /**
+   * the start time
+   */
   private Date startDate;
-
+  /**
+   * the end time
+   */
   private Date endDate;
+  /**
+   * the group identifier
+   */
+  private Integer groupId;
 
   public StatsFilterVO() {
   }
@@ -84,4 +97,19 @@ public class StatsFilterVO {
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
+
+  /**
+   * @return the groupId
+   */
+  public Integer getGroupId() {
+    return groupId;
+  }
+
+  /**
+   * @param groupId the groupId to set
+   */
+  public void setGroupId(Integer groupId) {
+    this.groupId = groupId;
+  }
+
 }
