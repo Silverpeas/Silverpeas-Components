@@ -22,12 +22,10 @@ package com.silverpeas.gallery.image;
 
 import java.util.List;
 import org.junit.Before;
-import com.silverpeas.util.PathTestUtil;
 import com.silverpeas.gallery.model.MetaData;
 import java.io.File;
 import java.util.Calendar;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import static com.silverpeas.gallery.image.ImageMetadataExtractor.*;
 
 
@@ -47,6 +45,7 @@ public class MetadataExtractorTest {
   File sunset = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Coucher de soleil.jpg");
   File gmt = new File(TARGET_DIR + "test-classes" + SEPARATOR + "w40_DSC_7481.jpg");
   File dauphins = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Dauphins-100.jpg");
+  File chefs = new File(TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_utf-8.jpg");
 
   @Before
   public void setUp() {
@@ -56,14 +55,14 @@ public class MetadataExtractorTest {
   @Test
   public void testLoadExtractor() {
     List<IptcProperty> properties = extractor.defineImageIptcProperties(
-            COMMA_SPLITTER.split("IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,"
-            + "IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,IPTC_19,IPTC_20,IPTC_21,IPTC_22,"
-            + "IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,IPTC_30,IPTC_31"));
+      COMMA_SPLITTER.split("IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,"
+      + "IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,IPTC_19,IPTC_20,IPTC_21,IPTC_22,"
+      + "IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,IPTC_30,IPTC_31"));
     assertNotNull(properties);
     assertEquals(24, properties.size());
 
     List<ExifProperty> exifProperties = extractor.defineImageProperties(COMMA_SPLITTER.split(
-            "METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7"));
+      "METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7"));
     assertNotNull(exifProperties);
     assertEquals(7, exifProperties.size());
   }
@@ -92,7 +91,7 @@ public class MetadataExtractorTest {
     assertEquals("592", meta.getProperty());
     assertEquals("Créateur", meta.getLabel());
     assertEquals("Nom du créateur : Tag_by_line",
-            meta.getValue().replace('ý', 'é').replace('È', 'é'));
+      meta.getValue().replace('ý', 'é').replace('È', 'é'));
 
   }
 
@@ -127,11 +126,12 @@ public class MetadataExtractorTest {
     assertThat(meta.getProperty(), is("592"));
     assertThat(meta.getLabel(), is("Créateur"));
     assertThat(meta.getValue(), is("Aymard Gilles"));
-    
+
     meta = metadata.get(7);
     assertThat(meta.getProperty(), is("537"));
     assertThat(meta.getLabel(), is("Mots clef"));
-    assertThat(meta.getValue(), is("Auberge des Dauphins / Architecture / Vue exterieure / Saou / Foret de Saou /"));
+    assertThat(meta.getValue(), is(
+      "Auberge des Dauphins / Architecture / Vue exterieure / Saou / Foret de Saou /"));
   }
 
   @Test
@@ -176,5 +176,58 @@ public class MetadataExtractorTest {
     assertEquals("(Windows) Titre", meta.getLabel());
     assertEquals("Le titre EXIF", meta.getValue());
 
+  }
+
+  /**
+   * For <a href="https://www.silverpeas.org/redmine/issues/3021">Bug #3021</a>.
+   */
+  @Test
+  public void testExtractImageIptcMetaDataUTF8Encoded() throws Exception {
+    List<MetaData> metadata = extractor.extractImageIptcMetaData(chefs);
+    assertNotNull(metadata);
+    assertEquals(8, metadata.size());
+    MetaData meta = metadata.get(0);
+    assertThat(meta.getProperty(), is("622"));
+    assertThat(meta.getLabel(), is("(IPTC) Crédit"));
+    assertThat(meta.getValue(), is("Francis Rey"));
+    meta = metadata.get(1);
+    assertThat(meta.getProperty(), is("634"));
+    assertThat(meta.getLabel(), is("Auteur"));
+    assertThat(meta.getValue(), is("Département de la Drôme"));
+
+    meta = metadata.get(2);
+    assertThat(meta.getProperty(), is("592"));
+    assertThat(meta.getLabel(), is("Créateur"));
+    assertThat(meta.getValue(), is("Francis Rey"));
+    meta = metadata.get(3);
+    assertThat(meta.getProperty(), is("632"));
+    assertThat(meta.getLabel(), is("Légende"));
+    assertThat(meta.getValue(),is("Salon de l'Agriculture . Durant le salon les cuisiniers Drômois "
+      + "ont réalisés en direct et fait déguster des plats dont les recettes étaient distribuées "
+      + "aux visiteurs"));
+    meta = metadata.get(4);
+    assertThat(meta.getProperty(), is("602"));
+    assertThat(meta.getLabel(), is("Ville"));
+    assertThat(meta.getValue(), is("Paris"));
+    meta = metadata.get(5);
+    assertThat(meta.getProperty(), is("628"));
+    assertThat(meta.getLabel(), is("Copyright"));
+    assertThat(meta.getValue(), is("©Francis Rey (2012)"));
+    meta = metadata.get(6);
+    assertThat(meta.getProperty(), is("567"));
+    assertThat(meta.getLabel(), is("Date de création"));
+    Calendar calend = Calendar.getInstance();
+    calend.set(Calendar.DAY_OF_MONTH, 28);
+    calend.set(Calendar.MONTH, Calendar.FEBRUARY);
+    calend.set(Calendar.YEAR, 2012);
+    calend.set(Calendar.HOUR_OF_DAY, 0);
+    calend.set(Calendar.MINUTE, 0);
+    calend.set(Calendar.SECOND, 0);
+    calend.set(Calendar.MILLISECOND, 0);
+    assertThat(calend.getTime(), is(meta.getDateValue()));
+    meta = metadata.get(7);
+    assertThat(meta.getProperty(), is("572"));
+    assertThat(meta.getLabel(), is("572"));
+    assertThat(meta.getValue(), is("113641"));
   }
 }

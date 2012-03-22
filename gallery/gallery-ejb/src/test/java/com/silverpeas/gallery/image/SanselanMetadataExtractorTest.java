@@ -25,11 +25,13 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.silverpeas.util.PathTestUtil.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
+import static com.silverpeas.gallery.image.AbstractImageMetadataExtractor.COMMA_SPLITTER;
 
 /**
  * @author ehugonnet
@@ -41,6 +43,7 @@ public class SanselanMetadataExtractorTest {
   File sunset = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Sunset.jpg");
   File gmt = new File(TARGET_DIR + "test-classes" + SEPARATOR + "w40_DSC_7481.jpg");
   File dauphins = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Dauphins-100.jpg");
+  File chefs = new File(TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_utf-8.jpg");
 
   @Before
   public void setUp() {
@@ -49,15 +52,15 @@ public class SanselanMetadataExtractorTest {
 
   @Test
   public void testLoadExtractor() {
-    List<IptcProperty> properties = extractor.defineImageIptcProperties(
-            AbstractImageMetadataExtractor.COMMA_SPLITTER.split(
-            "IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,IPTC_19,IPTC_20,IPTC_21,IPTC_22,IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,IPTC_30,IPTC_31"));
+    List<IptcProperty> properties = extractor.defineImageIptcProperties(COMMA_SPLITTER.split(
+      "IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,"
+      + "IPTC_19,IPTC_20,IPTC_21,IPTC_22,IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,"
+      + "IPTC_30,IPTC_31"));
     assertNotNull(properties);
     assertEquals(24, properties.size());
 
-    List<ExifProperty> exifProperties = extractor.defineImageProperties(
-            AbstractImageMetadataExtractor.COMMA_SPLITTER.split(
-            "METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7"));
+    List<ExifProperty> exifProperties = extractor.defineImageProperties(COMMA_SPLITTER.split(
+      "METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7"));
     assertNotNull(exifProperties);
     assertEquals(7, exifProperties.size());
   }
@@ -97,8 +100,9 @@ public class SanselanMetadataExtractorTest {
     List<MetaData> metadata = extractor.extractImageIptcMetaData(gmt);
     assertNotNull(metadata);
     for (MetaData metadonnee : metadata) {
-      System.out.println(metadonnee.getProperty() + " - " + metadonnee.getLabel() + ": " + metadonnee.
-              getValue());
+      System.out.
+        println(metadonnee.getProperty() + " - " + metadonnee.getLabel() + ": " + metadonnee.
+        getValue());
     }
     assertEquals(10, metadata.size());
     MetaData meta = metadata.get(0);
@@ -123,7 +127,7 @@ public class SanselanMetadataExtractorTest {
     assertThat(meta.getProperty(), is("592"));
     assertThat(meta.getLabel(), is("Créateur"));
     assertThat(meta.getValue(), is("Georges Emmanuel"));
-     meta = metadata.get(9);
+    meta = metadata.get(9);
     assertThat(meta.getProperty(), is("572"));
     assertThat(meta.getLabel(), is("572"));
     assertThat(meta.getValue(), is("161908+0000"));
@@ -135,7 +139,7 @@ public class SanselanMetadataExtractorTest {
     calend.set(Calendar.MINUTE, 19);
     calend.set(Calendar.SECOND, 8);
     calend.set(Calendar.MILLISECOND, 0);
-     assertThat(meta.getDateValue(), is(calend.getTime()));
+    assertThat(meta.getDateValue(), is(calend.getTime()));
   }
 
   /**
@@ -173,7 +177,7 @@ public class SanselanMetadataExtractorTest {
     assertThat(meta.getProperty(), is("537"));
     assertThat(meta.getLabel(), is("Mots clef"));
     assertThat(meta.getValue(), is(
-            "Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
+      "Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
   }
 
   @Test
@@ -223,5 +227,48 @@ public class SanselanMetadataExtractorTest {
     assertEquals("40095", meta.getProperty());
     assertEquals("(Windows) Sujet", meta.getLabel());
     assertEquals("l'objet EXIT", meta.getValue());
+  }
+  
+  /**
+   * For <a href="https://www.silverpeas.org/redmine/issues/3021">Bug #3021</a>.
+   */
+  @Test
+  @Ignore
+  public void testExtractImageIptcMetaDataUTF8Encoded() throws Exception {
+    List<MetaData> metadata = extractor.extractImageIptcMetaData(chefs);
+    assertNotNull(metadata);
+    assertEquals(8, metadata.size());
+    MetaData meta = metadata.get(0);
+    assertThat(meta.getProperty(), is("622"));
+    assertThat(meta.getLabel(), is("(IPTC) Crédit"));
+    assertThat(meta.getValue(), is("Conservation du patrimoine de la Drome"));
+    
+     assertThat(meta.getProperty(), is("634"));
+    assertThat(meta.getLabel(), is("(IPTC) Crédit"));
+    assertThat(meta.getValue(), is("Conservation du patrimoine de la Drome"));
+
+    meta = metadata.get(5);
+    assertThat(meta.getProperty(), is("567"));
+    assertThat(meta.getLabel(), is("Date de création"));
+    Calendar calend = Calendar.getInstance();
+    calend.set(Calendar.DAY_OF_MONTH, 19);
+    calend.set(Calendar.MONTH, Calendar.MAY);
+    calend.set(Calendar.YEAR, 2010);
+    calend.set(Calendar.HOUR_OF_DAY, 0);
+    calend.set(Calendar.MINUTE, 0);
+    calend.set(Calendar.SECOND, 0);
+    calend.set(Calendar.MILLISECOND, 0);
+    assertThat(calend.getTime(), is(meta.getDateValue()));
+
+    meta = metadata.get(1);
+    assertThat(meta.getProperty(), is("592"));
+    assertThat(meta.getLabel(), is("Créateur"));
+    assertThat(meta.getValue(), is("Aymard Gilles"));
+
+    meta = metadata.get(7);
+    assertThat(meta.getProperty(), is("537"));
+    assertThat(meta.getLabel(), is("Mots clef"));
+    assertThat(meta.getValue(), is(
+      "Auberge des Dauphins /Architecture /Vue exterieure /Saou /Foret de Saou /"));
   }
 }
