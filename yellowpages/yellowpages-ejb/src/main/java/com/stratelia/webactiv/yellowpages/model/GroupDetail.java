@@ -23,17 +23,13 @@
  */
 package com.stratelia.webactiv.yellowpages.model;
 
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-
 public class GroupDetail extends Group implements java.io.Serializable {
 
-  /**
-	 * 
-	 */
   private static final long serialVersionUID = 1L;
 
   private int totalUsers = 0;
@@ -53,13 +49,14 @@ public class GroupDetail extends Group implements java.io.Serializable {
   }
 
   public void addSubGroups(Group[] groups) {
-    Group group = null;
+    Group group;
     for (int g = 0; g < groups.length; g++) {
       group = groups[g];
       addSubGroup(new GroupDetail(group));
     }
   }
-
+  
+  @Override
   public List<GroupDetail> getSubGroups() {
     return subGroups;
   }
@@ -68,6 +65,7 @@ public class GroupDetail extends Group implements java.io.Serializable {
     return users;
   }
 
+  @Override
   public boolean equals(Object o) {
     if (o instanceof GroupDetail) {
       GroupDetail anotherGroup = (GroupDetail) o;
@@ -75,6 +73,15 @@ public class GroupDetail extends Group implements java.io.Serializable {
         return this.getId().equals(anotherGroup.getId());
     }
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 47 * hash + this.totalUsers;
+    hash = 47 * hash + (this.users != null ? this.users.hashCode() : 0);
+    hash = 47 * hash + (this.subGroups != null ? this.subGroups.hashCode() : 0);
+    return hash;
   }
 
   public int getTotalUsers() {
