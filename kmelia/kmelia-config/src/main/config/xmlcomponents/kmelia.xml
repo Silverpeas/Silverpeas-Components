@@ -1233,5 +1233,24 @@
         <message lang="de">Sets the display order of publications.</message>
       </help>
     </parameter>
+	<parameter>
+      <name>useFolderSharing</name>
+      <label>
+        <message lang="fr">Thèmes partageables</message>
+        <message lang="en">Folders sharing</message>
+        <message lang="de">Folders sharing</message>
+      </label>
+      <order>48</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Ce paramètre permet d'activer le partage de thèmes à des tiers non utilisateurs du portail.</message>
+        <message lang="en">This feature allows to activate folders sharing with persons who have no access to the portal.</message>
+        <message lang="de">This feature allows to activate folders sharing with persons who have no access to the portal.</message>
+      </help>
+      <personalSpaceValue>no</personalSpaceValue>
+    </parameter>
   </parameters>
 </WAComponent>

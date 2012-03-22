@@ -245,6 +245,7 @@ public class JSONServlet extends HttpServlet {
       }
       operations.put("wysiwygTopic", isAdmin && (kmeliaSC.isOrientedWebContent() || kmeliaSC.
               isWysiwygOnTopicsEnabled()));
+      operations.put("shareTopic", isAdmin && kmeliaSC.isFolderSharingEnabled());
 
       // publication operations
       boolean publicationsInTopic = !isRoot || (isRoot && (kmeliaSC.getNbPublicationsOnRoot() == 0

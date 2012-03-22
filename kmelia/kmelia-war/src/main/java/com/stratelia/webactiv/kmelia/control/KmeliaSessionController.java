@@ -595,6 +595,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isThumbnailMandatory() {
     return "yes".equals(getComponentParameterValue("thumbnailMandatory"));
   }
+  
+  public boolean isFolderSharingEnabled() {
+    return "yes".equals(getComponentParameterValue("useFolderSharing"));
+  }
 
   public boolean isContentEnabled() {
     String parameterValue = getComponentParameterValue("tabContent");

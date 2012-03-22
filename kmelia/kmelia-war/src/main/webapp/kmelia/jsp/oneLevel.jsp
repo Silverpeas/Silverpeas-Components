@@ -266,6 +266,7 @@ labels["operation.favorites"] = "<%=resources.getString("FavoritesAdd1")%> <%=re
 labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
 labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPredefinePositions")%>";
 labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.exportSelection")%>";
+labels["operation.shareTopic"] = "<%=resources.getString("kmelia.operation.shareTopic")%>";
 
 labels["js.topicTitle"] = "<fmt:message key="TopicTitle"/>";
 labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
