@@ -23,31 +23,12 @@
  */
 package com.silverpeas.whitePages.control;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.pdc.model.PdcClassification;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -72,31 +53,22 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.SearchAxis;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
-import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionInfo;
-import com.stratelia.silverpeas.peasCore.SessionManager;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.pdc.model.*;
+import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.CompoSpace;
-import com.stratelia.webactiv.beans.admin.DomainDriver;
-import com.stratelia.webactiv.beans.admin.DomainDriverManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
+import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBException;
+import org.apache.commons.fileupload.FileItem;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 public class WhitePagesSessionController extends AbstractComponentSessionController {
 
@@ -1050,37 +1022,52 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return pdcBm;
   }
 
-  public HashMap<String, List<ClassifyValue>> getPdcPositions(int cardId) throws PdcException {
+  public HashMap<String, Set<ClassifyValue>> getPdcPositions(int cardId) throws PdcException {
 
-    HashMap<String, List<ClassifyValue>> result = new HashMap<String, List<ClassifyValue>>();
+    HashMap<String, Set<ClassifyValue>> result = new HashMap<String, Set<ClassifyValue>>();
+    List<ClassifyPosition> listOfPositions = getPdcBm().getPositions(cardId, getComponentId());
 
-    List<ClassifyPosition> list = getPdcBm().getPositions(cardId, getComponentId());
-
-    if (list != null && list.size() > 0) {
-
-      Iterator<ClassifyPosition> iter = list.iterator();
-      while (iter.hasNext()) {
-        List<Value> pathValues = null;
-        ClassifyPosition position = iter.next();
-        List<ClassifyValue> values = position.getValues();
-        for (ClassifyValue value : values) {
-          pathValues = value.getFullPath();
-          if (pathValues != null && !pathValues.isEmpty()) {
-            List<ClassifyValue> valuesForPrincipal = null;
-            Value term = pathValues.get(0);
-            String principal = term.getName(getLanguage());
-            if (result.get(principal) != null) {
-              valuesForPrincipal = result.get(principal);
-              valuesForPrincipal.add(value);
-              result.put(principal, valuesForPrincipal);
+    if (listOfPositions != null && listOfPositions.size() > 0) {
+      for (ClassifyPosition position : listOfPositions) {
+        for (ClassifyValue value : position.getValues()) {
+          List<Value> path = value.getFullPath();
+          if (path != null && !path.isEmpty()) {
+            Value axis = path.get(0);
+            String category = axis.getName(getLanguage());
+            if (result.containsKey(category)) {
+              result.get(category).add(value);
             } else {
-              valuesForPrincipal = new ArrayList<ClassifyValue>();
-              valuesForPrincipal.add(value);
-              result.put(principal, valuesForPrincipal);
+              Set<ClassifyValue> values = new HashSet<ClassifyValue>();
+              values.add(value);
+              result.put(category, values);
             }
           }
         }
       }
+      
+//      Iterator<ClassifyPosition> iter = listOfPositions.iterator();
+//      while (iter.hasNext()) {
+//        List<Value> pathValues = null;
+//        ClassifyPosition position = iter.next();
+//        List<ClassifyValue> values = position.getValues();
+//        for (ClassifyValue value : values) {
+//          pathValues = value.getFullPath();
+//          if (pathValues != null && !pathValues.isEmpty()) {
+//            List<ClassifyValue> valuesForPrincipal = null;
+//            Value term = pathValues.get(0);
+//            String principal = term.getName(getLanguage());
+//            if (result.get(principal) != null) {
+//              valuesForPrincipal = result.get(principal);
+//              valuesForPrincipal.add(value);
+//              result.put(principal, valuesForPrincipal);
+//            } else {
+//              valuesForPrincipal = new ArrayList<ClassifyValue>();
+//              valuesForPrincipal.add(value);
+//              result.put(principal, valuesForPrincipal);
+//            }
+//          }
+//        }
+//      }
     }
     return result;
 
