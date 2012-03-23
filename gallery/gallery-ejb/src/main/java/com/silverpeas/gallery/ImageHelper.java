@@ -520,26 +520,28 @@ public class ImageHelper {
     // ajout du watermark (si le paramètre est activé) QUE POUR LES IMAGES JPEG
     String nameAuthor = "";
     String nameForWatermark = "";
-    ImageMetadataExtractor extractor = new DrewImageMetadataExtractor(photo.getInstanceId());
-    List<MetaData> iptcMetadata = extractor.extractImageIptcMetaData(image);
-    if (StringUtil.isDefined(watermarkHD) && watermark && ImageType.isJpeg(type)) {
-      // création d'un duplicata de l'image originale avec intégration du
-      // watermark
-      String value = getWatermarkValue(watermarkHD, iptcMetadata);
-      if (value != null) {
-        nameAuthor = value;
+    if (ImageType.isJpeg(type) && watermark) {
+      ImageMetadataExtractor extractor = new DrewImageMetadataExtractor(photo.getInstanceId());
+      List<MetaData> iptcMetadata = extractor.extractImageIptcMetaData(image);
+      if (StringUtil.isDefined(watermarkHD)) {
+        // création d'un duplicata de l'image originale avec intégration du
+        // watermark
+        String value = getWatermarkValue(watermarkHD, iptcMetadata);
+        if (value != null) {
+          nameAuthor = value;
+        }
+        if (!nameAuthor.isEmpty()) {
+          createWatermark(photo.getId(), nameAuthor, pathFile, image, percentSize);
+        }
       }
-      if (!nameAuthor.isEmpty()) {
-        createWatermark(photo.getId(), nameAuthor, pathFile, image, percentSize);
-      }
-    }
-    if (StringUtil.isDefined(watermarkOther) && watermark && ImageType.isJpeg(type)) {
-      String value = getWatermarkValue(watermarkOther, iptcMetadata);
-      if (value != null) {
-        nameAuthor = value;
-      }
-      if (!nameAuthor.isEmpty()) {
-        nameForWatermark = nameAuthor;
+      if (StringUtil.isDefined(watermarkOther)) {
+        String value = getWatermarkValue(watermarkOther, iptcMetadata);
+        if (value != null) {
+          nameAuthor = value;
+        }
+        if (!nameAuthor.isEmpty()) {
+          nameForWatermark = nameAuthor;
+        }
       }
     }
     return nameForWatermark;
