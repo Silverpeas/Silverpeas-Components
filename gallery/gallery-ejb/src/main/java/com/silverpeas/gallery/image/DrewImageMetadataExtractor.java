@@ -95,7 +95,9 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
             value = descriptor.getWindowsTitleDescription();
             break;
           default:
-            value = exifDirectory.getString(currentMetadata);
+            if(exifDirectory != null) {
+              value = exifDirectory.getString(currentMetadata);
+            }
         }
         if (value != null) {
           // ajout de cette metadata à la photo
