@@ -172,12 +172,11 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
     // affectation du formulaire à la photothèque
     String xmlFormName = getXMLFormName();
-    String xmlFormShortName = null;
     if (StringUtil.isDefined(xmlFormName)) {
-      xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1,
-              xmlFormName.indexOf("."));
+     String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1,
+              xmlFormName.indexOf('.'));
       try {
-        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
+        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ':'
                 + xmlFormShortName, xmlFormName);
       } catch (PublicationTemplateException e) {
         xmlFormName = null;
@@ -188,12 +187,11 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
     // affectation du formulaire associé aux demandes de photos
     String xmlOrderFormName = getOrderForm();
-    String xmlOrderFormShortName = null;
     if (StringUtil.isDefined(xmlOrderFormName)) {
-      xmlOrderFormShortName = xmlOrderFormName.substring(xmlOrderFormName.indexOf("/") + 1,
-              xmlOrderFormName.indexOf("."));
+      String xmlOrderFormShortName = xmlOrderFormName.substring(xmlOrderFormName.indexOf('/') + 1,
+              xmlOrderFormName.indexOf('.'));
       try {
-        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
+        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ':'
                 + xmlOrderFormShortName, xmlOrderFormName);
       } catch (PublicationTemplateException e) {
         throw new GalleryRuntimeException("GallerySessionController.super()",

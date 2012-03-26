@@ -34,12 +34,13 @@ import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.CharEncoding;
 
 import static com.drew.metadata.iptc.IptcDirectory.*;
 
@@ -54,6 +55,7 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
 
   }
 
+  @Override
   public List<MetaData> extractImageExifMetaData(File image) throws ImageMetadataException,
       IOException {
     return extractImageExifMetaData(image, I18NHelper.defaultLanguage);
@@ -97,10 +99,9 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
         }
         if (value != null) {
           // ajout de cette metadata à la photo
-          MetaData metaData = new MetaData();
+          MetaData metaData = new MetaData(value);
           metaData.setLabel(property.getLabel(lang));
           metaData.setProperty(property.getProperty() + "");
-          metaData.setValue(value);
           SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
               "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + property.getLabel()
               + " value = " + value);
@@ -127,12 +128,11 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
       IOException, ImageMetadataException {
     try {
       List<MetaData> result = new ArrayList<MetaData>();
-      // lire le fichier des properties
-      // 1. Traitement des metadata EXIF
       Metadata metadata = ImageMetadataReader.readMetadata(image);
+      ByteArrayOutputStream forEncodingDetection = new ByteArrayOutputStream(256);
+      List<MetaData> toDecodeResult = new ArrayList<MetaData>();
       IptcDirectory iptcDirectory = metadata.getDirectory(IptcDirectory.class);
       for (IptcProperty iptcProperty : imageIptcProperties) {
-        // rechercher la valeur de la metadata "label"
         String value;
         switch (iptcProperty.getProperty()) {
           case TAG_BY_LINE:
@@ -212,19 +212,26 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
             break;
         }
         if (value != null) {
-          MetaData metaData = new MetaData();
+          MetaData metaData = new MetaData(value);
           metaData.setLabel(iptcProperty.getLabel(lang));
           metaData.setProperty(iptcProperty.getProperty() + "");
-          metaData.setValue(value);
+          metaData.setData(value.getBytes(CharEncoding.ISO_8859_1));
           if (iptcProperty.isDate()) {
             metaData.setDate(true);
             metaData.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty()));
+          } else {
+            forEncodingDetection.write(value.getBytes(CharEncoding.ISO_8859_1));
+            toDecodeResult.add(metaData);
           }
           result.add(metaData);
           SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
               "root.MSG_GEN_ENTER_METHOD", "METADATA IPTC label = " + iptcProperty.getLabel()
               + " value = " + value);
         }
+      }
+      String encoding = StringUtil.detectEncoding(forEncodingDetection.toByteArray(), CharEncoding.UTF_8);
+      for(MetaData metaData : toDecodeResult) {
+        metaData.convert(encoding);
       }
       return result;
     } catch (MetadataException ex) {
@@ -238,8 +245,7 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
       UnsupportedEncodingException, MetadataException {
     if (iptcDirectory != null && iptcDirectory.containsTag(iptcTag)) {
       byte[] data = iptcDirectory.getByteArray(iptcTag);
-      String encoding = StringUtil.detectEncoding(data, "UTF-8");
-      return new String(data, encoding);
+      return new String(data, CharEncoding.ISO_8859_1);
     }
     return null;
   }

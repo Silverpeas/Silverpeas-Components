@@ -91,7 +91,7 @@ public class MetadataExtractorTest {
     assertEquals("592", meta.getProperty());
     assertEquals("Créateur", meta.getLabel());
     assertEquals("Nom du créateur : Tag_by_line",
-      meta.getValue().replace('ý', 'é').replace('È', 'é'));
+    meta.getValue().replace('ý', 'é').replace('È', 'é'));
 
   }
 

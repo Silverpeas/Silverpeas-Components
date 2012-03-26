@@ -132,10 +132,9 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
           }
           if (value != null) {
             // ajout de cette metadata à la photo
-            MetaData metaData = new MetaData();
+            MetaData metaData = new MetaData(value.replaceAll("\\s", " ").trim());
             metaData.setLabel(property.getLabel(lang));
             metaData.setProperty(property.getProperty() + "");
-            metaData.setValue(value.replaceAll("\\s", " ").trim());
             SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
                 "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + property.getLabel()
                     + " value = " + value);
@@ -247,17 +246,15 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
               break;
           }
           if (value != null) {
-            MetaData metaData = new MetaData();
+            MetaData metaData = new MetaData(value);
             metaData.setLabel(iptcProperty.getLabel(lang));
             metaData.setProperty(iptcProperty.getProperty() + "");
-            metaData.setValue(value);
             if (iptcProperty.isDate()) {
               metaData.setDate(true);
               metaData.setDateValue(getDateValue(value));
             }
             result.add(metaData);
-            SilverTrace.debug("gallery",
-                "GallerySessionController.addMetaData()",
+            SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
                 "root.MSG_GEN_ENTER_METHOD", "METADATA IPTC label = " + iptcProperty.getLabel()
                     + " value = " + value);
           }
