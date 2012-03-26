@@ -656,14 +656,18 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
         "ConnecteurJDBCSessionController.searchDriverIndice()",
         "connecteurJDBC.MSG_DRIVER_NAME", "DriverName : " + driverName);
     int i = 0;
-    while (i < driversNames.length && !driversNames[i].equals(driverName)) {
+    while (i < driversNames.length) {
       SilverTrace.info("connecteurJDBC",
           "ConnecteurJDBCSessionController.searchDriverIndice()",
           "connecteurJDBC.MSG_DRIVER_NAME", "driver n°" + i + "="
           + driversNames[i]);
+      if(driversNames[i].equals(driverName)){
+        return i;
+      }
       i++;
     }
-    return (i);
+    throw new ConnecteurJDBCRuntimeException( "ConnecteurJDBCSessionController.searchDriverIndice()",
+              SilverpeasException.ERROR, "connecteurJDBC.EX_UNK_DRIVER_NAME", driverName);
   }
 
   private Driver registerAndInstanciateDriver(String driverName)
