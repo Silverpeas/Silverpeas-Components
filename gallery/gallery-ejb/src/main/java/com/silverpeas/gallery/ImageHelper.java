@@ -26,6 +26,7 @@ import com.silverpeas.gallery.image.ImageMetadataExtractor;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
+import com.silverpeas.gallery.processing.ImageLoader;
 import com.silverpeas.gallery.processing.ImageResizer;
 import com.silverpeas.gallery.processing.ImageUtility;
 import com.silverpeas.gallery.processing.Size;
@@ -220,7 +221,7 @@ public class ImageHelper {
   private static void getDimension(File inputFile, PhotoDetail photo)
     throws IOException {
 
-    BufferedImage inputBuf = ImageIO.read(inputFile);
+    BufferedImage inputBuf = ImageLoader.loadImage(inputFile);
     if (inputBuf == null) {
       photo.setSizeL(0);
       photo.setSizeH(0);
@@ -328,12 +329,12 @@ public class ImageHelper {
   }
 
   private static void createWatermark(String fileId, String name, String path,
-    File dir, int percentSizeWatermark) throws IOException {
+    File file, int percentSizeWatermark) throws IOException {
 
     String watermarkFile = path + fileId + "_watermark.jpg";
 
     // Création du buffer avec l'image d'origine
-    BufferedImage inputBuf = ImageIO.read(dir);
+    BufferedImage inputBuf = ImageLoader.loadImage(file);
     if (inputBuf == null) {
       return;
     }
@@ -411,16 +412,10 @@ public class ImageHelper {
 
     // affichage d'un watermark blanc en décalé
     g.setColor(Color.WHITE);
-    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-      RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     g.setFont(watermarkFont);
     fontMetrics = g.getFontMetrics();
     rect = fontMetrics.getStringBounds(name, g);
-    // double angle = 3.14159265 / 2;
-    // AffineTransform saveAT = g.getTransform();
-    // saveAT.rotate(angle);
-    // g.setTransform(saveAT);
-
     g.drawString(name,
       ((int) inputBufWidth - (int) rect.getWidth()) - size / 2,
       ((int) inputBufHeight - (int) rect.getHeight()) - size / 2);
