@@ -24,7 +24,17 @@
 
 package com.silverpeas.kmelia.workflowextensions;
 
+import java.awt.Color;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+
 import au.id.jericho.lib.html.Source;
+
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Phrase;
@@ -62,7 +72,6 @@ import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -82,24 +91,17 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
-import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-
 public class SendInKmelia extends ExternalActionImpl {
   private String targetId = "unknown";
   private String topicId = "unknown";
   private String pubTitle = "unknown";
-  private String pubDesc = "unknown";
+  private String pubDesc = null;
   private String role = "unknown";
   private String xmlFormName = null;
   private boolean addPDFHistory = true;
   // Add pdf history before instance attachments
   private boolean addPDFHistoryFirst = true;
+  private String pdfHistoryName = null;
   private OrganizationController orga = null;
   private String userId = null;
   private final String ADMIN_ID = "0";
@@ -131,8 +133,9 @@ public class SendInKmelia extends ExternalActionImpl {
       topicId = getTriggerParameter("targetTopicId").getValue();
     }
     pubTitle = getTriggerParameter("pubTitle").getValue();
-    if (getTriggerParameter("pubDescription") != null) {
-      pubDesc = getTriggerParameter("pubDescription").getValue();
+    Parameter paramDescription = getTriggerParameter("pubDescription");
+    if (paramDescription != null && StringUtil.isDefined(paramDescription.getValue())) {
+      pubDesc = paramDescription.getValue();
     }
     if (getTriggerParameter("xmlFormName") != null) {
       xmlFormName = getTriggerParameter("xmlFormName").getValue();
@@ -146,7 +149,10 @@ public class SendInKmelia extends ExternalActionImpl {
         addPDFHistoryFirst =
             StringUtil.getBooleanValue(getTriggerParameter("addPDFHistoryFirst").getValue());
       }
-
+      Parameter paramPDFName = getTriggerParameter("pdfHistoryName");
+      if (paramPDFName != null) {
+        pdfHistoryName = getTriggerParameter("pdfHistoryName").getValue();
+      }
     }
 
     // 1 - Create publication
@@ -231,10 +237,9 @@ public class SendInKmelia extends ExternalActionImpl {
           .getInstance().getPublicationTemplate(targetId + ":" + xmlFormName);
       DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
       record.setId(pubId);
-      for (int i = 0; i < record.getFieldNames().length; i++) {
-        record.getField(record.getFieldNames()[i]).setObjectValue(
-            currentProcessInstance.getField(
-                record.getFieldNames()[i]).getObjectValue());
+      for (String fieldName : record.getFieldNames()) {
+        record.getField(fieldName).setObjectValue(
+            currentProcessInstance.getField(fieldName).getObjectValue());
       }
       // Update
       pubTemplate.getRecordSet().save(record);
@@ -654,63 +659,66 @@ public class SendInKmelia extends ExternalActionImpl {
         Font fontValue = new Font(Font.HELVETICA, 10, Font.NORMAL);
         List<FieldTemplate> fieldTemplates = xmlForm.getFieldTemplates();
         for (FieldTemplate fieldTemplate1 : fieldTemplates) {
-          GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) fieldTemplate1;
+          try {
+            GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) fieldTemplate1;
 
-          fieldLabel = fieldTemplate.getLabel("fr");
-          field = data.getField(fieldTemplate.getFieldName());
-          String componentId = step.getProcessInstance().getProcessModel().getModelId();
+            fieldLabel = fieldTemplate.getLabel("fr");
+            field = data.getField(fieldTemplate.getFieldName());
+            String componentId = step.getProcessInstance().getProcessModel().getModelId();
 
-          // fieldValue = data.getField(fieldTemplate.getFieldName()).getValue();
-          // wysiwyg field
-          if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
-            String file = WysiwygFCKFieldDisplayer.getFile(componentId,
-                getProcessInstance().getInstanceId(), fieldTemplate.getFieldName(), getLanguage());
+            // wysiwyg field
+            if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
+              String file = WysiwygFCKFieldDisplayer.getFile(componentId,
+                  getProcessInstance().getInstanceId(), fieldTemplate.getFieldName(), getLanguage());
 
-            // Extract the text content of the html code
-            Source source = new Source(file);
-            if (source != null) {
-              fieldValue = source.getTextExtractor().toString();
-            }
-          }
-          // Field file type
-          else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) &&
-              StringUtil.isDefined(field.getValue())) {
-            boolean fromCompoVersion = "yes".equals(getOrganizationController()
-                .getComponentParameterValue(componentId, "versionControl"));
-            // Versioning Used
-            if (fromCompoVersion) {
-              DocumentVersion documentVersion = versioningUtil.getDocumentVersion(
-                  new DocumentVersionPK(Integer.parseInt(field.getValue())));
-              if (documentVersion != null) {
-                fieldValue = documentVersion.getLogicalName();
-              }
-            } else {
-              AttachmentDetail attDetail = AttachmentController
-                  .searchAttachmentByPK(new AttachmentPK(field.getValue(), componentId));
-              if (attDetail != null) {
-                fieldValue = attDetail.getLogicalName(getLanguage());
+              // Extract the text content of the html code
+              Source source = new Source(new FileInputStream(file));
+              if (source != null) {
+                fieldValue = source.getTextExtractor().toString();
               }
             }
-          }
-          // Field date type
-          else if (fieldTemplate.getTypeName().equals("date")) {
-            fieldValue = DateUtil.getOutputDate(fieldValue, "fr");
-          }
-          // Others fields type
-          else {
-            fieldTemplate.setDisplayerName("simpletext");
-            fieldValue = field.getValue(getLanguage());
-          }
+            // Field file type
+            else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) &&
+                StringUtil.isDefined(field.getValue())) {
+              boolean fromCompoVersion = "yes".equals(getOrganizationController()
+                  .getComponentParameterValue(componentId, "versionControl"));
+              // Versioning Used
+              if (fromCompoVersion) {
+                Document doc = versioningUtil.getDocument(new DocumentPK(Integer.parseInt(field.getValue())));
+                if (doc != null) {
+                  fieldValue = doc.getName();
+                }
+              } else {
+                AttachmentDetail attDetail = AttachmentController
+                    .searchAttachmentByPK(new AttachmentPK(field.getValue(), componentId));
+                if (attDetail != null) {
+                  fieldValue = attDetail.getLogicalName(getLanguage());
+                }
+              }
+            }
+            // Field date type
+            else if (fieldTemplate.getTypeName().equals("date")) {
+              fieldValue = DateUtil.getOutputDate(field.getValue(), "fr");
+            }
+            // Others fields type
+            else {
+              fieldTemplate.setDisplayerName("simpletext");
+              fieldValue = field.getValue(getLanguage());
+            }
 
-          cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
-          cell.setBorderWidth(0);
-          cell.setPaddingBottom(5);
-          tableContent.addCell(cell);
+            cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
+            cell.setBorderWidth(0);
+            cell.setPaddingBottom(5);
+            tableContent.addCell(cell);
 
-          cell = new PdfPCell(new Phrase(fieldValue, fontValue));
-          cell.setBorderWidth(0);
-          cell.setPaddingBottom(5);
-          tableContent.addCell(cell);
+            cell = new PdfPCell(new Phrase(fieldValue, fontValue));
+            cell.setBorderWidth(0);
+            cell.setPaddingBottom(5);
+            tableContent.addCell(cell);
+          } catch (Exception e) {
+            SilverTrace.warn("workflowEngine", "SendInKmelia.generatePDFStep()",
+                "CANT_DISPLAY_DATA_OF_STEP", e);
+          }
         }
 
         document.add(tableContent);
@@ -778,6 +786,12 @@ public class SendInKmelia extends ExternalActionImpl {
 
   private void addPdfHistory(PublicationPK pubPK, String userId) {
     String fileName = "processHistory_" + getProcessInstance().getInstanceId() + ".pdf";
+    if (StringUtil.isDefined(pdfHistoryName)) {
+      fileName = pdfHistoryName;
+      if (!fileName.endsWith(".pdf")) {
+        fileName += ".pdf";
+      }
+    }
     byte[] pdf = generatePDF(getProcessInstance());
     try {
       getKmeliaBm().addAttachmentToPublication(pubPK, userId, fileName, "", pdf);
