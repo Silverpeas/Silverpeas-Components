@@ -28,7 +28,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 
 /**
  *
@@ -75,7 +74,7 @@ public class ImageUtility {
     int baseWidth) throws IOException {
     String[] directory = new String[]{subDir};
     File image = new File(FileRepositoryManager.getAbsolutePath(instanceId, directory) + imageName);
-    BufferedImage inputBuf = ImageIO.read(image);
+    BufferedImage inputBuf = ImageLoader.loadImage(image);
     if (inputBuf == null) {
       return new Size(0, 0);
     }
