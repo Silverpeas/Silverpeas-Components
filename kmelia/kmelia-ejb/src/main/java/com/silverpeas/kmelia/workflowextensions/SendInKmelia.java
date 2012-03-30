@@ -29,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -329,8 +330,12 @@ public class SendInKmelia extends ExternalActionImpl {
 
       // retrieve all versions of the document
       List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(document.getPk());
+      
+      // versions are retrieved from last one to first one
+      // reverse it...
+      Collections.reverse(versions);
 
-      // retrieve the initial version of the document
+      // retrieve first version of the document
       DocumentVersion version = versions.get(0);
 
       if (pathFrom == null) {
@@ -600,8 +605,8 @@ public class SendInKmelia extends ExternalActionImpl {
       } catch (WorkflowException we) {
         sAction = "##";
       }
-
-      String actor = getBestUserDetail().getDisplayedName();
+      
+      String actor = step.getUser().getFullName();
 
       String date = DateUtil.getOutputDateAndHour(step.getActionDate(), getLanguage());
 
