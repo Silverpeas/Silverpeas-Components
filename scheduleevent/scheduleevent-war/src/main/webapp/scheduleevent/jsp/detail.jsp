@@ -218,6 +218,10 @@
 		</view:buttonPane></div>
 	</c:if>
 
+	<c:if test="${requestScope.enableComment}">
+		<view:comments 	userId="${requestScope.userId}" componentId="${requestScope.toolId}"
+						resourceType="${scheduleEventDetail.resourceType}" resourceId="${scheduleEventDetail.id}" />
+	</c:if>
 </view:window>
 </body>
 </html>

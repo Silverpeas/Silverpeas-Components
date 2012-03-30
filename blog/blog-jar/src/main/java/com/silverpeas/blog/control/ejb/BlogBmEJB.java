@@ -301,7 +301,7 @@ public class BlogBmEJB implements SessionBean {
 
       // Supprime les commentaires
       ForeignPK foreignPK = new ForeignPK(postId, instanceId);
-      getCommentService().deleteAllCommentsOnPublication(foreignPK);
+      getCommentService().deleteAllCommentsOnPublication(PostDetail.getResourceType(), foreignPK);
 
       // Supprime le contenu Wysiwyg
       WysiwygController.deleteFileAndAttachment(instanceId, postId);
@@ -367,7 +367,8 @@ public class BlogBmEJB implements SessionBean {
       }
       // rechercher le nombre de commentaire
       CommentPK foreign_pk = new CommentPK(pub.getPK().getId(), null, pub.getPK().getInstanceId());
-      List<Comment> comments = getCommentService().getAllCommentsOnPublication(foreign_pk);
+      List<Comment> comments =
+          getCommentService().getAllCommentsOnPublication(PostDetail.getResourceType(), foreign_pk);
 
       // recherche de la date d'evenement
       Connection con = initCon();
@@ -766,7 +767,7 @@ public class BlogBmEJB implements SessionBean {
   private void indexExternalElementsOfPublication(PublicationPK pubPK) {
     try {
       // index comments
-      getCommentService().indexAllCommentsOnPublication(pubPK);
+      getCommentService().indexAllCommentsOnPublication(PostDetail.getResourceType(), pubPK);
     } catch (Exception e) {
       SilverTrace.error("blog", "BlogBmEJB.indexExternalElementsOfPublication",
               "Indexing comments failed", "pubPK = " + pubPK.toString(), e);

@@ -47,6 +47,7 @@
 <c:set var="componentLabel" value="${browseContext[1]}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 <c:set var="resourceName" value="${requestScope.resourceName}"/>
+<c:set var="resourceType" value="${requestScope.resourceType}"/>
 <c:set var="resourceId" value="${requestScope.resourceId}"/>
 <c:set var="userId" value="${requestScope.UserId}"/>
 <c:set var="path" value="${requestScope.Path}"/>
@@ -66,9 +67,8 @@
       </view:tabs>
 
       <view:frame>
-
-        <view:comments userId="${userId}" componentId="${instanceId}" resourceId="${resourceId}" indexed="${indexation}"/>
-
+        <view:comments  userId="${userId}" componentId="${instanceId}"
+                        resourceType="${resourceType}" resourceId="${resourceId}" indexed="${indexation}" />  
       </view:frame>
     </view:window>
   </body>

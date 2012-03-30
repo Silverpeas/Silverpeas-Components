@@ -36,6 +36,7 @@ import java.util.TreeSet;
 public class ScheduleEvent implements ScheduleEventBean, Serializable {
 
   private static final long serialVersionUID = 1L;
+  public static final String TYPE = "ScheduleEvent";
   public String id;
   public String title;
   public String description;
@@ -135,6 +136,10 @@ public class ScheduleEvent implements ScheduleEventBean, Serializable {
   @Override
   public void setStatus(int status) {
     this.status = status;
+  }
+  
+  public static String getResourceType() {
+    return TYPE;
   }
 
   @Override

@@ -536,6 +536,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         request.setAttribute("Path", chemin);
         request.setAttribute("resourceId", idResource);
         request.setAttribute("resourceName", myResource.getName());
+        request.setAttribute("resourceType", getSessionControlBeanName());
 
         destination = root + "comments.jsp";
       } else if ("SelectManager".equals(function)) {

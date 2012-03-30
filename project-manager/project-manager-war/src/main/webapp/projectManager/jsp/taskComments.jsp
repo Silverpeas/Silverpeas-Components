@@ -68,7 +68,8 @@
 
       <view:frame>
 
-        <view:comments userId="${userId}" componentId="${task.instanceId}" resourceId="${task.id}"/>
+      <view:comments  userId="${userId}" componentId="${task.instanceId}"
+                      resourceType="${task.contributionType}" resourceId="${task.id}" />
 
       </view:frame>
     </view:window>

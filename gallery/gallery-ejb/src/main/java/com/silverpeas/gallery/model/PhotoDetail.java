@@ -41,6 +41,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
    * 
    */
   private static final long serialVersionUID = 1L;
+  private static final String TYPE = "Photo";
   PhotoPK photoPK;
   String title;
   String description;
@@ -480,5 +481,17 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
     }
     
     return null;
+  }
+  
+  public String getContributionType() {
+    return TYPE;
+  }
+  
+  /**
+   * The type of this resource
+   * @return the same value returned by getContributionType()
+   */
+  public static String getResourceType() {
+    return TYPE;
   }
 }

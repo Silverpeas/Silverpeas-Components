@@ -3849,7 +3849,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
       try {
         // index comments
-        getCommentService().indexAllCommentsOnPublication(pubDetail.getPK());
+        getCommentService().indexAllCommentsOnPublication(pubDetail.getContributionType(),
+            pubDetail.getPK());
       } catch (Exception e) {
         SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
                 "Indexing comments failed", "pubPK = " + pubDetail.getPK().toString(), e);
@@ -3872,7 +3873,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     try {
       // index comments
-      getCommentService().unindexAllCommentsOnPublication(pubPK);
+      getCommentService().unindexAllCommentsOnPublication(PublicationDetail.getResourceType(),
+          pubPK);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
               "Indexing comments failed", "pubPK = " + pubPK.toString(), e);
@@ -3893,7 +3895,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     // remove comments
     try {
-      getCommentService().deleteAllCommentsOnPublication(pubPK);
+      getCommentService()
+          .deleteAllCommentsOnPublication(PublicationDetail.getResourceType(), pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.removeExternalElementsOfPublications()",
               ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_COMMENTAIRES", e);

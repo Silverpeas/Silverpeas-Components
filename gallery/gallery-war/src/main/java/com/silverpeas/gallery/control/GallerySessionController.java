@@ -217,8 +217,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public List<Comment> getAllComments(String id) {
-    return getCommentService().getAllCommentsOnPublication(new PhotoPK(id, getSpaceId(),
-            getComponentId()));
+    return getCommentService().getAllCommentsOnPublication(PhotoDetail.getResourceType(),
+        new PhotoPK(id, getSpaceId(), getComponentId()));
   }
 
   public int getSilverObjectId(String objectId) {
@@ -1265,8 +1265,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           albums[0] = nodePK.getId();
           setPhotoPath(photo.getPhotoPK().getId(), albums);
         } else {
-          // déplacer la photo dans un autre composant
-          boolean indexIt = true;
 
           // String id = createImageIntoAlbum(fromPhotoPK, photo,
           // nodePK.getId());
@@ -1280,11 +1278,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           getGalleryBm().deleteIndex(fromPhotoPK);
 
           // move comments
-          if (indexIt) {
-            getCommentService().moveAndReindexComments(fromForeignPK, toForeignPK);
-          } else {
-            getCommentService().moveComments(fromForeignPK, toForeignPK);
-          }
+          getCommentService().moveAndReindexComments(PhotoDetail.getResourceType(), fromForeignPK,
+              toForeignPK);
 
           // move pdc positions
           int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromPhotoPK);
@@ -1360,7 +1355,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
                 getComponentId());
 
         // move comments
-        getCommentService().moveAndReindexComments(fromForeignPK, toForeignPK);
+        getCommentService().moveAndReindexComments(PhotoDetail.getResourceType(), fromForeignPK,
+            toForeignPK);
 
         String xmlFormName = getXMLFormName();
 
