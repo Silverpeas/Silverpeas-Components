@@ -151,8 +151,7 @@ import com.stratelia.webactiv.kmelia.model.updatechain.FieldParameter;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.model.updatechain.UpdateChainDescriptor;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
+import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
@@ -208,7 +207,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   /* EJBs used by sessionController */
   private ThumbnailService thumbnailService = null;
-  private SearchEngineBm searchEngineEjb = null;
+  private SearchEngine searchEngineEjb = null;
   private CommentService commentService = null;
   private VersioningBm versioningBm = null;
   private PdcBm pdcBm = null;
@@ -376,7 +375,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return publicationSettings;
   }
 
-  public SearchEngineBm getSearchEngine() {
+  public SearchEngine getSearchEngine() {
     if (this.searchEngineEjb == null) {
       try {
         SearchEngineBmHome home = EJBUtilitaire.getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,

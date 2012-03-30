@@ -43,8 +43,7 @@ import com.stratelia.silverpeas.contentManager.GlobalSilverContentI18N;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
+import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.searchEngine.model.ScoreComparator;
@@ -58,7 +57,7 @@ import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 public class MixedSearchServiceImpl implements MixedSearchService {
   
   private PdcBm pdcBm = null;
-  private SearchEngineBm searchEngine = null;
+  private SearchEngine searchEngine = null;
 
   public Collection<GlobalSilverContent> search(String spaceId, String componentId, String userId, 
                            String queryString, // standard search
@@ -247,7 +246,7 @@ public class MixedSearchServiceImpl implements MixedSearchService {
     return pdcBm;
   }
   
-  private SearchEngineBm getSearchEngineBm() throws PdcException {
+  private SearchEngine getSearchEngineBm() throws PdcException {
     if (searchEngine == null) {
       try {
         SearchEngineBmHome home = (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(

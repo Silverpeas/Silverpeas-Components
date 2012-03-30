@@ -38,7 +38,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmEJB;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
+import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
@@ -357,9 +357,9 @@ public class PublicationImport {
     query.setXmlQuery(newXmlQuery);
 
     try {
-      SearchEngineBm searchEngineBm = kmeliaBm.getSearchEngineBm();
-      searchEngineBm.search(query);
-      MatchingIndexEntry[] result = searchEngineBm.getRange(0, searchEngineBm
+      SearchEngine searchEngine = kmeliaBm.getSearchEngineBm();
+      searchEngine.search(query);
+      MatchingIndexEntry[] result = searchEngine.getRange(0, searchEngine
           .getResultLength());
       for (MatchingIndexEntry mie : result) {
         if ("Publication".equals(mie.getObjectType())) {

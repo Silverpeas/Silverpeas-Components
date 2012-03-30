@@ -45,8 +45,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
+import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -443,10 +442,10 @@ public class SilverCrawlerSessionController extends
         SilverTrace.info("silverCrawler",
             "SilverCrawlerSessionController.getResultSearch()",
             "root.MSG_GEN_PARAM_VALUE", "query =" + query.getQuery());
-        SearchEngineBm searchEngineBm = getSearchEngineBm();
+        SearchEngine searchEngine = getSearchEngineBm();
 
-        searchEngineBm.search(query);
-        result = searchEngineBm.getRange(0, searchEngineBm.getResultLength());
+        searchEngine.search(query);
+        result = searchEngine.getRange(0, searchEngine.getResultLength());
         SilverTrace.info("silverCrawler",
             "SilverCrawlerSessionController.getResultSearch()",
             "root.MSG_GEN_PARAM_VALUE", "result =" + result.length
@@ -506,21 +505,21 @@ public class SilverCrawlerSessionController extends
     return currentResultSearch;
   }
 
-  private SearchEngineBm getSearchEngineBm() {
-    SearchEngineBm searchEngineBm = null;
+  private SearchEngine getSearchEngineBm() {
+    SearchEngine searchEngine = null;
     {
       try {
         SearchEngineBmHome searchEngineHome = (SearchEngineBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
                 SearchEngineBmHome.class);
-        searchEngineBm = searchEngineHome.create();
+        searchEngine = searchEngineHome.create();
       } catch (Exception e) {
         throw new SilverCrawlerRuntimeException(
             "SilverCrawlerSessionController.getSearchEngineBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
-    return searchEngineBm;
+    return searchEngine;
   }
 
   private boolean getSize(String path, long sizeMaxi) {

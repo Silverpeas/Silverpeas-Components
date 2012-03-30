@@ -53,8 +53,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
+import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DBUtil;
@@ -75,6 +74,7 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -596,9 +596,9 @@ public class DefaultBlogService implements BlogService  {
             + query.getQuery());
     Connection con = openConnection();
     try {
-      SearchEngineBm searchEngineBm = getSearchEngineBm();
-      searchEngineBm.search(query);
-      result = searchEngineBm.getRange(0, searchEngineBm.getResultLength());
+      SearchEngine searchEngine = getSearchEngineBm();
+      searchEngine.search(query);
+      result = searchEngine.getRange(0, searchEngine.getResultLength());
       SilverTrace.info("blog", "BlogBmEJB.getResultSearch()", "root.MSG_GEN_PARAM_VALUE",
               "result =" + result.length + "length = " + getSearchEngineBm().getResultLength());
 
@@ -944,19 +944,19 @@ public class DefaultBlogService implements BlogService  {
     return nodeBm;
   }
 
-  private SearchEngineBm getSearchEngineBm() {
-    SearchEngineBm searchEngineBm = null;
+  private SearchEngine getSearchEngineBm() {
+    SearchEngine searchEngine = null;
     {
       try {
         SearchEngineBmHome searchEngineHome = EJBUtilitaire.getEJBObjectRef(
                 JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
-        searchEngineBm = searchEngineHome.create();
+        searchEngine = searchEngineHome.create();
       } catch (Exception e) {
         throw new CommentRuntimeException("BlogSessionController.getCommentBm()",
                 SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
-    return searchEngineBm;
+    return searchEngine;
   }
 
   /**

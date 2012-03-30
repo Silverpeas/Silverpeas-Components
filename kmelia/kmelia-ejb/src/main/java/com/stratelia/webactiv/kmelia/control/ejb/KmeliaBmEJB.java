@@ -128,8 +128,7 @@ import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.TopicComparator;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
+import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -334,17 +333,17 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return currentCoordinatesBm;
   }
 
-  public SearchEngineBm getSearchEngineBm() {
-    SearchEngineBm searchEngineBm = null;
+  public SearchEngine getSearchEngineBm() {
+    SearchEngine searchEngine = null;
     try {
       SearchEngineBmHome searchEngineBmHome = EJBUtilitaire.getEJBObjectRef(SEARCHBM_EJBHOME,
               SearchEngineBmHome.class);
-      searchEngineBm = searchEngineBmHome.create();
+      searchEngine = searchEngineBmHome.create();
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getSearchEngineBm()", ERROR,
               "kmax.EX_IMPOSSIBLE_DE_FABRIQUER_SEARCHENGINEBM_HOME", e);
     }
-    return searchEngineBm;
+    return searchEngine;
   }
 
   /**

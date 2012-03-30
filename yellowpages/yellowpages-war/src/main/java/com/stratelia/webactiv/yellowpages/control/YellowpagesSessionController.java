@@ -72,8 +72,7 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
+import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -98,12 +97,13 @@ import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
+
 import java.util.Locale;
 
 public class YellowpagesSessionController extends AbstractComponentSessionController {
 
   private YellowpagesBm kscEjb = null;
-  private SearchEngineBm searchEngineEjb = null;
+  private SearchEngine searchEngineEjb = null;
   private TopicDetail currentTopic = null;
   private UserCompleteContact currentContact = null;
   private String path = null;
@@ -282,7 +282,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return kscEjb;
   }
 
-  public SearchEngineBm getSearchEngine() {
+  public SearchEngine getSearchEngine() {
     if (this.searchEngineEjb == null) {
       try {
         SearchEngineBmHome home = (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(

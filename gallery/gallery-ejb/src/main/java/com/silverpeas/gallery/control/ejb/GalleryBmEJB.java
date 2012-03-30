@@ -47,8 +47,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
+import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DBUtil;
@@ -70,6 +69,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
+
 import java.rmi.RemoteException;
 import java.rmi.ServerException;
 import java.sql.Connection;
@@ -705,9 +705,9 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     Collection<PhotoDetail> photos = new ArrayList<PhotoDetail>();
     MatchingIndexEntry[] result = null;
     try {
-      SearchEngineBm searchEngineBm = getSearchEngineBm();
-      searchEngineBm.search(query);
-      result = searchEngineBm.getRange(0, searchEngineBm.getResultLength());
+      SearchEngine searchEngine = getSearchEngineBm();
+      searchEngine.search(query);
+      result = searchEngine.getRange(0, searchEngine.getResultLength());
 
       // création des photos à partir des resultats
       for (MatchingIndexEntry matchIndex : result) {
@@ -869,13 +869,13 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     return publicationBm;
   }
 
-  public SearchEngineBm getSearchEngineBm() {
-    SearchEngineBm searchEngineBm = null;
+  public SearchEngine getSearchEngineBm() {
+    SearchEngine searchEngine = null;
     {
       try {
         SearchEngineBmHome searchEngineHome = EJBUtilitaire.getEJBObjectRef(SEARCHBM_EJBHOME,
             SearchEngineBmHome.class);
-        searchEngineBm = searchEngineHome.create();
+        searchEngine = searchEngineHome.create();
       } catch (Exception e) {
         throw new CommentRuntimeException(
             "GallerySessionController.getSearchEngineBm()",
@@ -883,7 +883,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       }
     }
 
-    return searchEngineBm;
+    return searchEngine;
   }
 
   private GalleryContentManager getGalleryContentManager() {
