@@ -42,11 +42,12 @@
 	String creator = EncodeHelper.javaStringToHtmlString(reply.readCreatorName());
 	int status = reply.getPublicReply();
 %>
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel />
+<link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
 <script language="JavaScript">
 <!--
@@ -92,9 +93,9 @@ function save()
 		document.forms[0].submit();
 }
 //-->
-</SCRIPT>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onLoad="document.forms[0].title.focus();">
+</script>
+</head>
+<body id="<%=componentId%>" class="questionReply updateR" onLoad="document.forms[0].title.focus();">
 
 <%
 	browseBar.setDomainName(spaceLabel);
@@ -109,40 +110,40 @@ function save()
 	out.println(board.printBefore());
 %>
 
-<center>
-<table CELLPADDING=5 width="100%">
-	<FORM METHOD=POST NAME="myForm" ACTION="EffectiveUpdateR">
+
+<table cellpadding="5" width="100%">
+	<form method="post" name="myForm" action="EffectiveUpdateR">
 	<tr>
-		<td class="txtlibform"><%=resource.getString("questionReply.reponse")%> :</td>
-		<td><input type="text" name="title" size="120" maxlength="100" value="<%=title%>"><img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"></td>
+		<td class="txtlibform"><%=resource.getString("questionReply.reponse")%>&nbsp;:</td>
+		<td><input type="text" name="title" size="120" maxlength="100" value="<%=title%>" /> <img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /></td>
 	</tr>
 	<tr valign="top">
-		<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
+		<td class="txtlibform"><%=resource.getString("GML.description")%>&nbsp;:</td>
 		<td><textarea cols="120" rows="5" name="content" id="content"><%=content%></textarea></td>
 	</tr>
 	<tr>
-		<td class="txtlibform"><%=resource.getString("GML.date")%> :</td>
+		<td class="txtlibform"><%=resource.getString("GML.date")%>&nbsp;:</td>
 		<td><%=date%></td>
 	</tr>
 	<tr>
-		<td class="txtlibform"><%=resource.getString("GML.publisher")%> :</td>
+		<td class="txtlibform"><%=resource.getString("GML.publisher")%>&nbsp;:</td>
 		<td><%=creator%></td>
 	</tr>
 	<tr>
-		<td colspan=2><span class="txt">(<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</span></td>
+		<td colspan=2><span class="txt">(<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /> : <%=resource.getString("GML.requiredField")%>)</span></td>
 	</tr>
-	</FORM>
+	</form>
 </table>
 <% out.println(board.printAfter()); %>
-<br>
-<CENTER>
+<br />
+<div class="buttonPane">
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "ConsultQuestionQuery", false));
     out.println(buttonPane.print());
 %>
-</CENTER>
+</div>
 
 <%
 out.println(frame.printAfter());
