@@ -45,8 +45,10 @@ public class MetadataExtractorTest {
   File sunset = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Coucher de soleil.jpg");
   File gmt = new File(TARGET_DIR + "test-classes" + SEPARATOR + "w40_DSC_7481.jpg");
   File dauphins = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Dauphins-100.jpg");
-  File chefs = new File(TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_utf-8.jpg");
-
+  File chefsUtf8 = new File(TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_utf-8.jpg");
+  File chefsLatin1 = new File(TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_latin1.jpg");
+  
+  
   @Before
   public void setUp() {
     extractor = new DrewImageMetadataExtractor("gallery52");
@@ -183,7 +185,7 @@ public class MetadataExtractorTest {
    */
   @Test
   public void testExtractImageIptcMetaDataUTF8Encoded() throws Exception {
-    List<MetaData> metadata = extractor.extractImageIptcMetaData(chefs);
+    List<MetaData> metadata = extractor.extractImageIptcMetaData(chefsUtf8);
     assertNotNull(metadata);
     assertEquals(8, metadata.size());
     MetaData meta = metadata.get(0);

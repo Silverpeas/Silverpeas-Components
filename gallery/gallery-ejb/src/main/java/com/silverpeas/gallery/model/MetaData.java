@@ -25,6 +25,7 @@ import java.util.Date;
 
 public class MetaData {
 
+ 
   private String property;
   private String label;
   private boolean date = false;
@@ -37,6 +38,10 @@ public class MetaData {
 
   public MetaData(String value) {
     this.value = value;
+  }
+
+  public MetaData(byte[] data) {
+    this.data = data;
   }
 
   public String getLabel() {
@@ -58,8 +63,8 @@ public class MetaData {
   public String getValue() {
     return value;
   }
-  
-   public void setValue(String value) {
+
+  public void setValue(String value) {
     this.value = value;
   }
 
@@ -84,10 +89,9 @@ public class MetaData {
   }
 
   public void convert(String encoding) throws UnsupportedEncodingException {
-    if (data != null) {
+    if(this.data != null) {
       this.value = new String(data, encoding);
-    } else {
-      this.value = null;
     }
   }
+
 }

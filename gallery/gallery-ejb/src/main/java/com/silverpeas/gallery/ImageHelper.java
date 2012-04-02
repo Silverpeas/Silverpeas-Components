@@ -26,10 +26,10 @@ import com.silverpeas.gallery.image.ImageMetadataExtractor;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
-import com.silverpeas.gallery.processing.ImageLoader;
 import com.silverpeas.gallery.processing.ImageResizer;
 import com.silverpeas.gallery.processing.ImageUtility;
 import com.silverpeas.gallery.processing.Size;
+import com.silverpeas.gallery.processing.Watermarker;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.ImageLoader;
 
 public class ImageHelper {
 
@@ -68,9 +69,8 @@ public class ImageHelper {
    * @param watermarkOther
    * @throws Exception
    */
-  public static void processImage(PhotoDetail photo, FileItem image,
-    String subDirectory, boolean watermark, String watermarkHD,
-    String watermarkOther) throws Exception {
+  public static void processImage(PhotoDetail photo, FileItem image, String subDirectory,
+    boolean watermark, String watermarkHD, String watermarkOther) throws Exception {
     String photoId = photo.getPhotoPK().getId();
     String instanceId = photo.getPhotoPK().getInstanceId();
 
@@ -149,16 +149,16 @@ public class ImageHelper {
           photo.setImageMimeType(mimeType);
           photo.setImageSize(size);
 
-          createImage(name, image, photo, subDirectory, watermark, watermarkHD,
-            watermarkOther);
+          createImage(name, image, photo, subDirectory, watermark, watermarkHD, watermarkOther);
         }
       }
     }
   }
 
-  private static void createImage(String name, File image, PhotoDetail photo,
-    String subDirectory, boolean watermark, String watermarkHD,
-    String watermarkOther) throws Exception {
+  private static void createImage(String name, File imageFile, PhotoDetail photo,
+    String subDirectory,
+    boolean watermark, String watermarkHD, String watermarkOther) throws IOException,
+    ImageMetadataException {
     String type = FileRepositoryManager.getFileExtension(name);
     String photoId = photo.getPhotoPK().getId();
     String instanceId = photo.getPhotoPK().getInstanceId();
@@ -175,16 +175,11 @@ public class ImageHelper {
 
     if (ImageType.isValidExtension(name)) {
       // recherche de la taille de l'image
+      BufferedImage image = ImageLoader.loadImage(imageFile);
       getDimension(image, photo);
-    }
-
-    // faire les preview et vignettes pour les formats possibles
-    // NOTE : on ne peut pas redimensionner les images de type "bmp" ni "tif"
-    if (ImageType.isValidExtension(name)) {
-
       String pathFile = FileRepositoryManager.getAbsolutePath(instanceId)
         + subDirectory + photoId + File.separator;
-      String nameForWatermark = computeWatermarkText(watermarkHD, watermark, type, image, photo,
+      String nameForWatermark = computeWatermarkText(watermarkHD, watermark, type, imageFile, photo,
         pathFile, percentSize, watermarkOther);
       // création de la preview et des vignettes
       createVignettes(photo, pathFile, image, watermark, nameForWatermark);
@@ -218,20 +213,17 @@ public class ImageHelper {
     }
   }
 
-  private static void getDimension(File inputFile, PhotoDetail photo)
-    throws IOException {
-
-    BufferedImage inputBuf = ImageLoader.loadImage(inputFile);
-    if (inputBuf == null) {
+  private static void getDimension(BufferedImage image, PhotoDetail photo) throws IOException {
+    if (image == null) {
       photo.setSizeL(0);
       photo.setSizeH(0);
     } else {
-      photo.setSizeL(inputBuf.getWidth());
-      photo.setSizeH(inputBuf.getHeight());
+      photo.setSizeL(image.getWidth());
+      photo.setSizeH(image.getHeight());
     }
   }
 
-  private static void createVignettes(PhotoDetail photo, String path, File originalImage,
+  private static void createVignettes(PhotoDetail photo, String path, BufferedImage originalImage,
     boolean watermark, String nameWatermark) throws IOException {
     String fileId = photo.getId();
 
@@ -251,7 +243,7 @@ public class ImageHelper {
       redimPhoto(originalImage, previewFile, largeWidth, false, nameWatermark, 0);
     }
 
-    File previewImage = new File(previewFile);
+    BufferedImage previewImage = ImageLoader.loadImage(new File(previewFile));
 
     // 1/ création de la preview
     int sizeWatermarkPreview = Integer.parseInt(gallerySettings.getString("sizeWatermark600x400"));
@@ -312,15 +304,15 @@ public class ImageHelper {
     return ImageUtility.getWidthAndHeight(instanceId, subDir, imageName, baseWidth);
   }
 
-  public static Size getWidthAndHeight(BufferedImage inputBuf, int widthParam) {
-    return ImageUtility.getWidthAndHeight(inputBuf, widthParam);
+  public static Size getWidthAndHeight(BufferedImage image, int widthParam) {
+    return ImageUtility.getWidthAndHeight(image, widthParam);
   }
 
-  private static void redimPhoto(File inputFile, String outputFile,
+  private static void redimPhoto(BufferedImage image, String outputFile,
     int widthParam, boolean watermark, String nameWatermark, int sizeWatermark)
     throws IOException {
 
-    ImageResizer resizer = new ImageResizer(inputFile, widthParam);
+    ImageResizer resizer = new ImageResizer(image, widthParam);
     if (watermark) {
       resizer.resizeImageWithWatermark(outputFile, nameWatermark, sizeWatermark);
     } else {
@@ -328,36 +320,18 @@ public class ImageHelper {
     }
   }
 
-  private static void createWatermark(String fileId, String name, String path,
-    File file, int percentSizeWatermark) throws IOException {
+  private static void createWatermark(String watermarkedTargetFile, String watermarkLabel,
+    BufferedImage image, int percentSizeWatermark) throws IOException {
 
-    String watermarkFile = path + fileId + "_watermark.jpg";
+    
 
-    // Création du buffer avec l'image d'origine
-    BufferedImage inputBuf = ImageLoader.loadImage(file);
-    if (inputBuf == null) {
-      return;
-    }
-
-    double inputBufWidth = inputBuf.getWidth();
-    double inputBufHeight = inputBuf.getHeight();
+    int imageWidth = image.getWidth();
+    int imageHeight = image.getHeight();
 
     // création du buffer a la même taille
-    BufferedImage outputBuf = new BufferedImage((int) inputBufWidth,
-      (int) inputBufHeight, BufferedImage.TYPE_INT_RGB);
+    BufferedImage outputBuf = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 
-    // Ajout du watermark (passage par le graphique pour mettre à jour le
-    // buffer)
-    Graphics2D g = (Graphics2D) outputBuf.getGraphics();
-    g.drawImage(inputBuf, 0, 0, (int) inputBufWidth, (int) inputBufHeight,
-      null);
-
-    // opacité du texte de 50%
-    AlphaComposite alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-      0.5f);
-    g.setComposite(alpha);
-
-    double max = Math.max(inputBufWidth, inputBufHeight);
+    double max = Math.max(imageWidth, imageHeight);
 
     // recherche de la taille du watermark en fonction de la taille de la photo
     int size = 8;
@@ -397,57 +371,27 @@ public class ImageHelper {
     if (max >= 3000) {
       size = (int) Math.rint(max * percentSizeWatermark / 100);
     }
+    Watermarker watermarker = new Watermarker(imageWidth, imageHeight);
+    watermarker.addWatermark(image, outputBuf, new Font("Arial", Font.BOLD, size), watermarkLabel, size);
 
-    // affichage d'un watermark noir
-    g.setColor(Color.BLACK);
-    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-      RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    Font watermarkFont = new Font("Arial", Font.BOLD, size);
-    g.setFont(watermarkFont);
-    FontMetrics fontMetrics = g.getFontMetrics();
-    Rectangle2D rect = fontMetrics.getStringBounds(name, g);
-
-    g.drawString(name, ((int) inputBufWidth - (int) rect.getWidth()) - size,
-      ((int) inputBufHeight - (int) rect.getHeight()) - size);
-
-    // affichage d'un watermark blanc en décalé
-    g.setColor(Color.WHITE);
-    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    g.setFont(watermarkFont);
-    fontMetrics = g.getFontMetrics();
-    rect = fontMetrics.getStringBounds(name, g);
-    g.drawString(name,
-      ((int) inputBufWidth - (int) rect.getWidth()) - size / 2,
-      ((int) inputBufHeight - (int) rect.getHeight()) - size / 2);
-
-    g.dispose();
-
-    // Ecriture du buffer sortie dans le fichier "outputFile" sur disque
-    File fileWatermark = new File(watermarkFile);
+    File fileWatermark = new File(watermarkedTargetFile);
     ImageIO.write(outputBuf, "JPEG", fileWatermark);
   }
 
   public static void pasteImage(PhotoPK fromPK, PhotoDetail image, boolean cut) {
     PhotoPK toPK = image.getPhotoPK();
-
     String toAbsolutePath = FileRepositoryManager.getAbsolutePath(toPK.getInstanceId());
     String fromAbsolutePath = FileRepositoryManager.getAbsolutePath(fromPK.getInstanceId());
-
     String subDirectory = gallerySettings.getString("imagesSubDirectory");
-
-    String fromDir = fromAbsolutePath + subDirectory + fromPK.getId()
-      + File.separator;
-    String toDir = toAbsolutePath + subDirectory + toPK.getId()
-      + File.separator;
-
+    String fromDir = fromAbsolutePath + subDirectory + fromPK.getId() + File.separator;
+    String toDir = toAbsolutePath + subDirectory + toPK.getId() + File.separator;
     // création du répertoire pour mettre la photo
     String nameRep = subDirectory + toPK.getId();
     try {
       FileRepositoryManager.createAbsolutePath(toPK.getInstanceId(), nameRep);
     } catch (Exception e) {
-      SilverTrace.error("gallery", "ImageHelper.pasteImage",
-        "root.MSG_GEN_PARAM_VALUE", "Unable to create dir : "
-        + toAbsolutePath + nameRep, e);
+      SilverTrace.error("gallery", "ImageHelper.pasteImage", "root.MSG_GEN_PARAM_VALUE",
+        "Unable to create dir : " + toAbsolutePath + nameRep, e);
     }
 
     // copier et renommer chaque image présente dans le répertoire d'origine
@@ -512,12 +456,12 @@ public class ImageHelper {
   private static String computeWatermarkText(String watermarkHD, boolean watermark, String type,
     File image, PhotoDetail photo, String pathFile, int percentSize, String watermarkOther) throws
     IOException, NumberFormatException, ImageMetadataException {
-    // ajout du watermark (si le paramètre est activé) QUE POUR LES IMAGES JPEG
     String nameAuthor = "";
     String nameForWatermark = "";
     if (ImageType.isJpeg(type) && watermark) {
       ImageMetadataExtractor extractor = new DrewImageMetadataExtractor(photo.getInstanceId());
       List<MetaData> iptcMetadata = extractor.extractImageIptcMetaData(image);
+      BufferedImage bufferedImage = ImageLoader.loadImage(image);
       if (StringUtil.isDefined(watermarkHD)) {
         // création d'un duplicata de l'image originale avec intégration du
         // watermark
@@ -526,7 +470,8 @@ public class ImageHelper {
           nameAuthor = value;
         }
         if (!nameAuthor.isEmpty()) {
-          createWatermark(photo.getId(), nameAuthor, pathFile, image, percentSize);
+          String watermarkFile = pathFile + photo.getId() + "_watermark.jpg";
+          createWatermark(watermarkFile, nameAuthor, bufferedImage, percentSize);
         }
       }
       if (StringUtil.isDefined(watermarkOther)) {

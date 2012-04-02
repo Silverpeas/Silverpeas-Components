@@ -24,13 +24,15 @@
  */
 package com.silverpeas.gallery.processing;
 
+import org.silverpeas.util.ImageLoader;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
 import org.junit.Test;
+
 import static com.silverpeas.util.PathTestUtil.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 
 /**
@@ -53,7 +55,7 @@ public class ImageResizerTest {
   @Test
   public void testResizeImage() throws Exception {
     String outputFile = TARGET_DIR + "test-classes" + SEPARATOR + "resizedKoala.jpg";
-    ImageResizer instance = new ImageResizer(koala, 512);
+    ImageResizer instance = new ImageResizer(ImageLoader.loadImage(koala), 512);
     instance.resizeImage(outputFile);
     File image = new File(outputFile);
     assertThat(image.exists(), is(true));
@@ -65,7 +67,7 @@ public class ImageResizerTest {
   @Test
   public void testResizeCMYKImage() throws Exception {
     String outputFile = TARGET_DIR + "test-classes" + SEPARATOR + "resizedImageJpgCmjn.jpg";
-    ImageResizer instance = new ImageResizer(jpegCmyk, 512);
+    ImageResizer instance = new ImageResizer(ImageLoader.loadImage(jpegCmyk), 512);
     instance.resizeImage(outputFile);
     File image = new File(outputFile);
     assertThat(image.exists(), is(true));
@@ -79,7 +81,7 @@ public class ImageResizerTest {
    */
   @Test
   public void testLoadImage() throws Exception {
-    ImageResizer instance = new ImageResizer(koala, 512);
+    ImageResizer instance = new ImageResizer(ImageLoader.loadImage(koala), 512);
     BufferedImage result = instance.loadImage();
     assertThat(result, is(notNullValue()));
   }
