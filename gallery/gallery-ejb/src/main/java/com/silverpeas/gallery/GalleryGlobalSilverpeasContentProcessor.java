@@ -26,6 +26,7 @@ package com.silverpeas.gallery;
 import java.io.IOException;
 
 import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.processing.Size;
 import com.stratelia.silverpeas.contentManager.DefaultGlobalSilverContentProcessor;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.IGlobalSilverContentProcessor;
@@ -49,24 +50,20 @@ public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilver
   public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
       UserDetail creatorDetail, String location) {
     GlobalSilverContent gsc = super.getGlobalSilverContent(sci, creatorDetail, location);
-
     String instanceId = sci.getInstanceId();
-
     String directory = galleryDirectory + sci.getId();
     PhotoDetail photo = (PhotoDetail) sci;
     gsc.setThumbnailURL(FileServerUtils.getUrl(null, instanceId, photo.getImageName(), photo
         .getImageMimeType(), directory));
-    String[] widthAndHeight = { "60", "45" };
+    Size size = new Size(60, 45);
     try {
-      widthAndHeight =
-          ImageHelper.getWidthAndHeight(instanceId, directory, photo.getImageName(), 60);
+      size = ImageHelper.getWidthAndHeight(instanceId, directory, photo.getImageName(), 60);
     } catch (IOException e) {
-      SilverTrace.info("gallery",
-          "GalleryGlobalSilverpeasContentProcessor.getGlobalSilverContent",
-          "root.MSG_GEN_PARAM_VALUE", "Error during processing size !");
+      SilverTrace.info("gallery", "GalleryGlobalSilverpeasContentProcessor.getGlobalSilverContent",
+          "root.MSG_GEN_PARAM_VALUE", "Error during processing size !", e);
     }
-    gsc.setThumbnailWidth(widthAndHeight[0]);
-    gsc.setThumbnailHeight(widthAndHeight[1]);
+    gsc.setThumbnailWidth(String.valueOf(size.getWidth()));
+    gsc.setThumbnailHeight(String.valueOf(size.getHeight()));
 
     return gsc;
   }
