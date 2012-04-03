@@ -15,35 +15,37 @@
 package com.silverpeas.questionReply.web;
 
 import com.silverpeas.personalization.UserPreferences;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import java.util.Vector;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import org.mockito.Mockito;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.questionReply.control.QuestionManager;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.rest.RESTWebServiceTest;
-import com.silverpeas.rest.mock.UserDetailWithProfiles;
+import static com.silverpeas.questionReply.web.QuestionReplyTestResources.COMPONENT_INSTANCE_ID;
+import static com.silverpeas.questionReply.web.QuestionReplyTestResources.REPLY_RESOURCE_PATH;
+import com.silverpeas.web.RESTWebServiceTest;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.attachment.control.AttachmentBm;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-import static com.silverpeas.rest.RESTWebService.*;
-import static com.silverpeas.questionReply.web.QuestionReplyTestResources.*;
+import static org.mockito.Matchers.anyString;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests on the comment getting by the CommentResource web service.

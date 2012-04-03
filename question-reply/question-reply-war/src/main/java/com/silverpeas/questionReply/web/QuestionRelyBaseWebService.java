@@ -23,26 +23,20 @@
  */
 package com.silverpeas.questionReply.web;
 
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.SilverpeasRole;
+import static com.stratelia.webactiv.SilverpeasRole.*;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
-import com.silverpeas.rest.RESTWebService;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-
-import javax.inject.Inject;
-
-import static com.stratelia.webactiv.SilverpeasRole.*;
 
 /**
  *
  */
 public abstract class QuestionRelyBaseWebService extends RESTWebService {
 
-  @Inject
-  protected OrganizationController controller;
-
   SilverpeasRole getUserProfile() {
-    String[] roles = controller.getUserProfiles(getUserDetail().getId(), getComponentId());
+    String[] roles = getOrganizationController().getUserProfiles(getUserDetail().getId(),
+            getComponentId());
     SilverpeasRole profile = user;
     for (String currentRole : roles) {
       SilverpeasRole role = SilverpeasRole.valueOf(currentRole);

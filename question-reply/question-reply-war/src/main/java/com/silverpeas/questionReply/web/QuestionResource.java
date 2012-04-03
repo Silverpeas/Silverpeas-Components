@@ -23,23 +23,19 @@
  */
 package com.silverpeas.questionReply.web;
 
+import com.silverpeas.annotation.Authorized;
 import com.silverpeas.questionReply.control.QuestionManagerFactory;
 import com.silverpeas.questionReply.model.Question;
 import com.stratelia.webactiv.SilverpeasRole;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 /**
  * A REST Web resource representing a given question.
@@ -48,13 +44,14 @@ import java.util.List;
 @Service
 @Scope("request")
 @Path("questionreply/{componentId}/questions")
+@Authorized
 public class QuestionResource extends QuestionRelyBaseWebService {
 
   @PathParam("componentId")
   protected String componentId;
 
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     return this.componentId;
   }
 
@@ -71,7 +68,6 @@ public class QuestionResource extends QuestionRelyBaseWebService {
   @Path("{questionId}")
   @Produces(MediaType.APPLICATION_JSON)
   public QuestionEntity getQuestion(@PathParam("questionId") String onQuestionId) {
-    checkUserPriviledges();
     try {
       Question theQuestion = QuestionManagerFactory.getQuestionManager().getQuestion(Long.parseLong(
           onQuestionId));
@@ -88,7 +84,6 @@ public class QuestionResource extends QuestionRelyBaseWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public QuestionEntity[] getAllQuestions(@PathParam("questionId") String onQuestionId) {
-    checkUserPriviledges();
     try {
       List<Question> questions = QuestionManagerFactory.getQuestionManager().getAllQuestions(
           componentId);
@@ -102,7 +97,6 @@ public class QuestionResource extends QuestionRelyBaseWebService {
   @Path("category/{categoryId}")
   @Produces(MediaType.APPLICATION_JSON)
   public QuestionEntity[] getAllQuestionsByCategory(@PathParam("categoryId") String categoryId) {
-    checkUserPriviledges();
     try {
       List<Question> questions = QuestionManagerFactory.getQuestionManager().
           getAllQuestionsByCategory(componentId, categoryId);
@@ -158,8 +152,8 @@ public class QuestionResource extends QuestionRelyBaseWebService {
     QuestionEntity entity = QuestionEntity.fromQuestion(question, 
             getUserPreferences().getLanguage()).withURI(questionURI).withUser(getUserDetail(), 
             getUserProfile());
-    AuthorEntity author = AuthorEntity.fromUser(question.readAuthor(controller));
-    author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
+    AuthorEntity author = AuthorEntity.fromUser(question.readAuthor(getOrganizationController()));
+    author.setAvatar(getHttpServletRequest().getContextPath() + author.getAvatar());
     entity.setCreator(author);
     return entity;
   }
