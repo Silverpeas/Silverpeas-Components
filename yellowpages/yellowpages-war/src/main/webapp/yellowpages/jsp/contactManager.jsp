@@ -48,7 +48,7 @@ void displayUserView(GraphicElementFactory gef, CompleteContact contactComplete,
 	ContactDetail detail = contactComplete.getContactDetail();
    out.println("<table>");
    out.println("<tr><td class=\"txtlibform\">"+resources.getString("Contact")+" :</td>");
-   out.println("<td align=\"left\" class=\"txtnav\">"+EncodeHelper.javaStringToHtmlString(detail.getFirstName())+" "+Encode.javaStringToHtmlString(detail.getLastName())+"</td>");
+   out.println("<td align=\"left\" class=\"txtnav\">"+EncodeHelper.javaStringToHtmlString(detail.getFirstName())+" "+EncodeHelper.javaStringToHtmlString(detail.getLastName())+"</td>");
    out.println("</tr>");
    out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.phoneNumber")+" :</td>");
    out.println("<td align=\"left\">"+EncodeHelper.javaStringToHtmlString(detail.getPhone())+"</td>");
@@ -57,7 +57,7 @@ void displayUserView(GraphicElementFactory gef, CompleteContact contactComplete,
    out.println("<td align=\"left\">"+EncodeHelper.javaStringToHtmlString(detail.getFax())+"</td>");
    out.println("</tr>");
    out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.eMail")+" :</td>");
-   out.println("<td align=\"left\"><a href=mailto:"+EncodeHelper.javaStringToHtmlString(detail.getEmail())+">"+Encode.javaStringToHtmlString(Encode.javaStringToHtmlString(detail.getEmail()))+"</A></td>");
+   out.println("<td align=\"left\"><a href=mailto:"+EncodeHelper.javaStringToHtmlString(detail.getEmail())+">"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToHtmlString(detail.getEmail()))+"</A></td>");
    out.println("</tr>");
    out.println("</table>");
 }
@@ -98,11 +98,9 @@ out.println(gef.getLookStyleSheet());
   CompleteContact contactComplete = null;
   ContactDetail contactDetail = null;
 
-//R�cup�ration des param�tres
+//Recuperation des parametres
 String action = (String) request.getAttribute("Action"); //Delete || Add || Update ||
-														// ViewContactInTopic || View ||
-														// UpdateView || ViewContact ||
-														// SaveUser || New || SelectUser
+// ViewContactInTopic || View || UpdateView || ViewContact || SaveUser || New || SelectUser
 
 String id = (String) request.getAttribute("ContactId");
 String profile = (String) request.getAttribute("Profile");
@@ -120,7 +118,7 @@ UserCompleteContact CurrentContact = yellowpagesScc.getCurrentContact();
 String owner = yellowpagesScc.getOwner();
 String Path = yellowpagesScc.getPath();
 
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=reallyClose();", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=reallyClose();", false);
 Button validateButton = null;
 
 if (action.equals("Delete") == false) {
@@ -342,12 +340,12 @@ else if (action.equals("SaveUser")) {
 
 /* New || SelectUser */
 else if (action.equals("New") || action.equals("SelectUser")) {
-      firstName = (String) request.getParameter("FirstName");
-      lastName = (String) request.getParameter("LastName");
-      email = (String) request.getParameter("Email");
-      phone = (String) request.getParameter("Phone");
-      fax = (String) request.getParameter("Fax");
-      userId = (String) request.getParameter("UserId");
+      firstName = request.getParameter("FirstName");
+      lastName = request.getParameter("LastName");
+      email = request.getParameter("Email");
+      phone = request.getParameter("Phone");
+      fax = request.getParameter("Fax");
+      userId = request.getParameter("UserId");
 
 		  id = null;
       TopicDetail currentTopic = yellowpagesScc.getCurrentTopic();
@@ -383,7 +381,7 @@ else if (action.equals("Delete")) {
       return;
 }
 
-validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendContactData('"+nextAction+"');", false);
+validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendContactData('"+nextAction+"');", false);
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
 browseBar.setDomainName(spaceLabel);
@@ -444,29 +442,29 @@ else if (action.equals("New") || action.equals("UpdateView")) {
     {
 %>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:</TD>
-      <TD><input type="text" name="LastName" value="<%=Encode.javaStringToHtmlString(lastName)%>" size="60" maxlength="60" readonly>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
+      <TD><input type="text" name="LastName" value="<%=EncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60" readonly>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.surname")%>&nbsp;:</TD>
-      <TD><input type="text" name="FirstName" value="<%=Encode.javaStringToHtmlString(firstName)%>" size="60" maxlength="60" readonly>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
+      <TD><input type="text" name="FirstName" value="<%=EncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60" readonly>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</TD>
-      <TD><input type="text" name="Email" value="<%=Encode.javaStringToHtmlString(email)%>" size="60" maxlength="100" readonly></TD></TR>
+      <TD><input type="text" name="Email" value="<%=EncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="100" readonly></TD></TR>
 <%
     }
     else
     {
 %>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:</TD>
-      <TD><input type="text" name="LastName" value="<%=Encode.javaStringToHtmlString(lastName)%>" size="60" maxlength="60">&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
+      <TD><input type="text" name="LastName" value="<%=EncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60">&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.surname")%>&nbsp;:</TD>
-      <TD><input type="text" name="FirstName" value="<%=Encode.javaStringToHtmlString(firstName)%>" size="60" maxlength="60">&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
+      <TD><input type="text" name="FirstName" value="<%=EncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60">&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</TD>
-      <TD><input type="text" name="Email" value="<%=Encode.javaStringToHtmlString(email)%>" size="60" maxlength="100"></TD></TR>
+      <TD><input type="text" name="Email" value="<%=EncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="100"></TD></TR>
 <%
     }
 %>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.phoneNumber")%>&nbsp;:</TD>
-      <TD><input type="text" name="Phone" value="<%=Encode.javaStringToHtmlString(phone)%>" size="20" maxlength="20"></TD></TR>
+      <TD><input type="text" name="Phone" value="<%=EncodeHelper.javaStringToHtmlString(phone)%>" size="20" maxlength="20"></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.faxNumber")%>&nbsp;:</TD>
-      <TD><input type="text" name="Fax" value="<%=Encode.javaStringToHtmlString(fax)%>" size="20" maxlength="20"></TD></TR>
+      <TD><input type="text" name="Fax" value="<%=EncodeHelper.javaStringToHtmlString(fax)%>" size="20" maxlength="20"></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.publisher")%>&nbsp;:</TD>
       <TD><%=creatorName%></TD></TR>
   <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("ContactDateCreation")%>&nbsp;:</TD>
@@ -474,7 +472,7 @@ else if (action.equals("New") || action.equals("UpdateView")) {
   <tr><td colspan="2">(<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%>)</td></tr>
   </table></td></tr></table>
   <input type="hidden" name="Action"><input type="hidden" name="ContactId" value="<%=id%>">
-	<input type="hidden" name="UserId" value="<%=Encode.javaStringToHtmlString(userId)%>">
+	<input type="hidden" name="UserId" value="<%=EncodeHelper.javaStringToHtmlString(userId)%>">
   </FORM>
 </center>
 <br>

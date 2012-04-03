@@ -33,16 +33,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="tabManager.jsp.inc" %>
 <%
-
-//Récupération des paramètres
-String id = (String) request.getParameter("ChildId");
-String action = (String) request.getParameter("Action");
+String id = request.getParameter("ChildId");
+String action = request.getParameter("Action");
 String name = "";
 String description = "";
 String modelId = "";
 
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=reallyClose();", false);
-Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=reallyClose();", false);
+Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
 
 NodeDetail subTopicDetail = yellowpagesScc.getSubTopicDetail(id);
 if (subTopicDetail != null) {
@@ -133,7 +131,7 @@ out.println(frame.printBefore());
                         <%=yellowpagesScc.getString("TopicTitle")%> :
                     </td>
                     <td align=left valign="baseline">
-                        <input type="text" name="Name" value="<%=Encode.javaStringToHtmlString(name)%>" size="60" maxlength="60">&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"> 
+                        <input type="text" name="Name" value="<%=EncodeHelper.javaStringToHtmlString(name)%>" size="60" maxlength="60">&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"> 
                     </td>
                 </tr>
                 <tr>            
@@ -141,7 +139,7 @@ out.println(frame.printBefore());
                         <%=resources.getString("GML.description")%> :
                     </td>
                     <td align=left valign="baseline">
-                        <input type="text" name="Description" value="<%=Encode.javaStringToHtmlString(description)%>" size="60" maxlength="200">
+                        <input type="text" name="Description" value="<%=EncodeHelper.javaStringToHtmlString(description)%>" size="60" maxlength="200">
                     </td>
                 </tr>
                 <tr> 

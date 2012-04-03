@@ -29,7 +29,7 @@
 <%@ include file="check.jsp" %>
 
 <% 
-// r�cup�ration des param�tres
+// recuperation des parametres
 PostDetail	post		= (PostDetail) request.getAttribute("Post");
 Collection	categories	= (Collection) request.getAttribute("Categories");
 Collection	archives	= (Collection) request.getAttribute("Archives");

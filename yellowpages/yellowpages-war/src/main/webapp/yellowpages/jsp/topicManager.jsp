@@ -49,7 +49,7 @@ String pathString = "";
 String topicName = "";
 boolean updateFailed = false;
 
-//R�cup�ration des param�tres
+//Recuperation des parametres
 String action = request.getParameter("Action");
 String id = request.getParameter("Id");
 String contactId = request.getParameter("ContactId");
@@ -213,32 +213,32 @@ function consult() {
 </script>
 </HEAD>
 <%
-if (action.equals("Add")) {
-    name = (String) request.getParameter("Name");
-    description = (String) request.getParameter("Description");
+if ("Add".equals(action)) {
+    name = request.getParameter("Name");
+    description = request.getParameter("Description");
     NodePK newNodePK = addTopic(yellowpagesScc, name, description, out);
     if (newNodePK.getId().equals("-1")) {
 		updateFailed = true;    
     } 
     action = "Search";
-} else if (action.equals("Update")) {
-    childId = (String) request.getParameter("ChildId");
-    topicName = (String) request.getParameter("Name");
-    description = (String) request.getParameter("Description");
-    modelId = (String) request.getParameter("ModelId");
+} else if ("Update".equals(action)) {
+    childId = request.getParameter("ChildId");
+    topicName = request.getParameter("Name");
+    description = request.getParameter("Description");
+    modelId = request.getParameter("ModelId");
     NodePK updatedNodePK = updateTopic(yellowpagesScc, childId, topicName, description, modelId, out);
     if (updatedNodePK.getId().equals("-1")) {
 		updateFailed = true;
 } 
     action = "Search";
-} else if (action.equals("Delete")) {
-    childId = (String) request.getParameter("ChildId");
+} else if ("Delete".equals(action)) {
+    childId = request.getParameter("ChildId");
     removeTopic(yellowpagesScc, childId, out);
     action = "Search";
 }
 
 
-if (action.equals("Search")) {
+if ("Search".equals(action)) {
 %>
     <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
     <FORM NAME="topicDetailForm" action="topicManager.jsp" METHOD=POST >
@@ -317,7 +317,7 @@ if (action.equals("Search")) {
 </CENTER>
 
 <input type="hidden" name="Action"><input type="hidden" name="Id" value="<%=id%>">
-<input type="hidden" name="Path" value="<%=Encode.javaStringToHtmlString(pathString)%>"><input type="hidden" name="ChildId">
+<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"><input type="hidden" name="ChildId">
 <input type="hidden" name="Name"><input type="hidden" name="Description"><input type="hidden" name="ModelId">
 </FORM>
 

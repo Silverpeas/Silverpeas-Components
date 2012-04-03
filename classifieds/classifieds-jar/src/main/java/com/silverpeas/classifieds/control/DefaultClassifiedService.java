@@ -42,8 +42,6 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DBUtil;
@@ -56,6 +54,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -70,6 +69,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.silverpeas.search.SearchEngineFactory;
 import static com.silverpeas.classifieds.ClassifiedUtil.*;
 
 /**
@@ -421,23 +421,18 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public Collection<ClassifiedDetail> search(QueryDescription query) {
     List<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    MatchingIndexEntry[] result = null;
     OrganizationController orga = new OrganizationController();
     try {
-      SearchEngineBm searchEngineBm = getSearchEngineBm();
-      searchEngineBm.search(query);
-      result = searchEngineBm.getRange(0, searchEngineBm.getResultLength());
-
+      List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).getEntries();
       // création des petites annonces à partir des resultats
-      for (int i = 0; i < result.length; i++) {
-        MatchingIndexEntry matchIndex = result[i];
-        if (matchIndex.getObjectType().equals("Classified")) {
+      for (MatchingIndexEntry matchIndex : result) {
+        if ("Classified".equals(matchIndex.getObjectType())) {
           ClassifiedDetail classified = getContentById(matchIndex.getObjectId());
           if (classified != null) {
             SilverTrace.info("classifieds", "ClassifiedsBmEJB.search()",
                 "root.MSG_GEN_ENTER_METHOD", "classified = " + classified.getTitle());
             // ne l'ajouter que si elle est valide
-            if (classified.getStatus().equals(ClassifiedDetail.VALID)) {
+            if (ClassifiedDetail.VALID.equals(classified.getStatus())) {
               // ajouter le nom du createur
               classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
                   .getDisplayedName());
@@ -509,20 +504,6 @@ public class DefaultClassifiedService implements ClassifiedService {
         new IndexEntryPK(classified.getInstanceId(), "Classified", Integer.toString(classified
             .getClassifiedId()));
     IndexEngineProxy.removeIndexEntry(indexEntry);
-  }
-
-  public SearchEngineBm getSearchEngineBm() {
-    SearchEngineBm searchEngineBm = null;
-    try {
-      SearchEngineBmHome searchEngineHome =
-          (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
-              SearchEngineBmHome.class);
-      searchEngineBm = searchEngineHome.create();
-    } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getSearchEngineBm()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return searchEngineBm;
   }
 
   @Override
