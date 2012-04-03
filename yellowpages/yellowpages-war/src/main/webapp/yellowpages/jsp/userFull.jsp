@@ -70,20 +70,20 @@ out.println(board.printBefore());
 </tr>
 <tr>
 	<td valign=baseline align=left class=txtlibform><%=resources.getString("GML.eMail")%> :</td>
-	<td align=left><a href=mailto:<%=Encode.javaStringToHtmlString(user.geteMail())%>><%=Encode.javaStringToHtmlString(Encode.javaStringToHtmlString(user.geteMail()))%></A></td>
+	<td align=left><a href=mailto:<%=EncodeHelper.javaStringToHtmlString(user.geteMail())%>><%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToHtmlString(user.geteMail()))%></A></td>
 </tr>
 <%
   String[] properties = user.getPropertiesNames();
 	String property = null;
 	for (int p=0; p<properties.length; p++)
 	{
-		property = (String) properties[p];
+		property = properties[p];
 		if (!property.startsWith("password"))
 		{
 			%>
 			<tr>
 				<td valign="baseline" align=left class="txtlibform"><%=user.getSpecificLabel(resources.getLanguage(), property) %> :</td>
-				<td align="left" valign="baseline"><%=Encode.javaStringToHtmlString(user.getValue(property))%></td>     
+				<td align="left" valign="baseline"><%=EncodeHelper.javaStringToHtmlString(user.getValue(property))%></td>     
 			</tr>
 			<%
 		}

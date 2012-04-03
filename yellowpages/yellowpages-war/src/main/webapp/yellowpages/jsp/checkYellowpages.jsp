@@ -59,8 +59,6 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.searchEngine.control.ejb.* "%>
-<%@ page import="com.stratelia.webactiv.searchEngine.model.* "%>
 <%@ page import="com.stratelia.webactiv.yellowpages.control.YellowpagesSessionController"%>
 <%@ page import="com.stratelia.webactiv.yellowpages.model.*"%>
 <%@page import="com.silverpeas.util.StringUtil"%>

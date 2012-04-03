@@ -81,8 +81,7 @@ private String afficheArbo(String idNodeSelected,
 			boolean portletMode = (bPortletMode != null && bPortletMode
 					.booleanValue());
 			String typeSearch = (String) request.getAttribute("TypeSearch");
-			String searchCriteria = (String) request
-					.getAttribute("SearchCriteria");
+			String searchCriteria = (String) request.getAttribute("SearchCriteria");
 
 			String profile = request.getParameter("Profile");
 			String action = request.getParameter("Action");
@@ -266,7 +265,7 @@ function exportCSV(){
 						<td valign="middle">
 						<%
 						  ButtonPane buttonPane = gef.getButtonPane();
-						  buttonPane.addButton((Button) gef.getFormButton("Ok", "javaScript:search()", false));
+						  buttonPane.addButton(gef.getFormButton("Ok", "javaScript:search()", false));
  						  out.println(buttonPane.print());
 						%>
 						</td>

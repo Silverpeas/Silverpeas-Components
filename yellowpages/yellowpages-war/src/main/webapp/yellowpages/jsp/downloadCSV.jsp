@@ -63,7 +63,7 @@
 		<%
 			out.println(board.printAfter());
 			ButtonPane buttonPane = gef.getButtonPane();
-			Button button = (Button) gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
+			Button button = gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
 			buttonPane.addButton(button);
 			out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
 			out.println(frame.printAfter());

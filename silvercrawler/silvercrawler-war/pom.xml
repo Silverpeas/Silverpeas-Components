@@ -35,7 +35,6 @@
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>searchengine</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
   </dependencies>

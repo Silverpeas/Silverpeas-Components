@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.search.SearchEngine" %>
 <%--
 
     Copyright (C) 2000 - 2011 Silverpeas
@@ -207,7 +208,7 @@ function closeWindows() {
             
             String keywords = kmeliaScc.getSessionPublication().getDetail().getKeywords();
             
-            SearchEngineBm searchEngine = kmeliaScc.getSearchEngine();
+            SearchEngine searchEngine = kmeliaScc.getSearchEngine();
             String queryStr = pubName+" "+keywords;
             
             //'*' or '?' not allowed as first character in WildcardQuery

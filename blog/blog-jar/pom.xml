@@ -23,24 +23,28 @@
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>publication</artifactId>
       <version>${core.version}</version>
+      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>node</artifactId>
       <version>${core.version}</version>
+      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
      <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>statistic</artifactId>
       <version>${core.version}</version>
+      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
      <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>mylinks</artifactId>
       <version>${core.version}</version>
+      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
