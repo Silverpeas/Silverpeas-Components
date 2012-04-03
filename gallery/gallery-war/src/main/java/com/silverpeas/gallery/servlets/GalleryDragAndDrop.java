@@ -117,7 +117,7 @@ public class GalleryDragAndDrop extends HttpServlet {
             }
             item.write(f);
             // Cas du zip
-            if (FileUtil.ARCHIVE_MIME_TYPE.equals(FileUtil.getMimeType(fileName))) {
+            if (FileUtil.isArchive(fileName)) {
               ZipManager.extract(f, parent);
             }
           }
