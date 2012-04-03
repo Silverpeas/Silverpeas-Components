@@ -157,12 +157,12 @@ out.println(board.printAfter());
   ButtonPane bouton = gef.getButtonPane();
 	if (request.getAttribute("Result") != null)
 	{
-		bouton.addButton((Button) gef.getFormButton(resources.getString("GML.close"), "javascript:window.close()", false));
+		bouton.addButton(gef.getFormButton(resources.getString("GML.close"), "javascript:window.close()", false));
 	}
 	else
 	{
-		bouton.addButton((Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
-		bouton.addButton((Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:window.close()", false));
+		bouton.addButton(gef.getFormButton(resources.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
+		bouton.addButton(gef.getFormButton(resources.getString("GML.cancel"), "javascript:window.close()", false));
 	}
   out.println(bouton.print());
 %>

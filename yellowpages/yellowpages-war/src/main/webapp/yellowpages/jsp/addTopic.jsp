@@ -29,13 +29,13 @@
 <%@ include file="tabManager.jsp.inc" %>
 
 <%
-//Récupération des paramètres
+//Recuperation des parametres
 TopicDetail CurrentTopic=yellowpagesScc.getCurrentTopic();
-String fatherId = (String) request.getParameter("Id");
-String path = (String) request.getParameter("Path");
+String fatherId = request.getParameter("Id");
+String path = request.getParameter("Path");
 
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
+Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
 %>
 <HTML>
 <HEAD>

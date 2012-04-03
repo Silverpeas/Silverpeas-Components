@@ -34,9 +34,9 @@ Collection			modelUsed	= (Collection) request.getAttribute("ModelUsed");
 //Icons
 String hLineSrc = m_context + "/util/icons/colorPix/1px.gif";
 
-// déclaration des boutons
-Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
+// declaration des boutons
+Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
 
 %>
 
@@ -65,8 +65,6 @@ function closeWindows() {
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
-//    browseBar.setPath(linkedPathString);
-
     out.println(window.printBefore());
 
     out.println(frame.printBefore());
@@ -93,7 +91,7 @@ function closeWindows() {
 		        out.println("</TR><TR>");
 		        
 	        nb++;
-					// recherche si le modèle est dans la liste
+					// recherche si le modele est dans la liste
 	        boolean used = false;
 	    		String usedCheck = "";
 	    	  if (modelUsed.contains(xmlForm.getFileName()))

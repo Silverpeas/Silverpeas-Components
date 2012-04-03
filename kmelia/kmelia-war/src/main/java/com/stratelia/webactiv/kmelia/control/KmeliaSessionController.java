@@ -151,7 +151,6 @@ import com.stratelia.webactiv.kmelia.model.updatechain.FieldParameter;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.model.updatechain.UpdateChainDescriptor;
-import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
@@ -192,6 +191,7 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import org.silverpeas.search.SearchEngineFactory;
 
 public class KmeliaSessionController extends AbstractComponentSessionController implements
         ExportFileNameProducer {
@@ -207,7 +207,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   /* EJBs used by sessionController */
   private ThumbnailService thumbnailService = null;
-  private SearchEngine searchEngineEjb = null;
   private CommentService commentService = null;
   private VersioningBm versioningBm = null;
   private PdcBm pdcBm = null;
@@ -373,20 +372,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
               getLanguage());
     }
     return publicationSettings;
-  }
-
-  public SearchEngine getSearchEngine() {
-    if (this.searchEngineEjb == null) {
-      try {
-        SearchEngineBmHome home = EJBUtilitaire.getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
-                SearchEngineBmHome.class);
-        this.searchEngineEjb = home.create();
-      } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaSessionController.getSearchEngine()",
-                SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    return this.searchEngineEjb;
   }
 
   public int getNbPublicationsOnRoot() {
@@ -2514,7 +2499,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   @Override
   public void close() {
-    removeEJBs(searchEngineEjb);
     removeEJBs(versioningBm);
   }
 
@@ -4543,18 +4527,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       }
     }
 
-    MatchingIndexEntry[] results = null;
     try {
-      try {
-        getSearchEngine().search(queryDescription);
-      } catch (NoSuchObjectException nsoe) {
-        // reference to EJB Session statefull is expired
-        // getting a new one...
-        searchEngineEjb = null;
-        // re-launching the search
-        getSearchEngine().search(queryDescription);
-      }
-      results = getSearchEngine().getRange(0, getSearchEngine().getResultLength());
+  
+      List<MatchingIndexEntry> results = SearchEngineFactory.getSearchEngine().search(
+        queryDescription).getEntries();
       PublicationDetail pubDetail = new PublicationDetail();
       pubDetail.setPk(new PublicationPK("unknown"));
       KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationFromDetail(pubDetail);
@@ -4620,33 +4596,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return sort(userPublications, sort);
   }
 
-  //  public String getPublicationPdfName(String pubId) throws RemoteException {
-//    String lang = getLanguage();
-//    StringBuilder pdfName = new StringBuilder(250);
-//
-//    // add space path to filename
-//    List<SpaceInst> listSpaces = getSpacePath();
-//    for (SpaceInst space :
-//            listSpaces) {
-//      pdfName.append(space.getName(lang)).append('-');
-//    }
-//    // add component name to filename
-//    pdfName.append(getComponentLabel());
-//
-//    if (!isKmaxMode) {
-//      TopicDetail topic = getPublicationTopic(pubId);
-//      Collection<NodeDetail> path = topic.getPath();
-//      for (NodeDetail node :
-//              path) {
-//        pdfName.append('-').append(node.getName(lang));
-//      }
-//    }
-//
-//    CompletePublication complete = getCompletePublication(pubId);
-//    pdfName.append('-').append(complete.getPublicationDetail().getTitle()).append('-');
-//    pdfName.append(pubId).append(".pdf");
-//    return pdfName.toString();
-//  }
   public List<SpaceInst> getSpacePath() {
     return this.getOrganizationController().getSpacePath(this.getSpaceId());
   }
