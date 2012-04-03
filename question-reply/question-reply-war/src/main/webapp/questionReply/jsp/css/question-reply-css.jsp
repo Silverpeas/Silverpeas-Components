@@ -189,10 +189,3 @@ div.question{
 	width:70%;
 	maw-width:500px;
 }
-
-.buttonPane {
-	text-align:center;
-}
-.buttonPane table {
-	margin:0 auto;
-}
