@@ -23,27 +23,23 @@
  */
 package com.silverpeas.questionReply.web;
 
+import com.silverpeas.attachment.web.AttachmentEntity;
+import com.silverpeas.questionReply.model.Reply;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.web.Exposable;
+import com.stratelia.webactiv.SilverpeasRole;
 import static com.stratelia.webactiv.SilverpeasRole.admin;
 import static com.stratelia.webactiv.SilverpeasRole.writer;
-
+import com.stratelia.webactiv.persistence.IdPK;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import com.silverpeas.attachment.web.AttachmentEntity;
-import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.rest.Exposable;
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import javax.xml.bind.annotation.XmlTransient;
 /**
  *
