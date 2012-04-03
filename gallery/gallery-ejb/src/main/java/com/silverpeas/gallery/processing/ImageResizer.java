@@ -24,22 +24,13 @@
  */
 package com.silverpeas.gallery.processing;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
-
 
 import static java.awt.RenderingHints.*;
 
@@ -51,12 +42,12 @@ public class ImageResizer {
 
   final static ResourceLocator gallerySettings = new ResourceLocator(
     "com.silverpeas.gallery.settings.gallerySettings", "");
-  private File imageSource;
+  private BufferedImage imageSource;
   private int maxSize;
   private int width = 60;
   private int height = 60;
 
-  public ImageResizer(File imageSource, int maxSize) {
+  public ImageResizer(BufferedImage imageSource, int maxSize) {
     this.imageSource = imageSource;
     this.maxSize = maxSize;
   }
@@ -66,15 +57,9 @@ public class ImageResizer {
     BufferedImage scaledImage = loadImage();
     Font watermarkFont = new Font("Arial", Font.BOLD, sizeWatermark);
     if (scaledImage != null) {
-      Graphics2D g = (Graphics2D) scaledImage.getGraphics();
-      g.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC);
-      AlphaComposite alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
-      g.setComposite(alpha);
-      drawWatermark(g, watermarkFont, nameWatermark, sizeWatermark / 2, Color.BLACK);
-      drawWatermark(g, watermarkFont, nameWatermark, sizeWatermark / 2, Color.WHITE);
-      g.dispose();
+      Watermarker watermarker = new Watermarker(width, height);
+      watermarker.addWatermark(scaledImage, watermarkFont, nameWatermark, sizeWatermark);
     }
-    // Ecriture du buffer sortie dans le fichier "outputFile" sur disque
     ImageIO.write(scaledImage, "JPEG", new File(outputFile));
   }
 
@@ -86,24 +71,18 @@ public class ImageResizer {
   }
 
   protected BufferedImage loadImage() throws IOException {
-    // Create buffer and fill it in with the initial image
-    
-    BufferedImage inputBuf = ImageLoader.loadImage(imageSource);
-    if (inputBuf == null) {
+    if (imageSource == null) {
       return null;
     }
-    Size size = ImageUtility.getWidthAndHeight(inputBuf, maxSize);
+    Size size = ImageUtility.getWidthAndHeight(imageSource, maxSize);
     width = size.getWidth();
     height = size.getHeight();
     boolean higherQuality = gallerySettings.getBoolean("UseHigherQuality", true);
-    return scaleImage(inputBuf, width, height, VALUE_INTERPOLATION_BICUBIC, higherQuality);
+    return scaleImage(imageSource, width, height, VALUE_INTERPOLATION_BICUBIC, higherQuality);
   }
 
   public BufferedImage scaleImage(BufferedImage img,
     int targetWidth, int targetHeight, Object hint, boolean higherQuality) {
-
-    // Never try to get a 0-sized picture so that constructor of BufferedImage
-    // will not return an IllegalArgumentException
     if (targetWidth < 1) {
       targetWidth = 1;
     }
@@ -152,17 +131,5 @@ public class ImageResizer {
     } while (w != targetWidth || h != targetHeight);
 
     return ret;
-  }
-
-  private void drawWatermark(Graphics2D g, Font watermarkFont, String nameWatermark,
-    int sizeWatermark, Color color) {
-    g.setColor(color);
-    g.setRenderingHint(KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_ON);      
-    g.setFont(watermarkFont);
-    FontMetrics fontMetrics = g.getFontMetrics();
-    Rectangle2D rect = fontMetrics.getStringBounds(nameWatermark, g);
-    g.drawString(nameWatermark, (width - (int) rect.getWidth())
-      - sizeWatermark, (height - (int) rect.getHeight())
-      - sizeWatermark);
   }
 }

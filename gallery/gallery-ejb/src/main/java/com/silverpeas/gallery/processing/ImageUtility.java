@@ -28,6 +28,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import org.silverpeas.util.ImageLoader;
 
 /**
  *

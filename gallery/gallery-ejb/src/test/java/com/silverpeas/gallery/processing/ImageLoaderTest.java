@@ -24,6 +24,7 @@
  */
 package com.silverpeas.gallery.processing;
 
+import org.silverpeas.util.ImageLoader;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
