@@ -60,7 +60,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title></title>
+<title><%=componentLabel%></title>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
@@ -94,9 +94,12 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 
 <body id="blog">
 <div id="<%=instanceId %>">
-		<div id="blogContainer">
-		    <div id="bandeau"><a href="<%="Main"%>"><%=componentLabel%></a></div>
-		    <div id="backHomeBlog"><a href="<%="Main"%>"><%=resource.getString("blog.accueil")%></a></div>
+<%
+out.println(window.printBefore());
+%>
+	<div id="blogContainer">
+	<div id="bandeau"><h2><a class="txttitrecol" href="<%="Main"%>"><%=componentLabel%></a></h2></div>
+		     
 		<%
 			String blocClass = "viewPost";
 			String status = "";
@@ -105,6 +108,26 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
            		status = resource.getString("GML.saveDraft");
           	}
          %>
+		 
+		<div id="navBlog">
+			<% String myOperations = "<ul class=\"yuimenu\">";
+				// ajouter les op�rations dans cette chaine et la passer � afficher dans la colonneDroite.jsp.inc
+				if ("admin".equals(profile)) {
+					myOperations += "<li><a href=\"EditPost?PostId="+postId+"\">"+resource.getString("blog.updatePost")+"</a></li>";
+					if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
+						myOperations += "<li><a href=\"DraftOutPost?PostId="+postId+"\">"+resource.getString("blog.draftOutPost")+"</a></li>";
+					}
+					myOperations += "<li><a href=\"javascript:onClick=deletePost('"+postId+"')\">"+resource.getString("blog.deletePost")+"</a></li>";
+					myOperations += "<li><a href=\"javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')\" id=\"toNotify\">"+resource.getString("GML.notify")+"</a></li>";
+				} 
+				else if (!isUserGuest) { 
+					myOperations += "<li><a href=\"javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')\">"+resource.getString("GML.notify")+"</a></li>";
+				}
+				myOperations += "</ul>";
+				%>
+				<%@ include file="colonneDroite.jsp.inc" %>
+		  </div>
+		 
 		  <div id="<%=blocClass%>">
 		   	<div class="titreTicket"><%=post.getPublication().getName()%> <span class="status">(<%=status%>)</span>
 			   	<%if (link != null && !link.equals("")) 
@@ -144,35 +167,26 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 		         <% } %>
 		       </span>
 		    </div>
-		    <div class="separateur"></div>
+		    <div class="separateur"><hr /></div>
 		    <view:comments userId="<%=userId %>" componentId="<%=instanceId %>" resourceId="<%=postId %>" indexed="true"/>
 			</div>
 				 
-			<div id="navBlog">
-				<% String myOperations = ""; 
-			  // ajouter les op�rations dans cette chaine et la passer � afficher dans la colonneDroite.jsp.inc
-			   if ("admin".equals(profile)) {
-            myOperations += "<a href=\"EditPost?PostId="+postId+"\">"+resource.getString("blog.updatePost")+"</a><br/>";
-            if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
-              myOperations += "<a href=\"DraftOutPost?PostId="+postId+"\">"+resource.getString("blog.draftOutPost")+"</a><br/>";
-            }
-            myOperations += "<a href=\"javascript:onClick=deletePost('"+postId+"')\">"+resource.getString("blog.deletePost")+"</a><br/>";
-            myOperations += "<a href=\"javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')\" id=\"toNotify\">"+resource.getString("GML.notify")+"</a><br/>";
-          } 
-			   else if (!isUserGuest) { 
-            myOperations += "<a href=\"javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')\">"+resource.getString("GML.notify")+"</a><br/>";
-          }
-				%>
-				<%@ include file="colonneDroite.jsp.inc" %>
-		  </div>
+			
 		
-		 
-  </div>
+	<div id="footer">
+      <%
+        out.flush();
+        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+instanceId+"&ComponentId="+instanceId).include(request, response);
+      %>      
+    </div>	 
+	</div>
 </div>
 
 <form name="postForm" action="DeletePost" method="post">
 	<input type="hidden" name="PostId"/>
 </form>
-
+<%
+out.println(window.printAfter());
+%> 
 </body>
 </html>
