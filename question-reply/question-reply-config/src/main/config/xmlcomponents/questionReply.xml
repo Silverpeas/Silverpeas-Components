@@ -29,14 +29,15 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>questionReply</name>
   <label>
-    <message lang="fr">Questions/Réponses - Questions aux experts</message>
-    <message lang="en">Questions/Answers - Questions to experts</message>
-    <message lang="de">Fragen/Antworten - Fragen an die Experten</message>
+    <message lang="fr">Questions/Réponses ( aux experts ) </message>
+    <message lang="en">Questions/Answers ( to experts )</message>
+    <message lang="de">Fragen/Antworten ( die Experten )</message>
   </label>
   <description>
-    <message lang="fr">Permet de gérer la base de connaissances des questions posées par les utilisateurs
-  vers les experts, localiser automatiquement l'expert apte à répondre à une question et gérer
-  la distribution de la réponse vers les utilisateurs.
+    <message lang="fr">Reprenant le principe bien connu d’une 
+		FAQ, cette application permet à n’importe quel utilisateur de poser directement
+		une question aux experts. Les réponses enrichissent progressivement cette base
+		de connaissances.
     </message>
     <message lang="en">Create a knowledge database, with questions asked by users to experts. 
     The users can locate the experts that have the best chance of knowing the answer.

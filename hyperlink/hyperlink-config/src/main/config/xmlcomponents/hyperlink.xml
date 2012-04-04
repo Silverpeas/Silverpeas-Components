@@ -34,7 +34,10 @@
     <message lang="de">Hyperlink</message>
   </label>
   <description>
-    <message lang="fr">Permet de créer un lien URL simple vers un document ou site Web.</message>
+    <message lang="fr">Répondant de prime abord à un besoin très basique, l’application 
+		permet de mettre en place un véritable système de SSO client vers n’importe
+		quels sites web nécessitant une authentification.
+	</message>
     <message lang="en">Create a link to a document or a web site.</message>
     <message lang="de">Erstellt eine Verknüpfung zu einem Dokument oder einer Webseite.</message>
   </description>

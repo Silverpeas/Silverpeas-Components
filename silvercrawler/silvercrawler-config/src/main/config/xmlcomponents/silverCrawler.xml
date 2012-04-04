@@ -23,8 +23,9 @@
     <message lang="de">Silvercrawler</message>
   </label>
   <description>
-    <message lang="fr">L'application SilverCrawler permet aux utilisateurs de naviguer et/ou rechercher des
-  fichiers directement sur un serveur de fichiers.
+    <message lang="fr">L'application permet d'exposer via l'interface web de la plate-forme,
+		le contenu de n'importe quel répertoire de votre SI. Doté d'un moteur de recherche performant, 
+		l'utilisateur peut également naviguer dans ce répertoire. Par défaut en lecture seule, l'application peut aussi autoriser l'écriture.
     </message>
     <message lang="en">This application crawls files and directories on a server filesystem indexing them so 
     that users can browse thoses files and search for them with the search engine.

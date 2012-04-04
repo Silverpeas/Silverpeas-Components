@@ -34,8 +34,10 @@
     <message lang="de">Umfrage</message>
   </label>
   <description>
-    <message lang="fr">Permet d'organiser des enquêtes d'opinion sur des questions ouvertes ou fermées, à
-    choix multiples.. Une surveillance du niveau de participation et du résultat en cours est possible.
+    <message lang="fr">Une enquête est constituée de plusieurs questions ouvertes ou 
+		fermées. Il est possible de programmer sa mise en ligne. Les résultats sont
+		présentés selon deux restitutions différentes (anonyme ou nominative) afin de les
+		exploiter pleinement selon les besoins.
     </message>
     <message lang="en">Create a survey with closed or open questions. You have feedback on the participation level or the current trend.</message>
     <message lang="de">Erstellen einer Umfrage mit geschlossenen oder offenen Fragen. 

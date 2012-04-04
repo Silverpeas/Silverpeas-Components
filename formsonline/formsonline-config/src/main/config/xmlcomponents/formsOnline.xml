@@ -34,7 +34,12 @@
     <message lang="de">Online Formulare</message>
   </label>
   <description>
-    <message lang="fr">Mise en ligne de formulaires</message>
+    <message lang="fr">Application très pratique basée sur des formulaires
+		entièrement personnalisables, elle permet aux utilisateurs de soumettre des
+		demandes structurées de toutes natures. Ensuite, les destinataires valident ou
+		refusent les demandes reçues. Les notifications permettent un suivi parfait des
+		demandes.
+	</message>
     <message lang="en">Online forms</message>
     <message lang="de">Online Formulare</message>
   </description>

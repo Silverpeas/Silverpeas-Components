@@ -32,8 +32,11 @@
     <message lang="de">Gelbe Seiten Verzeichnis</message>
   </label>
   <description>
-    <message lang="fr">Permet de créer un annuaire de contact. Un formulaire XML associé décrit l'identité
-  de chaque membre de l'annuaire, ainsi que tout autre caractéristique.
+    <message lang="fr">L’application permet de créer des contacts et des entreprises (utilisateurs
+		de la plate-forme ou non). Chaque contact peut être défini grâce à un formulaire
+		personnalisé. Une arborescence de catégories permet de les organiser en
+		toute liberté. Ils peuvent être importés et exportés au format CSV. Les contacts
+		peuvent être associés à une entreprise.
     </message>
     <message lang="en">Create a contact directory whith an XML form describing all the inos on every member of the directory.</message>
     <message lang="de">Erstellt ein Kontakt Verzeichnis mit der Hilfe eines XML-Formulars dass alle Infos über jedes Mitglied des Verzeichnisses beschreibt </message>
