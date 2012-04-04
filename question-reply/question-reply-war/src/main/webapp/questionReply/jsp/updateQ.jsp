@@ -43,14 +43,13 @@
 	int status = question.getStatus();
 	String creator = Encode.javaStringToHtmlString(question.readCreatorName());
 %>
-
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<SCRIPT LANGUAGE="JavaScript">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel />
+<link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
+<script language="JavaScript">
 <!--
 function isCorrectForm() {
      	var errorMsg = "";
@@ -100,9 +99,9 @@ function cancel(id)
 	document.QForm.submit();
 }
 //-->
-</SCRIPT>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onLoad="document.forms[0].title.focus();">
+</script>
+</head>
+<body id="<%=componentId%>" class="questionReply updateQ" onLoad="document.forms[0].title.focus();">
 
 <%
 	browseBar.setDomainName(spaceLabel);
@@ -120,15 +119,15 @@ function cancel(id)
 	out.println(board.printBefore());
 %>
 
-<center>
-<table CELLPADDING=5 width="100%">
-	<FORM METHOD=POST NAME="myForm" ACTION="EffectiveUpdateQ">
+
+<table cellpadding="5" width="100%">
+	<form method="post" name="myForm" action="EffectiveUpdateQ">
 	<!-- Affichage de la liste des cat�gories -->
 	<tr>
 	  	<td>
 	  		<span class="txtlibform"><%= resource.getString("questionReply.category") %> :&nbsp;</span>
 	    </td>
-	    <TD>
+	    <td>
 			<select name="CategoryId">
 			<option value=""></option>
 			<%
@@ -149,12 +148,12 @@ function cancel(id)
     		}
 			%>
 			</select>
-		</TD>
+		</td>
 	</tr>
 	<tr> 
 		<td class="txtlibform"><%=resource.getString("questionReply.question")%> :</td>
-		<td><input type="text" name="title" size="120" maxlength="100" value="<%=title%>">&nbsp;<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"></td>
-		<input type="hidden" name="questionId" value="<%=id%>">
+		<td><input type="text" name="title" size="120" maxlength="100" value="<%=title%>" />&nbsp;<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /></td>
+		<input type="hidden" name="questionId" value="<%=id%>" />
 	</tr>
 	<tr valign="top"> 
 		<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
@@ -168,21 +167,21 @@ function cancel(id)
 		<td class="txtlibform"><%=resource.getString("GML.publisher")%> :</td>
 		<td><%=creator%></td>
 	</tr>
-	<tr align=center>				 
-		<td colspan=2><span class="txt">(<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</span></td>
+	<tr>				 
+		<td colspan="2"><span class="txt">(<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /> : <%=resource.getString("GML.requiredField")%>)</span></td>
 	</tr>
-	</FORM>
+	</form>
 </table>
 <% out.println(board.printAfter()); %>
-<br>
-<CENTER>
+<br />
+<div class="buttonPane">
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
     buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancel('"+id+"');", false));
     out.println(buttonPane.print());
 %>
-</CENTER>
+</div>
 
 <%
 out.println(frame.printAfter());
@@ -190,8 +189,8 @@ out.println(window.printAfter());
 %>
 
 <form name="QForm" action="" Method="POST">
-<input type="hidden" name="questionId">
+<input type="hidden" name="questionId" />
 </form>
 
-</BODY>
-</HTML>
+</body>
+</html>
