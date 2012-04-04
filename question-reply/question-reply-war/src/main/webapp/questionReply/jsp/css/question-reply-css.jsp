@@ -147,6 +147,12 @@ div.question{
   overflow:auto;
 }
 
+.answerContent ul, .answerContent li{
+	list-style:disc inside none;
+	padding:inherit;
+	margin:inherit;
+}
+
 .answerContent table.tableBoard {
   width:auto !important;
   float:right;
@@ -177,4 +183,9 @@ div.question{
 
 #portlet-faq .questionTitle {
   margin: 6px 25px 5px 25px;
+}
+
+.updateR input{
+	width:70%;
+	maw-width:500px;
 }
