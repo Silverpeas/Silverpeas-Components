@@ -101,7 +101,7 @@ function cancel(id)
 //-->
 </script>
 </head>
-<body id="<%=componentId%>" class="questionReply updateQ" onLoad="document.forms[0].title.focus();">
+<body id="<%=componentId%>" class="questionReply updateQ" onload="document.forms[0].title.focus();">
 
 <%
 	browseBar.setDomainName(spaceLabel);
@@ -110,18 +110,19 @@ function cancel(id)
 	out.println(window.printBefore());
 	
 	boolean pdc = true;
-	if (profil.equals("publisher"))
+	if (profil.equals("publisher")) {
 		pdc = false;
-	if (!profil.equals("user"))
+	}
+	if (!profil.equals("user")) {
 		displayTabs(true, pdc, id, resource, gef, "CreateQQuery", routerUrl, out);
+	}
 	
 	out.println(frame.printBefore());
 	out.println(board.printBefore());
 %>
 
-
+<form method="post" name="myForm" action="EffectiveUpdateQ">
 <table cellpadding="5" width="100%">
-	<form method="post" name="myForm" action="EffectiveUpdateQ">
 	<!-- Affichage de la liste des cat�gories -->
 	<tr>
 	  	<td>
@@ -131,13 +132,11 @@ function cancel(id)
 			<select name="CategoryId">
 			<option value=""></option>
 			<%
-			if (allCategories != null)
-    		{
+			if (allCategories != null) {
 				String selected = "";
-    			Iterator it = allCategories.iterator();
-    			while (it.hasNext()) 
-		  		{
-    				NodeDetail uneCategory = (NodeDetail) it.next();
+    			Iterator<NodeDetail> it = allCategories.iterator();
+    			while (it.hasNext()) {
+    				NodeDetail uneCategory = it.next();
     				if (categoryId != null && categoryId.equals(uneCategory.getNodePK().getId()))
     					selected = "selected";
     				%>
@@ -152,8 +151,8 @@ function cancel(id)
 	</tr>
 	<tr> 
 		<td class="txtlibform"><%=resource.getString("questionReply.question")%> :</td>
-		<td><input type="text" name="title" size="120" maxlength="100" value="<%=title%>" />&nbsp;<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /></td>
-		<input type="hidden" name="questionId" value="<%=id%>" />
+		<td><input type="text" name="title" size="120" maxlength="100" value="<%=title%>" />&nbsp;<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" />
+		<input type="hidden" name="questionId" value="<%=id%>" /></td>
 	</tr>
 	<tr valign="top"> 
 		<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
@@ -170,26 +169,21 @@ function cancel(id)
 	<tr>				 
 		<td colspan="2"><span class="txt">(<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /> : <%=resource.getString("GML.requiredField")%>)</span></td>
 	</tr>
-	</form>
 </table>
+</form>
 <% out.println(board.printAfter()); %>
 <br />
-<div class="buttonPane">
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
     buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancel('"+id+"');", false));
     out.println(buttonPane.print());
-%>
-</div>
-
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
+	out.println(frame.printAfter());
+	out.println(window.printAfter());
 %>
 
-<form name="QForm" action="" Method="POST">
-<input type="hidden" name="questionId" />
+<form name="QForm" action="" method="post">
+	<input type="hidden" name="questionId" />
 </form>
 
 </body>

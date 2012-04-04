@@ -112,7 +112,7 @@ function save()
 //-->
 </script>
 </head>
-<body id="<%=componentId%>" class="questionReply addQR" onLoad="document.forms[0].title.focus();">
+<body id="<%=componentId%>" class="questionReply addQR" onload="document.forms[0].title.focus();">
 <fmt:message key="questionReply.addQR" var="currentPathLabel"/>
 <view:browseBar extraInformations="${currentPathLabel}"/>
 <view:window>
@@ -126,17 +126,15 @@ function save()
 	  	<td>
 	  		<span class="txtlibform"><fmt:message key="questionReply.category" /> :&nbsp;</span>
 	    </td>
-	    <TD>
+	    <td>
 			<select name="CategoryId">
 			<option value=""></option>
 			<%
-			if (allCategories != null)
-    		{
+			if (allCategories != null) {
 				String selected = "";
-    			Iterator it = allCategories.iterator();
-    			while (it.hasNext()) 
-		  		{
-    				NodeDetail uneCategory = (NodeDetail) it.next();
+    			Iterator<NodeDetail> it = allCategories.iterator();
+    			while (it.hasNext()) {
+    				NodeDetail uneCategory = it.next();
     				if (categoryId != null && categoryId.equals(uneCategory.getNodePK().getId()))
     					selected = "selected";
     				%>
@@ -197,15 +195,13 @@ function save()
   </form>
 </view:board>
 <br/>
-<div class="buttonPane">
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
     out.println(buttonPane.print());
 %>
-</div>
-            </view:frame>
+</view:frame>
 </view:window>
 <script type="text/javascript">
   <fmt:message key='configFile' var='configFile'/>

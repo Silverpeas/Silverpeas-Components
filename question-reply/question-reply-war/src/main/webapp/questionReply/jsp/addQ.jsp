@@ -87,7 +87,7 @@ function save()
 //-->
 </script>
 </head>
-<body id="<%=componentId%>" class="questionReply addQ" onLoad="document.forms[0].title.focus();">
+<body id="<%=componentId%>" class="questionReply addQ" onload="document.forms[0].title.focus();">
 
 <%
 	browseBar.setDomainName(spaceLabel);
@@ -98,11 +98,8 @@ function save()
 	out.println(board.printBefore());
 %>
 
-
+<form method="post" name="myForm" action="<%=routerUrl%>EffectiveCreateQ">
 <table cellpadding="5" width="100%">
-	<form method="post" name="myForm" action="<%=routerUrl%>EffectiveCreateQ">
-	
-	<!-- Affichage de la liste des cat�gories -->
 	<tr>
 	  	<td>
 	  		<span class="txtlibform"><%= resource.getString("questionReply.category") %> :&nbsp;</span>
@@ -111,13 +108,11 @@ function save()
 			<select name="CategoryId">
 			<option value=""></option>
 			<%
-			if (allCategories != null)
-    		{
+			if (allCategories != null) {
 				String selected = "";
-    			Iterator it = allCategories.iterator();
-    			while (it.hasNext()) 
-		  		{
-    				NodeDetail uneCategory = (NodeDetail) it.next();
+    			Iterator<NodeDetail> it = allCategories.iterator();
+    			while (it.hasNext()) {
+    				NodeDetail uneCategory = it.next();
     				if (categoryId != null && categoryId.equals(uneCategory.getNodePK().getId()))
     					selected = "selected";
     				%>
@@ -150,23 +145,18 @@ function save()
 		<td colspan="2"><span class="txt">(<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /> : <%=resource.getString("GML.requiredField")%>)</span> 
 		</td>
 	</tr>
-	</form>
 </table>
+</form>
 <% out.println(board.printAfter()); %>
 <br />
-<div class="buttonPane">
 <%
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
     out.println(buttonPane.print());
-%>
-</div>
 
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
+    out.println(frame.printAfter());
+	out.println(window.printAfter());
 %>
-
 </body>
 </html>
