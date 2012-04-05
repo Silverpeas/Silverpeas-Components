@@ -1,3 +1,4 @@
+<%@page import="org.silverpeas.search.SearchEngineFactory"%>
 <%@ page import="org.silverpeas.search.SearchEngine" %>
 <%--
 
@@ -208,7 +209,6 @@ function closeWindows() {
             
             String keywords = kmeliaScc.getSessionPublication().getDetail().getKeywords();
             
-            SearchEngine searchEngine = kmeliaScc.getSearchEngine();
             String queryStr = pubName+" "+keywords;
             
             //'*' or '?' not allowed as first character in WildcardQuery
@@ -218,14 +218,10 @@ function closeWindows() {
             QueryDescription query = new QueryDescription(queryStr);
             query.setSearchingUser(kmeliaScc.getUserDetail().getId());
             query.addSpaceComponentPair(kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
-            MatchingIndexEntry[] result = null;
-            try {
-                searchEngine.search(query);
-                result = searchEngine.getRange(0, searchEngine.getResultLength());
-            } catch (Exception e) {
-				   throw new KmeliaException("JSPpublicationManager",SilverpeasRuntimeException.ERROR,"root.EX_SEARCH_ENGINE_FAILED", e);
-            }
-            displaySearchResults(result, resources.getString("PubDeMemeSujet"), kmeliaScc, id, resources, out);
+            
+            List<MatchingIndexEntry> results = SearchEngineFactory.getSearchEngine().search(query).getEntries();
+            
+            displaySearchResults(results, resources.getString("PubDeMemeSujet"), kmeliaScc, id, resources, out);
         }else if(action.equals("PubReferencedBy")){
           displayLinkViewSelection(4, kmeliaScc, out);
           
