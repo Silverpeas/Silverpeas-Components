@@ -33,7 +33,7 @@
 
 <%@ page import="com.silverpeas.kmelia.model.*"%>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle basename="com.stratelia.webactiv.util.date.multilang.date" var="dateBundle" />
 
@@ -44,10 +44,11 @@
 <c:set var="distinctPublications" value="${requestScope.distinctPublications}"/>
 <c:set var="startDate" value="${requestScope.startDate}" />
 <c:set var="endDate" value="${requestScope.endDate}" />
-<c:set var="statGroupId" value="${requestScope.statGroupId}" />
+<c:set var="filterIdGroup" value="${requestScope.filterIdGroup}" />
+<c:set var="filterLibGroup" value="${requestScope.filterLibGroup}" />
 
 <!-- Be careful the following code is not multilangue -->
-<fmt:message var="dateFormat" key="dateInputFormat" bundle="${dateBundle}" />
+<fmt:message var="dateFormat" key="dateOutputFormat" bundle="${dateBundle}" />
 <fmt:formatDate var="startDateStr" value="${startDate}" pattern="${dateFormat}" />
 <fmt:formatDate var="endDateStr" value="${endDate}" pattern="${dateFormat}"/> 
 
@@ -128,15 +129,45 @@ function openGroupPanel() {
   SP_openWindow('statSelectionGroup', windowName, '750', '550','scrollbars=yes, resizable, alwaysRaised');
 }
 
+
 function clearFilterGroup() {
-  $("#filterIdGroupId").val("");
-  $("#filterLibGroupId").val("");
+  $("#filterIdGroup").val("");
+  $("#filterLibGroup").val("");
   
+}
+
+var dateFormat = '<fmt:message key="date.format.javascript" bundle="${dateBundle}"/>';
+
+function updateTimeInterval() {
+  var curDateControlVal = $("#dateControlId").val();
+  var curDate = new Date();
+  var strDate = $.datepicker.formatDate(dateFormat, curDate);
+  $("#endDateId").val(strDate);
+  if (curDateControlVal == 1) {
+    $("#beginDateId").val(strDate);
+  } else if (curDateControlVal==2) {
+    curDate.setDate(curDate.getDate()-1);
+    strDate = $.datepicker.formatDate(dateFormat, curDate);
+    $("#beginDateId").val(strDate);
+  } else if (curDateControlVal==3) {
+    curDate.setDate(curDate.getDate()-7);
+    strDate = $.datepicker.formatDate(dateFormat, curDate);
+    $("#beginDateId").val(strDate);
+  } else if (curDateControlVal==4) {
+    curDate.setMonth(curDate.getMonth()-1);
+    strDate = $.datepicker.formatDate(dateFormat, curDate);
+    $("#beginDateId").val(strDate);
+  } else if (curDateControlVal==5) {
+    curDate.setYear(curDate.getFullYear()-1);
+    strDate = $.datepicker.formatDate(dateFormat, curDate);
+    $("#beginDateId").val(strDate);
+  }
 }
 
 $(document).ready(function() {
   // do stuff when DOM is ready
-  $("#selectGroupId").val("${statGroupId}");
+  $("#filterIdGroup").val("${filterIdGroup}");
+  $("#filterLibGroup").val("${filterLibGroup}");
 });
 
 </script>
@@ -147,15 +178,15 @@ $(document).ready(function() {
 <view:window>
 <view:frame>
 <view:board>
-<h1><fmt:message key="kmelia.stat.title" /></h1>
+<h1><fmt:message key="kmelia.stat.title" /> <c:out value="${requestScope.kmelia.componentLabel}" /></h1>
 
+<fieldset>
+  <legend><fmt:message key="kmelia.stat.result.fieldset.period"/></legend>
 <div class="container-filter">
   <form class="content-container-filter" name="statForm" action="statistics" method="get">
-    
     <div class="datecontrole">
       <label for="dateControl"><fmt:message key="kmelia.stat.filter.period"/></label>
-      <!-- 
-      <select id="dateControl">
+      <select id="dateControlId" name="dateControl" onchange="javascript:updateTimeInterval();">
         <option value=""><fmt:message key="kmelia.stat.filter.period.datecontrol.custom"/></option>
         <option value="1"><fmt:message key="kmelia.stat.filter.period.datecontrol.today"/></option>
         <option value="2"><fmt:message key="kmelia.stat.filter.period.datecontrol.yesterday"/></option>
@@ -163,31 +194,30 @@ $(document).ready(function() {
         <option value="4"><fmt:message key="kmelia.stat.filter.period.datecontrol.month"/></option>
         <option value="5"><fmt:message key="kmelia.stat.filter.period.datecontrol.year"/></option>
       </select>
-       -->
       <div id="datePersonnalisedControl">
         <fmt:message key="kmelia.stat.filter.period.start" />
-        <input class="dateToPick" type="text" maxlength="10" size="12" value="${startDateStr}" name="beginDate"   /> 
+        <input class="dateToPick" type="text" maxlength="10" size="12" value="${startDateStr}" name="beginDate" id="beginDateId" /> 
         <fmt:message key="kmelia.stat.filter.period.end" /> 
-        <input class="dateToPick" type="text" maxlength="10" size="12" value="${endDateStr}" name="endDate"   />
+        <input class="dateToPick" type="text" maxlength="10" size="12" value="${endDateStr}" name="endDate" id="endDateId" />
       </div>
     </div>
     
     <div class="filterLibGroup">
       <label for="filterLibGroup"><fmt:message key="kmelia.stat.filter.group"/></label>
-      <!-- Adding userPanelGroup 
-      <input type="text" disabled="" size="25" value="" name="filterLibGroup" id="filterLibGroupId" />
-      <input type="hidden" value="" name="filterIdGroup" id="filterIdGroupId"/>
+      <!-- Adding userPanelGroup -->
+      <input type="text" disabled="" size="25" value="" name="filterLibGroup" id="filterLibGroup" />
+      <input type="hidden" value="" name="filterIdGroup" id="filterIdGroup"/>
       <fmt:message key="kmelia.stat.filter.group.select" var="selectGroupLabel" />
       <a href="javascript:openGroupPanel();"><img border="0" align="absmiddle" title="${selectGroupLabel}" alt="${selectGroupLabel}" src="/silverpeas/util/icons/groupe.gif"></a>
       <a href="javascript:clearFilterGroup()"><img border="0" align="absmiddle" title="Effacer filtre" alt="Effacer filtre" src="/silverpeas/util/icons/delete.gif"></a> 
-      --> 
+      <!-- 
       <select name="statGroupId" id="selectGroupId">
         <option value=""><fmt:message key="kmelia.stat.filter.group.noselection"/></option>
     <c:forEach var="group" items="${filterGroups}">
-        <option value="${group.id}">${group.name}</option> <!-- (${group.description}) -->
+        <option value="${group.id}">${group.name}</option>
     </c:forEach>
       </select>
-      
+       -->
     </div>
     <div class="button-filter">
       <fmt:message var="filterStatButtonLabel" key="kmelia.stat.filter.button" />
@@ -197,8 +227,23 @@ $(document).ready(function() {
     </div>
   </form>
 </div>
+<span class="titreCouleur">
+<h3>
+  <fmt:message key="kmelia.stat.result.period">
+    <fmt:param value="${startDateStr}" />
+    <fmt:param value="${endDateStr}" />
+  </fmt:message>
+</h3>
+</span>
 <div class="inlineMessage">${detailActivity.createdPublicationNumber} <fmt:message key="kmelia.stat.result.created.publication" /> - ${detailActivity.modifiedPublicationNumber} <fmt:message key="kmelia.stat.result.modified.publication" /></div>
 <div class="inlineMessage">${distinctPublications} <fmt:message key="kmelia.stat.result.consulted.publication" /></div>
+</fieldset>
+<br />
+
+<c:if test="${not empty querySearchs}">
+<fieldset>
+  <legend><fmt:message key="kmelia.stat.result.fieldset.search"/></legend>
+  
 <table id="table-keyword-frequency" class="table-result-statistics"cellpadding="0" cellspacing="0">
   <thead>
     <tr class="title-table"><th colspan="3" class="titreCouleur"><fmt:message key="kmelia.stat.most.interested.search" /></th></tr>
@@ -219,33 +264,9 @@ $(document).ready(function() {
 </c:forEach>
   </tbody>
 </table>
-<!-- 
-<div id="filterStats">
-  <fmt:message key="kmelia.stat.filter.title"/>
-  <br/>
-  Liste des groupes lecteurs ou rédacteurs:<br/>
-  <ul>
-    <c:forEach var="group" items="${filterGroups}" >
-      <li><c:out value="${group.id}" /> - <c:out value="${group.name}" /> - <c:out value="${group.description}" /></li>
-    </c:forEach>
-  </ul>
-</div>
+</fieldset>
+</c:if>
 
-<p>
-
-<fmt:message key="kmelia.stat.consulted.publications">
-  <fmt:param value="${startDateStr}" />
-  <fmt:param value="${endDateStr}" />
-</fmt:message>
-<c:out value="${requestScope.nbConsultedPublication}"></c:out>
-<br/>
-<fmt:message key="kmelia.stat.activity.publications">
-  <fmt:param value="${startDateStr}" />
-  <fmt:param value="${endDateStr}" />
-</fmt:message>
-<c:out value="${requestScope.nbActivity}"></c:out>
-</p>
- -->
 </view:board>
 </view:frame>
 </view:window>

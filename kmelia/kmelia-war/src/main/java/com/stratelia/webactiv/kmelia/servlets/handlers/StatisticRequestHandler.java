@@ -41,6 +41,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
+import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
@@ -85,8 +86,9 @@ public class StatisticRequestHandler {
       }
     }
     // Retrieve profile name and list
-    List<String> groups = getPertinentGroups(kmelia);
-    request.setAttribute("filterGroups", kmelia.groupIds2Groups(groups));
+    List<String> groupIds = getPertinentGroups(kmelia);
+    List<Group> groups = kmelia.groupIds2Groups(groupIds);
+    request.setAttribute("filterGroups", groups);
 
     // Build the statsFilter
     String instanceId = kmelia.getComponentId();
@@ -116,11 +118,17 @@ public class StatisticRequestHandler {
     request.setAttribute("endDate", endDate);
 
     // Retrieve the group filter
-    String groupId = request.getParameter("statGroupId");
+    String groupId = request.getParameter("filterIdGroup");
     if (StringUtil.isDefined(groupId)) {
       // Filter statistics for each user inside current group
       statFilter.setGroupId(Integer.parseInt(groupId));
-      request.setAttribute("statGroupId", groupId);
+      request.setAttribute("filterIdGroup", groupId);
+      // Retrieve group label
+      for (Group group : groups) {
+        if (group.getId().equals(groupId)) {
+          request.setAttribute("filterLibGroup", group.getName());
+        }
+      }
     }
 
     StatisticService statService = KmeliaSearchServiceFactory.getStatisticService();
@@ -169,6 +177,8 @@ public class StatisticRequestHandler {
     sel.setHostPath(hostPath);
 
     sel.setMultiSelect(false);
+    sel.setSetSelectable(true);
+    sel.setElementSelectable(false);
 
     String hostUrl =
         m_context + URLManager.getURL("useless", kmelia.getComponentId())
@@ -197,7 +207,7 @@ public class StatisticRequestHandler {
     sug.addProfileId(readerProfile.getId());
     sug.addProfileId(writerProfile.getId());
     sel.setExtraParams(sug);
-
+    
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
