@@ -52,11 +52,11 @@
 	
 	boolean isAdmin = ( (Boolean) request.getAttribute("isAdmin")).booleanValue();
 	
-	Collection whitePagesCards = (Collection) request.getAttribute("whitePagesCards");
+	Collection<WhitePagesCard> whitePagesCards = (Collection<WhitePagesCard>) request.getAttribute("whitePagesCards");
 	Form viewForm = (Form) request.getAttribute("Form");
 	PagesContext context = (PagesContext) request.getAttribute("context"); 
 	DataRecord data = (DataRecord) request.getAttribute("data"); 
-	HashMap pdcPositions = (HashMap)request.getAttribute("pdcPositions");
+	Map<String, Set<ClassifyValue>> pdcPositions = (Map<String, Set<ClassifyValue>>)request.getAttribute("pdcPositions");
 	
 	if (! card.readReadOnly()) {
 		operationPane.addOperation(resource.getIcon("whitePages.editCard"), resource.getString("whitePages.op.editUser"), "javascript:onClick=B_UPDATE_ONCLICK('"+userCardId+"');");
@@ -231,46 +231,32 @@ String firstName = userRecord.getField("FirstName").getValue(language);
         <ul>
         <%
         if(pdcPositions != null && !pdcPositions.isEmpty()){
-          Set keysStart = pdcPositions.keySet();
-          String[] keys = new String[keysStart.size()];
-          Iterator iter = keysStart.iterator();
-          int i = 0;
-          while(iter.hasNext()){
-            keys[i] = (String)iter.next();
-            i++;
-          }
+          Set<String> keysStart = pdcPositions.keySet();
+          String[] keys = keysStart.toArray(new String[keysStart.size()]);
           Arrays.sort(keys);
-          
-          for(int iKey=0;iKey<keys.length;iKey++){
-	          String key = keys[iKey];
+          for(String key: keys) {
 	          %>
 			  <li><%=key%>	
 		      <%
-              	List positions = (List)pdcPositions.get(key);
-              	Iterator iterPositions = positions.iterator();
-              	while(iterPositions.hasNext()){
-	              	ClassifyValue value	= (ClassifyValue)iterPositions.next();
-	    	        List pathValues	= value.getFullPath();
-		      		for(int j= 0; j < pathValues.size(); j++){
-		      		  	Value term = (Value) pathValues.get(j);
-		      		  	if(j!=0){
-		      		%>
-		            <ul>
-	        			<li><%=term.getName(language)%></li>
-	                <%
-		      		  	}
-						if(j == pathValues.size() -1){
-					  		for(int k= 1; k < pathValues.size(); k++){
-					%>
-						</ul>	
-		            <%
-					  		}
-		      		  	}
-		          	  }
-		        	}
-              	  	%>
-		  			</li>
-	  			<%
+              	Set<ClassifyValue> values = pdcPositions.get(key);
+                for(ClassifyValue value: values) {
+                  List<Value> path = value.getFullPath();
+                  for(int i = 1; i < path.size(); i++) {
+                    String term = path.get(i).getName(language);
+              %>
+              <ul>
+                <li><%= term %></li>
+              <%
+                  }
+                  for (int i = 1; i < path.size(); i++) {
+              %>
+              </ul>	
+              <%  
+                  }
+                }
+              %>
+              </li>
+              <%
 	        }
         }
         %>
@@ -301,9 +287,7 @@ String firstName = userRecord.getField("FirstName").getValue(language);
         
         <%
         if (whitePagesCards != null) {
-			Iterator i = whitePagesCards.iterator();
-			while (i.hasNext()) {
-				WhitePagesCard whitePagesCard = (WhitePagesCard) i.next();
+          for(WhitePagesCard whitePagesCard: whitePagesCards) {
 				long id = whitePagesCard.getUserCardId();
 				String instanceId = whitePagesCard.getInstanceId();
 				if(!card.getPK().getId().equals(String.valueOf(id))){

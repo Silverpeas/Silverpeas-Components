@@ -299,6 +299,11 @@ function initOperations(id, op) {
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
+	if (op.shareTopic) {
+		menuItem = new YAHOO.widget.MenuItem(labels["operation.shareTopic"], {url: "javascript:onclick=shareCurrentTopic()"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
 	
 	if (!groupEmpty) {
 		groupIndex++;
@@ -667,6 +672,11 @@ function addCurrentNodeAsFavorite() {
 
 function updateCurrentTopicWysiwyg() {
 	updateTopicWysiwyg(getCurrentNodeId());
+}
+
+function shareCurrentTopic() {
+	var url = getWebContext()+"/RfileSharing/jsp/NewTicket?objectId="+getCurrentNodeId()+"&componentId="+getComponentId()+"&type=Node";
+	SP_openWindow(url, "Share", '650', '400','scrollbars=yes, resizable, alwaysRaised');
 }
 
 function updateTopicWysiwyg(id) {

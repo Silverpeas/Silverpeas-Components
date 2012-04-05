@@ -79,7 +79,7 @@ public class JSONServlet extends HttpServlet {
 
     KmeliaSessionController kmeliaSC =
             (KmeliaSessionController) req.getSession().getAttribute(
-            "Silverpeas_" + "kmelia" + "_" + componentId);
+                "Silverpeas_" + "kmelia" + "_" + componentId);
 
     String language = kmeliaSC.getCurrentLanguage(); // takes care of i18n
 
@@ -169,7 +169,7 @@ public class JSONServlet extends HttpServlet {
         }
         jsonObject.put("translations", jsonTranslations);
       }
-      
+
       try {
         jsonObject.put("date", DateUtil.getOutputDate(node.getCreationDate(), language));
       } catch (ParseException e) {
@@ -215,6 +215,10 @@ public class JSONServlet extends HttpServlet {
     boolean isAdmin = SilverpeasRole.admin.isInRole(profile);
     boolean isRoot = "0".equals(id);
     boolean isBasket = "1".equals(id);
+    boolean statisticEnable = kmeliaSC.getSettings().getBoolean("kmelia.stats.enable", false);
+    boolean canShowStats =
+        SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.supervisor.isInRole(profile) ||
+            isAdmin;
 
     if (isBasket) {
       operations.put("emptyTrash", isAdmin || SilverpeasRole.publisher.isInRole(profile)
@@ -229,7 +233,7 @@ public class JSONServlet extends HttpServlet {
               && kmeliaSC.isExportZipAllowed() && isAdmin);
       operations.put("exportPDF", kmeliaSC.isExportComponentAllowed()
               && kmeliaSC.isExportPdfAllowed() && (isAdmin || SilverpeasRole.publisher.isInRole(
-              profile)));
+                  profile)));
 
       // topic operations
       operations.put("addTopic", isAdmin);
@@ -245,6 +249,7 @@ public class JSONServlet extends HttpServlet {
       }
       operations.put("wysiwygTopic", isAdmin && (kmeliaSC.isOrientedWebContent() || kmeliaSC.
               isWysiwygOnTopicsEnabled()));
+      operations.put("shareTopic", isAdmin && kmeliaSC.isFolderSharingEnabled());
 
       // publication operations
       boolean publicationsInTopic = !isRoot || (isRoot && (kmeliaSC.getNbPublicationsOnRoot() == 0
@@ -264,8 +269,9 @@ public class JSONServlet extends HttpServlet {
       operations.put("exportSelection", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("favorites", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
-      //TODO do we have to filter statistics display
-      operations.put("statistics", true);
+      if (statisticEnable && isRoot && canShowStats) {
+        operations.put("statistics", true);
+      }
     }
 
     return new JSONObject(operations);

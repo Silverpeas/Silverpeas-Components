@@ -26,58 +26,51 @@ package com.silverpeas.kmelia.model;
 
 import java.io.Serializable;
 
-public class MostInterestedQueryVO implements Serializable {
+public class StatisticActivityVO implements Serializable {
 
   /**
    * Serializable purpose
    */
-  private static final long serialVersionUID = 311256678113676898L;
+  private static final long serialVersionUID = -2115611579875072384L;
+
+  private Integer createdPublicationNumber = null;
+  private Integer modifiedPublicationNumber = null;
 
   /**
-   * The searched key words
+   * @param createdPublicationNumber
+   * @param modifiedPublicationNumber
    */
-  private String query;
-
-  /**
-   * Number of occurences
-   */
-  private Integer occurrences;
-
-  /**
-   * @param query
-   * @param occurrences
-   */
-  public MostInterestedQueryVO(String query, Integer occurrences) {
-    this.query = query;
-    this.occurrences = occurrences;
+  public StatisticActivityVO(Integer createdPublicationNumber, Integer modifiedPublicationNumber) {
+    super();
+    this.createdPublicationNumber = createdPublicationNumber;
+    this.modifiedPublicationNumber = modifiedPublicationNumber;
   }
 
   /**
-   * @return the query
+   * @return the createdPublicationNumber
    */
-  public String getQuery() {
-    return query;
+  public Integer getCreatedPublicationNumber() {
+    return createdPublicationNumber;
   }
 
   /**
-   * @param query the query to set
+   * @param createdPublicationNumber the createdPublicationNumber to set
    */
-  public void setQuery(String query) {
-    this.query = query;
+  public void setCreatedPublicationNumber(Integer createdPublicationNumber) {
+    this.createdPublicationNumber = createdPublicationNumber;
   }
 
   /**
-   * @return the occurrences
+   * @return the modifiedPublicationNumber
    */
-  public Integer getOccurrences() {
-    return occurrences;
+  public Integer getModifiedPublicationNumber() {
+    return modifiedPublicationNumber;
   }
 
   /**
-   * @param occurrences the occurrences to set
+   * @param modifiedPublicationNumber the modifiedPublicationNumber to set
    */
-  public void setOccurrences(Integer occurrences) {
-    this.occurrences = occurrences;
+  public void setModifiedPublicationNumber(Integer modifiedPublicationNumber) {
+    this.modifiedPublicationNumber = modifiedPublicationNumber;
   }
-
 }
