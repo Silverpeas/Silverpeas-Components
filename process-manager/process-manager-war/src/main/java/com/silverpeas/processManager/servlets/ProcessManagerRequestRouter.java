@@ -575,6 +575,11 @@ public class ProcessManagerRequestRouter
       }
 
       session.resetCurrentProcessInstance(processId);
+      if (!session.isUserAllowedOnActiveStates()) {
+        // user is not allowed to act on or view current process instance
+        // redirect him on home page
+        return listProcessHandler.getDestination(function, session, request);
+      }
 
       if (session.hasPendingQuestions()) {
         return listQuestionsHandler.getDestination(function, session, request);
