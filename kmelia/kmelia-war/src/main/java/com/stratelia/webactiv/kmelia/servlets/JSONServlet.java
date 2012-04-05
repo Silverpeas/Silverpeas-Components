@@ -45,6 +45,7 @@ import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.DateUtil;
@@ -218,7 +219,7 @@ public class JSONServlet extends HttpServlet {
     boolean statisticEnable = kmeliaSC.getSettings().getBoolean("kmelia.stats.enable", false);
     boolean canShowStats =
         SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.supervisor.isInRole(profile) ||
-            isAdmin;
+            isAdmin && !KmeliaHelper.isToolbox(kmeliaSC.getComponentId());
 
     if (isBasket) {
       operations.put("emptyTrash", isAdmin || SilverpeasRole.publisher.isInRole(profile)

@@ -48,6 +48,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.w3c.tidy.Node;
+
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.domain.TopicSearch;
@@ -214,18 +216,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         kmeliaSC.orderPubsToValidate(Integer.parseInt(sort));
         publications = kmeliaSC.getSessionPublicationsList();
       } else if (toSearch) {
-        // TODO modifier le code ici(ne pas ajouter de ligne de code dans le kmeliaSessionControler)
-        if(!StringUtil.isDefined(nodeId)) {
-          if (kmeliaSC.getSessionTopic() != null) {
-            nodeId = kmeliaSC.getSessionTopic().getNodePK().getId();
-          } else {
-            nodeId = "0";
-          }
-        }
-        TopicSearch newTS =
-            new TopicSearch(componentId, Integer.parseInt(nodeId), Integer.parseInt(kmeliaSC
-                .getUserId()), kmeliaSC.getLanguage(), query.toLowerCase(), new Date());
-        KmeliaSearchServiceFactory.getTopicSearchService().createTopicSearch(newTS);
+        // Insert this new search inside persistence layer in order to compute statistics
+        saveTopicSearch(componentId, nodeId, kmeliaSC, query);
         publications = kmeliaSC.search(query, Integer.parseInt(sort));
       } else {
         currentTopic = kmeliaSC.getSessionTopic();
@@ -280,6 +272,29 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
       }
     }
+  }
+
+  /**
+   * Save current topic search inside persistence layer
+   * @param componentId the component identifier
+   * @param nodeId the node identifier
+   * @param kmeliaSC the KmeliaSessionController
+   * @param query the topic search query keywords
+   */
+  private void saveTopicSearch(String componentId, String nodeId, KmeliaSessionController kmeliaSC,
+      String query) {
+    //Check node value
+    if(!StringUtil.isDefined(nodeId)) {
+      if (kmeliaSC.getSessionTopic() != null) {
+        nodeId = kmeliaSC.getSessionTopic().getNodePK().getId();
+      } else {
+        nodeId = "0";
+      }
+    }
+    TopicSearch newTS =
+        new TopicSearch(componentId, Integer.parseInt(nodeId), Integer.parseInt(kmeliaSC
+            .getUserId()), kmeliaSC.getLanguage(), query.toLowerCase(), new Date());
+    KmeliaSearchServiceFactory.getTopicSearchService().createTopicSearch(newTS);
   }
 
   /**
