@@ -1,5 +1,5 @@
 create table sc_kmelia_search (
-    id numeric(19,0) not null,
+    id bigint IDENTITY(1,1) not null,
     instanceId varchar(50),
     topicId integer not null,
     userId integer not null,
