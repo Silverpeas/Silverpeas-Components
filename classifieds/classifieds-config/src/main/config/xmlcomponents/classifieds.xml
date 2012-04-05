@@ -33,7 +33,11 @@
     <message lang="de">Kleinanzeigen</message>
   </label>
   <description>
-    <message lang="fr">Les petites annonces sont classées par catégories et types</message>
+    <message lang="fr">Les annonces peuvent être classées par thématiques.
+		La structure des annonces est personnalisable. Elles peuvent être modérées. Les
+		utilisateurs peuvent laisser des commentaires et s’abonner aux thématiques de
+		leurs choix.
+	</message>
     <message lang="en">Classified adds are organized by categories and types</message>
     <message lang="de">Kleinanzeigen organisiert nach Art und Kategorie</message>
   </description>

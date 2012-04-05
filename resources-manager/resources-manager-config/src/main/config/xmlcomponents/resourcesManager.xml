@@ -34,7 +34,11 @@
     <message lang="de">Ressourcen-Manager</message>
   </label>
   <description>
-    <message lang="fr">Cette application permet de gérer ses ressources matérielles et de les réserver.</message>
+    <message lang="fr">L’application permet de gérer des ressources (salles,
+		véhicules, matériel informatique...). Les utilisateurs créent des réservations sur
+		une ou plusieurs ressources. Seules les ressources disponibles aux dates demandées
+		sont proposées. Un système de validation est activable.
+	</message>
     <message lang="en">This application manages physical resources and how to book them.</message>
     <message lang="de">Diese Komponente verwaltet physische Ressourcen und wie man diese buchen kann.</message>
   </description>

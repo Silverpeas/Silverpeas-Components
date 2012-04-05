@@ -34,8 +34,9 @@
     <message lang="de">RSS aggregator</message>
   </label>
   <description>
-    <message lang="fr">Permet d'afficher, au sein de Silverpeas, des informations provenant de sites web
-  externes. Cette application permet d'agréger plusieurs sources d'informations au format RSS.
+    <message lang="fr">Cette application permet d’afficher au sein de la même page 
+		plusieurs sources d’informations externes au format RSS. Parfait pour fournir du
+		contenu adéquat et actualisé en permanence sur un sujet donné !
     </message>
     <message lang="en">Aggregate inside Silverpeas data from external web sites using their RSS streams.</message>
     <message lang="de">Aggregierte in der Plateform, Daten aus externe Websiten die über RSS Streams verfügen.</message>

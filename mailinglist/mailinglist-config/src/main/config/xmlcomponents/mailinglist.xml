@@ -34,9 +34,9 @@
     <message lang="de">Email Archivierer</message>
   </label>
   <description>
-    <message lang="fr">Cette application permet d'archiver les emails reçus à une adresse de messagerie donnée.
-  Les messages peuvent être soumis à modération. Grâce au paramètre Diffusion, l'application se
-  transforme en liste de diffusion.
+    <message lang="fr">Cette application permet d’archiver tous les emails reçus à 
+		une adresse de messagerie donnée. La modération est possible. Si l’abonnement
+		est activé, l’application se transforme en liste de diffusion.
     </message>
     <message lang="en">This application archives emails received on a specific email address. The messages may be moderated. Using the 'Diffusion list' parameter,
   this application can be transformed into a mailing-list.

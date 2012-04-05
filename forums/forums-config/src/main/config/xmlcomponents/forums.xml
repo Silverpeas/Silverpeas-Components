@@ -34,7 +34,10 @@
     <message lang="de">Forum</message>
   </label>
   <description>
-    <message lang="fr">Supporte les processus de communication asynchrone de type forum. Des salons peuvent être ouverts, sur des thèmes variés. L'escalade à plusieurs niveaux est possible sur chaque intervention d'un participant. Chaque salon est classable sur le plan de classement.</message>
+    <message lang="fr">Cette application couvre les fonctionnalités classiques d’un forum :
+		abonnement, indicateur de nouveautés, mise en avant des utilisateurs, date du
+		dernier message, nombre de consultations...
+	</message>
     <message lang="en">Forums can be created on diverse themes. You can answer on every point in the thread. Forums can be classified on the classification scheme.</message>
     <message lang="de">Foren können für verschiedene Themen erstellt werden. Sie können auf jedem Punkt in den Faden beantworten. 
 	Foren können Sie auf dem KP klassifizieren.</message>

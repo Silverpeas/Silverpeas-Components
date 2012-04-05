@@ -33,7 +33,10 @@
     <message lang="en">Bookmarks</message>
   </label>
   <description>
-    <message lang="fr">Permet de gérer un référentiel de sites Internet remarquables sur un thème donné.</message>
+    <message lang="fr">La connaissance est partout... et surtout sur les sites web.
+		L’objectif de cette application est simple : recenser et partager les sites web utiles
+		pour un projet, un service, une équipe...
+	</message>
     <message lang="en">Manage bookmarks on a specific topic.</message>
   </description>
   <suite>
