@@ -34,7 +34,7 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="com.silverpeas.rest"/>
+  <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.questionReply.web"/>
   <ctx:component-scan base-package="com.silverpeas.personalization.service" />
 
@@ -43,7 +43,8 @@
 
   <bean name="personalizationServiceFactory"
         class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
-        
+  
   <import resource="spring-silverpeas.xml"/>
+  <import resource="spring-webservice.xml"/>
 </beans>
 

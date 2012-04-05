@@ -50,7 +50,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.yellowpages.model.GroupDetail"%>
 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
@@ -200,10 +199,10 @@ function topicGoTo(id)
             
             ArrayLine arrayLine = arrayPane.addArrayLine();
 			arrayLine.addArrayCellIconPane(folderPane);
-            arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(childName), "GoToGroup?Id="+childId);
+            arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(childName), "GoToGroup?Id="+childId);
             ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(nbContact);
             arrayCellText1.setCompareOn(new Integer(nbContact));
-        	arrayLine.addArrayCellText(Encode.javaStringToHtmlString(childDescription));
+        	arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(childDescription));
             
         } //fin du while
         out.println(arrayPane.print());
@@ -242,8 +241,8 @@ function topicGoTo(id)
 	        carte.setProperties(resources.getIcon("yellowpages.user"), "", link);
         	ligne1.addArrayCellIconPane(iconPane);
 	    }
-        ArrayCellText arrayCellText1 = ligne1.addArrayCellText("<A HREF=\""+link+"\">"+Encode.javaStringToHtmlString(user.getLastName())+"</A>");
-        ArrayCellText arrayCellText2 = ligne1.addArrayCellText(Encode.javaStringToHtmlString(user.getFirstName()));
+        ArrayCellText arrayCellText1 = ligne1.addArrayCellText("<A HREF=\""+link+"\">"+EncodeHelper.javaStringToHtmlString(user.getLastName())+"</A>");
+        ArrayCellText arrayCellText2 = ligne1.addArrayCellText(EncodeHelper.javaStringToHtmlString(user.getFirstName()));
         ArrayCellText arrayCellText4 = null;
         if (user.geteMail()==null || "".equals(user.geteMail()))
         {
@@ -251,11 +250,11 @@ function topicGoTo(id)
         }
         else
         {
-            arrayCellText4 = ligne1.addArrayCellText("<a href=mailto:"+user.geteMail()+">"+Encode.javaStringToHtmlString(user.geteMail())+"</A>");
+            arrayCellText4 = ligne1.addArrayCellText("<a href=mailto:"+user.geteMail()+">"+EncodeHelper.javaStringToHtmlString(user.geteMail())+"</A>");
         }
         arrayCellText1.setCompareOn((String) ((user.getLastName() == null)?"":user.getLastName().toLowerCase()));
         arrayCellText2.setCompareOn((String) ((user.getFirstName() == null)?"":user.getFirstName().toLowerCase()));
-        arrayCellText4.setCompareOn((String) ((user.geteMail()==null)?"":Encode.javaStringToHtmlString(user.geteMail().toLowerCase())));
+        arrayCellText4.setCompareOn((String) ((user.geteMail()==null)?"":EncodeHelper.javaStringToHtmlString(user.geteMail().toLowerCase())));
     }   
     if (arrayPane.getColumnToSort() == 0)
     {

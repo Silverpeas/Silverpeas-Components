@@ -47,8 +47,8 @@
 	Collection allCategories = (Collection) request.getAttribute("AllCategories");
 	String categoryId = null;
 %>
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title><fmt:message key="GML.popupTitle" /></title>
   <view:looknfeel />
@@ -112,31 +112,29 @@ function save()
 //-->
 </script>
 </head>
-<body onLoad="document.forms[0].title.focus();">
+<body id="<%=componentId%>" class="questionReply addQR" onload="document.forms[0].title.focus();">
 <fmt:message key="questionReply.addQR" var="currentPathLabel"/>
 <view:browseBar extraInformations="${currentPathLabel}"/>
 <view:window>
 <view:frame>
 <view:board>
 
-<center>
-  <form method="POST" name="myForm" action="<%=routerUrl%>EffectiveCreateQR">
-    <table CELLPADDING=5 width="100%">
+
+  <form method="post" name="myForm" action="<%=routerUrl%>EffectiveCreateQR">
+    <table cellpadding="5" width="100%">
 	<tr>
 	  	<td>
 	  		<span class="txtlibform"><fmt:message key="questionReply.category" /> :&nbsp;</span>
 	    </td>
-	    <TD>
+	    <td>
 			<select name="CategoryId">
 			<option value=""></option>
 			<%
-			if (allCategories != null)
-    		{
+			if (allCategories != null) {
 				String selected = "";
-    			Iterator it = allCategories.iterator();
-    			while (it.hasNext()) 
-		  		{
-    				NodeDetail uneCategory = (NodeDetail) it.next();
+    			Iterator<NodeDetail> it = allCategories.iterator();
+    			while (it.hasNext()) {
+    				NodeDetail uneCategory = it.next();
     				if (categoryId != null && categoryId.equals(uneCategory.getNodePK().getId()))
     					selected = "selected";
     				%>
@@ -147,11 +145,11 @@ function save()
     		}
 			%>
 			</select>
-		</TD>
+		</td>
 	</tr>
 	<tr> 
 		<td class="txtlibform"><fmt:message key="questionReply.question" /> :</td>
-		<td><input type="text" name="title" size="120" maxlength="100" value="">&nbsp;<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"></td>
+		<td><input type="text" name="title" size="120" maxlength="100" value="" />&nbsp;<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /></td>
 	</tr>
 	<tr valign="top"> 
 		<td class="txtlibform"><fmt:message key="GML.description" /> :</td>
@@ -169,14 +167,14 @@ function save()
 		<td colspan="2">
 			<table width="70%" align="center" border=0 cellpadding=0 cellspacing=0>
 				<tr>
-					<td align="center" class="intfdcolor"  height="1px"><img src="<%=resource.getIcon("pdcPeas.noColorPix")%>"></td>
+					<td align="center" class="intfdcolor"  height="1px"><img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("pdcPeas.noColorPix")%>" /></td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 	<tr> 
 		<td class="txtlibform"><fmt:message key="questionReply.reponse" /> :</td>
-		<td><input type="text" name="titleR" size="120" maxlength="100" value="">&nbsp;<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"></td>
+		<td><input type="text" name="titleR" size="120" maxlength="100" value="" />&nbsp;<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /></td>
 	</tr>
 	<tr valign="top"> 
 		<td class="txtlibform"><fmt:message key="GML.description" /> :</td>
@@ -191,21 +189,19 @@ function save()
 		<td><%=creatorR%></td>
 	</tr>
 	<tr>				 
-		<td colspan="2"><span class="txt">(<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"> :<fmt:message key="GML.requiredField" />)</span></td>
+		<td colspan="2"><span class="txt">(<img alt="<%=resource.getString("GML.requiredField")%>"  src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /> :<fmt:message key="GML.requiredField" />)</span></td>
 	</tr>
 </table>
   </form>
 </view:board>
 <br/>
-<center>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
     out.println(buttonPane.print());
 %>
-</center>
-            </view:frame>
+</view:frame>
 </view:window>
 <script type="text/javascript">
   <fmt:message key='configFile' var='configFile'/>

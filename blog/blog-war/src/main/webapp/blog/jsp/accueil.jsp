@@ -28,7 +28,7 @@
 <%@ include file="check.jsp" %>
 
 <% 
-// récupération des paramètres
+// recuperation des parametres
 Collection	posts		= (Collection) request.getAttribute("Posts");
 Collection	categories	= (Collection) request.getAttribute("Categories");
 Collection	archives	= (Collection) request.getAttribute("Archives");
@@ -111,7 +111,7 @@ function addSubscription()
           boolean visible = true;
           if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT) 
               && !post.getPublication().getCreatorId().equals(userId)) {
-            // le billet en mode brouillon n'est pas visible si ce n'est pas le créateur
+            // le billet en mode brouillon n'est pas visible si ce n'est pas le crï¿½ateur
             visible = false;
             // sauf si le mode "brouillon visible" est actif et que le user est bloggeur
             if (isDraftVisible && "admin".equals(profile)) {
@@ -155,7 +155,7 @@ function addSubscription()
               
               <span class="creatorTicket"> 
               &nbsp;|&nbsp;
-                <% // date de création et de modification %>
+                <% // date de crï¿½ation et de modification %>
                 <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
                 <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) 
                    {
@@ -179,7 +179,7 @@ function addSubscription()
     <div id="navBlog">
       <%
       String myOperations = "";
-      // ajouter les opérations dans cette chaine et la passer à afficher dans la colonneDroite.jsp.inc
+      // ajouter les opï¿½rations dans cette chaine et la passer ï¿½ afficher dans la colonneDroite.jsp.inc
       if ("admin".equals(profile)) { 
         if (isPdcUsed) { 
           myOperations += "<a href=\"javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')\">"+resource.getString("GML.PDCParam")+"</a><br/>";

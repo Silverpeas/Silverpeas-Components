@@ -20,28 +20,22 @@
  */
 package com.silverpeas.questionReply.web;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
+import com.silverpeas.annotation.Authorized;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.control.QuestionManagerFactory;
 import com.silverpeas.questionReply.model.Reply;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 /**
  *
@@ -54,13 +48,14 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 @Service
 @Scope("request")
 @Path("questionreply/{componentId}/replies")
+@Authorized
 public class ReplyResource extends QuestionRelyBaseWebService {
 
   @PathParam("componentId")
   protected String componentId;
 
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     return this.componentId;
   }
 
@@ -77,7 +72,6 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   @Path("question/{questionId}")
   @Produces(MediaType.APPLICATION_JSON)
   public ReplyEntity[] getAllRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
-    checkUserPriviledges();
     try {
       long questionId = Long.parseLong(onQuestionId);
       List<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(questionId,
@@ -92,7 +86,6 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("public/question/{questionId}")
   public ReplyEntity[] getPublicRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
-    checkUserPriviledges();
     try {
       List<Reply> replies = QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(
               Long.parseLong(onQuestionId), componentId);
@@ -135,8 +128,8 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     Collection<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(reply.
             getPK(), "Images");
     entity.withAttachments(attachments);
-    AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(controller));
-    author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
+    AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(getOrganizationController()));
+    author.setAvatar(getHttpServletRequest().getContextPath() + author.getAvatar());
     return entity;
   }
 
