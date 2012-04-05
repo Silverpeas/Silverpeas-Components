@@ -33,9 +33,9 @@
     <message lang="de">Multi-level Tracker</message>
   </label>
   <description>
-    <message lang="fr">Permet de créer une base documentaire classée suivant plusieurs axes.
-      L'utilisateur sélectionne les valeurs des différents axes pour retrouver les documents
-      répondant à sa requête.
+    <message lang="fr">Cette application gère également des publications. 
+		Mais celles-ci sont classées dans une taxonomie indépendante permettant
+		à l’utilisateur de faire des recherches croisées en toute simplicité.
     </message>
     <message lang="en">Create a document database where documents are classified according to various
       classification scheme. The user select

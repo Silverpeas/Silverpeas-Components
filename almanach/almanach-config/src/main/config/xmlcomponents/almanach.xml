@@ -33,9 +33,9 @@
     <message lang="de">Almanach</message>
   </label>
   <description>
-    <message lang="fr">Permet de créer et de visualiser les différents agendas d'événements définis dans les
-      espaces et sous-espaces collaboratifs. A chaque événement peuvent être associés des fichiers
-      joints. La visualisation s'effectue sur plusieurs échelles de temps.
+    <message lang="fr">Les différentes vues proposées présentent des événements ponctuels
+		ou périodiques. L’application permet l’agrégation et l’accès rapide vers d’autres
+		almanachs. Tous les événements peuvent être exportés au format iCal.
     </message>
     <message lang="en">Enable to create and aggregate agendas from collaborative spaces or subspaces. Events can
       have attachments. You can view events using different time scales.

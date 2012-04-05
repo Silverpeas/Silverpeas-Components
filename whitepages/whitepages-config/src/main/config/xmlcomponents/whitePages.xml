@@ -35,8 +35,10 @@
   </label>
   <description>
     <message lang="fr">
-      Permet de créer un annuaire de compétences. A chaque expert est associé un formulaire décrivant ses domaines d'expertise.
-      L'indexation du CV sur le plan de classement permet de trouver rapidement une compétence.
+		L’application a pour objectif de retrouver les utilisateurs
+		experts dans un domaine et de se mettre en relation avec eux. Les experts sont
+		qualifiés grâce à un formulaire personnalisable et la cartographie de connaissances
+		(Plan de classement).
     </message>
     <message lang="en">
       Create a directory of skills, whith each expert described by an xml form. The resume is classified on the classification scheme 

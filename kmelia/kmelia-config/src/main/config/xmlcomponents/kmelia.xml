@@ -34,13 +34,14 @@
     <message lang="de">Dokumentenverwaltung</message>
   </label>
   <description>
-    <message lang="fr">Permet de fédérer et structurer la documentation par répertoires thématiques
-      arborescents. De nombreuses fonctions associées peuvent être activées : forumlaire d'entête
-      XML et méta-données associées, gestion de fichiers joints de formats Office, PDF, html,
-      gestion de
-      version des fichiers joints, gestion d'un workflow multi-étapes de validation / approbation,
-      indexation manuelle sur le Plan de Classement Silverpeas, contrôle de lecture,
-      gestion de commentaires, abonnement à un dossier ou un fichier, alerte de publication.
+    <message lang="fr">Les publications offrent la possibilité de regrouper en 
+		une seule et même page des méta-données, des fichiers joints (avec suivi des
+		modifications) ainsi qu’un contenu libre (Wysiwyg) ou structuré (formulaire).
+		Elles sont organisées dans une arborescence de dossiers. Les utilisateurs peuvent
+		commenter les publications, s’abonner aux dossiers, notifier...
+		Les différents rôles et de nombreux paramètres permettent de s’adapter à tous
+		vos besoins. Application phare de Silverpeas, elle est digne d’un « pure player »
+		de la GED. Elle est interfacée avec le moteur de workflow de la plate-forme.
     </message>
     <message lang="en">This application organizes documentation in hierarchical themes. You have many options : XML
       form for metadata, attachments versioned or not, workflows with many steps for validation / acceptation,

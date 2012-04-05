@@ -34,7 +34,8 @@
     <message lang="de">QuickInfo</message>
   </label>
   <description>
-    <message lang="fr">Permet de diffuser des brèves d'information. Les informations sont classées sur le Plan de Classement.</message>
+    <message lang="fr">Les actualités remontent automatiquement sur la page d’accueil. Elles sont constituées d’un titre et d’une description riche. 
+	</message>
     <message lang="en">Create and broadcast news. These pieces of information can be classified on the classification scheme.</message>
     <message lang="de">Erstellt und sendet Nachrichten. Diese Informationsstücke können auf dem KP klassifiziert werden.</message>
   </description>
