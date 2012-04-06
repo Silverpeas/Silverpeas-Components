@@ -3,7 +3,7 @@ create table sc_kmelia_search (
     instanceId varchar(50),
     topicId integer not null,
     userId integer not null,
-    date datetime not null,
+    searchDate datetime not null,
     language varchar(50),
     query varchar(255)
 );
