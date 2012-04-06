@@ -1165,11 +1165,7 @@ function loadNodeData(node, fnLoadComplete)  {
 			displayPublications(id);
 			displayPath(id);
 			displayOperations(id);
-			if (id != "0" || <%=kmeliaScc.getNbPublicationsOnRoot() == 0%>) {
-				$("#searchZone").css({'display':'block'});
-			} else if (<%=kmeliaScc.getNbPublicationsOnRoot() != 0%>) {
-				$("#searchZone").css({'display':'none'}); //hide search
-			}
+			$("#searchZone").css({'display':'block'});
 		}
 
 		//display topic information
