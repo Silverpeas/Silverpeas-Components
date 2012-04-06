@@ -46,7 +46,7 @@ public class TopicSearch extends AbstractPersistable<Long> {
   private Integer userId;
   private String language;
   private String query;
-  private Date date;
+  private Date searchDate;
 
   public TopicSearch() {
     this(null);
@@ -76,7 +76,7 @@ public class TopicSearch extends AbstractPersistable<Long> {
     this.userId = userId;
     this.language = language;
     this.query = query;
-    this.date = date;
+    this.searchDate = date;
   }
 
   /**
@@ -138,15 +138,15 @@ public class TopicSearch extends AbstractPersistable<Long> {
   /**
    * @return the date
    */
-  public Date getDate() {
-    return date;
+  public Date getSearchDate() {
+    return searchDate;
   }
 
   /**
-   * @param date the date to set
+   * @param searchDate the date to set
    */
-  public void setDate(Date date) {
-    this.date = date;
+  public void setSearchDate(Date searchDate) {
+    this.searchDate = searchDate;
   }
 
   /**

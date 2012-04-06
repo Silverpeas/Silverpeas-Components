@@ -32,17 +32,17 @@
 <dataset>
   <uniqueid tableName="sc_kmelia_search" maxId="15" />
   
-  <sc_kmelia_search id="10" instanceid="kmelia111" topicid="0" userid="0" date="2012-3-12 9:19:41"
+  <sc_kmelia_search id="10" instanceid="kmelia111" topicid="0" userid="0" searchdate="2012-3-12 9:19:41"
   	language="fr" query="ma recherche" />
-  <sc_kmelia_search id="11" instanceid="kmelia111" topicid="0" userid="0" date="2012-3-12 9:21:18"
+  <sc_kmelia_search id="11" instanceid="kmelia111" topicid="0" userid="0" searchdate="2012-3-12 9:21:18"
   	language="fr" query="mon autre recherche" />
-  <sc_kmelia_search id="12" instanceid="kmelia111" topicid="3" userid="0" date="2012-3-12 9:22:30"
+  <sc_kmelia_search id="12" instanceid="kmelia111" topicid="3" userid="0" searchdate="2012-3-12 9:22:30"
   	language="fr" query="ma recherche" />
-  <sc_kmelia_search id="13" instanceid="kmelia110" topicid="3" userid="0" date="2012-3-12 9:23:10"
+  <sc_kmelia_search id="13" instanceid="kmelia110" topicid="3" userid="0" searchdate="2012-3-12 9:23:10"
   	language="fr" query="ma recherche" />
-  <sc_kmelia_search id="14" instanceid="kmelia111" topicid="3" userid="12" date="2012-3-12 9:23:56"
+  <sc_kmelia_search id="14" instanceid="kmelia111" topicid="3" userid="12" searchdate="2012-3-12 9:23:56"
   	language="fr" query="cahier des charges" />
-  <sc_kmelia_search id="15" instanceid="kmelia111" topicid="3" userid="12" date="2012-3-12 9:24:30"
+  <sc_kmelia_search id="15" instanceid="kmelia111" topicid="3" userid="12" searchdate="2012-3-12 9:24:30"
   	language="fr" query="spécification détaillée" />
 
   <sb_statistic_history datestat="2012/04/01" heurestat="10:20" userid="0" objectid="200" componentid="kmelia111"
