@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<!--
+ If you change the data defined in this file, don't forget to change also the object generated
+ inside kmelia for tests.
+-->
+<dataset>
+  <uniqueid tableName="sc_kmelia_search" maxId="15" />
+  
+  <sc_kmelia_search id="10" instanceid="kmelia111" topicid="0" userid="0" date="2012-3-12 9:19:41"
+  	language="fr" query="ma recherche" />
+  <sc_kmelia_search id="11" instanceid="kmelia111" topicid="0" userid="0" date="2012-3-12 9:21:18"
+  	language="fr" query="mon autre recherche" />
+  <sc_kmelia_search id="12" instanceid="kmelia111" topicid="3" userid="0" date="2012-3-12 9:22:30"
+  	language="fr" query="ma recherche" />
+  <sc_kmelia_search id="13" instanceid="kmelia110" topicid="3" userid="0" date="2012-3-12 9:23:10"
+  	language="fr" query="ma recherche" />
+  <sc_kmelia_search id="14" instanceid="kmelia111" topicid="3" userid="12" date="2012-3-12 9:23:56"
+  	language="fr" query="cahier des charges" />
+  <sc_kmelia_search id="15" instanceid="kmelia111" topicid="3" userid="12" date="2012-3-12 9:24:30"
+  	language="fr" query="spécification détaillée" />
+
+  <sb_statistic_history datestat="2012/04/01" heurestat="10:20" userid="0" objectid="200" componentid="kmelia111"
+  	actiontype="1" objecttype="Publication" />
+  <sb_statistic_history datestat="2012/04/01" heurestat="10:21" userid="0" objectid="201" componentid="kmelia111"
+    actiontype="1" objecttype="Publication" />
+  <sb_statistic_history datestat="2012/04/02" heurestat="10:23" userid="0" objectid="201" componentid="kmelia111"
+    actiontype="1" objecttype="Publication" />
+  <sb_statistic_history datestat="2012/04/02" heurestat="10:23" userid="1" objectid="201" componentid="kmelia111"
+    actiontype="1" objecttype="Publication" />
+  <sb_statistic_history datestat="2012/04/03" heurestat="10:24" userid="0" objectid="202" componentid="kmelia111"
+    actiontype="1" objecttype="Publication" />
+  
+</dataset>
