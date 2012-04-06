@@ -24,12 +24,15 @@
 
 package com.silverpeas.kmelia.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.springframework.data.jpa.domain.AbstractPersistable;
+import javax.persistence.TableGenerator;
 
 /**
  * TopicSearch represents a kmelia specific topic search entity
@@ -37,10 +40,16 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
  */
 @Entity
 @Table(name = "sc_kmelia_search")
-public class TopicSearch extends AbstractPersistable<Long> {
+public class TopicSearch implements Serializable{
 
   private static final long serialVersionUID = 2162863596852109037L;
 
+  @Id
+  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
+  valueColumnName = "maxId", pkColumnValue = "sc_kmelia_search", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
+  private Long id;
+  
   private String instanceId;
   private Integer topicId;
   private Integer userId;
@@ -48,8 +57,7 @@ public class TopicSearch extends AbstractPersistable<Long> {
   private String query;
   private Date searchDate;
 
-  public TopicSearch() {
-    this(null);
+  protected TopicSearch() {
   }
 
   /**
@@ -57,7 +65,7 @@ public class TopicSearch extends AbstractPersistable<Long> {
    * @param id topic search identifier
    */
   public TopicSearch(Long id) {
-    this.setId(id);
+    this.id = id;
   }
 
   /**
@@ -70,7 +78,6 @@ public class TopicSearch extends AbstractPersistable<Long> {
    */
   public TopicSearch(String instanceId, Integer topicId, Integer userId, String language,
       String query, Date date) {
-    this(null);
     this.instanceId = instanceId;
     this.topicId = topicId;
     this.userId = userId;
@@ -163,4 +170,44 @@ public class TopicSearch extends AbstractPersistable<Long> {
     this.userId = userId;
   }
 
+  /**
+   * @return the id
+   */
+  public Long getId() {
+    return id;
+  }
+
+  /**
+   * @param id the id to set
+   */
+  public void setId(Long id) {
+    this.id = id;
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    TopicSearch other = (TopicSearch) obj;
+    if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 0;
+    hash += (id != null ? id.hashCode() : 0);
+    return hash;
+  }
+  
+  @Override
+  public String toString() {
+    return "com.silverpeas.kmelia.domain.TopicSearch[ id=" + id + " ] ";
+  }
 }

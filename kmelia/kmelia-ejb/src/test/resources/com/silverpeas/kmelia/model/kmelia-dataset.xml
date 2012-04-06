@@ -30,7 +30,7 @@
  inside kmelia for tests.
 -->
 <dataset>
-  <uniqueid tableName="sc_kmelia_search" maxId="15" />
+  <uniqueid tableName="sc_kmelia_search" maxId="16" />
   
   <sc_kmelia_search id="10" instanceid="kmelia111" topicid="0" userid="0" searchdate="2012-3-12 9:19:41"
   	language="fr" query="ma recherche" />
