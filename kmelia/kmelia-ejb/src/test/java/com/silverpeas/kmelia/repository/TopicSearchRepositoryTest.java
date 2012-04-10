@@ -104,7 +104,7 @@ public class TopicSearchRepositoryTest {
     // System.out.println("getMostInterestedSearch");
     String instanceId = "kmelia111";
     TopicSearch entity = new TopicSearch(instanceId, 0, 0, "fr", "ma nouvelle recherche", new Date());
-    TopicSearch result = repo.save(entity);
+    TopicSearch result = repo.saveAndFlush(entity);
     assertEquals(result, repo.findOne(result.getId()));
   }
   

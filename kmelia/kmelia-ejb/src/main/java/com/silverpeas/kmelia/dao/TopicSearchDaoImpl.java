@@ -47,7 +47,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class TopicSearchDaoImpl extends JdbcDaoSupport implements TopicSearchDao {
 
   private static final String QUERY_GET_LIST_MOST_INTERESTED_QUERY =
-      "SELECT count(*) as nb, query FROM public.sc_kmelia_search WHERE instanceid = ? GROUP BY query, language ORDER BY nb DESC, query";
+      "SELECT count(*) as nb, query FROM sc_kmelia_search WHERE instanceid = ? GROUP BY query, language ORDER BY nb DESC, query";
 
   private static ResourceLocator settings =
       new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "fr");
