@@ -40,15 +40,17 @@ import static org.junit.Assert.*;
  */
 public class MetadataExtractorTest {
 
-  ImageMetadataExtractor extractor;
-  File koala = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Koala.jpg");
-  File sunset = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Coucher de soleil.jpg");
-  File gmt = new File(TARGET_DIR + "test-classes" + SEPARATOR + "w40_DSC_7481.jpg");
-  File dauphins = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Dauphins-100.jpg");
-  File chefsUtf8 = new File(TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_utf-8.jpg");
-  File chefsLatin1 = new File(TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_latin1.jpg");
-  
-  
+  private ImageMetadataExtractor extractor;
+  private final File koala = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Koala.jpg");
+  private final File sunset = new File(
+    TARGET_DIR + "test-classes" + SEPARATOR + "Coucher de soleil.jpg");
+  private final File gmt = new File(TARGET_DIR + "test-classes" + SEPARATOR + "w40_DSC_7481.jpg");
+  private final File dauphins = new File(
+    TARGET_DIR + "test-classes" + SEPARATOR + "Dauphins-100.jpg");
+  private final File chefsUtf8 = new File(
+    TARGET_DIR + "test-classes" + SEPARATOR + "31605rc_utf-8.jpg");
+  private final File pingouin = new File(TARGET_DIR + "test-classes" + SEPARATOR + "pingouin.jpg");
+
   @Before
   public void setUp() {
     extractor = new DrewImageMetadataExtractor("gallery52");
@@ -93,7 +95,7 @@ public class MetadataExtractorTest {
     assertEquals("592", meta.getProperty());
     assertEquals("Créateur", meta.getLabel());
     assertEquals("Nom du créateur : Tag_by_line",
-    meta.getValue().replace('ý', 'é').replace('È', 'é'));
+      meta.getValue().replace('ý', 'é').replace('È', 'é'));
 
   }
 
@@ -180,6 +182,17 @@ public class MetadataExtractorTest {
 
   }
 
+ 
+  @Test
+  public void testExtractImageWithNoMetadata() throws Exception {
+    List<MetaData> metadata = extractor.extractImageExifMetaData(pingouin);
+    assertNotNull(metadata);
+    assertEquals(0, metadata.size());
+    metadata = extractor.extractImageIptcMetaData(pingouin);
+    assertNotNull(metadata);
+    assertEquals(0, metadata.size());
+  }
+
   /**
    * For <a href="https://www.silverpeas.org/redmine/issues/3021">Bug #3021</a>.
    */
@@ -204,7 +217,8 @@ public class MetadataExtractorTest {
     meta = metadata.get(3);
     assertThat(meta.getProperty(), is("632"));
     assertThat(meta.getLabel(), is("Légende"));
-    assertThat(meta.getValue(),is("Salon de l'Agriculture . Durant le salon les cuisiniers Drômois "
+    assertThat(meta.getValue(),
+      is("Salon de l'Agriculture . Durant le salon les cuisiniers Drômois "
       + "ont réalisés en direct et fait déguster des plats dont les recettes étaient distribuées "
       + "aux visiteurs"));
     meta = metadata.get(4);

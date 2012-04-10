@@ -70,42 +70,42 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
       ExifIFD0Directory exifDirectory = metadata.getDirectory(ExifIFD0Directory.class);
       ExifIFD0Descriptor descriptor = new ExifIFD0Descriptor(exifDirectory);
       String value = null;
-      for (ExifProperty property : imageProperties) {
-        // rechercher la valeur de la metadata "label"
-        int currentMetadata = property.getProperty();
-        switch (currentMetadata) {
-          case ExifIFD0Directory.TAG_WIN_AUTHOR:
-            value = descriptor.getWindowsAuthorDescription();
-            break;
-          case ExifIFD0Directory.TAG_WIN_COMMENT:
-            value = descriptor.getWindowsCommentDescription();
-            break;
+      if (exifDirectory != null) {
+        for (ExifProperty property : imageProperties) {
+          // rechercher la valeur de la metadata "label"
+          int currentMetadata = property.getProperty();
+          switch (currentMetadata) {
+            case ExifIFD0Directory.TAG_WIN_AUTHOR:
+              value = descriptor.getWindowsAuthorDescription();
+              break;
+            case ExifIFD0Directory.TAG_WIN_COMMENT:
+              value = descriptor.getWindowsCommentDescription();
+              break;
 
-          case ExifIFD0Directory.TAG_WIN_KEYWORDS:
-            value = descriptor.getWindowsKeywordsDescription();
-            break;
+            case ExifIFD0Directory.TAG_WIN_KEYWORDS:
+              value = descriptor.getWindowsKeywordsDescription();
+              break;
 
-          case ExifIFD0Directory.TAG_WIN_SUBJECT:
-            value = descriptor.getWindowsSubjectDescription();
-            break;
+            case ExifIFD0Directory.TAG_WIN_SUBJECT:
+              value = descriptor.getWindowsSubjectDescription();
+              break;
 
-          case ExifIFD0Directory.TAG_WIN_TITLE:
-            value = descriptor.getWindowsTitleDescription();
-            break;
-          default:
-            if (exifDirectory != null) {
+            case ExifIFD0Directory.TAG_WIN_TITLE:
+              value = descriptor.getWindowsTitleDescription();
+              break;
+            default:
               value = exifDirectory.getString(currentMetadata);
-            }
-        }
-        if (value != null) {
-          // ajout de cette metadata à la photo
-          MetaData metaData = new MetaData(value);
-          metaData.setLabel(property.getLabel(lang));
-          metaData.setProperty(property.getProperty() + "");
-          SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
-            "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + property.getLabel()
-            + " value = " + value);
-          result.add(metaData);
+          }
+          if (value != null) {
+            // ajout de cette metadata à la photo
+            MetaData metaData = new MetaData(value);
+            metaData.setLabel(property.getLabel(lang));
+            metaData.setProperty(property.getProperty() + "");
+            SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
+              "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + property.getLabel()
+              + " value = " + value);
+            result.add(metaData);
+          }
         }
       }
       return result;
