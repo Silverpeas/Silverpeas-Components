@@ -56,12 +56,24 @@ public class DateOption implements Comparable<DateOption> {
     this.hour = hour;
   }
 
+  @Override
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();
     result = prime * result + ((day == null) ? 0 : day.hashCode());
     result = prime * result + (int) (hour ^ (hour >>> 32));
     return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    return equals((DateOption) obj);
   }
 
   public boolean equals(DateOption obj) {

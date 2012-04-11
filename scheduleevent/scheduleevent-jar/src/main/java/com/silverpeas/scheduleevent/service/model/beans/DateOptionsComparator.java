@@ -28,6 +28,7 @@ import java.util.Comparator;
 
 public class DateOptionsComparator implements Comparator<DateOption> {
 
+  @Override
   public int compare(DateOption date1, DateOption date2) {
     if (date1.getDay().compareTo(date2.getDay()) == 0) {
       if (date1.getHour() == date2.getHour()) {

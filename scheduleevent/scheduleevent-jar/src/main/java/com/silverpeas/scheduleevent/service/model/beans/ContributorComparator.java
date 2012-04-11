@@ -28,6 +28,7 @@ import java.util.Comparator;
 
 public class ContributorComparator implements Comparator<Contributor> {
 
+  @Override
   public int compare(Contributor contr1, Contributor contr2) {
     if (contr1.getId() != null) {
       if (contr2.getId() == null)
