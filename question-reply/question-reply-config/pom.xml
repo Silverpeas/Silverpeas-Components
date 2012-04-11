@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>question-reply</artifactId>
-    <version>5.9</version>
+    <version>5.9.1-SNAPSHOT</version>
   </parent>
 	
   <groupId>com.silverpeas.components.question-reply</groupId>
