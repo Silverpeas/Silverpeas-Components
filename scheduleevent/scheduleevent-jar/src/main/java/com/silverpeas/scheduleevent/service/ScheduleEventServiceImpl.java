@@ -24,14 +24,13 @@
 
 package com.silverpeas.scheduleevent.service;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Set;
-
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.scheduleevent.service.model.dao.ResponseDao;
 import com.silverpeas.scheduleevent.service.model.dao.ScheduleEventDao;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Set;
 
 public class ScheduleEventServiceImpl implements ScheduleEventService {
   public static final String COMPONENT_NAME = "scheduleEvent";
@@ -47,36 +46,43 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
     this.scheduleEventDao = scheduleEventDao;
   }
 
+  @Override
   public String createScheduleEvent(ScheduleEvent scheduleEvent) {
     return scheduleEventDao.createScheduleEvent(scheduleEvent);
   }
 
+  @Override
   public void deleteScheduleEvent(String scheduleEventId) {
     ScheduleEvent event = scheduleEventDao.getScheduleEventComplete(scheduleEventId);
     scheduleEventDao.deleteScheduleEvent(event);
   }
 
+  @Override
   public ScheduleEvent findScheduleEvent(String scheduleEventId) {
     return scheduleEventDao.getScheduleEventComplete(scheduleEventId);
   }
 
+  @Override
   public Set<ScheduleEvent> listAllScheduleEventsByUserId(String userId) {
     Set<ScheduleEvent> events = scheduleEventDao.listScheduleEventsByCreatorId(userId);
     events.addAll(scheduleEventDao.listScheduleEventsByContributorId(userId));
     return events;
   }
 
+  @Override
   public void updateScheduleEventStatus(String scheduleEventId, int newStatus) {
     ScheduleEvent event = scheduleEventDao.getScheduleEventComplete(scheduleEventId);
     event.setStatus(newStatus);
     scheduleEventDao.updateScheduleEvent(event);
   }
 
+  @Override
   public ScheduleEvent purgeOldResponseForUserId(ScheduleEvent scheduleEvent, int userId) {
     scheduleEventDao.purgeResponseScheduleEvent(scheduleEvent, userId);
     return scheduleEventDao.getScheduleEventComplete(scheduleEvent.getId());
   }
 
+  @Override
   public void updateScheduleEvent(ScheduleEvent scheduleEvent) {
     scheduleEventDao.updateScheduleEvent(scheduleEvent);
   }
@@ -89,6 +95,7 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
     return responseDao;
   }
 
+  @Override
   public void setLastVisited(String scheduleEventId, int userId) {
     ScheduleEvent event = scheduleEventDao.getScheduleEventComplete(scheduleEventId);
     Set<Contributor> contributors = event.getContributors();

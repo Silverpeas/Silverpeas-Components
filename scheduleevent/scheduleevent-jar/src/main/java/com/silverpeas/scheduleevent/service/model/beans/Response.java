@@ -55,12 +55,23 @@ public class Response {
     this.userId = userId;
   }
 
+  @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + (int) (userId ^ (userId >>> 32));
-    result = prime * result + ((optionId == null) ? 0 : optionId.hashCode());
-    return result;
+    int hash = 7;
+    hash = 37 * hash + this.userId;
+    hash = 37 * hash + (this.optionId != null ? this.optionId.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    return equals((Response) obj);
   }
 
   public boolean equals(Response obj) {
