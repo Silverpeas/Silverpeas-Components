@@ -24,14 +24,9 @@
 
 package com.silverpeas.scheduleevent.service.model.beans;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.io.Serializable;
+import java.util.*;
 
 public class ScheduleEvent implements ScheduleEventBean, Serializable {
 

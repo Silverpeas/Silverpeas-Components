@@ -23,10 +23,10 @@
  */
 package com.silverpeas.questionReply.web;
 
-import com.silverpeas.rest.TestResources;
+import com.silverpeas.web.TestResources;
 import javax.inject.Inject;
 import javax.inject.Named;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * A wrapper of resources used in the tests of the Question and Reply web services.

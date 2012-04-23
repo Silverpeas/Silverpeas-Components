@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>gallery</artifactId>
-    <version>5.9-SNAPSHOT</version>
+    <version>5.10-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.components.gallery</groupId>
@@ -59,6 +59,16 @@
   </dependencies>
 
   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <showDeprecation>true</showDeprecation>
+        </configuration>
+      </plugin>
+    </plugins>
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>

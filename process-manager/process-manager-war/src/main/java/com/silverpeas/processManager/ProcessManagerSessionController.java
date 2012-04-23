@@ -357,6 +357,19 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           "processManager.GET_PROCESS_FROM_TODO_FAILED", "externalTodoId : " + externalTodoId, e);
     }
   }
+  
+  public boolean isUserAllowedOnActiveStates() {
+    String[] states = currentProcessInstance.getActiveStates();
+    if (states == null) {
+      return false;
+    }
+    for (String state : states) {
+      if (getActiveUsers(state).contains(getUserId())) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   /**
    * Get the active states.
@@ -496,8 +509,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   private List<String> getActiveUsers(String stateName) {
     List<String> activeUsers = new ArrayList<String>();
     State state = getState(stateName);
-    activeUsers.addAll(getUsers(state.getWorkingUsers()));
-    activeUsers.addAll(getUsers(state.getInterestedUsers()));
+    if (state != null) {
+      activeUsers.addAll(getUsers(state.getWorkingUsers()));
+      activeUsers.addAll(getUsers(state.getInterestedUsers()));
+    }
     return activeUsers;
   }
 

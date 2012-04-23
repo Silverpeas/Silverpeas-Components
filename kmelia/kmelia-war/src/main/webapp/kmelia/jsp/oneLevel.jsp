@@ -267,6 +267,7 @@ labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
 labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPredefinePositions")%>";
 labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.exportSelection")%>";
 labels["operation.shareTopic"] = "<%=resources.getString("kmelia.operation.shareTopic")%>";
+labels["operation.statistics"] = "<fmt:message key="kmelia.operation.statistics"/>";
 
 labels["js.topicTitle"] = "<fmt:message key="TopicTitle"/>";
 labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
@@ -325,11 +326,7 @@ function displayTopicContent(id) {
 		displayPublications(id);
 		displayPath(id);
 		displayOperations(id);
-		if (id != "0" || <%=kmeliaScc.getNbPublicationsOnRoot() == 0%>) {
-			$("#searchZone").css({'display':'block'});
-		} else if (<%=kmeliaScc.getNbPublicationsOnRoot() != 0%>) {
-			$("#searchZone").css({'display':'none'}); //hide search
-		}
+		$("#searchZone").css({'display':'block'});
 		displaySubTopics(id);
 	}
 

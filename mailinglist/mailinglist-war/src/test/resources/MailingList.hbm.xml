@@ -27,7 +27,7 @@
 
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+	"http://www.jboss.org/dtd/hibernate/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="com.silverpeas.mailinglist.service.model.beans">
   <class name="MailingList" table="sc_mailinglist_list">
     <id name="id" column="id" type="string">

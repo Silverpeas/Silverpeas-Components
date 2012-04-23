@@ -23,28 +23,12 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.DateUtil;
@@ -55,6 +39,21 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Writer;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JSONServlet extends HttpServlet {
 
@@ -70,16 +69,17 @@ public class JSONServlet extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
           IOException {
     SilverTrace.info("kmelia", "JSONServlet.doPost", "root.MSG_GEN_ENTER_METHOD");
-
     res.setContentType("application/json");
 
     String id = req.getParameter("Id");
     String componentId = req.getParameter("ComponentId");
     String action = req.getParameter("Action");
 
-    KmeliaSessionController kmeliaSC =
-            (KmeliaSessionController) req.getSession().getAttribute(
-            "Silverpeas_" + "kmelia" + "_" + componentId);
+    KmeliaSessionController kmeliaSC = (KmeliaSessionController) req.getSession().getAttribute(
+                "Silverpeas_" + "kmelia" + "_" + componentId);
+    if(kmeliaSC == null) {
+      return;
+    }
 
     String language = kmeliaSC.getCurrentLanguage(); // takes care of i18n
 
@@ -95,8 +95,8 @@ public class JSONServlet extends HttpServlet {
         temp.getNodePK().setId("tovalidate");
         temp.setName(kmeliaSC.getString("ToValidateShort"));
         if (kmeliaSC.displayNbPublis()) {
-          int nbPublisToValidate =
-                  kmeliaSC.getKmeliaBm().getPublicationsToValidate(componentId).size();
+          int nbPublisToValidate = kmeliaSC.getKmeliaBm().getPublicationsToValidate(componentId)
+              .size();
           temp.setNbObjects(nbPublisToValidate);
         }
         nodes.add(temp);
@@ -127,7 +127,7 @@ public class JSONServlet extends HttpServlet {
   }
 
   private String getListAsJSONArray(List<NodeDetail> nodes, String language,
-          KmeliaSessionController kmelia) {
+      KmeliaSessionController kmelia) {
     return getListAsJSONArray(nodes, language, kmelia, true);
   }
 
@@ -169,7 +169,7 @@ public class JSONServlet extends HttpServlet {
         }
         jsonObject.put("translations", jsonTranslations);
       }
-      
+
       try {
         jsonObject.put("date", DateUtil.getOutputDate(node.getCreationDate(), language));
       } catch (ParseException e) {
@@ -215,6 +215,10 @@ public class JSONServlet extends HttpServlet {
     boolean isAdmin = SilverpeasRole.admin.isInRole(profile);
     boolean isRoot = "0".equals(id);
     boolean isBasket = "1".equals(id);
+    boolean statisticEnable = kmeliaSC.getSettings().getBoolean("kmelia.stats.enable", false);
+    boolean canShowStats =
+        SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.supervisor.isInRole(profile) ||
+            isAdmin && !KmeliaHelper.isToolbox(kmeliaSC.getComponentId());
 
     if (isBasket) {
       operations.put("emptyTrash", isAdmin || SilverpeasRole.publisher.isInRole(profile)
@@ -229,7 +233,7 @@ public class JSONServlet extends HttpServlet {
               && kmeliaSC.isExportZipAllowed() && isAdmin);
       operations.put("exportPDF", kmeliaSC.isExportComponentAllowed()
               && kmeliaSC.isExportPdfAllowed() && (isAdmin || SilverpeasRole.publisher.isInRole(
-              profile)));
+                  profile)));
 
       // topic operations
       operations.put("addTopic", isAdmin);
@@ -265,6 +269,9 @@ public class JSONServlet extends HttpServlet {
       operations.put("exportSelection", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("favorites", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
+      if (statisticEnable && isRoot && canShowStats) {
+        operations.put("statistics", true);
+      }
     }
 
     return new JSONObject(operations);

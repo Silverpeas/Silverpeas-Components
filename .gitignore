@@ -6,6 +6,7 @@
 .classpath
 .project
 /target/
+nb-configuration.xml
 wiki/wiki-jar/Test de base/
 /kmelia/kmelia-ejb/src/main/resources/META-INF/MANIFEST.MF
 /kmelia/kmelia-war/src/main/webapp/META-INF

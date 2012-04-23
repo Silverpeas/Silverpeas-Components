@@ -29,7 +29,6 @@ import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
-import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
@@ -53,8 +52,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DBUtil;
@@ -75,6 +72,7 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -92,6 +90,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.silverpeas.search.SearchEngineFactory;
 
 /**
  * Default implementation of the services provided by the Blog component.
@@ -592,27 +591,22 @@ public class DefaultBlogService implements BlogService  {
     QueryDescription query = new QueryDescription(word);
     query.setSearchingUser(userId);
     query.addSpaceComponentPair(spaceId, instanceId);
-    MatchingIndexEntry[] result = null;
     SilverTrace.info("blog", "BlogBmEJB.getResultSearch()", "root.MSG_GEN_PARAM_VALUE", "query ="
             + query.getQuery());
     Connection con = openConnection();
     try {
-      SearchEngineBm searchEngineBm = getSearchEngineBm();
-      searchEngineBm.search(query);
-      result = searchEngineBm.getRange(0, searchEngineBm.getResultLength());
+      List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).getEntries();
       SilverTrace.info("blog", "BlogBmEJB.getResultSearch()", "root.MSG_GEN_PARAM_VALUE",
-              "result =" + result.length + "length = " + getSearchEngineBm().getResultLength());
+              "result =" + result.size() );
 
       // création des billets à partir des résultats
-
       // rechercher la liste des posts trié par date
       Collection<String> allEvents = PostDAO.getAllEvents(con, instanceId);
       Iterator<String> it = allEvents.iterator();
       while (it.hasNext()) {
         String pubId = it.next();
 
-        for (int i = 0; i < result.length; i++) {
-          MatchingIndexEntry matchIndex = result[i];
+        for (MatchingIndexEntry matchIndex : result) {
           String objectType = matchIndex.getObjectType();
           String objectId = matchIndex.getObjectId();
           if ("Publication".equals(objectType) || objectType.startsWith("Attachment")) {
@@ -943,21 +937,6 @@ public class DefaultBlogService implements BlogService  {
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return nodeBm;
-  }
-
-  private SearchEngineBm getSearchEngineBm() {
-    SearchEngineBm searchEngineBm = null;
-    {
-      try {
-        SearchEngineBmHome searchEngineHome = EJBUtilitaire.getEJBObjectRef(
-                JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
-        searchEngineBm = searchEngineHome.create();
-      } catch (Exception e) {
-        throw new CommentRuntimeException("BlogSessionController.getCommentBm()",
-                SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    return searchEngineBm;
   }
 
   /**

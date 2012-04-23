@@ -34,8 +34,11 @@
     <message lang="de">Quizz</message>
   </label>
   <description>
-    <message lang="fr">Permet d'évaluer la compréhension ou niveau de connaissance acquis d'un sujet.
-  L'utilisateur peut se faire aider d'indices. Un scoring évalue sa performance.
+    <message lang="fr">Idéale pour contrôler les connaissances ou comme solution de e-learning, 
+		cette application ludique permet de créer une suite de questions fermées.
+		Un scoring précis ainsi qu’un indice peuvent être définis sur chaque question.
+		La notion de bonne ou de mauvaise réponse ainsi qu’une note finale permet la
+		constitution d’un podium.
     </message>
     <message lang="en">Evaluates the understanding or the knowledge on a subject. The user can use hints lowering his score.</message>
     <message lang="de">Wertet das Verständnis oder das Wissen über ein Thema. Der Benutzer kann Hinweise benützen die sein Ergebnis Senken.</message>

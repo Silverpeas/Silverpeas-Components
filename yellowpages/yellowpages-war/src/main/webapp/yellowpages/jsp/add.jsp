@@ -29,8 +29,8 @@
 <%@ include file="tabManager.jsp.inc" %>
 
 <%
-	String newTopicName = (String) request.getParameter("Name");
-    String newTopicDescription = (String) request.getParameter("Description");
+	String newTopicName = request.getParameter("Name");
+  String newTopicDescription = request.getParameter("Description");
 	NodePK newNodePK = addTopic(yellowpagesScc, newTopicName, newTopicDescription,out);
 %>
 

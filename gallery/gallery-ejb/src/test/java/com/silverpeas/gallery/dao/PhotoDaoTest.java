@@ -36,7 +36,7 @@ import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +56,7 @@ public class PhotoDaoTest {
 
   @Before
   public void generalSetUp() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
             PhotoDaoTest.class.getClassLoader().getResourceAsStream(
             "com/silverpeas/gallery/dao/photo_dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);

@@ -73,6 +73,10 @@ ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLoc
 boolean userCanCreatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.writer.isInRole(profile);
 boolean userCanValidatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile);
 
+boolean userCanSeeStats =
+  SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.supervisor.isInRole(profile) ||
+  SilverpeasRole.admin.isInRole(profile) && !KmeliaHelper.isToolbox(kmeliaScc.getComponentId());
+
 %>
 
 <html>
@@ -217,7 +221,11 @@ $(document).ready(function() {
           		operationPane.addOperation("useless", resources.getString("ToValidate"), "ViewPublicationsToValidate");
           	}
   		}
-
+      if (userCanSeeStats) {
+        operationPane.addLine();
+        operationPane.addOperation("useless", resources.getString("kmelia.operation.statistics"), "javascript:showStats();");
+      }
+      
     //Instanciation du cadre avec le view generator
 	Frame frame = gef.getFrame();
 

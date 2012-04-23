@@ -27,7 +27,7 @@
 
 <!DOCTYPE hibernate-mapping PUBLIC
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+	"http://www.jboss.org/dtd/hibernate/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="com.silverpeas.whitePages.model">
   <class name="SearchField" table="sc_whitepages_searchfields">
   	<id name="id" column="id" type="string">

@@ -29,13 +29,14 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>webSites</name>
   <label>
-    <message lang="fr">Designer de site web</message>
+    <message lang="fr">Designer de sites web</message>
     <message lang="en">WebSite Designer</message>
     <message lang="de">Website-Designer</message>
   </label>
   <description>
-    <message lang="fr">Idem à l'annuaire de sites. Propose également des services pour créer un site Web,
-  via un éditeur WYSIWYG. Permet enfin de télécharger un site statique.
+    <message lang="fr">Créer des pages web et des répertoires, télécharger des
+		images, voilà tout ce dont vous avez besoin pour mettre en ligne de petits sites
+		intégrés à la plate-forme.
     </message>
     <message lang="en">A bit like the bookmaks application, but it also allow you to create web pages with a WYSIWYG editor.
     Those pages can be downloaded to create a static web site.

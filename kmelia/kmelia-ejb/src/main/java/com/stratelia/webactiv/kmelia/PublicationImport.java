@@ -38,7 +38,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmEJB;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
@@ -51,8 +50,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.apache.commons.fileupload.FileItem;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,6 +58,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.search.SearchEngineFactory;
 
 public class PublicationImport {
 
@@ -357,10 +356,7 @@ public class PublicationImport {
     query.setXmlQuery(newXmlQuery);
 
     try {
-      SearchEngineBm searchEngineBm = kmeliaBm.getSearchEngineBm();
-      searchEngineBm.search(query);
-      MatchingIndexEntry[] result = searchEngineBm.getRange(0, searchEngineBm
-          .getResultLength());
+      List<MatchingIndexEntry> result =SearchEngineFactory.getSearchEngine().search(query).getEntries();
       for (MatchingIndexEntry mie : result) {
         if ("Publication".equals(mie.getObjectType())) {
           return mie.getPK().getObjectId();

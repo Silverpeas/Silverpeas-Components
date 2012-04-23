@@ -34,8 +34,10 @@
     <message lang="de">Abstimmung</message>
   </label>
   <description>
-    <message lang="fr">Permet d'organiser des votes ou referendum sur une question unique, auprès d'une
-  audience ciblée. Une surveillance du niveau de participation et du résultat en cours est possible.
+    <message lang="fr">Recueillir l’opinion des utilisateurs n’a jamais été aussi simple. 
+		L’application « Vote » permet de créer rapidement une question à choix multiples
+		et de programmer sa mise en ligne. La participation ainsi que les résultats sont
+		calculés automatiquement et peuvent être exportés.
     </message>
     <message lang="en">Organize votes or a referendum on a unique question to a chosen audience. You have feedback on the participation level or the current trend.</message>
     <message lang="de">Organisiert Abstimmung oder ein Referendum über eine einzige Frage an einen bestimmten Empfängerkreis. 

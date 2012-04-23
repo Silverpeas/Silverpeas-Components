@@ -41,13 +41,14 @@
 	boolean usedPrivateReplies = isUsedPrivateReplies.booleanValue();
 
 %>
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel />
+<link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
-<script LANGUAGE="JavaScript">
+<script type="text/javascript">
 <!--
 function isCorrectForm() {
      	var errorMsg = "";
@@ -91,9 +92,9 @@ function save()
 		document.forms[0].submit();
 }
 //-->
-</SCRIPT>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF" onLoad="document.forms[0].title.focus();">
+</script>
+</head>
+<body id="<%=componentId%>" class="questionReply addR" onload="document.forms[0].title.focus();">
 
 <%
 	browseBar.setDomainName(spaceLabel);
@@ -109,11 +110,11 @@ function save()
  	out.println(board.printBefore());
 %>
 
-<table CELLPADDING=5 width="100%">
-	<form METHOD=POST NAME="myForm" ACTION="<%=routerUrl%>EffectiveCreateR">
+<form method="post" name="myForm" action="<%=routerUrl%>EffectiveCreateR">
+<table cellpadding="5" width="100%">
 	<tr>
 		<td class="txtlibform"><%=resource.getString("questionReply.reponse")%> :</td>
-		<td><input type="text" name="title" size="120" maxlength="100" value="">&nbsp;<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"></td>
+		<td><input type="text" name="title" size="120" maxlength="100" value="" />&nbsp;<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /></td>
 	</tr>
 	<tr valign="top">
 		<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
@@ -127,40 +128,33 @@ function save()
 		<td class="txtlibform"><%=resource.getString("GML.publisher")%> :</td>
 		<td><%=creator%></td>
 	</tr>
-	<% if (usedPrivateReplies)
-	{ %>
+	<% if (usedPrivateReplies) { %>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("questionReply.Rprivee")%> :</td>
-			<td><input type="radio" name="publicReply" value="0" checked></td>
+			<td><input type="radio" name="publicReply" value="0" checked /></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("questionReply.Rpublique")%> :</td>
-			<td><input type="radio" name="publicReply" value="1"></td>
+			<td><input type="radio" name="publicReply" value="1" /></td>
 		</tr>
-	<% }
-	else
-	{%>
-		<td><input type="hidden" name="publicReply" value="1"></td>
+	<% } else { %>
+		<td><input type="hidden" name="publicReply" value="1" /></td>
 	<% } %>
 	<tr>
-		<td colspan=2><span class="txt">(<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</span></td>
+		<td colspan=2><span class="txt">(<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /> : <%=resource.getString("GML.requiredField")%>)</span></td>
 	</tr>
-	</form>
 </table>
+</form>
 <% out.println(board.printAfter()); %>
 <br/>
-<center>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "ConsultQuestionQuery", false));
     out.println(buttonPane.print());
-%>
-</center>
 
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
+    out.println(frame.printAfter());
+	out.println(window.printAfter());
 %>
 <script type="text/javascript">
   <fmt:message key='configFile' var='configFile'/>

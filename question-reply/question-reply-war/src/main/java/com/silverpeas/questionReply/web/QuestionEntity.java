@@ -24,13 +24,13 @@
 package com.silverpeas.questionReply.web;
 
 import com.silverpeas.questionReply.model.Question;
-import com.silverpeas.rest.Exposable;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.SilverpeasRole;
+import static com.stratelia.webactiv.SilverpeasRole.*;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
-
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -38,9 +38,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-
-
-import static com.stratelia.webactiv.SilverpeasRole.*;
 
 /**
  *
