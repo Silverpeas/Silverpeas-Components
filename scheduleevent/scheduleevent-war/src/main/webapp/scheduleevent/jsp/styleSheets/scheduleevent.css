@@ -28,7 +28,8 @@
 	}
 
 td.txtlibform {
-	width:70px;}
+	width:100px;
+}
 
 .selected_date, #selected_hour {
 	float:left;
