@@ -271,8 +271,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String fileAlreadyOpened = request.getParameter("FileOpened");
         if (type.equals("Publication")
                 || type.equals("com.stratelia.webactiv.calendar.backbone.TodoDetail")
-                || type.equals("Attachment")
-                || type.equals("Document")) {
+                || type.equals("Attachment") || type.equals("Document")
+                || type.startsWith("Comment")) {
           KmeliaSecurity security = new KmeliaSecurity(kmelia.getOrganizationController());
           try {
             boolean accessAuthorized =
