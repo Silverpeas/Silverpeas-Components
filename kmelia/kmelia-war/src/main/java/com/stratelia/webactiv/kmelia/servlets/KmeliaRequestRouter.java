@@ -269,10 +269,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
         String fileAlreadyOpened = request.getParameter("FileOpened");
-        if (type.equals("Publication")
-                || type.equals("com.stratelia.webactiv.calendar.backbone.TodoDetail")
-                || type.equals("Attachment") || type.equals("Document")
-                || type.startsWith("Comment")) {
+        if (type != null && ("Publication".equals(type)
+                || "com.stratelia.webactiv.calendar.backbone.TodoDetail".equals(type)
+                || "Attachment".equals(type) || "Document".equals(type)
+                || type.startsWith("Comment"))) {
           KmeliaSecurity security = new KmeliaSecurity(kmelia.getOrganizationController());
           try {
             boolean accessAuthorized =
@@ -280,11 +280,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                         "Publication");
             if (accessAuthorized) {
               processPath(kmelia, id);
-              if (type.equals("Attachment")) {
+              if ("Attachment".equals(type)) {
                 String attachmentId = request.getParameter("AttachmentId");
                 request.setAttribute("AttachmentId", attachmentId);
                 destination = getDestination("ViewPublication", kmelia, request);
-              } else if (type.equals("Document")) {
+              } else if ("Document".equals(type)) {
                 String documentId = request.getParameter("DocumentId");
                 request.setAttribute("DocumentId", documentId);
                 destination = getDestination("ViewPublication", kmelia, request);
@@ -326,7 +326,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                     "root.MSG_GEN_PARAM_VALUE", "Document Not Found = " + e.getMessage(), e);
             destination = getDocumentNotFoundDestination(kmelia, request);
           }
-        } else if (type.equals("Node")) {
+        } else if ("Node".equals(type)) {
           if (kmaxMode) {
             // Simuler l'action d'un utilisateur ayant sélectionné la valeur id d'un axe
             // SearchCombination est un chemin /0/4/i
@@ -344,7 +344,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               destination = getDocumentNotFoundDestination(kmelia, request);
             }
           }
-        } else if (type.equals("Wysiwyg")) {
+        } else if ("Wysiwyg".equals(type)) {
           if (id.startsWith("Node")) {
             id = id.substring(5, id.length());
             request.setAttribute("Id", id);
