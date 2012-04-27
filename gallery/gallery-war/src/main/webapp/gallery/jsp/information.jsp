@@ -32,7 +32,7 @@
 	// récupération des paramètres :
       PhotoDetail photo = (PhotoDetail) request.getAttribute("Photo");
       String repertoire = (String) request.getAttribute("Repertoire");
-      List path = (List) request.getAttribute("Path");
+      List<NodeDetail> path = (List) request.getAttribute("Path");
       String userName = (String) request.getAttribute("UserName");
         
       boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
@@ -66,7 +66,7 @@
       String keyWord = "";
       String beginDate = "";
       String endDate = "";
-      Collection metaDataKeys = null;
+      Collection<String> metaDataKeys = null;
         
       String extensionAlt = "_preview.jpg";
         
@@ -126,7 +126,9 @@
         } else {
           endDate = "";
         }
-        metaDataKeys = photo.getMetaDataProperties();
+        if (viewMetadata) {
+          metaDataKeys = photo.getMetaDataProperties();
+        }
       }
         
       // déclaration des boutons
@@ -508,38 +510,34 @@ function hideTip() {
       		
       	<%
 				// AFFICHAGE des métadonnées
-				if (viewMetadata)
-				{	
-					if (metaDataKeys != null && metaDataKeys.size() > 0) 
+				if (metaDataKeys != null && !metaDataKeys.isEmpty()) 
+				{
+					%>
+					<br/>
+					<table align="left" border="0" CELLPADDING="5">
+					<%
+					MetaData metaData;
+					for (final String propertyLong : metaDataKeys)
 					{
-						%>
-						<br/>
-						<table align="left" border="0" CELLPADDING="5">
-						<%
-						Iterator it = metaDataKeys.iterator();
-						while (it.hasNext())
-						{
-							// traitement de la metaData
-							String propertyLong = (String) it.next();
-							// extraire le nom de la propertie
-							MetaData metaData = photo.getMetaData(propertyLong);
-							String mdLabel = metaData.getLabel();
-							String mdValue = metaData.getValue();
-							if (metaData.isDate())
-								mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
-							// affichage
-							%>
-								<tr align="left">
-									<td class="txtlibform" nowrap valign="top"><%=mdLabel%> :</td>
-									<td><%=mdValue%></td>
-								</tr>
-							<%
+						// extraire le nom de la propertie
+						metaData = photo.getMetaData(propertyLong);
+						String mdLabel = metaData.getLabel();
+						String mdValue = metaData.getValue();
+						if (metaData.isDate()) {
+							mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
 						}
+						// affichage
 						%>
-						</table>
+						<tr align="left">
+							<td class="txtlibform" nowrap valign="top"><%=mdLabel%> :</td>
+							<td><%=mdValue%></td>
+						</tr>
 						<%
 					}
-				} 
+					%>
+					</table>
+					<%
+				}
 		}
       	%>
 		<%=board.printAfter()%>
