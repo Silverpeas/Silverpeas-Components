@@ -20,15 +20,33 @@
  */
 package com.silverpeas.gallery.control.ejb;
 
+import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
+import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
+
+import java.rmi.RemoteException;
+import java.rmi.ServerException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+
+import org.silverpeas.search.SearchEngineFactory;
+
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.GalleryContentManager;
-import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.dao.OrderDAO;
 import com.silverpeas.gallery.dao.PhotoDAO;
-import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.MetaData;
@@ -65,23 +83,6 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
-
-import java.rmi.RemoteException;
-import java.rmi.ServerException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import org.silverpeas.search.SearchEngineFactory;
-
-import static com.stratelia.webactiv.util.JNDINames.*;
 
 /**
  * @author
@@ -273,7 +274,6 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     try {
       String id = PhotoDAO.createPhoto(con, photo);
       photo.getPhotoPK().setId(id);
-      ImageHelper.setMetaData(photo, "fr");
       createIndex(photo);
 
       // creation de l'emplacament
@@ -294,13 +294,6 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       SilverTrace.info("gallery", "GalleryBmEJB.updatePhoto()",
         "root.MSG_GEN_ENTER_METHOD", "PhotoPK = " + photo.toString());
       PhotoDAO.updatePhoto(con, photo);
-      // ajouter les metadatas pour les indexer
-      try {
-        ImageHelper.setMetaData(photo, "fr");
-      } catch (ImageMetadataException imex) {
-        SilverTrace.debug("gallery", "GalleryBmEJB.updatePhoto()", "gallery.EXTRACT_METADATA",
-          "photoId = " + photo);
-      }
       createIndex(photo);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.updatePhoto()",
@@ -531,12 +524,11 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   @Override
   public void indexGallery(String instanceId) {
     // parcourir tous les albums
-    Collection<AlbumDetail> albums = getAllAlbums(instanceId);
+    final Collection<AlbumDetail> albums = getAllAlbums(instanceId);
     if (albums != null) {
-      Iterator<AlbumDetail> it = albums.iterator();
-      while (it.hasNext()) {
-        // pour chaque album, parcourir toutes les photos
-        AlbumDetail album = it.next();
+      
+      // pour chaque album, parcourir toutes les photos
+      for (AlbumDetail album : albums) {
 
         // indexation de l'album
         try {
@@ -546,20 +538,9 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
             SilverpeasRuntimeException.ERROR, "gallery.MSG_INDEXALBUM", e);
         }
 
-        Collection<PhotoDetail> photos = getAllPhoto(album.getNodePK(), true);
+        final Collection<PhotoDetail> photos = getAllPhoto(album.getNodePK(), true);
         if (photos != null) {
-          Iterator<PhotoDetail> itP = photos.iterator();
-          while (itP.hasNext()) {
-            PhotoDetail photo = itP.next();
-            // ajout des métadata pour les indéxer
-            try {
-              ImageHelper.setMetaData(photo, "fr");
-            } catch (Exception e) {
-              SilverTrace.info("gallery", "GalleryBmEJB.indexGallery()",
-                "root.MSG_GEN_ENTER_METHOD",
-                "Impossible d'ajouter les métadata à la photo "
-                + photo.toString());
-            }
+          for (PhotoDetail photo : photos) {
             // indéxation de la photo
             createIndex(photo);
           }

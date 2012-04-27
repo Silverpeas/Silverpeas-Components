@@ -23,9 +23,11 @@
  */
 package com.silverpeas.gallery.model;
 
+import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileServerUtils;
 
@@ -35,6 +37,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class PhotoDetail implements SilverContentInterface, Serializable {
   /**
@@ -64,7 +67,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   Date beginDate;
   Date endDate;
   String permalink;
-  LinkedHashMap<String, MetaData> metaData = new LinkedHashMap<String, MetaData>();
+  LinkedHashMap<String, MetaData> metaData = null;
   String keyWord;
   Date beginDownloadDate;
   Date endDownloadDate;
@@ -377,18 +380,30 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   public void setPermalink(String permalink) {
     this.permalink = permalink;
   }
+  
+  private Map<String, MetaData> getAllMetaData() {
+    if (metaData == null) {
+      metaData = new LinkedHashMap<String, MetaData>();
+      try {
+        ImageHelper.setMetaData(this);
+      } catch (Exception e) {
+        SilverTrace.error("gallery", "PhotoDetail.getAllMetaData",
+            "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + getId());
+      }
+    }
+    return metaData;
+  }
 
   public void addMetaData(MetaData data) {
-    metaData.put(data.getProperty(), data);
+    getAllMetaData().put(data.getProperty(), data);
   }
 
   public MetaData getMetaData(String property) {
-    return metaData.get(property);
+    return getAllMetaData().get(property);
   }
 
   public Collection<String> getMetaDataProperties() {
-    //return metaData.keySet();
-    Collection<MetaData> values = metaData.values();
+    Collection<MetaData> values = getAllMetaData().values();
     Collection<String> properties = new ArrayList<String>();
     for (MetaData meta : values) {
       if (meta != null) {
@@ -422,7 +437,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
     return getName();
   }
 
-  public Iterator getLanguages() {
+  public Iterator<String> getLanguages() {
     return null;
   }
 

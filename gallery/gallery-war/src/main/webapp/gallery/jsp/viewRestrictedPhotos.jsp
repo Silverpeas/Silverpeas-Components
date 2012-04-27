@@ -29,14 +29,14 @@
 <%
   // récupération des paramètres :
   String searchKeyWord = (String) request.getAttribute("SearchKeyWord");
-  List photos = (List) request.getAttribute("Photos");
+  List<PhotoDetail> photos = (List) request.getAttribute("Photos");
   String profile = (String) request.getAttribute("Profile");
   int firstPhotoIndex = ((Integer) request.getAttribute("FirstPhotoIndex")).intValue();
   int nbPhotosPerPage = ((Integer) request.getAttribute("NbPhotosPerPage")).intValue();
   String taille = (String) request.getAttribute("Taille");
   Boolean isViewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
   Boolean isViewList = (Boolean) request.getAttribute("IsViewList");
-  Collection selectedIds = (Collection) request.getAttribute("SelectedIds");
+  Collection<String> selectedIds = (Collection) request.getAttribute("SelectedIds");
   boolean isViewNotVisible = ((Boolean) request.getAttribute("ViewVisible")).booleanValue();
   boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
     
@@ -51,7 +51,7 @@
     
   // initialisation de la pagination
   Pagination pagination = gef.getPagination(photos.size(), nbPhotosPerPage, firstPhotoIndex);
-  List affPhotos = photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
+  List<PhotoDetail> affPhotos = photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
     
   // création du chemin :
   String chemin = " ";
@@ -457,15 +457,13 @@
 			</tr>
 			<%
     }
-      Collection metaDataKeys = photo.getMetaDataProperties();
+      
       if (viewMetadata) {
-        if (metaDataKeys != null) {
-          Iterator itMeta = (Iterator) metaDataKeys.iterator();
-          while (itMeta.hasNext()) {
-            // traitement de la metaData
-            String property = (String) itMeta.next();
-              
-            MetaData metaData = photo.getMetaData(property);
+        final Collection<String> metaDataKeys = photo.getMetaDataProperties();
+        if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
+          MetaData metaData;
+          for (final String property : metaDataKeys) {
+            metaData = photo.getMetaData(property);
             String mdLabel = metaData.getLabel();
             String mdValue = metaData.getValue();
             if (metaData.isDate()) {
@@ -478,10 +476,10 @@
 				<td><%=mdValue%></td>
 			</tr>
 			<%
-				}
-											}
-										}
-										if (photo.getKeyWord() != null) {
+          }
+        }
+      }
+			if (photo.getKeyWord() != null) {
 			%>
 			<tr>
 				<td class="txtlibform" nowrap><%=resource
