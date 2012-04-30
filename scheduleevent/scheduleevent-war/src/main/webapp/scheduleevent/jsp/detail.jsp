@@ -1,4 +1,3 @@
-
 <%--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -124,10 +123,12 @@
 						<td class="txtlibform">${titleLabel}&nbsp;:</td>
 						<td colspan="3">${scheduleEventDetail.title}</td>
 					</tr>
-					<tr>
-						<td class="txtlibform">${descLabel}&nbsp;:</td>
-						<td colspan="3"><view:encodeHtmlParagraph string="${scheduleEventDetail.description}"/></td>
-					</tr>
+					<c:if test="${not empty scheduleEventDetail.description}">
+						<tr>
+							<td class="txtlibform">${descLabel}&nbsp;:</td>
+							<td colspan="3"><view:encodeHtmlParagraph string="${scheduleEventDetail.description}"/></td>
+						</tr>
+					</c:if>
 					<tr>
 						<td class="txtlibform"><fmt:message key="scheduleevent.form.listcontributors" />&nbsp;:</td>
 						<td>${scheduleEventDetail.subscribersCount}</td>
