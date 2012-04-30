@@ -216,12 +216,7 @@ public class GalleryDragAndDrop extends HttpServlet {
 
     // Création de la preview et des vignettes sur disque
     ImageHelper.processImage(newPhoto, file, watermark, watermarkHD, watermarkOther);
-    try {
-      ImageHelper.setMetaData(newPhoto, "fr");
-    } catch (Exception e) {
-      SilverTrace.info("gallery", "GalleryDragAndDrop.createPhoto",
-        "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + photoId);
-    }
+
     // Modification de la photo pour mise à jour dimension
     getGalleryBm().updatePhoto(newPhoto);
     return photoId;
