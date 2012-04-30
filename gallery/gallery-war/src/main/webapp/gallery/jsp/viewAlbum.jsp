@@ -31,7 +31,7 @@
 			AlbumDetail currentAlbum = (AlbumDetail) request.getAttribute("CurrentAlbum");
 			String userId = (String) request.getAttribute("UserId");
 			String profile = (String) request.getAttribute("Profile");
-			List path = (List) request.getAttribute("Path");
+			List<NodeDetail> path = (List) request.getAttribute("Path");
 			int firstPhotoIndex = ((Integer) request.getAttribute("FirstPhotoIndex")).intValue();
 			int nbPhotosPerPage = ((Integer) request.getAttribute("NbPhotosPerPage")).intValue();
 			String taille = (String) request.getAttribute("Taille");
@@ -43,7 +43,7 @@
 			boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
 			boolean isGuest = ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 			boolean isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
-			List      albums      = (List) request.getAttribute("Albums");
+			List<AlbumDetail> albums = (List) request.getAttribute("Albums");
 
 			session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 			
@@ -690,19 +690,18 @@ function uploadCompleted(s)  {
 						<td><%=photo.getAuthor()%></td>
 					</tr>
 					<%}
-									Collection metaDataKeys = photo.getMetaDataProperties();
 									if (viewMetadata) {
-										if (metaDataKeys != null) {
-											Iterator itMeta = metaDataKeys.iterator();
-											while (itMeta.hasNext()) {
+										final Collection<String> metaDataKeys = photo.getMetaDataProperties();
+										if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
+											MetaData metaData;
+											for (final String property : metaDataKeys) {
 												// traitement de la metaData
-												String property = (String) itMeta.next();
-
-												MetaData metaData = photo.getMetaData(property);
+												metaData = photo.getMetaData(property);
 												String mdLabel = metaData.getLabel();
 												String mdValue = metaData.getValue();
-												if (metaData.isDate())
+												if (metaData.isDate()) {
 													mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
+												}
 												// affichage%>
 					<tr>
 						<td class="txtlibform" nowrap><%=mdLabel%> :</td>
