@@ -65,7 +65,7 @@
 <head>
   <view:looknfeel/>
   <view:includePlugin name="datepicker"/>
-	<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+  <view:includePlugin name="wysiwyg"/>
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 	<% if (formUpdate != null) { 

@@ -62,7 +62,7 @@
 <%
    updateForm.displayScripts(out, context);
 %>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+<view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">
 	function goToMain() {
 		if (window.confirm("<%=resource.getString("whitePages.messageCancelCreate")%>")) {

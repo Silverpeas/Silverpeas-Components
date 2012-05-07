@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.util.*"%>
 <%@ page import="com.silverpeas.whitePages.model.*"%>
 <%@ page import="com.silverpeas.form.*"%>
@@ -46,11 +46,11 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<view:looknfeel/>
 <%
-   out.println(gef.getLookStyleSheet());
    updateForm.displayScripts(out, context);
 %>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+<view:includePlugin name="wysiwyg"/>
 <script language="JavaScript">
 <!--	
 	function B_VALIDER_ONCLICK(idCard) {

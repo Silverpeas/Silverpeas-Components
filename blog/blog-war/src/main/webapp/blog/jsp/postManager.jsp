@@ -82,7 +82,6 @@
         <view:includePlugin name="datepicker"/>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-		<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
     <script type="text/javascript">
 			
 			// fonctions de contr�le des zones du formulaire avant validation

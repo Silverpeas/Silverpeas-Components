@@ -26,29 +26,25 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkQuickInfo.jsp" %>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController" %>
-<%@ page import="com.stratelia.webactiv.util.FileRepositoryManager" %>
-<%@ page import="com.stratelia.webactiv.util.fileFolder.FileFolderManager" %>
-<%@ page import="com.stratelia.webactiv.util.fileFolder.FileFolderManager" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
 <%@ page import="com.silverpeas.util.EncodeHelper" %>
 
 <%
-  PublicationDetail quickInfoDetail = (PublicationDetail) request.getAttribute("info");
-  String pubId   = (String)request.getAttribute("Id");
+  	PublicationDetail quickInfoDetail = (PublicationDetail) request.getAttribute("info");
+  	String pubId   = (String)request.getAttribute("Id");
 	
-  String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("quickinfo", quickinfo.getSpaceId(), quickinfo.getComponentId());
+  	String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("quickinfo", quickinfo.getSpaceId(), quickinfo.getComponentId());
 
-  boolean isNewSubscription = true;
-  String codeHtml = "";
-  if (pubId != null && pubId != "-1") {
-       isNewSubscription = false;
-			if (quickInfoDetail.getWysiwyg() != null && !"".equals(quickInfoDetail.getWysiwyg()))
+  	boolean isNewSubscription = true;
+  	String codeHtml = "";
+	if (pubId != null && pubId != "-1") {
+       	isNewSubscription = false;
+		if (quickInfoDetail.getWysiwyg() != null && !"".equals(quickInfoDetail.getWysiwyg())) {
 	       codeHtml = quickInfoDetail.getWysiwyg();
-      else if (quickInfoDetail.getDescription() != null)
+		} else if (quickInfoDetail.getDescription() != null) {
 	       codeHtml = EncodeHelper.javaStringToHtmlParagraphe(quickInfoDetail.getDescription());
-  }
-
+		}
+  	}
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -57,9 +53,9 @@
 <title>QuickInfo - Edition</title>
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
+<view:includePlugin name="wysiwyg"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <script type="text/javascript">
 function isCorrectForm() {
  	var errorMsg = "";
@@ -148,6 +144,10 @@ function ClipboardCopyOne() {
 	document.quickInfoForm.target = "IdleFrame";
 	document.quickInfoForm.submit();
 }
+
+$(document).ready(function() {
+	<view:wysiwyg replace="Description" language="<%=language%>" width="600" height="300" toolbar="quickinfo"/>
+});
 </script>
 </head>
 <body id="quickinfo">
@@ -183,7 +183,7 @@ function ClipboardCopyOne() {
         	<td nowrap="nowrap" class="txtlibform"><%=resources.getString("GML.title")%>:</td>
             <td><input type="text" size="97" id="Name" name="Name" maxlength="<%=DBUtil.getTextFieldLength()%>" <%
                         if (quickInfoDetail != null)
-                          out.println("value=\""+Encode.javaStringToHtmlString(quickInfoDetail.getName())+"\"");
+                          out.println("value=\""+EncodeHelper.javaStringToHtmlString(quickInfoDetail.getName())+"\"");
                       %>/>
                       &nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" alt=""/></td>
          </tr>
@@ -230,7 +230,7 @@ function ClipboardCopyOne() {
                 button = gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
 								buttonPane.addButton(button);
               %>
-            <br/><center><%=buttonPane.print()%></center><br/>
+            <br/><%=buttonPane.print()%><br/>
             </td>
           </tr>
         </table>
@@ -252,22 +252,6 @@ function ClipboardCopyOne() {
       <input type="hidden" name="Id" value="<%=quickInfoDetail.getPK().getId()%>"/>
   <% } %>
 </form>
-<%                    
-out.println("<script type=\"text/javascript\">");
-out.println("var oFCKeditor = new FCKeditor('Description');");
-out.println("oFCKeditor.Width = \"500\";");
-out.println("oFCKeditor.Height = \"300\";");
-out.println("oFCKeditor.BasePath = \""+URLManager.getApplicationURL()+"/wysiwyg/jsp/FCKeditor/\" ;");
-out.println("oFCKeditor.DisplayErrors = true;");
-out.println("oFCKeditor.Config[\"AutoDetectLanguage\"] = false");
-out.println("oFCKeditor.Config[\"DefaultLanguage\"] = \""+quickinfo.getLanguage()+"\";");
-String configFile = settings.getString("configFile", URLManager.getApplicationURL() +"/wysiwyg/jsp/javaScript/myconfig.js");
-out.println("oFCKeditor.Config[\"CustomConfigurationsPath\"] = \""+configFile+"\";");
-out.println("oFCKeditor.ToolbarSet = 'quickinfo';");
-out.println("oFCKeditor.Config[\"ToolbarStartExpanded\"] = true;");
-out.println("oFCKeditor.ReplaceTextarea();");
-out.println("</script>");
-%>
 </div>
 </body>
 </html>

@@ -48,7 +48,7 @@
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel />
 <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
-<script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
+<view:includePlugin name="wysiwyg"/>
 <script language="JavaScript">
 <!--
 function isCorrectForm() {
@@ -68,8 +68,7 @@ function isCorrectForm() {
            	errorNb++;
 		}
 
-     switch(errorNb)
-     {
+     switch(errorNb) {
         case 0 :
             result = true;
             break;
@@ -87,22 +86,26 @@ function isCorrectForm() {
      return result;
 
 }
-function save()
-{
-	if (isCorrectForm())
+function save() {
+	if (isCorrectForm()) {
 		document.forms[0].submit();
+	}
 }
+
+$(document).ready(function() {
+	<view:wysiwyg replace="content" language="<%=language%>" width="600" height="300" toolbar="questionreply"/>
+});
 //-->
 </script>
 </head>
-<body id="<%=componentId%>" class="questionReply updateR" onLoad="document.forms[0].title.focus();">
+<body id="<%=componentId%>" class="questionReply updateR" onload="document.forms[0].title.focus();">
 
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setPath(resource.getString("questionReply.modif"));
 
 	tabbedPane.addTab(resource.getString("GML.head"), "#", true, false);
-  tabbedPane.addTab(resource.getString("GML.attachments"), "ViewAttachments", false);
+  	tabbedPane.addTab(resource.getString("GML.attachments"), "ViewAttachments", false);
 
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
@@ -110,9 +113,8 @@ function save()
 	out.println(board.printBefore());
 %>
 
-
+<form method="post" name="myForm" action="EffectiveUpdateR">
 <table cellpadding="5" width="100%">
-	<form method="post" name="myForm" action="EffectiveUpdateR">
 	<tr>
 		<td class="txtlibform"><%=resource.getString("questionReply.reponse")%>&nbsp;:</td>
 		<td><input type="text" name="title" size="120" maxlength="100" value="<%=title%>" /> <img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /></td>
@@ -132,8 +134,8 @@ function save()
 	<tr>
 		<td colspan=2><span class="txt">(<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /> : <%=resource.getString("GML.requiredField")%>)</span></td>
 	</tr>
-	</form>
 </table>
+</form>
 <% out.println(board.printAfter()); %>
 <br />
 <div class="buttonPane">
@@ -149,22 +151,5 @@ function save()
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-<script type="text/javascript">
-  <fmt:message key='configFile' var='configFile'/>
-  <c:if test="${configFile eq '???configFile???'}">
-  <c:url value="/wysiwyg/jsp/javaScript/myconfig.js" var="configFile"/>
-  </c:if>
-  var oFCKeditor = new FCKeditor('content');
-  oFCKeditor.Width = "500";
-  oFCKeditor.Height = "300";
-  oFCKeditor.BasePath = "<c:url value='/wysiwyg/jsp/FCKeditor/'/>";
-  oFCKeditor.DisplayErrors = true;
-  oFCKeditor.Config["AutoDetectLanguage"] = false;
-  oFCKeditor.Config["DefaultLanguage"] = "<c:out value='${language}'/>";
-  oFCKeditor.Config["CustomConfigurationsPath"] = "<c:out value='${configFile}'/>"
-  oFCKeditor.ToolbarSet = 'questionreply';
-  oFCKeditor.Config["ToolbarStartExpanded"] = true;
-  oFCKeditor.ReplaceTextarea();
-</script>
 </body>
 </html>
