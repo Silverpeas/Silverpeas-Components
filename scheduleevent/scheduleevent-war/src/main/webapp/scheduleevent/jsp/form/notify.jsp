@@ -27,6 +27,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<c:set var="sessionController">Silverpeas_ScheduleEvent</c:set>
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<%@ include file="dateFormat.jspf"%>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<c:set var="browseContext" value="${requestScope.browseContext}" />
+
+<c:set var="currentScheduleEvent" value="${requestScope.currentScheduleEvent}" />
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -48,18 +58,8 @@
     	document.confirmForm.submit();
     }
   </script>
-<link rel='stylesheet' type='text/css'
-	href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
+<link rel="stylesheet" type="text/css" href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
 </head>
-<c:set var="sessionController">Silverpeas_ScheduleEvent</c:set>
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
-<%@ include file="dateFormat.jspf"%>
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<c:set var="browseContext" value="${requestScope.browseContext}" />
-
-<c:set var="currentScheduleEvent" value="${requestScope.currentScheduleEvent}" />
-
 <body class="scheduleEvent" id="scheduleEvent_notify">
 
 <fmt:message key="scheduleevent.form.title.screen4" var="scheduleEventTitle" />
@@ -109,7 +109,6 @@
 		</table>
 	</div>
 
-	<br/>
 	<p class="txtnav"><fmt:message key="scheduleevent.form.selectContributors" /></p>
 
 	<div id="contributorsInfos">

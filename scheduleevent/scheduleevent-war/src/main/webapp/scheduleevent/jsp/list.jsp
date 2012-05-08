@@ -28,16 +28,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<%@ include file="form/dateFormat.jspf"%>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
 <%
 ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.getAttribute("ScheduleEvent");
 %>
 <c:set var="userId" value="<%=seScc.getUserId()%>"/>
   
-<html>
-  <fmt:setLocale value="${sessionScope[sessionController].language}" />
-  <%@ include file="form/dateFormat.jspf"%>
-  <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-  <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <view:looknfeel />
     <script type="text/javascript">
@@ -60,7 +62,7 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
 	    }
 
 	    function getDetail(id){
-	      document.utilForm.action="<c:url value="/Rscheduleevent/jsp/Detail"/>";
+	      	document.utilForm.action="<c:url value="/Rscheduleevent/jsp/Detail"/>";
 	    	document.utilForm.scheduleEventId.value=id;
 	    	document.utilForm.submit();
 	    }
@@ -68,7 +70,7 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   </head>
   
   
-  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+  <body>
   
   <fmt:message key="scheduleevent" var="scheduleEventTitle" />
   <view:browseBar>
@@ -81,8 +83,6 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
     <view:operation altText="${addScheduleEventAlt}" icon="${addScheduleEventIconPath}" action="${'javascript: addScheduleEvent();'}" />
   </view:operationPane>
   
-  <fmt:message key="scheduleevent.icons.see" var="seeIcon" bundle="${icons}" />
-  <fmt:message key="scheduleevent.icons.see.alt" var="seeIconAlt" />
   <fmt:message key="scheduleevent.icons.open" var="openIcon" bundle="${icons}" />
   <fmt:message key="scheduleevent.icons.open.alt" var="openIconAlt" />
   <fmt:message key="scheduleevent.icons.close" var="closeIcon" bundle="${icons}" />
@@ -110,7 +110,7 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   		<c:if test="${not empty requestScope.scheduleEventList}">
     		<c:forEach items="${requestScope.scheduleEventList}" var="event" varStatus="eventIndex">
       		<tr align="center">
-      			<td valign="top" align="center" class="ArrayCell"><a href="javascript:getDetail('${event.id}');">${event.title}</a>&nbsp;<a href="<c:url value="/ScheduleEvent/${event.id}"/>"><img src="${linkIcon}" border="0" align="bottom" alt="${linkIconAlt}" title="${linkIconAlt}"></a><c:if test="${event.status == 0}">&nbsp;<img alt="${closedIconAlt}" title="${closedIconAlt}" src="${closedIcon}" height="15" width="15"/></c:if></td>
+      			<td valign="top" align="center" class="ArrayCell"><a href="javascript:getDetail('${event.id}');">${event.title}</a>&nbsp;<a href="<c:url value="/ScheduleEvent/${event.id}"/>"><img src="${linkIcon}" border="0" align="bottom" alt="${linkIconAlt}" title="${linkIconAlt}"/></a><c:if test="${event.status == 0}">&nbsp;<img alt="${closedIconAlt}" title="${closedIconAlt}" src="${closedIcon}" height="15" width="15"/></c:if></td>
       			<td valign="top" align="center" class="ArrayCell"><view:formatDate value="${event.creationDate}" /></td>
       			<%
       			ScheduleEvent currentSe = (ScheduleEvent) pageContext.getAttribute("event");
