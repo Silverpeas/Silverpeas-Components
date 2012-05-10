@@ -32,7 +32,7 @@
 	// récupération des paramètres :
       PhotoDetail photo = (PhotoDetail) request.getAttribute("Photo");
       String repertoire = (String) request.getAttribute("Repertoire");
-      List path = (List) request.getAttribute("Path");
+      List<NodeDetail> path = (List) request.getAttribute("Path");
       String userName = (String) request.getAttribute("UserName");
         
       boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
@@ -66,7 +66,7 @@
       String keyWord = "";
       String beginDate = "";
       String endDate = "";
-      Collection metaDataKeys = null;
+      Collection<String> metaDataKeys = null;
         
       String extensionAlt = "_preview.jpg";
         
@@ -126,7 +126,9 @@
         } else {
           endDate = "";
         }
-        metaDataKeys = photo.getMetaDataProperties();
+        if (viewMetadata) {
+          metaDataKeys = photo.getMetaDataProperties();
+        }
       }
         
       // déclaration des boutons
@@ -139,7 +141,7 @@
       }
 	
 %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 		<head>
           <view:looknfeel/>
@@ -489,8 +491,8 @@ function hideTip() {
     //out.println(board.printBefore());
     
 %>
-<FORM Name="photoForm" action="<%=action%>" Method="POST" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
-<table CELLPADDING="5" WIDTH="100%">
+<form name="photoForm" action="<%=action%>" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+<table cellpadding="5" width="100%">
 <tr> 
 	<td valign="top"> 
 	<%if (photo != null) { %>
@@ -508,38 +510,34 @@ function hideTip() {
       		
       	<%
 				// AFFICHAGE des métadonnées
-				if (viewMetadata)
-				{	
-					if (metaDataKeys != null && metaDataKeys.size() > 0) 
+				if (metaDataKeys != null && !metaDataKeys.isEmpty()) 
+				{
+					%>
+					<br/>
+					<table align="left" border="0" cellpadding="5">
+					<%
+					MetaData metaData;
+					for (final String propertyLong : metaDataKeys)
 					{
-						%>
-						<br/>
-						<table align="left" border="0" CELLPADDING="5">
-						<%
-						Iterator it = metaDataKeys.iterator();
-						while (it.hasNext())
-						{
-							// traitement de la metaData
-							String propertyLong = (String) it.next();
-							// extraire le nom de la propertie
-							MetaData metaData = photo.getMetaData(propertyLong);
-							String mdLabel = metaData.getLabel();
-							String mdValue = metaData.getValue();
-							if (metaData.isDate())
-								mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
-							// affichage
-							%>
-								<tr align="left">
-									<td class="txtlibform" nowrap valign="top"><%=mdLabel%> :</td>
-									<td><%=mdValue%></td>
-								</tr>
-							<%
+						// extraire le nom de la propertie
+						metaData = photo.getMetaData(propertyLong);
+						String mdLabel = metaData.getLabel();
+						String mdValue = metaData.getValue();
+						if (metaData.isDate()) {
+							mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
 						}
+						// affichage
 						%>
-						</table>
+						<tr align="left">
+							<td class="txtlibform" nowrap="nowrap" valign="top"><%=mdLabel%> :</td>
+							<td><%=mdValue%></td>
+						</tr>
 						<%
 					}
-				} 
+					%>
+					</table>
+					<%
+				}
 		}
       	%>
 		<%=board.printAfter()%>
@@ -550,9 +548,9 @@ function hideTip() {
 		<table align="left">
 			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("gallery.photo")%> :</td>
-		      	<td><input type="file" name="WAIMGVAR0" size="60">
+		      	<td><input type="file" name="WAIMGVAR0" size="60"/>
 		      		<% if (vignette_url == null) { %>
-			      		<IMG src="<%=resource.getIcon("gallery.obligatoire")%>" width="5" height="5" border="0">
+			      		<img src="<%=resource.getIcon("gallery.obligatoire")%>" width="5" height="5" border="0"/>
 		      		<% } %>
 		      	</td>
 			</tr> 			
@@ -562,29 +560,30 @@ function hideTip() {
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageTitle%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(title)%>">
-					<input type="hidden" name="PhotoId" value="<%=photoId%>"> </td>
+				<td><input type="text" name="<%=ParameterNames.ImageTitle%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(title)%>"/>
+					<input type="hidden" name="PhotoId" value="<%=photoId%>"/> </td>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("GML.description")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageDescription%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(description)%>" ></TD>
+				<td><input type="text" name="<%=ParameterNames.ImageDescription%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(description)%>"/></td>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("GML.author")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageAuthor%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(author)%>" ></TD>
+				<td><input type="text" name="<%=ParameterNames.ImageAuthor%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(author)%>"/></td>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("gallery.keyWord")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageKeyWord%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(keyWord)%>" ></TD>
+				<td><input type="text" name="<%=ParameterNames.ImageKeyWord%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(keyWord)%>"/></td>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("gallery.download")%> :</td>
 				<%
 					String downloadCheck = "";
-					if (download)
-						downloadCheck = "checked";
+					if (download) {
+						downloadCheck = "checked=\"checked\"";
+					}
 				%>
-			    <td><input type="checkbox" name="<%=ParameterNames.ImageDownload%>" value="true" <%=downloadCheck%>></td>
+			    <td><input type="checkbox" name="<%=ParameterNames.ImageDownload%>" value="true" <%=downloadCheck%>/></td>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.beginDownloadDate")%> :</td>
@@ -604,12 +603,12 @@ function hideTip() {
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.creationDate")%> :</td>
-				<TD><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=creatorName%></TD>
+				<td><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=creatorName%></td>
 			</tr>
 			<% if (updateDate != null && updateName != null) { %>
 				<tr align="left">
 					<td class="txtlibform"><%=resource.getString("gallery.updateDate")%> :</td>
-					<TD><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=updateName%></TD>
+					<td><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=updateName%></td>
 				</tr>
 			<% } %>
 		</table>
@@ -634,11 +633,10 @@ function hideTip() {
 </table>	
 </form>
 <% 
-	//out.println(board.printAfter());
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+	out.println(buttonPane.print());
  	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>

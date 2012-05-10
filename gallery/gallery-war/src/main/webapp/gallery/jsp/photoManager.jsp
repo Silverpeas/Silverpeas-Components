@@ -130,25 +130,23 @@
     
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 		<head>
           <view:looknfeel/>
           <view:includePlugin name="datepicker"/>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-		<script language="javascript">
+		<script type="text/javascript">
 	
 			// fonctions de contrôle des zones du formulaire avant validation
-			function sendData() 
-			{
-				if (isCorrectForm()) 
-				{
+			function sendData() {
+				if (isCorrectForm()) {
 	        		document.photoForm.submit();
 	    		}
 			}
 		
-			function isCorrectForm() 
-			{
+			function isCorrectForm() {
 		     	var errorMsg = "";
 		     	var errorNb = 0;
 		     	var title = stripInitialWhitespace(document.photoForm.<%=ParameterNames.ImageTitle%>.value);
@@ -162,18 +160,15 @@
      			var beginDownloadDateOK = true;
      			var beginDateOK = true;
 		     	
-		     	if (title.length > 255) 
-		     	{ 
+		     	if (title.length > 255) { 
 					errorMsg+="  - '<%=resource.getString("GML.title")%>'  <%=resource.getString("gallery.MsgTaille")%>\n";
 		           	errorNb++;
 		     	}
-		   		if (descr.length > 255) 
-		     	{
+		   		if (descr.length > 255) {
 		     		errorMsg+="  - '<%=resource.getString("GML.description")%>'  <%=resource.getString("gallery.MsgTaille")%>\n";
 		           	errorNb++;
 		     	}				
-		     	if (<%=(vignette_url == null)%> && file == "")
-				{
+		     	if (<%=(vignette_url == null)%> && file == "") {
 	           		errorMsg+="  - '<%=resource.getString("gallery.photo")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
 	           		errorNb++;
 		     	}
@@ -238,17 +233,14 @@
 			     }
 		     	
 		     	// vérifier que le document est bien une image
-		     	if (file != "")
-		     	{
+		     	if (file != "")	{
  					var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
- 					if (verif.exec(file) == null)
- 					{
+ 					if (verif.exec(file) == null) {
   						errorMsg+="  - '<%=resource.getString("gallery.photo")%>'  <%=resource.getString("gallery.format")%>\n";
 	           			errorNb++;
  					}
  				}
-		     	switch(errorNb) 
-		     	{
+		     	switch(errorNb) {
 		        	case 0 :
 		            	result = true;
 		            	break;
@@ -268,7 +260,7 @@
 		</script>
 		
 		</head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="javascript:document.photoForm.WAIMGVAR0.focus();">
+<body onload="javascript:document.photoForm.WAIMGVAR0.focus();">
 <%
     
   browseBar.setDomainName(spaceLabel);
@@ -302,14 +294,14 @@
   out.println(board.printBefore());
       
 %>
-<FORM Name="photoForm" action="<%=action%>" Method="POST" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
+<form name="photoForm" action="<%=action%>" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 
-<table CELLPADDING="5" WIDTH="100%">
+<table cellpadding="5" width="100%">
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("gallery.photo")%> :</td>
-      	<td><input type="file" name="WAIMGVAR0" size="60">
+      	<td><input type="file" name="WAIMGVAR0" size="60"/>
       		<% if (vignette_url == null) { %>
-	      		<IMG src="<%=resource.getIcon("gallery.obligatoire")%>" width="5" height="5" border="0">
+	      		<img src="<%=resource.getIcon("gallery.obligatoire")%>" width="5" height="5" border="0"/>
       		<% } %>
       	</td>
 	</tr>
@@ -320,7 +312,7 @@
 	%> 
 		<tr>
 			<td class="txtlibform"><%=resource.getString("gallery.vignette")%> : </td>
-      		<td><IMG SRC="<%=vignette_url%>"></td>
+      		<td><img src="<%=vignette_url%>"/></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("gallery.nomFic")%> :</td>
@@ -329,29 +321,30 @@
 	<% } %>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>
-		<TD><input type="text" name="<%=ParameterNames.ImageTitle%>" size="60" maxlength="150" value="<%=title%>">
-			<input type="hidden" name="PhotoId" value="<%=photoId%>"> </td>
+		<td><input type="text" name="<%=ParameterNames.ImageTitle%>" size="60" maxlength="150" value="<%=title%>"/>
+			<input type="hidden" name="PhotoId" value="<%=photoId%>"/> </td>
 	</tr>
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("GML.description")%> :</td>
-		<TD><input type="text" name="<%=ParameterNames.ImageDescription%>" size="60" maxlength="150" value="<%=description%>" ></TD>
+		<td><input type="text" name="<%=ParameterNames.ImageDescription%>" size="60" maxlength="150" value="<%=description%>"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("GML.author")%> :</td>
-		<TD><input type="text" name="<%=ParameterNames.ImageAuthor%>" size="60" maxlength="150" value="<%=author%>" ></TD>
+		<td><input type="text" name="<%=ParameterNames.ImageAuthor%>" size="60" maxlength="150" value="<%=author%>"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("gallery.keyWord")%> :</td>
-		<TD><input type="text" name="<%=ParameterNames.ImageKeyWord%>" size="60" maxlength="150" value="<%=keyWord%>" ></TD>
+		<td><input type="text" name="<%=ParameterNames.ImageKeyWord%>" size="60" maxlength="150" value="<%=keyWord%>"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("gallery.download")%> :</td>
 		<%
 			String downloadCheck = "";
-			if (download)
-				downloadCheck = "checked";
+			if (download) {
+				downloadCheck = "checked=\"checked\"";
+			}
 		%>
-	    <td><input type="checkbox" name="<%=ParameterNames.ImageDownload%>" value="true" <%=downloadCheck%>></td>
+	    <td><input type="checkbox" name="<%=ParameterNames.ImageDownload%>" value="true" <%=downloadCheck%>/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("gallery.beginDownloadDate")%> :</td>
@@ -373,23 +366,24 @@
 		<td class="txtlibform"> <%=resource.getString("gallery.albumLabel")%> :</td>
 		<%
 			String albumLabelCheck = "";
-			if (albumLabel)
+			if (albumLabel) {
 				albumLabelCheck = "checked";
+			}
 		%>
 	    <td><input type="checkbox" name="AlbumLabel" value="true" <%=albumLabelCheck%>></td>
 	</tr>-->
 	<tr>
 		<td class="txtlibform"><%=resource.getString("gallery.creationDate")%> :</td>
-		<TD><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=creatorName%></TD>
+		<td><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=creatorName%></td>
 	</tr>
 	<% if (updateDate != null && updateName != null) { %>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("gallery.updateDate")%> :</td>
-		<TD><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=updateName%></TD>
+		<td><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=updateName%></td>
 	</tr>
 	<% } %>
   	<tr>
-  		<td colspan="2">( <img border="0" src=<%=resource.getIcon("gallery.obligatoire")%> width="5" height="5"> : Obligatoire )</td>
+  		<td colspan="2">( <img border="0" src=<%=resource.getIcon("gallery.obligatoire")%> width="5" height="5"/> : Obligatoire )</td>
   	</tr>
 </table>
 </form>
@@ -398,10 +392,9 @@
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-	out.println("<br/><center>"+buttonPane.print()+"</center>br/>");
+	out.println(buttonPane.print());
  	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-
 </body>
 </html>

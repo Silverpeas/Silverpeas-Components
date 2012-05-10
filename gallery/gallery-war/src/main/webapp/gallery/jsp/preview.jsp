@@ -30,7 +30,7 @@
 <%
   // récupération des paramètres :
   PhotoDetail photo = (PhotoDetail) request.getAttribute("Photo");
-  List path = (List) request.getAttribute("Path");
+  List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
   String profile = (String) request.getAttribute("Profile");
   Integer rang = (Integer) request.getAttribute("Rang");
   Integer albumSize = (Integer) request.getAttribute("NbPhotos");
@@ -85,7 +85,10 @@
   String endDownloadDate = resource.getOutputDate(photo.getEndDownloadDate());
   String nbComments = nbCom.toString();
   String link = photo.getPermalink();
-  Collection metaDataKeys = photo.getMetaDataProperties();
+  Collection<String> metaDataKeys = null;
+  if (viewMetadata) {
+    metaDataKeys = photo.getMetaDataProperties();
+  }
   String keyWord = photo.getKeyWord();
   String beginDate = resource.getOutputDate(photo.getBeginDate());
   String endDate = resource.getOutputDate(photo.getEndDate());
@@ -104,7 +107,8 @@
     
   Board board = gef.getBoard();
 %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <%
@@ -146,7 +150,7 @@ function goToNotify(url)
 
 </script>
 </head>
-<body class="yui-skin-sam" bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body class="yui-skin-sam">
   <%
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
@@ -211,8 +215,8 @@ function goToNotify(url)
     out.println(tabbedPane.print());
     out.println(frame.printBefore());
   %>
-<table CELLPADDING=5 WIDTH="100%">
-<FORM Name="photoForm" Method="POST" accept-charset="UTF-8">
+<form name="photoForm" method="post" accept-charset="UTF-8">
+<table cellpadding="5" width="100%">
 	<tr>
 	<!-- AFFICHAGE des boutons de navigation -->
 		<td align="center">
@@ -220,17 +224,17 @@ function goToNotify(url)
 				<tr>
 					<td align="center" width="25">
 						<%	if ( !debut ) { %>
-							<a href="PreviousPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowLeft.gif" align="middle" border=0 alt="<%=resource.getString("gallery.previous")%>" title="<%=resource.getString("gallery.previous")%>"></a>
+							<a href="PreviousPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowLeft.gif" align="middle" border="0" alt="<%=resource.getString("gallery.previous")%>" title="<%=resource.getString("gallery.previous")%>"/></a>
 						<% } else { %>
 							&nbsp;
 						<% } %>
 					</td>
-					<td align="center" nowrap class="txtlibform" width="50">
-						<%=rang.intValue()+1%> / <%=albumSize.intValue()%>
+					<td align="center" nowrap="nowrap">
+						<span class="txtnav"><span class="currentPage"><%=rang.intValue()+1%></span> / <%=albumSize.intValue()%></span>
 					</td>
 					<td align="center" width="25">
 						<% if ( !fin ) { %>
-							<a href="NextPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowRight.gif" align="middle" border=0 alt="<%=resource.getString("gallery.next")%>" title="<%=resource.getString("gallery.next")%>"></a>
+							<a href="NextPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowRight.gif" align="middle" border="0" alt="<%=resource.getString("gallery.next")%>" title="<%=resource.getString("gallery.next")%>"/></a>
 						<% } else { %>
 							&nbsp;
 						<% } %>
@@ -251,7 +255,7 @@ function goToNotify(url)
 					%>
 					<table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto"><tr><td align="center">
 						<table cellspacing="1" cellpadding="5" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
-							<center><IMG SRC="<%=preview_url%>"></center>
+							<center><img src="<%=preview_url%>"/></center>
 						</td></tr></table>
 					</td></tr></table>
 					<%
@@ -264,37 +268,37 @@ function goToNotify(url)
 	<tr>
 		<td align="center">
 			<%=board.printBefore()%>
-			<table align="left" border="0" CELLPADDING="5">
+			<table align="left" border="0" cellpadding="5">
 				<!-- AFFICHAGE des données de la photo -->
 				<%	if ( link != null && !link.equals("")) {	%>
 					<tr align="left">
-						<td class="txtlibform" nowrap><%=resource.getString("gallery.permalink")%> :</td>
-						<td><a href=<%=link%> ><img src=<%=resource.getIcon("gallery.link")%> border="0" alt='<%=resource.getString("gallery.CopyPhotoLink")%>' title='<%=resource.getString("gallery.CopyPhotoLink")%>' ></a></td>
+						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.permalink")%> :</td>
+						<td><a href="<%=link%>" ><img src=<%=resource.getIcon("gallery.link")%> border="0" alt='<%=resource.getString("gallery.CopyPhotoLink")%>' title='<%=resource.getString("gallery.CopyPhotoLink")%>'/></a></td>
 					</tr>
 				<%	}	
 				if ( title != null && !title.equals(name)) {	%>
 					<tr align="left">
-						<td class="txtlibform" nowrap><%=resource.getString("GML.title")%> :</td>
+						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.title")%> :</td>
 						<td><%=title%></td>
 					</tr>
 				<%	}	
 				if ( description != null && !description.equals("") ) {	%>
 					<tr align="left">
-						<td class="txtlibform" nowrap><%=resource.getString("GML.description")%> :</td>
+						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.description")%> :</td>
 						<td><%=description%></td>
 					</tr>
 				<%	}	
 						if (linkDownload || photo.isDownloadable()) 
 						{ %>
 						<tr align="left">
-							<td class="txtlibform" nowrap><%=resource.getString("gallery.originale")%> :</td>
+							<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.originale")%> :</td>
 							<td><a href="<%=lien%>" target=_blank><%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
 						</tr>
 						
 						<% if (!lienWatermark.equals(""))
 							{%>
 						<tr align="left">
-							<td class="txtlibform" nowrap><%=resource.getString("gallery.originaleWatermark")%> :</td>
+							<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.originaleWatermark")%> :</td>
 							<td><a href="<%=lienWatermark%>" target=_blank><%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
 						</tr>
 						<% } 
@@ -302,63 +306,63 @@ function goToNotify(url)
 						
 						<% if (photo.isDownload() && (photo.getBeginDownloadDate() != null || photo.getEndDownloadDate() != null)) { %>
 						<tr align="left">
-							<td class="txtlibform" nowrap><%=resource.getString("gallery.beginDownloadDate")%> :</td>
-							<TD><%=beginDownloadDate%>
+							<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.beginDownloadDate")%> :</td>
+							<td><%=beginDownloadDate%>
 							<% if (photo.getEndDownloadDate() != null) { %>
 								&nbsp;<span class="txtlibform"><%=resource.getString("gallery.endDownloadDate")%></span>&nbsp;<%=endDownloadDate%>
 							<% } %>
-							</TD>
+							</td>
 						</tr>
 						<% } %>
 				<% if (photo.getBeginDate() != null || photo.getEndDate() != null) { %>
 					<tr align="left">
-						<td class="txtlibform" nowrap><%=resource.getString("gallery.beginDate")%> :</td>
-						<TD><%=beginDate%>
+						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.beginDate")%> :</td>
+						<td><%=beginDate%>
 						<% if (photo.getEndDate() != null) { %>
 							&nbsp;<span class="txtlibform"><%=resource.getString("gallery.endDate")%></span>&nbsp;<%=endDate%>
 						<% } %>
-						</TD>
+						</td>
 					</tr>
 				<% 	}  %>			
 				<% 
 				if ( name != null ) {	%>
 					<tr align="left">
-						<td class="txtlibform" nowrap><%=resource.getString("gallery.nomFic")%> :</td>
+						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.nomFic")%> :</td>
 						<td><%=name%></td>
 					</tr>
 				<%	}
 				if ( size != 0 ) {	%>
 					<tr align="left">
-						<td class="txtlibform" nowrap><%=resource.getString("gallery.poids")%> :</td>
+						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.poids")%> :</td>
 						<td><%=FileRepositoryManager.formatFileSize(size)%></td>
 					</tr>
 				<%	}	
 				if ( height != 0 ) {	%>
 					<tr align="left">
-						<td class="txtlibform" nowrap><%=resource.getString("gallery.taille")%> :</td>
+						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.taille")%> :</td>
 						<td><%=width%> x <%=height%> <%=resource.getString("gallery.pixels")%> </td>
 					</tr>
 				<%	}
 				if ( author != null && !author.equals("") ) {	%>
 					<tr align="left">
-						<td class="txtlibform" nowrap><%=resource.getString("GML.author")%> :</td>
+						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.author")%> :</td>
 						<td><%=author%></td>
 					</tr>
 				<%	}	%>
 				<tr align="left">
-					<td class="txtlibform" nowrap><%=resource.getString("gallery.creationDate")%> :</td>
+					<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.creationDate")%> :</td>
 					<td><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=creatorName%></td>
 				</tr>
 				<% if (updateDate != null && updateName != null) { %>
 					<tr align="left">
-						<td class="txtlibform" nowrap><%=resource.getString("gallery.updateDate")%> :</td>
+						<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.updateDate")%> :</td>
 						<td><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=updateName%></td>
 					</tr>
 				<%	} 
 				if ( keyWord != null && !keyWord.equals("") ) 
 				{ %>
 					<tr align="left">
-					<td class="txtlibform" nowrap><%=resource.getString("gallery.keyWord")%> :</td>
+					<td class="txtlibform" nowrap="nowrap"><%=resource.getString("gallery.keyWord")%> :</td>
 					<td>
 					<%
 					StringTokenizer st = new StringTokenizer(keyWord);
@@ -375,36 +379,30 @@ function goToNotify(url)
 							
 				<%
 				// AFFICHAGE des métadonnées
-				if (viewMetadata)
-				{	
-					if (metaDataKeys != null && !metaDataKeys.isEmpty()) 
-					{
-						out.println("<br/>");
-						out.println(board.printBefore());
-						out.println("<table align=\"left\" border=\"0\" CELLPADDING=\"5\">");
-						Iterator it = metaDataKeys.iterator();
-						while (it.hasNext())
-						{
-							// traitement de la metaData
-							String propertyLong = (String) it.next();
-							// extraire le nom de la propertie
-							MetaData metaData = photo.getMetaData(propertyLong);
-							String mdLabel = metaData.getLabel();
-							String mdValue = metaData.getValue();
-							if (metaData.isDate())
-								mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
-							// affichage
-							%>
-								<tr align="left">
-									<td class="txtlibform" nowrap valign="top"><%=mdLabel%> :</td>
-									<td><%=mdValue%></td>
-								</tr>
-							<%
+				if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
+					out.println("<br/>");
+					out.println(board.printBefore());
+					out.println("<table align=\"left\" border=\"0\" CELLPADDING=\"5\">");
+					MetaData metaData;
+					for (final String propertyLong : metaDataKeys) {
+						// extraire le nom de la propertie
+						metaData = photo.getMetaData(propertyLong);
+						String mdLabel = metaData.getLabel();
+						String mdValue = metaData.getValue();
+						if (metaData.isDate()) {
+							mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
 						}
-						out.println(board.printAfter());
-						out.println("</table>");
+						// affichage
+						%>
+							<tr align="left">
+								<td class="txtlibform" nowrap="nowrap" valign="top"><%=mdLabel%> :</td>
+								<td><%=mdValue%></td>
+							</tr>
+						<%
 					}
-				} 
+					out.println(board.printAfter());
+					out.println("</table>");
+				}
 				
 				if (xmlForm != null) {
 				%>
@@ -432,8 +430,8 @@ function goToNotify(url)
 				<% } %>	
 		</td>
 	</tr>
-  </form>
 </table>
+</form>
 <% 
   	out.println(frame.printAfter());
 	out.println(window.printAfter());

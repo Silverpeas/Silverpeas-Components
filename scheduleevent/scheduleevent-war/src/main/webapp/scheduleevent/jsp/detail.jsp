@@ -1,4 +1,3 @@
-
 <%--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -30,12 +29,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <%@ include file="form/dateFormat.jspf"%>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 <c:url var="animationUrl" value="/util/javaScript/animation.js" />
@@ -124,10 +124,12 @@
 						<td class="txtlibform">${titleLabel}&nbsp;:</td>
 						<td colspan="3">${scheduleEventDetail.title}</td>
 					</tr>
-					<tr>
-						<td class="txtlibform">${descLabel}&nbsp;:</td>
-						<td colspan="3"><view:encodeHtmlParagraph string="${scheduleEventDetail.description}"/></td>
-					</tr>
+					<c:if test="${not empty scheduleEventDetail.description}">
+						<tr>
+							<td class="txtlibform">${descLabel}&nbsp;:</td>
+							<td colspan="3"><view:encodeHtmlParagraph string="${scheduleEventDetail.description}"/></td>
+						</tr>
+					</c:if>
 					<tr>
 						<td class="txtlibform"><fmt:message key="scheduleevent.form.listcontributors" />&nbsp;:</td>
 						<td>${scheduleEventDetail.subscribersCount}</td>
