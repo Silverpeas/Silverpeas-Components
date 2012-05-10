@@ -81,19 +81,15 @@
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
+<view:includePlugin name="wysiwyg"/>
 <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <script type="text/javascript">
 <!--
-var oEditor;
-
-function FCKeditor_OnComplete( editorInstance )
-{
-	oEditor = FCKeditorAPI.GetInstance(editorInstance.Name);
+function getCKEditor() {
+	return CKEDITOR.instances.Description;
 }
-
 function reallyUpdate() {
 	$('.WeekDayWeek').attr("disabled", false); 
 	$('.MonthDayWeek').attr("disabled", false); 
@@ -283,9 +279,8 @@ function sendEventData() {
 	    		}
 
 	    		var oldDesc = '<%=EncodeHelper.javaStringToJsString(description)%>';
-				var desc = oEditor.GetXHTML(true);
-	    		if (oldDesc != desc)
-	    		{
+				var desc = getCKEditor().getData();
+	    		if (oldDesc != desc) {
 	    			isChanged = 1;
 	    		}
 
@@ -454,6 +449,8 @@ $(document).ready(function(){
         width: 650});
 	
 	changeUnity();
+	
+	<view:wysiwyg replace="Description" language="${language}" width="600" height="300" toolbar="almanach"/>
 });
 //-->
 </script>

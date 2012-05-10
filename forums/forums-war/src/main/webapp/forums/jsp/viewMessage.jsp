@@ -225,10 +225,10 @@
 <head>
     <title><c:out value="${pageScope.title}" /></title>
     <view:looknfeel />
+    <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/viewMessage.js"></script>
-    <script type="text/javascript" src="<%=context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
     <script type="text/javascript">
         function init()
         {
@@ -263,22 +263,8 @@
             }
         }
 
-        function initFCKeditor()
-        {
-            if (oFCKeditor == null)
-            {
-                oFCKeditor = new FCKeditor("messageText");
-                oFCKeditor.Width = "500";
-                oFCKeditor.Height = "300";
-                oFCKeditor.BasePath = "<%=URLManager.getApplicationURL()%>/wysiwyg/jsp/FCKeditor/";
-                oFCKeditor.DisplayErrors = true;
-                oFCKeditor.Config["AutoDetectLanguage"] = false;
-                oFCKeditor.Config["DefaultLanguage"] = "<%=fsc.getLanguage()%>";
-                oFCKeditor.Config["CustomConfigurationsPath"] = "<%=configFile%>";
-                oFCKeditor.ToolbarSet = "quickinfo";
-                oFCKeditor.Config["ToolbarStartExpanded"] = true;
-                oFCKeditor.ReplaceTextarea();
-            }
+        function initCKeditor() {
+           	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
         }
 
         function callResizeFrame()

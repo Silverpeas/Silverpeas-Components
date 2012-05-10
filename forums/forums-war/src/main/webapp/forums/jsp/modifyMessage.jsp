@@ -25,6 +25,7 @@
 --%>
 <%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -37,34 +38,17 @@
     int forumId = message.getForumId();
     String text = message.getText();
     String title = message.getTitle();
-
-    ResourceLocator settings = fsc.getSettings();
-    String configFile = settings.getString("configFile", URLManager.getApplicationURL()
-        + "/wysiwyg/jsp/javaScript/myconfig.js");
 %>
 <html>
 <head>
     <title></title>
-<%
-    out.println(graphicFactory.getLookStyleSheet());
-%>
+    <view:looknfeel/>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-    <script type="text/javascript" src="<%=context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+    <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript">
-        function init()
-        {
-        	var oFCKeditor = new FCKeditor("messageText");
-            oFCKeditor.Width = "500";
-            oFCKeditor.Height = "300";
-            oFCKeditor.BasePath = "<%=URLManager.getApplicationURL()%>/wysiwyg/jsp/FCKeditor/";
-            oFCKeditor.DisplayErrors = true;
-            oFCKeditor.Config["AutoDetectLanguage"] = false;
-            oFCKeditor.Config["DefaultLanguage"] = "<%=fsc.getLanguage()%>";
-            oFCKeditor.Config["CustomConfigurationsPath"] = "<%=configFile%>";
-            oFCKeditor.ToolbarSet = "quickinfo";
-            oFCKeditor.Config["ToolbarStartExpanded"] = true;
-            oFCKeditor.ReplaceTextarea();
+        function init() {
+        	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
         }
 
         function validateMessage()
@@ -85,7 +69,7 @@
     </script>
 </head>
 
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF" <%addBodyOnload(out, fsc, "init()");%>>
+<body <%addBodyOnload(out, fsc, "init()");%>>
 <%
     Window window = graphicFactory.getWindow();
     Frame frame=graphicFactory.getFrame();
@@ -133,10 +117,8 @@
 
     String backUrl = ActionUrl.getUrl("viewMessage", "viewForum", 1, messageId, forumId);
     ButtonPane buttonPane = graphicFactory.getButtonPane();
-    buttonPane.addButton(graphicFactory.getFormButton(
-        resource.getString("valider"), "javascript:validateMessage();", false));
-    buttonPane.addButton(graphicFactory.getFormButton(
-        resource.getString("annuler"), backUrl, false));
+    buttonPane.addButton(graphicFactory.getFormButton(resource.getString("valider"), "javascript:validateMessage();", false));
+    buttonPane.addButton(graphicFactory.getFormButton(resource.getString("annuler"), backUrl, false));
     buttonPane.setHorizontalPosition();
     out.println(buttonPane.print());
 %>
