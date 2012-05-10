@@ -32,7 +32,6 @@ import static com.stratelia.webactiv.util.JNDINames.COORDINATESBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.PDCBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.SEARCHBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
 import static com.stratelia.webactiv.util.JNDINames.STATISTICBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.VERSIONING_EJBHOME;
@@ -63,7 +62,6 @@ import javax.activation.FileTypeMap;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
-import com.silverpeas.subscribe.Subscription;
 import org.apache.commons.io.FilenameUtils;
 
 import com.silverpeas.comment.service.CommentService;
@@ -83,6 +81,7 @@ import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.NodeSubscription;
