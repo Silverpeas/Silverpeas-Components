@@ -309,7 +309,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Removes just an occurrence of the specified event. The occurrence is identified by its start
-   * and end date.
+   * date.
    * @param eventDetail the detail of the event to which the occurrence belongs.
    * @param startDate the start date of the event occurrence.
    * @param endDate the end date of the event occurrence.
@@ -317,8 +317,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws RemoteException if the communication with the remote business object fails.
    * @throws AlmanachException if an error occurs while removing the occurrence of the event.
    */
-  public void removeOccurenceEvent(EventDetail eventDetail,
-          String startDate, String endDate)
+  public void removeOccurenceEvent(EventDetail eventDetail, String startDate)
           throws ParseException, RemoteException, AlmanachException {
     SilverTrace.info("almanach",
             "AlmanachSessionController.removeOccurenceEvent()",
@@ -328,7 +327,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     periodicityException.setPeriodicityId(new Integer(eventDetail.getPeriodicity().getPK().getId()).
             intValue());
     periodicityException.setBeginDateException(parse(startDate));
-    periodicityException.setEndDateException(parse(endDate));
+    periodicityException.setEndDateException(parse(startDate));
 
     // add exception periodicity in DB
     getAlmanachBm().addPeriodicityException(periodicityException);
@@ -850,7 +849,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
             "root.MSG_GEN_ENTER_METHOD");
 
     // Supprime l'occurence : exception dans la série
-    removeOccurenceEvent(event, dateDebutIteration, dateFinIteration);
+    removeOccurenceEvent(event, dateDebutIteration);
 
     // Ajoute un nouvel événement indépendant
     event.setPeriodicity(null);
