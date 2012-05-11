@@ -36,11 +36,11 @@
 <%
 	String language = almanach.getLanguage();
 
-	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");
-	Date dateDebutIteration = (Date) request.getAttribute("DateDebutIteration");
-	Date dateFinIteration = (Date) request.getAttribute("DateFinIteration");
+	EventDetail event = (EventDetail) request.getAttribute("Event");
+	Date startDate = (Date) request.getAttribute("EventStartDate");
+	Date endDate = (Date) request.getAttribute("EventEndDate");
 
-	String dateDebutIterationString = DateUtil.date2SQLDate(dateDebutIteration);
+	String startDateString = DateUtil.date2SQLDate(startDate);
 
 	Periodicity periodicity = event.getPeriodicity();
 
@@ -289,7 +289,7 @@ function sendEventData() {
 	    			isChanged = 1;
 	    		}
 
-				var oldStartDate = '<%=resources.getOutputDate(dateDebutIteration)%>';
+				var oldStartDate = '<%=resources.getOutputDate(startDate)%>';
 	    		var startDate = document.eventForm.StartDate.value;
 	    		if (oldStartDate != startDate)
 	    		{
@@ -303,7 +303,7 @@ function sendEventData() {
 	    			isChanged = 1;
 	    		}
 
-				var oldEndDate = '<%=resources.getOutputDate(dateFinIteration)%>';
+				var oldEndDate = '<%=resources.getOutputDate(endDate)%>';
 	    		var endDate = document.eventForm.EndDate.value;
 	    		if (oldEndDate != endDate)
 	    		{
@@ -475,9 +475,9 @@ $(document).ready(function(){
     operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("supprimerEvenement"), "javascript:onClick=eventDeleteConfirm('" + EncodeHelper.javaStringToJsString(title) + "','" + id +"')");
     out.println(window.printBefore());
 
-	tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
-	tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+dateDebutIterationString, true);
-	tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
+	tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+startDateString, false);
+	tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+startDateString, true);
+	tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+startDateString, false);
 
 	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
@@ -504,7 +504,7 @@ $(document).ready(function(){
 			<div class="field" id="eventStartDateArea">
 				<label for="eventStartDate" class="txtlibform"><fmt:message key='GML.dateBegin'/></label>
 				<div class="champs">
-					<input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(dateDebutIteration)%>" onchange="javascript:updateDates();"/>
+					<input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(startDate)%>" onchange="javascript:updateDates();"/>
 					<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 					<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
 					<input class="inputHour" type="text" name="StartHour" size="5" maxlength="5" value="<%=startHour%>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img  alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
@@ -514,7 +514,7 @@ $(document).ready(function(){
 			<div class="field" id="eventEndDateArea">
 				<label for="eventEndDate" class="txtlibform"><fmt:message key='GML.dateEnd'/></label>
 				<div class="champs">
-					<input id="eventEndDate" type="text" class="dateToPick" name="EndDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(dateFinIteration)%>"/>
+					<input id="eventEndDate" type="text" class="dateToPick" name="EndDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(endDate)%>"/>
 					<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 					<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
 					<input class="inputHour" type="text" name="EndHour" size="5" maxlength="5" value="<%=endHour%>"/> <span class="txtnote">(hh:mm)</span>
@@ -630,8 +630,8 @@ $(document).ready(function(){
 
   	<input type="hidden" name="Action"/>
   	<input type="hidden" name="Id" value="<%=event.getPK().getId()%>"/>
-  	<input type="hidden" name="DateDebutIteration" value="<%=dateDebutIterationString%>"/>
-  	<input type="hidden" name="DateFinIteration" value="<%=DateUtil.date2SQLDate(dateFinIteration)%>"/>
+  	<input type="hidden" name="EventStartDate" value="<%=startDateString%>"/>
+  	<input type="hidden" name="EventEndDate" value="<%=DateUtil.date2SQLDate(endDate)%>"/>
  </form>
    <center><br/>
    <%
