@@ -224,15 +224,14 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <%
-      out.println(gef.getLookStyleSheet());
-    %>
+    <view:looknfeel/>
     <title></title>
     <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/pubHighlight.css"/>
     <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/kmelia-print.css" media="print"/>
     <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
+    <view:includePlugin name="userZoom"/>
     <script type="text/javascript">
   
       $(function() {
@@ -621,21 +620,29 @@
 			        %>
 			         <div id="infoPublication" class="bgDegradeGris">
 			         			
-			         			<% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) {%>
+			         			<% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) { %>
 									<p id="authorInfo"><%=resources.getString("GML.author")%> : <b><%=pubDetail.getAuthor()%></b></p>
 								<% }%>
 			         	
-			         			<% if (updaterId != null) {%>
+			         			<% if (updaterId != null) {
+                                  String cssClass = "";
+                                  if (!currentUser.getId().equals(kmeliaPublication.getLastModifier().getId())) {
+                                    cssClass = " class='userToZoom'";
+                                  }%>
 								  	<div id="lastModificationInfo" class="paragraphe">
 								  		<%=resources.getString("PubDateUpdate")%>  <br />
-								  		<b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%> <%= updaterName%>
+								  		<b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%> <span<%=cssClass%> rel="<%=kmeliaPublication.getLastModifier().getId()%>"><%= updaterName%></span>
 								  		<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 							  		</div>
-							  	 <% }	%>
+							  	 <% }
+                                  String cssClass = "";
+                                  if (!currentUser.getId().equals(kmeliaPublication.getCreator().getId())) {
+                                    cssClass = " class='userToZoom'";
+                                  }%>
 								
 								 <div id="creationInfo" class="paragraphe">
 								 	<%=resources.getString("PubDateCreation")%> <br/>
-								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <%= creatorName%>
+								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <span<%=cssClass%> rel="<%=kmeliaPublication.getCreator().getId()%>"><%= creatorName%></span>
 								 	<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 							 	</div>
 							  	 
