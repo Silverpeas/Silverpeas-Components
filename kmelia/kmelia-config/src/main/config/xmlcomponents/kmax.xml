@@ -81,12 +81,12 @@
       <label>
         <message lang="fr">Rédacteurs</message>
         <message lang="en">Writers</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Redaktor</message>
       </label>
       <help>
         <message lang="fr">Les rédacteurs créent des publications.</message>
         <message lang="en">Writers create publications.</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Redaktor</message>
       </help>
     </profile>
     <profile name="user">
