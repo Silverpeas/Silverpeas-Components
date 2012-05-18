@@ -77,7 +77,7 @@
       <help>
         <message lang="fr">Les publieurs créent des publications.</message>
         <message lang="en">Publishers create publications.</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">
@@ -354,7 +354,7 @@
       <help>
         <message lang="fr">La gestion des thèmes est déléguée aux publieurs et rédacteurs.</message>
         <message lang="en">Publishers and writers can manage the themes.</message>
-        <message lang="de">Veröffentlicher und Schreiber können die Themen verwalten.</message>
+        <message lang="de">Veröffentlicher und Herausgeber können die Themen verwalten.</message>
       </help>
     </parameter>
     <parameter>
@@ -464,7 +464,7 @@
         <message lang="en">The targeted validation option allows writers to choose which publisher
         have to validate theirs publications. This avoid spam behaviour.
         </message>
-        <message lang="de">Gezielte Validierung erlaubt es dem Schreiber einen Validator auszuwählen. Dieses Verhalten Vermeidet Spam.</message>
+        <message lang="de">Gezielte Validierung erlaubt es dem Redaktor einen Validator auszuwählen. Dieses Verhalten Vermeidet Spam.</message>
       </help>
     </parameter>
     <parameter>
@@ -552,7 +552,7 @@
       <help>
         <message lang="fr">Cette fonction permet à un rédacteur de pouvoir modifier n'importe quelle publication.</message>
         <message lang="en">This function makes it possible to a writer to modify any publications.</message>
-        <message lang="de">Diese Funktion macht es einem Schreiber möglich, jede Veröffentlichung zu ändern.</message>
+        <message lang="de">Diese Funktion macht es einem Redaktor möglich, jede Veröffentlichung zu ändern.</message>
       </help>
     </parameter>
     <parameter>

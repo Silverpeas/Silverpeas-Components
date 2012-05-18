@@ -1,3 +1,3 @@
-A classified ad has been created in one of your subscriptions.
+Eine Kleinanzeige wurde in einem Ihrer Abonnements erstellt.
 
-Title of classified ad : <b>$classified.title$</b>
+Titel der Kleinanzeige : <b>$classified.title$</b>

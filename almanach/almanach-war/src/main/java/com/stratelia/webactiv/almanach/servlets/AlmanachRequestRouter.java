@@ -27,6 +27,8 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.util.StringUtil.isInteger;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -35,21 +37,12 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.control.CalendarViewType;
-import com.stratelia.webactiv.almanach.model.EventDetail;
-import com.stratelia.webactiv.almanach.model.EventPK;
-import com.stratelia.webactiv.almanach.model.Periodicity;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-
-import javax.servlet.http.HttpServletRequest;
-import java.net.URLEncoder;
-
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.util.StringUtil.isInteger;
 import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
+import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.Periodicity;
+import com.stratelia.webactiv.util.*;
+import java.net.URLEncoder;
+import javax.servlet.http.HttpServletRequest;
 
 public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessionController> {
 
@@ -171,15 +164,15 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         if (event.isPeriodic() && isDefined(dateIteration)) {
           java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
           calDateIteration.setTime(DateUtil.parse(dateIteration));
-          request.setAttribute("DateDebutIteration", calDateIteration.getTime());
+          request.setAttribute("EventStartDate", calDateIteration.getTime());
           calDateIteration.add(java.util.Calendar.DATE, event.getNbDaysDuration());
-          request.setAttribute("DateFinIteration", calDateIteration.getTime());
+          request.setAttribute("EventEndDate", calDateIteration.getTime());
         } else {
-          request.setAttribute("DateDebutIteration", event.getStartDate());
-          request.setAttribute("DateFinIteration", event.getEndDate());
+          request.setAttribute("EventStartDate", event.getStartDate());
+          request.setAttribute("EventEndDate", event.getEndDate());
         }
 
-        request.setAttribute("CompleteEvent", event);
+        request.setAttribute("Event", event);
         request.setAttribute("Contributor", almanach.getUserDetail(event.getCreatorId()));
 
         destination = "/almanach/jsp/viewEventContent.jsp?flag=" + flag;
@@ -297,29 +290,28 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         event.setPeriodicity(periodicity);
 
         // Ajoute l'événement
-        EventPK eventPK;
         String positions = request.getParameter("Positions");
         if (StringUtil.isDefined(positions)) {
           PdcClassificationEntity withClassification = PdcClassificationEntity.fromJSON(positions);
-          eventPK = almanach.addEvent(event, withClassification);
+          almanach.addEvent(event, withClassification);
         } else {
-          eventPK = almanach.addEvent(event);
+          almanach.addEvent(event);
         }
 
         destination = getDestination("almanach", almanach, request);
       } else if (function.startsWith("editEvent")) {
         String id = request.getParameter("Id"); // peut etre null en cas de
         // création
-        String dateIteration = request.getParameter("Date"); // peut etre null
+        String eventDate = request.getParameter("Date"); // peut etre null
         // récupère l'Event et sa périodicité
         EventDetail event = almanach.getEventDetail(id);
 
-        java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
-        calDateIteration.setTime(DateUtil.parse(dateIteration));
-        request.setAttribute("DateDebutIteration", calDateIteration.getTime());
-        calDateIteration.add(java.util.Calendar.DATE, event.getNbDaysDuration());
-        request.setAttribute("DateFinIteration", calDateIteration.getTime());
-        request.setAttribute("CompleteEvent", event);
+        java.util.Calendar calDate = java.util.Calendar.getInstance();
+        calDate.setTime(DateUtil.parse(eventDate));
+        request.setAttribute("EventStartDate", calDate.getTime());
+        calDate.add(java.util.Calendar.DATE, event.getNbDaysDuration());
+        request.setAttribute("EventEndDate", calDate.getTime());
+        request.setAttribute("Event", event);
 
         // Met en session l'événement courant
         almanach.setCurrentEvent(event);
@@ -335,9 +327,9 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         // | ReallyUpdateSerial |
         // ReallyUpdate
         String id = request.getParameter("Id"); // not null
-        String dateDebutIteration = request.getParameter("DateDebutIteration"); // format
+        String eventStartDate = request.getParameter("EventStartDate"); // format
         // client
-        String dateFinIteration = request.getParameter("DateFinIteration"); // format
+        String eventEndDate = request.getParameter("EventEndDate"); // format
         // client
 
         EventDetail event = almanach.getEventDetail(id);
@@ -433,7 +425,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         if ("ReallyUpdateOccurence".equals(action)) {
 
           // Met à jour l'événement et toutes les occurences de la série
-          almanach.updateEventOccurence(event, dateDebutIteration, dateFinIteration);
+          almanach.updateEventOccurence(event, eventStartDate, eventEndDate);
         } else if ("ReallyUpdateSerial".equals(action)) {
           java.util.Date startDateEvent = DateUtil.stringToDate(
               periodicityStartDate, almanach.getLanguage());
@@ -462,17 +454,17 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
 
       } else if (function.startsWith("editAttFiles")) {
         String id = request.getParameter("Id");
-        String dateIteration = request.getParameter("Date");
+        String startDate = request.getParameter("Date");
 
         // récupère l'Event
         EventDetail event = almanach.getEventDetail(id);
 
-        request.setAttribute("DateDebutIteration", dateIteration);
+        request.setAttribute("EventStartDate", startDate);
         request.setAttribute("Event", event);
         request.setAttribute("PdcUsed", almanach.isPdcUsed());
 
         String componentUrl = almanach.getComponentUrl() + "editAttFiles.jsp?Id=" + event.getPK().
-            getId() + "&Date=" + dateIteration;
+            getId() + "&Date=" + startDate;
         request.setAttribute("ComponentURL", URLEncoder.encode(componentUrl, "UTF-8"));
 
         destination = "/almanach/jsp/editAttFiles.jsp";
@@ -491,17 +483,14 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         destination = "/almanach/jsp/editAttFiles.jsp?Id="
             + request.getParameter("Id");
       } else if (function.equals("RemoveEvent")) {
-        String dateDebutIteration = request.getParameter("DateDebutIteration"); // format
-        // client
-        String dateFinIteration = request.getParameter("DateFinIteration"); // format
+        String startDate = request.getParameter("EventStartDate"); // format
         // client
 
         String action = request.getParameter("Action");
 
         if ("ReallyDeleteOccurence".equals(action)) {
           // Supprime l'occurence
-          almanach.removeOccurenceEvent(almanach.getCurrentEvent(),
-              dateDebutIteration, dateFinIteration);
+          almanach.removeOccurenceEvent(almanach.getCurrentEvent(), startDate);
 
         } else if ("ReallyDelete".equals(action)) {
 

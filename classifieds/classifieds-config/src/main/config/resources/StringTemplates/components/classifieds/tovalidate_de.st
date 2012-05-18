@@ -1,14 +1,14 @@
-The ad <b>$classified.title$</b> is available online.
-If the content of this announcement does not suit you, you can deny it.
+Die Kleinanzeige <b>$classified.title$</b> ist online verfügbar.
+Wenn der Inhalt dieser Kleinanzeige Ihnen nicht zusagt, können Sie diese offline nehmen.
 
 $if(notification_receiver_users)$
-This message has been sent
- to following users : $notification_receiver_users$
+Diese Nachricht wurde
+ den Benutzern gesendet : $notification_receiver_users$
 $endif$
 
 $if(notification_receiver_groups)$
   $if(!notification_receiver_users)$
-  This message has been sent
+  Diese Nachricht wurde
   $endif$
- to following groups : $notification_receiver_groups$
+ den Gruppen gesendet : $notification_receiver_groups$
 $endif$
