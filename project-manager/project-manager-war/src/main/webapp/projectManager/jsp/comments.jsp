@@ -78,7 +78,8 @@
 
       <view:frame>
 
-        <view:comments userId="${userId}" componentId="${instanceId}" resourceId="-1"/>
+        <view:comments 	userId="${userId}" componentId="${instanceId}"
+        				resourceType="ProjectManager" resourceId="-1"/>
 
       </view:frame>
     </view:window>

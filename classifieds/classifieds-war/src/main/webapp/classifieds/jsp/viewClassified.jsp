@@ -273,10 +273,12 @@
 				</tr>
 				<tr>
 					<td>
-						<!--Afficher les commentaires--> <c:if test="${isCommentsEnabled}">
-							<view:comments userId="${userId}" componentId="${instanceId}"
-								resourceId="${classified.classifiedId}" />
-						</c:if></td>
+						<!--Afficher les commentaires-->
+						<c:if test="${isCommentsEnabled}">
+							<view:comments 	userId="${userId}" componentId="${instanceId}"
+											resourceType="${classified.contributionType}" resourceId="${classified.classifiedId}" />
+						</c:if>
+					</td>
 				</tr>
 			</table>
 		</view:frame>

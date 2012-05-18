@@ -25,6 +25,9 @@ package com.stratelia.webactiv.kmelia;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.comment.CommentInstanciator;
+import com.silverpeas.comment.service.CommentServiceFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -76,6 +79,9 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
     version.delete(con, spaceId, componentId, userId);
     ThumbnailInstanciator thumbnail = new ThumbnailInstanciator();
     thumbnail.delete(con, spaceId, componentId, userId);
+    // delete all comments related to the component instance id (also any indexes)
+    CommentServiceFactory.getFactory().getCommentService()
+        .deleteAllCommentsByComponentInstanceId(componentId);
   }
 
   private void insertSpecialNode(Connection con, String componentId, String userId) throws

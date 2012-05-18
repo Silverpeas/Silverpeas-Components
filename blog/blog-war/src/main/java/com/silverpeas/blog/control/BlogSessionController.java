@@ -299,7 +299,8 @@ public class BlogSessionController extends AbstractComponentSessionController {
 
   public Collection<Comment> getAllComments(String postId) {
     CommentPK foreign_pk = new CommentPK(postId, null, getComponentId());
-    return getCommentService().getAllCommentsOnPublication(foreign_pk);
+    return getCommentService()
+        .getAllCommentsOnPublication(PostDetail.getResourceType(), foreign_pk);
   }
 
   public Comment getComment(String commentId) {
