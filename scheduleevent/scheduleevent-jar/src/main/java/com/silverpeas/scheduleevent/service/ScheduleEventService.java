@@ -26,9 +26,10 @@ package com.silverpeas.scheduleevent.service;
 
 import java.util.Set;
 
+import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 
-public interface ScheduleEventService {
+public interface ScheduleEventService extends SilverpeasComponentService {
 
   String createScheduleEvent(ScheduleEvent scheduleEvent);
 
