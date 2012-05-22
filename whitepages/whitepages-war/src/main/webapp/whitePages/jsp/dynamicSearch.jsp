@@ -51,6 +51,7 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<view:includePlugin name="messageme"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
@@ -135,10 +136,6 @@ function defineSearchFields(){
 function dynamicSearchLaunch(){
 	$.progressMessage();
 	document.searchform.submit();
-}
-
-function OpenPopup(userId, name){
-	initNotification(userId, name);
 }
 </script>
 <script type="text/javascript">
@@ -321,12 +318,12 @@ if(cards != null && cards.size() > 0){
                      %>
                      </li>
                      <li class="userMail">
-                     	<a href="#" onclick="OpenPopup(<%=card.getUserId()%>,'<%=lastName + " " + firstName%>')"><%=email%></a>
+                     	<a href="#" class="notification" rel="<%=card.getUserId()%>,<%=lastName + " " + firstName%>"><%=email%></a>
                      </li>                     
                    </ul>
                  </div>
                 <div class="action">
-                	  <a onclick="OpenPopup(<%=card.getPK().getId()%>,'admin ')" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a> <a onclick="javascript:consult(<%=card.getPK().getId()%>)" class="link goToWhitepages" href="javascript:consult(<%=card.getPK().getId()%>)"><fmt:message key="whitePages.seeCard"/></a>
+                	  <a rel="<%=card.getPK().getId()%>,admin" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a> <a onclick="javascript:consult(<%=card.getPK().getId()%>)" class="link goToWhitepages" href="javascript:consult(<%=card.getPK().getId()%>)"><fmt:message key="whitePages.seeCard"/></a>
                 </div>
                <br clear="all" />
             </li><%
@@ -346,7 +343,6 @@ if(cards != null && cards.size() > 0){
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-	<%@include file="../../socialNetwork/jsp/notificationDialog.jsp" %>
 	<view:progressMessage/>
 </body>
 </html>
