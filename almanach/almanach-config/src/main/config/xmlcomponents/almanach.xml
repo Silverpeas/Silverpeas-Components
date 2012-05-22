@@ -131,7 +131,7 @@
         <message lang="en">This almanach can aggregate events from other almanachs in subspaces of the space
           containing this almanach.
         </message>
-        <message lang="de">Dieser Almanach Kann Ereignisse von anderen Kalendern in Unterräume des Raumes mit
+        <message lang="de">Dieser Almanach Kann Ereignisse von anderen Kalendern in Unterbereiche des Bereichs mit
           diesem Almanach aggregierten.</message>
       </help>
     </parameter>
@@ -238,7 +238,7 @@
           <name>
             <message lang="fr">Ceux de l'espace</message>
             <message lang="en">Those from the same space</message>
-            <message lang="de">Die aus den gleichen Raum</message>
+            <message lang="de">Die aus dem gleichen Bereich</message>
           </name>
           <value>1</value>
         </option>
@@ -246,7 +246,7 @@
           <name>
             <message lang="fr">Ceux de l'espace et sous espaces</message>
             <message lang="en">Those from the same space and its subspaces.</message>
-            <message lang="de">Die aus den gleichen Raum und seine Unterräume</message>
+            <message lang="de">Die aus dem gleichen Bereich und seine Unterräume</message>
           </name>
           <value>2</value>
         </option>

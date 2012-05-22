@@ -38,6 +38,10 @@
 			<labelName>Department</labelName>
 			<language>en</language>
 		</label>
+		<label>
+			<labelName>Abteilung</labelName>
+			<language>de</language>
+		</label>
 	</fieldTemplate>
 	<fieldTemplate>
 		<fieldName>poste</fieldName>
@@ -50,6 +54,10 @@
 		<label>
 			<labelName>Post</labelName>
 			<language>en</language>
+		</label>
+		<label>
+			<labelName>Stellung</labelName>
+			<language>de</language>
 		</label>
 	</fieldTemplate>
 	<fieldTemplate>
@@ -64,6 +72,10 @@
 		<label>
 			<labelName>Competences</labelName>
 			<language>en</language>
+		</label>
+		<label>
+			<labelName>Kompetenzen</labelName>
+			<language>de</language>
 		</label>
 	</fieldTemplate>
 </recordTemplate>

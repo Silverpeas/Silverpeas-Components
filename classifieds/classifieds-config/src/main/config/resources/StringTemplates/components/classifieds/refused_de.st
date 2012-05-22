@@ -1,6 +1,6 @@
-Your ad <b>$classified.title$</b> has been refused.
+Ihre Kleinanzeige <b>$classified.title$</b> wurde abgelehnt.
 $if(refusalMotive)$
 
-Reason for refusal :
+Grund der Ablehnung :
 $refusalMotive$
 $endif$

@@ -63,12 +63,12 @@
       <label>
         <message lang="fr">Rédacteurs</message>
         <message lang="en">Writers</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Les rédacteurs rédigent des articles.</message>
         <message lang="en">Writers create posts</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">

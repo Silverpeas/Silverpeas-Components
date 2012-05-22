@@ -1,4 +1,4 @@
-$userName$, der Herausgeber der folgenden Antwort bitte Sie diese zur Kenntnis nehmen  : 
+$userName$, der Herausgeber der folgenden Antwort bittet Sie diese zur Kenntnis nehmen  : 
 
 Frage : $QuestionDetail.title$
 $QuestionDetail.content$
