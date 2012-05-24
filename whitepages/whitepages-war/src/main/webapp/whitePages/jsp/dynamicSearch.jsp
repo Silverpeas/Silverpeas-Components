@@ -323,7 +323,7 @@ if(cards != null && cards.size() > 0){
                    </ul>
                  </div>
                 <div class="action">
-                	  <a rel="<%=card.getPK().getId()%>,admin" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a> <a onclick="javascript:consult(<%=card.getPK().getId()%>)" class="link goToWhitepages" href="javascript:consult(<%=card.getPK().getId()%>)"><fmt:message key="whitePages.seeCard"/></a>
+                	  <a rel="<%=card.getUserId()%>,<%=lastName + " " + firstName%>" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a> <a onclick="javascript:consult(<%=card.getPK().getId()%>)" class="link goToWhitepages" href="javascript:consult(<%=card.getPK().getId()%>)"><fmt:message key="whitePages.seeCard"/></a>
                 </div>
                <br clear="all" />
             </li><%
