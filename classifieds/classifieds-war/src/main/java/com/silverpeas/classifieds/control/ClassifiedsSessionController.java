@@ -181,7 +181,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   private Collection<Comment> getAllComments(String classifiedId) {
     CommentPK foreign_pk = new CommentPK(classifiedId, getComponentId());
-    return getCommentService().getAllCommentsOnPublication(foreign_pk);
+    return getCommentService().getAllCommentsOnPublication(ClassifiedDetail.getResourceType(),
+        foreign_pk);
   }
 
   /**

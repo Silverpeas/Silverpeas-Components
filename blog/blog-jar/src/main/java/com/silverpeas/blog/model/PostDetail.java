@@ -163,6 +163,14 @@ public final class PostDetail implements SilverpeasContent {
   public String getContributionType() {
     return TYPE;
   }
+  
+  /**
+   * The type of this resource
+   * @return the same value returned by getContributionType()
+   */
+  public static String getResourceType() {
+    return TYPE;
+  }
 
   @Override
   public String getSilverpeasContentId() {

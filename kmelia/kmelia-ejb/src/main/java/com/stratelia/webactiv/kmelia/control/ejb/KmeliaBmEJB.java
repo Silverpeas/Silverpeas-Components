@@ -32,7 +32,6 @@ import static com.stratelia.webactiv.util.JNDINames.COORDINATESBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.PDCBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.SEARCHBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
 import static com.stratelia.webactiv.util.JNDINames.STATISTICBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.VERSIONING_EJBHOME;
@@ -63,7 +62,6 @@ import javax.activation.FileTypeMap;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
-import com.silverpeas.subscribe.Subscription;
 import org.apache.commons.io.FilenameUtils;
 
 import com.silverpeas.comment.service.CommentService;
@@ -83,6 +81,7 @@ import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.NodeSubscription;
@@ -3834,7 +3833,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
       try {
         // index comments
-        getCommentService().indexAllCommentsOnPublication(pubDetail.getPK());
+        getCommentService().indexAllCommentsOnPublication(pubDetail.getContributionType(),
+            pubDetail.getPK());
       } catch (Exception e) {
         SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
                 "Indexing comments failed", "pubPK = " + pubDetail.getPK().toString(), e);
@@ -3857,7 +3857,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     try {
       // index comments
-      getCommentService().unindexAllCommentsOnPublication(pubPK);
+      getCommentService().unindexAllCommentsOnPublication(PublicationDetail.getResourceType(),
+          pubPK);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
               "Indexing comments failed", "pubPK = " + pubPK.toString(), e);
@@ -3878,7 +3879,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     // remove comments
     try {
-      getCommentService().deleteAllCommentsOnPublication(pubPK);
+      getCommentService()
+          .deleteAllCommentsOnPublication(PublicationDetail.getResourceType(), pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.removeExternalElementsOfPublications()",
               ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_COMMENTAIRES", e);

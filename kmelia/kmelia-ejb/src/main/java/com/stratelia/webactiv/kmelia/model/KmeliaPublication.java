@@ -240,7 +240,8 @@ public class KmeliaPublication implements SilverpeasContent {
    * @return an unmodifiable list with the comments on this publication.
    */
   public List<Comment> getComments() {
-    return Collections.unmodifiableList(getCommentService().getAllCommentsOnPublication(pk));
+    return Collections.unmodifiableList(getCommentService().getAllCommentsOnPublication(
+        PublicationDetail.getResourceType(), pk));
   }
 
   /**

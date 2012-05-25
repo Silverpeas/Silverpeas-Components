@@ -45,6 +45,7 @@ Date 	   dateCalendar	= new Date(dateCal);
 String categoryId = "";
 if (post.getCategory() != null)
 	categoryId = post.getCategory().getNodePK().getId();
+String postResourceType = post.getContributionType();
 String postId = post.getPublication().getPK().getId();
 String link	= post.getPermalink();
 
@@ -145,7 +146,8 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 		       </span>
 		    </div>
 		    <div class="separateur"></div>
-		    <view:comments userId="<%=userId %>" componentId="<%=instanceId %>" resourceId="<%=postId %>" indexed="true"/>
+		    <view:comments 	userId="<%=userId %>" componentId="<%=instanceId %>"
+		    				resourceType="<%=postResourceType %>" resourceId="<%=postId %>" indexed="true"/>
 			</div>
 				 
 			<div id="navBlog">

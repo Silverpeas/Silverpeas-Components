@@ -89,6 +89,7 @@
   PublicationDetail pubDetail = kmeliaPublication.getDetail();
   UserDetail ownerDetail = kmeliaPublication.getCreator();
   String pubName = pubDetail.getName(language);
+  String resourceType = pubDetail.getContributionType();
   String id = pubDetail.getPK().getId();
 
   String contextComponentId = componentId;
@@ -783,7 +784,8 @@
                         if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {
 			      %>
       
-      <view:comments userId="<%= user_id%>" componentId="<%= componentId %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>
+      <view:comments	userId="<%= user_id%>" componentId="<%= componentId %>"
+      					resourceType="<%= resourceType %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>
       
       <% }
 

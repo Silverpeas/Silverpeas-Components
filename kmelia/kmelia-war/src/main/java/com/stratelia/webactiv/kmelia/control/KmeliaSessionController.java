@@ -1653,7 +1653,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public List<Comment> getAllComments(String id) throws RemoteException {
-    return getCommentService().getAllCommentsOnPublication(getPublicationPK(id));
+    return getCommentService().getAllCommentsOnPublication(PublicationDetail.getResourceType(),
+        getPublicationPK(id));
   }
 
   public void processTopicWysiwyg(String topicId) throws RemoteException {
@@ -3874,9 +3875,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
     // move comments
     if (indexIt) {
-      getCommentService().moveAndReindexComments(fromForeignPK, toForeignPK);
+      getCommentService().moveAndReindexComments(PublicationDetail.getResourceType(),
+          fromForeignPK, toForeignPK);
     } else {
-      getCommentService().moveComments(fromForeignPK, toForeignPK);
+      getCommentService().moveComments(PublicationDetail.getResourceType(), fromForeignPK,
+          toForeignPK);
     }
 
     // move pdc positions

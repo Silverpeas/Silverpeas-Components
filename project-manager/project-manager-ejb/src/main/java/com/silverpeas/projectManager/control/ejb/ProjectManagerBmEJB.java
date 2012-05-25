@@ -366,7 +366,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     AttachmentController.deleteAttachmentByCustomerPK(taskPK);
 
     // supprime les commentaires de la tâche
-    getCommentService().deleteAllCommentsOnPublication(taskPK);
+    getCommentService().deleteAllCommentsOnPublication(TaskDetail.getResourceType(), taskPK);
 
     // suppression de l'index
     removeIndex(id, instanceId);
@@ -1002,7 +1002,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     AttachmentController.attachmentIndexer(taskPK);
 
     // index comments
-    getCommentService().indexAllCommentsOnPublication(taskPK);
+    getCommentService().indexAllCommentsOnPublication(TaskDetail.getResourceType(), taskPK);
   }
 
   private Connection getConnection() {

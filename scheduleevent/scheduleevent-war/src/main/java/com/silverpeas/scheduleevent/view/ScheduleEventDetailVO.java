@@ -13,6 +13,7 @@ import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
+import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.scheduleevent.view.AvailabilityFactoryVO.Availability;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -303,4 +304,7 @@ public class ScheduleEventDetailVO {
     return allowedToChange;
   }
   
+  public String getResourceType() {
+    return ScheduleEvent.getResourceType();
+  }
 }

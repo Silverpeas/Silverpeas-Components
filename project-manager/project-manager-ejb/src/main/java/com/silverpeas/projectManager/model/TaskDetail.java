@@ -46,6 +46,7 @@ public class TaskDetail implements Serializable {
   public final static int COMPLETE = 3;
   public final static int IN_ALERT = 4;
   public final static int NOT_STARTED = 5;
+  private static final String TYPE = "Task";
   private int id;
   private int mereId = -1;
   private int chrono;
@@ -646,5 +647,17 @@ public class TaskDetail implements Serializable {
    */
   public void setPreviousTaskName(String string) {
     previousTaskName = string;
+  }
+
+  public String getContributionType() {
+    return TYPE;
+  }
+  
+  /**
+   * The type of this resource
+   * @return the same value returned by getContributionType()
+   */
+  public static String getResourceType() {
+    return TYPE;
   }
 }
