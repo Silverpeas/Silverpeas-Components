@@ -119,6 +119,7 @@ import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
+import com.stratelia.silverpeas.versioning.model.Reader;
 import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
@@ -2108,7 +2109,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                     getPublicationPK(pubId),
                     attachment.getLogicalName(), attachment.getInfo(), 0,
                     Integer.parseInt(getUserId()), new Date(), "", getComponentId(),
-                    (ArrayList<Worker>) workers, new ArrayList(), 0, 0);
+                    (ArrayList<Worker>) workers, new ArrayList<Reader>(), 0, 0);
 
         // Version creation
         DocumentVersion version =
