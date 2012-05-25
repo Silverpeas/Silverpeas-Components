@@ -225,13 +225,11 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <%
-      out.println(gef.getLookStyleSheet());
-    %>
+    <view:looknfeel/>
     <title></title>
     <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/pubHighlight.css"/>
     <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/kmelia-print.css" media="print"/>
-    <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+    <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
     <script type="text/javascript">
@@ -803,7 +801,7 @@
                 selectedFormat = true;
               }
             %>
-            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %> ><%=resources.getString("kmelia.export.format." + format)%></input>
+            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %>/><%=resources.getString("kmelia.export.format." + format)%></input>
             <% } %>
             <input type="hidden" name="PubId" value="<%=id%>"/>
             <input type="hidden" name="ComponentId" value="<%=componentId%>"/>

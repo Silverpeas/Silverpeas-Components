@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.util.*"%>
 <%@ page import="com.silverpeas.whitePages.model.*"%>
 <%@ page import="com.silverpeas.form.*"%>
@@ -60,10 +60,8 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+<view:looknfeel/>
+<view:includePlugin name="wysiwyg"/>
 <script language="JavaScript">
 <!--	
 	function changerChoice() {
@@ -75,11 +73,9 @@
 	
 //-->
 </script>
-
-
 </HEAD>
 
-<BODY class="yui-skin-sam" marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<BODY class="yui-skin-sam">
 
 <FORM NAME="choixFiche" METHOD="POST" ACTION="<%=routerUrl%>viewCard">
 	<input type="hidden" name="userCardId">

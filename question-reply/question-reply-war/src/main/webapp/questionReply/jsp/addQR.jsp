@@ -44,7 +44,7 @@
 	String creationDateR = resource.getOutputDate(reply.getCreationDate());
 	String creatorR = reply.readCreatorName();
 	
-	Collection allCategories = (Collection) request.getAttribute("AllCategories");
+	Collection<NodeDetail> allCategories = (Collection) request.getAttribute("AllCategories");
 	String categoryId = null;
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -53,8 +53,8 @@
   <title><fmt:message key="GML.popupTitle" /></title>
   <view:looknfeel />
   <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
-  <script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
-<script language="JavaScript">
+  <view:includePlugin name="wysiwyg"/>
+<script type="text/javascript">
 <!--
 function isCorrectForm() {
      	var errorMsg = "";
@@ -104,11 +104,15 @@ function isCorrectForm() {
      return result;	
      
 }
-function save()
-{
-	if (isCorrectForm())
+function save() {
+	if (isCorrectForm()) {
 		document.forms[0].submit();
+	}
 }
+
+$(document).ready(function() {
+	<view:wysiwyg replace="contentR" language="<%=language%>" width="600" height="300" toolbar="questionreply"/>
+});
 //-->
 </script>
 </head>
@@ -132,13 +136,12 @@ function save()
 			<%
 			if (allCategories != null) {
 				String selected = "";
-    			Iterator<NodeDetail> it = allCategories.iterator();
-    			while (it.hasNext()) {
-    				NodeDetail uneCategory = it.next();
-    				if (categoryId != null && categoryId.equals(uneCategory.getNodePK().getId()))
-    					selected = "selected";
+    			for (NodeDetail uneCategory : allCategories) {
+    				if (categoryId != null && categoryId.equals(uneCategory.getNodePK().getId())) {
+    					selected = "selected=\"selected\"";
+    				}
     				%>
-    				<option value=<%=uneCategory.getNodePK().getId()%> <%=selected%>><%=uneCategory.getName()%></option>
+    				<option value="<%=uneCategory.getNodePK().getId()%>" <%=selected%>><%=uneCategory.getName()%></option>
     				<%
     				selected = "";
 		  		}
@@ -203,22 +206,5 @@ function save()
 %>
 </view:frame>
 </view:window>
-<script type="text/javascript">
-  <fmt:message key='configFile' var='configFile'/>
-  <c:if test="${configFile eq '???configFile???'}">
-  <c:url value="/wysiwyg/jsp/javaScript/myconfig.js" var="configFile"/>
-  </c:if>
-  var oFCKeditor = new FCKeditor('contentR');
-  oFCKeditor.Width = "500";
-  oFCKeditor.Height = "300";
-  oFCKeditor.BasePath = "<c:url value='/wysiwyg/jsp/FCKeditor/'/>";
-  oFCKeditor.DisplayErrors = true;
-  oFCKeditor.Config["AutoDetectLanguage"] = false;
-  oFCKeditor.Config["DefaultLanguage"] = "<c:out value='${language}'/>";
-  oFCKeditor.Config["CustomConfigurationsPath"] = "<c:out value='${configFile}'/>"
-  oFCKeditor.ToolbarSet = 'questionreply';
-  oFCKeditor.Config["ToolbarStartExpanded"] = true;
-  oFCKeditor.ReplaceTextarea();
-</script>
 </body>
 </html>
