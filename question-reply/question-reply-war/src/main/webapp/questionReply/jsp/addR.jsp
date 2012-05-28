@@ -47,7 +47,7 @@
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel />
 <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
-<script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
+<view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">
 <!--
 function isCorrectForm() {
@@ -86,11 +86,15 @@ function isCorrectForm() {
      return result;
 
 }
-function save()
-{
-	if (isCorrectForm())
+function save() {
+	if (isCorrectForm()) {
 		document.forms[0].submit();
+	}
 }
+
+$(document).ready(function() {
+	<view:wysiwyg replace="content" language="<%=language%>" width="600" height="300" toolbar="questionreply"/>
+});
 //-->
 </script>
 </head>
@@ -156,22 +160,5 @@ function save()
     out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-<script type="text/javascript">
-  <fmt:message key='configFile' var='configFile'/>
-  <c:if test="${configFile eq '???configFile???'}">
-  <c:url value="/wysiwyg/jsp/javaScript/myconfig.js" var="configFile"/>
-  </c:if>
-  var oFCKeditor = new FCKeditor('content');
-  oFCKeditor.Width = "500";
-  oFCKeditor.Height = "300";
-  oFCKeditor.BasePath = "<c:url value='/wysiwyg/jsp/FCKeditor/'/>";
-  oFCKeditor.DisplayErrors = true;
-  oFCKeditor.Config["AutoDetectLanguage"] = false;
-  oFCKeditor.Config["DefaultLanguage"] = "<c:out value='${language}'/>";
-  oFCKeditor.Config["CustomConfigurationsPath"] = "<c:out value='${configFile}'/>"
-  oFCKeditor.ToolbarSet = 'questionreply';
-  oFCKeditor.Config["ToolbarStartExpanded"] = true;
-  oFCKeditor.ReplaceTextarea();
-</script>
 </body>
 </html>

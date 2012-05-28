@@ -34,16 +34,6 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-  <bean id="scheduleEventServicesFactory" name="scheduleEventServicesFactory"
-    class="com.silverpeas.scheduleevent.service.ServicesFactory"
-    factory-method="getInstance" />
-
-  <bean id="scheduleEventService" name="scheduleEventService"
-    class="com.silverpeas.scheduleevent.service.ScheduleEventServiceImpl">
-    <property name="scheduleEventDao" ref="scheduleEventDao" />
-    <property name="responseDao" ref="responseDao" />
-  </bean>
-
   <bean id="scheduleEventDao" name="scheduleEventDao"
     class="com.silverpeas.scheduleevent.service.model.dao.ScheduleEventDaoImpl">
     <property name="sessionFactory" ref="sessionFactory" />

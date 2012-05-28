@@ -1,1 +1,1 @@
-<html><head/><body><p><b>Message [$title$] :</b></p><p>$summary$ ...<br/></p></body></html>
+<html><head/><body><p><b>Meldung [$title$] :</b></p><p>$summary$ ...<br/></p></body></html>

@@ -312,7 +312,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
 
       // supprimer les commentaires
       CommentService commentController = CommentServiceFactory.getFactory().getCommentService();
-      commentController.deleteAllCommentsOnPublication(photoPK);
+      commentController.deleteAllCommentsOnPublication(PhotoDetail.getResourceType(), photoPK);
 
       // supprime le répertoire de la photo et tout ce qu'il contient
       String componentId = photoPK.getInstanceId();

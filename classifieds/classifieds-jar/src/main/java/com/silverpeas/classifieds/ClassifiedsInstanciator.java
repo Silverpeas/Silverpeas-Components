@@ -23,12 +23,13 @@
  */
 package com.silverpeas.classifieds;
 
+import java.sql.Connection;
+
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.classifieds.control.ClassifiedService;
 import com.silverpeas.classifieds.control.ClassifiedServiceFactory;
-import java.sql.Connection;
-
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
@@ -53,6 +54,8 @@ public class ClassifiedsInstanciator implements ComponentsInstanciatorIntf {
       ClassifiedService service = factory.getClassifiedService();
       service.deleteAllClassifieds(componentId);
       service.deleteAllSubscribes(componentId);
+      CommentServiceFactory.getFactory().getCommentService()
+          .deleteAllCommentsByComponentInstanceId(componentId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsInstanciator.delete()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

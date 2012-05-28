@@ -25,6 +25,7 @@ package org.silverpeas.resourcemanager;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.sql.Connection;
 
@@ -44,6 +45,11 @@ public class ResourcesManagerInstanciator implements ComponentsInstanciatorIntf 
   @Override
   public void delete(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
+    
+    // Delete all comments related to the component instance id
+    CommentServiceFactory.getFactory().getCommentService()
+        .deleteAllCommentsByComponentInstanceId(componentId);
+    
     SilverTrace.info("resourcesManager", "ResourcesManagerInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD","space = " + spaceId + ", componentId = " + componentId 
         + ", userId =" + userId);

@@ -1,1 +1,1 @@
-<html><head/><body><p><b>Message [$title$] - to be moderated : </b></p><p>$summary$ ...</p></body></html>
+<html><head/><body><p><b>Meldung [$title$] - zu moderieren  : </b></p><p>$summary$ ...</p></body></html>

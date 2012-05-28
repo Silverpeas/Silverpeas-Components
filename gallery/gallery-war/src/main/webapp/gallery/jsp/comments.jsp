@@ -48,6 +48,7 @@
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 <c:set var="photo" value="${requestScope.Photo}"/>
+<c:set var="photoResourceType" value="${photo.contributionType}"/>
 <c:set var="photoId" value="${photo.photoPK.id}"/>
 <c:set var="userId" value="${requestScope.UserId}"/>
 <c:set var="nodePath"  value="${requestScope.Path}"/>
@@ -88,9 +89,8 @@
       </view:tabs>
 
       <view:frame>
-
-        <view:comments userId="${userId}" componentId="${instanceId}" resourceId="${photoId}" callback="${callback}"/>
-
+        <view:comments 	userId="${userId}" componentId="${instanceId}"
+        				resourceType="${photoResourceType}" resourceId="${photoId}" callback="${callback}"/>
       </view:frame>
     </view:window>
   </body>

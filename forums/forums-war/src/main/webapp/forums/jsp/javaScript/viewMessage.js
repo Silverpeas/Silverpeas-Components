@@ -1,7 +1,5 @@
 var currentMessageId = -1;
 var parentMessageId = -1;
-var oFCKeditor = null;
-
 
 function replyMessage(messageId)
 {
@@ -25,7 +23,7 @@ function replyMessage(messageId)
     if (responseTable != null)
     {
     	responseTable.style.display = "block";
-    	initFCKeditor();
+    	initCKeditor();
     }
     var backButton = document.getElementById("backButton");
     if (backButton != null)

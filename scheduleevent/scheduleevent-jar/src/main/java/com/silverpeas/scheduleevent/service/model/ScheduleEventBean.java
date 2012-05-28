@@ -2,11 +2,11 @@ package com.silverpeas.scheduleevent.service.model;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.SortedSet;
 
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
-import java.util.SortedSet;
 
 public interface ScheduleEventBean {
   public String getId();

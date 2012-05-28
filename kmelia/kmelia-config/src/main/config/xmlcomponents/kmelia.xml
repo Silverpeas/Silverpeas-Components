@@ -94,12 +94,12 @@
       <label>
         <message lang="fr">Rédacteurs</message>
         <message lang="en">Writers</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Redaktor</message>
       </label>
       <help>
         <message lang="fr">Les rédacteurs créent des publications.</message>
         <message lang="en">Writers create publications.</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Redaktor</message>
       </help>
     </profile>
     <profile name="user">
@@ -465,7 +465,7 @@
       <help>
         <message lang="fr">La gestion des thèmes est déléguée aux publieurs et rédacteurs.</message>
         <message lang="en">Publishers and writers can manage the themes.</message>
-        <message lang="de">Veröffentlicher und Schreiber können die Themen verwalten.</message>
+        <message lang="de">Veröffentlicher und Herausgeber können die Themen verwalten.</message>
       </help>
     </parameter>
     <parameter>
@@ -615,8 +615,8 @@
           publication
         </message>
         <message lang="de">Klassisch: Ein Validator muss die Veröffentlichung Prüfen.
-          Gezielte (nur eine Prüfung): Schreiber wählt einen Validator aus. Dieses Verhalten Vermeidet Spam. 
-          Gezielte (verschiedene Prüfungen): Schreiber wählt mehrere Validator aus.
+          Gezielte (nur eine Prüfung): Der Redaktor wählt einen Validator aus. Dieses Verhalten Vermeidet Spam. 
+          Gezielte (verschiedene Prüfungen): Der Redaktor wählt mehrere Validator aus.
           Kollegial: Alle Validatoren müssen die Veröffentlichung validieren
         </message>
       </help>      
@@ -709,7 +709,7 @@
         </message>
         <message lang="en">This function makes it possible to a writer to modify any publications.
         </message>
-        <message lang="de">Diese Funktion macht es einem Schreiber möglich, jede Veröffentlichung zu ändern.</message>
+        <message lang="de">Diese Funktion macht es einem Redaktor möglich, jede Veröffentlichung zu ändern.</message>
       </help>
     </parameter>
     <parameter>

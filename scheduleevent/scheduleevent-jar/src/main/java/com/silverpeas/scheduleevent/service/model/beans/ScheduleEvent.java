@@ -24,13 +24,22 @@
 
 package com.silverpeas.scheduleevent.service.model.beans;
 
-import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-public class ScheduleEvent implements ScheduleEventBean, Serializable {
+import com.silverpeas.SilverpeasToolContent;
+import com.silverpeas.scheduleevent.constant.ScheduleEventConstant;
+import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
+public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, Serializable {
 
   private static final long serialVersionUID = 1L;
+  public static final String TYPE = "ScheduleEvent";
   public String id;
   public String title;
   public String description;
@@ -133,6 +142,40 @@ public class ScheduleEvent implements ScheduleEventBean, Serializable {
   }
 
   @Override
+  public String getComponentInstanceId() {
+    return ScheduleEventConstant.TOOL_ID;
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    // Currently, it is not used
+    return null;
+  }
+
+  @Override
+  public UserDetail getCreator() {
+    return UserDetail.getById(Integer.toString(getAuthor()));
+  }
+
+  @Override
+  public String getContributionType() {
+    return TYPE;
+  }
+
+  /**
+   * The type of this resource
+   * @return the same value returned by getContributionType()
+   */
+  public static String getResourceType() {
+    return TYPE;
+  }
+
+  @Override
+  public String getURL() {
+    return "/Rscheduleevent/jsp/Detail?scheduleEventId=" + getId();
+  }
+
+  @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
@@ -156,5 +199,5 @@ public class ScheduleEvent implements ScheduleEventBean, Serializable {
       return false;
     return true;
   }
-  
+
 }

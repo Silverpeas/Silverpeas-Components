@@ -314,8 +314,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         NotificationMetaData notifMetaData = new NotificationMetaData(
                   NotificationParameters.NORMAL, subject, templates, fileName);
 
-        // String url = "/ScheduleEvent/" + currentScheduleEvent.getId();
-        String url = "/Rscheduleevent/jsp/Detail?scheduleEventId=" + currentScheduleEvent.getId();
         for (String lang : DisplayI18NHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
           templates.put(lang, template);
@@ -325,7 +323,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
               DateUtil.getOutputDate(currentScheduleEvent.getCreationDate(), lang));
           template.setAttribute("event", currentScheduleEvent);
           template.setAttribute("senderName", getUserDetail().getDisplayedName());
-          template.setAttribute("silverpeasURL", url);
+          template.setAttribute("silverpeasURL", currentScheduleEvent.getURL());
 
           ResourceLocator localizedMessage = new ResourceLocator(
                 "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle", lang);
@@ -335,7 +333,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         for (String userId : userIds) {
           notifMetaData.addUserRecipient(new UserRecipient(userId));
         }
-        notifMetaData.setLink(url);
+        notifMetaData.setLink(currentScheduleEvent.getURL());
         notifyUsers(notifMetaData);
       }
     } catch (Exception e) {

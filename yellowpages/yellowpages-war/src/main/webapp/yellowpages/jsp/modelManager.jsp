@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
@@ -139,9 +140,7 @@ if (action.equals("NewModel")) {
 <HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="javascript">
 function sendModelData(operation) {
@@ -253,8 +252,8 @@ if (action.equals("ModelChoice")) {
 	%>
 	<HTML>
 	<HEAD>
-	<% out.println(gef.getLookStyleSheet()); %>
-	<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+	<view:looknfeel/>
+	<view:includePlugin name="wysiwyg"/>
 	<script language="javaScript">
 	    function previewModel(id)
 	    {

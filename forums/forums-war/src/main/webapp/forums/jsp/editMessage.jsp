@@ -125,22 +125,14 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
 
     String folderName = EncodeHelper.javaStringToHtmlString(
         fsc.getForumName(folderId > 0 ? folderId : forumId));
-
-    String configFile = null;
-    if (!move)
-    {
-        ResourceLocator settings = fsc.getSettings();
-        configFile = settings.getString("configFile", URLManager.getApplicationURL()
-            + "/wysiwyg/jsp/javaScript/myconfig.js");
-    }
 %>
 <html>
 <head>
     <title></title>
     <view:looknfeel />
+    <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-    <script type="text/javascript" src="<%=context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
     <script type="text/javascript"><%
 
     if (move) {
@@ -152,21 +144,8 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
 
     } else {
 %>
-        var oFCKeditor = null;
-
-        function init()
-        {
-            oFCKeditor = new FCKeditor("messageText");
-            oFCKeditor.Width = "500";
-            oFCKeditor.Height = "300";
-            oFCKeditor.BasePath = "<%=URLManager.getApplicationURL()%>/wysiwyg/jsp/FCKeditor/";
-            oFCKeditor.DisplayErrors = true;
-            oFCKeditor.Config["AutoDetectLanguage"] = false;
-            oFCKeditor.Config["DefaultLanguage"] = "<%=fsc.getLanguage()%>";
-            oFCKeditor.Config["CustomConfigurationsPath"] = "<%=configFile%>";
-            oFCKeditor.ToolbarSet = "quickinfo";
-            oFCKeditor.Config["ToolbarStartExpanded"] = true;
-            oFCKeditor.ReplaceTextarea();
+        function init() {
+        	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
             document.forms["forumsForm"].elements["messageTitle"].focus();
         }
 
@@ -191,7 +170,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     </script>
 </head>
 
-<body marginheight="5" marginwidth="5" bgcolor="#FFFFFF" leftmargin="5" topmargin="5" <%addBodyOnload(out, fsc, (move ? "" : "init();"));%>>
+<body <%addBodyOnload(out, fsc, (move ? "" : "init();"));%>>
 <%
     Window window = graphicFactory.getWindow();
 
@@ -287,7 +266,6 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
         </form>
         </table>
     </center><br/>
-    <center>
       <center>
         <fmt:message key="valider" var="validate"/>
         <fmt:message key="annuler" var="cancel"/>
