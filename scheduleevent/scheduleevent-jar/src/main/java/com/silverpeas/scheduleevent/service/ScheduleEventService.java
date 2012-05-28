@@ -29,7 +29,7 @@ import java.util.Set;
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 
-public interface ScheduleEventService extends SilverpeasComponentService {
+public interface ScheduleEventService extends SilverpeasComponentService<ScheduleEvent> {
 
   String createScheduleEvent(ScheduleEvent scheduleEvent);
 
