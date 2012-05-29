@@ -88,7 +88,6 @@
 
     String nextAction = "";
 
-    ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", kmeliaScc.getLanguage());
     ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
 
     KmeliaPublication kmeliaPublication = null;
@@ -165,7 +164,7 @@
     String linkedPathString = kmeliaScc.getSessionPath();
     String pathString = "";
 
-    Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "GoToCurrentTopic", false);
+    Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "GoToCurrentTopic", false);
     Button validateButton = null;
 
     if ("1".equals(checkPath)) {
@@ -328,7 +327,7 @@
       nextAction = "AddPublication";
 } 
 
-    validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');", false);
+    validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');", false);
 
     String sRequestURL = request.getRequestURL().toString();
     String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
@@ -1055,7 +1054,12 @@
         if ("New".equals(action)) { %>
           	<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getSessionTopic().getNodePK().getId() %>"/>
     <%  } else { %>
+    	<% if (!"-1".equals(pubDetail.getCloneId()) && !StringUtil.isDefined(pubDetail.getCloneStatus())) { %>
+    		<!-- positions are only editable on original publication -->
+    		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= pubDetail.getCloneId() %>" editable="false" />
+    	<% } else { %>
     		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
+    	<% } %>
     <%  }
       } %>
 	
