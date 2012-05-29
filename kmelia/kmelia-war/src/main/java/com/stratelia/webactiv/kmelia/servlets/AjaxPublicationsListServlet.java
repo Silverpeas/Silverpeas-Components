@@ -817,25 +817,21 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("<option value=\"2\" id=\"sort2\" " + isSelectedSort(ksc, "2") + ">" +
         resources.getString("DateDesc") + "</option>");
     out.write("<option value=\"5\" id=\"sort5\" " + isSelectedSort(ksc, "5") + ">" +
-        resources.getString("CreateDateAsc")
-        + "</option>");
+        resources.getString("CreateDateAsc") + "</option>");
     out.write("<option value=\"6\" id=\"sort6\" " + isSelectedSort(ksc, "6") + ">" +
-        resources.getString("CreateDateDesc")
-        + "</option>");
+        resources.getString("CreateDateDesc") + "</option>");
     out.write("<option value=\"0\" id=\"sort0\" " + isSelectedSort(ksc, "0") + ">" +
         resources.getString("PubAuteur") + "</option>");
     if (ksc.isFieldImportanceVisible()) {
       out.write("<option value=\"3\" id=\"sort3\" " + isSelectedSort(ksc, "3") + ">" +
-          resources.getString("PubImportance")
-          + "</option>");
+          resources.getString("PubImportance") + "</option>");
     }
     out.write("<option value=\"4\" id=\"sort4\" " + isSelectedSort(ksc, "4") + ">" +
         resources.getString("PubTitre") + "</option>");
     out.write("<option value=\"7\" id=\"sort7\" " + isSelectedSort(ksc, "7") + ">" +
-        resources.getString("PubDescription")
-        + "</option>");
-    out.write("<option value=\"8\" id=\"sort8\" " + isSelectedSort(ksc, "8") + ">" +
-        resources.getString("kmelia.publis.sort.8")
+        resources.getString("PubDescription") + "</option>");
+    out.write("<option value=\"-1\" id=\"sort-1\" " + isSelectedSort(ksc, "-1") + ">" +
+        resources.getString("kmelia.publis.sort.-1")
         + "</option>");
     out.write("</select>");
   }
