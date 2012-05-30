@@ -2974,7 +2974,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
 
     final NotificationMetaData notifMetaData =
-        NotificationHelper.build(new KmeliaSubscriptionPublicationNotification(topicPK, pubDetail, NotifAction.REPORT));
+        NotificationHelper.build(new KmeliaSubscriptionPublicationNotification(topicPK, pubDetail, NotifAction.REPORT,
+            senderName));
 
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData()",
         "root.MSG_GEN_EXIT_METHOD");

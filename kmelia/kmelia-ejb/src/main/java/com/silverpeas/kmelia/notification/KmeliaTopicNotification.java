@@ -137,7 +137,7 @@ public class KmeliaTopicNotification extends AbstractKmeliaNotification<NodeDeta
 
   @Override
   protected void performTemplateData(final String language, final NodeDetail resource, final SilverpeasTemplate template) {
-    getNotification().addLanguage(language, getBundle().getString("kmelia.NewTopic", getTitle()), "");
+    getNotification().addLanguage(language, getBundle(language).getString("kmelia.NewTopic", getTitle()), "");
     template.setAttribute("path", getHTMLNodePath(resource.getFatherPK(), language));
     template.setAttribute("topic", resource);
     template.setAttribute("topicName", resource.getName(language));

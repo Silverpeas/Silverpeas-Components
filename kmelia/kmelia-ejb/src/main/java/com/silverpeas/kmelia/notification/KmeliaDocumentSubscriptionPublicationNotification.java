@@ -42,14 +42,12 @@ public class KmeliaDocumentSubscriptionPublicationNotification extends KmeliaSub
 
   private final Document document;
   private final DocumentVersion documentVersion;
-  private final String senderName;
 
   public KmeliaDocumentSubscriptionPublicationNotification(final NodePK nodePK, final PublicationDetail resource,
       final Document document, final DocumentVersion documentVersion, final String senderName) {
-    super(nodePK, resource, NotifAction.REPORT);
+    super(nodePK, resource, NotifAction.REPORT, senderName);
     this.document = document;
     this.documentVersion = documentVersion;
-    this.senderName = senderName;
   }
 
   @Override
@@ -60,11 +58,6 @@ public class KmeliaDocumentSubscriptionPublicationNotification extends KmeliaSub
   @Override
   protected String getFileName() {
     return "notificationAttachment";
-  }
-
-  @Override
-  protected String getSenderName() {
-    return senderName;
   }
 
   @Override

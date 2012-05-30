@@ -49,12 +49,19 @@ public class KmeliaSubscriptionPublicationNotification extends AbstractKmeliaPub
   private final NotifAction action;
   private final String fileName;
   private final String subjectKey;
+  private final String senderName;
 
   public KmeliaSubscriptionPublicationNotification(final NodePK nodePK, final PublicationDetail resource,
       final NotifAction action) {
+    this(nodePK, resource, action, null);
+  }
+
+  public KmeliaSubscriptionPublicationNotification(final NodePK nodePK, final PublicationDetail resource,
+      final NotifAction action, final String senderName) {
     super(resource, null, null);
     this.nodePK = nodePK;
     this.action = action;
+    this.senderName = senderName;
     if (NotifAction.REPORT.equals(action)) {
       fileName = "notification";
       subjectKey = "Alert";
@@ -133,7 +140,7 @@ public class KmeliaSubscriptionPublicationNotification extends AbstractKmeliaPub
   }
 
   @Override
-  protected String getPath(final String language) {
+  protected final String getPath(final String language) {
     if (nodePK == null) {
       return "";
     }
@@ -142,7 +149,7 @@ public class KmeliaSubscriptionPublicationNotification extends AbstractKmeliaPub
 
   @Override
   protected String getSenderName() {
-    return "";
+    return senderName;
   }
 
   @Override

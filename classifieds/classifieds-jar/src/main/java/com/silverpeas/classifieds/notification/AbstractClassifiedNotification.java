@@ -21,34 +21,44 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.kmelia.notification;
+package com.silverpeas.classifieds.notification;
 
 import java.util.Collection;
 
+import com.silverpeas.classifieds.ClassifiedUtil;
+import com.silverpeas.classifieds.model.ClassifiedDetail;
+import com.silverpeas.notification.helper.AbstractTemplateNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractKmeliaPublicationNotification extends AbstractKmeliaNotification<PublicationDetail> {
+public abstract class AbstractClassifiedNotification extends AbstractTemplateNotificationBuilder<ClassifiedDetail> {
 
-  public AbstractKmeliaPublicationNotification(final PublicationDetail resource, final String fileName,
-      final String subject) {
-    super(resource, null, null);
+  public AbstractClassifiedNotification(final ClassifiedDetail resource) {
+    super(resource);
+  }
+
+  public AbstractClassifiedNotification(final ClassifiedDetail resource, final String title, final String fileName) {
+    super(resource, title, fileName);
+  }
+
+  @Override
+  protected String getMultilangPropertyFile() {
+    return "com.silverpeas.classifieds.multilang.classifiedsBundle";
+  }
+
+  @Override
+  protected String getTemplatePath() {
+    return "classifieds";
   }
 
   protected abstract Collection<String> getUserIdToNotify();
 
   protected abstract String getSubjectKey();
-
-  protected abstract String getPath(final String language);
-
-  protected abstract String getSenderName();
 
   @Override
   protected String getTitle() {
@@ -56,7 +66,7 @@ public abstract class AbstractKmeliaPublicationNotification extends AbstractKmel
   }
 
   @Override
-  protected void perform(final PublicationDetail resource) {
+  protected void perform(final ClassifiedDetail resource) {
     final Collection<String> userIdToNotify = getUserIdToNotify();
 
     // Stopping the process if no user to notify
@@ -77,26 +87,32 @@ public abstract class AbstractKmeliaPublicationNotification extends AbstractKmel
   }
 
   @Override
-  protected void performTemplateData(final String language, final PublicationDetail resource,
+  protected void performTemplateData(final String language, final ClassifiedDetail resource,
       final SilverpeasTemplate template) {
-    getNotification().addLanguage(language, getBundle(language).getString(getSubjectKey(), getTitle()), "");
-    template.setAttribute("path", getPath(language));
-    template.setAttribute("publication", resource);
-    template.setAttribute("publicationName", resource.getName(language));
-    template.setAttribute("publicationDesc", resource.getDescription(language));
-    template.setAttribute("publicationKeywords", resource.getKeywords(language));
-    template.setAttribute("senderName", getSenderName());
+    getNotification().addLanguage(language, getBundle().getString(getSubjectKey(), getTitle()), "");
+    template.setAttribute("classified", resource);
+    template.setAttribute("classifiedName", resource.getTitle());
     template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
   @Override
-  protected void performNotificationResource(final String language, final PublicationDetail resource,
+  protected void performNotificationResource(final String language, final ClassifiedDetail resource,
       final NotificationResourceData notificationResourceData) {
-    notificationResourceData.setResourceName(resource.getName(language));
+    notificationResourceData.setResourceName(resource.getTitle());
   }
 
   @Override
-  protected String getResourceURL(final PublicationDetail resource) {
-    return KmeliaHelper.getPublicationUrl(resource);
+  protected String getResourceURL(final ClassifiedDetail resource) {
+    return ClassifiedUtil.getClassifiedUrl(resource);
+  }
+
+  @Override
+  protected String getComponentInstanceId() {
+    return getResource().getInstanceId();
+  }
+
+  @Override
+  protected String getSender() {
+    return getResource().getCreatorId();
   }
 }

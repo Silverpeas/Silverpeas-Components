@@ -40,13 +40,11 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 public class KmeliaAttachmentSubscriptionPublicationNotification extends KmeliaSubscriptionPublicationNotification {
 
   private final AttachmentDetail attachmentDetail;
-  private final String senderName;
 
   public KmeliaAttachmentSubscriptionPublicationNotification(final NodePK nodePK, final PublicationDetail resource,
       final AttachmentDetail attachmentDetail, final String senderName) {
-    super(nodePK, resource, NotifAction.REPORT);
+    super(nodePK, resource, NotifAction.REPORT, senderName);
     this.attachmentDetail = attachmentDetail;
-    this.senderName = senderName;
   }
 
   @Override
@@ -57,11 +55,6 @@ public class KmeliaAttachmentSubscriptionPublicationNotification extends KmeliaS
   @Override
   protected String getFileName() {
     return "notificationAttachment";
-  }
-
-  @Override
-  protected String getSenderName() {
-    return senderName;
   }
 
   @Override
