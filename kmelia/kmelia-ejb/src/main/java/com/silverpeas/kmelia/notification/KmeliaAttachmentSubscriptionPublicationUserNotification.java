@@ -27,32 +27,29 @@ import static com.silverpeas.util.StringUtil.isDefined;
 
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaDocumentSubscriptionPublicationNotification extends KmeliaSubscriptionPublicationNotification {
+public class KmeliaAttachmentSubscriptionPublicationUserNotification extends KmeliaSubscriptionPublicationUserNotification {
 
-  private final Document document;
-  private final DocumentVersion documentVersion;
+  private final AttachmentDetail attachmentDetail;
 
-  public KmeliaDocumentSubscriptionPublicationNotification(final NodePK nodePK, final PublicationDetail resource,
-      final Document document, final DocumentVersion documentVersion, final String senderName) {
+  public KmeliaAttachmentSubscriptionPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource,
+      final AttachmentDetail attachmentDetail, final String senderName) {
     super(nodePK, resource, NotifAction.REPORT, senderName);
-    this.document = document;
-    this.documentVersion = documentVersion;
+    this.attachmentDetail = attachmentDetail;
   }
 
   @Override
   protected String getSubjectKey() {
-    return "AlertDocument";
+    return "AlertAttachment";
   }
 
   @Override
@@ -65,27 +62,24 @@ public class KmeliaDocumentSubscriptionPublicationNotification extends KmeliaSub
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
 
-    template.setAttribute("attachmentFileName", documentVersion.getLogicalName());
-    if (isDefined(document.getName())) {
-      template.setAttribute("attachmentTitle", document.getName());
+    template.setAttribute("attachmentFileName", attachmentDetail.getLogicalName(language));
+    if (isDefined(attachmentDetail.getTitle(language))) {
+      template.setAttribute("attachmentTitle", attachmentDetail.getTitle(language));
     }
-    if (isDefined(document.getDescription())) {
-      template.setAttribute("attachmentDesc", document.getDescription());
+    if (isDefined(attachmentDetail.getInfo(language))) {
+      template.setAttribute("attachmentDesc", attachmentDetail.getInfo(language));
     }
-    template
-        .setAttribute("attachmentCreationDate", DateUtil.getOutputDate(documentVersion.getCreationDate(), language));
-    template.setAttribute("attachmentSize", documentVersion.getDisplaySize());
-
-    final UserDetail authorDetail =
-        getOrganizationController().getUserDetail(Integer.toString(documentVersion.getAuthorId()));
-    template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " " + authorDetail.getLastName());
-
-    template.setAttribute("attachmentMajorNumber", documentVersion.getMajorNumber());
-    template.setAttribute("attachmentMinorNumber", documentVersion.getMinorNumber());
+    template.setAttribute("attachmentCreationDate", DateUtil.getOutputDate(attachmentDetail.
+        getCreationDate(), language));
+    template.setAttribute("attachmentSize", attachmentDetail.getAttachmentFileSize(language));
+    final UserDetail authorDetail = getOrganizationController().getUserDetail(
+        attachmentDetail.getAuthor());
+    template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " " + authorDetail.
+        getLastName());
   }
 
   @Override
   protected String getResourceURL(final PublicationDetail resource) {
-    return KmeliaHelper.getDocumentUrl(resource, document);
+    return KmeliaHelper.getAttachmentUrl(resource, attachmentDetail);
   }
 }

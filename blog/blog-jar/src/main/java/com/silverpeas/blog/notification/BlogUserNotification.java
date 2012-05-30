@@ -28,7 +28,7 @@ import java.util.Collection;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.comment.model.Comment;
-import com.silverpeas.notification.helper.AbstractTemplateNotificationBuilder;
+import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
@@ -40,7 +40,7 @@ import com.stratelia.webactiv.util.DateUtil;
  * The centralization of the construction of the blog notifications
  * @author Yohann Chastagnier
  */
-public class BlogNotificationBuilder extends AbstractTemplateNotificationBuilder<PostDetail> {
+public class BlogUserNotification extends AbstractTemplateUserNotificationBuilder<PostDetail> {
 
   private final UserDetail userDetail;
   private final String componentInstanceId;
@@ -51,17 +51,17 @@ public class BlogNotificationBuilder extends AbstractTemplateNotificationBuilder
   private final String senderId;
   private final Collection<String> newSubscribers;
 
-  public BlogNotificationBuilder(final String componentInstanceId, final PostDetail postDetail,
+  public BlogUserNotification(final String componentInstanceId, final PostDetail postDetail,
       final UserDetail userDetail) {
     this(componentInstanceId, postDetail, null, null, userDetail.getId(), null, userDetail);
   }
 
-  public BlogNotificationBuilder(final String componentInstanceId, final PostDetail postDetail, final Comment comment,
+  public BlogUserNotification(final String componentInstanceId, final PostDetail postDetail, final Comment comment,
       final String type, final String senderId, final Collection<String> newSubscribers) {
     this(componentInstanceId, postDetail, comment, type, senderId, newSubscribers, null);
   }
 
-  private BlogNotificationBuilder(final String componentInstanceId, final PostDetail postDetail, final Comment comment,
+  private BlogUserNotification(final String componentInstanceId, final PostDetail postDetail, final Comment comment,
       final String type, final String senderId, final Collection<String> newSubscribers, final UserDetail userDetail) {
     super(postDetail, null, null);
     this.componentInstanceId = componentInstanceId;

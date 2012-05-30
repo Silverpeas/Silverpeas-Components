@@ -35,9 +35,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractKmeliaPublicationNotification extends AbstractKmeliaNotification<PublicationDetail> {
+public abstract class AbstractKmeliaPublicationUserNotification extends AbstractKmeliaUserNotification<PublicationDetail> {
 
-  public AbstractKmeliaPublicationNotification(final PublicationDetail resource, final String fileName,
+  public AbstractKmeliaPublicationUserNotification(final PublicationDetail resource, final String fileName,
       final String subject) {
     super(resource, null, null);
   }

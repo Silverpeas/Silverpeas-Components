@@ -27,7 +27,7 @@ import java.util.Collection;
 
 import com.silverpeas.classifieds.ClassifiedUtil;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
-import com.silverpeas.notification.helper.AbstractTemplateNotificationBuilder;
+import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -36,13 +36,13 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractClassifiedNotification extends AbstractTemplateNotificationBuilder<ClassifiedDetail> {
+public abstract class AbstractClassifiedUserNotification extends AbstractTemplateUserNotificationBuilder<ClassifiedDetail> {
 
-  public AbstractClassifiedNotification(final ClassifiedDetail resource) {
+  public AbstractClassifiedUserNotification(final ClassifiedDetail resource) {
     super(resource);
   }
 
-  public AbstractClassifiedNotification(final ClassifiedDetail resource, final String title, final String fileName) {
+  public AbstractClassifiedUserNotification(final ClassifiedDetail resource, final String title, final String fileName) {
     super(resource, title, fileName);
   }
 
@@ -89,7 +89,7 @@ public abstract class AbstractClassifiedNotification extends AbstractTemplateNot
   @Override
   protected void performTemplateData(final String language, final ClassifiedDetail resource,
       final SilverpeasTemplate template) {
-    getNotification().addLanguage(language, getBundle().getString(getSubjectKey(), getTitle()), "");
+    getNotification().addLanguage(language, getBundle(language).getString(getSubjectKey(), getTitle()), "");
     template.setAttribute("classified", resource);
     template.setAttribute("classifiedName", resource.getTitle());
     template.setAttribute("silverpeasURL", getResourceURL(resource));

@@ -21,37 +21,47 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.classifieds.notification;
+package com.silverpeas.kmelia.notification;
 
 import java.util.Collection;
+import java.util.Collections;
 
-import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier
  */
-public class ClassifiedSubscriptionNotification extends AbstractClassifiedNotification {
+public class KmeliaModificationPublicationUserNotification extends AbstractKmeliaActionPublicationUserNotification {
 
-  private final Collection<String> usersToBeNotified;
+  private final int modificationScope;
 
-  public ClassifiedSubscriptionNotification(final ClassifiedDetail resource, final Collection<String> usersToBeNotified) {
-    super(resource, null, "subscription");
-    this.usersToBeNotified = usersToBeNotified;
-  }
-
-  @Override
-  protected Collection<String> getUserIdToNotify() {
-    return usersToBeNotified;
+  public KmeliaModificationPublicationUserNotification(final PublicationDetail resource, final int modificationScope) {
+    super(null, resource, NotifAction.UPDATE);
+    this.modificationScope = modificationScope;
   }
 
   @Override
   protected String getSubjectKey() {
-    return "classifieds.mailNewPublicationSubscription";
+    return "kmelia.PublicationModified";
   }
 
   @Override
-  protected NotifAction getAction() {
-    return NotifAction.CREATE;
+  protected String getFileName() {
+    if (modificationScope == KmeliaHelper.PUBLICATION_HEADER) {
+      return "notificationUpdateHeader";
+    }
+    return "notificationUpdateContent";
+  }
+
+  @Override
+  protected Collection<String> getUserIdToNotify() {
+    return Collections.singletonList(getSender());
+  }
+
+  @Override
+  protected String getSenderName() {
+    return getSender();
   }
 }

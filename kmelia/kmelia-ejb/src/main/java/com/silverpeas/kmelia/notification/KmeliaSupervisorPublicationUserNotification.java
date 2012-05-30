@@ -23,45 +23,54 @@
  */
 package com.silverpeas.kmelia.notification;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaModificationPublicationNotification extends AbstractKmeliaActionPublicationNotification {
+public class KmeliaSupervisorPublicationUserNotification extends KmeliaSubscriptionPublicationUserNotification {
 
-  private final int modificationScope;
-
-  public KmeliaModificationPublicationNotification(final PublicationDetail resource, final int modificationScope) {
-    super(null, resource, NotifAction.UPDATE);
-    this.modificationScope = modificationScope;
+  public KmeliaSupervisorPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource) {
+    super(nodePK, resource, NotifAction.CREATE);
   }
 
   @Override
   protected String getSubjectKey() {
-    return "kmelia.PublicationModified";
+    return "kmelia.SupervisorNotifSubject";
   }
 
   @Override
   protected String getFileName() {
-    if (modificationScope == KmeliaHelper.PUBLICATION_HEADER) {
-      return "notificationUpdateHeader";
-    }
-    return "notificationUpdateContent";
+    return "notificationSupervisor";
   }
 
   @Override
   protected Collection<String> getUserIdToNotify() {
-    return Collections.singletonList(getSender());
+    final List<String> roles = Collections.singletonList("supervisor");
+    final List<String> supervisors =
+        new ArrayList<String>(Arrays.asList(getOrganizationController().getUsersIdsByRoleNames(
+            getResource().getPK().getInstanceId(), roles)));
+    SilverTrace.debug("kmelia", "KmeliaSupervisorPublicationNotification.getUserIdToNotify()",
+        "root.MSG_GEN_PARAM_VALUE", supervisors.size() + " users in role supervisor !");
+    return supervisors;
   }
 
   @Override
-  protected String getSenderName() {
-    return getSender();
+  protected String getSender() {
+    return getResource().getUpdaterId();
+  }
+
+  @Override
+  protected boolean isSendImmediatly() {
+    return true;
   }
 }

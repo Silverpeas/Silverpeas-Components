@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaSubscriptionPublicationNotification extends AbstractKmeliaPublicationNotification {
+public class KmeliaSubscriptionPublicationUserNotification extends AbstractKmeliaPublicationUserNotification {
 
   private final NodePK nodePK;
   private final NotifAction action;
@@ -51,12 +51,12 @@ public class KmeliaSubscriptionPublicationNotification extends AbstractKmeliaPub
   private final String subjectKey;
   private final String senderName;
 
-  public KmeliaSubscriptionPublicationNotification(final NodePK nodePK, final PublicationDetail resource,
+  public KmeliaSubscriptionPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource,
       final NotifAction action) {
     this(nodePK, resource, action, null);
   }
 
-  public KmeliaSubscriptionPublicationNotification(final NodePK nodePK, final PublicationDetail resource,
+  public KmeliaSubscriptionPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource,
       final NotifAction action, final String senderName) {
     super(resource, null, null);
     this.nodePK = nodePK;

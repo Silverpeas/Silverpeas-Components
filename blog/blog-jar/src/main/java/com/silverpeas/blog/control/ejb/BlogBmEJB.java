@@ -46,12 +46,12 @@ import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
-import com.silverpeas.blog.notification.BlogNotificationBuilder;
+import com.silverpeas.blog.notification.BlogUserNotification;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
-import com.silverpeas.notification.helper.NotificationHelper;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
@@ -146,7 +146,7 @@ public class BlogBmEJB implements SessionBean {
         }
 
         if (!newSubscribers.isEmpty()) {
-          NotificationHelper.buildAndSend(new BlogNotificationBuilder(fatherPK.getInstanceId(), post, comment, type,
+          UserNotificationHelper.buildAndSend(new BlogUserNotification(fatherPK.getInstanceId(), post, comment, type,
               senderId, newSubscribers));
         }
       }

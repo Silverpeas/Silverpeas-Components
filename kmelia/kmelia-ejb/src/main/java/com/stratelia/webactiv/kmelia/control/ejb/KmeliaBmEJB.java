@@ -68,16 +68,16 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.dao.ModelDAO;
-import com.silverpeas.kmelia.notification.KmeliaAttachmentSubscriptionPublicationNotification;
-import com.silverpeas.kmelia.notification.KmeliaDefermentPublicationNotification;
-import com.silverpeas.kmelia.notification.KmeliaDocumentSubscriptionPublicationNotification;
-import com.silverpeas.kmelia.notification.KmeliaModificationPublicationNotification;
-import com.silverpeas.kmelia.notification.KmeliaPendingValidationPublicationNotification;
-import com.silverpeas.kmelia.notification.KmeliaSubscriptionPublicationNotification;
-import com.silverpeas.kmelia.notification.KmeliaSupervisorPublicationNotification;
-import com.silverpeas.kmelia.notification.KmeliaTopicNotification;
-import com.silverpeas.kmelia.notification.KmeliaValidationPublicationNotification;
-import com.silverpeas.notification.helper.NotificationHelper;
+import com.silverpeas.kmelia.notification.KmeliaAttachmentSubscriptionPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaDefermentPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaDocumentSubscriptionPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaModificationPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaPendingValidationPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaSubscriptionPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaTopicUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaValidationPublicationUserNotification;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.pdc.ejb.PdcBmHome;
@@ -548,7 +548,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     SilverTrace.info("kmelia", "KmeliaBmEJB.topicCreationAlert()",
         "root.MSG_GEN_ENTER_METHOD");
 
-    NotificationHelper.buildAndSend(new KmeliaTopicNotification(nodePK, fatherPK, alertType));
+    UserNotificationHelper.buildAndSend(new KmeliaTopicUserNotification(nodePK, fatherPK, alertType));
 
     SilverTrace.info("kmelia", "KmeliaBmEJB.topicCreationAlert()", "root.MSG_GEN_PARAM_VALUE",
         "AlertType alert = " + alertType);
@@ -1907,7 +1907,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
 
       // Building and sending the notification
-      NotificationHelper.buildAndSend(new KmeliaSubscriptionPublicationNotification(fatherPK, pubDetail, action));
+      UserNotificationHelper.buildAndSend(new KmeliaSubscriptionPublicationUserNotification(fatherPK, pubDetail, action));
 
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "KmeliaBmEJB.sendSubscriptionsNotification()",
@@ -2345,7 +2345,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     try {
 
-      NotificationHelper.buildAndSend(new KmeliaValidationPublicationNotification(fatherPK, pubDetail, refusalMotive,
+      UserNotificationHelper.buildAndSend(new KmeliaValidationPublicationUserNotification(fatherPK, pubDetail, refusalMotive,
           userIdWhoRefuse));
 
     } catch (Exception e) {
@@ -2359,7 +2359,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     if (pubDetail.isValid()) {
       try {
 
-        NotificationHelper.buildAndSend(new KmeliaSupervisorPublicationNotification(fatherPK, pubDetail));
+        UserNotificationHelper.buildAndSend(new KmeliaSupervisorPublicationUserNotification(fatherPK, pubDetail));
 
       } catch (Exception e) {
         SilverTrace.warn("kmelia", "KmeliaBmEJB.alertSupervisors()",
@@ -2805,7 +2805,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     try {
 
-      NotificationHelper.buildAndSend(new KmeliaDefermentPublicationNotification(pubDetail, defermentMotive));
+      UserNotificationHelper.buildAndSend(new KmeliaDefermentPublicationUserNotification(pubDetail, defermentMotive));
 
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "KmeliaBmEJB.sendDefermentNotification()",
@@ -2974,7 +2974,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
 
     final NotificationMetaData notifMetaData =
-        NotificationHelper.build(new KmeliaSubscriptionPublicationNotification(topicPK, pubDetail, NotifAction.REPORT,
+        UserNotificationHelper.build(new KmeliaSubscriptionPublicationUserNotification(topicPK, pubDetail, NotifAction.REPORT,
             senderName));
 
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData()",
@@ -3000,7 +3000,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     final AttachmentDetail attachmentDetail = AttachmentController.searchAttachmentByPK(attachmentPk);
 
     final NotificationMetaData notifMetaData =
-        NotificationHelper.build(new KmeliaAttachmentSubscriptionPublicationNotification(topicPK, pubDetail,
+        UserNotificationHelper.build(new KmeliaAttachmentSubscriptionPublicationUserNotification(topicPK, pubDetail,
             attachmentDetail, senderName));
     
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(attachment)",
@@ -3028,7 +3028,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     final DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(documentPk);
 
     final NotificationMetaData notifMetaData =
-        NotificationHelper.build(new KmeliaDocumentSubscriptionPublicationNotification(topicPK, pubDetail,
+        UserNotificationHelper.build(new KmeliaDocumentSubscriptionPublicationUserNotification(topicPK, pubDetail,
             document, documentVersion, senderName));
 
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(document)",
@@ -3208,11 +3208,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   private void sendValidationAlert(final PublicationDetail pubDetail, final String[] users) {
 
-    NotificationHelper.buildAndSend(new KmeliaPendingValidationPublicationNotification(pubDetail, users));
+    UserNotificationHelper.buildAndSend(new KmeliaPendingValidationPublicationUserNotification(pubDetail, users));
   }
 
   private void sendModificationAlert(final int modificationScope, final PublicationDetail pubDetail) {
-    NotificationHelper.buildAndSend(new KmeliaModificationPublicationNotification(pubDetail, modificationScope));
+    UserNotificationHelper.buildAndSend(new KmeliaModificationPublicationUserNotification(pubDetail, modificationScope));
   }
 
   @Override

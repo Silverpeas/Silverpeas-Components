@@ -33,13 +33,13 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 /**
  * @author Yohann Chastagnier
  */
-public class ClassifiedValidationNotification extends AbstractClassifiedNotification {
+public class ClassifiedValidationUserNotification extends AbstractClassifiedUserNotification {
 
   private final String userIdWhoRefuse;
   private final String refusalMotive;
   private final String userToBeNotified;
 
-  public ClassifiedValidationNotification(final ClassifiedDetail resource, final String userIdWhoRefuse,
+  public ClassifiedValidationUserNotification(final ClassifiedDetail resource, final String userIdWhoRefuse,
       final String refusalMotive, final String userToBeNotified) {
     super(resource, null, "subscription");
     this.userIdWhoRefuse = userIdWhoRefuse;

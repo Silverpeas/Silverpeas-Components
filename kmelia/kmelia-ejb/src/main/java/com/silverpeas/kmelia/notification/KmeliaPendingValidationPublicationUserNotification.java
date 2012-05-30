@@ -26,51 +26,43 @@ package com.silverpeas.kmelia.notification;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaSupervisorPublicationNotification extends KmeliaSubscriptionPublicationNotification {
+public class KmeliaPendingValidationPublicationUserNotification extends AbstractKmeliaActionPublicationUserNotification {
 
-  public KmeliaSupervisorPublicationNotification(final NodePK nodePK, final PublicationDetail resource) {
-    super(nodePK, resource, NotifAction.CREATE);
+  private final String[] usersToBeNotified;
+
+  public KmeliaPendingValidationPublicationUserNotification(final PublicationDetail resource,
+      final String[] usersToBeNotified) {
+    super(null, resource, NotifAction.PENDING_VALIDATION);
+    this.usersToBeNotified = usersToBeNotified;
   }
 
   @Override
   protected String getSubjectKey() {
-    return "kmelia.SupervisorNotifSubject";
+    return "ToValidateForNotif";
   }
 
   @Override
   protected String getFileName() {
-    return "notificationSupervisor";
+    return "notificationToValidate";
   }
 
   @Override
   protected Collection<String> getUserIdToNotify() {
-    final List<String> roles = Collections.singletonList("supervisor");
-    final List<String> supervisors =
-        new ArrayList<String>(Arrays.asList(getOrganizationController().getUsersIdsByRoleNames(
-            getResource().getPK().getInstanceId(), roles)));
-    SilverTrace.debug("kmelia", "KmeliaSupervisorPublicationNotification.getUserIdToNotify()",
-        "root.MSG_GEN_PARAM_VALUE", supervisors.size() + " users in role supervisor !");
-    return supervisors;
+    if (usersToBeNotified == null) {
+      return null;
+    }
+    return new ArrayList<String>(Arrays.asList(usersToBeNotified));
   }
 
   @Override
-  protected String getSender() {
-    return getResource().getUpdaterId();
-  }
-
-  @Override
-  protected boolean isSendImmediatly() {
-    return true;
+  protected String getSenderName() {
+    return getSender();
   }
 }

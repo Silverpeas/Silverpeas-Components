@@ -21,32 +21,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.kmelia.notification;
+package com.silverpeas.classifieds.notification;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import java.util.Collection;
 
+import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractKmeliaActionPublicationNotification extends KmeliaSubscriptionPublicationNotification {
+public class ClassifiedSubscriptionUserNotification extends AbstractClassifiedUserNotification {
 
-  public AbstractKmeliaActionPublicationNotification(NodePK nodePK, PublicationDetail resource, NotifAction action) {
-    super(nodePK, resource, action);
+  private final Collection<String> usersToBeNotified;
+
+  public ClassifiedSubscriptionUserNotification(final ClassifiedDetail resource, final Collection<String> usersToBeNotified) {
+    super(resource, null, "subscription");
+    this.usersToBeNotified = usersToBeNotified;
   }
 
   @Override
-  protected String getSender() {
-    String userId = getResource().getUpdaterId();
-    if (!isDefined(userId)) {
-      userId = getResource().getCreatorId();
-    }
-    if (!isDefined(userId)) {
-      stop();
-    }
-    return userId;
+  protected Collection<String> getUserIdToNotify() {
+    return usersToBeNotified;
+  }
+
+  @Override
+  protected String getSubjectKey() {
+    return "classifieds.mailNewPublicationSubscription";
+  }
+
+  @Override
+  protected NotifAction getAction() {
+    return NotifAction.CREATE;
   }
 }

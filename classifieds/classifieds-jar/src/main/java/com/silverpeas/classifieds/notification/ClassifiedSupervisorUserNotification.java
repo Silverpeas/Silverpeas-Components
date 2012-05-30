@@ -21,56 +21,46 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.kmelia.notification;
+package com.silverpeas.classifieds.notification;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaDefermentPublicationNotification extends AbstractKmeliaActionPublicationNotification {
+public class ClassifiedSupervisorUserNotification extends AbstractClassifiedUserNotification {
 
-  private final String refusalMotive;
-
-  public KmeliaDefermentPublicationNotification(final PublicationDetail resource, final String refusalMotive) {
-    super(null, resource, NotifAction.SUSPEND);
-    this.refusalMotive = refusalMotive;
-  }
-
-  @Override
-  protected String getSubjectKey() {
-    return "kmelia.PublicationSuspended";
-  }
-
-  @Override
-  protected String getFileName() {
-    return "notification";
-  }
-
-  @Override
-  protected void perform(final PublicationDetail resource) {
-    super.perform(resource);
-    getNotification().setOriginalExtraMessage(refusalMotive);
-  }
-
-  @Override
-  protected void performTemplateData(final String language, final PublicationDetail resource,
-      final SilverpeasTemplate template) {
-    super.performTemplateData(language, resource, template);
-    template.setAttribute("refusalMotive", refusalMotive);
-  }
-
-  @Override
-  protected boolean stopWhenNoUserToNotify() {
-    return false;
+  public ClassifiedSupervisorUserNotification(final ClassifiedDetail resource) {
+    super(resource, null, "tovalidate");
   }
 
   @Override
   protected Collection<String> getUserIdToNotify() {
-    return null;
+    final List<String> roles = Collections.singletonList("admin");
+    final OrganizationController orga = new OrganizationController();
+    return new ArrayList<String>(Arrays.asList(orga.getUsersIdsByRoleNames(getComponentInstanceId(), roles)));
+  }
+
+  @Override
+  protected String getSubjectKey() {
+    return "classifieds.supervisorNotifSubject";
+  }
+
+  @Override
+  protected NotifAction getAction() {
+    return NotifAction.PENDING_VALIDATION;
+  }
+
+  @Override
+  protected boolean isSendImmediatly() {
+    return true;
   }
 }

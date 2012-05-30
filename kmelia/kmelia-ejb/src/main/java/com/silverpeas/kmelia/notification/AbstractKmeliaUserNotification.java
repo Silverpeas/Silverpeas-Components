@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.silverpeas.notification.helper.AbstractTemplateNotificationBuilder;
+import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -50,13 +50,13 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractKmeliaNotification<T> extends AbstractTemplateNotificationBuilder<T> {
+public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplateUserNotificationBuilder<T> {
 
-  public AbstractKmeliaNotification(final T resource) {
+  public AbstractKmeliaUserNotification(final T resource) {
     super(resource);
   }
 
-  public AbstractKmeliaNotification(final T resource, final String title, final String fileName) {
+  public AbstractKmeliaUserNotification(final T resource, final String title, final String fileName) {
     super(resource, title, fileName);
   }
 

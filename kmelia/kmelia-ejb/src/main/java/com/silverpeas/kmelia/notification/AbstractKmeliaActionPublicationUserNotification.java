@@ -23,46 +23,30 @@
  */
 package com.silverpeas.kmelia.notification;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaPendingValidationPublicationNotification extends AbstractKmeliaActionPublicationNotification {
+public abstract class AbstractKmeliaActionPublicationUserNotification extends KmeliaSubscriptionPublicationUserNotification {
 
-  private final String[] usersToBeNotified;
-
-  public KmeliaPendingValidationPublicationNotification(final PublicationDetail resource,
-      final String[] usersToBeNotified) {
-    super(null, resource, NotifAction.PENDING_VALIDATION);
-    this.usersToBeNotified = usersToBeNotified;
+  public AbstractKmeliaActionPublicationUserNotification(NodePK nodePK, PublicationDetail resource, NotifAction action) {
+    super(nodePK, resource, action);
   }
 
   @Override
-  protected String getSubjectKey() {
-    return "ToValidateForNotif";
-  }
-
-  @Override
-  protected String getFileName() {
-    return "notificationToValidate";
-  }
-
-  @Override
-  protected Collection<String> getUserIdToNotify() {
-    if (usersToBeNotified == null) {
-      return null;
+  protected String getSender() {
+    String userId = getResource().getUpdaterId();
+    if (!isDefined(userId)) {
+      userId = getResource().getCreatorId();
     }
-    return new ArrayList<String>(Arrays.asList(usersToBeNotified));
-  }
-
-  @Override
-  protected String getSenderName() {
-    return getSender();
+    if (!isDefined(userId)) {
+      stop();
+    }
+    return userId;
   }
 }

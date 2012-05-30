@@ -42,14 +42,14 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaTopicNotification extends AbstractKmeliaNotification<NodeDetail> {
+public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<NodeDetail> {
 
   private final NodePK nodePK;
   private final NodeDetail fatherDetail;
   private final String alertType;
   private final NotifAction action;
 
-  public KmeliaTopicNotification(final NodePK nodePK, final NodePK fatherPK, final String alertType) {
+  public KmeliaTopicUserNotification(final NodePK nodePK, final NodePK fatherPK, final String alertType) {
     super(null, null, "notificationCreateTopic");
     this.nodePK = nodePK;
     this.alertType = alertType;

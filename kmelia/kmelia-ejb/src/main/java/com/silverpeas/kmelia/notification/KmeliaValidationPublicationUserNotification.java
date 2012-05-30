@@ -36,12 +36,12 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaValidationPublicationNotification extends AbstractKmeliaActionPublicationNotification {
+public class KmeliaValidationPublicationUserNotification extends AbstractKmeliaActionPublicationUserNotification {
 
   private final String refusalMotive;
   private final String userIdWhoRefuse;
 
-  public KmeliaValidationPublicationNotification(final NodePK nodePK, final PublicationDetail resource,
+  public KmeliaValidationPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource,
       final String refusalMotive,
       final String userIdWhoRefuse) {
     super(nodePK, resource, null);

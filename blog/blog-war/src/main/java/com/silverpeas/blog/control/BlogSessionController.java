@@ -33,7 +33,7 @@ import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
-import com.silverpeas.blog.notification.BlogNotificationBuilder;
+import com.silverpeas.blog.notification.BlogUserNotification;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -42,7 +42,7 @@ import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.ejb.MyLinksBmHome;
 import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.notification.helper.NotificationHelper;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -229,7 +229,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String postId)
       throws RemoteException {
-    return NotificationHelper.build(new BlogNotificationBuilder(getComponentId(), getPost(postId), getUserDetail()));
+    return UserNotificationHelper.build(new BlogUserNotification(getComponentId(), getPost(postId), getUserDetail()));
   }
 
   public synchronized void deletePost(String postId) {

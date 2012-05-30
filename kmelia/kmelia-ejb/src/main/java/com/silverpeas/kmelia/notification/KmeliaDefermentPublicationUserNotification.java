@@ -21,46 +21,56 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.classifieds.notification;
+package com.silverpeas.kmelia.notification;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
-import com.silverpeas.classifieds.model.ClassifiedDetail;
+import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier
  */
-public class ClassifiedSupervisorNotification extends AbstractClassifiedNotification {
+public class KmeliaDefermentPublicationUserNotification extends AbstractKmeliaActionPublicationUserNotification {
 
-  public ClassifiedSupervisorNotification(final ClassifiedDetail resource) {
-    super(resource, null, "tovalidate");
-  }
+  private final String refusalMotive;
 
-  @Override
-  protected Collection<String> getUserIdToNotify() {
-    final List<String> roles = Collections.singletonList("admin");
-    final OrganizationController orga = new OrganizationController();
-    return new ArrayList<String>(Arrays.asList(orga.getUsersIdsByRoleNames(getComponentInstanceId(), roles)));
+  public KmeliaDefermentPublicationUserNotification(final PublicationDetail resource, final String refusalMotive) {
+    super(null, resource, NotifAction.SUSPEND);
+    this.refusalMotive = refusalMotive;
   }
 
   @Override
   protected String getSubjectKey() {
-    return "classifieds.supervisorNotifSubject";
+    return "kmelia.PublicationSuspended";
   }
 
   @Override
-  protected NotifAction getAction() {
-    return NotifAction.PENDING_VALIDATION;
+  protected String getFileName() {
+    return "notification";
   }
 
   @Override
-  protected boolean isSendImmediatly() {
-    return true;
+  protected void perform(final PublicationDetail resource) {
+    super.perform(resource);
+    getNotification().setOriginalExtraMessage(refusalMotive);
+  }
+
+  @Override
+  protected void performTemplateData(final String language, final PublicationDetail resource,
+      final SilverpeasTemplate template) {
+    super.performTemplateData(language, resource, template);
+    template.setAttribute("refusalMotive", refusalMotive);
+  }
+
+  @Override
+  protected boolean stopWhenNoUserToNotify() {
+    return false;
+  }
+
+  @Override
+  protected Collection<String> getUserIdToNotify() {
+    return null;
   }
 }

@@ -43,12 +43,12 @@ import com.silverpeas.classifieds.dao.ClassifiedsDAO;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.classifieds.model.Subscribe;
-import com.silverpeas.classifieds.notification.ClassifiedSubscriptionNotification;
-import com.silverpeas.classifieds.notification.ClassifiedSupervisorNotification;
-import com.silverpeas.classifieds.notification.ClassifiedValidationNotification;
+import com.silverpeas.classifieds.notification.ClassifiedSubscriptionUserNotification;
+import com.silverpeas.classifieds.notification.ClassifiedSupervisorUserNotification;
+import com.silverpeas.classifieds.notification.ClassifiedValidationUserNotification;
 import com.silverpeas.comment.service.notification.CommentUserNotificationService;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.notification.helper.NotificationHelper;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
@@ -305,8 +305,8 @@ public class DefaultClassifiedService implements ClassifiedService {
       final String refusalMotive, final String userIdWhoRefuse) {
     try {
 
-      NotificationHelper.buildAndSend(new ClassifiedValidationNotification(classified, userIdWhoRefuse, refusalMotive,
-          userId));
+      UserNotificationHelper.buildAndSend(new ClassifiedValidationUserNotification(classified, userIdWhoRefuse,
+          refusalMotive, userId));
 
     } catch (Exception e) {
       SilverTrace.warn("classifieds", "classifieds.sendValidationNotification()",
@@ -318,8 +318,8 @@ public class DefaultClassifiedService implements ClassifiedService {
   public void sendSubscriptionsNotification(final String field1, final String field2, final ClassifiedDetail classified) {
     try {
 
-      NotificationHelper.buildAndSend(new ClassifiedSubscriptionNotification(classified, getUsersBySubscribe(field1,
-          field2)));
+      UserNotificationHelper.buildAndSend(new ClassifiedSubscriptionUserNotification(classified, getUsersBySubscribe(
+          field1, field2)));
 
     } catch (Exception e) {
       SilverTrace.warn("classifieds", "ClassifiedsBmEJB.sendSubscriptionsNotification()",
@@ -451,7 +451,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     if (ClassifiedDetail.TO_VALIDATE.equalsIgnoreCase(classified.getStatus())) {
       try {
 
-        NotificationHelper.buildAndSend(new ClassifiedSupervisorNotification(classified));
+        UserNotificationHelper.buildAndSend(new ClassifiedSupervisorUserNotification(classified));
 
       } catch (Exception e) {
         SilverTrace.warn("classifieds", "classifieds.sendAlertToSupervisors()",
