@@ -25,6 +25,7 @@ package com.silverpeas.kmelia.notification;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
+import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.versioning.model.Document;
@@ -38,7 +39,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaDocumentSubscriptionPublicationUserNotification extends KmeliaSubscriptionPublicationUserNotification {
+public class KmeliaDocumentSubscriptionPublicationUserNotification extends
+    KmeliaSubscriptionPublicationUserNotification {
 
   private final Document document;
   private final DocumentVersion documentVersion;
@@ -82,6 +84,25 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends Kmeli
 
     template.setAttribute("attachmentMajorNumber", documentVersion.getMajorNumber());
     template.setAttribute("attachmentMinorNumber", documentVersion.getMinorNumber());
+  }
+
+  @Override
+  protected void performNotificationResource(final String language, final PublicationDetail resource,
+      final NotificationResourceData notificationResourceData) {
+    super.performNotificationResource(language, resource, notificationResourceData);
+
+    final StringBuffer sb = new StringBuffer();
+    if (isDefined(document.getName())) {
+      sb.append(document.getName());
+    }
+    if (sb.length() > 0) {
+      sb.append(" - ");
+    }
+    sb.append(documentVersion.getLogicalName());
+
+    sb.insert(0, " - ");
+    sb.insert(0, notificationResourceData.getResourceName());
+    notificationResourceData.setResourceName(sb.toString());
   }
 
   @Override

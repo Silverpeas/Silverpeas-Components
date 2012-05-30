@@ -3207,7 +3207,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   private void sendValidationAlert(final PublicationDetail pubDetail, final String[] users) {
-
     UserNotificationHelper.buildAndSend(new KmeliaPendingValidationPublicationUserNotification(pubDetail, users));
   }
 

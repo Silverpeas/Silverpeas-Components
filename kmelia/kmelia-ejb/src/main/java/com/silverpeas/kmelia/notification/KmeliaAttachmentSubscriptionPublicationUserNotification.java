@@ -25,6 +25,7 @@ package com.silverpeas.kmelia.notification;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
+import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -37,7 +38,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaAttachmentSubscriptionPublicationUserNotification extends KmeliaSubscriptionPublicationUserNotification {
+public class KmeliaAttachmentSubscriptionPublicationUserNotification extends
+    KmeliaSubscriptionPublicationUserNotification {
 
   private final AttachmentDetail attachmentDetail;
 
@@ -76,6 +78,25 @@ public class KmeliaAttachmentSubscriptionPublicationUserNotification extends Kme
         attachmentDetail.getAuthor());
     template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " " + authorDetail.
         getLastName());
+  }
+
+  @Override
+  protected void performNotificationResource(final String language, final PublicationDetail resource,
+      final NotificationResourceData notificationResourceData) {
+    super.performNotificationResource(language, resource, notificationResourceData);
+
+    final StringBuffer sb = new StringBuffer();
+    if (isDefined(attachmentDetail.getTitle(language))) {
+      sb.append(attachmentDetail.getTitle(language));
+    }
+    if (sb.length() > 0) {
+      sb.append(" - ");
+    }
+    sb.append(attachmentDetail.getLogicalName(language));
+
+    sb.insert(0, " - ");
+    sb.insert(0, notificationResourceData.getResourceName());
+    notificationResourceData.setResourceName(sb.toString());
   }
 
   @Override
