@@ -33,6 +33,8 @@ import static com.stratelia.webactiv.SilverpeasRole.writer;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -128,6 +130,10 @@ public class ReplyEntity implements Exposable {
 
   public String getTitle() {
     return title;
+  }
+
+  public String getLanguage() {
+    return this.language;
   }
   
   public AttachmentEntity[] getAttachments() {
@@ -261,11 +267,11 @@ public class ReplyEntity implements Exposable {
    * @param attachmentDetails 
    * @return itself.
    */
-  public ReplyEntity withAttachments(final Collection<AttachmentDetail> attachmentDetails) {
+  public ReplyEntity withAttachments(final Collection<SimpleDocument> attachmentDetails) {
     if(attachmentDetails != null && !attachmentDetails.isEmpty()) {
       List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
-      for(AttachmentDetail attachment : attachmentDetails) {
-        entities.add(AttachmentEntity.fromAttachment(attachment, this.language));
+      for(SimpleDocument attachment : attachmentDetails) {
+        entities.add(AttachmentEntity.fromAttachment(attachment));
       }
       this.attachments = entities.toArray(new AttachmentEntity[entities.size()]);
     }

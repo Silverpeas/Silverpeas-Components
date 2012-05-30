@@ -34,6 +34,9 @@ import java.util.List;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -125,8 +128,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   protected ReplyEntity asWebEntity(final Reply reply, URI replyURI, SilverpeasRole profile) {
     ReplyEntity entity = ReplyEntity.fromReply(reply, getUserPreferences().getLanguage()).withURI(
             replyURI).withProfile(profile);
-    Collection<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(reply.
-            getPK(), "Images");
+    Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(reply.getPK(), entity.getLanguage());
     entity.withAttachments(attachments);
     AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(getOrganizationController()));
     author.setAvatar(getHttpServletRequest().getContextPath() + author.getAvatar());

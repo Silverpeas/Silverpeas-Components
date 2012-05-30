@@ -26,6 +26,7 @@ package com.stratelia.webactiv.almanach.control.ejb;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.almanach.AlmanachContentManager;
@@ -77,6 +78,9 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import static com.silverpeas.util.StringUtil.*;
 import static com.stratelia.webactiv.util.DateUtil.*;
 
@@ -833,27 +837,19 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
    * getAttachments(com.stratelia.webactiv.almanach.model.EventPK)
    */
   @Override
-  public Collection<AttachmentDetail> getAttachments(EventPK eventPK) {
+  public Collection<SimpleDocument> getAttachments(EventPK eventPK) {
     SilverTrace.info("almanach", "AlmanachBmEJB.getAttachments()",
             "root.MSG_GEN_ENTER_METHOD", "eventId = " + eventPK.getId());
-    String ctx = "Images";
-    AttachmentPK foreignKey = new AttachmentPK(eventPK.getId(), null, eventPK.getComponentName());
-    SilverTrace.info("almanach", "AlmanachBmEJB.getAttachments()",
-            "root.MSG_GEN_PARAM_VALUE", "foreignKey = " + foreignKey.toString());
-
-    Connection con = null;
     try {
-      con = getConnection();
-      Collection<AttachmentDetail> attachmentList = AttachmentController.
-              searchAttachmentByPKAndContext(foreignKey, ctx, con);
-      SilverTrace.info("almanach", "AlmanachBmEJB.getAttachments()",
-              "root.MSG_GEN_PARAM_VALUE", "attachmentList.size() = "
-              + attachmentList.size());
+      Collection<SimpleDocument> attachmentList = AttachmentServiceFactory.getAttachmentService
+          ().searchAttachmentsByExternalObject(eventPK, null);
+      SilverTrace.info("almanach", "AlmanachBmEJB.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
+          "attachmentList.size() = " + attachmentList.size());
       return attachmentList;
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getAttachments()",
               SilverpeasRuntimeException.ERROR,
-              "almanach.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS", e);
+          "almanach.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS", e);
     }
   }
 
