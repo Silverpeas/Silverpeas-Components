@@ -41,12 +41,12 @@ public class ClassifiedSubscriptionUserNotification extends AbstractClassifiedUs
   }
 
   @Override
-  protected Collection<String> getUserIdToNotify() {
+  protected Collection<String> getUserIdsToNotify() {
     return usersToBeNotified;
   }
 
   @Override
-  protected String getSubjectKey() {
+  protected String getBundleSubjectKey() {
     return "classifieds.mailNewPublicationSubscription";
   }
 

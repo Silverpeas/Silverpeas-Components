@@ -26,11 +26,12 @@ package com.silverpeas.kmelia.notification;
 import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -70,26 +71,33 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
   }
 
   @Override
-  protected String getTitle() {
-    return getBundle().getString("kmelia.NewTopic");
+  protected String getBundleSubjectKey() {
+    return "kmelia.NewTopic";
   }
 
   @Override
-  protected void perform(final NodeDetail resource) {
-    boolean haveRights = resource.haveRights();
-    int rightsDependOn = resource.getRightsDependsOn();
+  protected Collection<String> getUserIdsToNotify() {
+    boolean haveRights = getResource().haveRights();
+    int rightsDependOn = getResource().getRightsDependsOn();
     if (fatherDetail != null) {
       // Case of creation only
       haveRights = fatherDetail.haveRights();
       rightsDependOn = fatherDetail.getRightsDependsOn();
     }
 
-    final UserDetail[] userDetails;
     final String[] users;
     if (!haveRights) {
       if ("All".equals(alertType)) {
-        users = null;
-        userDetails = getOrganizationController().getAllUsers(getComponentInstanceId());
+        final UserDetail[] userDetails = getOrganizationController().getAllUsers(getComponentInstanceId());
+        if (userDetails != null) {
+          users = new String[userDetails.length];
+          int i = 0;
+          for (final UserDetail userDetail : userDetails) {
+            users[i++] = userDetail.getId();
+          }
+        } else {
+          users = null;
+        }
       } else if ("Publisher".equals(alertType)) {
         // Get the list of all publishers and admin
         final List<String> profileNames = new ArrayList<String>();
@@ -97,13 +105,10 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
         profileNames.add("publisher");
         profileNames.add("writer");
         users = getOrganizationController().getUsersIdsByRoleNames(getComponentInstanceId(), profileNames);
-        userDetails = null;
       } else {
         users = null;
-        userDetails = null;
       }
     } else {
-      userDetails = null;
       final List<String> profileNames = new ArrayList<String>();
       profileNames.add("admin");
       profileNames.add("publisher");
@@ -123,21 +128,15 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
       }
     }
 
-    if (userDetails != null) {
-      for (final UserDetail userDetail : userDetails) {
-        getNotification().addUserRecipient(new UserRecipient(userDetail));
-      }
+    if (users == null) {
+      return null;
     }
-    if (users != null) {
-      for (final String user : users) {
-        getNotification().addUserRecipient(new UserRecipient(user));
-      }
-    }
+    return Arrays.asList(users);
   }
 
   @Override
   protected void performTemplateData(final String language, final NodeDetail resource, final SilverpeasTemplate template) {
-    getNotification().addLanguage(language, getBundle(language).getString("kmelia.NewTopic", getTitle()), "");
+    getNotification().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("path", getHTMLNodePath(resource.getFatherPK(), language));
     template.setAttribute("topic", resource);
     template.setAttribute("topicName", resource.getName(language));

@@ -31,7 +31,6 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
@@ -45,7 +44,6 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
   private final UserDetail userDetail;
   private final String componentInstanceId;
   private final Comment comment;
-  private final String titleKey;
   private final String fileName;
   private final NotifAction action;
   private final String senderId;
@@ -82,19 +80,17 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
       fileName = "blogNotification";
       action = NotifAction.REPORT;
     }
-    if (action.equals(NotifAction.REPORT)) {
-      titleKey = "blog.notifSubject";
-    } else {
-      titleKey = "blog.subjectSubscription";
-    }
     this.senderId = senderId;
     this.newSubscribers = newSubscribers;
     this.userDetail = userDetail;
   }
 
   @Override
-  protected String getTitle() {
-    return getBundle().getString(titleKey);
+  protected String getBundleSubjectKey() {
+    if (action.equals(NotifAction.REPORT)) {
+      return "blog.notifSubject";
+    }
+    return "blog.subjectSubscription";
   }
 
   @Override
@@ -103,18 +99,19 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
   }
 
   @Override
-  protected void perform(final PostDetail resource) {
-    if (newSubscribers != null) {
-      for (final String subscriberId : newSubscribers) {
-        getNotification().addUserRecipient(new UserRecipient(subscriberId));
-      }
-    }
+  protected Collection<String> getUserIdsToNotify() {
+    return newSubscribers;
+  }
+
+  @Override
+  protected boolean stopWhenNoUserToNotify() {
+    return !NotifAction.REPORT.equals(action);
   }
 
   @Override
   protected void performTemplateData(final String language, final PostDetail resource,
       final SilverpeasTemplate template) {
-    getNotification().addLanguage(language, getBundle(language).getString(titleKey, getTitle()), "");
+    getNotification().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("blog", resource);
     template.setAttribute("blogName", resource.getPublication().getName(language));
     template.setAttribute("blogDate", DateUtil.getOutputDate(resource.getDateEvent(), language));

@@ -43,14 +43,14 @@ public class ClassifiedSupervisorUserNotification extends AbstractClassifiedUser
   }
 
   @Override
-  protected Collection<String> getUserIdToNotify() {
+  protected Collection<String> getUserIdsToNotify() {
     final List<String> roles = Collections.singletonList("admin");
     final OrganizationController orga = new OrganizationController();
     return new ArrayList<String>(Arrays.asList(orga.getUsersIdsByRoleNames(getComponentInstanceId(), roles)));
   }
 
   @Override
-  protected String getSubjectKey() {
+  protected String getBundleSubjectKey() {
     return "classifieds.supervisorNotifSubject";
   }
 

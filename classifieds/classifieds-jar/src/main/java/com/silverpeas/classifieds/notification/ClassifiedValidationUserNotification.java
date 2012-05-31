@@ -48,12 +48,12 @@ public class ClassifiedValidationUserNotification extends AbstractClassifiedUser
   }
 
   @Override
-  protected Collection<String> getUserIdToNotify() {
+  protected Collection<String> getUserIdsToNotify() {
     return Collections.singletonList(userToBeNotified);
   }
 
   @Override
-  protected String getSubjectKey() {
+  protected String getBundleSubjectKey() {
     if (!ClassifiedDetail.VALID.equals(getResource().getStatus())) {
       return "classifieds.classifiedRefused";
     }

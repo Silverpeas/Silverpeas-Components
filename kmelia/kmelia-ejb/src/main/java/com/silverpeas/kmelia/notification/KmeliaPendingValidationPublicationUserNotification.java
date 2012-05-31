@@ -44,7 +44,7 @@ public class KmeliaPendingValidationPublicationUserNotification extends Abstract
   }
 
   @Override
-  protected String getSubjectKey() {
+  protected String getBundleSubjectKey() {
     return "ToValidateForNotif";
   }
 
@@ -54,7 +54,7 @@ public class KmeliaPendingValidationPublicationUserNotification extends Abstract
   }
 
   @Override
-  protected Collection<String> getUserIdToNotify() {
+  protected Collection<String> getUserIdsToNotify() {
     if (usersToBeNotified == null) {
       return null;
     }
@@ -64,5 +64,10 @@ public class KmeliaPendingValidationPublicationUserNotification extends Abstract
   @Override
   protected String getSenderName() {
     return getSender();
+  }
+
+  @Override
+  protected boolean isSendImmediatly() {
+    return true;
   }
 }

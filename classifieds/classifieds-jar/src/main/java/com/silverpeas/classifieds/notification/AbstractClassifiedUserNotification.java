@@ -23,20 +23,17 @@
  */
 package com.silverpeas.classifieds.notification;
 
-import java.util.Collection;
-
 import com.silverpeas.classifieds.ClassifiedUtil;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractClassifiedUserNotification extends AbstractTemplateUserNotificationBuilder<ClassifiedDetail> {
+public abstract class AbstractClassifiedUserNotification extends
+    AbstractTemplateUserNotificationBuilder<ClassifiedDetail> {
 
   public AbstractClassifiedUserNotification(final ClassifiedDetail resource) {
     super(resource);
@@ -56,40 +53,10 @@ public abstract class AbstractClassifiedUserNotification extends AbstractTemplat
     return "classifieds";
   }
 
-  protected abstract Collection<String> getUserIdToNotify();
-
-  protected abstract String getSubjectKey();
-
-  @Override
-  protected String getTitle() {
-    return getBundle().getString(getSubjectKey());
-  }
-
-  @Override
-  protected void perform(final ClassifiedDetail resource) {
-    final Collection<String> userIdToNotify = getUserIdToNotify();
-
-    // Stopping the process if no user to notify
-    if (stopWhenNoUserToNotify() && CollectionUtil.isEmpty(userIdToNotify)) {
-      stop();
-    }
-
-    if (CollectionUtil.isNotEmpty(userIdToNotify)) {
-      // There is at least one user to notify
-      for (final String userId : userIdToNotify) {
-        getNotification().addUserRecipient(new UserRecipient(userId));
-      }
-    }
-  }
-
-  protected boolean stopWhenNoUserToNotify() {
-    return true;
-  }
-
   @Override
   protected void performTemplateData(final String language, final ClassifiedDetail resource,
       final SilverpeasTemplate template) {
-    getNotification().addLanguage(language, getBundle(language).getString(getSubjectKey(), getTitle()), "");
+    getNotification().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("classified", resource);
     template.setAttribute("classifiedName", resource.getTitle());
     template.setAttribute("silverpeasURL", getResourceURL(resource));

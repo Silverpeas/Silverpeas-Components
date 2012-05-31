@@ -78,7 +78,7 @@ public class KmeliaSubscriptionPublicationUserNotification extends AbstractKmeli
   }
 
   @Override
-  protected String getSubjectKey() {
+  protected String getBundleSubjectKey() {
     return subjectKey;
   }
 
@@ -93,7 +93,7 @@ public class KmeliaSubscriptionPublicationUserNotification extends AbstractKmeli
   }
 
   @Override
-  protected Collection<String> getUserIdToNotify() {
+  protected Collection<String> getUserIdsToNotify() {
 
     if (NotifAction.REPORT.equals(action)) {
       // In the report case, users that have to be notified can't be known at this level

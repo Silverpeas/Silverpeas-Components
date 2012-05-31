@@ -43,7 +43,7 @@ public class KmeliaModificationPublicationUserNotification extends AbstractKmeli
   }
 
   @Override
-  protected String getSubjectKey() {
+  protected String getBundleSubjectKey() {
     return "kmelia.PublicationModified";
   }
 
@@ -56,7 +56,7 @@ public class KmeliaModificationPublicationUserNotification extends AbstractKmeli
   }
 
   @Override
-  protected Collection<String> getUserIdToNotify() {
+  protected Collection<String> getUserIdsToNotify() {
     return Collections.singletonList(getSender());
   }
 

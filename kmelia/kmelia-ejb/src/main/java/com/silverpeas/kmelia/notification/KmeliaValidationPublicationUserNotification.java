@@ -26,7 +26,8 @@ package com.silverpeas.kmelia.notification;
 import static com.silverpeas.util.StringUtil.isDefined;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -50,7 +51,7 @@ public class KmeliaValidationPublicationUserNotification extends AbstractKmeliaA
   }
 
   @Override
-  protected String getSubjectKey() {
+  protected String getBundleSubjectKey() {
     if (!isDefined(refusalMotive)) {
       return "PublicationValidated";
     }
@@ -79,15 +80,14 @@ public class KmeliaValidationPublicationUserNotification extends AbstractKmeliaA
   }
 
   @Override
-  protected Collection<String> getUserIdToNotify() {
-    String userId = getResource().getUpdaterId();
-    if (!isDefined(userId)) {
-      userId = getResource().getCreatorId();
+  protected Collection<String> getUserIdsToNotify() {
+    final Set<String> userIds = new HashSet<String>();
+    for (String userId : new String[] { getResource().getCreatorId(), getResource().getUpdaterId() }) {
+      if (isDefined(userId)) {
+        userIds.add(userId);
+      }
     }
-    if (isDefined(userId)) {
-      return Collections.singletonList(userId);
-    }
-    return null;
+    return userIds;
   }
 
   @Override

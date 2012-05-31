@@ -44,7 +44,7 @@ public class KmeliaSupervisorPublicationUserNotification extends KmeliaSubscript
   }
 
   @Override
-  protected String getSubjectKey() {
+  protected String getBundleSubjectKey() {
     return "kmelia.SupervisorNotifSubject";
   }
 
@@ -54,7 +54,7 @@ public class KmeliaSupervisorPublicationUserNotification extends KmeliaSubscript
   }
 
   @Override
-  protected Collection<String> getUserIdToNotify() {
+  protected Collection<String> getUserIdsToNotify() {
     final List<String> roles = Collections.singletonList("supervisor");
     final List<String> supervisors =
         new ArrayList<String>(Arrays.asList(getOrganizationController().getUsersIdsByRoleNames(

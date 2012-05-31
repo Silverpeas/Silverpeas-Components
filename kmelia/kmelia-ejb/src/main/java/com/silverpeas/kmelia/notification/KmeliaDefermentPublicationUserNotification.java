@@ -23,7 +23,11 @@
  */
 package com.silverpeas.kmelia.notification;
 
+import static com.silverpeas.util.StringUtil.isDefined;
+
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -42,7 +46,7 @@ public class KmeliaDefermentPublicationUserNotification extends AbstractKmeliaAc
   }
 
   @Override
-  protected String getSubjectKey() {
+  protected String getBundleSubjectKey() {
     return "kmelia.PublicationSuspended";
   }
 
@@ -70,7 +74,13 @@ public class KmeliaDefermentPublicationUserNotification extends AbstractKmeliaAc
   }
 
   @Override
-  protected Collection<String> getUserIdToNotify() {
-    return null;
+  protected Collection<String> getUserIdsToNotify() {
+    final Set<String> userIds = new HashSet<String>();
+    for (String userId : new String[] { getResource().getCreatorId(), getResource().getUpdaterId() }) {
+      if (isDefined(userId)) {
+        userIds.add(userId);
+      }
+    }
+    return userIds;
   }
 }

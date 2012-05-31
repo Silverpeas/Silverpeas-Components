@@ -23,63 +23,30 @@
  */
 package com.silverpeas.kmelia.notification;
 
-import java.util.Collection;
-
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractKmeliaPublicationUserNotification extends AbstractKmeliaUserNotification<PublicationDetail> {
+public abstract class AbstractKmeliaPublicationUserNotification extends
+    AbstractKmeliaUserNotification<PublicationDetail> {
 
   public AbstractKmeliaPublicationUserNotification(final PublicationDetail resource, final String fileName,
       final String subject) {
     super(resource, null, null);
   }
 
-  protected abstract Collection<String> getUserIdToNotify();
-
-  protected abstract String getSubjectKey();
-
   protected abstract String getPath(final String language);
 
   protected abstract String getSenderName();
 
   @Override
-  protected String getTitle() {
-    return getBundle().getString(getSubjectKey());
-  }
-
-  @Override
-  protected void perform(final PublicationDetail resource) {
-    final Collection<String> userIdToNotify = getUserIdToNotify();
-
-    // Stopping the process if no user to notify
-    if (stopWhenNoUserToNotify() && CollectionUtil.isEmpty(userIdToNotify)) {
-      stop();
-    }
-
-    if (CollectionUtil.isNotEmpty(userIdToNotify)) {
-      // There is at least one user to notify
-      for (final String userId : userIdToNotify) {
-        getNotification().addUserRecipient(new UserRecipient(userId));
-      }
-    }
-  }
-
-  protected boolean stopWhenNoUserToNotify() {
-    return true;
-  }
-
-  @Override
   protected void performTemplateData(final String language, final PublicationDetail resource,
       final SilverpeasTemplate template) {
-    getNotification().addLanguage(language, getBundle(language).getString(getSubjectKey(), getTitle()), "");
+    getNotification().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("path", getPath(language));
     template.setAttribute("publication", resource);
     template.setAttribute("publicationName", resource.getName(language));

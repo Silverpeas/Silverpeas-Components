@@ -50,7 +50,7 @@ public class KmeliaAttachmentSubscriptionPublicationUserNotification extends
   }
 
   @Override
-  protected String getSubjectKey() {
+  protected String getBundleSubjectKey() {
     return "AlertAttachment";
   }
 

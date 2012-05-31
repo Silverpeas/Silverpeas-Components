@@ -53,7 +53,7 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
   }
 
   @Override
-  protected String getSubjectKey() {
+  protected String getBundleSubjectKey() {
     return "AlertDocument";
   }
 
