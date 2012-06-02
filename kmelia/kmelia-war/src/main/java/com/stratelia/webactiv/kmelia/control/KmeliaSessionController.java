@@ -224,7 +224,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private List<String> sessionCombination = null; // Specific Kmax
   private String sessionTimeCriteria = null; // Specific Kmax
   private List<NodeDetail> sessionTreeview = null;
-  private String sortValue = "2";
+  private String sortValue = null;
+  private String defaultSortValue = "2";
   private String autoRedirectURL = null;
   private int nbPublicationsOnRoot = -1;
   private int rang = 0;
@@ -301,9 +302,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       componentManageable = getOrganizationController().isComponentManageable(getComponentId(),
               getUserId());
     }
-    sortValue = getComponentParameterValue("publicationSort");
-    if (!StringUtil.isDefined(sortValue)) {
-      sortValue = getSettings().getString("publications.sort.default", "2");
+    defaultSortValue = getComponentParameterValue("publicationSort");
+    if (!StringUtil.isDefined(defaultSortValue)) {
+      defaultSortValue = getSettings().getString("publications.sort.default", "2");
     }
     // check if this instance use a specific template of publication
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
@@ -1374,9 +1375,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized void orderPubs() {
     if (!StringUtil.isDefined(getSortValue())) {
-      sortValue = "2";
+      //sortValue = "2";
+      orderPubs(-1);
+    } else {
+      orderPubs(Integer.parseInt(getSortValue()));
     }
-    orderPubs(Integer.parseInt(getSortValue()));
   }
 
   private void applyVisibilityFilter() throws RemoteException {
@@ -1458,7 +1461,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       return null;
     }
     List<KmeliaPublication> publicationsToSort = new ArrayList<KmeliaPublication>(publications);
-    switch (sortType) {
+    
+    int sort = sortType;
+    if (isManualSortingUsed(publicationsToSort) && sort == -1) {
+      // display publications according to manual order defined by admin
+      sort = 99;
+    } else if (sort == -1) {
+      // display publications according to default sort defined on application level or instance
+      // level
+      sort = Integer.parseInt(defaultSortValue);
+    }
+    
+    switch (sort) {
       case 0:
         Collections.sort(publicationsToSort, new PubliAuthorComparatorAsc());
         break;
@@ -1491,6 +1505,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     return publicationsToSort;
+  }
+  
+  private boolean isManualSortingUsed(List<KmeliaPublication> publications) {
+    for (KmeliaPublication publication : publications) {
+      if (publication.getRank() != 0) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private List<KmeliaPublication> sortByTitle(List<KmeliaPublication> publications) {
