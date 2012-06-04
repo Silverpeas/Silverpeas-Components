@@ -60,6 +60,7 @@ public abstract class AbstractKmeliaPublicationUserNotification extends
   protected void performNotificationResource(final String language, final PublicationDetail resource,
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceName(resource.getName(language));
+    notificationResourceData.setResourceDescription(resource.getDescription(language));
   }
 
   @Override

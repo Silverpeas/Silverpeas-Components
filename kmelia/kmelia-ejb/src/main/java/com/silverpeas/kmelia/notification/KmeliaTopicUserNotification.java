@@ -151,6 +151,7 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
     notificationResourceData.setResourceId(resource.getId());
     notificationResourceData.setResourceType(resource.getType());
     notificationResourceData.setResourceName(resource.getName(language));
+    notificationResourceData.setResourceDescription(resource.getDescription(language));
   }
 
   @Override

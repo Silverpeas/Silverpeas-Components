@@ -101,6 +101,7 @@ public class ScheduleEventUserNotification extends AbstractTemplateUserNotificat
   protected void performNotificationResource(final String language, final ScheduleEvent resource,
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceName(resource.getTitle());
+    notificationResourceData.setResourceDescription(resource.getDescription());
   }
 
   @Override
