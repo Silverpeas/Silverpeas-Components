@@ -1442,16 +1442,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private synchronized void orderPubs(int sortType) {
-
-    List<KmeliaPublication> publications = sort(getSessionPublicationsList(), sortType);
-
-    sessionPublicationsList = publications;
+    sessionPublicationsList = sort(getSessionPublicationsList(), sortType);
   }
 
-  public synchronized void orderPubsToValidate(int sortType)
-          throws RemoteException {
+  public synchronized void orderPubsToValidate(String sortType) throws RemoteException {
+    int sort = Integer.parseInt(defaultSortValue);
+    if (StringUtil.isDefined(sortType)) {
+      sort = Integer.parseInt(sortType);
+    }
     List<KmeliaPublication> publications =
-            sort(getKmeliaBm().getPublicationsToValidate(getComponentId()), sortType);
+            sort(getKmeliaBm().getPublicationsToValidate(getComponentId()), sort);
     sessionPublicationsList = publications;
   }
 
