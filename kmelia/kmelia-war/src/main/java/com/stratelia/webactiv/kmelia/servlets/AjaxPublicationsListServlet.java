@@ -218,7 +218,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       } else if (toSearch) {
         // Insert this new search inside persistence layer in order to compute statistics
         saveTopicSearch(componentId, nodeId, kmeliaSC, query);
-        publications = kmeliaSC.search(query, Integer.parseInt(sort));
+        publications = kmeliaSC.search(query);
       } else {
         currentTopic = kmeliaSC.getSessionTopic();
         publications = kmeliaSC.getSessionPublicationsList();
