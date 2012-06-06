@@ -211,7 +211,7 @@
 
 #pubList .publication {
 	white-space: normal;
-	float: left;
+	display: inline;
 }
 
 #pubList .publication .bullet {
@@ -238,7 +238,7 @@
 #pubList .publication .line2, 
 #pubList .publication .line3,
 #pubList .publication .files {
-	margin-left: 15px;
+	padding-left: 32px;
 	white-space: normal;
 }
 
