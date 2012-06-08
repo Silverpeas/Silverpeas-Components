@@ -50,7 +50,6 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
 
   public DrewImageMetadataExtractor(String instanceId) {
     init(instanceId);
-
   }
 
   @Override
@@ -120,7 +119,6 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
   public List<MetaData> extractImageIptcMetaData(File image) throws ImageMetadataException,
     IOException {
     return extractImageIptcMetaData(image, I18NHelper.defaultLanguage);
-
   }
 
   @Override
@@ -137,7 +135,7 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
           case TAG_RELEASE_DATE:
           case TAG_DATE_CREATED:
           case TAG_KEYWORDS:
-            addStringMetaData(result, iptcDirectory, iptcProperty, lang);
+            addStringMetaData(result, iptcDirectory, iptcProperty, lang, forEncodingDetection);
             break;
           case TAG_BY_LINE:
           case TAG_BY_LINE_TITLE:
@@ -184,15 +182,18 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
   }
 
   private void addStringMetaData(List<MetaData> metadata, IptcDirectory iptcDirectory,
-    IptcProperty iptcProperty, String lang) throws UnsupportedEncodingException, MetadataException {
+      IptcProperty iptcProperty, String lang, ByteArrayOutputStream forEncodingDetection)
+      throws IOException, UnsupportedEncodingException, MetadataException {
     String value = getIptcStringValue(iptcDirectory, iptcProperty.getProperty());
     if (value != null) {
-      MetaData meta = new MetaData(value);
+      MetaData meta = new MetaData(value.getBytes());
       meta.setLabel(iptcProperty.getLabel(lang));
       meta.setProperty(iptcProperty.getProperty() + "");
       if (iptcProperty.isDate()) {
         meta.setDate(true);
         meta.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty()));
+      } else {
+        forEncodingDetection.write(value.getBytes());
       }
       metadata.add(meta);
     }
