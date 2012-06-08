@@ -29,10 +29,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import com.silverpeas.rssAgregator.model.RSSItem;
 import com.silverpeas.rssAgregator.model.RssAgregatorException;
 import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.rssAgregator.model.SPChannelPK;
@@ -48,6 +51,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import de.nava.informa.core.ParseException;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.ChannelBuilder;
+import de.nava.informa.impl.basic.Item;
 import de.nava.informa.parsers.FeedParser;
 
 /**
@@ -73,7 +77,8 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "com.silverpeas.rssAgregator.multilang.rssAgregatorBundle",
-        "com.silverpeas.rssAgregator.settings.rssAgregatorIcons");
+        "com.silverpeas.rssAgregator.settings.rssAgregatorIcons",
+        "com.silverpeas.rssAgregator.settings.rssAgregatorSettings");
   }
 
   /**
@@ -104,27 +109,23 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   public List<SPChannel> getChannelsContent() throws RssAgregatorException {
     List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
     ArrayList<SPChannel> channels = new ArrayList<SPChannel>();
-    SPChannel channel = null;
     Channel rssChannel = null;
     SPChannelPK channelPK = null;
     boolean oneChannelLoaded = false;
 
-    for (int c = 0; c < channelsFromDB.size(); c++) {
-      channel = (SPChannel) channelsFromDB.get(c);
+    for (SPChannel channel : channelsFromDB) {
       channelPK = (SPChannelPK) channel.getPK();
       if (cache.isContentNeedToRefresh(channelPK)) {
         if (oneChannelLoaded) {
           channel = null;
         } else {
-          SilverTrace.debug("rssAgregator",
-              "RssAgregatorSessionController.getChannels",
-              "Mise a jour du cache", "channelPK = " + channelPK.toString());
+          SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannels",
+              "Update cache", "channelPK = " + channelPK.toString());
           try {
             rssChannel = getChannelFromUrl(channel.getUrl());
           } catch (Exception e) {
-            SilverTrace.info("rssAgregator",
-                "RssAgregatorSessionController.getChannelsContent()",
-                "Mise a jour du cache", "channelPK = " + channelPK.toString());
+            SilverTrace.info("rssAgregator", "RssAgregatorSessionController.getChannelsContent()",
+                "Update cache", "channelPK = " + channelPK.toString());
           } finally {
             channel._setChannel(rssChannel);
             cache.addChannelToCache(channel);
@@ -132,9 +133,8 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
         }
         oneChannelLoaded = true;
       } else {
-        SilverTrace.debug("rssAgregator",
-            "RssAgregatorSessionController.getChannels",
-            "Utilisation du cache", "channelPK = " + channelPK.toString());
+        SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannels",
+            "Use cache", "channelPK = " + channelPK.toString());
         channel = cache.getChannelFromCache(channelPK);
       }
       channels.add(channel);
@@ -154,18 +154,16 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
 
   public void updateChannel(SPChannel channel) throws RssAgregatorException {
     boolean urlHaveChanged = true;
-    SilverTrace.debug("rssAgregator",
-        "RssAgregatorSessionController.updateChannel",
+    SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.updateChannel",
         "root.MSG_GEN_PARAM_VALUE", "channelPK = " + channel.getPK().getId());
-    SilverTrace.debug("rssAgregator",
-        "RssAgregatorSessionController.updateChannel",
-        "root.MSG_GEN_PARAM_VALUE", "channelPK = "
-            + currentChannel.getPK().getId());
+    SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.updateChannel",
+        "root.MSG_GEN_PARAM_VALUE", "channelPK = " + currentChannel.getPK().getId());
     if (currentChannel != null
         && currentChannel.getPK().getId().equals(channel.getPK().getId())) {
       urlHaveChanged = !currentChannel.getUrl().equals(channel.getUrl());
-      if (urlHaveChanged)
+      if (urlHaveChanged) {
         currentChannel.setUrl(channel.getUrl());
+      }
       currentChannel.setNbDisplayedItems(channel.getNbDisplayedItems());
       currentChannel.setRefreshRate(channel.getRefreshRate());
       currentChannel.setDisplayImage(channel.getDisplayImage());
@@ -199,14 +197,12 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   }
 
   public SPChannel getChannel(String id) throws RssAgregatorException {
-    currentChannel = getRssBm().getChannel(
-        new SPChannelPK(id, getComponentId()));
+    currentChannel = getRssBm().getChannel(new SPChannelPK(id, getComponentId()));
     return currentChannel;
   }
 
   private Channel getChannelFromUrl(String sUrl) throws RssAgregatorException {
-    SilverTrace.debug("rssAgregator",
-        "RssAgregatorSessionController.getChannelFromUrl",
+    SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannelFromUrl",
         "root.MSG_GEN_ENTER_METHOD", "sUrl = " + sUrl);
     Channel channel = null;
     try {
@@ -247,14 +243,13 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   }
 
   /**
-   * 
    * @return HTML string content of RSS presentation
    */
   public String getRSSIntroductionContent() {
     SilverpeasTemplate rssTemplate = getNewTemplate();
     return rssTemplate.applyFileTemplate("introductionRSS_" + this.getLanguage());
   }
-  
+
   /**
    * @return an RSS aggregator Silverpeas Template
    */
@@ -267,5 +262,69 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
         .getString("customersTemplatePath"));
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+  }
+
+  /**
+   * @return the list of RSS Item
+   * @throws RssAgregatorException
+   */
+  public List<RSSItem> getChannelItems() throws RssAgregatorException {
+    List<SPChannel> channels = getAllChannels();
+    List<RSSItem> items = buildRSSItemList(channels);
+    for (RSSItem item : items) {
+      SilverTrace.debug("module", "RssAgregator", "Item title = " + item.getItemTitle() +
+          ", item date=" + item.getItemDate());
+    }
+    return items;
+  }
+
+  /**
+   * @return the list of channels
+   * @throws RssAgregatorException
+   */
+  public List<SPChannel> getAllChannels() throws RssAgregatorException {
+    List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
+    List<SPChannel> channels = new ArrayList<SPChannel>();
+    Channel rssChannel = null;
+    SPChannelPK channelPK = null;
+    for (SPChannel dbChannel : channelsFromDB) {
+      channelPK = (SPChannelPK) dbChannel.getPK();
+      if (cache.isContentNeedToRefresh(channelPK)) {
+        SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getAllChannels",
+              "Refresh channel content", "channelPK = " + channelPK.toString());
+        try {
+          rssChannel = getChannelFromUrl(dbChannel.getUrl());
+        } catch (Exception e) {
+          SilverTrace.info("rssAgregator", "RssAgregatorSessionController.getAllChannels()",
+                "Problem to read RSS from URL", "channelPK = " + channelPK.toString(), e);
+        } finally {
+          dbChannel._setChannel(rssChannel);
+          cache.addChannelToCache(dbChannel);
+        }
+      } else {
+        SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannels",
+            "Use cache", "channelPK = " + channelPK.toString());
+        dbChannel = cache.getChannelFromCache(channelPK);
+      }
+      channels.add(dbChannel);
+    }
+    return channels;
+  }
+
+  /**
+   * @param channels the list of channels
+   * @return the list of RSS items read from channels.
+   */
+  private List<RSSItem> buildRSSItemList(List<SPChannel> channels) {
+    List<RSSItem> items = new ArrayList<RSSItem>();
+    for (SPChannel spChannel : channels) {
+      Channel channel = spChannel._getChannel();
+      Collection<Item> channelItems = channel.getItems();
+      for (Item item : channelItems) {
+        items.add(new RSSItem(item, channel));
+      }
+    }
+    Collections.sort(items);
+    return items;
   }
 }

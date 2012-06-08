@@ -24,7 +24,8 @@
 
 package com.silverpeas.rssAgregator.control;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.rssAgregator.model.SPChannelPK;
@@ -41,9 +42,9 @@ public class RssAgregatorCache {
   // instance of RssAgregatorCache singleton
   private static RssAgregatorCache instance = null;
   // content of cache
-  private Hashtable<SPChannelPK, SPChannel> cache = new Hashtable<SPChannelPK, SPChannel>();
+  private Map<SPChannelPK, SPChannel> cache = new HashMap<SPChannelPK, SPChannel>();
   // informations about cache refresh
-  private Hashtable<SPChannelPK, Long> cacheNextRefresh = new Hashtable<SPChannelPK, Long>();
+  private Map<SPChannelPK, Long> cacheNextRefresh = new HashMap<SPChannelPK, Long>();
 
   /**
    * Default constructor
@@ -58,7 +59,7 @@ public class RssAgregatorCache {
   /**
    * Get an instance of RssAgregatorCache
    */
-  public final static RssAgregatorCache getInstance() {
+  public static final RssAgregatorCache getInstance() {
     if (instance == null) {
       instance = new RssAgregatorCache();
     }
@@ -85,7 +86,7 @@ public class RssAgregatorCache {
     long currentTime = System.currentTimeMillis();
     int refreshRate = spChannel.getRefreshRate() * 60 * 1000; // refresh rate in
     // ms
-    cacheNextRefresh.put(key, new Long(currentTime + refreshRate));
+    cacheNextRefresh.put(key, Long.valueOf(currentTime + refreshRate));
   }
 
   /**
@@ -106,7 +107,7 @@ public class RssAgregatorCache {
       return true;
     } else {
       // verify if the content has been refreshed at the refresh rate
-      long timeOfNextRefresh = ((Long) cacheNextRefresh.get(key)).longValue();
+      long timeOfNextRefresh = cacheNextRefresh.get(key);
       long currentTime = System.currentTimeMillis();
       return currentTime > timeOfNextRefresh;
     }
