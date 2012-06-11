@@ -50,7 +50,7 @@ import org.silverpeas.resourcemanager.services.CategoryService;
 import org.silverpeas.resourcemanager.services.ReservationService;
 import org.silverpeas.resourcemanager.services.ReservedResourceService;
 import org.silverpeas.resourcemanager.services.ResourceService;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
