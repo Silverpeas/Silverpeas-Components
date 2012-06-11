@@ -213,12 +213,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         publications = kmeliaSC.getSessionPublicationsList();
         role = SilverpeasRole.user.toString();
       } else if (toValidate) {
-        kmeliaSC.orderPubsToValidate(Integer.parseInt(sort));
+        kmeliaSC.orderPubsToValidate(sort);
         publications = kmeliaSC.getSessionPublicationsList();
       } else if (toSearch) {
         // Insert this new search inside persistence layer in order to compute statistics
         saveTopicSearch(componentId, nodeId, kmeliaSC, query);
-        publications = kmeliaSC.search(query, Integer.parseInt(sort));
+        publications = kmeliaSC.search(query);
       } else {
         currentTopic = kmeliaSC.getSessionTopic();
         publications = kmeliaSC.getSessionPublicationsList();
@@ -502,11 +502,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("<div id=\"noPublicationMessage\">");
       out.write(board.printBefore());
       out.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" align=\"center\">");
-      out.write("<tr valign=\"middle\" class=\"intfdcolor\">");
+      out.write("<tr valign=\"middle\">");
       out.write("<td width=\"80\"><img src=\"" + publicationSrc + "\" border=\"0\"/></td>");
       out.write("<td align=\"left\"><b>" + resources.getString("GML.publications") +
           "</b></td></tr>");
-      out.write("<tr class=\"intfdcolor4\"><td colspan=\"2\">&#160;</td></tr>");
+      out.write("<tr><td colspan=\"2\">&#160;</td></tr>");
       out.write("<tr>");
       out.write("<td>&#160;</td>");
       out.write("<td>" + noPublications + "</td>");
