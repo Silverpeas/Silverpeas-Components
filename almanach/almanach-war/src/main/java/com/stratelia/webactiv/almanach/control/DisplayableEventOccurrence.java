@@ -29,13 +29,13 @@ import com.silverpeas.calendar.DateTime;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.silverpeas.attachment.model.SimpleDocument;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
@@ -130,7 +130,7 @@ public class DisplayableEventOccurrence extends EventOccurrence {
         description = event.getDescription();
       }
     }
-    Collection<AttachmentDetail> attachments = event.getAttachments();
+    Collection<SimpleDocument> attachments = event.getAttachments();
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("id", event.getId());
     jsonObject.put("instanceId", event.getInstanceId());

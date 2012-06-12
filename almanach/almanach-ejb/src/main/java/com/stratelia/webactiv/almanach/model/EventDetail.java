@@ -57,6 +57,7 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import static com.silverpeas.util.StringUtil.*;
 
@@ -302,7 +303,7 @@ public class EventDetail extends AbstractI18NBean implements
     return wysiwygContent;
   }
 
-  public Collection<AttachmentDetail> getAttachments() {
+  public Collection<SimpleDocument> getAttachments() {
     try {
       AlmanachBm almanachService = ((AlmanachBmHome) EJBUtilitaire.getEJBObjectRef(
               JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();

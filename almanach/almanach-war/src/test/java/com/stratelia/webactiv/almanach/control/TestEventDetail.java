@@ -25,10 +25,10 @@ package com.stratelia.webactiv.almanach.control;
 
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
  * Its an event detail dedicated to unit tests. As such, some methods are overriden.
@@ -41,7 +41,7 @@ public class TestEventDetail extends EventDetail {
   }
 
   @Override
-  public Collection<AttachmentDetail> getAttachments() {
-    return new ArrayList<AttachmentDetail>();
+  public Collection<SimpleDocument> getAttachments() {
+    return new ArrayList<SimpleDocument>();
   }
 }
