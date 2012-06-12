@@ -35,9 +35,13 @@ import java.util.Collection;
 import java.util.Properties;
 import javax.naming.Context;
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  *
@@ -45,6 +49,7 @@ import static org.mockito.Mockito.*;
  */
 public class WikiInstanciatorTest extends AbstractTestDao {
 
+  @Rule
   private TemporaryFolder folder = new TemporaryFolder();
 
   public WikiInstanciatorTest() {
@@ -56,8 +61,10 @@ public class WikiInstanciatorTest extends AbstractTestDao {
   }
 
   @Override
+  @Before
   public void setUp() throws Exception {
     super.setUp();
+    folder.create();
     Properties props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream(
         "jndi.properties"));
@@ -72,11 +79,18 @@ public class WikiInstanciatorTest extends AbstractTestDao {
     super.setUp();
   }
 
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    folder.delete();
+  }
+  
+
   /**
    * Test of createPages method, of class WikiInstanciator.
    */
+  @Test
   public void testCreatePages() throws Exception {
-    System.out.println("createPages");
     String instanceId = "wiki18";
     WikiPageDAO dao = mock(WikiPageDAO.class);
     WikiInstanciator instance = new WikiInstanciator(dao);
