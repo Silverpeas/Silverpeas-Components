@@ -27,15 +27,11 @@ import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.attachment.control.AttachmentBm;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import static org.hamcrest.Matchers.is;
@@ -44,6 +40,10 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.anyString;
 import org.mockito.Mockito;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.SimpleDocumentService;
+import org.silverpeas.attachment.SimpleDocumentServiceWrapper;
+import org.silverpeas.attachment.model.SimpleDocument;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,7 +61,7 @@ public class ReplyGettingTest extends RESTWebServiceTest<QuestionReplyTestResour
     WebResource resource = resource();
     try {
       resource.path(REPLY_RESOURCE_PATH + "/question/3").accept(MediaType.APPLICATION_JSON).get(
-              String.class);
+          String.class);
       fail("A non authenticated user shouldn't access the comment");
     } catch (UniformInterfaceException ex) {
       int recievedStatus = ex.getResponse().getStatus();
@@ -72,61 +72,58 @@ public class ReplyGettingTest extends RESTWebServiceTest<QuestionReplyTestResour
 
   @Test
   public void getAllRepliesByAnAuthenticatedUser() throws Exception {
-    AttachmentBm mockAttachmentBm = mock(AttachmentBm.class);
-    when(mockAttachmentBm.getAttachmentsByPKAndContext(Mockito.any(AttachmentPK.class),
-            Mockito.matches("Images"), Mockito.any(java.sql.Connection.class))).thenReturn(
-            new Vector<AttachmentDetail>());
-    AttachmentBm oldBm = AttachmentController.changeAttachmentControllerForTests(mockAttachmentBm);
-    try {
-      WebResource resource = resource();
+    SimpleDocumentService mockDocumentService = mock(SimpleDocumentService.class);
+    when(mockDocumentService.searchAttachmentsByExternalObject(Mockito.any(WAPrimaryKey.class),
+        Mockito.any(String.class))).thenReturn(new ArrayList<SimpleDocument>());
+    ((SimpleDocumentServiceWrapper) AttachmentServiceFactory.getAttachmentService()).setRealService(
+        mockDocumentService);
+    WebResource resource = resource();
 
-      UserDetailWithProfiles creator = new UserDetailWithProfiles();
-      creator.setFirstName("Lisa");
-      creator.setLastName("Simpson");
-      creator.setId("1");
-      creator.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.publisher);
-      String creatorSessionKey = authenticate(creator);
+    UserDetailWithProfiles creator = new UserDetailWithProfiles();
+    creator.setFirstName("Lisa");
+    creator.setLastName("Simpson");
+    creator.setId("1");
+    creator.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.publisher);
+    String creatorSessionKey = authenticate(creator);
 
 
-      UserDetailWithProfiles publisher = new UserDetailWithProfiles();
-      publisher.setFirstName("Maud");
-      publisher.setLastName("Simpson");
-      publisher.setId("5");
-      publisher.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.publisher);
-      String publisherSessionKey = authenticate(publisher);
+    UserDetailWithProfiles publisher = new UserDetailWithProfiles();
+    publisher.setFirstName("Maud");
+    publisher.setLastName("Simpson");
+    publisher.setId("5");
+    publisher.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.publisher);
+    String publisherSessionKey = authenticate(publisher);
 
-      UserDetailWithProfiles user = new UserDetailWithProfiles();
-      user.setFirstName("Bart");
-      user.setLastName("Simpson");
-      user.setId("10");
-      user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.writer);
-      String sessionKey = authenticate(user);
-      QuestionManager mockedQuestionManager = mock(QuestionManager.class);
-      Question question = getNewSimpleQuestion(3);
-      when(mockedQuestionManager.getQuestion(3L)).thenReturn(question);
-      List<Reply> replies = getPrivateAndPublicReplies(3L);
-      when(mockedQuestionManager.getAllReplies(3L, COMPONENT_INSTANCE_ID)).thenReturn(replies);
-      getTestResources().getMockableQuestionManager().setQuestionManager(mockedQuestionManager);
-      ReplyEntity[] entities = resource.path(REPLY_RESOURCE_PATH + "/question/3").header(HTTP_SESSIONKEY,
-              sessionKey).accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
-      assertNotNull(entities);
-      assertThat(entities.length, is(2));
-      assertThat(entities[0], ReplyEntityMatcher.matches(replies.get(0)));
-      assertThat(entities[1], ReplyEntityMatcher.matches(replies.get(1)));
-      entities = resource.path(REPLY_RESOURCE_PATH + "/question/3").header(HTTP_SESSIONKEY,
-              creatorSessionKey).accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
-      assertNotNull(entities);
-      assertThat(entities.length, is(2));
-      assertThat(entities[0], ReplyEntityMatcher.matches(replies.get(0)));
-      assertThat(entities[1], ReplyEntityMatcher.matches(replies.get(1)));
-      entities = resource.path(REPLY_RESOURCE_PATH + "/question/3").header(HTTP_SESSIONKEY,
-              publisherSessionKey).accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
-      assertNotNull(entities);
-      assertThat(entities.length, is(1));
-      assertThat(entities[0], ReplyEntityMatcher.matches(replies.get(0)));
-    } finally {
-      AttachmentController.changeAttachmentControllerForTests(oldBm);
-    }
+    UserDetailWithProfiles user = new UserDetailWithProfiles();
+    user.setFirstName("Bart");
+    user.setLastName("Simpson");
+    user.setId("10");
+    user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.writer);
+    String sessionKey = authenticate(user);
+    QuestionManager mockedQuestionManager = mock(QuestionManager.class);
+    Question question = getNewSimpleQuestion(3);
+    when(mockedQuestionManager.getQuestion(3L)).thenReturn(question);
+    List<Reply> replies = getPrivateAndPublicReplies(3L);
+    when(mockedQuestionManager.getAllReplies(3L, COMPONENT_INSTANCE_ID)).thenReturn(replies);
+    getTestResources().getMockableQuestionManager().setQuestionManager(mockedQuestionManager);
+    ReplyEntity[] entities = resource.path(REPLY_RESOURCE_PATH + "/question/3").header(
+        HTTP_SESSIONKEY,
+        sessionKey).accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
+    assertNotNull(entities);
+    assertThat(entities.length, is(2));
+    assertThat(entities[0], ReplyEntityMatcher.matches(replies.get(0)));
+    assertThat(entities[1], ReplyEntityMatcher.matches(replies.get(1)));
+    entities = resource.path(REPLY_RESOURCE_PATH + "/question/3").header(HTTP_SESSIONKEY,
+        creatorSessionKey).accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
+    assertNotNull(entities);
+    assertThat(entities.length, is(2));
+    assertThat(entities[0], ReplyEntityMatcher.matches(replies.get(0)));
+    assertThat(entities[1], ReplyEntityMatcher.matches(replies.get(1)));
+    entities = resource.path(REPLY_RESOURCE_PATH + "/question/3").header(HTTP_SESSIONKEY,
+        publisherSessionKey).accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
+    assertNotNull(entities);
+    assertThat(entities.length, is(1));
+    assertThat(entities[0], ReplyEntityMatcher.matches(replies.get(0)));
   }
 
   @Test
@@ -153,7 +150,7 @@ public class ReplyGettingTest extends RESTWebServiceTest<QuestionReplyTestResour
     getTestResources().getMockableQuestionManager().setQuestionManager(mockedQuestionManager);
     try {
       resource.path(REPLY_RESOURCE_PATH + "/question/3").header(HTTP_SESSIONKEY, sessionKey).
-              accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
+          accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
     } catch (UniformInterfaceException ex) {
       int recievedStatus = ex.getResponse().getStatus();
       int unauthorized = Status.FORBIDDEN.getStatusCode();
@@ -187,25 +184,25 @@ public class ReplyGettingTest extends RESTWebServiceTest<QuestionReplyTestResour
     reply.setPK(new IdPK(101));
     reply.setTitle("Private reply");
     reply.writeWysiwygContent(
-            "This reply content should be visible for writers and question creator only");
+        "This reply content should be visible for writers and question creator only");
     reply.setCreationDate("2011/06/03");
     reply.setPrivateReply(01);
     reply.setPublicReply(0);
     replies.add(reply);
     return replies;
   }
-  
+
   @Before
   public void preparePersonalization() {
-     PersonalizationService myPersonalizationService = mock(PersonalizationService.class);
-     UserPreferences prefs = mock(UserPreferences.class);
-     when(prefs.getLanguage()).thenReturn("en");
-     when(myPersonalizationService.getUserSettings(anyString())).thenReturn(prefs);
-     getMockedPersonalizationService().setPersonalizationService(myPersonalizationService);
+    PersonalizationService myPersonalizationService = mock(PersonalizationService.class);
+    UserPreferences prefs = mock(UserPreferences.class);
+    when(prefs.getLanguage()).thenReturn("en");
+    when(myPersonalizationService.getUserSettings(anyString())).thenReturn(prefs);
+    getMockedPersonalizationService().setPersonalizationService(myPersonalizationService);
   }
 
   @Override
   public String[] getExistingComponentInstances() {
-    return new String[]{ COMPONENT_INSTANCE_ID };
+    return new String[]{COMPONENT_INSTANCE_ID};
   }
 }

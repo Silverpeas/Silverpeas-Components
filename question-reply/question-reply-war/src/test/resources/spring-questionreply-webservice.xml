@@ -37,7 +37,12 @@
   <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.questionReply.web"/>
   <ctx:component-scan base-package="com.silverpeas.personalization.service" />
-
+  <ctx:component-scan base-package="org.silverpeas.attachment">
+    <ctx:exclude-filter type="regex" expression="org.silverpeas.attachment.*Service" />
+  </ctx:component-scan>
+  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory" factory-method="getInstance" />
+  
+  <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
   <bean id="questionManagerFactory" class="com.silverpeas.questionReply.control.QuestionManagerFactory"
         factory-method="getFactory"/>
 

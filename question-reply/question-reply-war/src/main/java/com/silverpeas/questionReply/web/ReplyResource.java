@@ -21,12 +21,11 @@
 package com.silverpeas.questionReply.web;
 
 import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.control.QuestionManagerFactory;
 import com.silverpeas.questionReply.model.Reply;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,10 +33,8 @@ import java.util.List;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -49,7 +46,7 @@ import org.springframework.stereotype.Service;
  * an access to a reply referenced by its URL.
  */
 @Service
-@Scope("request")
+@RequestScoped
 @Path("questionreply/{componentId}/replies")
 @Authorized
 public class ReplyResource extends QuestionRelyBaseWebService {
@@ -63,13 +60,14 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   }
 
   /**
-   * Gets the JSON representation of the specified existing question.
-   * If the reply doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to access the question, a 403 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * Gets the JSON representation of the specified existing question. If the reply doesn't exist, a
+   * 404 HTTP code is returned. If the user isn't authentified, a 401 HTTP code is returned. If the
+   * user isn't authorized to access the question, a 403 is returned. If a problem occurs when
+   * processing the request, a 503 HTTP code is returned.
+   *
    * @param onQuestionId the unique identifier of the question.
-   * @return the response to the HTTP GET request with the JSON representation of the asked question replies.
+   * @return the response to the HTTP GET request with the JSON representation of the asked question
+   * replies.
    */
   @GET
   @Path("question/{questionId}")
@@ -78,7 +76,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     try {
       long questionId = Long.parseLong(onQuestionId);
       List<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(questionId,
-              componentId);
+          componentId);
       return asWebEntities(extractVisibleReplies(questionId, replies), getUserProfile());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
@@ -91,7 +89,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   public ReplyEntity[] getPublicRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     try {
       List<Reply> replies = QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(
-              Long.parseLong(onQuestionId), componentId);
+          Long.parseLong(onQuestionId), componentId);
       return asWebEntities(replies, getUserProfile());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
@@ -104,6 +102,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
 
   /**
    * Converts the specified list of replies into their corresponding web entities.
+   *
    * @param replies the replies to convert.
    * @param profile the profile of the user.
    * @return an array with the corresponding reply entities.
@@ -120,6 +119,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
 
   /**
    * Converts the reply into its corresponding web entity.
+   *
    * @param reply the reply to convert.
    * @param replyURI the URI of the reply.
    * @param profile the profile of the user.
@@ -127,8 +127,9 @@ public class ReplyResource extends QuestionRelyBaseWebService {
    */
   protected ReplyEntity asWebEntity(final Reply reply, URI replyURI, SilverpeasRole profile) {
     ReplyEntity entity = ReplyEntity.fromReply(reply, getUserPreferences().getLanguage()).withURI(
-            replyURI).withProfile(profile);
-    Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(reply.getPK(), entity.getLanguage());
+        replyURI).withProfile(profile);
+    Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentsByExternalObject(reply.getPK(), entity.getLanguage());
     entity.withAttachments(attachments);
     AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(getOrganizationController()));
     author.setAvatar(getHttpServletRequest().getContextPath() + author.getAvatar());
@@ -137,6 +138,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
 
   /**
    * Private replies should be visible to writers or publishers that have asked the question.
+   *
    * @param questionAuthor
    * @param reply
    * @param role
@@ -144,7 +146,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
    * @return
    */
   boolean isReplyVisible(String questionAuthor, Reply reply, SilverpeasRole role,
-          String userId) {
+      String userId) {
     boolean isPrivate = reply.getPublicReply() <= 0;
     if (isPrivate) {
       boolean isAuthor = questionAuthor.equals(userId);
@@ -156,10 +158,10 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   }
 
   List<Reply> extractVisibleReplies(long questionId, List<Reply> replies) throws
-          QuestionReplyException {
+      QuestionReplyException {
     List<Reply> visibleReplies = new ArrayList<Reply>(replies.size());
     String authorId = QuestionManagerFactory.getQuestionManager().getQuestion(questionId).
-            getCreatorId();
+        getCreatorId();
     SilverpeasRole profile = getUserProfile();
     String userid = getUserDetail().getId();
     for (Reply reply : replies) {
