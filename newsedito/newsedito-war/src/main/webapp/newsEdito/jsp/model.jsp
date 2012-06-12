@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%@ include file="imports.jsp" %>
 <%@ include file="declarations.jsp.inc" %>
@@ -44,8 +45,8 @@ context.setBorderPrinted(false);
 %>
 <HTML>
 <HEAD>
-<% out.println(gef.getLookStyleSheet()); %>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+<view:looknfeel/>
+<view:includePlugin name="wysiwyg"/>
 <% formUpdate.displayScripts(out, context); %>
 <script language="javaScript">
 function topicGoTo(id) {

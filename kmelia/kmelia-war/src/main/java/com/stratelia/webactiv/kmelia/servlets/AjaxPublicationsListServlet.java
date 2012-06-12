@@ -213,12 +213,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         publications = kmeliaSC.getSessionPublicationsList();
         role = SilverpeasRole.user.toString();
       } else if (toValidate) {
-        kmeliaSC.orderPubsToValidate(Integer.parseInt(sort));
+        kmeliaSC.orderPubsToValidate(sort);
         publications = kmeliaSC.getSessionPublicationsList();
       } else if (toSearch) {
         // Insert this new search inside persistence layer in order to compute statistics
         saveTopicSearch(componentId, nodeId, kmeliaSC, query);
-        publications = kmeliaSC.search(query, Integer.parseInt(sort));
+        publications = kmeliaSC.search(query);
       } else {
         currentTopic = kmeliaSC.getSessionTopic();
         publications = kmeliaSC.getSessionPublicationsList();
@@ -502,11 +502,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("<div id=\"noPublicationMessage\">");
       out.write(board.printBefore());
       out.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" align=\"center\">");
-      out.write("<tr valign=\"middle\" class=\"intfdcolor\">");
+      out.write("<tr valign=\"middle\">");
       out.write("<td width=\"80\"><img src=\"" + publicationSrc + "\" border=\"0\"/></td>");
       out.write("<td align=\"left\"><b>" + resources.getString("GML.publications") +
           "</b></td></tr>");
-      out.write("<tr class=\"intfdcolor4\"><td colspan=\"2\">&#160;</td></tr>");
+      out.write("<tr><td colspan=\"2\">&#160;</td></tr>");
       out.write("<tr>");
       out.write("<td>&#160;</td>");
       out.write("<td>" + noPublications + "</td>");
@@ -817,25 +817,21 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("<option value=\"2\" id=\"sort2\" " + isSelectedSort(ksc, "2") + ">" +
         resources.getString("DateDesc") + "</option>");
     out.write("<option value=\"5\" id=\"sort5\" " + isSelectedSort(ksc, "5") + ">" +
-        resources.getString("CreateDateAsc")
-        + "</option>");
+        resources.getString("CreateDateAsc") + "</option>");
     out.write("<option value=\"6\" id=\"sort6\" " + isSelectedSort(ksc, "6") + ">" +
-        resources.getString("CreateDateDesc")
-        + "</option>");
+        resources.getString("CreateDateDesc") + "</option>");
     out.write("<option value=\"0\" id=\"sort0\" " + isSelectedSort(ksc, "0") + ">" +
         resources.getString("PubAuteur") + "</option>");
     if (ksc.isFieldImportanceVisible()) {
       out.write("<option value=\"3\" id=\"sort3\" " + isSelectedSort(ksc, "3") + ">" +
-          resources.getString("PubImportance")
-          + "</option>");
+          resources.getString("PubImportance") + "</option>");
     }
     out.write("<option value=\"4\" id=\"sort4\" " + isSelectedSort(ksc, "4") + ">" +
         resources.getString("PubTitre") + "</option>");
     out.write("<option value=\"7\" id=\"sort7\" " + isSelectedSort(ksc, "7") + ">" +
-        resources.getString("PubDescription")
-        + "</option>");
-    out.write("<option value=\"8\" id=\"sort8\" " + isSelectedSort(ksc, "8") + ">" +
-        resources.getString("kmelia.publis.sort.8")
+        resources.getString("PubDescription") + "</option>");
+    out.write("<option value=\"-1\" id=\"sort-1\" " + isSelectedSort(ksc, "-1") + ">" +
+        resources.getString("kmelia.publis.sort.-1")
         + "</option>");
     out.write("</select>");
   }

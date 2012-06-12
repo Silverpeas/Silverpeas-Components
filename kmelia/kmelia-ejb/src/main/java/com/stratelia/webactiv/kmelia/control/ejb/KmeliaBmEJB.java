@@ -2495,11 +2495,22 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   public List<KmeliaPublication> getPublicationsToValidate(String componentId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
             "root.MSG_GEN_ENTER_METHOD");
-    Collection<PublicationDetail> publications = null;
+    Collection<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     PublicationPK pubPK = new PublicationPK("useless", componentId);
     try {
-      publications =
+      Collection<PublicationDetail> temp =
               getPublicationBm().getPublicationsByStatus(PublicationDetail.TO_VALIDATE, pubPK);
+      // retrieve original publications according to clones
+      for (PublicationDetail publi : temp) {
+        boolean isClone = PublicationDetail.TO_VALIDATE.equals(publi.getStatus()) && !"-1".equals(publi.getCloneId());
+        if (isClone) {
+          // publication is a clone, get original one
+          publications.add(getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK())));
+        } else {
+          // publication is not a clone, return it
+          publications.add(publi);
+        }
+      }
     } catch (Exception e) {
       throw new KmeliaRuntimeException(
               "KmeliaBmEJB.getPublicationsToValidate()", ERROR,

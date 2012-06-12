@@ -229,7 +229,7 @@
     <title></title>
     <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/pubHighlight.css"/>
     <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/kmelia-print.css" media="print"/>
-    <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+    <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
     <view:includePlugin name="userZoom"/>
@@ -810,7 +810,7 @@
                 selectedFormat = true;
               }
             %>
-            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %> ><%=resources.getString("kmelia.export.format." + format)%></input>
+            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %>/><%=resources.getString("kmelia.export.format." + format)%></input>
             <% } %>
             <input type="hidden" name="PubId" value="<%=id%>"/>
             <input type="hidden" name="ComponentId" value="<%=componentId%>"/>

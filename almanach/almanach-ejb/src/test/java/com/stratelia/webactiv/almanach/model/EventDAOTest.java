@@ -119,7 +119,9 @@ public class EventDAOTest extends BaseAlmanachTest {
   @Test
   public void fetchEventsForAMonthWithoutAnyEvents() throws Exception {
     Calendar month = Calendar.getInstance();
+    month.setTime(dateToUseInTests());
     month.add(Calendar.YEAR, 1);
+    month.set(Calendar.MONTH, Calendar.MAY);
     List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInMonth(month.
             getTime(), almanachIds));
     assertThat(events.isEmpty(), is(true));
