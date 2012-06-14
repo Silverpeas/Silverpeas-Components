@@ -38,7 +38,7 @@
 <%@ include file="checkSurvey.jsp" %>
 
 <%
-//R�cup�ration des param�tres
+//Retrieve parameter
 String creationDate = "";
 String nextAction = "";
 
@@ -60,7 +60,7 @@ String endDate = request.getParameter("endDate");
 String nbQuestions = request.getParameter("nbQuestions");
 String anonymousString = request.getParameter("anonymous");
 
-//Mode anonyme -> force les enqu�tes � �tre toutes anonymes
+//Anonymous mode -> force anonymous mode for each survey
 if(surveyScc.isAnonymousModeEnabled()) {
 	anonymousString = "true";
 }
@@ -79,12 +79,14 @@ if (action == null) {
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" language="JavaScript1.2">
+<script type="text/javascript" language="javascript">
 function sendData() {
-    if (isCorrectForm()) {
-		document.surveyForm.anonymous.disabled = false;
-        document.surveyForm.submit();
-    }
+  if (isCorrectForm()) {
+    document.surveyForm.anonymous.disabled = false;
+    <view:pdcPositions setIn="document.surveyForm.Positions.value"/>;
+    //alert("Positions value before submit form=" + document.surveyForm.Positions.value);
+    document.surveyForm.submit();
+  }
 }
 
 function isCorrectForm() {
@@ -168,7 +170,7 @@ function isCorrectForm() {
 </head>
 <body>
 <%
-if (action.equals("SendNewSurvey")) {
+/*if (action.equals("SendNewSurvey")) {
       if (beginDate != null) {
           if (beginDate.length()>0)
             beginDate = resources.getDBDate(beginDate);
@@ -187,7 +189,7 @@ if (action.equals("SendNewSurvey")) {
       surveyScc.setSessionSurveyUnderConstruction(surveyDetail);
 } //End if action = SendNewSurvey
 
-else if (action.equals("CreateSurvey")) {
+else */if (action.equals("CreateSurvey")) {
       cancelButton = (Button) gef.getFormButton(generalMessage.getString("GML.cancel"), "Main.jsp", false);
       validateButton = (Button) gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
       surveyScc.removeSessionSurveyUnderConstruction();
@@ -229,7 +231,7 @@ else if (action.equals("CreateSurvey")) {
 	        	anonymousCheck = "checked";
 	        }
 
-	        //Mode anonyme -> force les enqu�tes � �tre toutes anonymes
+	        //Anonymuos mode -> force anonymous mode for each survey
 	        String anonymousDisabled = "";
 	        if(surveyScc.isAnonymousModeEnabled()) {
 				anonymousDisabled = "disabled";
@@ -241,19 +243,23 @@ else if (action.equals("CreateSurvey")) {
     <tr><td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=generalMessage.getString("GML.requiredField")%>)</td></tr>
     <tr><td><input type="hidden" name="Action" value="<%=nextAction%>"></td></tr>
   </table>
+  <!-- ADD PDC creation there -->
+  <input type="hidden" name="Positions"/>
+  <view:pdcNewContentClassification componentId="<%=componentId%>" />
+
 </form>
 </center>
 <%
 	  out.println(board.printAfter());
-      out.println(frame.printMiddle());
-      ButtonPane buttonPane = gef.getButtonPane();
-      buttonPane.addButton(validateButton);
-      buttonPane.addButton(cancelButton);
-      buttonPane.setHorizontalPosition();
-      out.println("<BR><center>"+buttonPane.print()+"</center>");
-      out.println(frame.printAfter());
-      out.println(window.printAfter());
-      out.println("</BODY></HTML>");
+    out.println(frame.printMiddle());
+    ButtonPane buttonPane = gef.getButtonPane();
+    buttonPane.addButton(validateButton);
+    buttonPane.addButton(cancelButton);
+    buttonPane.setHorizontalPosition();
+    out.println("<br><center>"+buttonPane.print()+"</center>");
+    out.println(frame.printAfter());
+    out.println(window.printAfter());
+    out.println("</body></html>");
  } //End if action = ViewQuestion
 if (action.equals("SendNewSurvey")) {
 %>

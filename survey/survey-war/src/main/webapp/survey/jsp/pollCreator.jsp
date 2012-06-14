@@ -30,17 +30,16 @@
 <%@ page import="java.io.File"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="org.apache.commons.fileupload.FileItem" %>
-<%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil" %>
 <%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
 <%@ page import="java.text.ParsePosition"%>
 
 <%@ include file="checkSurvey.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
-    List items = FileUploadUtil.parseRequest(request);
+    List<FileItem> items = FileUploadUtil.parseRequest(request);
     String action = FileUploadUtil.getOldParameter(items, "Action");
     String pollId = FileUploadUtil.getOldParameter(items, "PollId");
     String title = FileUploadUtil.getOldParameter(items, "title");
@@ -69,6 +68,8 @@
     String anonymousCheck = "";
     String anonymous = FileUploadUtil.getOldParameter(items, "AnonymousAllowed");
 
+    String positions = FileUploadUtil.getOldParameter(items, "Positions");
+    
     //Mode anonyme -> force les votes à être tous anonymes
 	if(surveyScc.isAnonymousModeEnabled()) {
 		anonymous = "1";
@@ -105,9 +106,9 @@
     int nb = 0;
     int attachmentSuffix = 0;
     ArrayList imageList = new ArrayList();
-    ArrayList answers = new ArrayList();
+    List<Answer> answers = new ArrayList<Answer>();
     Answer answer = null;
-    Iterator itemIter = items.iterator();
+    Iterator<FileItem> itemIter = items.iterator();
     while (itemIter.hasNext()) {
       FileItem item = (FileItem) itemIter.next();
       if (item.isFormField()) {
@@ -166,11 +167,16 @@
   {
     if (isCorrectForm()) {
       if (checkAnswers()) {
-        if (window.document.pollForm.suggestion.checked)
+        if (window.document.pollForm.suggestion.checked) {
           window.document.pollForm.SuggestionAllowed.value = "1";
+        }
         window.document.pollForm.anonymous.disabled = false;
-        if (window.document.pollForm.anonymous.checked)
+        if (window.document.pollForm.anonymous.checked) {
             window.document.pollForm.AnonymousAllowed.value = "1";
+        }
+<% if ("SendPollForm".equals(action)) { %>
+        <view:pdcPositions setIn="document.pollForm.Positions.value"/>;
+<% } %>
         window.document.pollForm.submit();
       }
     }
@@ -393,13 +399,13 @@
   </head>
   <body>
     <%
-        if ((action.equals("CreatePoll")) || (action.equals("SendPollForm"))) {
+        if (("CreatePoll".equals(action)) || ("SendPollForm".equals(action))) {
           cancelButton = (Button) gef.getFormButton(generalMessage.getString("GML.cancel"), "Main.jsp", false);
           if (action.equals("CreatePoll")) {
             validateButton = (Button) gef.getFormButton(generalMessage.getString("GML.validate"),
                 "javascript:onClick=sendData()", false);
             nextAction = "SendPollForm";
-          } else if (action.equals("SendPollForm")) {
+          } else if ("SendPollForm".equals(action)) {
             validateButton = (Button) gef.getFormButton(generalMessage.getString("GML.validate"),
                 "javascript:onClick=sendData()", false);
             suggestionCheck = "";
@@ -429,8 +435,8 @@
     <!--DEBUT CORPS -->
     <%
 String disabledValue = "";
-if (action.equals("SendPollForm")) {
-disabledValue = "disabled";
+if ("SendPollForm".equals(action)) {
+  disabledValue = "disabled";
 }
     %>
     <form name="pollForm" action="pollCreator.jsp" method="post" enctype="multipart/form-data">
@@ -439,7 +445,7 @@ disabledValue = "disabled";
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationDate")%> :</td><td><%=creationDate%></td></tr>
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationBeginDate")%> :</td><td><input type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/></td></tr>
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationEndDate")%> :</td><td><input type="text" class="dateToPick" name="endDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/></td></tr>
-        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%> :</td><td><input type="text" name="question" value="<%=Encode.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
+        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%> :</td><td><input type="text" name="question" value="<%=EncodeHelper.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
             <%if (disabledValue != "disabled") {%>
         <!--  type de question -->
         <tr><td class="txtlibform" valign=top><%=resources.getString("survey.style")%> :</td><td>
@@ -461,15 +467,15 @@ disabledValue = "disabled";
         //Mode anonyme -> force les votes à être tous anonymes
         String anonymousDisabled = "";
         if(surveyScc.isAnonymousModeEnabled()) {
-			anonymousCheck = "checked";
-			anonymousDisabled = "disabled";
-		}
+          anonymousCheck = "checked";
+          anonymousDisabled = "disabled";
+        }
 		%>
 
         <tr><td class="txtlibform"><%=resources.getString("survey.pollAnonymous")%> :</td><td><input type="checkbox" name="anonymous" value="" <%=anonymousCheck%> <%=disabledValue%> <%=anonymousDisabled%>></td></tr>
 
         <% if ("SendPollForm".equals(action)) {
-nb = new Integer(nbAnswers).intValue();
+nb = Integer.parseInt(nbAnswers);
 String inputName = "";
 int j = 0;
 for (int i = 0; i < nb; i++) {
@@ -485,7 +491,7 @@ for (int i = 0; i < nb; i++) {
     out.println("<tr><td></td><td><span id=\"imageGallery" + i + "\"></span>");
     out.println("<input type=\"hidden\" id=\"valueImageGallery" + i + "\" name=\"valueImageGallery" + i + "\" >");
 
-    List galleries = surveyScc.getGalleries();
+    List<ComponentInstLight> galleries = surveyScc.getGalleries();
     if (galleries != null) {
       out.println(
           " <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this, '" + i + "');this.selectedIndex=0;\"> ");
@@ -513,6 +519,10 @@ if (!"0".equals(suggestion)) {
              <input type="hidden" name="AnonymousAllowed" value="0">
          </td></tr>
       </table>
+<%if ("SendPollForm".equals(action)) { %>
+      <input type="hidden" name="Positions" />
+      <view:pdcNewContentClassification componentId="<%=componentId%>" />
+<%} %>
     </form>
 
     <!-- FIN CORPS -->
@@ -527,7 +537,7 @@ if (!"0".equals(suggestion)) {
           out.println(frame.printAfter());
           out.println(window.printAfter());
         } //End if action = ViewQuestion
-        if (action.equals("SendNewPoll")) {
+        if ("SendNewPoll".equals(action)) {
           if (beginDate != null) {
             if (beginDate.length() > 0) {
               beginDate = resources.getDBDate(beginDate);
@@ -543,15 +553,16 @@ if (!"0".equals(suggestion)) {
           boolean anonymousB = false;
           if (anonymous.equals("1")) {
             anonymousB = true;
-		  }
+          }
           QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, creationDate, beginDate, endDate, false, 0, 1, anonymousB);
           Question questionObject = new Question(null, null, question, "", "", null, style, 0);
-          ArrayList questions = new ArrayList();
+          List<Question> questions = new ArrayList<Question>();
           questionObject.setAnswers(answers);
           questions.add(questionObject);
           QuestionContainerDetail surveyDetail = new QuestionContainerDetail(surveyHeader, questions, null, null);
           surveyDetail.setHeader(surveyHeader);
           surveyDetail.setQuestions(questions);
+          surveyScc.setNewSurveyPositionsFromJSON(positions);
           surveyScc.createSurvey(surveyDetail);
           surveyScc.setSessionSurveyUnderConstruction(surveyDetail);
     %>

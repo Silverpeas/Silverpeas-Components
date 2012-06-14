@@ -34,11 +34,10 @@
 <%@ page import="java.io.File"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 
 <%@ include file="checkSurvey.jsp" %>
-<%@ include file="surveyUtils.jsp.inc" %>
+<%@ include file="surveyUtils.jsp" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -330,6 +329,9 @@ function isCorrectForm() {
 </table>
 </form>
 </center>
+
+<view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" editable="true" />
+
 </view:board>
 <%
         out.println(frame.printMiddle());
