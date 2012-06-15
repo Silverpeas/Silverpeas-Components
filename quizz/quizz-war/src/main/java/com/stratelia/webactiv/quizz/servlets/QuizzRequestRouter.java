@@ -40,6 +40,8 @@ import java.io.File;
 
 public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionController> {
 
+  private static final long serialVersionUID = -8909826089973730380L;
+
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for quizz, returns "quizz"
@@ -120,7 +122,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
           SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_COPY_FAILED",
               "function = " + function, e);
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD)
+        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
             + "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("paste")) {
         try {
@@ -129,7 +131,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
           SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_CUT_FAILED",
               "function = " + function, e);
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp";
+        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
 

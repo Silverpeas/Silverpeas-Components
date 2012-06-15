@@ -72,9 +72,9 @@ if (action == null) {
 }
 
 %>
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -201,8 +201,8 @@ function isCorrectForm() {
 }
 
 </script>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+</head>
+<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
 <%
 if (action.equals("SendNewQuizz")) {
       if (beginDate != null) {
@@ -252,9 +252,9 @@ else if (action.equals("CreateQuizz")) {
       out.println(board.printBefore());
 %>
 <center>
-<table CELLPADDING=5 width="100%">
-	<form name="quizzForm" Action="quizzCreator.jsp" method="POST">
-    <tr><td class="txtlibform" valign="baseline" align=left width="100"><%=resources.getString("GML.name")%> :</td>
+<form name="quizzForm" Action="quizzCreator.jsp" method="POST">
+<table cellpadding="5" width="100%">
+  <tr><td class="txtlibform" valign="baseline" align=left width="100"><%=resources.getString("GML.name")%> :</td>
 		<td><input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=EncodeHelper.javaStringToHtmlString(title)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
 	</tr>
     <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationDate")%> :</td>
@@ -287,14 +287,14 @@ else if (action.equals("CreateQuizz")) {
 	<tr><td class="intfdcolor4" valign="top" align=left colspan=2 nowrap><span class="txt">( <img src="<%=mandatoryField%>" width="5" height="5"> = <%=resources.getString("GML.requiredField")%> ) </span>
 		</td>
 	</tr>
-	</form>
 </table>
+</form>
 </center>
 <%
-	out.println(board.printAfter());
-    out.println(frame.printMiddle());
+  out.println(board.printAfter());
+  out.println(frame.printMiddle());
 %>
-<BR>
+<br>
 <center>
 <%
       ButtonPane buttonPane = gef.getButtonPane();
@@ -305,24 +305,24 @@ else if (action.equals("CreateQuizz")) {
 %>
 </center>
 <%
-    out.println(frame.printAfter());
-	out.println(window.printAfter());
-    out.println("</BODY></HTML>");
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
+  out.println("</body></html>");
  } //End if action = ViewQuestion
 if (action.equals("SendNewQuizz")) {
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <script language="Javascript">
     function goToQuestionCreator() {
         document.questionForm.submit();
     }
 </script>
-</HEAD>
-<BODY onLoad="goToQuestionCreator()">
-<Form name="questionForm" Action="questionCreator.jsp" Method="POST" ENCTYPE="multipart/form-data">
+</head>
+<body onLoad="goToQuestionCreator()">
+<form name="questionForm" action="questionCreator.jsp" method="POST" enctype="multipart/form-data">
 <input type="hidden" name="Action" value="FirstQuestion">
-</Form>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>
 <% } %>
