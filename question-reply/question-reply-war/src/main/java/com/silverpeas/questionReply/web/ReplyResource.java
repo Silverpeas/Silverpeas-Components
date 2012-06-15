@@ -34,8 +34,8 @@ import java.util.List;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 
 /**
  *
@@ -46,7 +46,7 @@ import org.springframework.stereotype.Service;
  * an access to a reply referenced by its URL.
  */
 @Service
-@Scope("request")
+@RequestScoped
 @Path("questionreply/{componentId}/replies")
 @Authorized
 public class ReplyResource extends QuestionRelyBaseWebService {

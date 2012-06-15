@@ -50,8 +50,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 import static com.silverpeas.export.ExportDescriptor.*;
 
 /**
@@ -59,7 +59,7 @@ import static com.silverpeas.export.ExportDescriptor.*;
  */
 @Path("almanach/ics/{almanachId}")
 @Service
-@Scope("request")
+@RequestScoped
 public class AlmanachICSProducer {
 
   @QueryParam("userId")

@@ -30,7 +30,7 @@ import org.silverpeas.resourcemanager.model.ResourceStatus;
 import org.silverpeas.resourcemanager.repository.ReservationRepository;
 import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
 import org.silverpeas.resourcemanager.repository.ResourceRepository;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
