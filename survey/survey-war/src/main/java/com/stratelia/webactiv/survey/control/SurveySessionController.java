@@ -900,7 +900,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
           String type =
               physicalName.substring(physicalName.indexOf('.') + 1, physicalName.length());
           String newPhysicalName =
-              new Long(new Date().getTime()).toString() + attachmentSuffix + "." + type;
+              Long.toString(new Date().getTime()) + attachmentSuffix + "." + type;
           attachmentSuffix = attachmentSuffix + 1;
 
           if (survey.getHeader().getInstanceId().equals(getComponentId())) {
