@@ -34,7 +34,6 @@
 <%@ page import="java.io.File"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 
 <%@ include file="checkSurvey.jsp" %>
@@ -121,7 +120,7 @@ $(document).ready(function(){
 </head>
 <body>
 <%
-  List questionsV = surveyScc.getSessionQuestions();
+  List<Question> questionsV = surveyScc.getSessionQuestions();
   surveyId = surveyScc.getSessionSurveyId();
 
   Window window = gef.getWindow();
@@ -157,7 +156,7 @@ String questionDownSrc = "icons/arrowDown.gif";
 String questionDeleteSrc = m_context + "/util/icons/delete.gif";
 String questionUpdateSrc = m_context + "/util/icons/update.gif";
 Question question = null;
-Collection answers = null;
+Collection<Answer> answers = null;
 String operations = "";
 Board board = gef.getBoard();
 try
@@ -183,7 +182,7 @@ try
 <form name="survey" action="questionsUpdate.jsp" method="post" />
   <input type="hidden" name="Action" value="SubmitQuestions" />
         <%
-        Iterator itQ = questionsV.iterator();
+        Iterator<Question> itQ = questionsV.iterator();
         int i = 1;
         for (int j=0; j<questionsV.size(); j++)
         {
@@ -219,7 +218,7 @@ try
               if (style.equals("open"))
               {
               		// Open question
-                    Iterator itA = answers.iterator();
+                    Iterator<Answer> itA = answers.iterator();
                     int isOpened = 0;
                     out.println("<tr><td colspan=\"2\"><textarea name=\"openedAnswer_"+i+"\" cols=\"60\" rows=\"4\"></textarea></td></tr>");
               }
@@ -230,7 +229,7 @@ try
                			// drop down list
                			out.println("<tr><td><select id=\"answers\" name=\"answers\" onchange=\"if(this.value=='openanswer_"+i+"'){document.getElementById('openanswer"+i+"').style.display='block'}else{document.getElementById('openanswer"+i+"').style.display='none'};\">");
 
-               			Iterator itA = answers.iterator();
+               			Iterator<Answer> itA = answers.iterator();
                         while (itA.hasNext())
                         {
                             Answer answer = (Answer) itA.next();
@@ -249,7 +248,7 @@ try
                     	if (style.equals("checkbox")) {
                           inputType = "checkbox";
                         }
-                     	Iterator itA = answers.iterator();
+                     	Iterator<Answer> itA = answers.iterator();
                     	int isOpened = 0;
                     	while (itA.hasNext())
                     	{
