@@ -37,10 +37,133 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <jsp:useBean id="currentQuizzId" scope="session" class="java.lang.String" />
 
 <%@ include file="checkQuizz.jsp" %>
-<%@ include file="quizzUtils.jsp.inc" %>
+
+<%!
+  String displayQuestionsUpdateView(Vector questions, GraphicElementFactory gef, String m_context, QuizzSessionController quizzScc,ResourceLocator settings, ResourcesWrapper resources) throws QuizzException {
+        String questionUpSrc = "icons/questionUp.gif";
+        String questionDownSrc = "icons/questionDown.gif";
+        String questionDeleteSrc = "icons/questionDelete.gif";
+        String questionUpdateSrc = "icons/questionUpdate.gif";
+        String r = "";
+        Question question = null;
+        Collection<Answer> answers = null;
+        String operations = "";
+        
+        Board board = gef.getBoard();
+        
+    try{
+      //Display the questions
+      r += "<center>";
+      //r += "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td>";
+      r += board.printBefore();
+      r += "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"98%\"><tr><td>";
+      r += "<form name=\"quizz\" Action=\"questionsUpdate.jsp\" Method=\"Post\">";
+      r += "<input type=\"hidden\" name=\"Action\" value=\"SubmitQuestions\">";
+      Iterator itQ = questions.iterator();
+      int i = 1;
+      for (int j=0; j<questions.size(); j++) {
+          question = (Question) questions.get(j);
+          answers = question.getAnswers();
+
+          //check available operations to current question
+          operations = " ";
+          if (j!=0) {
+            operations += "<a href=\"questionsUpdate.jsp?Action=UpQuestion&QId="+j+"\"><img src=\""+questionUpSrc+"\" border=\"0\" alt=\""+resources.getString("QuestionUp")+"\" title=\""+resources.getString("QuestionUp")+"\"></a> ";
+          }
+          if (j+1!=questions.size()) {
+            operations += "<a href=\"questionsUpdate.jsp?Action=DownQuestion&QId="+j+"\"><img src=\""+questionDownSrc+"\" border=\"0\" alt=\""+resources.getString("QuestionDown")+"\" title=\""+resources.getString("QuestionDown")+"\"></a> ";
+          }
+          operations += "<a href=\"questionsUpdate.jsp?Action=DeleteQuestion&QId="+j+"\"><img src=\""+questionDeleteSrc+"\" border=\"0\" alt=\""+resources.getString("GML.delete")+"\" title=\""+resources.getString("GML.delete")+"\"></a> ";
+          //operations += "<a href=\"questionsUpdate.jsp?Action=UpdateQuestion&QId="+j+"\"><img src=\""+questionUpdateSrc+"\" border=\"0\" alt=\""+resources.getString("QuestionUpdate")+"\"></a>";
+
+          r += "<table border=\"0\" width=\"100%\">";
+          r += "<tr><td colspan=\"2\" align=\"left\"><B>&#149; <U>"+EncodeHelper.javaStringToHtmlString(question.getLabel())+"</U></B>"+operations+"<BR><BR></td></tr>";
+          if (question.isOpen()) {
+            Iterator<Answer> itA = answers.iterator();
+            int isOpened = 0;
+            r += "<tr><td colspan=\"2\"><textarea name=\"openedAnswer_"+i+"\" cols=\"60\" rows=\"4\"></textarea></td></tr>";
+          } 
+          else 
+          {
+              String style = question.getStyle();
+                if (style.equals("list"))
+                {
+                  // drop down list
+                    String selectedStr = "";
+                    
+                      r += "<tr><td><select id=\"answer_"+i+"\" name=\"answer_"+i+"\" >";
+                                      
+                      Iterator<Answer> itA = answers.iterator();
+                    while (itA.hasNext()) 
+                    {
+                      Answer answer = (Answer) itA.next();
+                          r += "<option value=\"\" "+selectedStr+">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>";
+                    }
+                    r += "</td></tr>";
+                }
+                else
+                {
+              String inputType = "radio";
+              if (style.equals("checkbox")) {
+                  inputType = "checkbox";
+              }
+              Iterator<Answer> itA = answers.iterator();
+              int isOpened = 0;
+              while (itA.hasNext()) {
+                Answer answer = (Answer) itA.next();
+                if (answer.isOpened()) {
+                  isOpened = 1;
+                  r += "<tr><td align=\"left\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR><input type=\"text\" size=\"20\" name=\"openedAnswer_"+i+"\"></td></tr>";
+                } 
+                else 
+                {
+                  if (answer.getImage() == null) 
+                            {
+                      r += "<tr><td align=\"left\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</td></tr>";
+                            } 
+                            else 
+                            {
+                                String imageUrl = answer.getImage();
+                                String url = "";
+                                if (imageUrl.startsWith("/"))
+                                {
+                                  url = imageUrl+"&Size=266x150";
+                                }
+                                else
+                                {
+                                  url = FileServer.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+                                }
+                      r += "<tr valign=middle><td align=\"left\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\" valign=top>"+Encode.javaStringToHtmlString(answer.getLabel())+"&nbsp;&nbsp;&nbsp;";
+                      r += "<img src=\""+url+"\" border=\"0\" hspace=10 vspace=10 align=absmiddle></td><td>";
+                            }
+                      
+                      
+                }
+              }
+            }
+          }
+          i++;
+          r += "</table>";
+      }
+      r += "</form></table>";
+      r += board.printAfter();
+      //r += "</td></tr></table>";
+      //r += "<table>";
+      Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
+      Button voteButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:SendQuestions('"+questions.size()+"');", false);
+      r += "<table><tr><td align=\"center\"><br><table border=\"0\"><tr><td>"+voteButton.print()+"</td><td>"+cancelButton.print()+"</td></tr></table></td></tr>";
+      r += "</table>";
+    } catch(Exception e){
+      throw new QuizzException ("questionUtils_JSP.displayQuestionsUpdateView",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_UPDATEVIEW",e);
+    }
+        return r;
+  }
+%>
+
+
 
 <%
-//R�cup�ration des param�tres
+//Retrieve parameters
 String action = (String) request.getParameter("Action");
 String quizzId = (String) request.getParameter("QuizzId");
 
@@ -89,14 +212,14 @@ if (action.equals("SendQuestions")) {
 }
 if (action.equals("UpdateQuestions")) {
 %>
-<HTML>
-<HEAD>
-	<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+	<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-</HEAD>
-<Script language="javaScript1.2">
+</head>
+<script language="javascript">
 function addQuestion() {
     document.questionForm.submit();
 }
@@ -108,52 +231,52 @@ function SendQuestions(nb)
 			alert('<%=resources.getString("MustContainsAQuestion")%>');
 }
 </script>
-<BODY>
+<body>
 <%
-          Vector questionsV = null;
-          if (quizzId != null) {
-              session.removeAttribute("currentQuizzId");
-              session.removeAttribute("questionsVector");
+  Vector<Question> questionsV = null;
+  if (quizzId != null) {
+    session.removeAttribute("currentQuizzId");
+    session.removeAttribute("questionsVector");
 
-              session.setAttribute("currentQuizzId", quizzId);
-              
-              quizz = quizzScc.getQuizzDetail(quizzId);
-              Collection questions = quizz.getQuestions();
-              //questions collection to questions vector
-              questionsV = new Vector(questions);
-              session.setAttribute("questionsVector", questionsV);
-          }
-          questionsV = (Vector) session.getAttribute("questionsVector");
-          quizzId = (String) session.getAttribute("currentQuizzId");
-          
-          Window window = gef.getWindow();
-          Frame frame=gef.getFrame();
-          BrowseBar browseBar = window.getBrowseBar();
-          browseBar.setDomainName(quizzScc.getSpaceLabel());
-          browseBar.setComponentName(quizzScc.getComponentLabel());
-          browseBar.setExtraInformation(resources.getString("QuizzUpdate"));
+    session.setAttribute("currentQuizzId", quizzId);
+    
+    quizz = quizzScc.getQuizzDetail(quizzId);
+    Collection<Question> questions = quizz.getQuestions();
+    //questions collection to questions vector
+    questionsV = new Vector<Question>(questions);
+    session.setAttribute("questionsVector", questionsV);
+  }
+  questionsV = (Vector) session.getAttribute("questionsVector");
+  quizzId = (String) session.getAttribute("currentQuizzId");
+  
+  Window window = gef.getWindow();
+  Frame frame=gef.getFrame();
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(quizzScc.getSpaceLabel());
+  browseBar.setComponentName(quizzScc.getComponentLabel());
+  browseBar.setExtraInformation(resources.getString("QuizzUpdate"));
 
-          OperationPane operationPane = window.getOperationPane();
-          operationPane.addOperation(m_context + "/util/icons/quizz_to_addQuestion.gif", resources.getString("QuestionAdd"), "javaScript:addQuestion()");
-          
-          out.println(window.printBefore());
+  OperationPane operationPane = window.getOperationPane();
+  operationPane.addOperation(m_context + "/util/icons/quizz_to_addQuestion.gif", resources.getString("QuestionAdd"), "javaScript:addQuestion()");
+  
+  out.println(window.printBefore());
 
-          TabbedPane tabbedPane = gef.getTabbedPane();
-          tabbedPane.addTab(resources.getString("GML.head"), "quizzUpdate.jsp?Action=UpdateQuizzHeader&QuizzId="+quizzId, action.equals("UpdateQuizzHeader"), true);
-          tabbedPane.addTab(resources.getString("QuizzQuestions"), "questionsUpdate.jsp?Action=UpdateQuestions&QuizzId="+quizzId, action.equals("UpdateQuestions"), false);
-          out.println(tabbedPane.print());
-         
-          out.println(frame.printBefore());
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resources.getString("GML.head"), "quizzUpdate.jsp?Action=UpdateQuizzHeader&QuizzId="+quizzId, action.equals("UpdateQuizzHeader"), true);
+  tabbedPane.addTab(resources.getString("QuizzQuestions"), "questionsUpdate.jsp?Action=UpdateQuestions&QuizzId="+quizzId, action.equals("UpdateQuestions"), false);
+  out.println(tabbedPane.print());
+ 
+  out.println(frame.printBefore());
 
-          out.println(displayQuestionsUpdateView(questionsV, gef, m_context, quizzScc, settings, resources));
+  out.println(displayQuestionsUpdateView(questionsV, gef, m_context, quizzScc, settings, resources));
 %>
-          <Form name="questionForm" Action="questionCreatorBis.jsp" Method="POST" ENCTYPE="multipart/form-data">
+          <form name="questionForm" action="questionCreatorBis.jsp" method="post" enctype="multipart/form-data">
           <input type="hidden" name="Action" value="CreateQuestion">
-          </Form>
+          </form>
 <%
-          out.println(frame.printAfter());
-          out.println(window.printAfter());
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 <% } %>

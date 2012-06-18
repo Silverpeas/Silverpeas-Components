@@ -39,7 +39,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-//R�cup�ration des param�tres
+//Retrieve parameters
 String action = "";
 String quizzId = "";
 String title = "";
@@ -75,29 +75,29 @@ ResourceLocator settings = quizzScc.getSettings();
 
 QuestionContainerDetail quizz = null;
 if (action.equals("SendQuizzHeader")) {
-      if (beginDate != null) {
-          if (beginDate.length()>0)
-            beginDate = resources.getDBDate(beginDate);
-          else
-            beginDate = null;
-      }
-      if (endDate != null) {
-          if (endDate.length()>0)
-            endDate = resources.getDBDate(endDate);
-          else
-            endDate = null;
-      }
+    if (beginDate != null) {
+        if (beginDate.length()>0)
+          beginDate = resources.getDBDate(beginDate);
+        else
+          beginDate = null;
+    }
+    if (endDate != null) {
+        if (endDate.length()>0)
+          endDate = resources.getDBDate(endDate);
+        else
+          endDate = null;
+    }
 
-	  /*if(nbAnswersMax == null || nbAnswersMax.trim().length() == 0) {
-			nbAnswersMax = "0";
-	  }
+  /*if(nbAnswersMax == null || nbAnswersMax.trim().length() == 0) {
+		nbAnswersMax = "0";
+  }
 
-	  if(nbAnswersNeeded == null || nbAnswersNeeded.trim().length() == 0) {
-			nbAnswersNeeded = "0";
-	  } */
+  if(nbAnswersNeeded == null || nbAnswersNeeded.trim().length() == 0) {
+		nbAnswersNeeded = "0";
+  } */
 
-      QuestionContainerHeader quizzHeader = new QuestionContainerHeader(null, title, description,notice, null, null, beginDate, endDate, false, 0, new Integer(nbQuestions).intValue(),new Integer(nbAnswersMax).intValue(),new Integer(nbAnswersNeeded).intValue(),0);
-      quizzScc.updateQuizzHeader(quizzHeader, quizzId);
+    QuestionContainerHeader quizzHeader = new QuestionContainerHeader(null, title, description,notice, null, null, beginDate, endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax), Integer.parseInt(nbAnswersNeeded),0);
+    quizzScc.updateQuizzHeader(quizzHeader, quizzId);
 %>
 <jsp:forward page="<%=quizzScc.getComponentUrl()+\"Main.jsp\"%>"/>
 <%
@@ -106,24 +106,26 @@ if (action.equals("SendQuizzHeader")) {
 if (action.equals("UpdateQuizzHeader")) {
       quizz = quizzScc.getQuizzDetail(quizzId);
       QuestionContainerHeader quizzHeader = quizz.getHeader();
-      title =Encode.javaStringToHtmlString(quizzHeader.getTitle());
-  	  description=quizzHeader.getDescription();
-      notice=quizzHeader.getComment();
+      title = EncodeHelper.javaStringToHtmlString(quizzHeader.getTitle());
+  	  description = quizzHeader.getDescription();
+      notice = quizzHeader.getComment();
       creationDate = resources.getOutputDate(quizzHeader.getCreationDate());
       beginDate = "";
-      if (quizzHeader.getBeginDate() != null)
+      if (quizzHeader.getBeginDate() != null) {
           beginDate = resources.getInputDate(quizzHeader.getBeginDate());
+      }
       endDate = "";
-      if (quizzHeader.getEndDate() != null)
+      if (quizzHeader.getEndDate() != null) {
           endDate = resources.getInputDate(quizzHeader.getEndDate());
-      nbQuestions = new Integer(quizzHeader.getNbQuestionsPerPage()).toString();
+      }
+      nbQuestions = Integer.toString(quizzHeader.getNbQuestionsPerPage());
 
-	nbAnswersNeeded = new Integer(quizzHeader.getNbParticipationsBeforeSolution()).toString();
-	nbAnswersMax = new Integer(quizzHeader.getNbMaxParticipations()).toString() ;
+	nbAnswersNeeded = Integer.toString(quizzHeader.getNbParticipationsBeforeSolution());
+	nbAnswersMax = Integer.toString(quizzHeader.getNbMaxParticipations());
 %>
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -250,63 +252,65 @@ function isCorrectForm() {
 }
 
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
-        Window window = gef.getWindow();
+  Window window = gef.getWindow();
 
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(quizzScc.getSpaceLabel());
-        browseBar.setComponentName(quizzScc.getComponentLabel());
-        browseBar.setExtraInformation(resources.getString("QuizzUpdate"));
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(quizzScc.getSpaceLabel());
+  browseBar.setComponentName(quizzScc.getComponentLabel());
+  browseBar.setExtraInformation(resources.getString("QuizzUpdate"));
 
-        out.println(window.printBefore());
+  out.println(window.printBefore());
 
-        TabbedPane tabbedPane = gef.getTabbedPane();
-        tabbedPane.addTab(resources.getString("GML.head"), "quizzUpdate.jsp?Action=UpdateQuizzHeader&QuizzId="+quizzId, action.equals("UpdateQuizzHeader"), false);
-        tabbedPane.addTab(resources.getString("QuizzQuestions"), "questionsUpdate.jsp?Action=UpdateQuestions&QuizzId="+quizzId, action.equals("UpdateQuestions"), true);
-        out.println(tabbedPane.print());
-        Frame frame = gef.getFrame();
-        Board board = gef.getBoard();
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resources.getString("GML.head"), "quizzUpdate.jsp?Action=UpdateQuizzHeader&QuizzId="+quizzId, action.equals("UpdateQuizzHeader"), false);
+  tabbedPane.addTab(resources.getString("QuizzQuestions"), "questionsUpdate.jsp?Action=UpdateQuestions&QuizzId="+quizzId, action.equals("UpdateQuestions"), true);
+  out.println(tabbedPane.print());
+  Frame frame = gef.getFrame();
+  Board board = gef.getBoard();
 
-        out.println(frame.printBefore());
-        out.println(board.printBefore());
+  out.println(frame.printBefore());
+  out.println(board.printBefore());
 %>
 
 <center>
-<table CELLPADDING=5 width="100%">
-	<form name="quizzForm" Action="quizzUpdate.jsp" method="POST">
-        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("GML.name")%> :</td><td><input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=title%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
-        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationDate")%> :</td><td><%=creationDate%></td></tr>
-        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationBeginDate")%> :</td><td><input type="text"  class="dateToPick" name="beginDate" size="11" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=beginDate%>"/><img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
-        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationEndDate")%> :</td><td><input type="text" class="dateToPick" name="endDate" size="11" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=endDate%>"/></td></tr>
-        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbQuestionPerPage")%> :</td><td><input type="text" name="nbQuestions" size="5" maxlength="3" value="<%=nbQuestions%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
-        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbPossibleAnswer")%> :</td><td><input type="text" name="nbAnswersMax" size="5" maxlength="3" value="<%=nbAnswersMax%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
-        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbAnswerNeeded")%> :</td><td><input type="text" name="nbAnswersNeeded" size="5" maxlength="3" value="<%=nbAnswersNeeded%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
-        <tr><td class="txtlibform" valign="top" align=left><%=resources.getString("GML.description")%> :</td><td><textarea name="description" cols="49" wrap="VIRTUAL" rows="3"><%=description%></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
-        <tr><td class="txtlibform" valign="top" align=left><%=resources.getString("QuizzCreationNotice")%> :</td><td><textarea name="notice" cols="50" wrap="VIRTUAL" rows="3"><%=notice%></textarea></td></tr>
-        <tr><td><input type="hidden" name="Action" value="SendQuizzHeader">
-                 <input type="hidden" name="QuizzId" value="<%=quizzId%>"></td></tr>
-		<tr><td class="intfdcolor4" valign="top" align=left colspan=2 nowrap><span class="txt">( <img src="<%=mandatoryField%>" width="5" height="5"> = <%=resources.getString("GML.requiredField")%> ) </span>
-			</td>
-		</tr>
-	</form>
+<form name="quizzForm" Action="quizzUpdate.jsp" method="post">
+<table cellpadding="5" width="100%">
+  <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("GML.name")%> :</td><td><input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=title%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
+  <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationDate")%> :</td><td><%=creationDate%></td></tr>
+  <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationBeginDate")%> :</td><td><input type="text"  class="dateToPick" name="beginDate" size="11" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=beginDate%>"/><img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
+  <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationEndDate")%> :</td><td><input type="text" class="dateToPick" name="endDate" size="11" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=endDate%>"/></td></tr>
+  <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbQuestionPerPage")%> :</td><td><input type="text" name="nbQuestions" size="5" maxlength="3" value="<%=nbQuestions%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
+  <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbPossibleAnswer")%> :</td><td><input type="text" name="nbAnswersMax" size="5" maxlength="3" value="<%=nbAnswersMax%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
+  <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbAnswerNeeded")%> :</td><td><input type="text" name="nbAnswersNeeded" size="5" maxlength="3" value="<%=nbAnswersNeeded%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
+  <tr><td class="txtlibform" valign="top" align=left><%=resources.getString("GML.description")%> :</td><td><textarea name="description" cols="49" wrap="VIRTUAL" rows="3"><%=description%></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
+  <tr><td class="txtlibform" valign="top" align=left><%=resources.getString("QuizzCreationNotice")%> :</td><td><textarea name="notice" cols="50" wrap="VIRTUAL" rows="3"><%=notice%></textarea></td></tr>
+  <tr><td><input type="hidden" name="Action" value="SendQuizzHeader">
+           <input type="hidden" name="QuizzId" value="<%=quizzId%>"></td></tr>
+  <tr><td class="intfdcolor4" valign="top" align=left colspan=2 nowrap><span class="txt">( <img src="<%=mandatoryField%>" width="5" height="5"> = <%=resources.getString("GML.requiredField")%> ) </span>
+	</td></tr>
 </table>
-<center>
+</form>
+
 <%
-		out.println(board.printAfter());
-        out.println(frame.printMiddle());
-        Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
-        Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
-        ButtonPane buttonPane = gef.getButtonPane();
-        buttonPane.addButton(validateButton);
-        buttonPane.addButton(cancelButton);
-        buttonPane.setHorizontalPosition();
-        out.println("<br><table width=\"100%\"><tr><td align=center>"+buttonPane.print()+"</td></tr></table>");
-		out.println(frame.printAfter());
-        out.println(window.printAfter());
+	out.println(board.printAfter());
+  out.println(frame.printMiddle());
+%>
+  <view:pdcClassification componentId="<%= quizzScc.getComponentId() %>" contentId="<%= quizzId %>" editable="true" />
+<%
+  Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
+  Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
+  ButtonPane buttonPane = gef.getButtonPane();
+  buttonPane.addButton(validateButton);
+  buttonPane.addButton(cancelButton);
+  buttonPane.setHorizontalPosition();
+  out.println("<br><table width=\"100%\"><tr><td align=center>"+buttonPane.print()+"</td></tr></table>");
+	out.println(frame.printAfter());
+  out.println(window.printAfter());
 %>
 </center>
-</BODY>
-</HTML>
+</body>
+</html>
 <% } %>

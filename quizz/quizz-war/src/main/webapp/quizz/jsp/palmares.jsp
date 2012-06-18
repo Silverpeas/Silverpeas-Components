@@ -60,9 +60,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
 
-<HTML>
-<HEAD>
-	<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+	<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -126,7 +126,7 @@ out.println(gef.getLookStyleSheet());
     else
       arrayCellText2 = arrayLine.addArrayCellText("<A HREF=quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&ParticipationId="+nb_user_votes+"&Action=ViewCurrentQuestions>"+quizzHeader.getTitle()+"</A>");
     arrayCellText2.setCompareOn((String) (quizzHeader.getTitle()).toLowerCase());
-    ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(Encode.javaStringToHtmlString(quizzHeader.getDescription()));
+    ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(quizzHeader.getDescription()));
     ArrayCellText arrayCellText4 = arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
     
 	Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
@@ -177,7 +177,7 @@ if (quizzScc.getIsAllowedTopScores())
 	      lastName = userDetail.getLastName();
       }
       ArrayLine arrayLine = arrayPane2.addArrayLine();
-      ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(new Integer(scoreDetail.getPosition()).toString());
+      ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(Integer.toString(scoreDetail.getPosition()));
       arrayCellText3.setCompareOn(new Integer(scoreDetail.getPosition()));
       arrayLine.addArrayCellText(lastName + " " + firstName);
       
@@ -185,7 +185,7 @@ if (quizzScc.getIsAllowedTopScores())
       ArrayCellText arrayCellText = arrayLine.addArrayCellText(resources.getOutputDate(participationDate));
       arrayCellText.setCompareOn(participationDate);
       
-      ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(new Integer(scoreDetail.getScore()).toString()+"/"+currentQuizzPoints);
+      ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(Integer.toString(scoreDetail.getScore())+"/"+currentQuizzPoints);
       arrayCellText1.setCompareOn(new Integer(scoreDetail.getScore()));
     }
   }
@@ -193,7 +193,7 @@ if (quizzScc.getIsAllowedTopScores())
 }
 %>
 <!-- fin palmares -->  
-<!-- R�sultats du user -->
+<!-- User result -->
 <%
     out.println("<br>&nbsp;&nbsp;<span class=textePetitBold2>"+resources.getString("QuizzUserParticipations")+"<br></span>");
     ArrayPane arrayPane3 = gef.getArrayPane("QuizzResult2","palmares.jsp?quizz_id="+request.getParameter("quizz_id"),request,session);
@@ -208,12 +208,12 @@ if (quizzScc.getIsAllowedTopScores())
     while (j.hasNext()) {
       ScoreDetail scoreDetail = (ScoreDetail) j.next();
       ArrayLine arrayLine = arrayPane3.addArrayLine();
-      arrayLine.addArrayCellText(new Integer(scoreDetail.getPosition()).toString());
+      arrayLine.addArrayCellText(Integer.toString(scoreDetail.getPosition()));
       
       Date participationDate = DateUtil.parse(scoreDetail.getParticipationDate());
       arrayLine.addArrayCellLink(resources.getOutputDate(participationDate),"quizzQuestionsNew.jsp?QuizzId="+request.getParameter("quizz_id")+"&Action=ViewResult&Page=0"+"&UserId="+scoreDetail.getUserId()+"&ParticipationId="+new Integer(scoreDetail.getParticipationId()).toString());
       
-      ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(new Integer(scoreDetail.getScore()).toString()+"/"+currentQuizzPoints);
+      ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(Integer.toString(scoreDetail.getScore())+"/"+currentQuizzPoints);
       arrayCellText1.setCompareOn(new Integer(scoreDetail.getScore()));
     }
   }
@@ -264,7 +264,7 @@ else
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 
 

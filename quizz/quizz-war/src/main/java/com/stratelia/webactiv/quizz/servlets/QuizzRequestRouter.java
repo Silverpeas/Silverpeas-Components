@@ -24,6 +24,10 @@
 
 package com.stratelia.webactiv.quizz.servlets;
 
+import java.io.File;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -34,9 +38,6 @@ import com.stratelia.webactiv.quizz.control.QuizzSessionController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 
 public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionController> {
 
@@ -98,6 +99,9 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
         }
       } else if (function.startsWith("quizzCreator")) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
+          
+          quizzSC.createTemporaryQuizz(request);
+          
           destination = "quizzCreator.jsp";
         } else {
           profileError = true;
@@ -167,4 +171,5 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
 
     return destination;
   }
+
 }

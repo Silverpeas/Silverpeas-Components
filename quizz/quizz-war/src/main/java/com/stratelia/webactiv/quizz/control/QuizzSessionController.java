@@ -28,9 +28,12 @@
  */
 package com.stratelia.webactiv.quizz.control;
 
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
 import java.io.File;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -43,7 +46,15 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.xml.bind.JAXBException;
 
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -54,6 +65,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.quizz.QuizzException;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
@@ -80,6 +92,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   private ScoreBm scoreBm = null;
   private int nbTopScores = 0;
   private boolean isAllowedTopScores = false;
+  private List<PdcPosition> positions = null;
 
   /** Creates new sessionClientController */
   public QuizzSessionController(MainSessionController mainSessionCtrl,
@@ -223,17 +236,16 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    * @throws QizzException
    * @see
    */
-  public void createQuizz(QuestionContainerDetail quizzDetail)
-      throws QuizzException {
+  public void createQuizz(QuestionContainerDetail quizzDetail) throws QuizzException {
+    QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(),
-          getComponentId());
-      questionContainerBm.createQuestionContainer(qcPK, quizzDetail,
-          getUserId());
+      qcPK = questionContainerBm.createQuestionContainer(qcPK, quizzDetail, getUserId());
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.createQuizz",
           QuizzException.ERROR, "Quizz.EX_PROBLEM_TO_CREATE", e);
     }
+    // persist positions after quiz creation
+    classifyContent(quizzDetail, qcPK);
   }
 
   /**
@@ -243,12 +255,35 @@ public class QuizzSessionController extends AbstractComponentSessionController {
    */
   public void createQuizz(QuestionContainerDetail quizzDetail, String componentId)
       throws QuizzException {
+    QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
-      questionContainerBm.createQuestionContainer(qcPK, quizzDetail, getUserId());
+      qcPK = questionContainerBm.createQuestionContainer(qcPK, quizzDetail, getUserId());
     } catch (Exception e) {
       throw new QuizzException("QuizzSessionController.createQuizz", QuizzException.ERROR,
           "Quizz.EX_PROBLEM_TO_CREATE", e);
+    }
+    // persist positions after quiz creation
+    classifyContent(quizzDetail, qcPK);
+  }
+
+  /**
+   * this method classify content only when new quiz is created Check if a position has been defined
+   * in header form then persist it
+   * @param quizDetail the current quiz QuestionContainerDetail
+   * @param qcPK the QuestionContainerPK with content identifier
+   */
+  private void classifyContent(QuestionContainerDetail quizDetail, QuestionContainerPK qcPK) {
+    List<PdcPosition> positions = this.getPositions();
+    if (positions != null && !positions.isEmpty()) {
+      PdcClassification classification =
+             aPdcClassificationOfContent(qcPK.getId(), qcPK.getInstanceId()).withPositions(
+                 this.getPositions());
+      if (!classification.isEmpty()) {
+        PdcClassificationService service =
+               PdcServiceFactory.getFactory().getPdcClassificationService();
+        classification.ofContent(qcPK.getId());
+        service.classifyContent(quizDetail, classification);
+      }
     }
   }
 
@@ -710,7 +745,8 @@ public class QuizzSessionController extends AbstractComponentSessionController {
           if (quizz.getHeader().getInstanceId().equals(getComponentId())) {
             // in the same component
             String absolutePath = FileRepositoryManager.getAbsolutePath(componentId);
-            String dir = absolutePath + srvSettings.getString("imagesSubDirectory") + File.separator;
+            String dir =
+                absolutePath + srvSettings.getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(dir + physicalName, dir + newPhysicalName);
             SilverTrace.debug("Quizz", "QuizzSessionController.pasteQuizz()", "root.MSG_PAST",
                     " same component : from = " + dir + physicalName + " to = " + dir +
@@ -788,6 +824,80 @@ public class QuizzSessionController extends AbstractComponentSessionController {
     } catch (RemoveException e) {
       SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
     }
+  }
+
+  /**
+   * @param request
+   * @throws ParseException
+   */
+  public void createTemporaryQuizz(HttpServletRequest request)
+      throws ParseException {
+    String action = request.getParameter("Action");
+    if ("SendNewQuizz".equals(action)) {
+      String title = request.getParameter("title");
+      String description = request.getParameter("description");
+      String beginDate = request.getParameter("beginDate");
+      String endDate = request.getParameter("endDate");
+      String nbQuestions = request.getParameter("nbQuestions");
+      String notice = request.getParameter("notice");
+      String nbAnswersNeeded = request.getParameter("nbAnswersNeeded");
+      String nbAnswersMax = request.getParameter("nbAnswersMax");
+
+      if (StringUtil.isDefined(beginDate)) {
+        beginDate = DateUtil.date2SQLDate(beginDate, this.getLanguage());
+      }
+      if (StringUtil.isDefined(endDate)) {
+        endDate = DateUtil.date2SQLDate(endDate, this.getLanguage());
+      }
+
+      QuestionContainerHeader questionContainerHeader =
+          new QuestionContainerHeader(null, title, description, notice, null, null, beginDate,
+              endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax),
+              Integer.parseInt(nbAnswersNeeded), 0);
+      HttpSession session = request.getSession();
+      QuestionContainerDetail questionContainerDetail = new QuestionContainerDetail();
+      questionContainerDetail.setHeader(questionContainerHeader);
+      session.setAttribute("quizzUnderConstruction", questionContainerDetail);
+      // create the positions of the new quiz on the PdC
+      String positions = request.getParameter("Positions");
+      setQuizPositionsFromJSON(positions);
+    }
+  }
+
+  /**
+   * Set new survey positions (axis classification) from JSON string
+   * @param positions: the JSON string positions
+   */
+  public void setQuizPositionsFromJSON(String positions) {
+    if (StringUtil.isDefined(positions)) {
+      PdcClassificationEntity surveyClassification = null;
+      try {
+        surveyClassification = PdcClassificationEntity.fromJSON(positions);
+      } catch (JAXBException e) {
+        SilverTrace.error("Survey", "SurveySessionController.sendNewSurveyAction",
+            "PdcClassificationEntity error", "Problem to read JSON", e);
+      }
+      if (surveyClassification != null && !surveyClassification.isUndefined()) {
+        List<PdcPosition> pdcPositions = surveyClassification.getPdcPositions();
+        this.setPositions(pdcPositions);
+      }
+    } else {
+      this.setPositions(null);
+    }
+  }
+
+  /**
+   * @return the positions
+   */
+  public List<PdcPosition> getPositions() {
+    return positions;
+  }
+
+  /**
+   * @param positions the positions to set
+   */
+  public void setPositions(List<PdcPosition> positions) {
+    this.positions = positions;
   }
 
 }

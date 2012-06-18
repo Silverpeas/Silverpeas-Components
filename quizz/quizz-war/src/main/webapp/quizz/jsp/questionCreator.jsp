@@ -29,13 +29,16 @@
 <jsp:useBean id="questionsVector" scope="session" class="java.util.Vector" />
 
 <%@ include file="checkQuizz.jsp" %>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%!
   String displayQuestionContainerHeader(QuizzSessionController quizzScc, QuestionContainerDetail questionContainerDetail, ResourcesWrapper resources, JspWriter out, GraphicElementFactory gef)  throws QuizzException {
       Board board = gef.getBoard();
 	  String questionContainerHeaderHTML="";
 	  try{
 		  QuestionContainerHeader questionContainerHeader = questionContainerDetail.getHeader();
-		  String title = Encode.javaStringToHtmlString(questionContainerHeader.getTitle());
+		  String title = EncodeHelper.javaStringToHtmlString(questionContainerHeader.getTitle());
 		  String creationDate = resources.getOutputDate(new Date());
 		  String beginDate = "&nbsp;";
 		  if (questionContainerHeader.getBeginDate() != null)
@@ -52,8 +55,8 @@
 		  String nbAnswersNeeded = "&nbsp;";
 		  if (questionContainerHeader.getNbParticipationsBeforeSolution() != 0)
 			  nbAnswersNeeded = new Integer(questionContainerHeader.getNbParticipationsBeforeSolution()).toString();
-		  String description = Encode.javaStringToHtmlParagraphe(questionContainerHeader.getDescription());
-		  String notice = Encode.javaStringToHtmlParagraphe(questionContainerHeader.getComment());
+		  String description = EncodeHelper.javaStringToHtmlParagraphe(questionContainerHeader.getDescription());
+		  String notice = EncodeHelper.javaStringToHtmlParagraphe(questionContainerHeader.getComment());
 			questionContainerHeaderHTML+="<center>";
 			questionContainerHeaderHTML += board.printBefore();
 			questionContainerHeaderHTML+="<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"98%\">";
@@ -71,21 +74,19 @@
 		} catch (Exception e){
 			throw new QuizzException ("questionCreator_JSP.displayCredits",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_QUESTION_HEADER",e);
 		}
-
-        return questionContainerHeaderHTML;
+    return questionContainerHeaderHTML;
   }
 %>
 
 <%
 
-//R�cup�ration des param�tres
+//Retrieve parameter
 String nextAction = "";
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-int nbZone = 4; // nombre de zones � contr�ler
-List galleries = quizzScc.getGalleries();
-if (galleries != null)
-{
+int nbZone = 4; // number of field to control
+List<ComponentInstLight> galleries = quizzScc.getGalleries();
+if (galleries != null) {
 	nbZone = nbZone + 2;
 }
 
@@ -101,7 +102,7 @@ Button cancelButton = null;
 Button finishButton = null;
 ButtonPane buttonPane = null;
 
-List items = FileUploadUtil.parseRequest(request);
+List<FileItem> items = FileUploadUtil.parseRequest(request);
 boolean file = false;
 int nb = 0;
 int attachmentSuffix = 0;
@@ -114,17 +115,15 @@ String nbPointsMax = FileUploadUtil.getOldParameter(items, "nbPointsMax", "");
 String nbAnswers = FileUploadUtil.getOldParameter(items, "nbAnswers", "");
 String style = FileUploadUtil.getOldParameter(items, "questionStyle", "");
 QuestionForm form = new QuestionForm(file, attachmentSuffix);
-List answers = QuestionHelper.extractAnswer(items, form, quizzScc.getComponentId(), quizzSettings.getString("imagesSubDirectory"));
+List<Answer> answers = QuestionHelper.extractAnswer(items, form, quizzScc.getComponentId(), quizzSettings.getString("imagesSubDirectory"));
 file = form.isFile();
 attachmentSuffix = form.getAttachmentSuffix();
 %>
 
-<HTML>
-<HEAD>
-	<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<html>
+<head>
+	<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
+<view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -400,7 +399,7 @@ function confirmCancel()
 		document.getElementById('valueImageGallery'+currentAnswer).value = url;
 	}
 </script>
-</HEAD>
+</head>
 <%
 
 if (action.equals("FirstQuestion")) {
@@ -483,7 +482,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       Board board = gef.getBoard();
       %>
       <!--DEBUT CORPS -->
-      <form name="quizzForm" Action="questionCreator.jsp" method="POST" ENCTYPE="multipart/form-data">
+      <form name="quizzForm" action="questionCreator.jsp" method="post" enctype="multipart/form-data">
 
         <br>
 
@@ -554,15 +553,15 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
               } else {
                 out.println("<center>");
                 out.println(board.printBefore());
-			    out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"98%\">");
+                out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"98%\">");
                 out.println("<tr><td class=\"txtlibform\" valign=top>" + resources.getString("QuizzCreationQuestion") + questionNb + " :</td><td><textarea name=\"question\" cols=\"49\" wrap=\"VIRTUAL\" rows=\"3\">"+Encode.javaStringToHtmlString(question)+"</textarea>&nbsp;<img border=\"0\" src=\"" + mandatoryField + "\" width=\"5\" height=\"5\"></td></tr>");
-				out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("quizz.style")+" :</td><td>");
+                out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("quizz.style")+" :</td><td>");
                 out.println(" <select id=\"questionStyle\" name=\"questionStyle\" > ");
-    			out.println(" <option selected value=\"null\">"+resources.getString("quizz.style")+"</option> ");
-				out.println(" <option value=\"radio\">"+resources.getString("quizz.radio")+"</option> ");
-				out.println(" <option value=\"checkbox\">"+resources.getString("quizz.checkbox")+"</option> ");
-				out.println(" <option value=\"list\">"+resources.getString("quizz.list")+"</option> ");
-    			out.println("</select>");
+              	out.println(" <option selected value=\"null\">"+resources.getString("quizz.style")+"</option> ");
+                out.println(" <option value=\"radio\">"+resources.getString("quizz.radio")+"</option> ");
+                out.println(" <option value=\"checkbox\">"+resources.getString("quizz.checkbox")+"</option> ");
+                out.println(" <option value=\"list\">"+resources.getString("quizz.list")+"</option> ");
+              	out.println("</select>");
                 out.println("</td></tr>");
 
                 out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationNbAnswers")+" :</td><td><input type=\"text\" name=\"nbAnswers\" value=\""+nbAnswers+"\" size=\"5\" maxlength=\"3\">&nbsp;&nbsp;&nbsp;<img border=\"0\" src=\"" + mandatoryField + "\" width=\"5\" height=\"5\"></td></tr>");
@@ -572,7 +571,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
                 out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzPenalty") + " :</td><td><input type=\"text\" name=\"penalty\" value=\""+penalty+"\" size=\"5\" maxlength=\"3\">&nbsp;"+resources.getString("QuizzNbPoints")+"</td></tr>");
                 String inputName = "answer"+0;
                 out.println("<tr><td><input type=\"hidden\" name=\""+inputName+"\"</td></tr>");
-				out.println("<tr><td>(<img border=\"0\" src=\""+mandatoryField+"\" width=\"5\" height=\"5\">&nbsp;=&nbsp;"+resources.getString("GML.requiredField") + ")</td></tr>");
+                out.println("<tr><td>(<img border=\"0\" src=\""+mandatoryField+"\" width=\"5\" height=\"5\">&nbsp;=&nbsp;"+resources.getString("GML.requiredField") + ")</td></tr>");
                 out.println("</table>");
                 out.println(board.printAfter());
            }
@@ -581,27 +580,27 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       </form>
       <!-- FIN CORPS -->
 <%
-      out.println(frame.printMiddle());
-            out.println("<br><center>"+buttonPane.print());
-out.println(frame.printAfter());
-
-      out.println(window.printAfter());
-      out.println("</BODY></HTML>");
+    out.println(frame.printMiddle());
+    out.println("<br><center>"+buttonPane.print());
+    out.println(frame.printAfter());
+  
+    out.println(window.printAfter());
+    out.println("</body></html>");
  } //End if action = ViewQuestion
 if (action.equals("End")) {
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <script language="Javascript">
-    function goToQuizzPreview() {
-        document.questionForm.submit();
-    }
+function goToQuizzPreview() {
+  document.questionForm.submit();
+}
 </script>
-</HEAD>
-<BODY onLoad="goToQuizzPreview()">
-<Form name="questionForm" Action="quizzQuestionsNew.jsp" Method="POST">
+</head>
+<body onload="goToQuizzPreview()">
+<form name="questionForm" action="quizzQuestionsNew.jsp" method="post">
 <input type="hidden" name="Action" value="PreviewQuizz">
-</Form>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>
 <% } %>
