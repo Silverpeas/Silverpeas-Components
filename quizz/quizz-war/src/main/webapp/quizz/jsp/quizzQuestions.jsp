@@ -35,9 +35,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 
 <% out.println(gef.getLookStyleSheet()); %>
 <script language="JavaScript">
@@ -48,8 +48,8 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
 //-->
 </script>
 </head>
-<body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<SCRIPT language="JavaScript">
+<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<script language="javascript">
 <!--
 //  InitBulle("txtnote","000000","intfdcolor2",2,90);
 //-->
@@ -57,7 +57,7 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
   {
     return;
   }
-</SCRIPT>
+</script>
 <!--  -->
 
 <%
@@ -103,11 +103,11 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
       </p>
     <% } %>
   </blockquote>
-  <FORM>
+  <form>
   <table width="100%" border="0">
   <%  //Questions
-    Collection quizzQuestions = quizzDetail.getQuestions();
-    Iterator i = quizzQuestions.iterator();
+    Collection<Question> quizzQuestions = quizzDetail.getQuestions();
+    Iterator<Question> i = quizzQuestions.iterator();
     while (i.hasNext()) {
       Question quizzQuestion = (Question) i.next(); %>
       <tr><td class="intfdcolor4" nowrap width="41%"><span class="txtlibform">&nbsp;<img src="icons/1pxRouge.gif" width=5 height=5>&nbsp;<%=quizzQuestion.getLabel()%>&nbsp;</td>
@@ -119,8 +119,8 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
           </td>
       </tr> <%
       //Answers
-      Collection questionAnswers = quizzQuestion.getAnswers();
-      Iterator j = questionAnswers.iterator();
+      Collection<Answer> questionAnswers = quizzQuestion.getAnswers();
+      Iterator<Answer> j = questionAnswers.iterator();
       while (j.hasNext()) {
         Answer questionAnswer = (Answer) j.next(); %>
         <tr><td colspan="3"><table><tr>
@@ -156,8 +156,8 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
       out.println(frame.printAfter());
       out.println(window.printAfter());
       %>
-</FORM>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>
 
 

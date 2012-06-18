@@ -34,8 +34,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkQuizz.jsp" %>
 
 <%!
-    String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzException
-    {
+String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzException {
 	String Html_display = null;
 	try {
 		if (nb_user_votes >= nb_max_user_votes)
@@ -52,7 +51,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	}catch( Exception e){
 		throw new QuizzException ("palmares_JSP.displayCredits",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_PALMARES",e);
 	}
-
 	return Html_display;
 }
 %>
@@ -109,27 +107,29 @@ out.println(gef.getLookStyleSheet());
   arrayPane.addArrayColumn(resources.getString("QuizzCredits"));
   arrayPane.addArrayColumn(resources.getString("QuizzCreationDate"));
 
-  Collection quizzList = quizzScc.getUserQuizzList();
-  Iterator i = quizzList.iterator();
+  Collection<QuestionContainerHeader> quizzList = quizzScc.getUserQuizzList();
+  Iterator<QuestionContainerHeader> i = quizzList.iterator();
   while (i.hasNext()) {
     QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i.next();
     int nb_max_participations = quizzHeader.getNbMaxParticipations();
-    Collection scoreDetails = quizzHeader.getScores(); 
+    Collection<ScoreDetail> scoreDetails = quizzHeader.getScores(); 
     int nb_user_votes = 0;
-    if (scoreDetails != null)
+    if (scoreDetails != null) {
       nb_user_votes = scoreDetails.size();
+    }
     ArrayLine arrayLine = arrayPane.addArrayLine();
     arrayLine.addArrayCellLink("<img src=\"icons/palmares_30x15.gif\" border=0>","palmares.jsp?quizz_id="+quizzHeader.getPK().getId());
     ArrayCellText arrayCellText2 = null;
-    if (nb_user_votes >= nb_max_participations)
+    if (nb_user_votes >= nb_max_participations) {
       arrayCellText2 = arrayLine.addArrayCellText(quizzHeader.getTitle());
-    else
-      arrayCellText2 = arrayLine.addArrayCellText("<A HREF=quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&ParticipationId="+nb_user_votes+"&Action=ViewCurrentQuestions>"+quizzHeader.getTitle()+"</A>");
+    } else {
+      arrayCellText2 = arrayLine.addArrayCellText("<a href=quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&ParticipationId="+nb_user_votes+"&Action=ViewCurrentQuestions>"+quizzHeader.getTitle()+"</a>");
+    }
     arrayCellText2.setCompareOn((String) (quizzHeader.getTitle()).toLowerCase());
     ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(quizzHeader.getDescription()));
     ArrayCellText arrayCellText4 = arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
     
-	Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
+    Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
     ArrayCellText arrayCellText5 = arrayLine.addArrayCellText(resources.getOutputDate(creationDate));
     arrayCellText5.setCompareOn(creationDate);
     
@@ -162,10 +162,10 @@ if (quizzScc.getIsAllowedTopScores())
     arrayPane2.addArrayColumn(resources.getString("ScoreDate"));
     arrayPane2.addArrayColumn(resources.getString("ScoreLib"));
 
-  Collection scoreList = quizzScc.getUserPalmares(request.getParameter("quizz_id"));
+  Collection<ScoreDetail> scoreList = quizzScc.getUserPalmares(request.getParameter("quizz_id"));
   if (scoreList != null)
   {
-    Iterator j = scoreList.iterator();
+    Iterator<ScoreDetail> j = scoreList.iterator();
     while (j.hasNext()) {
       ScoreDetail scoreDetail = (ScoreDetail) j.next();
       UserDetail userDetail=quizzScc.getUserDetail(scoreDetail.getUserId());
@@ -201,10 +201,10 @@ if (quizzScc.getIsAllowedTopScores())
     arrayPane3.addArrayColumn(resources.getString("ScoreDate"));
     arrayPane3.addArrayColumn(resources.getString("ScoreLib"));
 
-  Collection userScoreList = quizzScc.getUserScoresByFatherId(request.getParameter("quizz_id"));
+  Collection<ScoreDetail> userScoreList = quizzScc.getUserScoresByFatherId(request.getParameter("quizz_id"));
   if (userScoreList != null)
   {
-    Iterator j = userScoreList.iterator();
+    Iterator<ScoreDetail> j = userScoreList.iterator();
     while (j.hasNext()) {
       ScoreDetail scoreDetail = (ScoreDetail) j.next();
       ArrayLine arrayLine = arrayPane3.addArrayLine();
@@ -219,7 +219,7 @@ if (quizzScc.getIsAllowedTopScores())
   }
   out.println(arrayPane3.print());
 %>
-<!-- fin r�sultats user -->  
+<!-- End user result-->  
 <!-- moyenne -->
 <div align="right">
   <table width="100%" border="0" cellspacing="0" cellpadding="5">
@@ -240,10 +240,11 @@ if (quizzScc.getIsAllowedTopScores())
 <%
 float average=quizzScc.getAveragePoints(request.getParameter("quizz_id"));
 int averageInt=Math.round(average);
-if (averageInt==average)
+if (averageInt==average) {
   out.println(averageInt);
-else
+} else {
   out.println(average);
+}
 %>           
               <br>
               <img src="icons/1pxBlanc.gif" width="30" height="1"><br>

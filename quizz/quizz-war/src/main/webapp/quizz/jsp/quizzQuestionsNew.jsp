@@ -82,11 +82,11 @@ String displayQuizzHeader(QuizzSessionController quizzScc, QuestionContainerHead
 String displayQuizz(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context, QuizzSessionController quizzScc, ResourcesWrapper resources, ResourceLocator settings, JspWriter out) throws QuizzException {
   String r = "";
   Question question = null;
-  Collection answers = null;
+  Collection<Answer> answers = null;
 	try{
 		if (quizz != null) {
 			QuestionContainerHeader quizzHeader = quizz.getHeader();
-			Collection questions = quizz.getQuestions();
+			Collection<Question> questions = quizz.getQuestions();
 			//Display the quizz header
 			r += displayQuizzHeader(quizzScc, quizzHeader, resources, gef);
 
@@ -96,7 +96,7 @@ String displayQuizz(QuestionContainerDetail quizz, GraphicElementFactory gef, St
 			r += "<input type=\"hidden\" name=\"NbQuestions\" value=\""+questions.size()+"\">";
 			r += "<input type=\"hidden\" name=\"QuizzId\" value=\""+quizzHeader.getPK().getId()+"\">";
 
-			Iterator itQ = questions.iterator();
+			Iterator<Question> itQ = questions.iterator();
 			int i = 1;
 			while (itQ.hasNext()) {
 				  question = (Question) itQ.next();
@@ -125,13 +125,13 @@ Vector displayQuestions(QuestionContainerDetail quizz, int roundId,GraphicElemen
 			int nbQuestionsPerPage = quizzHeader.getNbQuestionsPerPage();
 			int end = nbQuestionsPerPage * roundId;
 			int begin = end - nbQuestionsPerPage;
-			Collection questions = quizz.getQuestions();
+			Collection<Question> questions = quizz.getQuestions();
 			int nbQuestions = 0;
-			if (end <= questions.size())
+			if (end <= questions.size()) {
 				nbQuestions = nbQuestionsPerPage;
-			else
+			} else {
 				nbQuestions = questions.size() % nbQuestionsPerPage;
-
+      }
 			r += displayQuizzHeader(quizzScc, quizzHeader, resources, gef);
 
 			//Display the questions
@@ -140,7 +140,7 @@ Vector displayQuestions(QuestionContainerDetail quizz, int roundId,GraphicElemen
 			r += "<input type=\"hidden\" name=\"RoundId\">";
 			r += "<input type=\"hidden\" name=\"NbQuestions\" value=\""+nbQuestions+"\">";
 			r += "<input type=\"hidden\" name=\"QuizzId\" value=\""+quizzHeader.getPK().getId()+"\">";
-			Iterator itQ = questions.iterator();
+			Iterator<Question> itQ = questions.iterator();
 			int i = 1;
 			int j = 1;
 			while (itQ.hasNext()) {
@@ -186,14 +186,14 @@ Vector displayQuestions(QuestionContainerDetail quizz, int roundId,GraphicElemen
 }
 
 String displayQuestion(QuizzSessionController quizzScc, Question question, int i, String m_context, ResourceLocator settings, GraphicElementFactory gef, ResourcesWrapper resources) {
-  Collection answers = question.getAnswers();
+  Collection<Answer> answers = question.getAnswers();
   Board board = gef.getBoard();
   String r = "";
   r += "<br>";
   r += board.printBefore();
   r += "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\">";
   r += "<tr><td nowrap class=\"intfdcolor4\">";
-  r += "<span class=txtlibform>&nbsp;<b>&#149;</b>&nbsp;"+Encode.javaStringToHtmlString(question.getLabel())+"&nbsp;</span>";
+  r += "<span class=txtlibform>&nbsp;<b>&#149;</b>&nbsp;"+EncodeHelper.javaStringToHtmlString(question.getLabel())+"&nbsp;</span>";
   r += " - "+question.getNbPointsMax()+" pts</td>";
   r += "<td nowrap class=\"intfdcolor4\" align=\"right\">";
   r += "<input type=\"hidden\" name=\"cluePenalty_"+i+"\" value=\"0\">";
@@ -212,7 +212,7 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
   r += "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\" >";
 
   if (question.isOpen()) {
-        Iterator itA = answers.iterator();
+        Iterator<Answer> itA = answers.iterator();
         while (itA.hasNext()) {
             Answer answer = (Answer) itA.next();
             String inputValue = answer.getPK().getId()+","+question.getPK().getId();
@@ -230,12 +230,12 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 
           r += "<tr><td><select id=\"answer_"+i+"\" name=\"answer_"+i+"\" >";
 
-          Iterator itA = answers.iterator();
+          Iterator<Answer> itA = answers.iterator();
         while (itA.hasNext())
         {
         	Answer answer = (Answer) itA.next();
         	String inputValue = answer.getPK().getId()+","+question.getPK().getId();
-              r += "<option value=\""+inputValue+"\" "+selectedStr+">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
+              r += "<option value=\""+inputValue+"\" "+selectedStr+">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>";
         }
         r += "</td></tr>";
   	}
@@ -244,7 +244,7 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
         String inputType = "radio";
         if (style.equals("checkbox"))
         	inputType = "checkbox";
-          Iterator itA = answers.iterator();
+          Iterator<Answer> itA = answers.iterator();
           int isOpened = 0;
           while (itA.hasNext())
           {
@@ -281,13 +281,13 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
                   isOpened = 1;
                   r += "<td align=\"left\" class=\"intfdcolor4\" width=\"1%\">";
                   r += "<input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\""+inputValue+"\"></td>";
-                  r += "<td align=\"left\" class=\"intfdcolor4\">"+Encode.javaStringToHtmlString(answer.getLabel())+"";
+                  r += "<td align=\"left\" class=\"intfdcolor4\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"";
                   r += "<input type=\"text\" size=\"20\" name=\"openedAnswer_"+i+"\"></td></tr>";
                   r += "<tr><td colspan=2><br></td></tr></table></td></tr>";
               } else {
                   r += "<td align=\"left\" class=\"intfdcolor4\" width=\"1%\">";
                   r += "<input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\""+inputValue+"\"></td>";
-                  r += "<td class=\"intfdcolor4\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</td>";
+                  r += "<td class=\"intfdcolor4\" width=\"100%\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td>";
               }
               r += "</tr></table></td></tr>";
           }
@@ -301,28 +301,29 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 
 Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, int i, String m_context, ResourceLocator settings, QuizzSessionController quizzScc, boolean solutionAllowed, ResourcesWrapper resources) {
 
-  Collection answers = question.getAnswers();
-  Collection questionResults = question.getQuestionResults();
+  Collection<Answer> answers = question.getAnswers();
+  Collection<QuestionResult> questionResults = question.getQuestionResults();
   Vector displayQuestionResult = new Vector();
   String r = "";
   // User answers
   int questionUserScore = 0;
-  Iterator itB = questionResults.iterator();
+  Iterator<QuestionResult> itB = questionResults.iterator();
   Vector qrUser = new Vector();
   try {
 		while (itB.hasNext()) {
 			QuestionResult questionResult = (QuestionResult) itB.next();
 			questionUserScore += questionResult.getNbPoints();
-			if (question.isOpen())
+			if (question.isOpen()) {
 				qrUser.add(questionResult.getOpenedAnswer());
-			else {
+			} else {
 				qrUser.add(questionResult.getAnswerPK().getId());
 			}
 		}
-		if (question.getNbPointsMax() < questionUserScore)
+		if (question.getNbPointsMax() < questionUserScore) {
 			questionUserScore = question.getNbPointsMax();
-		else if (question.getNbPointsMin() > questionUserScore)
+		} else if (question.getNbPointsMin() > questionUserScore) {
 			questionUserScore = question.getNbPointsMin();
+		}
 		r = "<br><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">";
 		r += "<tr><td class=\"intfdcolor4\" nowrap width=\"41%\"><span class=txtlibform>&nbsp;<b>&#149</b>&nbsp;"+Encode.javaStringToHtmlString(question.getLabel())+"&nbsp;</span></td>";
 		r += "<td class=\"quizzscore\" width=25% align=\"center\">"+resources.getString("ScoreLib")+" : "+questionUserScore+"/"+question.getNbPointsMax()+" pts</td>";
@@ -330,7 +331,7 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 		r += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		r += "</td></tr>";
 		if (question.isOpen()) {
-			Iterator itA = answers.iterator();
+			Iterator<Answer> itA = answers.iterator();
 			while (itA.hasNext()) {
 				Answer answer = (Answer) itA.next();
 				String inputValue = answer.getPK().getId()+","+question.getPK().getId();
@@ -352,7 +353,7 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 			//if (question.isQCM())
 			if (style.equals("checkbox"))
                   inputType = "checkbox";
-			Iterator itA = answers.iterator();
+			Iterator<Answer> itA = answers.iterator();
 			int isOpened = 0;
 			while (itA.hasNext()) {
 				Answer answer = (Answer) itA.next();
@@ -384,9 +385,9 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 					isOpened = 1;
 					r += "<td width=\"40px\" align=\"center\"><input disabled type=\""+inputType+"\" name=\"answer_"+i+"\" value=\""+inputValue+"\"></td><td align=\"left\">";
 					if (answer.isSolution() && solutionAllowed)
-						r += "<b class=textePetitBoldVert>"+Encode.javaStringToHtmlString(answer.getLabel())+"</b>";
+						r += "<b class=textePetitBoldVert>"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</b>";
 					else
-						r += Encode.javaStringToHtmlString(answer.getLabel());
+						r += EncodeHelper.javaStringToHtmlString(answer.getLabel());
 					r += "<BR><input disabled type=\"text\" size=\"20\" name=\"openedAnswer_"+i+"\"></td></tr>";
 				} else {
 					inputStatus = "";
@@ -399,14 +400,14 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 					}
 					r += "<td width=\"40px\" align=\"center\"><input disabled type=\""+inputType+"\" name=\"answer_"+i+"\" value=\""+inputValue+"\" "+inputStatus+"></td><td align=\"left\">";
 					if (answer.isSolution() && solutionAllowed)
-						r += "<b class=textePetitBoldVert>"+Encode.javaStringToHtmlString(answer.getLabel())+"</b><BR>";
+						r += "<b class=textePetitBoldVert>"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</b><BR>";
 					else
-						r += Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
+						r += EncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
 					r += "</td>";
 					if (solutionAllowed){
    						r += "</tr><tr>";
 						r += "<td align=\"left\" colspan=2>";
-						r += "<b>"+Encode.javaStringToHtmlParagraphe(answer.getComment())+"</b></td>";
+						r += "<b>"+EncodeHelper.javaStringToHtmlParagraphe(answer.getComment())+"</b></td>";
 					}
 				}
 				r += "</tr></table></td></tr>";
@@ -417,8 +418,8 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 		SilverTrace.info("Quizz","quizzQuestionsNew_JSP.displayQuestionResult","Quizz.EX_BAD_NUMBER_FORMAT");
 	}
 	displayQuestionResult.add(r);
-	displayQuestionResult.add((new Integer(questionUserScore)).toString());
-	displayQuestionResult.add((new Integer(question.getNbPointsMax())).toString());
+	displayQuestionResult.add(Integer.toString(questionUserScore));
+	displayQuestionResult.add(Integer.toString(question.getNbPointsMax()));
 
 	return displayQuestionResult;
 }
@@ -451,11 +452,10 @@ String displayQuizzHeaderPreview(QuizzSessionController quizzScc, QuestionContai
 String displayQuizzPreview(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, ResourcesWrapper resources, ResourceLocator settings) throws QuizzException {
   String r = "";
   Question question = null;
-  Collection answers = null;
   try{
 		if (quizz != null) {
 			QuestionContainerHeader quizzHeader = quizz.getHeader();
-			Collection questions = quizz.getQuestions();
+			Collection<Question> questions = quizz.getQuestions();
 
 			//Display the quizz header
 			r += displayQuizzHeaderPreview(quizzScc, quizzHeader,resources, gef);
@@ -463,7 +463,7 @@ String displayQuizzPreview(QuestionContainerDetail quizz, GraphicElementFactory 
 			//Display the questions
 			r += "<form name=\"quizz\" Action=\"quizzQuestionsNew.jsp\" Method=\"Post\">";
 			r += "<input type=\"hidden\" name=\"Action\" value=\"SubmitQuizz\">";
-			Iterator itQ = questions.iterator();
+			Iterator<Question> itQ = questions.iterator();
 			int i = 1;
 			while (itQ.hasNext()) {
 				  question = (Question) itQ.next();
@@ -484,7 +484,7 @@ String displayQuizzPreview(QuestionContainerDetail quizz, GraphicElementFactory 
 
 
 String displayQuestionPreview(Question question, int i, String m_context, QuizzSessionController quizzScc,ResourceLocator settings, GraphicElementFactory gef, ResourcesWrapper resources) {
-        Collection answers = question.getAnswers();
+        Collection<Answer> answers = question.getAnswers();
         Board board = gef.getBoard();
         String r = "<br>";
         r += board.printBefore();
@@ -509,11 +509,11 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
         	r += "<tr><td colspan=\"2\">";
             r += "<select id=\"answers\" name=\"answers\" >";
 
-        	Iterator itA = answers.iterator();
+        	Iterator<Answer> itA = answers.iterator();
         	while (itA.hasNext())
 	        {
 	            Answer answer = (Answer) itA.next();
-	           	r += "<option name=\"answer_"+i+"\" value=\"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
+	           	r += "<option name=\"answer_"+i+"\" value=\"\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>";
 	        }
 
          	r += "</td></tr>";
@@ -523,7 +523,7 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 	        String inputType = "radio";
 	        if (style.equals("checkbox"))
 	        	inputType = "checkbox";
-	        Iterator itA = answers.iterator();
+	        Iterator<Answer> itA = answers.iterator();
 	        while (itA.hasNext())
 	        {
 	            Answer answer = (Answer) itA.next();
@@ -581,7 +581,7 @@ String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory g
 				if (nb_user_votes >= quizzHeader.getNbParticipationsBeforeSolution())
 				  solutionAllowed = true;
 
-				Collection questions = quizz.getQuestions();
+				Collection<Question> questions = quizz.getQuestions();
 				//Display the quizz header
 				String quizzId = quizzHeader.getPK().getId();
 				String title = quizzHeader.getTitle();
@@ -590,7 +590,7 @@ String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory g
 				r += "<form name=\"quizz\" Action=\"quizzQuestionsNew.jsp\" Method=\"Post\">";
 				r += "<input type=\"hidden\" name=\"Action\">";
 				r += "<input type=\"hidden\" name=\"QuizzId\" value=\""+quizzHeader.getPK().getId()+"\">";
-				Iterator itQ = questions.iterator();
+				Iterator<Question> itQ = questions.iterator();
 				int i = 1;
 				while (itQ.hasNext()) {
 					  question = (Question) itQ.next();
@@ -613,14 +613,15 @@ String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory g
 				String winRateImg3 = settings.getString("winRateImg3");
 				String winRateImg4 = settings.getString("winRateImg4");
 
-				if (winRate<=new Integer(winRate1).intValue())
-				winRateImg=winRateImg1;
-				else if (winRate<=new Integer(winRate2).intValue())
-				winRateImg=winRateImg2;
-				else if (winRate<=new Integer(winRate3).intValue())
-				winRateImg=winRateImg3;
-				else if (winRate<=new Integer(winRate4).intValue())
-				winRateImg=winRateImg4;
+				if (winRate<=new Integer(winRate1).intValue()) {
+				  winRateImg=winRateImg1;
+				} else if (winRate<=new Integer(winRate2).intValue()) {
+				  winRateImg=winRateImg2;
+			  } else if (winRate<=new Integer(winRate3).intValue()) {
+			    winRateImg=winRateImg3;
+        } else if (winRate<=new Integer(winRate4).intValue()) {
+          winRateImg=winRateImg4;
+        }
 
 				r += "<table width=100% border=0 cellspacing=0 cellpadding=5><tr><td width=50% align=right valign=top class=\"txtnav\">"+resources.getString("TotalScoreLib")+" :</td>";
 				r += "<td width=\"50%\"><table border=0 cellspacing=0 cellpadding=0><tr>";
@@ -651,13 +652,13 @@ String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory g
 				QuestionContainerHeader quizzHeader = quizz.getHeader();
 				r += displayQuizzHeader(quizzScc,quizzHeader,resources, gef);
 				boolean solutionAllowed = true;
-				Collection questions = quizz.getQuestions();
+				Collection<Question> questions = quizz.getQuestions();
 				String quizzId = quizzHeader.getPK().getId();
 				String title = quizzHeader.getTitle();
 				r += "<form name=\"quizz\">";
 				r += "<input type=\"hidden\" name=\"Action\">";
 				r += "<input type=\"hidden\" name=\"QuizzId\" value=\""+quizzHeader.getPK().getId()+"\">";
-				Iterator itQ = questions.iterator();
+				Iterator<Question> itQ = questions.iterator();
 				int i = 1;
 				while (itQ.hasNext()) {
 					  question = (Question) itQ.next();
@@ -1022,12 +1023,12 @@ else if (action.equals("ViewResult")) {
         out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
         String participation=(String) session.getAttribute("currentParticipationId");
         int nb_user_votes = 0;
-        Collection userScores = quizzScc.getUserScoresByFatherId(quizzId);
+        Collection<ScoreDetail> userScores = quizzScc.getUserScoresByFatherId(quizzId);
         if (userScores != null)
         nb_user_votes = userScores.size();
 
         if ((participation!=null)&&(!participation.equals("")))
-          participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();
+          participationId = Integer.parseInt((String) session.getAttribute("currentParticipationId"));
 	else
 	  participationId=nb_user_votes;
 
@@ -1066,17 +1067,18 @@ else if (action.equals("ViewResult")) {
         {
 		quizzPart += "<center><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\" class=\"intfdcolor4\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
         quizzPart += resources.getString("EducationSuggestion") + " :</span><br>";
-        quizzPart += Encode.javaStringToHtmlString(userScoreDetail.getSuggestion())+"</td></tr></table></td></tr></table>";
+        quizzPart += EncodeHelper.javaStringToHtmlString(userScoreDetail.getSuggestion())+"</td></tr></table></td></tr></table>";
         }
 
         out.println(quizzPart);
         out.println(frame.printMiddle());
 
         Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.back"), "Main.jsp", false);
-        if (origin.equals("1"))
+        if (origin.equals("1")) {
           cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "quizzResultUser.jsp", false);
-        else if (origin.equals("0"))
+        } else if (origin.equals("0")) {
           cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "palmares.jsp?quizz_id="+quizzId, false);
+        }
         out.println("<table width=100% border=\"0\">");
         out.println("<tr><td align=\"center\">"+cancelButton.print()+"</td></tr>");
         out.println("</table>");
@@ -1096,7 +1098,7 @@ else if (action.equals("ViewResultAdmin")) {
              quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
         }
         int nb_user_votes = 0;
-        Collection userScores = quizzScc.getUserScoresByFatherId(quizzId);
+        Collection<ScoreDetail> userScores = quizzScc.getUserScoresByFatherId(quizzId);
         if (userScores != null)
           nb_user_votes = userScores.size();
 
@@ -1126,8 +1128,9 @@ else if (action.equals("ViewResultAdmin")) {
         quizzPart += "<center><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\" class=\"intfdcolor4\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
         quizzPart += resources.getString("EducationSuggestion") + " :</span><br>";
         quizzPart += "<textarea name=\"txa_suggestion\" cols=\"120\" rows=\"4\">";
-        if (userScoreDetail.getSuggestion()!=null)
+        if (userScoreDetail.getSuggestion()!=null) {
           quizzPart += userScoreDetail.getSuggestion();
+        }
         quizzPart += "</textarea>";
         quizzPart += "</td></tr></table></td></tr></table>";
         quizzPart += "<input type=\"hidden\" name=\"UserId\" value=\""+userId+"\">";
@@ -1136,10 +1139,11 @@ else if (action.equals("ViewResultAdmin")) {
         out.println(quizzPart);
         out.println(frame.printMiddle());
         Button cancelButton=(Button) gef.getFormButton(resources.getString("GML.back"), "quizzAdmin.jsp", false);
-        if (origin.equals("1"))
+        if (origin.equals("1")) {
           cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "quizzResultAdmin.jsp", false);
-        else if (origin.equals("0"))
+        } else if (origin.equals("0")) {
           cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "palmaresAdmin.jsp?quizz_id="+quizzId, false);
+        }
         Button voteButton = (Button) gef.getFormButton(resources.getString("QuestionUpdate"), "javascript:update_suggestion("+quizz.getHeader().getPK().getId()+")", false);
         out.println("<table width=100% border=\"0\">");
         out.println("<tr><td align=\"center\"><table><tr><td align=center>"+voteButton.print()+"</td><td align=center>"+cancelButton.print()+"</td></tr></table></td></tr>");
