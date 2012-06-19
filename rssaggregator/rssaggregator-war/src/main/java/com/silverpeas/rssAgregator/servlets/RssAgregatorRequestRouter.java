@@ -24,6 +24,7 @@
 
 package com.silverpeas.rssAgregator.servlets;
 
+import com.silverpeas.rssAgregator.control.RSSServiceFactory;
 import com.silverpeas.rssAgregator.control.RssAgregatorSessionController;
 import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.util.StringUtil;
@@ -35,7 +36,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-public class RssAgregatorRequestRouter extends ComponentRequestRouter<RssAgregatorSessionController> {
+public class RssAgregatorRequestRouter extends
+    ComponentRequestRouter<RssAgregatorSessionController> {
 
   private static final long serialVersionUID = -4056285757621649567L;
 
@@ -48,7 +50,8 @@ public class RssAgregatorRequestRouter extends ComponentRequestRouter<RssAgregat
     return new RssAgregatorSessionController(mainSessionCtrl, componentContext);
   }
 
-  public String getDestination(String function, RssAgregatorSessionController rssSC, HttpServletRequest request) {
+  public String getDestination(String function, RssAgregatorSessionController rssSC,
+      HttpServletRequest request) {
     String destination = "";
     SilverTrace.info("rssAgregator", "rssAgregatorRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + rssSC.getUserId() + " Function=" + function);
@@ -67,6 +70,14 @@ public class RssAgregatorRequestRouter extends ComponentRequestRouter<RssAgregat
 
         if (channels.size() != 0) {
           request.setAttribute("Channels", channels);
+          Boolean aggregateRSS = rssSC.getSettings().getBoolean("rss.flow.aggregate", false);
+          request.setAttribute("aggregate", aggregateRSS);
+          if (aggregateRSS) {
+            request.setAttribute("allChannels", RSSServiceFactory.getRSSService().getAllChannels(
+                rssSC.getComponentId()));
+            request.setAttribute("items", RSSServiceFactory.getRSSService().getApplicationItems(
+                rssSC.getComponentId(), true));
+          }
           destination = "/rssAgregator/jsp/welcome.jsp";
         } else {
           request.setAttribute("Content", rssSC.getRSSIntroductionContent());

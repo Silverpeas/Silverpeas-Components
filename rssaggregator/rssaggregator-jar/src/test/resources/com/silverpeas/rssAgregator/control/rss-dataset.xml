@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : rss-dataset.xml
+    Created on : 04 juin 2012
+    Author     : ebonnet
+    Description:
+        Purpose of the document follows.
+-->
+
+<dataset>
+  <sc_rss_channels id="10" url="http://www.monde-diplomatique.fr/recents.xml" refreshrate="10" displayimage="1"
+  nbdisplayeditems="10" creatorid="0" creationdate="2012/05/25" instanceId="rssAgregator50" />
+  <sc_rss_channels id="11" url="http://fluxrss.fr/actualite/redirect?code=t8fTUBgjIU" refreshrate="10" displayimage="1"
+  nbdisplayeditems="10" creatorid="0" creationdate="2012/05/26" instanceId="rssAgregator50" />
+</dataset>

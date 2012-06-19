@@ -21,30 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.rssAgregator.control;
 
 import java.util.List;
 
+import com.silverpeas.rssAgregator.model.RSSItem;
 import com.silverpeas.rssAgregator.model.RssAgregatorException;
 import com.silverpeas.rssAgregator.model.SPChannel;
-import com.silverpeas.rssAgregator.model.SPChannelPK;
 
-/**
- * @author neysseri
- */
-public interface RssAgregatorBm {
+public interface RSSService {
 
-  public SPChannel addChannel(SPChannel channel) throws RssAgregatorException;
-
-  public void updateChannel(SPChannel channel) throws RssAgregatorException;
-
-  public void deleteChannel(SPChannelPK channelPK) throws RssAgregatorException;
-
-  public void deleteChannels(String instanceId) throws RssAgregatorException;
-
-  public List<SPChannel> getChannels(String instanceId) throws RssAgregatorException;
-
-  public SPChannel getChannel(SPChannelPK channelPK) throws RssAgregatorException;
+  /**
+   * 
+   * @param applicationId the application identifier
+   * @param agregateContent true if sorting all items from date, false else if sorting by channel
+   * @return list of RSSItems which are retrieved from application RSS channels
+   * @throws RssAgregatorException
+   */
+  public List<RSSItem> getApplicationItems(String applicationId, boolean agregateContent)  throws RssAgregatorException;
+  
+  /**
+   * Retrieve all the channel of an application
+   * @param applicationId the current application identifier (instance of rssagregator application)
+   * @return the list of SPChannel
+   * @throws RssAgregatorException
+   */
+  public List<SPChannel> getAllChannels(String applicationId) throws RssAgregatorException;
 
 }

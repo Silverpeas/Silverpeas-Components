@@ -78,6 +78,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 
 <%@ page import="com.silverpeas.rssAgregator.model.SPChannel"%>
+<%@ page import="com.silverpeas.rssAgregator.model.RSSItem"%>
 <%@ page import="de.nava.informa.utils.ItemComparator"%>
 <%@ page import="de.nava.informa.impl.basic.Channel"%>
 <%@ page import="de.nava.informa.impl.basic.Item"%>
