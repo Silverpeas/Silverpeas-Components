@@ -29,7 +29,7 @@ import javax.inject.Named;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.ReservedResourcePk;
 import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

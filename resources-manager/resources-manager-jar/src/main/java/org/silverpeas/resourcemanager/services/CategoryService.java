@@ -25,7 +25,7 @@ package org.silverpeas.resourcemanager.services;
 
 import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.repository.CategoryRepository;
-import org.springframework.stereotype.Service;
+import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
