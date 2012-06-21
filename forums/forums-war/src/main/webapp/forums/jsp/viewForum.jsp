@@ -42,7 +42,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <%@ page import="java.io.IOException"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>

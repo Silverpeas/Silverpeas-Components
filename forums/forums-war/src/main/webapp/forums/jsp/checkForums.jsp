@@ -52,7 +52,8 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
-<%!  public static String IMAGE_UPDATE = "../../util/icons/update.gif";
+<%!  
+  public static String IMAGE_UPDATE = "../../util/icons/update.gif";
   public static String IMAGE_UNLOCK = "../../util/icons/lock.gif";
   public static String IMAGE_LOCK = "../../util/icons/unlock.gif";
   public static String IMAGE_DELETE = "../../util/icons/delete.gif";

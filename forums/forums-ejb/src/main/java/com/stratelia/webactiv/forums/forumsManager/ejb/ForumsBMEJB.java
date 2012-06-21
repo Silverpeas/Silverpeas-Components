@@ -197,7 +197,7 @@ public class ForumsBMEJB implements SessionBean {
    * @param forumPK
    * @return
    */
-  public ArrayList<Forum> getForums(ForumPK forumPK) {
+  public List<Forum> getForums(ForumPK forumPK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getForumsList(con, forumPK);
@@ -210,7 +210,7 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  public ArrayList<Forum> getForumsByCategory(ForumPK forumPK, String categoryId) {
+  public List<Forum> getForumsByCategory(ForumPK forumPK, String categoryId) {
     Connection con = openConnection();
     SilverTrace.debug("forums", "ForumsBMEJB.getForumsByCategory()", "",
         "categoryId = " + categoryId);
@@ -229,7 +229,7 @@ public class ForumsBMEJB implements SessionBean {
    * @param forumPK
    * @return
    */
-  public ArrayList<String> getForumSonsIds(ForumPK forumPK) {
+  public List<String> getForumSonsIds(ForumPK forumPK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getForumSonsIds(con, forumPK);
@@ -250,7 +250,7 @@ public class ForumsBMEJB implements SessionBean {
    * @since 29 Septembre 2000
    */
   public void lockForum(ForumPK forumPK, int level) {
-    ArrayList<String> sonsIds = getForumSonsIds(forumPK);
+    List<String> sonsIds = getForumSonsIds(forumPK);
     for (String sonsId : sonsIds) {
       lockForum(new ForumPK(forumPK.getComponentName(), sonsId), level);
     }
@@ -274,7 +274,7 @@ public class ForumsBMEJB implements SessionBean {
    * @since 29 Septembre 2000
    */
   public int unlockForum(ForumPK forumPK, int level) {
-    ArrayList<String> sonsIds = getForumSonsIds(forumPK);
+    List<String> sonsIds = getForumSonsIds(forumPK);
     for (String sonsId : sonsIds) {
       unlockForum(new ForumPK(forumPK.getComponentName(), sonsId), level);
     }
@@ -299,7 +299,7 @@ public class ForumsBMEJB implements SessionBean {
    * @since 3 Octobre 2000
    */
   public void deleteForum(ForumPK forumPK) {
-    ArrayList<String> sonsIds = getForumSonsIds(forumPK);
+    List<String> sonsIds = getForumSonsIds(forumPK);
     for (String sonsId : sonsIds) {
       deleteForum(new ForumPK(forumPK.getComponentName(), sonsId));
     }
@@ -307,7 +307,7 @@ public class ForumsBMEJB implements SessionBean {
     Connection con = openConnection();
     try {
       // Recuperation des ids de messages
-      ArrayList<String> messagesIds = getMessagesIds(forumPK);
+      List<String> messagesIds = getMessagesIds(forumPK);
 
       // Suppression du forum et de ses messages
       ForumsDAO.deleteForum(con, forumPK);
@@ -429,7 +429,7 @@ public class ForumsBMEJB implements SessionBean {
     return messages;
   }
 
-  private ArrayList<String> getSubjectsIds(ForumPK forumPK) {
+  private List<String> getSubjectsIds(ForumPK forumPK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getSubjectsIds(con, forumPK);
@@ -442,7 +442,7 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  private ArrayList<String> getMessagesIds(ForumPK forumPK, int messageParentId) {
+  private List<String> getMessagesIds(ForumPK forumPK, int messageParentId) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getMessagesIds(con, forumPK, messageParentId);
@@ -455,7 +455,7 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  private ArrayList<String> getMessagesIds(ForumPK forumPK) {
+  private List<String> getMessagesIds(ForumPK forumPK) {
     return getMessagesIds(forumPK, -1);
   }
 
@@ -548,7 +548,7 @@ public class ForumsBMEJB implements SessionBean {
     Connection con = openConnection();
     try {
       // liste de tous les messages de la discussion
-      ArrayList messagesIds = getMessagesIds(forumPK, messageParentId);
+      List<String> messagesIds = getMessagesIds(forumPK, messageParentId);
 
       // ajouter la "racine" du message dans la liste de ses réponses
       messagesIds.add(String.valueOf(messageParentId));
@@ -587,7 +587,7 @@ public class ForumsBMEJB implements SessionBean {
    */
   public boolean isNewMessageByForum(String userId, ForumPK forumPK, String status) {
     // liste de tous les sujets du forum
-    ArrayList<String> messagesIds = getSubjectsIds(forumPK);
+    List<String> messagesIds = getSubjectsIds(forumPK);
     int messageParentId;
     for (int i = 0, n = messagesIds.size(); i < n; i++) {
       // pour ce message on recherche la date de la dernière visite
@@ -606,18 +606,16 @@ public class ForumsBMEJB implements SessionBean {
     Connection con = openConnection();
     try {
       // liste de tous les messages de la discussion
-      ArrayList messagesIds = getMessagesIds(forumPK, messageParentId);
+      List<String> messagesIds = getMessagesIds(forumPK, messageParentId);
       // ajouter la "racine" du message dans la liste de ses réponses
       messagesIds.add(String.valueOf(messageParentId));
 
       // récupération de la date du dernier message du forum
       Message message = getLastMessage(forumPK, messagesIds, status);
       // date du dernier message de la discussion
-      Date dateLastMessageBySubject = (message != null ? message.getDate()
-          : null);
-      SilverTrace.info("forums", "ForumsBMEJB.isNewMessage()",
-          "root.MSG_GEN_PARAM_VALUE", "date du dernier message du sujet = "
-              + dateLastMessageBySubject);
+      Date dateLastMessageBySubject = (message != null ? message.getDate() : null);
+      SilverTrace.info("forums", "ForumsBMEJB.isNewMessage()", "root.MSG_GEN_PARAM_VALUE",
+          "date du dernier message du sujet = " + dateLastMessageBySubject);
 
       // recherche sur tous les messages de la date de visite la plus ancienne
       // date de la dernière visite pour un message
@@ -1278,16 +1276,15 @@ public class ForumsBMEJB implements SessionBean {
     try {
       // pour cette catégorie, rechercher les forums et mettre '0' dans la
       // catégorie
-      ArrayList<Forum> forums = getForumsByCategory(new ForumPK(instanceId, null),
-          categoryId);
+      List<Forum> forums = getForumsByCategory(new ForumPK(instanceId, null), categoryId);
       Forum forum;
       int forumId;
       for (int i = 0, n = forums.size(); i < n; i++) {
         forum = forums.get(i);
         forumId = forum.getId();
         ForumPK forumPK = new ForumPK(instanceId, String.valueOf(forumId));
-        updateForum(forumPK, forum.getName(), forum.getDescription(), forum
-            .getParentId(), "0", null, false);
+        updateForum(forumPK, forum.getName(), forum.getDescription(), forum.getParentId(), "0",
+            null, false);
       }
 
       // suppression de la catégorie

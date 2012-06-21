@@ -40,6 +40,7 @@ import com.stratelia.webactiv.util.DateUtil;
  */
 public class ForumDetail extends AbstractI18NBean implements SilverContentInterface, Serializable {
 
+  private static final long serialVersionUID = -5500661559879178630L;
   private ForumPK pk;
   private String name;
   private String description;
@@ -109,7 +110,7 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
   }
 
   public void setSilverObjectId(int silverObjectId) {
-    this.silverObjectId = new Integer(silverObjectId).toString();
+    this.silverObjectId = Integer.toString(silverObjectId);
   }
 
   public String getSilverObjectId() {
@@ -166,7 +167,7 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
     return getName();
   }
 
-  public Iterator getLanguages() {
+  public Iterator<String> getLanguages() {
     return null;
   }
 
