@@ -402,7 +402,7 @@ function updateSurvey(surveyId, name, nbVotes)
 }
 
 function clipboardPaste() {     
-	  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RSurvey&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("surveyList", "UTF-8"))%>&TargetFrame=MyMain&message=REFRESH');
+	  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)%>paste?compR=RSurvey&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("surveyList", "UTF-8"))%>&TargetFrame=MyMain&message=REFRESH');
 	}
 
 function openSPWindow(fonction, windowName){
@@ -441,7 +441,7 @@ function openSPWindow(fonction, windowName){
   String bodyPart = "";
 
   int view = surveyScc.getViewType();
-  Collection surveys = surveyScc.getSurveys();
+  Collection<QuestionContainerHeader> surveys = surveyScc.getSurveys();
 
   TabbedPane tabbedPane = gef.getTabbedPane();
   tabbedPane.addTab(resources.getString("SurveyOpened"),
