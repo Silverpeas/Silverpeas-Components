@@ -136,10 +136,8 @@ public class EventDAOTest extends BaseAlmanachTest {
 
   @Test
   public void fetchEventsForAWeekWithoutAnyEvents() throws Exception {
-    Calendar week = Calendar.getInstance();
-    week.add(Calendar.YEAR, 1);
-    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInWeek(
-            week.getTime(),
+    Date week = getDate(2012, 2, 12);
+    List<EventDetail> events = new ArrayList<EventDetail>(eventDAO.findAllEventsInWeek(week,
             almanachIds));
     assertThat(events.isEmpty(), is(true));
   }

@@ -32,7 +32,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ include file="checkSurvey.jsp" %>
-<%@ include file="surveyUtils.jsp.inc" %>
+<%@ include file="surveyUtils.jsp" %>
 
 
 <%
