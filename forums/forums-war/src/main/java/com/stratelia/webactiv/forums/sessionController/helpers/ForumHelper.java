@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
 
 /**
- *
  * @author ehugonnet
  */
 public class ForumHelper {
@@ -58,7 +57,7 @@ public class ForumHelper {
   public static final String STATUS_FOR_VALIDATION = "A";
   public static final String STATUS_REFUSED = "R";
 
-  public static int getIntParameter(HttpServletRequest request, String name) {    
+  public static int getIntParameter(HttpServletRequest request, String name) {
     return getIntParameter(request, name, -1);
   }
 
@@ -194,63 +193,59 @@ public class ForumHelper {
         out.print("</tr>");
         out.print("</table>");
         out.println("</td>");
+
+        if (!simpleMode) {
+          // Dernier post
+          out.print("    <td align=\"center\"><span class=\"txtnote\">");
+          int lastMessageId = -1;
+          Date dateLastMessage = null;
+          String lastMessageDate = "";
+          String lastMessageUser = "";
+          Object[] lastMessage = fsc.getLastMessage(forumId, messageId);
+          if (lastMessage != null) {
+            lastMessageId = Integer.parseInt((String) lastMessage[0]);
+            lastMessageDate = convertDate((Date) lastMessage[1], resources);
+            lastMessageUser = (String) lastMessage[2];
+          }
+          if (lastMessageDate != null) {
+            out.print("<a href=\"" + ActionUrl.getUrl(
+                "viewMessage", call, 1, lastMessageId, forumId, true, false) + "\">");
+            out.print(EncodeHelper.javaStringToHtmlString(lastMessageDate));
+            out.print("<br/>");
+            out.print(EncodeHelper.javaStringToHtmlString(lastMessageUser));
+            out.print("</a>");
+          }
+          out.println("</span></td>");
+          cellsCount++;
+
+          // Nombres de réponses
+          out.print("    <td align=\"center\"><span class=\"txtnote\">");
+          out.print(fsc.getNbResponses(forumId, messageId));
+          out.println("</span></td>");
+          cellsCount++;
+
+          // Nombres de vues
+          out.print("    <td align=\"center\"><span class=\"txtnote\">");
+          out.print(fsc.getMessageStat(messageId));
+          out.println("</span></td>");
+          cellsCount++;
+
+          // Notation
+          NotationDetail notation = fsc.getMessageNotation(messageId);
+          int globalNote = notation.getRoundGlobalNote();
+          int userNote = notation.getUserNote();
+          String cellLabel = notation.getNotesCount() + " " + resources.getString("forums.note");
+          if (userNote > 0) {
+            cellLabel += " - " + resources.getString("forums.yourNote") + " : " + userNote;
+          }
+          out.print("<td align=\"center\"  title=\"" + cellLabel + "\"><span class=\"txtnote\">");
+          for (int i = 1; i <= 5; i++) {
+            out.print("<img class=\"notation_" + (i <= globalNote ? "on" : "off")
+                + "\" src=\"" + IMAGE_NOTATION_EMPTY + "\"/>");
+          }
+          out.println("</span></td>");
+        }
       }
-
-
-
-
-      if (!simpleMode) {
-        // Dernier post
-        out.print("    <td align=\"center\"><span class=\"txtnote\">");
-        int lastMessageId = -1;
-        Date dateLastMessage = null;
-        String lastMessageDate = "";
-        String lastMessageUser = "";
-        Object[] lastMessage = fsc.getLastMessage(forumId, messageId);
-        if (lastMessage != null) {
-          lastMessageId = Integer.parseInt((String) lastMessage[0]);
-          lastMessageDate = convertDate((Date) lastMessage[1], resources);
-          lastMessageUser = (String) lastMessage[2];
-        }
-        if (lastMessageDate != null) {
-          out.print("<a href=\"" + ActionUrl.getUrl(
-              "viewMessage", call, 1, lastMessageId, forumId, true, false) + "\">");
-          out.print(EncodeHelper.javaStringToHtmlString(lastMessageDate));
-          out.print("<br/>");
-          out.print(EncodeHelper.javaStringToHtmlString(lastMessageUser));
-          out.print("</a>");
-        }
-        out.println("</span></td>");
-        cellsCount++;
-
-        // Nombres de réponses
-        out.print("    <td align=\"center\"><span class=\"txtnote\">");
-        out.print(fsc.getNbResponses(forumId, messageId));
-        out.println("</span></td>");
-        cellsCount++;
-
-        // Nombres de vues
-        out.print("    <td align=\"center\"><span class=\"txtnote\">");
-        out.print(fsc.getMessageStat(messageId));
-        out.println("</span></td>");
-        cellsCount++;
-
-        // Notation
-        NotationDetail notation = fsc.getMessageNotation(messageId);
-        int globalNote = notation.getRoundGlobalNote();
-        int userNote = notation.getUserNote();
-        String cellLabel = notation.getNotesCount() + " " + resources.getString("forums.note");
-        if (userNote > 0) {
-          cellLabel += " - " + resources.getString("forums.yourNote") + " : " + userNote;
-        }
-        out.print("<td align=\"center\"  title=\"" + cellLabel + "\"><span class=\"txtnote\">");
-        for (int i = 1; i <= 5; i++) {
-          out.print("<img class=\"notation_" + (i <= globalNote ? "on" : "off")
-              + "\" src=\"" + IMAGE_NOTATION_EMPTY + "\"/>");
-        }
-        out.println("</span></td>");
-      }
-
       // Opérations
       if (isAutorized) {
         int opCellWidth = 40;
@@ -278,11 +273,11 @@ public class ForumHelper {
           out.print("&nbsp;");
         }
         out.print(
-            "<a href=\"javascript:deleteMessage(" + messageId + ", " + messageParent + ", false)\">");
+            "<a href=\"javascript:deleteMessage(" + messageId + ", " + messageParent +
+                ", false)\">");
         out.print("<img src=" + IMAGE_DELETE + " align=\"middle\" border=\"0\" alt=\""
             + resource.getString("deleteMessage") + "\" title=\""
             + resource.getString("deleteMessage") + "\"></a>");
-
 
         if (!simpleMode) {
           out.print("&nbsp;");
@@ -299,7 +294,8 @@ public class ForumHelper {
 
       out.println("  </tr>");
     } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPmessagesListManager.displayMessageLine()", "root.EX_NO_MESSAGE",
+      SilverTrace.info("forums", "JSPmessagesListManager.displayMessageLine()",
+          "root.EX_NO_MESSAGE",
           null, ioe);
     }
   }
@@ -326,7 +322,8 @@ public class ForumHelper {
     }
   }
 
-  public static void displaySingleMessageList(JspWriter out, ResourceLocator resource, String userId,
+  public static void displaySingleMessageList(JspWriter out, ResourceLocator resource,
+      String userId,
       boolean admin, boolean moderator, boolean reader, boolean view, int currentForumId,
       int messageId, boolean simpleMode, String call, ForumsSessionController fsc,
       ResourcesWrapper resources) {
@@ -340,7 +337,8 @@ public class ForumHelper {
       Message[] messages = fsc.getMessagesList(currentForumId);
       int messagesCount = messages.length;
       if (messagesCount > 0) {
-        out.println(
+        out
+            .println(
             "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" class=\"contourintfdcolor\">");
         displayOneMessage(messages, out, resource, userId, currentForumId, admin, moderator,
             reader, view, messageId, 0, simpleMode, call, fsc, resources);
@@ -348,7 +346,8 @@ public class ForumHelper {
 
         if (messagesCount > 1) {
           out.println("<div class=\"contourintfdcolor\" id=\"msgDiv\">");
-          out.println(
+          out
+              .println(
               "<table id=\"msgTable\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">");
           scanMessage(messages, out, resource, userId, currentForumId, admin, moderator,
               reader, view, messageId, 1, -1, simpleMode, call, fsc, resources);
@@ -356,7 +355,8 @@ public class ForumHelper {
           out.println("</div>");
         }
       } else {
-        out.println(
+        out
+            .println(
             "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"contourintfdcolor\">");
         out.println("<tr><td align=\"center\"><span class=\"txtnav\">"
             + resource.getString("noMessages") + "</span></td></tr>");
@@ -375,7 +375,8 @@ public class ForumHelper {
     }
   }
 
-  public static void scanMessage(Message[] messages, JspWriter out, ResourceLocator resource, String userId,
+  public static void scanMessage(Message[] messages, JspWriter out, ResourceLocator resource,
+      String userId,
       int currentPage, boolean admin, boolean moderator, boolean reader, boolean view,
       int currentMessageId, int depth, int maxDepth, boolean simpleMode, String call,
       ForumsSessionController fsc, ResourcesWrapper resources) {
@@ -385,7 +386,7 @@ public class ForumHelper {
       if (parentId == currentMessageId) {
         int messageId = message.getId();
         boolean hasChildren = hasMessagesChildren(messages, messageId);
-        //boolean isDeployed = fsc.messageIsDeployed(messageId);
+        // boolean isDeployed = fsc.messageIsDeployed(messageId);
         boolean isDeployed = true;
         displayMessageLine(message, out, resource, userId, admin, moderator, reader, view,
             depth, hasChildren, isDeployed, fsc.isForumActive(currentPage), simpleMode, call, fsc,
@@ -405,8 +406,10 @@ public class ForumHelper {
   }
 
   public static void displayOneMessage(Message[] messages, JspWriter out, ResourceLocator resource,
-      String userId, int currentPage, boolean admin, boolean moderator, boolean reader, boolean view,
-      int currentMessageId, int depth, boolean simpleMode, String call, ForumsSessionController fsc,
+      String userId, int currentPage, boolean admin, boolean moderator, boolean reader,
+      boolean view,
+      int currentMessageId, int depth, boolean simpleMode, String call,
+      ForumsSessionController fsc,
       ResourcesWrapper resources) {
     int i = 0;
     boolean loop = true;
@@ -452,7 +455,8 @@ public class ForumHelper {
     }
   }
 
-  public static int[] displayMessageNotation(JspWriter out, ResourcesWrapper resources, int messageId,
+  public static int[] displayMessageNotation(JspWriter out, ResourcesWrapper resources,
+      int messageId,
       ForumsSessionController fsc, boolean reader) {
     try {
       NotationDetail notation = fsc.getMessageNotation(messageId);
@@ -464,7 +468,8 @@ public class ForumHelper {
         if (!reader) {
           out.print(" id=\"notationImg" + i + "\"");
         }
-        out.print(" style=\"margin-bottom: 0px\" class=\"notation_" + (i <= globalNote ? "on" : "off")
+        out.print(" style=\"margin-bottom: 0px\" class=\"notation_" +
+            (i <= globalNote ? "on" : "off")
             + "\" src=\"" + IMAGE_NOTATION_EMPTY + "\"/>");
       }
       out.print(" (" + notation.getNotesCount() + " " + resources.getString("forums.note"));
@@ -472,7 +477,7 @@ public class ForumHelper {
         out.print(" - " + resources.getString("forums.yourNote") + " : " + userNote);
       }
       out.println(")</span>");
-      return new int[]{globalNote, userNote};
+      return new int[] { globalNote, userNote };
     } catch (IOException ioe) {
       SilverTrace.info("forums", "JSPforumsListManager.displayForumNotation()",
           "root.EX_NO_MESSAGE", null, ioe);
