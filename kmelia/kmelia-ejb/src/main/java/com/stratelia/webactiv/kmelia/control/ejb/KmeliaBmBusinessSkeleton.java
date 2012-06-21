@@ -701,7 +701,7 @@ public interface KmeliaBmBusinessSkeleton {
    * @param coordinatePK
    * @param coordinates
    */
-  public void deleteCoordinates(CoordinatePK coordinatePK, ArrayList coordinates)
+  public void deleteCoordinates(CoordinatePK coordinatePK, ArrayList<?> coordinates)
       throws RemoteException;
 
   public Collection<Alias> getAlias(PublicationPK pubPK) throws RemoteException;
