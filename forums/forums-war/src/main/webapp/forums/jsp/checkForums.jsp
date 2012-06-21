@@ -38,7 +38,7 @@
 <%@ page import="com.stratelia.webactiv.forums.forumsException.ForumsException"%>
 <%@ page import="com.stratelia.webactiv.forums.models.Forum"%>
 <%@ page import="com.stratelia.webactiv.forums.models.Message"%>
-<%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"%>
+<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
 <%@ page import="com.stratelia.webactiv.forums.url.ActionUrl"%>
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>

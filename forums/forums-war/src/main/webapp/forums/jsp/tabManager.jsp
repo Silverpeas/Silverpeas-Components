@@ -24,16 +24,15 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.io.IOException"
-%><%@ page import="java.util.ArrayList"
-%><%@page import="com.stratelia.webactiv.forums.url.ActionUrl"
-%><%@ page import="com.stratelia.webactiv.util.ResourceLocator"
-%><%@ page import="com.stratelia.webactiv.util.publication.model.CompletePublication"
-%><%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"
-%><%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"
-%><%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"
-%><%@ page import="com.stratelia.silverpeas.peasCore.URLManager"
-%>
+<%@ page import="java.io.IOException"%>
+<%@ page import="java.util.ArrayList"%>
+<%@ page import="com.stratelia.webactiv.forums.url.ActionUrl"%>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="com.stratelia.webactiv.util.publication.model.CompletePublication"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%!
 public void displayTabs(int params, int forumId, ForumsSessionController forumsScc,
         GraphicElementFactory gef, String action, JspWriter out)

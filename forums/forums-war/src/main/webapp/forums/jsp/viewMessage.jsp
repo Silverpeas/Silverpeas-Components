@@ -40,11 +40,11 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<%@page import="java.util.Map"%>
-<%@page import="java.util.HashMap"%>
-<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumHelper"%>
-<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
-<%@page import="java.util.Hashtable"%>
+<%@ page import="java.util.Map"%>
+<%@ page import="java.util.HashMap"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumHelper"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
+<%@ page import="java.util.Hashtable"%>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;

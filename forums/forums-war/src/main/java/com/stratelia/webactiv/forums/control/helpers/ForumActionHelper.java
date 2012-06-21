@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.forums.sessionController.helpers;
+package com.stratelia.webactiv.forums.control.helpers;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.forums.sessionController.ForumsSessionController;
+import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;

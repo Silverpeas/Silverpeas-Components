@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -31,13 +30,15 @@
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
+
+<%@ include file="checkForums.jsp"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<%@ include file="checkForums.jsp"%>
 <%!
 public void listFolders(JspWriter out, String userId, boolean admin, int rootId, int parentId,
         String indent, ResourceLocator resource, ForumsSessionController fsc)
