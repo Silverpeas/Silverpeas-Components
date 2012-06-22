@@ -65,10 +65,6 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
   			}
   			channelImage 	= channel.getImage();
   			if (spChannel.getDisplayImage() == 1 && channelImage != null && channelImage.getLink()!=null && channelImage.getLocation()!=null) {
-  				//test la taille de l'image associe au channel
-  				String sNewHeight = "";
-  				String sNewWidth = "";
-  				boolean displayImage = false;
     			channelName = "<a href=\""+channelImage.getLink()+"\" target=_blank><img class='img-item-rssNews' src=\""+channelImage.getLocation()+"\" border=\"0\" /></a>"+channelName;
       		}  else {
 				channelName = "<img class='img-item-rssNews' src=\""+resource.getIcon("rss.logoRSS")+"\" border=\"0\" />"+channelName;
@@ -98,7 +94,7 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
     
     			sDate = "";
     			if (item.getDate() != null)
-    				sDate = " ("+dateFormatter.format(item.getDate())+")";
+    				sDate = dateFormatter.format(item.getDate());
     
     			out.println("<li class='item-channel'>");
 				out.println("<a class='deploy-item' title='deploy item' href='#' onclick = 'return false;' ><img class='deploy-item-rssNews' src='../../util/icons/arrow/open.gif' border='0' /></a><a class='deploy-item itemDeploy' title='bend item' href='#' onclick = 'return false;' ><img class='deploy-item-rssNews' src='../../util/icons/arrow/closed.gif' border='0' /></a>");
@@ -115,14 +111,14 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
     		}
     	out.println("</ul>");
     } else if (spChannel==null) {
-    	out.println("<center><BR>");
+    	out.println("<center><br />");
     	out.println(resource.getString("rss.download"));
-    	out.println("<BR><img src=\""+context+"/util/icons/attachment_to_upload.gif\" height=20 width=83><BR><BR>");
+    	out.println("<br /><img src=\""+context+"/util/icons/attachment_to_upload.gif\" height='20' width='83' /><br /><br />");
     	out.println("</center>");
     } else if (channel==null) {
-    	out.println("<center><BR>");
+    	out.println("<center><br />");
     	out.println(resource.getString("rss.nonCorrectURL"));
-    	out.println("<BR><BR>"+spChannel.getUrl()+"<BR><BR>");
+    	out.println("<br /><br />"+spChannel.getUrl()+"<br /><br />");
     	out.println("</center>");
     } 
 
@@ -148,8 +144,8 @@ var updateChannelWindow = window;
 
 function addChannel() {
     windowName = "addChannelWindow";
-	larg = "600";
-	haut = "350";
+	larg = "750";
+	haut = "280";
     windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
     if (!addChannelWindow.closed && addChannelWindow.name== "addChannelWindow")
         addChannelWindow.close();
@@ -158,8 +154,8 @@ function addChannel() {
 
 function updateChannel(id) {
     windowName = "updateChannelWindow";
-	larg = "600";
-	haut = "350";
+	larg = "750";
+	haut = "280";
     windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
     if (!updateChannelWindow.closed && updateChannelWindow.name=="updateChannelWindow")
         updateChannelWindow.close();
@@ -191,12 +187,26 @@ function loadChannelsItem() {
   });
 }
 
+ <!-- Commentaire AuroreA. Ajout js pour filtre ( à finir ) et deploiement -->
 $(document).ready(function(){
 
 	$('.description-item-rssNews a').attr( "target" , "_blank"  ) ;
 
 	$('.deploy-item').click(function() {
 		$(this).parent().children('.itemDeploy').toggle();
+	});
+	$('.deploy-all-item').click(function() {
+		$('.itemDeploy').show();
+		$('.btn-deploy-all-item').toggle();
+	});
+	$('.bend-all-item').click(function() {
+		$('.itemDeploy').hide();
+		$('.btn-deploy-all-item').toggle();
+	});
+	
+	$('.filter-channel').click(function() {
+		$('.item-channel').hide();
+		$('.'+this.id).show();
 	});
 });
 
@@ -212,58 +222,80 @@ $(document).ready(function(){
 		operationPane.addOperation(resource.getIcon("rss.addChannel"), resource.getString("rss.addChannel"), "javascript:onClick=addChannel()");
 	}
 
-  out.println(window.printBefore());
-  
+
+    out.println(window.printBefore());
 %>
+
+
+
 <c:choose>
   <c:when test="${aggregate}">
-  <c:if test="${not empty rssChannels && fn:contains(role, 'admin')}">
-    <div id="adminChannels" class="arrayPane">
-		<h2>Listes des channels</h2>
-		<table class="tableArrayPane" width="100%" cellspacing="2" cellpadding="2" border="0">
-			<thead><tr><td class="ArrayColumn">Nom</td><td class="ArrayColumn">Op&eacute;rations</td></tr></thead>
-		
-			<tbody>
+  
+  
+	<!-- Commentaire AuroreA. ATTENTION : Texte et icone mis en dur -->
+	<div class="deploy-all-item btn-deploy-all-item bgDegradeGris " title="deploy all item" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/open.gif" border="0" /> Tout d&eacute;ployer</div>
+	<div class="bend-all-item btn-deploy-all-item bgDegradeGris " title="bend item" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/closed.gif" border="0" /> Tout r&eacute;duire</div>	
+	<div id="displaying"  class="bgDegradeGris">Affichage agr&eacute;g&eacute; des flux : <a id="aggregate-displaying" class="active" href="">On</a><a id="no-aggregate-displaying" href="">Off</a></div>
+	<a id="dynamicalLoad" class="bgDegradeGris" href="javascript:loadChannelsItem();"><span>Actualiser les flux</span></a>
+	
+  <c:if test="${not empty rssChannels}">
+
+    <div class="sousNavBulle">
+	
+	  	<!-- Commentaire AuroreA. ATTENTION : Texte  mis en dur -->
+		<div>Afficher : 
+			<a onclick="changeScope('ALL')" href="#" class="active">Tous</a>	
+			
+			
+
 			<c:forEach var="channel" items="${rssChannels}">
-			<tr>
-				<td id="channel<c:out value="${channel.PK.id}"/>">
-					<c:out value="${channel.channel.title}"/>
-				</td>
-				<td>
-					<a href="javaScript:onClick=updateChannel('<c:out value="${channel.PK.id}"/>');" class="update">
+			<span <c:if test="${fn:contains(role, 'admin')}"> class="filter" </c:if> >
+			
+				<!-- Commentaire AuroreA. Sur le lien mettre channel_$idDuChannel -->
+				<a id="channel_<c:out value="${channel.PK.id}"/>" href="#" class="filter-channel"><c:out value="${channel.channel.title}"/></a>
+				
+				<c:if test="${fn:contains(role, 'admin')}">
+				<span class="operation-chanel">
+					<a href="javaScript:onClick=updateChannel('<c:out value="${channel.PK.id}"/>');" class="update" title="update channel">
 						<fmt:message key="rss.updateChannel" bundle="${icons}" var="updateChannelIcon"/>
 						<img src="<c:url value="${updateChannelIcon}"/>" border="0" alt="<fmt:message key="GML.modify"/>" />
 					</a>&nbsp;
-					<a href="javaScript:onClick=deleteChannel('<c:out value="${channel.PK.id}"/>');" class="delete">
+					<a href="javaScript:onClick=deleteChannel('<c:out value="${channel.PK.id}"/>');" class="delete" title="delete channel">
 						<fmt:message key="rss.deleteChannel" bundle="${icons}" var="deleteChannelIcon"/>
 						<img src="<c:url value="${deleteChannelIcon}"/>" border="0" alt="<fmt:message key="GML.delete"/>" />
 					</a>
-		
-				</td>
-			</tr>
+				</span>
+				</c:if>
+			</span>
+				
 			</c:forEach>
-			</tbody>
-		</table>
+		</div>
     </div>
   </c:if>
   
-  <div id="agregateWelcome"><fmt:message key="rss.agregate.welcome"/></div>
+  <!-- Commentaire AuroreA.  POURQUOI CE TEXTE ???<div id="agregateWelcome"><fmt:message key="rss.agregate.welcome"/></div> -->
   
-  <a id="dynamicalLoad" href="javascript:loadChannelsItem();">Actualiser les flux</a>
+
   
   <c:if test="${not empty rssItems}">
   <div id="rssNews">
+  
 	  <ul>
-	  <% int idItemChannel= 0; %>
+
+
 	  <c:forEach var="item" items="${rssItems}">
 		<c:set var="channelName" value="${item.channelTitle}"/>
+
 		<c:if test="${fn:length(channelName) gt 40}">
 		  <c:set var="channelName" value="${fn:substring(item.channelTitle, 0, 39)}..." />
 		</c:if>
-		<li id="idItemChannel_<%=idItemChannel%>" class="item-channel">
+		
+		
+		<!-- Commentaire AuroreA. Sur le li mettre la classe channel_$idDuChannel -->
+		<li class="item-channel channel_Id ">
 			
-			<a class="deploy-item" title="deploy item" href="#idItemChannel_<%=idItemChannel%>" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/open.gif" border="0" /></a>
-			<a class="deploy-item itemDeploy" title="bend item" href="#idItemChannel_<%=idItemChannel%>" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/closed.gif" border="0" /></a>
+			<a class="deploy-item" title="deploy item" href="#" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/open.gif" border="0" /></a>
+			<a class="deploy-item itemDeploy" title="bend item" href="#" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/closed.gif" border="0" /></a>
 			<h3 class="title-item-rssNews">
 				<c:if test="${not empty item.channelImage}">
 				<a href="${item.channelImage.link }" target="_blank"><img class="img-item-rssNews" src="${item.channelImage.location}" border="0" /></a>    
@@ -271,13 +303,13 @@ $(document).ready(function(){
 				<span  class="channelName-rssNews"><c:out value="${channelName}"/> </span> 
 				<a href="<c:out value="${item.itemLink}"/>"><c:out value="${item.itemTitle}"/> </a> 
 			</h3>
-			<div class="lastUpdate-item-rssNews"><c:out value="${item.itemDate}"/></div>
+			<div class="lastUpdate-item-rssNews"><c:out value="${dateFormatter.format(item.itemDate)}"/></div>
 			<div class="itemDeploy" >
 				<div class="description-item-rssNews"><c:out value="${item.itemDescription}" escapeXml="false"/></div>
 				<br class="clear"/>
 			</div>
 		</li>
-		 <% idItemChannel++; %>
+
 	  </c:forEach>
 	  </ul>
   </div>
@@ -286,7 +318,14 @@ $(document).ready(function(){
   </c:when>
   <c:otherwise>
   
-  <a id="dynamicalLoad" href="javascript:loadChannelsItem();">Actualiser les flux</a>
+	<!-- Commentaire AuroreA.  ATTENTION : Texte et icone mis en dur -->
+  	<div class="deploy-all-item btn-deploy-all-item bgDegradeGris " title="deploy all item" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/open.gif" border="0" /> Tout d&eacute;ployer</div>
+	<div class="bend-all-item btn-deploy-all-item bgDegradeGris " title="bend item" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/closed.gif" border="0" /> Tout r&eacute;duire</div>	
+	<div id="displaying"  class="bgDegradeGris">Affichage agr&eacute;g&eacute; des flux : <a id="aggregate-displaying"href="">On</a><a  class="active" id="no-aggregate-displaying" href="">Off</a></div>
+	<a id="dynamicalLoad" class="bgDegradeGris" href="javascript:loadChannelsItem();"><span>Actualiser les flux</span></a>
+	
+	<hr id="sep-no-agregate" />
+
 	<div id='rssNews' class="no-agregate">
 	  <ul>
 	<%   
@@ -313,13 +352,13 @@ $(document).ready(function(){
 	%> 
 	  </ul> 
 	</div>
-<form name="refresh" Action="LoadChannels" method="post"></form>
-<form name="deleteChannel" Action="DeleteChannel" method="post">
+<form name="refresh" action="LoadChannels" method="post"></form>
+<form name="deleteChannel" action="DeleteChannel" method="post">
   <input type="hidden" name="Id">
 </form>
 <%
 if (nbChannelsToLoad > 0) { %>
-<form name="loadChannels" Action="LoadChannels" method="post"></form>
+<form name="loadChannels" action="LoadChannels" method="post"></form>
 <script language="javascript">
   window.setTimeout("document.loadChannels.submit()", 500);
 </script>
@@ -329,11 +368,6 @@ if (nbChannelsToLoad > 0) { %>
 </c:choose>
 
 
-  
-
-
-<%
-out.println(window.printAfter());
-%>
+<% out.println(window.printAfter()); %>  
 </body>
 </html>
