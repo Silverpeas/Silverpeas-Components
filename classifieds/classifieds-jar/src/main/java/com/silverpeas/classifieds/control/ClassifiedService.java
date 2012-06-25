@@ -33,7 +33,7 @@ import java.util.Collection;
  * Services provided by the Classified Silverpeas component.
  * It has to be managed by the IoC container under the name classifiedService.
  */
-public interface ClassifiedService extends SilverpeasComponentService {
+public interface ClassifiedService extends SilverpeasComponentService<ClassifiedDetail> {
 
   /**
    * create a classified
