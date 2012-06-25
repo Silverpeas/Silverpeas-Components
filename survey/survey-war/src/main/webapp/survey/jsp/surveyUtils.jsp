@@ -6,11 +6,11 @@ TabbedPane displayTabs(SurveySessionController surveyScc, String surveyId, Graph
 ResourcesWrapper resources, boolean pollingStationMode, boolean participated) {
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	String label = "";
-	if (pollingStationMode)
+	if (pollingStationMode) {
 		label = resources.getString("PollingStation");
-	else
+	} else {
 		label = resources.getString("Survey");
-
+  }
 	boolean tabValid = action.equals("ViewCurrentQuestions") || action.equals("ViewResult") || action.equals("ViewSurvey");
 	if (!participated) {
 	 tabValid = action.equals("ViewCurrentQuestions") || action.equals("ViewSurvey");
@@ -23,9 +23,6 @@ ResourcesWrapper resources, boolean pollingStationMode, boolean participated) {
   }
 
 	tabbedPane.addTab(resources.getString("survey.Comments"), "surveyDetail.jsp?Action=ViewComments&Participated="+participated+"&SurveyId="+surveyId, action.equals("ViewComments"), true);
-
-	if (("admin".equals(profile) || "publisher".equals(profile)) && surveyScc.isPdcUsed())
-		tabbedPane.addTab(resources.getString("GML.PDC"), "pdcPositions.jsp?Action=ViewPdcPositions&Participated="+participated+"&SurveyId="+surveyId, action.equals("ViewPdcPositions"), true);
 
 	return tabbedPane;
 }
@@ -107,7 +104,7 @@ ResourcesWrapper resources, ResourceLocator settings, String profile, boolean po
                     r += "</table>";
                     r += "</form>";
                 } else {
-                    r += "<BR>"+resources.getString("SurveyWithNoQuestions")+"<BR><BR>";
+                    r += "<br>"+resources.getString("SurveyWithNoQuestions")+"<br><br>";
                 }
             } else {
                 r += "<table><tr><td>"+resources.getString("SurveyUnavailable")+"</td></tr>";
@@ -137,16 +134,17 @@ ResourcesWrapper resources, ResourceLocator settings, String profile, boolean po
                 int nbQuestions = 0;
                 int nbTotalQuestion = questions.size();
 
-                if (end < questions.size())
+                if (end < questions.size()) {
                     nbQuestions = nbQuestionsPerPage;
-                else if (end == questions.size())
+                } else if (end == questions.size()) {
                     nbQuestions = (questions.size() / roundId);
-                else  //derniere page
+                } else { //derniere page
                      nbQuestions = nbQuestionsPerPage - (end - questions.size());
+                }
 
-                if (nbQuestionsPerPage >= questions.size())
+                if (nbQuestionsPerPage >= questions.size()) {
                     nbQuestions = questions.size();
-
+                }
 				r += displayTabs(surveyScc, surveyHeader.getPK().getId(), gef, "ViewSurvey", profile, resources, pollingStationMode, participated).print();
                 r += frame.printBefore();
                 r += "<center>";
@@ -351,7 +349,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
         return r;
 }
 
-// Pr�visualisation
+// Previsualisation
   String displaySurveyPreview(QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, ResourcesWrapper resources, ResourceLocator settings) throws SurveyException, ParseException
   {
         String r = "";
@@ -403,7 +401,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                     {
                           question = (Question) itQ.next();
                           answers = question.getAnswers();
-                          //r+="<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor><tr><td CLASS=intfdcolor4 NOWRAP>";
+                          //r+="<table cellpadding=0 cellspacing=2 border=0 width=\"98%\" CLASS=intfdcolor><tr><td class=intfdcolor4 nowrap>";
                           r += board.printBefore();
                           r += "<table border=\"0\" width=\"100%\">";
                           r += "<tr><td colspan=\"2\"><B><U>"+Encode.javaStringToHtmlString(question.getLabel())+"</U></B><BR/></td></tr>";
@@ -423,7 +421,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           {
                           		if (style.equals("list"))
                           		{
-                          			// liste d�roulante
+                          			// drop down list
                           			r += "<tr><td><select id=\"answers\" name=\"answers\" onchange=\"if(this.value=='openanswer_"+i+"'){document.getElementById('openanswer"+i+"').style.display='block'}else{document.getElementById('openanswer"+i+"').style.display='none'};\">";
 
                           			Iterator itA = answers.iterator();
@@ -738,12 +736,12 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 					}
 	                r += "</table>";
 	                r += board.printAfter();
-	                r += "<BR>";
+	                r += "<br>";
 
 	                r += board.printBefore();
 
 	                r += "<table border=\"0\" cellspacing=\"3\" cellpadding=\"0\" width=\"100%\" align=center>";
-	                r += "<TR><TD align=\"center\" class=\"intfdcolor\" height=\"1\" colspan=\"3\"></TD></TR>";
+	                r += "<tr><td align=\"center\" class=\"intfdcolor\" height=\"1\" colspan=\"3\"></td></tr>";
 					if (surveyScc.isParticipationMultipleUsed())
 					{
 		                r += "<tr><td align=\"center\"><b>"+resources.getString("SurveyNbParticipations")+"</b></td>";
@@ -760,7 +758,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 		                else
 		                	r += "<td align=\"center\"><b>"+resources.getString("SurveyParticipationRate")+"</b></td></tr>";
 	                }
-	                r += "<TR><TD align=\"center\" class=\"intfdcolor\" height=\"1\" colspan=\"3\"></TD></TR>";
+	                r += "<tr><td align=\"center\" class=\"intfdcolor\" height=\"1\" colspan=\"3\"></td></tr>";
 	                r += "<tr><td align=\"center\">"+nbVoters;
 	                if (!anonymous)
 		                {
@@ -777,7 +775,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 		                else
 		                 	r += "<td align=\"center\">"+participationRate+"&nbsp;%</td></tr>";
 	                }
-	                r += "<TR><TD align=\"center\" class=\"intfdcolor\" height=\"1\" colspan=\"3\"></TD></TR>";
+	                r += "<tr><td align=\"center\" class=\"intfdcolor\" height=\"1\" colspan=\"3\"></td></tr>";
 	                r += "</table>";
 	                r += board.printAfter();
 	                r += "<BR>";
@@ -815,7 +813,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           String style = question.getStyle();
                           if (styleView.equals("user"))
                           {
-                          		// affichage des résults par user
+                          		// Display result for each user
                           		if (style.equals("open"))
 		                        {
 		                        	r += displayOpenAnswersToQuestionByUser(userId, false, question.getPK().getId(), surveyScc);
@@ -829,7 +827,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           {
 	                          if (!anonymous && choice.equals("D"))
 	                          {
-	 	                      	  // affichage des résultat de façon nominative
+	 	                      	  // display not anonymous result
 		                      	  if (style.equals("open"))
 		                          {
 		                              r += displayOpenAnswersToQuestionNotAnonymous(question.getPK().getId(), surveyScc);
@@ -860,7 +858,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                      r += " </tbody></table>";
                      r += board.printAfter();
                  } else {
-                     r += "<BR>"+resources.getString("SurveyWithNoQuestions")+"<BR><BR>";
+                     r += "<br>"+resources.getString("SurveyWithNoQuestions")+"<br><br>";
                  }
                  r += frame.printAfter();
 	        } else {
@@ -887,7 +885,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                 answer = Encode.javaStringToHtmlParagraphe(qR.getOpenedAnswer());
                 if (!StringUtil.isDefined(answer))
                     answer = surveyScc.getString("NoResponse");
-                r += "<tr><td colspan=\"2\" align=\"left\">&#149; "+answer+"<BR></td></tr>";
+                r += "<tr><td colspan=\"2\" align=\"left\">&#149; "+answer+"<br></td></tr>";
             }
         }
         catch( Exception e){

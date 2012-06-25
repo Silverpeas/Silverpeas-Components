@@ -34,11 +34,10 @@
 <%@ page import="java.io.File"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 
 <%@ include file="checkSurvey.jsp" %>
-<%@ include file="surveyUtils.jsp.inc" %>
+<%@ include file="surveyUtils.jsp" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -59,6 +58,12 @@ String creationDate = "";
 String beginDate = request.getParameter("beginDate");
 String endDate = request.getParameter("endDate");
 String nbQuestions = request.getParameter("nbQuestions");
+
+String appName = "survey";
+if (surveyScc.isPollingStationMode()) {
+  nbQuestions = "1";
+  appName = "pollingStation";
+}
 String anonymousString = request.getParameter("anonymous");
 
 //Anonymous mode -> force all the survey to be anonymous
@@ -71,7 +76,6 @@ boolean anonymous = StringUtil.isDefined(anonymousString) && "true".equalsIgnore
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 //Icons
-String topicAddSrc = m_context + "/util/icons/folderAdd.gif";
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
 QuestionContainerDetail survey = null;
@@ -106,7 +110,9 @@ if ("UpdateSurveyHeader".equals(action))
           endDate = "";
           if (surveyHeader.getEndDate() != null)
               endDate = resources.getInputDate(surveyHeader.getEndDate());
-          nbQuestions = new Integer(surveyHeader.getNbQuestionsPerPage()).toString();
+          if (!surveyScc.isPollingStationMode()) {
+          	nbQuestions = new Integer(surveyHeader.getNbQuestionsPerPage()).toString();
+          }
           anonymous = surveyHeader.isAnonymous();
 
           //Mode anonyme -> force les enquetes a etre toutes anonymes
@@ -123,6 +129,7 @@ if ("UpdateSurveyHeader".equals(action))
 <html>
 <head>
 <title></title>
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <view:looknfeel />
 <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
@@ -139,7 +146,6 @@ function isCorrectForm() {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.surveyForm.title.value);
-     var nbQuestions = document.surveyForm.nbQuestions.value;
      var beginDate = document.surveyForm.beginDate.value;
      var endDate = document.surveyForm.endDate.value;
      var beginDateOK = true;
@@ -148,10 +154,12 @@ function isCorrectForm() {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
            errorNb++;
      }
+     <% if (!surveyScc.isPollingStationMode()) { %>
      if (!isValidTextArea(document.surveyForm.description)) {
           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationDescription")%>' <%=resources.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Characters")%>\n";
           errorNb++;
      }
+     <% } %>
      if (!isWhitespace(beginDate)) {
      	if (!isDateOK(beginDate, '<%=resources.getLanguage()%>')) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
@@ -179,6 +187,8 @@ function isCorrectForm() {
              }
          }
        }
+     <% if (!surveyScc.isPollingStationMode()) { %>
+     var nbQuestions = document.surveyForm.nbQuestions.value;
      if (isWhitespace(nbQuestions)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbQuestionPerPage")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
            errorNb++;
@@ -193,6 +203,10 @@ function isCorrectForm() {
                 }
            }
      }
+     <% } %>
+     
+  	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
+  
      switch(errorNb) {
         case 0 :
             result = true;
@@ -213,7 +227,7 @@ function isCorrectForm() {
 
 </script>
 </head>
-<body>
+<body class="<%=appName%>">
 <%
         Window window = gef.getWindow();
         Frame frame = gef.getFrame();
@@ -243,101 +257,101 @@ function isCorrectForm() {
   </c:when>
 </c:choose>
 <%
-
         out.println(frame.printBefore());
 %>
-<view:board>
 
-<center>
 <form name="surveyForm" action="surveyUpdate.jsp" method="post">
-<table cellpadding="5" width="100%">
-    <tr>
-      <td class="txtlibform"><%=resources.getString("GML.name")%> :</td>
-      <td>
-        <input type="text" name="title" size="60" value="<%=title%>" maxlength="100">
-        &nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5">
-      </td>
-    </tr>
-    <tr>
-      <td class="txtlibform"><%=resources.getString("SurveyCreationDescription")%> :</td>
-      <td>
-        <textarea name="description" cols="50" rows="4"><%=description%></textarea>
-      </td>
-    </tr>
-    <tr>
-      <td class="txtlibform"><%=resources.getString("SurveyCreationDate")%> :</td>
-      <td><%=creationDate%></td>
-    </tr>
-    <tr>
-      <td class="txtlibform"><%=resources.getString("SurveyCreationBeginDate")%> :</td>
-      <td>
-        <input type="text" class="dateToPick" name="beginDate" size="14" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
-      </td>
-    </tr>
-    <tr>
-      <td class="txtlibform"><%=resources.getString("SurveyCreationEndDate")%>
-        :</td>
-      <td>
-        <input type="text" class="dateToPick" name="endDate" size="14" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
-      </td>
-    </tr>
-    <%
-    String anonymousCheck = "";
-    if (anonymous) {
-      anonymousCheck = "checked";
-    }
+<fieldset id="info" class="skinFieldset">
+	<legend><%=resources.getString("survey.header.fieldset.info") %></legend>
+	<div class="fields">
+		<div class="field" id="nameArea">
+			<label class="txtlibform" for="title"><%=resources.getString("GML.name")%></label>
+			<div class="champs">
+				<input type="text" name="title" size="60" maxlength="60" value="<%=title%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+			</div>
+		</div>
+		<% if (!surveyScc.isPollingStationMode()) { %>
+		<div class="field" id="questionArea">
+			<label class="txtlibform"><%=resources.getString("SurveyCreationDescription")%></label>
+			<div class="champs">
+				<textarea name="description" cols="80" rows="4"><%=description%></textarea>
+			</div>
+		</div>
+		<% } %>
+		<%
+		    
+		%>
+		<% if (!surveyScc.isPollingStationMode()) { %>
+		<div class="field" id="nbQuestionsArea">
+			<label class="txtlibform"><%=resources.getString("SurveyCreationNbQuestionPerPage")%></label>
+			<div class="champs">
+				<input type="text" name="nbQuestions" size="5" value="<%=nbQuestions%>" maxlength="2"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+			</div>
+		</div>
+		<% } %>
+		
+		<div class="field" id="anonymousArea">
+			<%
+				String anonymousLabel = resources.getString("survey.surveyAnonymous");
+	    		if (surveyScc.isPollingStationMode()) {
+	    			anonymousLabel = resources.getString("survey.pollAnonymous");
+	      		}
+	    
+		        //Mode anonyme -> force les votes à être tous anonymes
+		        String anonymousDisabled = "";
+		        String anonymousCheck = "";
+		        if (anonymous) {
+	  		      	anonymousCheck = "checked=\"checked\"";
+	  		  	}
+		        if(surveyScc.isAnonymousModeEnabled()) {
+		          anonymousDisabled = "disabled=\"disabled\"";
+		        }
+			%>
+			<label class="txtlibform"><%=anonymousLabel%></label>
+			<div class="champs">
+				<input type="checkbox" name="anonymous" value="true" <%=anonymousCheck%> <%=anonymousDisabled%>/>
+    	  		<input type="hidden" name="anonymousString" value="<%=anonymousString%>"/>
+			</div>
+		</div>
+		<input type="hidden" name="Action" value="SendSurveyHeader"/>
+        <input type="hidden" name="NextAction"/>
+        <input type="hidden" name="SurveyId" value="<%=surveyId%>"/>
+	</div>
+</fieldset>
 
-    //Mode anonyme -> force les enquetes a etre toutes anonymes
-    String anonymousDisabled = "";
-    if(surveyScc.isAnonymousModeEnabled()) {
-      anonymousDisabled = "disabled";
-    }
-  
-    String anonymousLabel = resources.getString("survey.surveyAnonymous");
-    String displayVote = "";
-    if (surveyScc.isPollingStationMode()) {
-      anonymousLabel = resources.getString("survey.pollAnonymous");
-      displayVote="display:none;";
-    }
-  
-    %>
-    <tr style="<%=displayVote%>">
-      <td class="txtlibform"><%=resources.getString("SurveyCreationNbQuestionPerPage")%>
-        :</td>
-      <td>
-        <input type="text" name="nbQuestions" size="5" value="<%=nbQuestions%>" maxlength="2">
-        &nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5">
-      </td>
-    </tr>
-    <tr>
-    	<td class="txtlibform"><%=anonymousLabel%> :</td>
-    	<td>
-    	  <input type="checkbox" name="anonymous" value="true" <%=anonymousCheck%> <%=anonymousDisabled%>>
-    	  <input type="hidden" name="anonymousString" value="<%=anonymousString%>">
-    	</td>
-    </tr>
-    <tr>
-      <td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">
-        : <%=generalMessage.getString("GML.requiredField")%>) </td>
-    </tr>
-    <tr>
-      <td>
-        <input type="hidden" name="Action" value="SendSurveyHeader">
-        <input type="hidden" name="NextAction">
-        <input type="hidden" name="SurveyId" value="<%=surveyId%>">
-      </td>
-    </tr>
-</table>
+<fieldset id="dates" class="skinFieldset">
+		<legend><%=resources.getString("survey.header.fieldset.period") %></legend>
+		<div class="fields">
+			<div class="field" id="beginArea">
+				<label for="beginDate" class="txtlibform"><%=resources.getString("SurveyCreationBeginDate")%></label>
+				<div class="champs">
+					<input type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
+				</div>
+			</div>
+			<div class="field" id="endArea">
+				<label for="beginDate" class="txtlibform"><%=resources.getString("SurveyCreationEndDate")%></label>
+				<div class="champs">
+					<input type="text" class="dateToPick" name="endDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
+				</div>
+			</div>
+		</div>
+</fieldset>
+
+<view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" editable="true" />
+
+<div class="legend">
+	<img src="<%=mandatoryField%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%>
+</div>
+
 </form>
-</center>
-</view:board>
+
 <%
         out.println(frame.printMiddle());
-        Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
+        Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
         ButtonPane buttonPane = gef.getButtonPane();
         buttonPane.addButton(validateButton);
         buttonPane.setHorizontalPosition();
-        out.println("<br/><center>"+buttonPane.print()+"</center>");
+        out.println("<center>"+buttonPane.print()+"</center>");
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>
