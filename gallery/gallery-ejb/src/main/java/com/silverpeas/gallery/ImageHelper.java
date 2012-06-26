@@ -36,16 +36,15 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.ImageLoader;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import javax.imageio.ImageIO;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.ImageLoader;
 
 public class ImageHelper {
 
@@ -136,7 +135,7 @@ public class ImageHelper {
           String dir = FileRepositoryManager.getAbsolutePath(instanceId) + subDirectory + photoId
             + File.separator + name;
 
-          String mimeType = AttachmentController.getMimeType(name);
+          String mimeType = FileUtil.getMimeType(name);
           long size = image.length();
 
           // création du répertoire pour mettre la photo

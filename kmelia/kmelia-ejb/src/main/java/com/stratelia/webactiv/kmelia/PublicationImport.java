@@ -50,6 +50,8 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import java.io.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,6 +61,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.search.SearchEngineFactory;
 
 public class PublicationImport {
@@ -442,14 +445,6 @@ public class PublicationImport {
   }
 
   public void importAttachment(String publicationId, String userId, String filePath, String title,
-      String info, Date creationDate)
-      throws RemoteException {
-    importAttachment(publicationId, userId, filePath, title,
-        info, creationDate, null);
-
-  }
-
-  public void importAttachment(String publicationId, String userId, String filePath, String title,
       String info, Date creationDate, String logicalName)
       throws RemoteException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
@@ -471,9 +466,17 @@ public class PublicationImport {
       attDetail.setLogicalName(logicalName);
       updateLogicalName=false;
     }
+    InputStream in = null;
+    try {
+      in  = new BufferedInputStream(new FileInputStream(filePath));
+      attachmentIE.importAttachment(publicationId, componentId, attDetail, in, isIndexable,
+          updateLogicalName);
+    } catch (FileNotFoundException e) {
+      throw new RemoteException("ImportAttachment", e);
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
 
-    attachmentIE.importAttachment(publicationId, componentId, attDetail,
-        isIndexable, updateLogicalName);
   }
 
   /**

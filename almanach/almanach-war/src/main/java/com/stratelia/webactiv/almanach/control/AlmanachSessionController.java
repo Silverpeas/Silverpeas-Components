@@ -23,30 +23,6 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
-import static com.silverpeas.export.ExportDescriptor.withWriter;
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
-import static com.stratelia.webactiv.util.DateUtil.parse;
-import static com.silverpeas.pdc.model.PdcClassification.*;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.RemoveException;
-
-import org.apache.commons.io.FileUtils;
-
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
@@ -66,12 +42,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBadParamException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachNoSuchFindEventException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
+import com.stratelia.webactiv.almanach.control.ejb.*;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import com.stratelia.webactiv.almanach.model.EventPK;
@@ -79,17 +50,30 @@ import com.stratelia.webactiv.almanach.model.PeriodicityException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+
+import javax.ejb.RemoveException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.*;
+
+import static com.silverpeas.export.ExportDescriptor.withWriter;
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
+import static com.stratelia.webactiv.util.DateUtil.parse;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events.
@@ -297,7 +281,11 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     // remove event from DB
     getAlmanachBm().removeEvent(pk);
     // remove attachments from filesystem
-    AttachmentController.deleteAttachmentByCustomerPK(pk);
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
+        .searchAttachmentsByExternalObject(pk, null);
+    for (SimpleDocument document : documents) {
+      AttachmentServiceFactory.getAttachmentService().createIndex(document);
+    }
     // Delete the Wysiwyg if exists
     if (WysiwygController.haveGotWysiwyg(getSpaceId(), getComponentId(), id)) {
       FileFolderManager.deleteFile(WysiwygController.getWysiwygPath(getComponentId(), id));

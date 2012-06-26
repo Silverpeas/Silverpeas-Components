@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.kmelia.model;
 
+import com.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
 public class FileDetail extends Object implements java.io.Serializable {
@@ -76,8 +77,7 @@ public class FileDetail extends Object implements java.io.Serializable {
   }
 
   public String getMimeType() {
-    return com.stratelia.webactiv.util.attachment.control.AttachmentController
-        .getMimeType(name);
+    return FileUtil.getMimeType(name);
   }
 
   public String getPath() {

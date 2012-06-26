@@ -40,6 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import javax.inject.Inject;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.ReservedResource;
@@ -279,7 +282,11 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   @Override
   public void deleteReservation(String id, String componentId) {
     deleteIndex(id, "Reservation", componentId);
-    AttachmentController.deleteAttachmentByCustomerPK(new ForeignPK(id, componentId));
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
+        .searchAttachmentsByExternalObject(new ForeignPK(id, componentId), null);
+    for (SimpleDocument document : documents) {
+      AttachmentServiceFactory.getAttachmentService().createIndex(document);
+    }
     reservationService.deleteReservation(Integer.parseInt(id));
   }
 
