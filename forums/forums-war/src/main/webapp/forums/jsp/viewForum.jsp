@@ -236,7 +236,7 @@
                         <tr class="ArrayColumn">
                           <td nowrap="nowrap" align="center" colspan="3"><fmt:message key="forums.nbSubjects"/></td>
                           <td nowrap="nowrap" align="center"><fmt:message key="forums.lastMessage"/></td>
-                          <td nowrap="nowrap" align="center"><<fmt:message key="forums.nbMessages"/></td>
+                          <td nowrap="nowrap" align="center"><fmt:message key="forums.nbMessages"/></td>
                           <td nowrap="nowrap" align="center"><fmt:message key="forums.nbViews"/></td>
                           <td nowrap="nowrap" align="center"><fmt:message key="forums.notation"/></td>
                           <c:if test="${isAdmin || isModerator}">

@@ -338,7 +338,8 @@
     </script>
 </head>
 
-<body id="forum" <%addBodyOnload(out, fsc);%>><%
+<body id="forum" <%addBodyOnload(out, fsc);%>>
+<%
 
         Window window = graphicFactory.getWindow();
         Frame frame=graphicFactory.getFrame();
@@ -510,44 +511,30 @@
                                     <div class="messageContent">
                                       <span class="txtnote"><%=text%></span>
                                     </div>
-                                  <%
-                                      if (!isReader) {
-                                  %>
+                                  
                                   <div class="messageFooter">
                                         <input name="checkbox" type="checkbox" <%if (isSubscriber) {%>checked<%}%>
                                                 onclick="javascript:window.location.href='viewMessage.jsp?action=<%=(isSubscriber ? 13 : 14)%>&params=<%=currentId%>&forumId=<%=forumId%>'">
                                                 <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span>                                             
-                                             <%
-                                              if (forumActive) {%>
+                                             <% if (forumActive) { %>
                                               <div class="messageActions">
-                                              <%
-                                                if (isAdmin || isUser) {
-				    %>
-                                                  <a href="javascript:replyMessage(<%=currentId%>)"><img
-				           src="<%=context%>/util/icons/reply.gif" align="middle" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"></a>&nbsp;
-				    <%  }
-                                                if (userId.equals(author) || isAdmin || isModerator) {
+                                              <% if ((isAdmin || isUser) && STATUS_VALIDATE.equals(status)) { %>
+                                                  <a href="javascript:replyMessage(<%=currentId%>)"><img src="<%=context%>/util/icons/reply.gif" align="middle" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"/></a>&nbsp;
+				    						  <%  }
+                                                if (userId.equals(authorId) || isAdmin || isModerator) {
                                                   if (isModerator && STATUS_FOR_VALIDATION.equals(status)) {
                                             %>
                                                     <a href="javascript:valideMessage(<%=currentId%>)"><img 
                                                         src="<%=context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"></a>&nbsp;
                                                     <a href="javascript:refuseMessage(<%=currentId%>)"><img
                                                       src="<%=context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("refuseMessage")%>" title="<%=resource.getString("refuseMessage")%>"></a>&nbsp;
-                                            <%
-                                                  }
-                                            %>
-                                               <a href="javascript:editMessage(<%=currentId%>)"><img
-                                                 src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"></a>&nbsp;
-                                               <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img
-                                                 src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"></a>&nbsp;<%
-                                                }%>
+                                            <% } %>
+                                               <a href="javascript:editMessage(<%=currentId%>)"><img src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"/></a>&nbsp;
+                                               <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"/></a>&nbsp;
+                                            <% } %>
                                               </div>
-                                           <%   }
-                                          %>  
+                                           <% } %>  
                                         </div>
-                                    <% 
-                                      }
-                                    %> 
                               </div>
                               <br clear="all"/>
                     </div><%
