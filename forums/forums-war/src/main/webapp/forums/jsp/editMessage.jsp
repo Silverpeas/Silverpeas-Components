@@ -134,39 +134,39 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-    <script type="text/javascript"><%
-
-    if (move) {
+    <script type="text/javascript">
+<%
+  if (move) {
 %>
-        function validateMessage()
-        {
-            document.forms["forumsForm"].submit();
-        }<%
-
-    } else {
+function validateMessage()
+{
+    document.forms["forumsForm"].submit();
+}
+<%
+  } else {
 %>
-        function init() {
-        	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
-            document.forms["forumsForm"].elements["messageTitle"].focus();
-        }
+function init() {
+	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
+    document.forms["forumsForm"].elements["messageTitle"].focus();
+}
 
-        function validateMessage()
-        {
-            if (document.forms["forumsForm"].elements["messageTitle"].value == "")
-            {
-                alert('<%=resource.getString("emptyMessageTitle")%>');
-            }
-            else if (!isTextFilled())
-            {
-                alert('<%=resource.getString("emptyMessageText")%>');
-            }
-            else
-            {
-                document.forms["forumsForm"].submit();
-            }
-        }<%
-
+function validateMessage()
+{
+    if (document.forms["forumsForm"].elements["messageTitle"].value == "")
+    {
+        alert('<%=resource.getString("emptyMessageTitle")%>');
     }
+    else if (!isTextFilled())
+    {
+        alert('<%=resource.getString("emptyMessageText")%>');
+    }
+    else
+    {
+        document.forms["forumsForm"].submit();
+    }
+}
+<%
+  }
 %>
     </script>
 </head>
@@ -244,11 +244,11 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
                     <table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%">
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("messageTitle")%> :</span></td>
-                            <td valign="top"><input type="text" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
+                            <td valign="top"><input type="text" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/></td>
                         </tr>
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("messageText")%> : </span></td>
-                            <td valign="top"><font size=1><textarea name="messageText" id="messageText"></textarea></font></td>
+                            <td valign="top"><font size=1><textarea name="messageText" id="messageText"></textarea></font>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/></td>
                         </tr>
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("forumKeywords")%> : </span></td>
@@ -258,8 +258,9 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
                             <td valign="top"><span class="txtlibform"><%=resource.getString("subscribeMessage")%> :</span></td>
                             <td valign="top"><input type="checkbox" name="subscribeMessage"></td>
                         </tr>
-                    </table><%
-
+                        <tr><td></td><td>(<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5" />&nbsp;=&nbsp;<fmt:message key="reqchamps" />)</td></tr>
+                    </table>
+<%
     }
 %>
                 </td>
