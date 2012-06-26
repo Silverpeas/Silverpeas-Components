@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -31,13 +30,15 @@
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
+
+<%@ include file="checkForums.jsp"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<%@ include file="checkForums.jsp"%>
 <%!
 public void listFolders(JspWriter out, String userId, boolean admin, int rootId, int parentId,
         String indent, ResourceLocator resource, ForumsSessionController fsc)
@@ -133,39 +134,39 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-    <script type="text/javascript"><%
-
-    if (move) {
+    <script type="text/javascript">
+<%
+  if (move) {
 %>
-        function validateMessage()
-        {
-            document.forms["forumsForm"].submit();
-        }<%
-
-    } else {
+function validateMessage()
+{
+    document.forms["forumsForm"].submit();
+}
+<%
+  } else {
 %>
-        function init() {
-        	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
-            document.forms["forumsForm"].elements["messageTitle"].focus();
-        }
+function init() {
+	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
+    document.forms["forumsForm"].elements["messageTitle"].focus();
+}
 
-        function validateMessage()
-        {
-            if (document.forms["forumsForm"].elements["messageTitle"].value == "")
-            {
-                alert('<%=resource.getString("emptyMessageTitle")%>');
-            }
-            else if (!isTextFilled())
-            {
-                alert('<%=resource.getString("emptyMessageText")%>');
-            }
-            else
-            {
-                document.forms["forumsForm"].submit();
-            }
-        }<%
-
+function validateMessage()
+{
+    if (document.forms["forumsForm"].elements["messageTitle"].value == "")
+    {
+        alert('<%=resource.getString("emptyMessageTitle")%>');
     }
+    else if (!isTextFilled())
+    {
+        alert('<%=resource.getString("emptyMessageText")%>');
+    }
+    else
+    {
+        document.forms["forumsForm"].submit();
+    }
+}
+<%
+  }
 %>
     </script>
 </head>
@@ -187,8 +188,8 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     	(reqForum > 0 ? "viewForum" : "main"), (move ? 12 : 8), (reqForum > 0 ? reqForum : -1));
 %>
     <center>
-        <table class="intfdcolor4" border="0" cellpadding="0" cellspacing="0" width="98%">
         <form name="forumsForm" action="<%=formAction%>" method="post">
+        <table class="intfdcolor4" border="0" cellpadding="0" cellspacing="0" width="98%">
             <tr align="center">
                 <td valign="top" align="center"><%
 
@@ -243,11 +244,11 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
                     <table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%">
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("messageTitle")%> :</span></td>
-                            <td valign="top"><input type="text" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
+                            <td valign="top"><input type="text" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/></td>
                         </tr>
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("messageText")%> : </span></td>
-                            <td valign="top"><font size=1><textarea name="messageText" id="messageText"></textarea></font></td>
+                            <td valign="top"><font size=1><textarea name="messageText" id="messageText"></textarea></font>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/></td>
                         </tr>
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("forumKeywords")%> : </span></td>
@@ -257,14 +258,15 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
                             <td valign="top"><span class="txtlibform"><%=resource.getString("subscribeMessage")%> :</span></td>
                             <td valign="top"><input type="checkbox" name="subscribeMessage"></td>
                         </tr>
-                    </table><%
-
+                        <tr><td></td><td>(<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5" />&nbsp;=&nbsp;<fmt:message key="reqchamps" />)</td></tr>
+                    </table>
+<%
     }
 %>
                 </td>
             </tr>
-        </form>
         </table>
+        </form>
     </center><br/>
       <center>
         <fmt:message key="valider" var="validate"/>
