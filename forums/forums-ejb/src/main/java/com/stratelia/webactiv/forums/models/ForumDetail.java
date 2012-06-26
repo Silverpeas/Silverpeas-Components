@@ -28,9 +28,12 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
 
+import com.silverpeas.SilverpeasContent;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.forums.ForumsContentManager;
 import com.stratelia.webactiv.util.DateUtil;
 
 /**
@@ -38,8 +41,10 @@ import com.stratelia.webactiv.util.DateUtil;
  * @author Marc Guillemin
  * @version 1.0
  */
-public class ForumDetail extends AbstractI18NBean implements SilverContentInterface, Serializable {
+public class ForumDetail extends AbstractI18NBean implements SilverContentInterface, Serializable, SilverpeasContent {
 
+  private static final long serialVersionUID = -5500661559879178630L;
+  private static final String TYPE = "forum";  
   private ForumPK pk;
   private String name;
   private String description;
@@ -109,7 +114,7 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
   }
 
   public void setSilverObjectId(int silverObjectId) {
-    this.silverObjectId = new Integer(silverObjectId).toString();
+    this.silverObjectId = Integer.toString(silverObjectId);
   }
 
   public String getSilverObjectId() {
@@ -166,7 +171,7 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
     return getName();
   }
 
-  public Iterator getLanguages() {
+  public Iterator<String> getLanguages() {
     return null;
   }
 
@@ -218,5 +223,32 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
     result = 31 * result + (silverObjectId != null ? silverObjectId.hashCode() : 0);
     result = 31 * result + (iconUrl != null ? iconUrl.hashCode() : 0);
     return result;
+  }
+
+  @Override
+  public String getComponentInstanceId() {
+    return getPK().getComponentName();
+  }
+
+  @Override
+  public String getContributionType() {
+    return TYPE;
+  }
+
+  @Override
+  public UserDetail getCreator() {
+    return UserDetail.getById(this.getCreatorId());
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    if (this.silverObjectId == null) {
+      ForumsContentManager forumsContentMgr = new ForumsContentManager();
+      int objectId = forumsContentMgr.getSilverObjectId(getId(), getComponentInstanceId());
+      if (objectId >= 0) {
+        this.silverObjectId = String.valueOf(objectId);
+      }
+    }
+    return this.silverObjectId;
   }
 }

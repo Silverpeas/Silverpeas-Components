@@ -33,7 +33,7 @@
 %><%@ page import="com.stratelia.webactiv.forums.models.Forum"
 %><%@ page import="com.stratelia.webactiv.forums.url.ActionUrl"
 %><%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"
-%><%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"
+%><%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"
 %><%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"
 %><%@ page import="com.stratelia.webactiv.util.ResourceLocator"
 %>
@@ -150,7 +150,7 @@ public void displayForumLine(String spaceId, String componentId, Forum forum,
 		out.print(Encode.javaStringToHtmlString(nbMessages));
 		out.println("</span></td>");
 		
-		//cinquième colonne
+		//cinquiï¿½me colonne
 		// dernier sujet du forum
 		out.print("<td nowrap=\"nowrap\" align=\"center\" class=\"fondClair\"><span class=\"txtnote\">");
 		if (lastMessageDate != null)
