@@ -188,8 +188,8 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     	(reqForum > 0 ? "viewForum" : "main"), (move ? 12 : 8), (reqForum > 0 ? reqForum : -1));
 %>
     <center>
-        <table class="intfdcolor4" border="0" cellpadding="0" cellspacing="0" width="98%">
         <form name="forumsForm" action="<%=formAction%>" method="post">
+        <table class="intfdcolor4" border="0" cellpadding="0" cellspacing="0" width="98%">
             <tr align="center">
                 <td valign="top" align="center"><%
 
@@ -264,8 +264,8 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
 %>
                 </td>
             </tr>
-        </form>
         </table>
+        </form>
     </center><br/>
       <center>
         <fmt:message key="valider" var="validate"/>

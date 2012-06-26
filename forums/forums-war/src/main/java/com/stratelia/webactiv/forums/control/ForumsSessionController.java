@@ -23,15 +23,27 @@
  */
 package com.stratelia.webactiv.forums.control;
 
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static com.stratelia.webactiv.SilverpeasRole.admin;
+import static com.stratelia.webactiv.SilverpeasRole.reader;
+import static com.stratelia.webactiv.SilverpeasRole.user;
+import static com.stratelia.webactiv.forums.models.Message.STATUS_FOR_VALIDATION;
+import static com.stratelia.webactiv.forums.models.Message.STATUS_REFUSED;
+import static com.stratelia.webactiv.forums.models.Message.STATUS_VALIDATE;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
+import javax.xml.bind.JAXBException;
 
 import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.notation.ejb.NotationBmHome;
@@ -39,6 +51,11 @@ import com.silverpeas.notation.ejb.NotationRuntimeException;
 import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationDetail;
 import com.silverpeas.notation.model.NotationPK;
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -50,18 +67,16 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import static com.stratelia.webactiv.SilverpeasRole.*;
 import com.stratelia.webactiv.beans.admin.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.forumsException.ForumsException;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBMHome;
-import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.forums.models.Forum;
+import com.stratelia.webactiv.forums.models.ForumDetail;
+import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.Message;
-import static com.stratelia.webactiv.forums.models.Message.*;
-
+import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -77,9 +92,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Cette classe gere la session de l'acteur durant sa navigation dans les forums
@@ -108,6 +120,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private boolean external = false;
   private String mailType = MAIL_TYPE;
   private boolean resizeFrame = false;
+  private List<PdcPosition> positions = null;
 
   // Constructeur
   public ForumsSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
@@ -145,8 +158,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       throw new EJBException(re.getMessage(), re);
     }
     SilverTrace.debug("forums", "ForumsSessionController.getForumsListByCategory()", "",
-        "retour = "
-            + result);
+        "retour = " + result);
     return result;
   }
 
@@ -243,13 +255,13 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * Cree un nouveau forum dans la datasource
-   * @param forumName nom du forum
-   * @param forumDescription description du forum
-   * @param forumCreator l'id du createur du forum
-   * @param forumParent l'id du forum parent
+   * Create a new forum and persist it inside datasource
+   * @param forumName forum name
+   * @param forumDescription forum description
+   * @param forumCreator creator user identifier
+   * @param forumParent parent forum identifier
    * @param keywords the keywords.
-   * @return l'id du forum nouvellement cree
+   * @return identifier of the new forum
    * @author frageade
    * @since 02 Octobre 2000
    */
@@ -258,16 +270,21 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return createForum(forumName, forumDescription, forumCreator, forumParent, "0", keywords);
   }
 
-  public int createForum(String forumName, String forumDescription,
-      String forumCreator, int forumParent, String categoryId, String keywords) {
+  public int createForum(String forumName, String forumDescription, String forumCreator,
+      int forumParent, String categoryId, String keywords) {
     ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId());
     String currentCategoryId = categoryId;
     try {
       if (!StringUtil.isDefined(categoryId)) {
         currentCategoryId = null;
       }
-      return getForumsBM().createForum(forumPK, truncateTextField(forumName), truncateTextArea(
-          forumDescription), forumCreator, forumParent, currentCategoryId, keywords);
+      int forumId =
+          getForumsBM().createForum(forumPK, truncateTextField(forumName), truncateTextArea(
+              forumDescription), forumCreator, forumParent, currentCategoryId, keywords);
+
+      // Classify content here
+      classifyContent(forumPK);
+      return forumId;
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage(), re);
     }
@@ -276,26 +293,23 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   /**
    * Met a jour les informations sur un forum dans la datasource
    * @param forumId l'ID du forum dans la datasource
-   * @param forumName nom du forum
-   * @param forumDescription description du forum
-   * @param forumParent l'id du forum parent
+   * @param forumName forum name
+   * @param forumDescription forum description
+   * @param forumParent parent forum identifier
    * @param keywords the keywords.
    * @author frageade
    * @since 03 Octobre 2000
    */
   public void updateForum(int forumId, String forumName, String forumDescription, int forumParent,
       String keywords) {
-    updateForum(forumId, forumName, forumDescription, forumParent, null,
-        keywords);
+    updateForum(forumId, forumName, forumDescription, forumParent, null, keywords);
   }
 
-  public void updateForum(int forumId, String forumName,
-      String forumDescription, int forumParent, String categoryId,
-      String keywords) {
+  public void updateForum(int forumId, String forumName, String forumDescription, int forumParent,
+      String categoryId, String keywords) {
     try {
       getForumsBM().updateForum(getForumPK(forumId), truncateTextField(forumName),
-          truncateTextArea(forumDescription), forumParent, categoryId,
-          keywords);
+          truncateTextArea(forumDescription), forumParent, categoryId, keywords);
     } catch (RemoteException re) {
       SilverTrace.error("forums", "ForumsSessionController.updateForum()",
           "forums.EXE_UPDATE_FORUM_FAILED", re.getMessage());
@@ -1204,7 +1218,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
             JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
       } catch (Exception e) {
-        SilverTrace.error("quickinfo", "QuickInfoSessionController.getPublicationBm()",
+        SilverTrace.error("forum", "ForumSessionController.getPublicationBm()",
             "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
         throw new EJBException(e);
       }
@@ -1295,4 +1309,66 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     Collections.reverse(ancestors);
     return ancestors;
   }
+
+  /**
+   * this method clasify content only when new forum is created. Check if a position has been
+   * defined in header formulary then persist it
+   * @param forumDetail the current ForumDetail
+   */
+  private void classifyContent(ForumPK forumPK) {
+
+    List<PdcPosition> positions = this.getPositions();
+    if (positions != null && !positions.isEmpty()) {
+      ForumDetail forumDetail;
+      try {
+        forumDetail = getForumsBM().getForumDetail(forumPK);
+        String forumId = forumDetail.getPK().getId();
+        PdcClassification classification =
+              aPdcClassificationOfContent(forumId, forumDetail.getInstanceId()).withPositions(
+                  this.getPositions());
+        if (!classification.isEmpty()) {
+          PdcClassificationService service =
+              PdcServiceFactory.getFactory().getPdcClassificationService();
+          classification.ofContent(forumId);
+          service.classifyContent(forumDetail, classification);
+        }
+      } catch (RemoteException e) {
+        SilverTrace.error("Forum", "ForumSessionController.classifyContent",
+            "Problem to load FormDetail", e);
+      }
+    }
+  }
+
+  public void setForumPositions(String positions) {
+    if (StringUtil.isDefined(positions)) {
+      PdcClassificationEntity surveyClassification = null;
+      try {
+        surveyClassification = PdcClassificationEntity.fromJSON(positions);
+      } catch (JAXBException e) {
+        SilverTrace.error("Forum", "ForumActionHelper.actionManagement",
+                  "PdcClassificationEntity error", "Problem to read JSON", e);
+      }
+      if (surveyClassification != null && !surveyClassification.isUndefined()) {
+        List<PdcPosition> pdcPositions = surveyClassification.getPdcPositions();
+        this.setPositions(pdcPositions);
+      }
+    } else {
+      this.setPositions(null);
+    }
+  }
+
+  /**
+   * @return the positions
+   */
+  private List<PdcPosition> getPositions() {
+    return positions;
+  }
+
+  /**
+   * @param positions the positions to set
+   */
+  private void setPositions(List<PdcPosition> positions) {
+    this.positions = positions;
+  }
+
 }

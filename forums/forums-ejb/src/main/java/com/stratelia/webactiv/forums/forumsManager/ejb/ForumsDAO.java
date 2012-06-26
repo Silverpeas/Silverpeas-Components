@@ -1905,7 +1905,7 @@ public class ForumsDAO {
    * @return The forum corresponding to the primary key (ForumDetail).
    * @throws SQLException An SQL exception.
    */
-  private static ForumDetail getForumDetail(Connection con, ForumPK forumPK)
+  public static ForumDetail getForumDetail(Connection con, ForumPK forumPK)
       throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;

@@ -93,10 +93,9 @@ public class ForumsContentManager implements ContentInterface {
       throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(true);
     SilverTrace.info("forums", "ForumsContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
-    return getContentManager().addSilverContent(con, forumPK.getId(),
-        forumPK.getComponentName(), userId, scv);
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+    return getContentManager().addSilverContent(con, forumPK.getId(), forumPK.getComponentName(),
+        userId, scv);
   }
 
   /**
@@ -116,7 +115,7 @@ public class ForumsContentManager implements ContentInterface {
       SilverTrace.info("forums",
           "ForumsContentManager.updateSilverContentVisibility()",
           "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-          + scv.toString());
+              + scv.toString());
       getContentManager().updateSilverContentVisibilityAttributes(scv,
           forumPK.getComponentName(), silverContentId);
       ClassifyEngine.clearCache();
@@ -135,7 +134,7 @@ public class ForumsContentManager implements ContentInterface {
     if (contentId != -1) {
       SilverTrace.info("forums", "ForumsContentManager.deleteSilverContent()",
           "root.MSG_GEN_ENTER_METHOD", "pubId = " + forumPK.getId()
-          + ", contentId = " + contentId);
+              + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId,
           forumPK.getComponentName());
     }

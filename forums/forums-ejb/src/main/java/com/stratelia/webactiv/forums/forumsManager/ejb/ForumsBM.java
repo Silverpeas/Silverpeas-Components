@@ -59,6 +59,14 @@ public interface ForumsBM extends EJBObject {
 
   public Collection<ForumDetail> getForums(Collection<ForumPK> forumPKs) throws RemoteException;
 
+  /**
+   * 
+   * @param forumPK forum primary key
+   * @return a ForumDetail from the forum primary key identifier
+   * @throws RemoteException
+   */
+  public ForumDetail getForumDetail(ForumPK forumPK) throws RemoteException;
+
   public Collection<Forum> getForumsList(Collection<ForumPK> forumPKs) throws RemoteException;
 
   public Collection<Message> getThreadsList(Collection<MessagePK> messagePKs)

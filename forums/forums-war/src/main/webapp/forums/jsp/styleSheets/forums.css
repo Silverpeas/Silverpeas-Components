@@ -228,4 +228,24 @@
 }
 
 
+.forum fieldset#infoFieldset legend {
+  background:transparent url(../../../util/icons/component/forumsSmall.gif) 11px 0px no-repeat;
+}
 
+.forum fieldset#moderatorsFieldset legend {
+  background:transparent url(../../../util/icons/groupe.gif) 11px 0px no-repeat;
+}
+
+#infoFieldset .field, 
+#moderatorsFieldset .field {
+  clear: both;
+  display: block;
+  float: none;
+  width: 98%;
+}
+
+#infoFieldset #nameArea input,
+#infoFieldset #categoryArea select,
+#infoFieldset #keywordsArea input  {
+  width: 46%;
+}
