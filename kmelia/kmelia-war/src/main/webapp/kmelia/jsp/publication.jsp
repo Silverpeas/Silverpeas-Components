@@ -232,7 +232,6 @@
     <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
-    <view:includePlugin name="userZoom"/>
     <script type="text/javascript">
   
       $(function() {
@@ -625,25 +624,17 @@
 									<p id="authorInfo"><%=resources.getString("GML.author")%> : <b><%=pubDetail.getAuthor()%></b></p>
 								<% }%>
 			         	
-			         			<% if (updaterId != null) {
-                                  String cssClass = "";
-                                  if (!currentUser.getId().equals(kmeliaPublication.getLastModifier().getId())) {
-                                    cssClass = " class='userToZoom'";
-                                  }%>
+			         			<% if (updaterId != null) {%>
 								  	<div id="lastModificationInfo" class="paragraphe">
 								  		<%=resources.getString("PubDateUpdate")%>  <br />
-								  		<b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%> <span<%=cssClass%> rel="<%=kmeliaPublication.getLastModifier().getId()%>"><%= updaterName%></span>
+                                        <b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
 								  		<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 							  		</div>
-							  	 <% }
-                                  String cssClass = "";
-                                  if (!currentUser.getId().equals(kmeliaPublication.getCreator().getId())) {
-                                    cssClass = " class='userToZoom'";
-                                  }%>
+							  	 <% }%>
 								
 								 <div id="creationInfo" class="paragraphe">
 								 	<%=resources.getString("PubDateCreation")%> <br/>
-								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <span<%=cssClass%> rel="<%=kmeliaPublication.getCreator().getId()%>"><%= creatorName%></span>
+								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getCreator().getId()%>"/>
 								 	<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 							 	</div>
 							  	 
