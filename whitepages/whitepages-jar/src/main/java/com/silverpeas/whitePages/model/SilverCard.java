@@ -61,9 +61,14 @@ public class SilverCard implements SilverpeasContent {
   }
 
   @Override
-  public String getContributionType() {
+  public String getDescription() {
     // TODO Auto-generated method stub
     return null;
   }
 
+  @Override
+  public String getContributionType() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
