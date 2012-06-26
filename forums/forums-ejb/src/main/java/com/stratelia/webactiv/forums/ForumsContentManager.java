@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.models.ForumDetail;
@@ -52,20 +53,13 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  */
 public class ForumsContentManager implements ContentInterface {
 
-  /**
-   * Find all the SilverContent with the given list of SilverContentId
-   * @param ids list of silverContentId to retrieve
-   * @param peasId the id of the instance
-   * @param userId the id of the user who wants to retrieve silverContent
-   * @param userRoles the roles of the user
-   * @return a List of SilverContent
-   */
-  public List getSilverContentById(List ids, String peasId, String userId,
-      List userRoles) {
+  @Override
+  public List<SilverContentInterface> getSilverContentById(List<Integer> alSilverContentId,
+      String sComponentId, String sUserId, List<String> alContentUserRoles) {
     if (getContentManager() == null) {
-      return new ArrayList();
+      return new ArrayList<SilverContentInterface>();
     }
-    return getHeaders(makePKArray(ids, peasId));
+    return getHeaders(makePKArray(alSilverContentId, sComponentId));
   }
 
   /**
@@ -99,10 +93,9 @@ public class ForumsContentManager implements ContentInterface {
       throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(true);
     SilverTrace.info("forums", "ForumsContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
-    return getContentManager().addSilverContent(con, forumPK.getId(),
-        forumPK.getComponentName(), userId, scv);
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+    return getContentManager().addSilverContent(con, forumPK.getId(), forumPK.getComponentName(),
+        userId, scv);
   }
 
   /**
@@ -122,7 +115,7 @@ public class ForumsContentManager implements ContentInterface {
       SilverTrace.info("forums",
           "ForumsContentManager.updateSilverContentVisibility()",
           "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-          + scv.toString());
+              + scv.toString());
       getContentManager().updateSilverContentVisibilityAttributes(scv,
           forumPK.getComponentName(), silverContentId);
       ClassifyEngine.clearCache();
@@ -141,7 +134,7 @@ public class ForumsContentManager implements ContentInterface {
     if (contentId != -1) {
       SilverTrace.info("forums", "ForumsContentManager.deleteSilverContent()",
           "root.MSG_GEN_ENTER_METHOD", "pubId = " + forumPK.getId()
-          + ", contentId = " + contentId);
+              + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId,
           forumPK.getComponentName());
     }
@@ -160,22 +153,22 @@ public class ForumsContentManager implements ContentInterface {
   /**
    * return a list of forumPK according to a list of silverContentId
    * @param idList a list of silverContentId
-   * @param peasId the id of the instance
+   * @param componentId the id of the instance
    * @return a list of forumPK
    */
-  private ArrayList makePKArray(List idList, String peasId) {
-    ArrayList fks = new ArrayList();
+  private List<ForumPK> makePKArray(List<Integer> idList, String componentId) {
+    List<ForumPK> fks = new ArrayList<ForumPK>();
     ForumPK forumPK = null;
-    Iterator iter = idList.iterator();
+    Iterator<Integer> iter = idList.iterator();
     String id = null;
 
     // for each silverContentId, we get the corresponding forumId
     while (iter.hasNext()) {
-      int contentId = ((Integer) iter.next()).intValue();
+      int contentId = iter.next().intValue();
 
       try {
         id = getContentManager().getInternalContentId(contentId);
-        forumPK = new ForumPK(peasId, id);
+        forumPK = new ForumPK(componentId, id);
         fks.add(forumPK);
       } catch (ClassCastException ignored) {
         // ignore unknown item
@@ -191,9 +184,9 @@ public class ForumsContentManager implements ContentInterface {
    * @param ids a list of ForumPK
    * @return a list of ForumDetail
    */
-  private List getHeaders(List ids) {
+  private List getHeaders(List<ForumPK> ids) {
     ForumDetail forumDetail = null;
-    ArrayList headers = new ArrayList();
+    List<ForumDetail> headers = new ArrayList<ForumDetail>();
 
     try {
       ArrayList forumDetails = (ArrayList) getForumsBM().getForums(ids);

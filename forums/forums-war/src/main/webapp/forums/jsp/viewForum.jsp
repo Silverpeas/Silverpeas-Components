@@ -42,13 +42,13 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <%@ page import="java.io.IOException"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.forums.sessionController.helpers.*"%>
-<%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.*"%>
+<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
 <%@ page import="com.stratelia.webactiv.forums.models.Forum"%>
 <%@ page import="com.stratelia.webactiv.forums.models.Message"%>
 <%
@@ -236,7 +236,7 @@
                         <tr class="ArrayColumn">
                           <td nowrap="nowrap" align="center" colspan="3"><fmt:message key="forums.nbSubjects"/></td>
                           <td nowrap="nowrap" align="center"><fmt:message key="forums.lastMessage"/></td>
-                          <td nowrap="nowrap" align="center"><<fmt:message key="forums.nbMessages"/></td>
+                          <td nowrap="nowrap" align="center"><fmt:message key="forums.nbMessages"/></td>
                           <td nowrap="nowrap" align="center"><fmt:message key="forums.nbViews"/></td>
                           <td nowrap="nowrap" align="center"><fmt:message key="forums.notation"/></td>
                           <c:if test="${isAdmin || isModerator}">

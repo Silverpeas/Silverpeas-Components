@@ -53,49 +53,47 @@
   </c:otherwise>
 </c:choose> 
 <html>
-    <head>
-          <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
-<%
-  out.println(graphicFactory.getLookStyleSheet());
-%>
-    <script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
-    <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
-    <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-    <script type="text/javascript">
-        // fonctions de controle des zones du formulaire avant validation
-        function sendData(creation)
-        {
-            if (isCorrectForm())
-            {
-                document.forms["categoryForm"].action = (creation ? "CreateCategory" : "UpdateCategory");
-                document.forms["categoryForm"].submit();
-            }
-        }
+  <head>
+    <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
+<view:looknfeel />
+  <script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
+  <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
+  <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
+  <script type="text/javascript">
+// fonctions de controle des zones du formulaire avant validation
+function sendData(creation)
+{
+    if (isCorrectForm())
+    {
+        document.forms["categoryForm"].action = (creation ? "CreateCategory" : "UpdateCategory");
+        document.forms["categoryForm"].submit();
+    }
+}
 
-        function isCorrectForm()
-        {
-            var errorMsg = "";
-            var errorNb = 0;
-            var name = stripInitialWhitespace(document.categoryForm.Name.value);
-            if (name == "")
-            {
-              errorMsg += "  - '<fmt:message key="GML.title" />'  " + "<fmt:message key="GML.MustBeFilled"/>\n";
-                errorNb++;
-            }
+function isCorrectForm()
+{
+    var errorMsg = "";
+    var errorNb = 0;
+    var name = stripInitialWhitespace(document.categoryForm.Name.value);
+    if (name == "")
+    {
+      errorMsg += "  - '<fmt:message key="GML.title" />'  " + "<fmt:message key="GML.MustBeFilled"/>\n";
+        errorNb++;
+    }
 
-            if (errorNb > 0)
-            {
-                window.alert("<fmt:message key="GML.ThisFormContains" /> " + errorNb
-                    + " " + (errorNb == 1 ? "<fmt:message key="GML.error" />" : "<fmt:message key="GML.errors"/>")
-                    + " : \n" + errorMsg);
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-    </script>
+    if (errorNb > 0)
+    {
+        window.alert("<fmt:message key="GML.ThisFormContains" /> " + errorNb
+            + " " + (errorNb == 1 ? "<fmt:message key="GML.error" />" : "<fmt:message key="GML.errors"/>")
+            + " : \n" + errorMsg);
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+  </script>
 </head>
 
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" <%addBodyOnload(out, fsc, "document.categoryForm.Name.focus();");%>>
@@ -113,29 +111,30 @@
   <view:window>
     <view:frame>
       <view:board>
+  <form name="categoryForm" action="<c:out value="${pageScope.action}" />" method="post">
+    <input type="hidden" name="CategoryId" value="<c:out value="${categoryId}" />"/>
+    <input type="hidden" name="Langue" value="<%=resources.getLanguage()%>"/>
     <table cellpadding="5" width="100%">
-      <form name="categoryForm" action="<c:out value="${pageScope.action}" />" method="post">
-        <input type="hidden" name="CategoryId" value="<c:out value="${categoryId}" />"/>
-        <input type="hidden" name="Langue" value="<%=resources.getLanguage()%>"/>
-        <tr>
-          <td class="txtlibform"><fmt:message key="GML.title" /> :</td>
-          <td><input type="text" name="Name" size="60" maxlength="150" value="<c:out value="${name}" />">
-            <img src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5" border="0">
-          </td>
-        </tr>
-        <tr>
-          <td class="txtlibform"><fmt:message key="GML.description" /> :</td>
-          <td><input type="text" name="Description" size="60" maxlength="150" value="<c:out value="${description}" />" ></td>
-        </tr>
-        <tr>
-          <td class="txtlibform"><fmt:message key="forums.creationDate" /> :</td>
-          <td><c:out value="${creationDate}" />&nbsp;<span class="txtlibform"></td>
-        </tr>
-        <tr>
-          <td colspan="2">( <img border="0" src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5"> : Obligatoire )</td>
-        </tr>
-      </form>
-    </table><br/>
+      <tr>
+        <td class="txtlibform"><fmt:message key="GML.title" /> :</td>
+        <td><input type="text" name="Name" size="60" maxlength="150" value="<c:out value="${name}" />">
+          <img src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5" border="0">
+        </td>
+      </tr>
+      <tr>
+        <td class="txtlibform"><fmt:message key="GML.description" /> :</td>
+        <td><input type="text" name="Description" size="60" maxlength="150" value="<c:out value="${description}" />" ></td>
+      </tr>
+      <tr>
+        <td class="txtlibform"><fmt:message key="forums.creationDate" /> :</td>
+        <td><c:out value="${creationDate}" />&nbsp;<span class="txtlibform"></td>
+      </tr>
+      <tr>
+        <td colspan="2">( <img border="0" src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5"> : Obligatoire )</td>
+      </tr>
+    </table>
+  </form>
+    <br/>
       <center>
         <fmt:message var="validateLabel" key="GML.validate" />
         <fmt:message var="cancelLabel" key="GML.cancel" />
