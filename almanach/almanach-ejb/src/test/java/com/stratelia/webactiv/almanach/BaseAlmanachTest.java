@@ -84,10 +84,14 @@ public abstract class BaseAlmanachTest extends AbstractJndiCase {
   }
   
   public static Date dateToUseInTests() {
+    return getDate(TEST_YEAR, TEST_MONTH, 14);
+  }
+  
+  public static Date getDate(int year, int month, int day) {
     Calendar date = Calendar.getInstance();
-    date.set(Calendar.YEAR, TEST_YEAR);
-    date.set(Calendar.MONTH, TEST_MONTH - 1);
-    date.set(Calendar.DAY_OF_MONTH, 14);
+    date.set(Calendar.YEAR, year);
+    date.set(Calendar.MONTH, month - 1);
+    date.set(Calendar.DAY_OF_MONTH, day);
     return date.getTime();
   }
 }

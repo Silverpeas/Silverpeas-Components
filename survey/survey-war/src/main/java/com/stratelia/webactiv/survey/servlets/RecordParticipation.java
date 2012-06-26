@@ -61,18 +61,15 @@ public class RecordParticipation extends HttpServlet {
 
     // Get the context
     String sRequestURL = request.getRequestURL().toString();
-    String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length()
-        - request.getRequestURI().length());
+    String urlAbsolute =
+        sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
 
-    SilverTrace.info("Survey", "RecordParticipation.doPost",
-        "Survey.MSG_GEN_PARAM_VALUE", m_sAbsolute
-        + URLManager.getApplicationURL()
-        + URLManager.getURL(null, null, componentId)
-        + "surveyDetail.jsp&action=ViewResult&SurveyId=" + surveyId);
-    response.sendRedirect(response.encodeRedirectURL(m_sAbsolute
-        + URLManager.getApplicationURL()
-        + URLManager.getURL(null, null, componentId)
-        + "surveyDetail.jsp?Action=ViewResult&SurveyId=" + surveyId));
+    SilverTrace.info("Survey", "RecordParticipation.doPost", "Survey.MSG_GEN_PARAM_VALUE",
+        urlAbsolute + URLManager.getApplicationURL() + URLManager.getURL(null, null, componentId)
+            + "surveyDetail.jsp&action=ViewResult&SurveyId=" + surveyId);
+    response.sendRedirect(response.encodeRedirectURL(urlAbsolute + URLManager.getApplicationURL()
+        + URLManager.getURL(null, null, componentId) +
+        "surveyDetail.jsp?Action=ViewResult&SurveyId=" + surveyId));
   }
 
   /**
