@@ -97,6 +97,7 @@ function refreshPublications()
 	$.get(getWebContext()+'/RAjaxPublicationsListServlet', {Id:nodeId,ComponentId:componentId,IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
+				activateUserZoom();
 			},"html");
 }
 
@@ -114,6 +115,7 @@ function displayPublicationsToValidate()
 	$.get(getWebContext()+'/RAjaxPublicationsListServlet', {ComponentId:componentId,ToValidate:1,IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
+				activateUserZoom();
 			},"html");
 }
 
@@ -143,6 +145,7 @@ function sortGoTo(selectedIndex) {
 		$.get(getWebContext()+'/RAjaxPublicationsListServlet', {Index:0,Sort:sort,ComponentId:componentId,Query:topicQuery,IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
+								activateUserZoom();
 							},"html");
 		return;
 	}
@@ -170,7 +173,18 @@ function displayPublications(id) {
 	$.get(url, {Id:id,ComponentId:componentId,PubIdToHighlight:pubIdToHighlight,IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
+				activateUserZoom();
 			},"html");
+}
+
+function activateUserZoom() {
+	$('.userToZoom').each(function() {
+	    var $this = $(this);
+	    if ($this.data('userZoom') == null)
+	      $this.userZoom({
+	        id: $this.attr('rel')
+	      });
+	  });
 }
 
 function displayOperations(id) {
@@ -465,6 +479,7 @@ function displayTopicInformation(id) {
 					if (params["i18n"]) {
 						setCurrentTopicTranslations(topic[0].translations);
 					}
+					activateUserZoom();
 				});
 	} else {
 		$("#footer").css({'visibility':'hidden'});
@@ -745,6 +760,7 @@ function doPagination(index) {
 	$.get(url, {Index:index,ComponentId:componentId,ToValidate:paramToValidate,Query:topicQuery,SelectedPubIds:selectedPublicationIds,NotSelectedPubIds:notSelectedPublicationIds,IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
+								activateUserZoom();
 							},"html");
 }
 

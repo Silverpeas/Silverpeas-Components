@@ -62,9 +62,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
@@ -133,15 +131,9 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 		       <span class="creatorTicket"> 
 	  	       &nbsp;|&nbsp;
 		         <% // date de cr�ation et de modification %>
-		         <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
-		         <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) 
-		         {
-		           UserDetail updater = m_MainSessionCtrl.getOrganizationController().getUserDetail(post.getPublication().getUpdaterId());
-		           String updaterName = "Unknown";
-		           if (updater != null)
-		             updaterName = updater.getDisplayedName();
-		           %>
-		           - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%> <%=resource.getString("GML.by")%> <%=updaterName %>
+		         <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <view:username userId="<%=post.getPublication().getCreatorId()%>" />
+		         <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) { %>
+		           - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%> <%=resource.getString("GML.by")%> <view:username userId="<%=post.getPublication().getUpdaterId()%>" />
 		         <% } %>
 		       </span>
 		    </div>

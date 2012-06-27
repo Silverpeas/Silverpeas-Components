@@ -120,27 +120,10 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
         }
 	}
 
-    String creationDate = resources.getOutputDate(pubDetail.getCreationDate());
-
   	String author 	= pubDetail.getAuthor();
 
   	String creatorId = pubDetail.getCreatorId();
-	String creatorName	= resources.getString("kmelia.UnknownUser");
-	if (creatorId != null && creatorId.length() > 0) {
-		UserDetail creator = kmeliaScc.getUserDetail(creatorId);
-		if (creator != null) {
-			creatorName = creator.getDisplayedName();
-		}
-	}
-
 	String updaterId = pubDetail.getUpdaterId();
-	String updaterName = resources.getString("kmelia.UnknownUser");
-	if (updaterId != null && updaterId.length() > 0) {
-		UserDetail updater = kmeliaScc.getUserDetail(updaterId);
-		if (updater != null) {
-			updaterName = updater.getDisplayedName();
-		}
-	}
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
@@ -387,11 +370,12 @@ function pubDraftOut() {
 			out.print(resources.getString("GML.author")+" : "+pubDetail.getAuthor());
 		}
     	out.print("<br/>");
-		out.print(creatorName+" - "+resources.getOutputDate(pubDetail.getCreationDate()));
-		if (updaterId != null) {
-			out.print(" | ");
-			out.print(resources.getString("kmelia.LastModification")+" : "+updaterName+" - "+resources.getOutputDate(pubDetail.getUpdateDate()));
-		}
+    	%>
+    		<view:username userId="<%=creatorId%>" /> - <%=resources.getOutputDate(pubDetail.getCreationDate()) %>
+    	<%
+		if (updaterId != null) { %>
+			 | <%=resources.getString("kmelia.LastModification") %> : <view:username userId="<%=updaterId%>" /> - <%=resources.getOutputDate(pubDetail.getUpdateDate()) %>
+		<% }
 		out.println("</center>");
 
 		out.flush();

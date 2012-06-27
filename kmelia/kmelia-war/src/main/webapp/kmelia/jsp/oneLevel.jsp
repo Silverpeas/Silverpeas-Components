@@ -71,13 +71,13 @@ String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
+<view:includePlugin name="userZoom"/>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>

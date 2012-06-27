@@ -78,7 +78,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
-<% out.println(graphicFactory.getLookStyleSheet());%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
@@ -301,7 +301,7 @@ $(document).ready(function(){
 		
 		   <div id="eventInfoPublication" class="bgDegradeGris">
 		   	<div class="paragraphe">
-		   		<b><%=resources.getString("almanach.createdBy")%></b> <%=contributor.getDisplayedName() %>
+		   		<b><%=resources.getString("almanach.createdBy")%></b> <view:username userId="<%=contributor.getId()%>" />
 		   		<div class="profilPhoto"><img src="<%=m_context %><%=contributor.getAvatar() %>" alt="" class="defaultAvatar"/></div>
 	   		</div>
 		   		

@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCell"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellLink"%>
 <%@page import="java.text.SimpleDateFormat"%>
@@ -41,9 +42,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
     <view:includePlugin name="datepicker"/>
+    <view:includePlugin name="userZoom"/>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
     <script type="text/javascript">
@@ -208,9 +209,7 @@
 		ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(updateDate);
 		cellUpdateDate.setCompareOn(delegatedNews.getPublicationDetail().getUpdateDate());
 		
-		String contributorId = delegatedNews.getContributorId();
-        String contributorName = newsScc.getUserDetail(contributorId).getDisplayedName();
-		arrayLine.addArrayCellText(contributorName);
+		arrayLine.addArrayCellText(UserNameGenerator.toString(delegatedNews.getContributorId(), "unknown"));
 		
 		String status = delegatedNews.getStatus();
 		arrayLine.addArrayCellText(resources.getString("delegatednews.status."+status));
