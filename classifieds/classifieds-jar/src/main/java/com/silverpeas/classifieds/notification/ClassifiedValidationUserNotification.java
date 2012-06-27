@@ -71,7 +71,7 @@ public class ClassifiedValidationUserNotification extends AbstractClassifiedUser
   @Override
   protected void perform(final ClassifiedDetail resource) {
     super.perform(resource);
-    getNotification().setOriginalExtraMessage(refusalMotive);
+    getNotificationMetaData().setOriginalExtraMessage(refusalMotive);
   }
 
   @Override
