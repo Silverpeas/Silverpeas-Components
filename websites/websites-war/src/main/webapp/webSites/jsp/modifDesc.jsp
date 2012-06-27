@@ -76,6 +76,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="util.jsp" %>
 <%@ include file="checkScc.jsp" %>
 
@@ -213,9 +215,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	String mandatoryField=m_context+"/util/icons/mandatoryField.gif";
 
-	String id = (String) request.getParameter("Id");
-	String currentPath = (String) request.getParameter("path"); /* = null ou rempli si type= design */
-	String type = (String) request.getParameter("type"); // null  ou design
+	String id = request.getParameter("Id");
+	String currentPath = request.getParameter("path"); /* = null ou rempli si type= design */
+	String type = request.getParameter("type"); // null  ou design
 
 	//CBO : UPDATE
 	//SiteDetail site = scc.getWebSite(id);
@@ -226,7 +228,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	Collection allIcons = (Collection) request.getAttribute("AllIcons");
 	//CBO : FIN ADD
 
-	String recupParam = (String) request.getParameter("RecupParam"); //=null ou oui
+	String recupParam = request.getParameter("RecupParam"); //=null ou oui
 	String nom;
 	String description;
 	String lapage;
@@ -234,13 +236,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	boolean refChecked = false;
 
 	if (recupParam != null) {//=oui
-		nom = (String) request.getParameter("Nom");
+		nom = request.getParameter("Nom");
 		if (nom == null) nom = "";
-		description = (String) request.getParameter("Description");
+		description = request.getParameter("Description");
 		if (description == null) description = "";
-		lapage = (String) request.getParameter("Page");
+		lapage = request.getParameter("Page");
 		if (lapage == null) lapage = "";
-		String listeIcones = (String) request.getParameter("ListeIcones");
+		String listeIcones = request.getParameter("ListeIcones");
 		int i = 0;
 		int begin = 0;
 		int end = 0;
@@ -294,10 +296,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <HTML>
 <HEAD>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-
+<view:looknfeel/>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
 <Script language="JavaScript">
 
@@ -499,22 +498,6 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
     out.println(frame.printBefore());
 	out.print(board.printBefore());
 
-	//current User
-	String 		creatorName = null;
-
-	//CBO : UPDATE
-	//UserDetail 	creator 	= scc.getUserDetail(site.getAuthor());
-	UserDetail 	creator = scc.getUserDetail(site.getCreatorId());
-
-	if (creator != null)
-		creatorName = creator.getDisplayedName();
-	else
-		creatorName = "?";
-
-	//currentDate
-
-	//CBO : UPDATE
-	//String creationDate = resources.getOutputDate(site.getDate());
 	String creationDate = resources.getOutputDate(site.getCreationDate());
 
 	int popup = site.getPopup();
@@ -548,7 +531,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
 
                 <tr>
                 	<td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("GML.publisher")%> : </span></td>
-                    <td class="intfdcolor4"><%=creatorName%></td>
+                    <td class="intfdcolor4"><view:username userId="<%=site.getCreatorId()%>"/></td>
                 </tr>
                 <tr>
                     <td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("GML.date")%> : </span></td>

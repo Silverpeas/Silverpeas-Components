@@ -191,27 +191,9 @@
     }
   }
 
-  String creationDate = resources.getOutputDate(pubDetail.getCreationDate());
-
   String author = pubDetail.getAuthor();
 
-  String creatorId = pubDetail.getCreatorId();
-  String creatorName = resources.getString("kmelia.UnknownUser");
-  if (creatorId != null && creatorId.length() > 0) {
-    UserDetail creator = kmeliaScc.getUserDetail(creatorId);
-    if (creator != null) {
-      creatorName = creator.getDisplayedName();
-    }
-  }
-
   String updaterId = pubDetail.getUpdaterId();
-  String updaterName = resources.getString("kmelia.UnknownUser");
-  if (updaterId != null && updaterId.length() > 0) {
-    UserDetail updater = kmeliaScc.getUserDetail(updaterId);
-    if (updater != null) {
-      updaterName = updater.getDisplayedName();
-    }
-  }
 
   boolean highlightFirst = resources.getSetting("highlightFirstOccurence", false);
   
@@ -641,25 +623,25 @@
 							  	  <%
 						          // Displaying all validator's name and final validation date 
 						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) {
-						            String validators = "";
 						            List validationSteps = pubComplete.getValidationSteps();
-						            if (validationSteps != null && !validationSteps.isEmpty()) {
+						            if (validationSteps != null && !validationSteps.isEmpty()) { %>
+						            	<p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/> 
+						            		<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <%=resources.getString("GML.by")%>
+						            <%
 						              Collections.reverse(validationSteps); //display steps from in order of validation
 						              for (int v = 0; v < validationSteps.size(); v++) {
-						                if (v != 0) {
-						                  validators += ", ";
-						                }
+						                if (v != 0) { %>
+						                  , 
+						                <% }
 						                ValidationStep vStep = (ValidationStep) validationSteps.get(v);
-						                if (vStep != null) {
-						                  validators += kmeliaScc.getUserDetail(vStep.getUserId()).getDisplayedName();
-						                }
+						                if (vStep != null) { %>
+						                	<view:username userId="<%=vStep.getUserId()%>"/>
+						                <% }
 						              }
-						            } else {
-						              validators = kmeliaScc.getUserDetail(pubDetail.getValidatorId()).getDisplayedName();
-						            }
-						        %>					        
-       								 <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/> 
-       								 	<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <%=resources.getString("GML.by")%>  <%= validators%> 						 	
+						            } else { %>
+						            	<view:username userId="<%=pubDetail.getValidatorId()%>"/>
+						            <% }
+						        %>
    								 	</p>
 							    <%
 							      }
