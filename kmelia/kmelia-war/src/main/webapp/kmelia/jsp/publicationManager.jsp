@@ -66,12 +66,10 @@
     String description = "";
     String keywords = "";
     String content = "";
-    String creatorName = "";
     String creationDate = "";
     String beginDate = "";
     String endDate = "";
     String updateDate = "";
-    String updaterName = "";
     String version = "";
     String importance = "";
     String pubName = "";
@@ -92,6 +90,7 @@
 
     KmeliaPublication kmeliaPublication = null;
     UserDetail ownerDetail = null;
+    UserDetail updater = null;
 
     CompletePublication pubComplete = null;
     PublicationDetail pubDetail = null;
@@ -250,18 +249,9 @@
       }
       if (pubDetail.getUpdateDate() != null) {
         updateDate = resources.getOutputDate(pubDetail.getUpdateDate());
-
-        UserDetail updater = kmeliaScc.getUserDetail(pubDetail.getUpdaterId());
-        if (updater != null) {
-          updaterName = updater.getDisplayedName();
-        }
+        updater = kmeliaScc.getUserDetail(pubDetail.getUpdaterId());
       } else {
         updateDate = "";
-      }
-      if (ownerDetail != null) {
-        creatorName = ownerDetail.getDisplayedName();
-      } else {
-        creatorName = kmeliaScc.getString("UnknownAuthor");
       }
       version = pubDetail.getVersion();
       importance = Integer.toString(pubDetail.getImportance());
@@ -313,7 +303,6 @@
     } else if (action.equals("New")) {
       creationDate = resources.getOutputDate(new Date());
       beginDate = resources.getInputDate(new Date());
-      creatorName = kmeliaScc.getUserDetail().getDisplayedName();
       tempId = "-1";
 
       if (!kmaxMode) {
@@ -944,16 +933,16 @@
 			    <% if (kmeliaPublication != null) { %>
 				<div class="field" id="creationArea">
 					<label class="txtlibform"><%=resources.getString("kmelia.header.contributors") %></label>
-					<% if (StringUtil.isDefined(updateDate) && StringUtil.isDefined(updaterName)) {%>
+					<% if (StringUtil.isDefined(updateDate) && updater != null) {%>
 					<div class="champs">
-						<%=resources.getString("PubDateUpdate")%> <br /><b><%=updateDate%></b> <%=resources.getString("kmelia.By")%> <%=kmeliaPublication.getLastModifier().getDisplayedName()%>
+						<%=resources.getString("PubDateUpdate")%> <br /><b><%=updateDate%></b> <%=resources.getString("kmelia.By")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
 						<div class="profilPhoto"><img src="<%=m_context+kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 					</div>
 					<% } %>
 				</div>
 				<div class="field" id="updateArea">
 					<div class="champs">
-						<%=resources.getString("PubDateCreation")%> <br /><b><%=creationDate%></b> <%=resources.getString("kmelia.By")%> <%=kmeliaPublication.getCreator().getDisplayedName()%>
+						<%=resources.getString("PubDateCreation")%> <br /><b><%=creationDate%></b> <%=resources.getString("kmelia.By")%> <view:username userId="<%=kmeliaPublication.getCreator().getId()%>"/>
 						<div class="profilPhoto"><img src="<%=m_context+kmeliaPublication.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 					</div>
 				</div>

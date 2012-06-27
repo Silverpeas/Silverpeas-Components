@@ -37,7 +37,7 @@ import java.util.Date;
 /**
  * Services provided by the Blog Silverpeas component.
  */
-public interface BlogService extends SilverpeasComponentService {
+public interface BlogService extends SilverpeasComponentService<PostDetail> {
 
   public String createPost(final PostDetail post);
 

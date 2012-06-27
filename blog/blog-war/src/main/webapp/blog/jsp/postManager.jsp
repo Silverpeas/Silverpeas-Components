@@ -192,7 +192,7 @@
 		<% if (updateDate != null && updater != null) { %>
 			<tr>
 				<td class="txtlibform"><%=resource.getString("GML.updateDate")%> :</td>
-				<td><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("GML.by")%></span>&nbsp;<%=updater.getDisplayedName()%></td>
+				<td><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("GML.by")%></span>&nbsp;<view:username userId="<%=updater.getId()%>" /></td>
 			</tr>
 		<% } %>
     <tr><td colspan="2">( <img alt="mandatory"  border="0" src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%> )</td></tr>

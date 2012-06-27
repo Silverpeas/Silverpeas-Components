@@ -24,27 +24,26 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <%@ include file="check.jsp" %>
 
 <%@page import="java.util.List"%>
 <%@page import="com.silverpeas.formsonline.model.FormDetail"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
-
-
 <%@page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 
@@ -129,7 +128,7 @@ function valider() {
 	<%=frame.printBefore()%>
 	<%=board.printBefore()%>
 
-	<form name="creationForm" action="SaveForm" method="POST">
+	<form name="creationForm" action="SaveForm" method="post">
 	<table class="intfdcolor4" width="100%" cellspacing="0" cellpadding="5" border="0">
 	<tr>
 		<td ><span class="txtlibform"><%=resource.getString("formsOnline.Template")%>  : </span></td>
@@ -163,7 +162,7 @@ function valider() {
 	</tr>			
    	<tr>
 		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.publisher")%> : </span></td>
-        <td colspan="4"><span class="txtlibform"><%=userDetail.getDisplayedName()%></span></td>
+        <td colspan="4"><span class="txtlibform"><view:username userId="<%=userDetail.getId()%>" /></span></td>
 	</tr>			
   	<tr>
 		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.title")%> : </span></td>
@@ -177,10 +176,10 @@ function valider() {
   	<%=window.printAfter()%>  
 <%
     ButtonPane buttonPane = gef.getButtonPane();
-    Button validerButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=valider();", false);
+    Button validerButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=valider();", false);
     buttonPane.addButton(validerButton);    
 
-    Button annulerButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
+    Button annulerButton = gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
     buttonPane.addButton(annulerButton);    
     buttonPane.setHorizontalPosition();
 %>

@@ -39,6 +39,7 @@ import javax.ejb.EJBException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class ForumsStatistics implements ComponentStatisticsInterface {
 
@@ -47,9 +48,8 @@ public class ForumsStatistics implements ComponentStatisticsInterface {
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList<Forum> forums = getForums(spaceId, componentId);
-    ArrayList<UserIdCountVolumeCouple> couples =
-        new ArrayList<UserIdCountVolumeCouple>(forums.size());
+    List<Forum> forums = getForums(spaceId, componentId);
+    List<UserIdCountVolumeCouple> couples = new ArrayList<UserIdCountVolumeCouple>(forums.size());
     for (Forum forum : forums) {
       UserIdCountVolumeCouple couple = new UserIdCountVolumeCouple();
       couple.setUserId(Integer.toString(forum.getId()));
@@ -72,7 +72,7 @@ public class ForumsStatistics implements ComponentStatisticsInterface {
     return forumsBM;
   }
 
-  public ArrayList<Forum> getForums(String spaceId, String componentId)
+  private List<Forum> getForums(String spaceId, String componentId)
       throws RemoteException {
     return getForumsBM().getForums(new ForumPK(componentId, spaceId));
   }
