@@ -27,6 +27,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<view:includePlugin name="popup"/>
+
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
@@ -52,28 +54,17 @@
       document.galleryForm.Name.value = "";
       document.galleryForm.Description.value = "";
     }
-    $("#galleryEditor").dialog({
+    $("#galleryEditor").popup({
       title: title,
-      buttons: [
+      callback: function() {
+        var isCorrect = validateGalleryForm();
+        if (isCorrect) 
         {
-          text: "<fmt:message key='GML.validate'/>",
-          click: function() {
-            if (validateGalleryForm()) 
-            {
-              document.galleryForm.submit();
-            }
-            $(this).dialog("close");
-          }
-        },
-        {
-          text: "<fmt:message key='GML.cancel'/>",
-          click: function() {
-            $(this).dialog("close");
-          }
+          document.galleryForm.submit();
+          
         }
-      ],
-      height: 250,
-      width: 570
+        return isCorrect;
+      }
     });
   }
 		
