@@ -73,23 +73,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="com.silverpeas.util.EncodeHelper" %>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="util.jsp" %>
 
 <%@ include file="checkScc.jsp" %>
-
-<%!
-
- private ResourceLocator settings;
-
-
-  /* extractFinChemin */
-  private String extractFinChemin(String deb, String chemin) {
-      int longueur = deb.length();
-      String res = chemin.substring(longueur);
-      return ignoreAntiSlash(res);
-  }
-%>
 
 <%
 
@@ -148,13 +136,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <html>
 <head>
-
-<%
-out.println(gef.getLookStyleSheet());
-%>
-
+<view:looknfeel/>
 <title><%=resources.getString("GML.popupTitle")%></title>
-
 <script language="javascript">
 
 <%

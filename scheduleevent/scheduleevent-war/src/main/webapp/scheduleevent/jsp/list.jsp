@@ -114,9 +114,8 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
       			<td valign="top" align="center" class="ArrayCell"><view:formatDate value="${event.creationDate}" /></td>
       			<%
       			ScheduleEvent currentSe = (ScheduleEvent) pageContext.getAttribute("event");
-      			UserDetail creator = seScc.getUserDetail(String.valueOf(currentSe.getAuthor()));
       			%>
-      			<td valign="top" align="center" class="ArrayCell"><%=creator.getDisplayedName()%></td>
+      			<td valign="top" align="center" class="ArrayCell"><view:username userId="<%=String.valueOf(currentSe.getAuthor())%>"/></td>
       			<td valign="top" align="center" class="ArrayCell">
         			<c:if test="${event.author == userId}">
 	        			<c:if test="${event.status == 0}">
