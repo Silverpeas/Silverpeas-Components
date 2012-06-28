@@ -53,13 +53,7 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
 	
 	Item		item		= null;
 	int			i			= 0;
-	out.println("<table width=\"100%\" border=\"0\" cellpadding=\"2\" cellspacing=\"0\" class=\"intfdcolor\">");
-  out.println("<tr>");
-  out.println("<td class=\"intfdcolor\">");
-  out.println("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-  out.println("<tr>");
-  out.println("<td colspan=\"3\" class=\"intfdcolor\"><img src=\""+context+"/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\"></td>");
-  out.println("</tr>");
+
   if (spChannel != null)
   {
   		String 	channelName 	= null;
@@ -71,46 +65,26 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
   			}
   			channelImage 	= channel.getImage();
   			if (spChannel.getDisplayImage() == 1 && channelImage != null && channelImage.getLink()!=null && channelImage.getLocation()!=null) {
-  				//test la taille de l'image associe au channel
-  				String sNewHeight = "";
-  				String sNewWidth = "";
-  				boolean displayImage = false;
-    			if (channelImage.getHeight()<=17) {
-    					displayImage = true;
-    			} else if (channelImage.getHeight()>17 && channelImage.getHeight()<40) {
-    					displayImage = true;
-    					//les dimensions de l'image doivent etre reduites de maniere proportionnelles
-    					Float height = Float.valueOf(Integer.toString(channelImage.getHeight()));
-    					Float width = Float.valueOf(Integer.toString(channelImage.getWidth()));
-    					Float maxHeight = new Float(18);
-    					Float ratio = new Float(height.floatValue() / maxHeight.floatValue());
-    					sNewHeight = " height=17px ";
-    					int newWidth = Math.round(width.floatValue() / ratio.floatValue());
-    					sNewWidth = " width="+newWidth+"px ";
-    			}
-    			if (displayImage && channelImage.getLocation().toString().endsWith(".gif") || channelImage.getLocation().toString().endsWith(".jpg"))
-        		channelName = "<a href=\""+channelImage.getLink()+"\" target=_blank><img src=\""+channelImage.getLocation()+"\" border=\"0\" "+sNewHeight+sNewWidth+"></a>";
-      		}
+    			channelName = "<a href=\""+channelImage.getLink()+"\" target=_blank><img class='img-item-rssNews' src=\""+channelImage.getLocation()+"\" border=\"0\" /></a>"+channelName;
+      		}  else {
+				channelName = "<img class='img-item-rssNews' src=\""+resource.getIcon("rss.logoRSS")+"\" border=\"0\" />"+channelName;
+			}
     		} else {
     			channelName = resource.getString("rss.error");
     		}
-    	  out.println("<tr>");
-        out.println("<td class=\"intfdcolor4\" nowrap><span class=\"txtnav\">&nbsp;"+channelName+"&nbsp;</span></td>");
-        out.print("<td class=\"intfdcolor\" width=\"100%\" nowrap><img src=\"../../util/icons/portlet/rond.gif\"></td>");
+    	out.println("<h2 class='title-channel'>");
+        out.println("&nbsp;"+channelName+"&nbsp;");
+   
         if (role != null && role.equals("admin")) {
-          out.print("<td align=\"right\"><a href=\"javaScript:onClick=updateChannel('"+spChannel.getPK().getId()+"');\"><img src=\""+resource.getIcon("rss.updateChannel")+"\" border=\"0\" alt=\""+resource.getString("GML.modify")+"\"></a>&nbsp;");	
-         	out.print("<a href=\"javaScript:onClick=deleteChannel('"+spChannel.getPK().getId()+"');\"><img src=\""+resource.getIcon("rss.deleteChannel")+"\" border=\"0\" alt=\""+resource.getString("GML.delete")+"\"></a></td>");
+          out.print("<a href=\"javaScript:onClick=updateChannel('"+spChannel.getPK().getId()+"');\" class='update'><img src=\""+resource.getIcon("rss.updateChannel")+"\" border=\"0\" alt=\""+resource.getString("GML.modify")+"\"></a>&nbsp;");	
+         	out.print("<a href=\"javaScript:onClick=deleteChannel('"+spChannel.getPK().getId()+"');\" class='delete'><img src=\""+resource.getIcon("rss.deleteChannel")+"\" border=\"0\" alt=\""+resource.getString("GML.delete")+"\"></a>");
         }
-        out.println("</tr>");
+        out.println("</h2>");
       }
-      out.println("<tr bgcolor=\"#000000\">");
-      out.println("<td colspan=\"3\"><img src=\""+context+"/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\"></td>");
-      out.println("</tr>");
-      out.println("<tr>");
-      out.println("<td colspan=\"3\" class=\"intfdcolor4\">");
+
     	if (spChannel != null && channel != null)
     	{
-        out.println("<table>");
+        out.println("<ul>");
     		Date pubDate = null;
     		Object[] 	allItems 	= channel.getItems().toArray();
     		java.util.Arrays.sort(allItems, new ItemComparator(true));
@@ -120,39 +94,34 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
     
     			sDate = "";
     			if (item.getDate() != null)
-    				sDate = " ("+dateFormatter.format(item.getDate())+")";
+    				sDate = dateFormatter.format(item.getDate());
     
-    			out.println("<tr>");
-    			//out.println("<td>"+sDate+"</td>");
-    			out.println("<td><b><a href=\""+item.getLink()+"\" target=_blank>"+item.getTitle()+"</a></b>"+sDate+"<br>");
+    			out.println("<li class='item-channel'>");
+				out.println("<a class='deploy-item' title='deploy item' href='#' onclick = 'return false;' ><img class='deploy-item-rssNews' src='../../util/icons/arrow/open.gif' border='0' /></a><a class='deploy-item itemDeploy' title='bend item' href='#' onclick = 'return false;' ><img class='deploy-item-rssNews' src='../../util/icons/arrow/closed.gif' border='0' /></a>");
+    			out.println("<h3 class='title-item-rssNews'><a href=\""+item.getLink()+"\" target=_blank>"+item.getTitle()+"</a></h3><div class='lastUpdate-item-rssNews'>"+sDate+"</div>");
     			if (item.getDescription() != null && item.getDescription().length()>0)
-    				out.println(item.getDescription()+"<br>");
-    			out.println("</td></tr>");
+    				out.println("<div class='itemDeploy'><div class='description-item-rssNews'>"+item.getDescription()+"<br clear='all'/></div></div>");
+    			out.println("</li>");
     
     			i++;
     			if (i<allItems.length && i < spChannel.getNbDisplayedItems())
     			{
-    				out.println("<tr><td>&nbsp;</td></tr>");
+    				out.println("");
     			}
     		}
-    	out.println("</table>");
+    	out.println("</ul>");
     } else if (spChannel==null) {
-    	out.println("<center><BR>");
+    	out.println("<center><br />");
     	out.println(resource.getString("rss.download"));
-    	out.println("<BR><img src=\""+context+"/util/icons/attachment_to_upload.gif\" height=20 width=83><BR><BR>");
+    	out.println("<br /><img src=\""+context+"/util/icons/attachment_to_upload.gif\" height='20' width='83' /><br /><br />");
     	out.println("</center>");
     } else if (channel==null) {
-    	out.println("<center><BR>");
+    	out.println("<center><br />");
     	out.println(resource.getString("rss.nonCorrectURL"));
-    	out.println("<BR><BR>"+spChannel.getUrl()+"<BR><BR>");
+    	out.println("<br /><br />"+spChannel.getUrl()+"<br /><br />");
     	out.println("</center>");
     } 
-	out.println("</td>");
-  out.println("</tr>");
-  out.println("</table>");
-  out.println("</td>");
-  out.println("</tr>");
-  out.println("</table>");
+
 }
 %>
 
@@ -164,7 +133,7 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
 
 	SimpleDateFormat dateFormatter = new SimpleDateFormat(resource.getString("rss.dateFormat"));
 %>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <view:looknfeel/>
@@ -175,8 +144,8 @@ var updateChannelWindow = window;
 
 function addChannel() {
     windowName = "addChannelWindow";
-	larg = "600";
-	haut = "350";
+	larg = "750";
+	haut = "280";
     windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
     if (!addChannelWindow.closed && addChannelWindow.name== "addChannelWindow")
         addChannelWindow.close();
@@ -185,8 +154,8 @@ function addChannel() {
 
 function updateChannel(id) {
     windowName = "updateChannelWindow";
-	larg = "600";
-	haut = "350";
+	larg = "750";
+	haut = "280";
     windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
     if (!updateChannelWindow.closed && updateChannelWindow.name=="updateChannelWindow")
         updateChannelWindow.close();
@@ -218,9 +187,32 @@ function loadChannelsItem() {
   });
 }
 
+ <!-- Commentaire AuroreA. Ajout js pour filtre ( à finir ) et deploiement -->
+$(document).ready(function(){
+
+	$('.description-item-rssNews a').attr( "target" , "_blank"  ) ;
+
+	$('.deploy-item').click(function() {
+		$(this).parent().children('.itemDeploy').toggle();
+	});
+	$('.deploy-all-item').click(function() {
+		$('.itemDeploy').show();
+		$('.btn-deploy-all-item').toggle();
+	});
+	$('.bend-all-item').click(function() {
+		$('.itemDeploy').hide();
+		$('.btn-deploy-all-item').toggle();
+	});
+	
+	$('.filter-channel').click(function() {
+		$('.item-channel').hide();
+		$('.'+this.id).show();
+	});
+});
+
 </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body class="rssAgregator" id="<%=gef.getComponentId()%>">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel);
@@ -230,83 +222,143 @@ function loadChannelsItem() {
 		operationPane.addOperation(resource.getIcon("rss.addChannel"), resource.getString("rss.addChannel"), "javascript:onClick=addChannel()");
 	}
 
-  out.println(window.printBefore());
-  
+
+    out.println(window.printBefore());
 %>
+
+
+
 <c:choose>
   <c:when test="${aggregate}">
-  <p><fmt:message key="rss.agregate.welcome"/></p>
-  <c:if test="${not empty rssChannels && fn:contains(role, 'admin')}">
-    <div id="adminChannels">
-    <c:forEach var="channel" items="${rssChannels}">
-      <div id="channel<c:out value="${channel.PK.id}"/>">
-      <p>
-      <c:out value="${channel.channel.title}"/>
-        <a href="javaScript:onClick=updateChannel('<c:out value="${channel.PK.id}"/>');">
-        <fmt:message key="rss.updateChannel" bundle="${icons}" var="updateChannelIcon"/>
-        <img src="<c:url value="${updateChannelIcon}"/>" border="0" alt="<fmt:message key="GML.modify"/>">
-        </a>&nbsp;
-        <a href="javaScript:onClick=deleteChannel('<c:out value="${channel.PK.id}"/>');">
-        <fmt:message key="rss.deleteChannel" bundle="${icons}" var="deleteChannelIcon"/>
-        <img src="<c:url value="${deleteChannelIcon}"/>" border="0" alt="<fmt:message key="GML.delete"/>">
-        </a>
-      </p>     
-      </div>
-    </c:forEach>
+  
+  
+	<!-- Commentaire AuroreA. ATTENTION : Texte et icone mis en dur -->
+	<div class="deploy-all-item btn-deploy-all-item bgDegradeGris " title="deploy all item" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/open.gif" border="0" /> Tout d&eacute;ployer</div>
+	<div class="bend-all-item btn-deploy-all-item bgDegradeGris " title="bend item" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/closed.gif" border="0" /> Tout r&eacute;duire</div>	
+	<div id="displaying"  class="bgDegradeGris">Affichage agr&eacute;g&eacute; des flux : <a id="aggregate-displaying" class="active" href="">On</a><a id="no-aggregate-displaying" href="">Off</a></div>
+	<a id="dynamicalLoad" class="bgDegradeGris" href="javascript:loadChannelsItem();"><span>Actualiser les flux</span></a>
+	
+  <c:if test="${not empty rssChannels}">
+
+    <div class="sousNavBulle">
+	
+	  	<!-- Commentaire AuroreA. ATTENTION : Texte  mis en dur -->
+		<div>Afficher : 
+			<a onclick="changeScope('ALL')" href="#" class="active">Tous</a>	
+			
+			
+
+			<c:forEach var="channel" items="${rssChannels}">
+			<span <c:if test="${fn:contains(role, 'admin')}"> class="filter" </c:if> >
+			
+				<!-- Commentaire AuroreA. Sur le lien mettre channel_$idDuChannel -->
+				<a id="channel_<c:out value="${channel.PK.id}"/>" href="#" class="filter-channel"><c:out value="${channel.channel.title}"/></a>
+				
+				<c:if test="${fn:contains(role, 'admin')}">
+				<span class="operation-chanel">
+					<a href="javaScript:onClick=updateChannel('<c:out value="${channel.PK.id}"/>');" class="update" title="update channel">
+						<fmt:message key="rss.updateChannel" bundle="${icons}" var="updateChannelIcon"/>
+						<img src="<c:url value="${updateChannelIcon}"/>" border="0" alt="<fmt:message key="GML.modify"/>" />
+					</a>&nbsp;
+					<a href="javaScript:onClick=deleteChannel('<c:out value="${channel.PK.id}"/>');" class="delete" title="delete channel">
+						<fmt:message key="rss.deleteChannel" bundle="${icons}" var="deleteChannelIcon"/>
+						<img src="<c:url value="${deleteChannelIcon}"/>" border="0" alt="<fmt:message key="GML.delete"/>" />
+					</a>
+				</span>
+				</c:if>
+			</span>
+				
+			</c:forEach>
+		</div>
     </div>
   </c:if>
   
+  <!-- Commentaire AuroreA.  POURQUOI CE TEXTE ???<div id="agregateWelcome"><fmt:message key="rss.agregate.welcome"/></div> -->
+  
+
+  
   <c:if test="${not empty rssItems}">
   <div id="rssNews">
-  <ul>
-  <c:forEach var="item" items="${rssItems}">
-    <c:set var="channelName" value="${item.channelTitle}"/>
-    <c:if test="${fn:length(channelName) gt 40}">
-      <c:set var="channelName" value="${fn:substring(item.channelTitle, 0, 39)}..." />
-    </c:if>
-    <li>
-    <c:if test="${not empty item.channelImage}">
-      <a href="${item.channelImage.link }" target=_blank><img src="${item.channelImage.location}" border="0"></a>    
-    </c:if>
-    
-    <c:out value="${channelName}"/> : <a href="<c:out value="${item.itemLink}"/>"><c:out value="${item.itemTitle}"/> - <c:out value="${item.itemDate}"/></a> <c:out value="${item.itemDescription}"/></li>
-  </c:forEach>
-  </ul>
+  
+	  <ul>
+
+
+	  <c:forEach var="item" items="${rssItems}">
+		<c:set var="channelName" value="${item.channelTitle}"/>
+
+		<c:if test="${fn:length(channelName) gt 40}">
+		  <c:set var="channelName" value="${fn:substring(item.channelTitle, 0, 39)}..." />
+		</c:if>
+		
+		
+		<!-- Commentaire AuroreA. Sur le li mettre la classe channel_$idDuChannel -->
+		<li class="item-channel channel_Id ">
+			
+			<a class="deploy-item" title="deploy item" href="#" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/open.gif" border="0" /></a>
+			<a class="deploy-item itemDeploy" title="bend item" href="#" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/closed.gif" border="0" /></a>
+			<h3 class="title-item-rssNews">
+				<c:if test="${not empty item.channelImage}">
+				<a href="${item.channelImage.link }" target="_blank"><img class="img-item-rssNews" src="${item.channelImage.location}" border="0" /></a>    
+				</c:if>
+				<span  class="channelName-rssNews"><c:out value="${channelName}"/> </span> 
+				<a href="<c:out value="${item.itemLink}"/>"><c:out value="${item.itemTitle}"/> </a> 
+			</h3>
+			<div class="lastUpdate-item-rssNews"><c:out value="${dateFormatter.format(item.itemDate)}"/></div>
+			<div class="itemDeploy" >
+				<div class="description-item-rssNews"><c:out value="${item.itemDescription}" escapeXml="false"/></div>
+				<br class="clear"/>
+			</div>
+		</li>
+
+	  </c:forEach>
+	  </ul>
   </div>
   </c:if>
   
   </c:when>
   <c:otherwise>
-  <table>
-<%   
-  SPChannel channel = null;
-  int nbChannelsToLoad = 0;
-  for (int c=0; c<channels.size(); c++)
-  {
-    channel = (SPChannel) channels.get(c);
-    if (channel == null) {
-      nbChannelsToLoad++;
-    }
-    if (c%2 == 0) {
-      out.println("<tr>");
-    }
-    out.println("<td width=\"50%\" valign=\"top\">");
-    displayChannel(channel, dateFormatter, role, context, resource, out);
-    out.println("</td>");
-    if (c%2 != 0)
-    {
-      out.println("</tr>");
-    }
-  }
-%> 
-  </table> 
-<form name="refresh" Action="LoadChannels" method="post"></form>
-<form name="deleteChannel" Action="DeleteChannel" method="post">
+  
+	<!-- Commentaire AuroreA.  ATTENTION : Texte et icone mis en dur -->
+  	<div class="deploy-all-item btn-deploy-all-item bgDegradeGris " title="deploy all item" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/open.gif" border="0" /> Tout d&eacute;ployer</div>
+	<div class="bend-all-item btn-deploy-all-item bgDegradeGris " title="bend item" onclick = "return false;" ><img class="deploy-item-rssNews" src="../../util/icons/arrow/closed.gif" border="0" /> Tout r&eacute;duire</div>	
+	<div id="displaying"  class="bgDegradeGris">Affichage agr&eacute;g&eacute; des flux : <a id="aggregate-displaying"href="">On</a><a  class="active" id="no-aggregate-displaying" href="">Off</a></div>
+	<a id="dynamicalLoad" class="bgDegradeGris" href="javascript:loadChannelsItem();"><span>Actualiser les flux</span></a>
+	
+	<hr id="sep-no-agregate" />
+
+	<div id='rssNews' class="no-agregate">
+	  <ul>
+	<%   
+	  SPChannel channel = null;
+	  int nbChannelsToLoad = 0;
+	  for (int c=0; c<channels.size(); c++)
+	  {
+		channel = (SPChannel) channels.get(c);
+		if (channel == null) {
+		  nbChannelsToLoad++;
+		}
+		
+		if (c%2 == 0) {
+		  out.println("<li class='left'>");
+		}else {
+		  out.println("<li class='right'>");
+		}
+
+		displayChannel(channel, dateFormatter, role, context, resource, out);
+		
+		out.println("</li>");
+		
+	  }
+	%> 
+	  </ul> 
+	</div>
+<form name="refresh" action="LoadChannels" method="post"></form>
+<form name="deleteChannel" action="DeleteChannel" method="post">
   <input type="hidden" name="Id">
 </form>
 <%
 if (nbChannelsToLoad > 0) { %>
-<form name="loadChannels" Action="LoadChannels" method="post"></form>
+<form name="loadChannels" action="LoadChannels" method="post"></form>
 <script language="javascript">
   window.setTimeout("document.loadChannels.submit()", 500);
 </script>
@@ -315,14 +367,7 @@ if (nbChannelsToLoad > 0) { %>
   </c:otherwise>
 </c:choose>
 
-<div id="dynamicalLoad">
-  <a href="javascript:loadChannelsItem();">Lien pour charger les flux RSS</a>
-  <div id="rssItems">
-  </div>
-</div>
 
-<%
-out.println(window.printAfter());
-%>
+<% out.println(window.printAfter()); %>  
 </body>
 </html>
