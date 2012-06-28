@@ -29,7 +29,10 @@
 <jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
 
 <%@ include file="checkQuizz.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle basename="com.stratelia.webactiv.quizz.multilang.quizz"/>
 
 <%
 //Retrieve parameter
@@ -72,9 +75,11 @@ if (action == null) {
 }
 
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
+<title></title>
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -182,6 +187,8 @@ function isCorrectForm() {
             }
        }
   }
+
+  <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
   
   switch(errorNb) {
     case 0 :
@@ -203,7 +210,7 @@ function isCorrectForm() {
 
 </script>
 </head>
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF">
 <%
 if (action.equals("CreateQuizz")) {
   cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
@@ -232,54 +239,90 @@ if (action.equals("CreateQuizz")) {
 
   out.println(window.printBefore());
   out.println(frame.printBefore());
-  out.println(board.printBefore());
 %>
-<center>
-<form name="quizzForm" Action="quizzCreator.jsp" method="post">
-<table cellpadding="5" width="100%">
-  <tr><td class="txtlibform" valign="baseline" align=left width="100"><%=resources.getString("GML.name")%> :</td>
-		<td><input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=EncodeHelper.javaStringToHtmlString(title)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
-	</tr>
-    <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationDate")%> :</td>
-		<td><%=creationDate%></td>
-	</tr>
-    <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationBeginDate")%> :</td>
-		<td><input type="text" class="dateToPick" name="beginDate" size="11" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=beginDate%>"/><img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
-	</tr>
-    <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationEndDate")%> :</td>
-		<td><input type="text" class="dateToPick" name="endDate" size="11" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=endDate%>"/></td>
-	</tr>
-    <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbQuestionPerPage")%> :</td>
-		<td><input type="text" name="nbQuestions" size="5" maxlength="3" value="<%=nbQuestions%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
-	</tr>
-    <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbPossibleAnswer")%> :</td>
-		<td><input type="text" name="nbAnswersMax" size="5" maxlength="3" value="<%=nbAnswersMax%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
-	</tr>
-    <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbAnswerNeeded")%> :</td>
-		<td><input type="text" name="nbAnswersNeeded" size="5" maxlength="3" value="<%=nbAnswersNeeded%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
-	</tr>
-    <tr><td class="txtlibform" valign="top" align=left><%=resources.getString("GML.description")%> :</td>
-		<td><textarea name="description" cols="49" wrap="VIRTUAL" rows="3"><%=EncodeHelper.javaStringToHtmlString(
-        description)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
-	</tr>
-    <tr><td class="txtlibform" valign="top" align=left><%=resources.getString("QuizzCreationNotice")%> :</td>
-		<td><textarea name="notice" cols="49" wrap="VIRTUAL" rows="3"><%=EncodeHelper.javaStringToHtmlString(notice)%></textarea></td>
-	</tr>
-    <tr><td colspan=2><input type="hidden" name="Action" value="<%=nextAction%>"></td>
-	</tr>
-	<tr><td class="intfdcolor4" valign="top" align=left colspan=2 nowrap><span class="txt">( <img src="<%=mandatoryField%>" width="5" height="5"> = <%=resources.getString("GML.requiredField")%> ) </span>
-		</td>
-	</tr>
-</table>
+<form name="quizzForm" action="quizzCreator.jsp" method="post">
+  <input type="hidden" name="Action" value="<%=nextAction%>" />
   <input type="hidden" name="Positions" />
+
+<fieldset id="infoFieldset" class="skinFieldset">
+  <legend><fmt:message key="quizz.header.fieldset.info" /></legend>
+  <!-- SAISIE DU QUIZZ -->
+  <div class="fields">
+    <!-- Forum name -->
+    <div class="field" id="titleArea">
+      <label class="txtlibform" for="title"><fmt:message key="GML.name" /> </label>
+      <div class="champs">
+        <input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=EncodeHelper.javaStringToHtmlString(title)%>" />&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+      </div>
+    </div>
+    <div class="field" id="nbQuestionsArea">
+      <label class="txtlibform" for="nbQuestions"><fmt:message key="QuizzCreationNbQuestionPerPage" /> </label>
+      <div class="champs">
+        <input type="text" name="nbQuestions" size="5" maxlength="3" value="<%=nbQuestions%>"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+      </div>
+    </div>
+    
+    <div class="field" id="nbAnswersMaxArea">
+      <label class="txtlibform" for="nbAnswersMax"><fmt:message key="QuizzCreationNbPossibleAnswer" /> </label>
+      <div class="champs">
+        <input type="text" name="nbAnswersMax" size="5" maxlength="3" value="<%=nbAnswersMax%>"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+      </div>
+    </div>
+    
+    <div class="field" id="nbAnswersNeededArea">
+      <label class="txtlibform" for="nbAnswersNeeded"><fmt:message key="QuizzCreationNbAnswerNeeded" /> </label>
+      <div class="champs">
+        <input type="text" name="nbAnswersNeeded" size="5" maxlength="3" value="<%=nbAnswersNeeded%>"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+      </div>
+    </div>
+
+    <div class="field" id="descriptionArea">
+      <label class="txtlibform" for="description"><fmt:message key="GML.description" /> </label>
+      <div class="champs">
+        <textarea name="description" cols="49" rows="3"><%=EncodeHelper.javaStringToHtmlString(description)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+      </div>
+    </div>
+
+    <div class="field" id="noticeArea">
+      <label class="txtlibform" for="notice"><fmt:message key="QuizzCreationNotice" /> </label>
+      <div class="champs">
+        <textarea name="notice" cols="49" rows="3"><%=EncodeHelper.javaStringToHtmlString(notice)%></textarea>
+      </div>
+    </div>
+    
+  </div>
+</fieldset>
+<fieldset id="datesFieldset" class="skinFieldset">
+  <legend><fmt:message key="quizz.header.fieldset.period" /></legend>
+  <div class="fields">
+    <div class="field" id="beginArea">
+      <label for="beginDate" class="txtlibform"><fmt:message key="QuizzCreationBeginDate" /></label>
+      <div class="champs">
+        <input type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+      </div>
+    </div>
+    <div class="field" id="endArea">
+      <label for="endDate" class="txtlibform"><fmt:message key="QuizzCreationEndDate" /></label>
+      <div class="champs">
+        <input type="text" class="dateToPick" name="endDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
+      </div>
+    </div>
+  </div>  
+</fieldset>
+
   <view:pdcNewContentClassification componentId="<%=quizzScc.getComponentId()%>" />
+
+<div class="legend">
+  <img border="0" src="<%=mandatoryField%>" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
+</div>
+ 
 </form>
-</center>
+
 <%
-  out.println(board.printAfter());
+
   out.println(frame.printMiddle());
 %>
-<br>
+<br/>
 <center>
 <%
   ButtonPane buttonPane = gef.getButtonPane();
@@ -304,9 +347,9 @@ function goToQuestionCreator() {
 }
 </script>
 </head>
-<body onLoad="goToQuestionCreator()">
+<body onload="goToQuestionCreator()">
 <form name="questionForm" action="questionCreator.jsp" method="post" enctype="multipart/form-data">
-<input type="hidden" name="Action" value="FirstQuestion">
+<input type="hidden" name="Action" value="FirstQuestion"/>
 </form>
 </body>
 </html>

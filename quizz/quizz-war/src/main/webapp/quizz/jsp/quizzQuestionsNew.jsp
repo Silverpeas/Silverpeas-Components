@@ -767,14 +767,19 @@ else {
   }
 }
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+  <title></title>
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<view:looknfeel />
+<style type="text/css">
+.thumbnailPreviewAndActions {
+  display: none;
+}
+</style>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script language="javascript">
 <!--
 function confirmCancel()
 {
@@ -865,315 +870,313 @@ function clipboardCopy(id) {
 <%
 
 if (action.equals("RecordQuestionsResponses")) {
-        int nbQuestions = Integer.parseInt(request.getParameter("NbQuestions"));
-        int cluePenalty  = 0;
-        Hashtable hash = (Hashtable) session.getAttribute("questionsResponses");
-        if (hash == null)
-              hash = new Hashtable();
+  int nbQuestions = Integer.parseInt(request.getParameter("NbQuestions"));
+  int cluePenalty  = 0;
+  Hashtable hash = (Hashtable) session.getAttribute("questionsResponses");
+  if (hash == null)
+        hash = new Hashtable();
 
-        for (int i = 1; i <= nbQuestions; i++) {
-            Vector v = new Vector(5, 2);
-            cluePenalty = Integer.parseInt(request.getParameter("cluePenalty_"+i));
-            v.add("PC"+cluePenalty);
-            String[] selectedAnswers = (String[]) request.getParameterValues("answer_"+i);
-            if (selectedAnswers != null) {
-              String questionId = selectedAnswers[0].substring(selectedAnswers[0].indexOf(",")+1, selectedAnswers[0].length());
-              for (int j = 0; j < selectedAnswers.length; j++) {
-                    String answerId = selectedAnswers[j].substring(0, selectedAnswers[j].indexOf(","));
-                    v.add(answerId);
-              }
-              String openedAnswer = request.getParameter("openedAnswer_"+i);
-              v.add("OA"+openedAnswer);
-              //if (hash.containsKey(questionId))
-              hash.put(questionId, v);
-            }
+  for (int i = 1; i <= nbQuestions; i++) {
+      Vector v = new Vector(5, 2);
+      cluePenalty = Integer.parseInt(request.getParameter("cluePenalty_"+i));
+      v.add("PC"+cluePenalty);
+      String[] selectedAnswers = (String[]) request.getParameterValues("answer_"+i);
+      if (selectedAnswers != null) {
+        String questionId = selectedAnswers[0].substring(selectedAnswers[0].indexOf(",")+1, selectedAnswers[0].length());
+        for (int j = 0; j < selectedAnswers.length; j++) {
+              String answerId = selectedAnswers[j].substring(0, selectedAnswers[j].indexOf(","));
+              v.add(answerId);
         }
-        session.setAttribute("questionsResponses", hash);
-        action = "ViewCurrentQuestions";
+        String openedAnswer = request.getParameter("openedAnswer_"+i);
+        v.add("OA"+openedAnswer);
+        //if (hash.containsKey(questionId))
+        hash.put(questionId, v);
+      }
+  }
+  session.setAttribute("questionsResponses", hash);
+  action = "ViewCurrentQuestions";
 } else if (action.equals("SendVote")) {
-        int nbQuestions = Integer.parseInt(request.getParameter("NbQuestions"));
-		int cluePenalty  = 0;
-        Hashtable hash = (Hashtable) session.getAttribute("questionsResponses");
-        if (hash == null)
-            hash = new Hashtable();
+  int nbQuestions = Integer.parseInt(request.getParameter("NbQuestions"));
+  int cluePenalty  = 0;
+  Hashtable hash = (Hashtable) session.getAttribute("questionsResponses");
+  if (hash == null)
+      hash = new Hashtable();
 
-        for (int i = 1; i <= nbQuestions; i++) {
-            Vector v = new Vector(5, 2);
-            cluePenalty = Integer.parseInt(request.getParameter("cluePenalty_"+i));
-            v.add("PC"+cluePenalty);
-            String[] selectedAnswers = (String[]) request.getParameterValues("answer_"+i);
-            if (selectedAnswers != null) {
-              String questionId = selectedAnswers[0].substring(selectedAnswers[0].indexOf(",")+1, selectedAnswers[0].length());
-              for (int j = 0; j < selectedAnswers.length; j++) {
-                    String answerId = selectedAnswers[j].substring(0, selectedAnswers[j].indexOf(","));
-                    v.add(answerId);
-              }
-              String openedAnswer = request.getParameter("openedAnswer_"+i);
-              v.add("OA"+openedAnswer);
-              hash.put(questionId, v);
-           }
+  for (int i = 1; i <= nbQuestions; i++) {
+      Vector v = new Vector(5, 2);
+      cluePenalty = Integer.parseInt(request.getParameter("cluePenalty_"+i));
+      v.add("PC"+cluePenalty);
+      String[] selectedAnswers = (String[]) request.getParameterValues("answer_"+i);
+      if (selectedAnswers != null) {
+        String questionId = selectedAnswers[0].substring(selectedAnswers[0].indexOf(",")+1, selectedAnswers[0].length());
+        for (int j = 0; j < selectedAnswers.length; j++) {
+              String answerId = selectedAnswers[j].substring(0, selectedAnswers[j].indexOf(","));
+              v.add(answerId);
         }
-        quizzScc.recordReply(quizzId, hash);
-        action = "ViewResult";
+        String openedAnswer = request.getParameter("openedAnswer_"+i);
+        v.add("OA"+openedAnswer);
+        hash.put(questionId, v);
+     }
+  }
+  quizzScc.recordReply(quizzId, hash);
+  action = "ViewResult";
 } //End if action = ViewResult
 if (action.equals("SubmitQuizz")) {
-        QuestionContainerDetail quizzDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
-        //Vector 2 Collection
-        Vector questionsV = (Vector) session.getAttribute("questionsVector");
-        List<Question> q = new ArrayList<Question>();
-        for (int j = 0; j < questionsV.size(); j++) {
-              q.add((Question) questionsV.get(j));
-        }
-        quizzDetail.setQuestions(q);
-        quizzScc.createQuizz(quizzDetail);
-        session.removeAttribute("quizzUnderConstruction");
-        quizzScc.setPositions(null);
-        %>
-        <jsp:forward page="<%=quizzScc.getComponentUrl()+\"Main.jsp\"%>"/>
-        <%
-        return;
+  QuestionContainerDetail quizzDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
+  //Vector 2 Collection
+  Vector questionsV = (Vector) session.getAttribute("questionsVector");
+  List<Question> q = new ArrayList<Question>();
+  for (int j = 0; j < questionsV.size(); j++) {
+        q.add((Question) questionsV.get(j));
+  }
+  quizzDetail.setQuestions(q);
+  quizzScc.createQuizz(quizzDetail);
+  session.removeAttribute("quizzUnderConstruction");
+  quizzScc.setPositions(null);
+  %>
+  <jsp:forward page="<%=quizzScc.getComponentUrl()+\"Main.jsp\"%>"/>
+  <%
+  return;
 } else if (action.equals("PreviewQuizz")) {
-        out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
+    out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
 
-        Window window = gef.getWindow();
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(quizzScc.getSpaceLabel());
-        browseBar.setComponentName(quizzScc.getComponentLabel());
-        browseBar.setExtraInformation(resources.getString("GML.preview"));
+    Window window = gef.getWindow();
+    BrowseBar browseBar = window.getBrowseBar();
+    browseBar.setDomainName(quizzScc.getSpaceLabel());
+    browseBar.setComponentName(quizzScc.getComponentLabel());
+    browseBar.setExtraInformation(resources.getString("GML.preview"));
 
-        out.println(window.printBefore());
-        Frame frame = gef.getFrame();
-        out.println(frame.printBefore());
-        String quizzPart = displayQuizzPreview(quizz, gef, m_context, quizzScc, resources, settings);
-        out.println(quizzPart);
-        out.println(frame.printMiddle());
-        out.println("<table width=\"100%\">");
-        Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:confirmCancel();", false);
-        Button voteButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=document.quizz.submit();", false);
-        out.println("<tr><td align=\"center\"><table><tr align=center><td align=center>"+voteButton.print()+"</td><td align=center>"+cancelButton.print()+"</td></tr></table></td></tr>");
-        out.println("</table>");
-        out.println("<br><br>"+frame.printAfter());
-        out.println(window.printAfter());
+    out.println(window.printBefore());
+    Frame frame = gef.getFrame();
+    out.println(frame.printBefore());
+    String quizzPart = displayQuizzPreview(quizz, gef, m_context, quizzScc, resources, settings);
+    out.println(quizzPart);
+    out.println(frame.printMiddle());
+    out.println("<table width=\"100%\">");
+    Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:confirmCancel();", false);
+    Button voteButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=document.quizz.submit();", false);
+    out.println("<tr><td align=\"center\"><table><tr align=center><td align=center>"+voteButton.print()+"</td><td align=center>"+cancelButton.print()+"</td></tr></table></td></tr>");
+    out.println("</table>");
+    out.println("<br><br>"+frame.printAfter());
+    out.println(window.printAfter());
 }
 if (action.equals("ViewQuizz")) {
-        out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
-        Window window = gef.getWindow();
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(quizzScc.getSpaceLabel());
-        browseBar.setComponentName(quizzScc.getComponentLabel());
-        browseBar.setPath("<a href=\"Main.jsp\">"+resources.getString("QuizzList")+"</a>");
-        browseBar.setExtraInformation(quizz.getHeader().getTitle());
+  out.println("<body bgcolor=\"#FFFFFF\">");
+  Window window = gef.getWindow();
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(quizzScc.getSpaceLabel());
+  browseBar.setComponentName(quizzScc.getComponentLabel());
+  browseBar.setPath("<a href=\"Main.jsp\">"+resources.getString("QuizzList")+"</a>");
+  browseBar.setExtraInformation(quizz.getHeader().getTitle());
 
-        //operation pane
-        OperationPane operationPane = window.getOperationPane();
-        operationPane.addOperation(m_context + "/util/icons/quizz_print.gif",resources.getString("GML.print"),"javascript:window.print()");
-        if (quizzScc.getNbVoters(quizz.getHeader().getPK().getId())==0||"admin".equals(quizzScc.getUserRoleLevel()))
-        {
-        	operationPane.addLine();
-	  		  operationPane.addOperation(m_context + "/util/icons/quizz_to_edit.gif",resources.getString("QuestionUpdate"),"quizzUpdate.jsp?Action=UpdateQuizzHeader&QuizzId="+quizz.getHeader().getPK().getId());
-	  	  }
+  //operation pane
+  OperationPane operationPane = window.getOperationPane();
+  operationPane.addOperation(m_context + "/util/icons/quizz_print.gif",resources.getString("GML.print"),"javascript:window.print()");
+  if (quizzScc.getNbVoters(quizz.getHeader().getPK().getId())==0||"admin".equals(quizzScc.getUserRoleLevel()))
+  {
+  	operationPane.addLine();
+	  operationPane.addOperation(m_context + "/util/icons/quizz_to_edit.gif",resources.getString("QuestionUpdate"),"quizzUpdate.jsp?Action=UpdateQuizzHeader&QuizzId="+quizz.getHeader().getPK().getId());
+  }
 
-        if (profile.equals("admin")) {
-          // export csv
-          String url = "ExportCSV?QuizzId=" + quizz.getHeader().getPK().getId();
-          operationPane.addOperation(exportSrc, resources.getString("GML.export"), "javaScript:onClick=Export('"+url+"')");
-        }
+  if (profile.equals("admin")) {
+    // export csv
+    String url = "ExportCSV?QuizzId=" + quizz.getHeader().getPK().getId();
+    operationPane.addOperation(exportSrc, resources.getString("GML.export"), "javaScript:onClick=Export('"+url+"')");
+  }
 
-        // copier
-        operationPane.addOperation(copySrc, resources.getString("GML.copy"), "javaScript:onClick=clipboardCopy('"+quizz.getHeader().getPK().getId()+"')");
+  // copier
+  operationPane.addOperation(copySrc, resources.getString("GML.copy"), "javaScript:onClick=clipboardCopy('"+quizz.getHeader().getPK().getId()+"')");
 
-        out.println(window.printBefore());
-        Frame frame = gef.getFrame();
-        out.println(frame.printBefore());
-        String quizzPart = displayQuizz(quizz,gef, m_context, quizzScc, resources, settings, out);
-        out.println(quizzPart);
+  out.println(window.printBefore());
+  Frame frame = gef.getFrame();
+  out.println(frame.printBefore());
+  String quizzPart = displayQuizz(quizz,gef, m_context, quizzScc, resources, settings, out);
+  out.println(quizzPart);
 %>
   <view:pdcClassification componentId="<%= quizzScc.getComponentId() %>" contentId="<%= quizzId %>" />
 <%        
-        out.println(frame.printMiddle());
-        out.println(frame.printAfter());
-        out.println(window.printAfter());
+  out.println(frame.printMiddle());
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 } //End if action = ViewQuizz
 else if (action.equals("ViewCurrentQuestions")) {
-        out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
+  out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
 
-        Window window = gef.getWindow();
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(quizzScc.getSpaceLabel());
-        browseBar.setComponentName(quizzScc.getComponentLabel());
-        browseBar.setPath("<a href=\"Main.jsp\">" + resources.getString("QuizzList") + "</a>");
-        browseBar.setExtraInformation(resources.getString("QuizzParticipate") + " " + quizz.getHeader().getTitle());
+  Window window = gef.getWindow();
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(quizzScc.getSpaceLabel());
+  browseBar.setComponentName(quizzScc.getComponentLabel());
+  browseBar.setPath("<a href=\"Main.jsp\">" + resources.getString("QuizzList") + "</a>");
+  browseBar.setExtraInformation(resources.getString("QuizzParticipate") + " " + quizz.getHeader().getTitle());
 
-        //operation pane
-        OperationPane operationPane = window.getOperationPane();
-        operationPane.addOperation(m_context + "/util/icons/quizz_print.gif",resources.getString("GML.print"),"javascript:window.print()");
+  //operation pane
+  OperationPane operationPane = window.getOperationPane();
+  operationPane.addOperation(m_context + "/util/icons/quizz_print.gif",resources.getString("GML.print"),"javascript:window.print()");
 
-        out.println(window.printBefore());
-        Frame frame = gef.getFrame();
-        out.println(frame.printBefore());
+  out.println(window.printBefore());
+  Frame frame = gef.getFrame();
+  out.println(frame.printBefore());
 
-        html_string = displayQuestions(quizz, Integer.parseInt(roundId), gef, m_context, quizzScc, resources, settings, frame, out);
-        out.println(html_string.get(0));
-        out.println(frame.printMiddle());
-        out.println(html_string.get(1));
-        out.println(frame.printAfter());
-        out.println(window.printAfter());
+  html_string = displayQuestions(quizz, Integer.parseInt(roundId), gef, m_context, quizzScc, resources, settings, frame, out);
+  out.println(html_string.get(0));
+  out.println(frame.printMiddle());
+  out.println(html_string.get(1));
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 }
 else if (action.equals("ViewResult")) {
-        out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
-        String participation=(String) session.getAttribute("currentParticipationId");
-        int nb_user_votes = 0;
-        Collection<ScoreDetail> userScores = quizzScc.getUserScoresByFatherId(quizzId);
-        if (userScores != null)
-        nb_user_votes = userScores.size();
+  out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
+  String participation=(String) session.getAttribute("currentParticipationId");
+  int nb_user_votes = 0;
+  Collection<ScoreDetail> userScores = quizzScc.getUserScoresByFatherId(quizzId);
+  if (userScores != null)
+  nb_user_votes = userScores.size();
 
-        if ((participation!=null)&&(!participation.equals("")))
-          participationId = Integer.parseInt((String) session.getAttribute("currentParticipationId"));
-	else
+  if ((participation!=null)&&(!participation.equals(""))) {
+    participationId = Integer.parseInt((String) session.getAttribute("currentParticipationId"));
+  } else {
 	  participationId=nb_user_votes;
+  }
 
-        if (userId == null) {
-          participationId += 1;
-          quizz = quizzScc.getQuestionContainerForCurrentUserByParticipationId(quizzId, participationId);
-        }
-        else
-        {
-            quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
-        }
+  if (userId == null) {
+    participationId += 1;
+    quizz = quizzScc.getQuestionContainerForCurrentUserByParticipationId(quizzId, participationId);
+  }
+  else
+  {
+      quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
+  }
 
-        Window window = gef.getWindow();
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(quizzScc.getSpaceLabel());
-        browseBar.setComponentName(quizzScc.getComponentLabel());
-        browseBar.setPath("<a href=\"Main.jsp\">"+resources.getString("QuizzList")+"</a>");
-        browseBar.setExtraInformation(resources.getString("QuizzSeeResults"));
+  Window window = gef.getWindow();
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(quizzScc.getSpaceLabel());
+  browseBar.setComponentName(quizzScc.getComponentLabel());
+  browseBar.setPath("<a href=\"Main.jsp\">"+resources.getString("QuizzList")+"</a>");
+  browseBar.setExtraInformation(resources.getString("QuizzSeeResults"));
 
-        //operation pane
-        OperationPane operationPane = window.getOperationPane();
-        operationPane.addOperation(m_context + "/util/icons/quizz_print.gif",resources.getString("GML.print"),"javascript:window.print()");
+  //operation pane
+  OperationPane operationPane = window.getOperationPane();
+  operationPane.addOperation(m_context + "/util/icons/quizz_print.gif",resources.getString("GML.print"),"javascript:window.print()");
 
-        out.println(window.printBefore());
-        Frame frame = gef.getFrame();
-        out.println(frame.printBefore());
-        String quizzPart = displayQuizzResult(quizz, gef, m_context, quizzScc, resources, settings, nb_user_votes);
-        ScoreDetail userScoreDetail = null;
-        //Suggestion pedagogique
-        if (userId == null) {
-          userScoreDetail= quizzScc.getCurrentUserScoreByFatherIdAndParticipationId(quizzId, participationId);
-        } else
-          userScoreDetail= quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
+  out.println(window.printBefore());
+  Frame frame = gef.getFrame();
+  out.println(frame.printBefore());
+  String quizzPart = displayQuizzResult(quizz, gef, m_context, quizzScc, resources, settings, nb_user_votes);
+  ScoreDetail userScoreDetail = null;
+  //Suggestion pedagogique
+  if (userId == null) {
+    userScoreDetail= quizzScc.getCurrentUserScoreByFatherIdAndParticipationId(quizzId, participationId);
+  } else
+    userScoreDetail= quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
 
-        if ((userScoreDetail.getSuggestion()!=null) && (!userScoreDetail.getSuggestion().equals("")))
-        {
-		quizzPart += "<center><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\" class=\"intfdcolor4\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
-        quizzPart += resources.getString("EducationSuggestion") + " :</span><br>";
-        quizzPart += EncodeHelper.javaStringToHtmlString(userScoreDetail.getSuggestion())+"</td></tr></table></td></tr></table>";
-        }
+  if ((userScoreDetail.getSuggestion()!=null) && (!userScoreDetail.getSuggestion().equals(""))) {
+    quizzPart += "<center><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\" class=\"intfdcolor4\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
+    quizzPart += resources.getString("EducationSuggestion") + " :</span><br>";
+    quizzPart += EncodeHelper.javaStringToHtmlString(userScoreDetail.getSuggestion())+"</td></tr></table></td></tr></table>";
+  }
 
-        out.println(quizzPart);
-        out.println(frame.printMiddle());
+  out.println(quizzPart);
+  out.println(frame.printMiddle());
 
-        Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.back"), "Main.jsp", false);
-        if (origin.equals("1")) {
-          cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "quizzResultUser.jsp", false);
-        } else if (origin.equals("0")) {
-          cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "palmares.jsp?quizz_id="+quizzId, false);
-        }
-        out.println("<table width=100% border=\"0\">");
-        out.println("<tr><td align=\"center\">"+cancelButton.print()+"</td></tr>");
-        out.println("</table>");
-        out.println(frame.printAfter());
-        out.println(window.printAfter());
+  Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.back"), "Main.jsp", false);
+  if (origin.equals("1")) {
+    cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "quizzResultUser.jsp", false);
+  } else if (origin.equals("0")) {
+    cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "palmares.jsp?quizz_id="+quizzId, false);
+  }
+  out.println("<table width=100% border=\"0\">");
+  out.println("<tr><td align=\"center\">"+cancelButton.print()+"</td></tr>");
+  out.println("</table>");
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 }
 else if (action.equals("ViewResultAdmin")) {
-        out.println("<body>");
-        String participation= (String) session.getAttribute("currentParticipationId");
-        if ((participation!=null)&&(!participation.equals("")))
-          participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();
-        if (userId == null) {
-          participationId += 1;
-          quizz = quizzScc.getQuestionContainerForCurrentUserByParticipationId(quizzId, participationId);
-        } else{
-             participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();
-             quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
-        }
-        int nb_user_votes = 0;
-        Collection<ScoreDetail> userScores = quizzScc.getUserScoresByFatherId(quizzId);
-        if (userScores != null)
-          nb_user_votes = userScores.size();
+  out.println("<body>");
+  String participation= (String) session.getAttribute("currentParticipationId");
+  if ((participation!=null)&&(!participation.equals("")))
+    participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();
+  if (userId == null) {
+    participationId += 1;
+    quizz = quizzScc.getQuestionContainerForCurrentUserByParticipationId(quizzId, participationId);
+  } else{
+       participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();
+       quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
+  }
+  int nb_user_votes = 0;
+  Collection<ScoreDetail> userScores = quizzScc.getUserScoresByFatherId(quizzId);
+  if (userScores != null) {
+    nb_user_votes = userScores.size();
+  }
 
-        Window window = gef.getWindow();
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(quizzScc.getSpaceLabel());
-        browseBar.setComponentName(quizzScc.getComponentLabel());
-        browseBar.setPath("<a href=\"Main.jsp\">"+resources.getString("QuizzList")+"</a>");
-        browseBar.setExtraInformation(resources.getString("QuizzSeeResults"));
+  Window window = gef.getWindow();
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setDomainName(quizzScc.getSpaceLabel());
+  browseBar.setComponentName(quizzScc.getComponentLabel());
+  browseBar.setPath("<a href=\"Main.jsp\">"+resources.getString("QuizzList")+"</a>");
+  browseBar.setExtraInformation(resources.getString("QuizzSeeResults"));
 
-        //operation pane
-        OperationPane operationPane = window.getOperationPane();
-        operationPane.addOperation(m_context + "/util/icons/quizz_print.gif",resources.getString("GML.print"),"javascript:window.print()");
+  //operation pane
+  OperationPane operationPane = window.getOperationPane();
+  operationPane.addOperation(m_context + "/util/icons/quizz_print.gif",resources.getString("GML.print"),"javascript:window.print()");
 
-        out.println(window.printBefore());
-        Frame frame = gef.getFrame();
-        out.println(frame.printBefore());
-        String quizzPart = displayQuizzResultAdmin(quizz, gef, m_context, quizzScc, resources, settings, nb_user_votes);
-        ScoreDetail userScoreDetail = null;
-        //Suggestion pedagogique
-        if (userId == null) {
-          userScoreDetail= quizzScc.getCurrentUserScoreByFatherIdAndParticipationId(quizzId, participationId);
-        } else
-          userScoreDetail= quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
+  out.println(window.printBefore());
+  Frame frame = gef.getFrame();
+  out.println(frame.printBefore());
+  String quizzPart = displayQuizzResultAdmin(quizz, gef, m_context, quizzScc, resources, settings, nb_user_votes);
+  ScoreDetail userScoreDetail = null;
+  //Suggestion pedagogique
+  if (userId == null) {
+    userScoreDetail= quizzScc.getCurrentUserScoreByFatherIdAndParticipationId(quizzId, participationId);
+  } else {
+    userScoreDetail= quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
+  }
 
+  quizzPart += "<center><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\" class=\"intfdcolor4\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
+  quizzPart += resources.getString("EducationSuggestion") + " :</span><br>";
+  quizzPart += "<textarea name=\"txa_suggestion\" cols=\"120\" rows=\"4\">";
+  if (userScoreDetail.getSuggestion()!=null) {
+    quizzPart += userScoreDetail.getSuggestion();
+  }
+  quizzPart += "</textarea>";
+  quizzPart += "</td></tr></table></td></tr></table>";
+  quizzPart += "<input type=\"hidden\" name=\"UserId\" value=\""+userId+"\">";
+  quizzPart += "<input type=\"hidden\" name=\"Page\" value=\""+origin+"\">";
 
-        quizzPart += "<center><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\" class=\"intfdcolor4\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
-        quizzPart += resources.getString("EducationSuggestion") + " :</span><br>";
-        quizzPart += "<textarea name=\"txa_suggestion\" cols=\"120\" rows=\"4\">";
-        if (userScoreDetail.getSuggestion()!=null) {
-          quizzPart += userScoreDetail.getSuggestion();
-        }
-        quizzPart += "</textarea>";
-        quizzPart += "</td></tr></table></td></tr></table>";
-        quizzPart += "<input type=\"hidden\" name=\"UserId\" value=\""+userId+"\">";
-        quizzPart += "<input type=\"hidden\" name=\"Page\" value=\""+origin+"\">";
-
-        out.println(quizzPart);
-        out.println(frame.printMiddle());
-        Button cancelButton=(Button) gef.getFormButton(resources.getString("GML.back"), "quizzAdmin.jsp", false);
-        if (origin.equals("1")) {
-          cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "quizzResultAdmin.jsp", false);
-        } else if (origin.equals("0")) {
-          cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "palmaresAdmin.jsp?quizz_id="+quizzId, false);
-        }
-        Button voteButton = (Button) gef.getFormButton(resources.getString("QuestionUpdate"), "javascript:update_suggestion("+quizz.getHeader().getPK().getId()+")", false);
-        out.println("<table width=100% border=\"0\">");
-        out.println("<tr><td align=\"center\"><table><tr><td align=center>"+voteButton.print()+"</td><td align=center>"+cancelButton.print()+"</td></tr></table></td></tr>");
-        out.println("</table>");
-        out.println(frame.printAfter());
-        out.println(window.printAfter());
+  out.println(quizzPart);
+  out.println(frame.printMiddle());
+  Button cancelButton=(Button) gef.getFormButton(resources.getString("GML.back"), "quizzAdmin.jsp", false);
+  if (origin.equals("1")) {
+    cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "quizzResultAdmin.jsp", false);
+  } else if (origin.equals("0")) {
+    cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "palmaresAdmin.jsp?quizz_id="+quizzId, false);
+  }
+  Button voteButton = (Button) gef.getFormButton(resources.getString("QuestionUpdate"), "javascript:update_suggestion("+quizz.getHeader().getPK().getId()+")", false);
+  out.println("<table width=100% border=\"0\">");
+  out.println("<tr><td align=\"center\"><table><tr><td align=center>"+voteButton.print()+"</td><td align=center>"+cancelButton.print()+"</td></tr></table></td></tr>");
+  out.println("</table>");
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 }
 else if (action.equals("UpdateSuggestion")) {
-        String suggestion = (String) request.getParameter("txa_suggestion");
-        participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();
-        quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
-        ScoreDetail userScoreDetail = null;
-        //Suggestion pedagogique
-        userScoreDetail = quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
-        userScoreDetail.setSuggestion(suggestion);
-        quizzScc.updateScore(userScoreDetail);
+  String suggestion = (String) request.getParameter("txa_suggestion");
+  participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();
+  quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
+  ScoreDetail userScoreDetail = null;
+  //Suggestion pedagogique
+  userScoreDetail = quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
+  userScoreDetail.setSuggestion(suggestion);
+  quizzScc.updateScore(userScoreDetail);
 
-        if (origin.equals("0"))
-        {
+  if (origin.equals("0"))
+  {
 %>
           <script language="JavaScript">
           <!--
           self.location="palmaresAdmin.jsp?quizz_id=<%=quizzId%>";
           //-->
           </script>
-        <%
-        }
-        else
-          if (origin.equals("1"))
-          {
+<%
+  } else if (origin.equals("1")) {
 %>
 <script language="JavaScript">
 <!--
@@ -1181,8 +1184,8 @@ self.location="quizzResultAdmin.jsp";
 //-->
 </script>
 <%
-    }
   }
+}
 %>
 </body>
 </html>

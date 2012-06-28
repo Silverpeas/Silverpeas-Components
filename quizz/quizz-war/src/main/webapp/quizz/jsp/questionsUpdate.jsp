@@ -221,14 +221,15 @@ out.println(gef.getLookStyleSheet());
 </head>
 <script language="javascript">
 function addQuestion() {
-    document.questionForm.submit();
+  document.questionForm.submit();
 }
 function SendQuestions(nb)
 {
-	if (Number(nb) > 0)
+	if (Number(nb) > 0) {
 		self.location = "questionsUpdate.jsp?Action=SendQuestions";
-	else
-			alert('<%=resources.getString("MustContainsAQuestion")%>');
+	} else {
+		alert('<%=resources.getString("MustContainsAQuestion")%>');
+	}
 }
 </script>
 <body>
