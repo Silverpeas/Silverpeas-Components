@@ -51,6 +51,7 @@ import static org.mockito.Mockito.when;
  * Tests on the comment getting by the CommentResource web service.
  */
 public class QuestionGettingTest extends RESTWebServiceTest<QuestionReplyTestResources> {
+  private UserDetail creator;
 
   public QuestionGettingTest() {
     super("com.silverpeas.questionReply.web", "spring-questionreply-webservice.xml");
@@ -73,21 +74,12 @@ public class QuestionGettingTest extends RESTWebServiceTest<QuestionReplyTestRes
   public void getAQuestionByAnAuthenticatedUser() throws Exception {
     WebResource resource = resource();
 
-    UserDetail creator = new UserDetail();
-    creator.setFirstName("Lisa");
-    creator.setLastName("Simpson");
-    creator.setId("1");
-    authenticate(creator);
-
-    UserDetailWithProfiles user = new UserDetailWithProfiles();
-    user.setFirstName("Bart");
-    user.setLastName("Simpson");
-    user.setId("10");
+    UserDetailWithProfiles user = getTestResources().aUserNamed("Bart", "Simpson");
     user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
     QuestionManager mockedQuestionManager = mock(QuestionManager.class);
-    Question question = getNewSimpleQuestion(3);
+    Question question = getNewSimpleQuestion(creator.getId(), 3);
     when(mockedQuestionManager.getQuestion(3L)).thenReturn(question);
     getTestResources().getMockableQuestionManager().setQuestionManager(mockedQuestionManager);
     QuestionEntity entity = resource.path(QUESTION_RESOURCE_PATH + "/3").header(HTTP_SESSIONKEY, sessionKey).
@@ -103,21 +95,11 @@ public class QuestionGettingTest extends RESTWebServiceTest<QuestionReplyTestRes
   public void getAnInvisibleQuestionByAnAuthenticatedUser() throws Exception {
     WebResource resource = resource();
 
-    UserDetail creator = new UserDetail();
-    creator.setFirstName("Lisa");
-    creator.setLastName("Simpson");
-    creator.setId("1");
-    authenticate(creator);
-
-    UserDetailWithProfiles user = new UserDetailWithProfiles();
-    user.setFirstName("Bart");
-    user.setLastName("Simpson");
-    user.setId("10");
+    UserDetailWithProfiles user = getTestResources().aUserNamed("Bart", "Simpson");
     user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
-    getMockedPersonalizationService().setPersonalizationService(mock(PersonalizationService.class));
     QuestionManager mockedQuestionManager = mock(QuestionManager.class);
-    Question question = getNewSimpleQuestion(3);
+    Question question = getNewSimpleQuestion(creator.getId(), 3);
     question.waitForAnswer();
     when(mockedQuestionManager.getQuestion(3L)).thenReturn(question);
     getTestResources().getMockableQuestionManager().setQuestionManager(mockedQuestionManager);
@@ -132,8 +114,8 @@ public class QuestionGettingTest extends RESTWebServiceTest<QuestionReplyTestRes
     }
   }
 
-  private Question getNewSimpleQuestion(int id) {
-    Question question = new Question("1", COMPONENT_INSTANCE_ID);
+  private Question getNewSimpleQuestion(String creatorId, int id) {
+    Question question = new Question(creatorId, COMPONENT_INSTANCE_ID);
     question.setPK(new IdPK(id));
     question.getPK().setId(COMPONENT_INSTANCE_ID);
     question.setTitle("Test");
@@ -143,12 +125,16 @@ public class QuestionGettingTest extends RESTWebServiceTest<QuestionReplyTestRes
   }
 
   @Before
-  public void preparePersonalization() {
-     PersonalizationService myPersonalizationService = mock(PersonalizationService.class);
+  public void preparePersonalizationAndQuestionCreator() {
+     PersonalizationService myPersonalizationService = getTestResources().getPersonalizationServiceMock();
      UserPreferences prefs = mock(UserPreferences.class);
      when(prefs.getLanguage()).thenReturn("en");
      when(myPersonalizationService.getUserSettings(anyString())).thenReturn(prefs);
-     getMockedPersonalizationService().setPersonalizationService(myPersonalizationService);
+     
+     creator = new UserDetail();
+     creator.setFirstName("Lisa");
+     creator.setLastName("Simpson");
+     authenticate(creator);
   }
 
   @Override

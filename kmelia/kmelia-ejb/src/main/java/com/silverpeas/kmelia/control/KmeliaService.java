@@ -24,11 +24,12 @@
 package com.silverpeas.kmelia.control;
 
 import com.silverpeas.SilverpeasComponentService;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * Services provided by the Kmelia Silverpeas component.
  */
-public interface KmeliaService extends SilverpeasComponentService {
+public interface KmeliaService extends SilverpeasComponentService<PublicationDetail> {
 
  
 }

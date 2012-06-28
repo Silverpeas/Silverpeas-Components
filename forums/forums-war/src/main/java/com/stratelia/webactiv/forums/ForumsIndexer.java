@@ -27,8 +27,8 @@ package com.stratelia.webactiv.forums;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.forums.control.ForumsSessionController;
 import com.stratelia.webactiv.forums.models.Message;
-import com.stratelia.webactiv.forums.sessionController.ForumsSessionController;
 
 public class ForumsIndexer implements ComponentIndexerInterface {
 

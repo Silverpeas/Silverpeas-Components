@@ -38,7 +38,7 @@
 <%@ page import="com.stratelia.webactiv.forums.forumsException.ForumsException"%>
 <%@ page import="com.stratelia.webactiv.forums.models.Forum"%>
 <%@ page import="com.stratelia.webactiv.forums.models.Message"%>
-<%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"%>
+<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
 <%@ page import="com.stratelia.webactiv.forums.url.ActionUrl"%>
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
@@ -52,7 +52,8 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
-<%!  public static String IMAGE_UPDATE = "../../util/icons/update.gif";
+<%!  
+  public static String IMAGE_UPDATE = "../../util/icons/update.gif";
   public static String IMAGE_UNLOCK = "../../util/icons/lock.gif";
   public static String IMAGE_LOCK = "../../util/icons/unlock.gif";
   public static String IMAGE_DELETE = "../../util/icons/delete.gif";

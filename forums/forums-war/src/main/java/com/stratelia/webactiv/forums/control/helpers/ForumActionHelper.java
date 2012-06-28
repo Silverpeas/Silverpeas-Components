@@ -21,18 +21,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.forums.sessionController.helpers;
+package com.stratelia.webactiv.forums.control.helpers;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.forums.sessionController.ForumsSessionController;
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.forums.control.ForumsSessionController;
+import com.stratelia.webactiv.util.ResourceLocator;
+
 /**
- *
  * @author ehugonnet
  */
 public class ForumActionHelper {
@@ -78,6 +79,8 @@ public class ForumActionHelper {
             int forumParent = ForumHelper.getIntParameter(request, "forumFolder");
             String categoryId = request.getParameter("CategoryId").trim();
             String keywords = request.getParameter("forumKeywords").trim();
+            String positions = request.getParameter("Positions");
+            fsc.setForumPositions(positions);
             int forumId = fsc.createForum(forumName, forumDescription, userId, forumParent,
                 categoryId, keywords);
             if (forumModerators != null) {
@@ -127,7 +130,9 @@ public class ForumActionHelper {
               }
             }
             String categoryId = request.getParameter("CategoryId").trim();
-            fsc.updateForum(forumId, forumName, forumDescription, forumParent, categoryId, keywords);
+            fsc
+                .updateForum(forumId, forumName, forumDescription, forumParent, categoryId,
+                    keywords);
             break;
           }
           case CREATE_MESSAGE: {
@@ -138,7 +143,7 @@ public class ForumActionHelper {
             String forumKeywords = request.getParameter("forumKeywords");
             String subscribe = request.getParameter("subscribeMessage");
             if (StringUtil.isDefined(messageTitle) && StringUtil.isDefined(messageText)) {
-              int result = fsc.createMessage(messageTitle, userId, forumId, parentId, messageText, 
+              int result = fsc.createMessage(messageTitle, userId, forumId, parentId, messageText,
                   forumKeywords);
               if (subscribe == null) {
                 subscribe = "0";

@@ -48,8 +48,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.w3c.tidy.Node;
-
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.domain.TopicSearch;
@@ -91,6 +89,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
 
@@ -878,7 +877,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
     if (updater != null && (StringUtil.isDefined(updater.getFirstName())
         || StringUtil.isDefined(updater.getLastName()))) {
-      return updater.getDisplayedName();
+      return UserNameGenerator.toString(updater, kmeliaScc.getUserId());
     }
     return kmeliaScc.getString("kmelia.UnknownUser");
   }

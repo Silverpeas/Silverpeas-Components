@@ -408,6 +408,11 @@ public class KmeliaPublication implements SilverpeasContent {
   }
 
   @Override
+  public String getDescription() {
+    return getDetail().getDescription();
+  }
+
+  @Override
   public String getContributionType() {
     return getDetail().getContributionType();
   }

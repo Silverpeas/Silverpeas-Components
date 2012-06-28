@@ -23,29 +23,40 @@
  */
 package com.silverpeas.classifieds.control;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.silverpeas.search.SearchEngineFactory;
+
 import com.silverpeas.classifieds.dao.ClassifiedsDAO;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.classifieds.model.Subscribe;
+import com.silverpeas.classifieds.notification.ClassifiedSubscriptionUserNotification;
+import com.silverpeas.classifieds.notification.ClassifiedSupervisorUserNotification;
+import com.silverpeas.classifieds.notification.ClassifiedValidationUserNotification;
 import com.silverpeas.comment.service.notification.CommentUserNotificationService;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -54,23 +65,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.inject.Named;
-import org.silverpeas.search.SearchEngineFactory;
-import static com.silverpeas.classifieds.ClassifiedUtil.*;
 
 /**
  * Services provided by the Classified Silverpeas component.
@@ -307,34 +301,13 @@ public class DefaultClassifiedService implements ClassifiedService {
     }
   }
 
-  private void sendValidationNotification(String userId, ClassifiedDetail classified,
-      String refusalMotive, String userIdWhoRefuse) {
+  private void sendValidationNotification(final String userId, final ClassifiedDetail classified,
+      final String refusalMotive, final String userIdWhoRefuse) {
     try {
-      if (userId != null) {
 
-        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        String subject = getValidationNotificationSubject(classified, DisplayI18NHelper.getDefaultLanguage());
-        String templateName = "validated";
-        if (!ClassifiedDetail.VALID.equals(classified.getStatus())) {
-          templateName = "refused";
-        }
-        NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
-                templateName);
+      UserNotificationHelper.buildAndSend(new ClassifiedValidationUserNotification(classified, userIdWhoRefuse,
+          refusalMotive, userId));
 
-        for (String language : DisplayI18NHelper.getLanguages()) {
-          SilverpeasTemplate template = newTemplate(classified);
-          template.setAttribute("refusalMotive", refusalMotive);
-          templates.put(language, template);
-          notifMetaData.addLanguage(language,
-              getValidationNotificationSubject(classified, language), "");
-        }
-
-        notifMetaData.addUserRecipient(new UserRecipient(userId));
-        notifMetaData.setLink(URLManager.getSearchResultURL(classified));
-        notifMetaData.setComponentId(classified.getInstanceId());
-        notifyUsers(notifMetaData, userIdWhoRefuse);
-      }
     } catch (Exception e) {
       SilverTrace.warn("classifieds", "classifieds.sendValidationNotification()",
           "classifieds.EX_ERR_ALERT_USERS", "userId = " + userId +
@@ -342,45 +315,16 @@ public class DefaultClassifiedService implements ClassifiedService {
     }
   }
 
-  public void sendSubscriptionsNotification(String field1, String field2,
-      ClassifiedDetail classified) {
-    // We alert subscribers only if classified is Valid
-    Collection<String> users = getUsersBySubscribe(field1, field2);
-    if (users != null) {
-      try {
-        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        String subject = getMessage("classifieds.mailNewPublicationSubscription");
-        NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
-                "subscription");
+  public void sendSubscriptionsNotification(final String field1, final String field2, final ClassifiedDetail classified) {
+    try {
 
-        for (String language : DisplayI18NHelper.getLanguages()) {
-          SilverpeasTemplate template = newTemplate(classified);
-          templates.put(language, template);
-          notifMetaData.addLanguage(language, getMessage(
-              "classifieds.mailNewPublicationSubscription", subject, language), "");
-        }
-        for (String user : users) {
-          notifMetaData.addUserRecipient(new UserRecipient(user));
-        }
-        notifMetaData.setLink(URLManager.getSearchResultURL(classified));
-        notifMetaData.setComponentId(classified.getInstanceId());
-        notifyUsers(notifMetaData, classified.getCreatorId());
-      } catch (Exception e) {
-        SilverTrace.warn("classifieds", "ClassifiedsBmEJB.sendSubscriptionsNotification()",
-            "classifieds.EX_ERR_ALERT_USERS", "", e);
-      }
-    }
-  }
+      UserNotificationHelper.buildAndSend(new ClassifiedSubscriptionUserNotification(classified, getUsersBySubscribe(
+          field1, field2)));
 
-  private String getValidationNotificationSubject(ClassifiedDetail classified, final String language) {
-    String subject = "";
-    if (ClassifiedDetail.VALID.equals(classified.getStatus())) {
-      subject = getMessage("classifieds.classifiedValidated", language);
-    } else {
-      subject = getMessage("classifieds.classifiedRefused", language);
+    } catch (Exception e) {
+      SilverTrace.warn("classifieds", "ClassifiedsBmEJB.sendSubscriptionsNotification()",
+          "classifieds.EX_ERR_ALERT_USERS", "", e);
     }
-    return subject;
   }
 
   @Override
@@ -397,25 +341,6 @@ public class DefaultClassifiedService implements ClassifiedService {
       // fermer la connexion
       closeConnection(con);
     }
-  }
-
-  private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
-    try {
-      if (notifMetaData.getSender() == null || notifMetaData.getSender().length() == 0) {
-        notifMetaData.setSender(senderId);
-      }
-      getNotificationSender(notifMetaData.getComponentId()).notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
-      SilverTrace.warn("classifieds", "classifiedsBmEJB.notifyUsers()",
-          "classifieds.EX_ERR_ALERT_USERS", e);
-    }
-  }
-
-  private NotificationSender getNotificationSender(String componentId) {
-    // must return a new instance each time
-    // This is to resolve Serializable problems
-    NotificationSender notifSender = new NotificationSender(componentId);
-    return notifSender;
   }
 
   @Override
@@ -522,32 +447,12 @@ public class DefaultClassifiedService implements ClassifiedService {
     updateClassified(classified);
   }
 
-  private void sendAlertToSupervisors(ClassifiedDetail classified) {
+  private void sendAlertToSupervisors(final ClassifiedDetail classified) {
     if (ClassifiedDetail.TO_VALIDATE.equalsIgnoreCase(classified.getStatus())) {
       try {
-        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        String subject = getMessage("classifieds.supervisorNotifSubject");
-        NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
-                "tovalidate");
 
-        for (String language : DisplayI18NHelper.getLanguages()) {
-          SilverpeasTemplate template = newTemplate(classified);
-          templates.put(language, template);
-          notifMetaData.addLanguage(language, getMessage(
-              "classifieds.supervisorNotifSubject", subject, language), "");
-        }
+        UserNotificationHelper.buildAndSend(new ClassifiedSupervisorUserNotification(classified));
 
-        List<String> roles = new ArrayList<String>();
-        roles.add("admin");
-        OrganizationController orga = new OrganizationController();
-        String[] admins = orga.getUsersIdsByRoleNames(classified.getInstanceId(), roles);
-        for (String admin : admins) {
-          notifMetaData.addUserRecipient(new UserRecipient(admin));
-        }
-        notifMetaData.setLink(getClassifiedUrl(classified));
-        notifMetaData.setComponentId(classified.getInstanceId());
-        notifyUsers(notifMetaData, classified.getCreatorId());
       } catch (Exception e) {
         SilverTrace.warn("classifieds", "classifieds.sendAlertToSupervisors()",
             "classifieds.EX_ERR_ALERT_USERS", "userId = " +
