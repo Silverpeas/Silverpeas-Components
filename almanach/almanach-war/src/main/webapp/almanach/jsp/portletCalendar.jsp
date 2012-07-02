@@ -25,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
@@ -42,14 +43,14 @@
 <c:set var="calendarView" value="${requestScope.calendarView}"/>
 <c:set var="currentDay" value="${calendarView.currentDay}"/>
 
-<HTML>
-  <HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
-    <link rel='stylesheet' type='text/css' href="<c:url value='/util/styleSheets/jquery/fullcalendar.css'/>" />
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
+    <view:includePlugin name="calendar"/>
     <script type="text/javascript">
       function nextView()
       {
@@ -91,58 +92,36 @@
         document.createEventForm.Day.value = day;
         document.createEventForm.submit();
       }
+      
+      function buildCalendarView() {
+      }
 
       $(document).ready(function() {
+        
+        var currentDay = new Date();
+        currentDay.setFullYear(${currentDay.year});
+        currentDay.setMonth(${currentDay.month});
+        currentDay.setDate(${currentDay.dayOfMonth});
 
         // page is now ready, initialize the calendar...
-
-        $('#calendar').fullCalendar({
-          // put your options and callbacks here
-          monthNames: ['<fmt:message key="GML.mois0"/>', '<fmt:message key="GML.mois1"/>', '<fmt:message key="GML.mois2"/>', '<fmt:message key="GML.mois3"/>',
-            '<fmt:message key="GML.mois4"/>', '<fmt:message key="GML.mois5"/>', '<fmt:message key="GML.mois6"/>', '<fmt:message key="GML.mois7"/>',
-            '<fmt:message key="GML.mois8"/>', '<fmt:message key="GML.mois9"/>', '<fmt:message key="GML.mois10"/>', '<fmt:message key="GML.mois11"/>'],
-          dayNames: ['<fmt:message key="GML.jour1"/>', '<fmt:message key="GML.jour2"/>', '<fmt:message key="GML.jour3"/>', '<fmt:message key="GML.jour4"/>',
-            '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'],
-          dayNamesShort: ['<fmt:message key="GML.shortJour1"/>', '<fmt:message key="GML.shortJour2"/>', '<fmt:message key="GML.shortJour3"/>',
-            '<fmt:message key="GML.shortJour4"/>', '<fmt:message key="GML.shortJour5"/>', '<fmt:message key="GML.shortJour6"/>', '<fmt:message key="GML.shortJour7"/>'],
-          buttonText: {
-            prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
-            next:     '&nbsp;&#9658;&nbsp;',  // right triangle
-            prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
-            nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
-            today:    "<fmt:message key='auJour'/>",
-            month:    '<fmt:message key="GML.month"/>',
-            week:     '<fmt:message key="GML.week"/>',
-            day:      '<fmt:message key="GML.day"/>'
-          },
-          minHour: 8,
-          allDayText: '',
-          allDayDefault: false,
-          timeFormat: 'HH:mm{ - HH:mm}',
-          axisFormat: 'HH:mm',
-          columnFormat: { agendaWeek: 'ddd d' },
-          firstDay: <c:out value='${calendarView.firstDayOfWeek -1}' />,
-          defaultView: "<c:out value='${calendarView.viewType}'/>",
-          dayClick: function(date, allDay, jsEvent, view) {
-            var dayDate = $.fullCalendar.formatDate(date, "yyyy-MM-dd'T'HH:mm");
-            clickDay(dayDate);
-          },
-          eventClick: function(calEvent, jsEvent, view) {
-            var eventDate = $.fullCalendar.formatDate(calEvent.start, "yyyy/MM/dd");
-            clickEvent(calEvent.id, eventDate, calEvent.instanceId);
-          },
-          events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>
-      <c:if test='${not calendarView.weekendVisible}'>
-            , weekends: false
-      </c:if>
-          });
-
-          $('#calendar').fullCalendar('gotoDate', <c:out value="${currentDay.year}"/>, <c:out value="${currentDay.month}"/>, <c:out value="${currentDay.dayOfMonth}"/>)
-
+        <c:if test='${not calendarView.viewType.nextEventsView}'>
+            $("#calendar").calendar({
+              view: "${fn:toLowerCase(calendarView.viewType.name)}",
+              weekends: ${calendarView.weekendVisible},
+              firstDayOfWeek: ${calendarView.firstDayOfWeek},
+              currentDate: currentDay,
+              events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>,
+              onday: clickDay,
+              onevent: function(event) {
+                var eventDate = $.fullCalendar.formatDate(event.start, "yyyy/MM/dd");
+                clickEvent(event.id, eventDate, event.instanceId);
+              }
+            });
+        </c:if>
         });
     </script>
-  </HEAD>
-  <BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5">
+  </head>
+  <body class="portlet">
     <view:window>
       <view:frame>
 
@@ -150,58 +129,37 @@
         <fmt:message key="almanach.icons.leftArrow" var="leftArrow" bundle="${icons}"/>
         <fmt:message key="almanach.icons.rightArrow" var="rightArrow" bundle="${icons}"/>
         <fmt:message key="auJour" var="today" />
-      <CENTER>
-        <table width="98%" border="0" cellspacing="0" cellpadding="1">
-          <tr>
-            <td>
-              <table cellpadding=0 cellspacing=0 border=0 width=50% bgcolor=000000>
-                <tr>
-                  <td>
-                    <table cellpadding=2 cellspacing=1 border=0 width="100%" >
-                      <tr>
-                        <td class=intfdcolor align=center nowrap width="100%" height="24"><a href="javascript:onClick=goToDay()" onFocus="this.blur()" class=hrefComponentName><c:out value='${today}'/></a></td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </td>
-            <td width="100%">
-              <table cellpadding=0 cellspacing=0 border=0 width=50% bgcolor=000000>
-                <tr>
-                  <td>
-                    <table cellpadding=0 cellspacing=1 border=0 width="100%" >
-                      <tr>
-                        <td class=intfdcolor><a href="javascript:onClick=previousView()" onFocus="this.blur()"><img src="<c:url value='${leftArrow}'/>" border="0"></a></td>
-                        <td class=intfdcolor align=center nowrap width="100%" height="24"><span class="txtnav"><c:out value="${calendarView.label}" /></span></td>
-                        <td class=intfdcolor><a href="javascript:onClick=nextView()" onFocus="this.blur()"><img src="<c:url value='${rightArrow}'/>" border="0"></a></td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-        <BR/>
+
+        <div id="navigation">
+          <fmt:message key="almanach.icons.leftArrow" var="leftArrow" bundle="${icons}"/>
+          <fmt:message key="almanach.icons.rightArrow" var="rightArrow" bundle="${icons}"/>
+          <div id="currentScope">
+            <a href="javascript:onClick=previousView()"><img src="<c:url value='${leftArrow}'/>" border="0" alt="" align="top"/></a>
+            <span class="txtnav"><c:out value="${calendarView.label}" /></span>
+            <a href="javascript:onClick=nextView()"><img src="<c:url value='${rightArrow}'/>" border="0" alt="" align="top"/></a>
+          </div>
+          <div id="today">
+            <a href="javascript:onClick=goToDay()"><c:out value="${today}" /></a>
+          </div>
+        </div>
+
         <div id="calendar"></div>
-      </CENTER>
 
-    </view:frame>
-  </view:window>
-  <form name="almanachForm" action="../..<c:out value='${calendarView.almanach.url}'/>almanach.jsp"  method="POST" target="MyMain">
-    <input type="hidden" name="Action"/>
-    <input type="hidden" name="Id"/>
-  </form>
+      </view:frame>
+    </view:window>
+    <form name="almanachForm" action="../..<c:out value='${calendarView.almanach.url}'/>almanach.jsp"  method="POST" target="MyMain">
+      <input type="hidden" name="Action"/>
+      <input type="hidden" name="Id"/>
+    </form>
 
-  <form name="viewEventForm" action=""  method="POST" target="MyMain">
-    <input type="hidden" name="Id"/>
-    <input type="hidden" name="Date"/>
-  </form>
+    <form name="viewEventForm" action=""  method="POST" target="MyMain">
+      <input type="hidden" name="Id"/>
+      <input type="hidden" name="Date"/>
+    </form>
 
-  <form name="createEventForm" action="../..<c:out value='${calendarView.almanach.url}'/>createEvent.jsp" method="POST" target="MyMain">
-    <input type="hidden" name="Day"/>
-  </form>
+    <form name="createEventForm" action="../..<c:out value='${calendarView.almanach.url}'/>createEvent.jsp" method="POST" target="MyMain">
+      <input type="hidden" name="Day"/>
+    </form>
 
-</body>
+  </body>
 </html>
