@@ -27,7 +27,8 @@
 
 <%@ include file="check.jsp" %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <%
 	out.println(gef.getLookStyleSheet());
@@ -68,7 +69,7 @@
  		return result;
 	}
 	
-	// envoi les donn�es entr�es par l'utilisateur
+	// Send data filled by user
 	function sendData(){
 		if (isCorrectForm()) {
 			document.channel.submit();
@@ -76,8 +77,8 @@
 	}
 </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<FORM name="channel" action="CreateChannel" method="post">
+<body bgcolor="#ffffff">
+<form name="channel" action="CreateChannel" method="post">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel);
@@ -91,26 +92,26 @@
 	<table width="100%" border="0" cellspacing="0" cellpadding="4">
 	<tr>
 		<td class="txtlibform"><%=resource.getString("rss.url")%> :</td>
-		<td><input type="text" name="Url" maxlength="1000" size="60">&nbsp;<img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle"></td>
+		<td><input type="text" name="Url" maxlength="1000" size="60"/>&nbsp;<img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle" /></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("rss.refreshRate")%> :</td>
-		<td><input type="text" name="RefreshRate" maxlength="10" size="3" value="10">&nbsp;(<%=resource.getString("rss.minutes")%>)&nbsp;<img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle"></td>
+		<td><input type="text" name="RefreshRate" maxlength="10" size="3" value="10"/>&nbsp;(<%=resource.getString("rss.minutes")%>)&nbsp;<img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("rss.nbDisplayedItems")%> :</td>
-		<td><input type="text" name="NbItems" maxlength="10" size="3" value="10"></td>
+		<td><input type="text" name="NbItems" maxlength="10" size="3" value="10"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("rss.displayImage")%> :</td>
-		<td><input type="checkbox" name="DisplayImage"></td>
+		<td><input type="checkbox" name="DisplayImage"/></td>
 	</tr>
 	<tr> 
-        <td colspan="2" valign="top">( <img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle">&nbsp;: <%=resource.getString("GML.requiredField")%> )</td>
+        <td colspan="2" valign="top">( <img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle"/>&nbsp;: <%=resource.getString("GML.requiredField")%> )</td>
     </tr>
 	</table>
 <%	 
-	out.println(board.printAfter()+"<BR>");
+	out.println(board.printAfter()+"<br/>");
 	
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:sendData()", false));

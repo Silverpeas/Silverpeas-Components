@@ -33,8 +33,8 @@ String displayImageChecked = "";
 if (channel.getDisplayImage() == 1)
 	displayImageChecked = " checked";
 %>
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <%
 	out.println(gef.getLookStyleSheet());
@@ -88,8 +88,8 @@ if (channel.getDisplayImage() == 1)
 	}
 </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<FORM name="channel" action="UpdateChannel" method="post">
+<body bgcolor="#ffffff">
+<form name="channel" action="UpdateChannel" method="post">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel);
@@ -100,30 +100,30 @@ if (channel.getDisplayImage() == 1)
 	out.println(frame.printBefore());
 	out.println(board.printBefore());
 %>
-	<table width="100%" border="0" cellspacing="0" cellpadding="4">
-	<input type="hidden" name="Id" value="<%=channel.getPK().getId()%>">
+<input type="hidden" name="Id" value="<%=channel.getPK().getId()%>"/>
+<table width="100%" border="0" cellspacing="0" cellpadding="4">
 	<tr>
 		<td class="txtlibform"><%=resource.getString("rss.url")%> :</td>
-		<td><input type="text" name="Url" maxlength="1000" size="60" value="<%=channel.getUrl()%>">&nbsp;<img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle"></td>
+		<td><input type="text" name="Url" maxlength="1000" size="60" value="<%=channel.getUrl()%>"/>&nbsp;<img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("rss.refreshRate")%> :</td>
-		<td><input type="text" name="RefreshRate" maxlength="10" size="3" value="<%=channel.getRefreshRate()%>">&nbsp;(<%=resource.getString("rss.minutes")%>)&nbsp;<img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle"></td>
+		<td><input type="text" name="RefreshRate" maxlength="10" size="3" value="<%=channel.getRefreshRate()%>"/>&nbsp;(<%=resource.getString("rss.minutes")%>)&nbsp;<img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("rss.nbDisplayedItems")%> :</td>
-		<td><input type="text" name="NbItems" maxlength="10" size="3" value="<%=channel.getNbDisplayedItems()%>"></td>
+		<td><input type="text" name="NbItems" maxlength="10" size="3" value="<%=channel.getNbDisplayedItems()%>"/></td>
 	</tr>
 	<tr>
 	<td class="txtlibform"><%=resource.getString("rss.displayImage")%> :</td>
-		<td><input type="checkbox" name="DisplayImage" <%=displayImageChecked%>></td>
+		<td><input type="checkbox" name="DisplayImage" <%=displayImageChecked%>/></td>
 	</tr>
 	<tr> 
-        <td colspan="2" valign="top">( <img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle">&nbsp;: <%=resource.getString("GML.requiredField")%> )</td>
-    </tr>
-	</table>
+        <td colspan="2" valign="top">( <img src="<%=resource.getIcon("rss.mandatoryField")%>" width=5 align="absmiddle"/>&nbsp;: <%=resource.getString("GML.requiredField")%> )</td>
+  </tr>
+</table>
 <%	 
-	out.println(board.printAfter()+"<BR>");
+	out.println(board.printAfter()+"<br/>");
 	
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:sendData()", false));

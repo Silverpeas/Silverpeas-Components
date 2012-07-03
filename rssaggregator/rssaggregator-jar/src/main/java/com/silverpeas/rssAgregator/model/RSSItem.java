@@ -30,49 +30,96 @@ import java.util.Date;
 import de.nava.informa.core.ImageIF;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
+
 /**
  * Use RSSItem to encapsulate RSS news or ATOM data. It allows us having light JSON transfer data.
- * Users who want more news about RSS only need to click on the items link. 
+ * Users who want more news about RSS only need to click on the items link.
  * @author ebonnet
  */
 public class RSSItem implements Serializable, Comparable<RSSItem> {
 
   private static final long serialVersionUID = -1235557051682143463L;
 
+  /*
+   * Items attributes
+   */
   /**
-   * Item attributes
+   * itemTitle the item title
    */
   private String itemTitle;
+  /**
+   * itemDescription the item description
+   */
   private String itemDescription;
+  /**
+   * itemLink the item url link
+   */
   private URL itemLink;
+  /**
+   * itemSubject the item subject
+   */
   private String itemSubject;
+  /**
+   * itemDate the item date
+   */
   private Date itemDate;
+  /**
+   * itemComments the item comments
+   */
   private URL itemComments;
 
-  /**
+  /*
    * Channel attributes
    */
-  private Long channelId;
-  private String channelTitle;
-  private String channelDescription;
-  private ImageIF channelImage;
 
+  /**
+   * channelId the channel identifier
+   */
+  private Long channelId;
+  /**
+   * externalChannelId the external channel identifier
+   */
+  private Long externalChannelId;
+  /**
+   * channelTitle the channel title
+   */
+  private String channelTitle;
+  /**
+   * channelDescription the channel description
+   */
+  private String channelDescription;
+  /**
+   * ImageIF the channel image
+   */
+  private ImageIF channelImage;  
+  /**
+   * url the current channel URL that was filled by user
+   */
+  private String channelUrl;
+  /**
+   * nbDisplayedItems the number of displayed items
+   */
+  private int nbDisplayedItems;
+  
   /**
    * Default RSSItem constructor which encapsulate Item and Channel from informa API
    * @param item
    * @param channel
    */
-  public RSSItem(Item item, Channel channel) {
+  public RSSItem(Item item, Channel channel, SPChannel spChannel) {
     this.itemTitle = item.getTitle();
     this.itemDescription = item.getDescription();
     this.itemLink = item.getLink();
     this.itemSubject = item.getSubject();
     this.itemDate = item.getDate();
     this.itemComments = item.getComments();
-    this.channelId = channel.getId();
+    this.externalChannelId = channel.getId();
     this.channelTitle = channel.getTitle();
     this.channelImage = channel.getImage();
     this.channelDescription = channel.getDescription();
+    this.channelId = Long.parseLong(spChannel.getPK().getId());
+    this.channelUrl = spChannel.getUrl();
+    this.nbDisplayedItems = spChannel.getNbDisplayedItems();
   }
 
   /**
@@ -160,17 +207,17 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
   }
 
   /**
-   * @return the channelId
+   * @return the externalChannelId
    */
-  public Long getChannelId() {
-    return channelId;
+  public Long getExternalChannelId() {
+    return externalChannelId;
   }
 
   /**
-   * @param channelId the channelId to set
+   * @param externalChannelId the externalChannelId to set
    */
-  public void setChannelId(Long channelId) {
-    this.channelId = channelId;
+  public void setExternalChannelId(Long externalChannelId) {
+    this.externalChannelId = externalChannelId;
   }
 
   /**
@@ -213,6 +260,48 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
    */
   public void setChannelImage(ImageIF image) {
     this.channelImage = image;
+  }
+
+  /**
+   * @return the channelId
+   */
+  public Long getChannelId() {
+    return channelId;
+  }
+
+  /**
+   * @param channelId the channelId to set
+   */
+  public void setChannelId(Long channelId) {
+    this.channelId = channelId;
+  }
+
+  /**
+   * @return the channelUrl
+   */
+  public String getChannelUrl() {
+    return channelUrl;
+  }
+
+  /**
+   * @param channelUrl the channelUrl to set
+   */
+  public void setChannelUrl(String channelUrl) {
+    this.channelUrl = channelUrl;
+  }
+
+  /**
+   * @return the nbDisplayedItems
+   */
+  public int getNbDisplayedItems() {
+    return nbDisplayedItems;
+  }
+
+  /**
+   * @param nbDisplayedItems the nbDisplayedItems to set
+   */
+  public void setNbDisplayedItems(int nbDisplayedItems) {
+    this.nbDisplayedItems = nbDisplayedItems;
   }
 
   @Override

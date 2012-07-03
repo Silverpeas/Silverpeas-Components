@@ -18,7 +18,7 @@ Unfortunately, every website does not provide RSS feeds.<br />
 Some "agregator" websites provide RSS feeds but are not the producer of the information: see <a target="_blank" href="http://www.newsisfree.com/">NewsIsFree</a>, <a target="_blank" href="http://www.syndic8.com/">Syndic8</a>.<br /><br />
 </p>
 
-<div class="txtlibform">Here are two examples of RSS feeds:</div>
+<div class="txtlibform">Here are some examples of RSS feeds:</div>
 
 
 <div class="rss_exemple">

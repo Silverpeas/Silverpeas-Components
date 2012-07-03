@@ -50,8 +50,8 @@ public class RssAgregatorCache {
    * Default constructor
    */
   private RssAgregatorCache() {
-    ResourceLocator res = new ResourceLocator(
-        "com.silverpeas.rssAgregator.settings.rssAgregatorSettings", "");
+    ResourceLocator res =
+        new ResourceLocator("com.silverpeas.rssAgregator.settings.rssAgregatorSettings", "");
     String refreshRate = res.getString("refreshRate");
     REFRESH_RATE = (60 * 1000) * Long.valueOf(refreshRate).longValue();
   }
@@ -90,7 +90,6 @@ public class RssAgregatorCache {
   }
 
   /**
-   * 
    * @param key of the channel to remove from the cache
    */
   public void removeChannelFromCache(SPChannelPK key) {

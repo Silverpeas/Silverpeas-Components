@@ -58,8 +58,8 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
       WAPrimaryKey pk = getDAO().add(channel);
       channel.setPK(pk);
     } catch (PersistenceException pe) {
-      throw new RssAgregatorException("RssAgregatorBmImpl.addChannel()",
-          SilverpeasException.ERROR, "rssAgregator.ADDING_CHANNEL_FAILED", pe);
+      throw new RssAgregatorException("RssAgregatorBmImpl.addChannel()", SilverpeasException.ERROR,
+          "rssAgregator.ADDING_CHANNEL_FAILED", pe);
     }
     return channel;
   }

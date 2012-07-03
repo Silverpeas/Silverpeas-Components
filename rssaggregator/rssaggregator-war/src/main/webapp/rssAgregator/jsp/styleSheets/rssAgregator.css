@@ -309,3 +309,7 @@ hr#sep-no-agregate {
 	padding:0;
 	clear:both;
 }
+
+body.portlet .cellBrowseBar, body.portlet .cellOperation {
+  display: none;
+}

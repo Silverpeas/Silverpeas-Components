@@ -29,13 +29,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import com.silverpeas.rssAgregator.model.RSSItem;
+import com.silverpeas.rssAgregator.model.RSSViewType;
 import com.silverpeas.rssAgregator.model.RssAgregatorException;
 import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.rssAgregator.model.SPChannelPK;
@@ -51,7 +49,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import de.nava.informa.core.ParseException;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.ChannelBuilder;
-import de.nava.informa.impl.basic.Item;
 import de.nava.informa.parsers.FeedParser;
 
 /**
@@ -69,6 +66,8 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   private ChannelBuilder channelBuilder = new ChannelBuilder();
   private SPChannel currentChannel = null;
   private SimpleDateFormat dateFormatter = null;
+  private static final String DEFAULT_VIEW_PARAMETER = "defaultView";
+  private RSSViewType viewMode;
 
   /**
    * Default constructor
@@ -79,6 +78,12 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
         "com.silverpeas.rssAgregator.multilang.rssAgregatorBundle",
         "com.silverpeas.rssAgregator.settings.rssAgregatorIcons",
         "com.silverpeas.rssAgregator.settings.rssAgregatorSettings");
+    String defaultView = getComponentParameterValue(DEFAULT_VIEW_PARAMETER);
+    if (defaultView.isEmpty()) {
+      viewMode = RSSViewType.SEPARATED;
+    } else {
+      viewMode = RSSViewType.valueOf(defaultView);
+    }
   }
 
   /**
@@ -86,7 +91,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
    */
   public List<SPChannel> getAvailableChannels() throws RssAgregatorException {
     List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
-    ArrayList<SPChannel> channels = new ArrayList<SPChannel>();
+    List<SPChannel> channels = new ArrayList<SPChannel>();
     SPChannel channel = null;
     SPChannelPK channelPK = null;
 
@@ -265,66 +270,44 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   }
 
   /**
-   * @return the list of RSS Item
-   * @throws RssAgregatorException
+   * Sets the current view mode of the RSS agregator rendering.
+   * @param viewMode the view mode (separated, agregated).
    */
-  public List<RSSItem> getChannelItems() throws RssAgregatorException {
-    List<SPChannel> channels = getAllChannels();
-    List<RSSItem> items = buildRSSItemList(channels);
-    for (RSSItem item : items) {
-      SilverTrace.debug("module", "RssAgregator", "Item title = " + item.getItemTitle() +
-          ", item date=" + item.getItemDate());
-    }
-    return items;
+  public void setViewMode(final RSSViewType viewMode) {
+    this.viewMode = viewMode;
   }
-
+  
   /**
-   * @return the list of channels
-   * @throws RssAgregatorException
+   * @return the current viewMode
    */
-  public List<SPChannel> getAllChannels() throws RssAgregatorException {
-    List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
-    List<SPChannel> channels = new ArrayList<SPChannel>();
-    Channel rssChannel = null;
-    SPChannelPK channelPK = null;
-    for (SPChannel dbChannel : channelsFromDB) {
-      channelPK = (SPChannelPK) dbChannel.getPK();
-      if (cache.isContentNeedToRefresh(channelPK)) {
-        SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getAllChannels",
-              "Refresh channel content", "channelPK = " + channelPK.toString());
-        try {
-          rssChannel = getChannelFromUrl(dbChannel.getUrl());
-        } catch (Exception e) {
-          SilverTrace.info("rssAgregator", "RssAgregatorSessionController.getAllChannels()",
-                "Problem to read RSS from URL", "channelPK = " + channelPK.toString(), e);
-        } finally {
-          dbChannel._setChannel(rssChannel);
-          cache.addChannelToCache(dbChannel);
-        }
-      } else {
-        SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannels",
-            "Use cache", "channelPK = " + channelPK.toString());
-        dbChannel = cache.getChannelFromCache(channelPK);
-      }
-      channels.add(dbChannel);
-    }
-    return channels;
+  public RSSViewType getViewMode() {
+    return this.viewMode;
   }
-
+  
   /**
-   * @param channels the list of channels
-   * @return the list of RSS items read from channels.
+   * 
+   * @return
+
+  public RSSViewForm getAgregateViewForm() {
+    String role = this.getRole();
+    
+    new RSSViewForm(role, channels, items, viewMode)
+  }   */
+  
+  /**
+   * This method return the highest user profiles
+   * @return profile which gives the higher access
    */
-  private List<RSSItem> buildRSSItemList(List<SPChannel> channels) {
-    List<RSSItem> items = new ArrayList<RSSItem>();
-    for (SPChannel spChannel : channels) {
-      Channel channel = spChannel._getChannel();
-      Collection<Item> channelItems = channel.getItems();
-      for (Item item : channelItems) {
-        items.add(new RSSItem(item, channel));
+  public String getHighestRole() {
+    String[] profiles = this.getUserRoles();
+    String role = "user";
+    for (String profile : profiles) {
+      // if admin, return it, we won't find a better profile
+      if ("admin".equals(profile)) {
+        return profile;
       }
     }
-    Collections.sort(items);
-    return items;
+    return role;
   }
+
 }

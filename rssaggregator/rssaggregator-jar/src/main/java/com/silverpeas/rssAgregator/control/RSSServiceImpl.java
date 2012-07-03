@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,7 +57,8 @@ public class RSSServiceImpl implements RSSService {
   private ChannelBuilder channelBuilder = new ChannelBuilder();
 
   @Override
-  public List<RSSItem> getApplicationItems(String applicationId, boolean agregateContent) throws RssAgregatorException {
+  public List<RSSItem> getApplicationItems(String applicationId, boolean agregateContent)
+      throws RssAgregatorException {
     List<SPChannel> channels = getAllChannels(applicationId);
     List<RSSItem> items = buildRSSItemList(channels, agregateContent);
     for (RSSItem item : items) {
@@ -85,8 +85,10 @@ public class RSSServiceImpl implements RSSService {
         try {
           rssChannel = getChannelFromUrl(dbChannel.getUrl());
         } catch (Exception e) {
-          SilverTrace.info("rssAgregator", "RSSServiceImpl.getAllChannels()",
-                "Problem to read RSS from URL", "channelPK = " + channelPK.toString(), e);
+          SilverTrace.error("rssAgregator", "RSSServiceImpl.getAllChannels()",
+              "RSS problem from URL", "channelPK = " + channelPK.toString() + ", url=" +
+                    dbChannel.getUrl(), e);
+          rssChannel = null;
         } finally {
           dbChannel._setChannel(rssChannel);
           cache.addChannelToCache(dbChannel);
@@ -139,9 +141,17 @@ public class RSSServiceImpl implements RSSService {
     List<RSSItem> items = new ArrayList<RSSItem>();
     for (SPChannel spChannel : channels) {
       Channel channel = spChannel._getChannel();
-      Collection<Item> channelItems = channel.getItems();
-      for (Item item : channelItems) {
-        items.add(new RSSItem(item, channel));
+      if (channel != null) {
+        List<Item> channelItems = new ArrayList<Item>(channel.getItems());
+        // Get the number of displayed items
+        int nbChannelItems = spChannel.getNbDisplayedItems();
+        for (Item item : channelItems) {
+          // Limit the number of items
+          if (channelItems.indexOf(item) + 1 > nbChannelItems) {
+            break;
+          }
+          items.add(new RSSItem(item, channel, spChannel));
+        }
       }
     }
     // Sort list of items in agregate content mode
