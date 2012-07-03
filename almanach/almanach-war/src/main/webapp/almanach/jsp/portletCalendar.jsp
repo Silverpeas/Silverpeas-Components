@@ -49,6 +49,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
+    <style type="text/css">
+      <c:out value=".${instanceId} { border-color: ${calendarView.almanach.color}; color: ${calendarView.almanach.color}; }"/>
+      <c:out value=".${instanceId} .fc-event-skin { background-color: ${calendarView.almanach.color}; border-color: ${calendarView.almanach.color}; color: white; }"/>
+      <c:forEach var="almanach" items="${othersAlmanachs}">
+        <c:out value=".${almanach.instanceId} { border-color: ${almanach.color}; color: ${almanach.color}; }"/>
+        <c:out value=".${almanach.instanceId} .fc-event-skin { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
+      </c:forEach>
+    </style>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <view:includePlugin name="calendar"/>
     <script type="text/javascript">
@@ -69,17 +77,17 @@
         document.almanachForm.submit();
       }
 
-      function clickEvent(idEvent, date, componentId){
+      function clickEvent( idEvent, date, componentId ){
         viewEvent(idEvent, date, componentId);
       }
 
-      function clickDay(day){
+      function clickDay( day ){
         flag = "<c:out value='${flag}'/>";
         if(flag == "publisher" || flag == "admin")
           addEvent(day);
       }
 
-      function viewEvent(id, date, componentId)
+      function viewEvent( id, date, componentId )
       {
         document.viewEventForm.action = "<c:url value='/Ralmanach/'/>"+componentId+"/viewEventContent.jsp";
         document.viewEventForm.Id.value = id;
@@ -87,24 +95,148 @@
         document.viewEventForm.submit();
       }
 
-      function addEvent(day)
+      function addEvent( day )
       {
         document.createEventForm.Day.value = day;
         document.createEventForm.submit();
       }
       
-      function buildCalendarView() {
+      function renderNextEvents( target ) {
+        var MONTH_NAMES = ['<fmt:message key="GML.mois0"/>', '<fmt:message key="GML.mois1"/>', '<fmt:message key="GML.mois2"/>', '<fmt:message key="GML.mois3"/>',
+          '<fmt:message key="GML.mois4"/>', '<fmt:message key="GML.mois5"/>', '<fmt:message key="GML.mois6"/>', '<fmt:message key="GML.mois7"/>',
+          '<fmt:message key="GML.mois8"/>', '<fmt:message key="GML.mois9"/>', '<fmt:message key="GML.mois10"/>', '<fmt:message key="GML.mois11"/>'];
+        var DAY_NAMES = ['<fmt:message key="GML.jour1"/>', '<fmt:message key="GML.jour2"/>', '<fmt:message key="GML.jour3"/>', '<fmt:message key="GML.jour4"/>',
+          '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'];
+        var TODAY = "<fmt:message key='GML.Today'/>";
+        var TOMORROW = "<fmt:message key='GML.Tomorrow'/>";
+        var SLOTS_MAX = 5;
+       
+        var events = <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>;
+        var slotCount = 0;
+        var now = new Date();
+        var nextday = new Date();
+        nextday.setDate(nextday.getDate() + 1);
+        
+        function inTwoDigits( t )
+        {
+          if (t < 10) t = "0" + t;
+          return t;
+        }
+        
+        function computeIdFrom( date )
+        {
+          var year = date.getFullYear(), month = inTwoDigits(date.getMonth()+1), day = inTwoDigits(date.getDate());
+          return year + "-" + month + "-" + day;
+        }
+        
+        function formatDate( date )
+        {
+          var year = date.getFullYear(), month = inTwoDigits(date.getMonth()+1), day = inTwoDigits(date.getDate());
+          return year + "/" + month + "/" + day;
+        }
+        
+        function compareDate( date1, date2 )
+        {
+          if (date1.getFullYear() < date2.getFullYear() || date1.getMonth() < date2.getMonth() ||
+            date1.getDate() < date2.getDate())
+            return -1;
+          if (date1.getFullYear() == date2.getFullYear() && date1.getMonth() == date2.getMonth() &&
+            date1.getDate() == date2.getDate())
+            return 0
+          else return 1;
+        }
+        
+        function startTimeOf( event ) {
+          if (event.startTimeDefined)
+          {
+            var hours = inTwoDigits(startDate.getHours()), minutes = inTwoDigits(startDate.getMinutes());
+            var startTime =  "<fmt:message key='GML.at'/> " + hours + ":" + minutes + " - ";
+            return $("<span>").addClass("eventBeginHours").append(startTime);
+          }
+          return "";
+        }
+        
+        function locationOf( event )
+        {
+          if (event.location.length > 0)
+          {
+            return $("<div>").addClass("eventInfo").
+              append($("<div>").addClass("eventPlace").
+                append($("<div>").addClass("bloc").append($("<span>").html(event.location)))).
+              append($("<br>", {clear: "left"}));
+          }
+          return "";
+        }
+      
+        function shortFormatOf( date )
+        {
+          var month = inTwoDigits(date.getMonth()+1), day = inTwoDigits(date.getDate());
+          return $("<div>").addClass("eventShortDate").
+            append($("<span>").addClass("number").append(day)).
+            append("/").
+            append($("<span>").addClass("month").append(month));
+        }
+      
+        function longFormatOf( date )
+        {
+          if (compareDate(date, now) == 0)
+            return $("<div>").addClass("eventLongDate").append(TODAY);
+          else if (compareDate(date, nextday) == 0)
+            return $("<div>").addClass("eventLongDate").append(TOMORROW);
+          else
+            return $("<div>").addClass("eventLongDate").
+              append($("<span>").addClass("day").html(DAY_NAMES[date.getDay()] + " ")).
+              append($("<span>").addClass("number").html(inTwoDigits(date.getDate()) + " ")).
+              append($("<span>").addClass("month").html(MONTH_NAMES[date.getMonth()] + " ")).
+              append($("<span>").addClass("year").html(date.getFullYear()));
+        }
+        
+        function daySlotOf( event )
+        {
+          var id = computeIdFrom(startDate);
+          var eventsInSameDay = $("#"+id);
+          if (eventsInSameDay.length == 0)
+          {
+            eventsInSameDay = $("<li>").attr("id", id).addClass("events").
+               append(shortFormatOf(startDate)).append(longFormatOf(startDate)).appendTo(listOfEvents);
+             slotCount++;
+          }
+          if (event.priority && !eventsInSameDay.hasClass("priority"))
+          {
+            //id += "_priority";
+            eventsInSameDay.addClass("priority");
+          }
+          return eventsInSameDay;
+        }
+        
+        var listOfEvents = $("<ul>").attr("id", "eventList").addClass("eventList").appendTo(target);
+        for (var i = 0; i < events.length && slotCount < SLOTS_MAX; i++) {
+          var event = events[i];
+          var eventCss = event.className.join(' ');
+          var startDate = $.fullCalendar.parseDate(event.start);
+          if (compareDate(startDate, now) < 0)
+            startDate = now;
+          
+          daySlotOf(event).append($("<div>").attr("id", "event" + i).addClass("event " + eventCss).
+            append($("<div>").addClass("eventName").
+              append(startTimeOf(event)).
+              append($("<a>", {
+              "href": "javascript:viewEvent(" + event.id + ", '" + formatDate(startDate) + "' , '" + event.instanceId + "');",
+              "title": "<fmt:message key='almanach.openEvent'/>"}).addClass(eventCss).html(event.title))).
+            append(locationOf(event)));
+        }
       }
 
       $(document).ready(function() {
-        
-        var currentDay = new Date();
-        currentDay.setFullYear(${currentDay.year});
-        currentDay.setMonth(${currentDay.month});
-        currentDay.setDate(${currentDay.dayOfMonth});
 
         // page is now ready, initialize the calendar...
-        <c:if test='${not calendarView.viewType.nextEventsView}'>
+      <c:choose>
+        <c:when test='${not calendarView.viewType.nextEventsView}'>
+            var currentDay = new Date();
+            currentDay.setFullYear(${currentDay.year});
+            currentDay.setMonth(${currentDay.month});
+            currentDay.setDate(${currentDay.dayOfMonth});
+            
             $("#calendar").calendar({
               view: "${fn:toLowerCase(calendarView.viewType.name)}",
               weekends: ${calendarView.weekendVisible},
@@ -117,14 +249,16 @@
                 clickEvent(event.id, eventDate, event.instanceId);
               }
             });
-        </c:if>
+        </c:when>
+        <c:otherwise>
+            $("#navigation").remove();
+            renderNextEvents($("#calendar"));
+        </c:otherwise>
+      </c:choose>
         });
     </script>
   </head>
   <body class="portlet">
-    <view:window>
-      <view:frame>
-
         <!-- AFFICHAGE HEADER -->
         <fmt:message key="almanach.icons.leftArrow" var="leftArrow" bundle="${icons}"/>
         <fmt:message key="almanach.icons.rightArrow" var="rightArrow" bundle="${icons}"/>
@@ -145,8 +279,6 @@
 
         <div id="calendar"></div>
 
-      </view:frame>
-    </view:window>
     <form name="almanachForm" action="../..<c:out value='${calendarView.almanach.url}'/>almanach.jsp"  method="POST" target="MyMain">
       <input type="hidden" name="Action"/>
       <input type="hidden" name="Id"/>
