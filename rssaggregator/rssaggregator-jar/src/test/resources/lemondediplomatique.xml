@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<rss version="2.0"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<channel>
+	<title>Le Monde diplomatique</title>
+	<link>http://www.monde-diplomatique.fr/</link>
+	<language>fr-fr</language>
+	<description>Journal mensuel d'informations internationales
+</description>
+
+
+	<item>
+		<title>La &#171;&#160;grande muraille verte&#160;&#187; d'Afrique</title>
+		<link>http://www.monde-diplomatique.fr/2011/11/HERTSGAARD/46896</link>
+		<dc:subject>Afrique</dc:subject>
+<dc:subject>S&#233;n&#233;gal</dc:subject>
+<dc:subject>Agriculture</dc:subject>
+<dc:subject>Alimentation</dc:subject>
+<dc:subject>D&#233;sertification</dc:subject>
+<dc:subject>&#201;cologie</dc:subject>
+<dc:subject>Faim</dc:subject>
+<dc:subject>Femmes</dc:subject>
+<dc:subject>For&#234;t</dc:subject>
+<dc:subject>Sahel</dc:subject>
+<dc:subject>Climat</dc:subject>
+<dc:subject>Sahara</dc:subject>
+<dc:subject>Environnement</dc:subject>
+
+		<dc:date>2012-05-25T13:35:19Z</dc:date>
+		<dc:creator>Mark Hertsgaard</dc:creator>
+		<description>Tandis qu'une famine ravage la Corne de l'Afrique, des scientifiques r&#233;fl&#233;chissent aux &#233;quilibres &#233;cologiques. Pour combattre la d&#233;sertification, plusieurs pays ont lanc&#233; un projet de &#171;&#160;grande muraille verte&#160;&#187;. / Afrique, S&#233;n&#233;gal, Agriculture, Alimentation, D&#233;sertification, &#201;cologie, Faim, Femmes, For&#234;t, (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/afrique&quot; rel=&quot;tag&quot;&gt;Afrique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/senegal&quot; rel=&quot;tag&quot;&gt;S&#233;n&#233;gal&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/agriculture&quot; rel=&quot;tag&quot;&gt;Agriculture&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/alimentation&quot; rel=&quot;tag&quot;&gt;Alimentation&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/desertification&quot; rel=&quot;tag&quot;&gt;D&#233;sertification&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/ecologie&quot; rel=&quot;tag&quot;&gt;&#201;cologie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/faim&quot; rel=&quot;tag&quot;&gt;Faim&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/femmes&quot; rel=&quot;tag&quot;&gt;Femmes&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/foret&quot; rel=&quot;tag&quot;&gt;For&#234;t&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/sahel&quot; rel=&quot;tag&quot;&gt;Sahel&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/climat&quot; rel=&quot;tag&quot;&gt;Climat&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/sahara&quot; rel=&quot;tag&quot;&gt;Sahara&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/environnement&quot; rel=&quot;tag&quot;&gt;Environnement&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2011/11/&quot; rel=&quot;directory&quot;&gt;2011/11&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>Soldats oubli&#233;s du Courneau</title>
+		<link>http://www.monde-diplomatique.fr/2011/11/FERRY/46924</link>
+		<dc:subject>France</dc:subject>
+<dc:subject>Russie</dc:subject>
+<dc:subject>S&#233;n&#233;gal</dc:subject>
+<dc:subject>Arm&#233;e</dc:subject>
+<dc:subject>Colonialisme</dc:subject>
+<dc:subject>Conflit</dc:subject>
+<dc:subject>Histoire</dc:subject>
+<dc:subject>Sant&#233;</dc:subject>
+<dc:subject>Ville</dc:subject>
+<dc:subject>Madagascar</dc:subject>
+
+		<dc:date>2012-05-25T13:35:19Z</dc:date>
+		<dc:creator>Stephan Ferry et Philippe Lespinasse</dc:creator>
+		<description>Sous une butte de sable en Gironde, neuf cent trente-six combattants africains gisent dans l'anonymat. / France, Russie, S&#233;n&#233;gal, Arm&#233;e, Colonialisme, Conflit, Histoire, Sant&#233;, Ville, Madagascar - 2011/11
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/france&quot; rel=&quot;tag&quot;&gt;France&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/russie&quot; rel=&quot;tag&quot;&gt;Russie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/senegal&quot; rel=&quot;tag&quot;&gt;S&#233;n&#233;gal&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/armee&quot; rel=&quot;tag&quot;&gt;Arm&#233;e&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/colonialisme&quot; rel=&quot;tag&quot;&gt;Colonialisme&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/conflit&quot; rel=&quot;tag&quot;&gt;Conflit&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/histoire&quot; rel=&quot;tag&quot;&gt;Histoire&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/sante&quot; rel=&quot;tag&quot;&gt;Sant&#233;&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/ville&quot; rel=&quot;tag&quot;&gt;Ville&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/madagascar&quot; rel=&quot;tag&quot;&gt;Madagascar&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2011/11/&quot; rel=&quot;directory&quot;&gt;2011/11&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>Enqu&#234;te dans le temple de l'euro</title>
+		<link>http://www.monde-diplomatique.fr/2011/11/DUMINI/46897</link>
+		<dc:subject>Allemagne</dc:subject>
+<dc:subject>Europe</dc:subject>
+<dc:subject>Banque</dc:subject>
+<dc:subject>Capitalisme</dc:subject>
+<dc:subject>Dette</dc:subject>
+<dc:subject>&#201;lections</dc:subject>
+<dc:subject>Finance</dc:subject>
+<dc:subject>Monnaie</dc:subject>
+<dc:subject>Politique</dc:subject>
+<dc:subject>Crise &#233;conomique</dc:subject>
+<dc:subject>Crise financi&#232;re</dc:subject>
+<dc:subject>Crise mon&#233;taire</dc:subject>
+<dc:subject>N&#233;olib&#233;ralisme</dc:subject>
+
+		<dc:date>2012-05-21T13:18:53Z</dc:date>
+		<dc:creator>Antoine Dumini et Fran&#231;ois Ruffin</dc:creator>
+		<description>Ind&#233;pendante des d&#233;lib&#233;rations d&#233;mocratiques, la Banque centrale europ&#233;enne devait incarner la stabilit&#233; mon&#233;taire. Elle a conduit la zone euro au bord de l'&#233;clatement. Pourtant, la crise a renforc&#233; son pouvoir. / Allemagne, Europe, Banque, Capitalisme, Dette, &#201;lections, Finance, Monnaie, Politique, (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/allemagne&quot; rel=&quot;tag&quot;&gt;Allemagne&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/europe&quot; rel=&quot;tag&quot;&gt;Europe&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/banque&quot; rel=&quot;tag&quot;&gt;Banque&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/capitalisme&quot; rel=&quot;tag&quot;&gt;Capitalisme&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/dette&quot; rel=&quot;tag&quot;&gt;Dette&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/elections&quot; rel=&quot;tag&quot;&gt;&#201;lections&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/finance&quot; rel=&quot;tag&quot;&gt;Finance&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/monnaie&quot; rel=&quot;tag&quot;&gt;Monnaie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/politique&quot; rel=&quot;tag&quot;&gt;Politique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/criseeconomique&quot; rel=&quot;tag&quot;&gt;Crise &#233;conomique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/crisefinanciere&quot; rel=&quot;tag&quot;&gt;Crise financi&#232;re&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/crisemonetaire&quot; rel=&quot;tag&quot;&gt;Crise mon&#233;taire&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/neoliberalisme&quot; rel=&quot;tag&quot;&gt;N&#233;olib&#233;ralisme&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2011/11/&quot; rel=&quot;directory&quot;&gt;2011/11&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>Quand les mots valent de l'or</title>
+		<link>http://www.monde-diplomatique.fr/2011/11/KAPLAN/46925</link>
+		<dc:subject>Capitalisme</dc:subject>
+<dc:subject>Entreprise</dc:subject>
+<dc:subject>Informatique</dc:subject>
+<dc:subject>Internet</dc:subject>
+<dc:subject>Langue</dc:subject>
+<dc:subject>Publicit&#233;</dc:subject>
+<dc:subject>Technologies de l'information</dc:subject>
+<dc:subject>Technologie</dc:subject>
+<dc:subject>Marketing</dc:subject>
+<dc:subject>Commerce</dc:subject>
+
+		<dc:date>2012-05-21T13:18:53Z</dc:date>
+		<dc:creator>Fr&#233;d&#233;ric Kaplan</dc:creator>
+		<description>Le succ&#232;s de Google tient en deux algorithmes&#160;: l'un, qui permet de trouver des pages r&#233;pondant &#224; certains mots, l'a rendu populaire&#160;; l'autre, qui affecte &#224; ces mots une valeur marchande, l'a rendu riche. Google a r&#233;ussi &#224; &#233;tendre le domaine du capitalisme &#224; la langue elle-m&#234;me. / Capitalisme, (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/capitalisme&quot; rel=&quot;tag&quot;&gt;Capitalisme&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/entreprise&quot; rel=&quot;tag&quot;&gt;Entreprise&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/informatique&quot; rel=&quot;tag&quot;&gt;Informatique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/internet&quot; rel=&quot;tag&quot;&gt;Internet&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/langue&quot; rel=&quot;tag&quot;&gt;Langue&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/publicite&quot; rel=&quot;tag&quot;&gt;Publicit&#233;&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/technocomm&quot; rel=&quot;tag&quot;&gt;Technologies de l'information&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/technologie&quot; rel=&quot;tag&quot;&gt;Technologie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/marketing&quot; rel=&quot;tag&quot;&gt;Marketing&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/commerce&quot; rel=&quot;tag&quot;&gt;Commerce&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2011/11/&quot; rel=&quot;directory&quot;&gt;2011/11&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>&#171;&#160;L&#224;-bas si j'y suis&#160;&#187;&#160;: mai 2012</title>
+		<link>http://www.monde-diplomatique.fr/carnet/2012-05-18-La-bas-si-j-y-suis</link>
+		<dc:subject>Afrique</dc:subject>
+<dc:subject>Angola</dc:subject>
+<dc:subject>&#201;tats-Unis</dc:subject>
+<dc:subject>France</dc:subject>
+<dc:subject>Portugal</dc:subject>
+<dc:subject>&#201;conomie</dc:subject>
+<dc:subject>&#201;lections</dc:subject>
+<dc:subject>M&#233;dias</dc:subject>
+<dc:subject>Mouvement de contestation</dc:subject>
+<dc:subject>Politique</dc:subject>
+<dc:subject>Soci&#233;t&#233;</dc:subject>
+<dc:subject>Tiers-monde</dc:subject>
+
+		<dc:date>2012-05-18T14:17:03Z</dc:date>
+		
+		<description>Mercredi 9&#160;mai, dans &#171;&#160;L&#224;-bas si j'y suis&#160;&#187;, &#224; 15&#160;heures, sur France Inter, Daniel Mermet s'entretenait avec l'&#233;quipe du Monde diplomatique autour du num&#233;ro de mai. Serge Halimi se r&#233;jouit du d&#233;part de Nicolas Sarkozy et de la fin de l'antisarkozysme, et &#233;voque la situation en Argentine o&#249; la pr&#233;sidente a (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/afrique&quot; rel=&quot;tag&quot;&gt;Afrique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/angola&quot; rel=&quot;tag&quot;&gt;Angola&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/etatsunis&quot; rel=&quot;tag&quot;&gt;&#201;tats-Unis&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/france&quot; rel=&quot;tag&quot;&gt;France&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/portugal&quot; rel=&quot;tag&quot;&gt;Portugal&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/economie&quot; rel=&quot;tag&quot;&gt;&#201;conomie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/elections&quot; rel=&quot;tag&quot;&gt;&#201;lections&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/medias&quot; rel=&quot;tag&quot;&gt;M&#233;dias&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/mouvementsocial&quot; rel=&quot;tag&quot;&gt;Mouvement de contestation&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/politique&quot; rel=&quot;tag&quot;&gt;Politique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/societe&quot; rel=&quot;tag&quot;&gt;Soci&#233;t&#233;&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/tiersmonde&quot; rel=&quot;tag&quot;&gt;Tiers-monde&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/carnet/&quot; rel=&quot;directory&quot;&gt;La valise diplomatique&lt;/a&gt;
+		</description>
+		<enclosure url="http://www.monde-diplomatique.fr/rss/IMG/mp3/labas1205.mp3" type="audio/mpeg" length="42815712" />
+	</item>
+
+
+	<item>
+		<title>&#171;&#160;Nous co&#251;tons moins cher&#8230;&#160;&#187;</title>
+		<link>http://www.monde-diplomatique.fr/carnet/2012-05-15-Enfants-forcats</link>
+		<dc:subject>Burkina Faso</dc:subject>
+<dc:subject>&#201;tats-Unis</dc:subject>
+<dc:subject>Inde</dc:subject>
+<dc:subject>Enfance</dc:subject>
+<dc:subject>Jeunes</dc:subject>
+<dc:subject>ONG</dc:subject>
+<dc:subject>Pauvret&#233;</dc:subject>
+<dc:subject>Travail</dc:subject>
+<dc:subject>R&#233;publique dominicaine</dc:subject>
+<dc:subject>Esclavage</dc:subject>
+
+		<dc:date>2012-05-15T14:33:38Z</dc:date>
+		<dc:creator>Dominique Godr&#232;che</dc:creator>
+		<description>Des Etats-Unis au Burkina Faso, de l'Inde &#224; la R&#233;publique dominicaine, d&#232;s l'&#226;ge de six ans, des enfants sont employ&#233;s dans les exploitations agricoles, vestimentaires, aurif&#232;res&#8230; Ployant sous des sacs de gravats, de briques, ou de l&#233;gumes&#8230; Se faufilant dans les mines de mica, en Inde, dans des tunnels (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/burkina&quot; rel=&quot;tag&quot;&gt;Burkina Faso&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/etatsunis&quot; rel=&quot;tag&quot;&gt;&#201;tats-Unis&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/inde&quot; rel=&quot;tag&quot;&gt;Inde&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/enfance&quot; rel=&quot;tag&quot;&gt;Enfance&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/jeunes&quot; rel=&quot;tag&quot;&gt;Jeunes&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/ong&quot; rel=&quot;tag&quot;&gt;ONG&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/pauvrete&quot; rel=&quot;tag&quot;&gt;Pauvret&#233;&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/travail&quot; rel=&quot;tag&quot;&gt;Travail&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/republiquedominicaine&quot; rel=&quot;tag&quot;&gt;R&#233;publique dominicaine&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/esclavage&quot; rel=&quot;tag&quot;&gt;Esclavage&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/carnet/&quot; rel=&quot;directory&quot;&gt;La valise diplomatique&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>M.&#160;Fran&#231;ois Hollande contre&#160;le&#160;pantouflage</title>
+		<link>http://www.monde-diplomatique.fr/carnet/2012-05-10-Pantouflage</link>
+		<dc:subject>France</dc:subject>
+<dc:subject>Capitalisme</dc:subject>
+<dc:subject>&#201;conomie</dc:subject>
+<dc:subject>Entreprise</dc:subject>
+<dc:subject>Finance</dc:subject>
+<dc:subject>Parti politique</dc:subject>
+<dc:subject>Politique</dc:subject>
+
+		<dc:date>2012-05-10T12:47:04Z</dc:date>
+		
+		<description>D'ici quelques jours, le nouveau pr&#233;sident de la R&#233;publique va annoncer la composition de son gouvernement. Il devrait se montrer plus attentif que son pr&#233;d&#233;cesseur &#224; ce que le passage dans un cabinet minist&#233;riel ne serve plus de propulseur &#224; une carri&#232;re lucrative dans le priv&#233;. En tout cas, en 2006, (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/france&quot; rel=&quot;tag&quot;&gt;France&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/capitalisme&quot; rel=&quot;tag&quot;&gt;Capitalisme&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/economie&quot; rel=&quot;tag&quot;&gt;&#201;conomie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/entreprise&quot; rel=&quot;tag&quot;&gt;Entreprise&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/finance&quot; rel=&quot;tag&quot;&gt;Finance&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/partipolitique&quot; rel=&quot;tag&quot;&gt;Parti politique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/politique&quot; rel=&quot;tag&quot;&gt;Politique&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/carnet/&quot; rel=&quot;directory&quot;&gt;La valise diplomatique&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>En Gr&#232;ce, succ&#232;s de la gauche radicale, impasse institutionnelle</title>
+		<link>http://www.monde-diplomatique.fr/carnet/2012-05-08-Grece</link>
+		<dc:subject>Gr&#232;ce</dc:subject>
+<dc:subject>&#201;lections</dc:subject>
+<dc:subject>Politique</dc:subject>
+<dc:subject>Extr&#234;me gauche</dc:subject>
+<dc:subject>Crise &#233;conomique</dc:subject>
+
+		<dc:date>2012-05-08T11:34:07Z</dc:date>
+		<dc:creator>Valia Kaimaki</dc:creator>
+		<description>Le camarade Staline peut reposer tranquillement dans sa tombe, le Parti communiste (PC) grec veille, bien d&#233;cid&#233; &#224; poursuivre sa mission &#233;ternelle&#160;: servir la r&#233;volution ouvri&#232;re, guetter son arriv&#233;e, pr&#233;parer les troupes, et surtout ne pas permettre aux sir&#232;nes de faire entendre le chant d'une victoire (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/grece&quot; rel=&quot;tag&quot;&gt;Gr&#232;ce&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/elections&quot; rel=&quot;tag&quot;&gt;&#201;lections&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/politique&quot; rel=&quot;tag&quot;&gt;Politique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/extremegauche&quot; rel=&quot;tag&quot;&gt;Extr&#234;me gauche&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/criseeconomique&quot; rel=&quot;tag&quot;&gt;Crise &#233;conomique&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/carnet/&quot; rel=&quot;directory&quot;&gt;La valise diplomatique&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>Apr&#232;s l'&#233;lection de Fran&#231;ois Hollande</title>
+		<link>http://www.monde-diplomatique.fr/carnet/2012-05-07-Hollande</link>
+		<dc:subject>Europe</dc:subject>
+<dc:subject>France</dc:subject>
+<dc:subject>&#201;conomie</dc:subject>
+<dc:subject>&#201;lections</dc:subject>
+<dc:subject>Extr&#234;me droite</dc:subject>
+<dc:subject>Finance</dc:subject>
+<dc:subject>Id&#233;ologie</dc:subject>
+<dc:subject>In&#233;galit&#233;s</dc:subject>
+<dc:subject>Parti politique</dc:subject>
+<dc:subject>Politique</dc:subject>
+<dc:subject>Crise &#233;conomique</dc:subject>
+<dc:subject>Crise financi&#232;re</dc:subject>
+
+		<dc:date>2012-05-07T18:37:48Z</dc:date>
+		
+		<description>L'&#233;lection de Fran&#231;ois Hollande &#224; la pr&#233;sidence de la R&#233;publique avec 51,62&#160;% des suffrages comporte au moins deux avantages. Elle sanctionne l'&#233;chec de Nicolas Sarkozy et de son projet de transformation du pays. Le pr&#233;sident sortant avait pr&#233;tendu r&#233;concilier les Fran&#231;ais et l'argent. Dans son esprit, (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/europe&quot; rel=&quot;tag&quot;&gt;Europe&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/france&quot; rel=&quot;tag&quot;&gt;France&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/economie&quot; rel=&quot;tag&quot;&gt;&#201;conomie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/elections&quot; rel=&quot;tag&quot;&gt;&#201;lections&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/extremedroite&quot; rel=&quot;tag&quot;&gt;Extr&#234;me droite&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/finance&quot; rel=&quot;tag&quot;&gt;Finance&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/ideologie&quot; rel=&quot;tag&quot;&gt;Id&#233;ologie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/inegalites&quot; rel=&quot;tag&quot;&gt;In&#233;galit&#233;s&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/partipolitique&quot; rel=&quot;tag&quot;&gt;Parti politique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/politique&quot; rel=&quot;tag&quot;&gt;Politique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/criseeconomique&quot; rel=&quot;tag&quot;&gt;Crise &#233;conomique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/crisefinanciere&quot; rel=&quot;tag&quot;&gt;Crise financi&#232;re&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/carnet/&quot; rel=&quot;directory&quot;&gt;La valise diplomatique&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>Dans la Tunisie de 1956, d&#233;j&#224; une Constituante</title>
+		<link>http://www.monde-diplomatique.fr/2011/11/GHORBAL/46927</link>
+		<dc:subject>France</dc:subject>
+<dc:subject>Tunisie</dc:subject>
+<dc:subject>Colonialisme</dc:subject>
+<dc:subject>Droit</dc:subject>
+<dc:subject>&#201;lections</dc:subject>
+<dc:subject>Islam</dc:subject>
+<dc:subject>La&#239;cit&#233;</dc:subject>
+<dc:subject>Politique</dc:subject>
+<dc:subject>Religion</dc:subject>
+
+		<dc:date>2012-05-07T13:10:05Z</dc:date>
+		<dc:creator>Samy Ghorbal</dc:creator>
+		<description>Victorieux de l'&#233;lection du 23&#160;octobre 2011, le parti islamiste conservateur souhaite former une coalition avec deux partis de gauche. L'Assembl&#233;e &#233;lue devra r&#233;diger une nouvelle Constitution. / France, Tunisie, Colonialisme, Droit, &#201;lections, Islam, La&#239;cit&#233;, Politique, Religion - (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/france&quot; rel=&quot;tag&quot;&gt;France&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/tunisie&quot; rel=&quot;tag&quot;&gt;Tunisie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/colonialisme&quot; rel=&quot;tag&quot;&gt;Colonialisme&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/droit&quot; rel=&quot;tag&quot;&gt;Droit&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/elections&quot; rel=&quot;tag&quot;&gt;&#201;lections&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/islam&quot; rel=&quot;tag&quot;&gt;Islam&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/laicite&quot; rel=&quot;tag&quot;&gt;La&#239;cit&#233;&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/politique&quot; rel=&quot;tag&quot;&gt;Politique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/religion&quot; rel=&quot;tag&quot;&gt;Religion&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2011/11/&quot; rel=&quot;directory&quot;&gt;2011/11&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>Comment basculent les empires</title>
+		<link>http://www.monde-diplomatique.fr/2011/11/GOLUB/46930</link>
+		<dc:subject>&#201;tats-Unis</dc:subject>
+<dc:subject>&#201;tats-Unis (affaires ext&#233;rieures)</dc:subject>
+<dc:subject>Europe</dc:subject>
+<dc:subject>Royaume-Uni</dc:subject>
+<dc:subject>Capitalisme</dc:subject>
+<dc:subject>Colonialisme</dc:subject>
+<dc:subject>Commerce international</dc:subject>
+<dc:subject>Histoire</dc:subject>
+<dc:subject>Imp&#233;rialisme</dc:subject>
+<dc:subject>Mondialisation</dc:subject>
+<dc:subject>Relations Nord-Sud</dc:subject>
+<dc:subject>Relations internationales</dc:subject>
+
+		<dc:date>2012-05-07T13:10:05Z</dc:date>
+		<dc:creator>Philip S. Golub</dc:creator>
+		<description>Au-del&#224; des griefs conjoncturels de Washington, les Etats-Unis acceptent mal que leur toute-puissance soit contest&#233;e. En particulier en Asie, une r&#233;gion du monde qui constitua le pr&#233; carr&#233; des puissances occidentales. / &#201;tats-Unis, &#201;tats-Unis (affaires ext&#233;rieures), Europe, Royaume-Uni, Capitalisme, (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/etatsunis&quot; rel=&quot;tag&quot;&gt;&#201;tats-Unis&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/euaffext&quot; rel=&quot;tag&quot;&gt;&#201;tats-Unis (affaires ext&#233;rieures)&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/europe&quot; rel=&quot;tag&quot;&gt;Europe&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/royaumeuni&quot; rel=&quot;tag&quot;&gt;Royaume-Uni&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/capitalisme&quot; rel=&quot;tag&quot;&gt;Capitalisme&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/colonialisme&quot; rel=&quot;tag&quot;&gt;Colonialisme&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/commerceinternational&quot; rel=&quot;tag&quot;&gt;Commerce international&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/histoire&quot; rel=&quot;tag&quot;&gt;Histoire&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/imperialisme&quot; rel=&quot;tag&quot;&gt;Imp&#233;rialisme&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/mondialisation&quot; rel=&quot;tag&quot;&gt;Mondialisation&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/nordsud&quot; rel=&quot;tag&quot;&gt;Relations Nord-Sud&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/relinter&quot; rel=&quot;tag&quot;&gt;Relations internationales&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2011/11/&quot; rel=&quot;directory&quot;&gt;2011/11&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>Aux Philippines, les ambitions d'un d&#233;put&#233; boxeur</title>
+		<link>http://www.monde-diplomatique.fr/2011/11/GARCIA/46932</link>
+		<dc:subject>Philippines</dc:subject>
+<dc:subject>&#201;lections</dc:subject>
+<dc:subject>Finance</dc:subject>
+<dc:subject>In&#233;galit&#233;s</dc:subject>
+<dc:subject>Pauvret&#233;</dc:subject>
+<dc:subject>Politique</dc:subject>
+<dc:subject>Sport</dc:subject>
+
+		<dc:date>2012-05-06T13:02:30Z</dc:date>
+		<dc:creator>David Garcia</dc:creator>
+		<description>Champion du monde des poids mi-moyens, le boxeur Manny Pacquiao a tent&#233; une entr&#233;e en force dans le monde politique philippin. Mais si ce sportif tr&#232;s populaire affirme vouloir terrasser la pauvret&#233;, la bourgeoisie a compris l'int&#233;r&#234;t de s'allier &#224; lui. / Philippines, &#201;lections, Finance, In&#233;galit&#233;s, (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/philippines&quot; rel=&quot;tag&quot;&gt;Philippines&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/elections&quot; rel=&quot;tag&quot;&gt;&#201;lections&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/finance&quot; rel=&quot;tag&quot;&gt;Finance&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/inegalites&quot; rel=&quot;tag&quot;&gt;In&#233;galit&#233;s&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/pauvrete&quot; rel=&quot;tag&quot;&gt;Pauvret&#233;&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/politique&quot; rel=&quot;tag&quot;&gt;Politique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/sport&quot; rel=&quot;tag&quot;&gt;Sport&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2011/11/&quot; rel=&quot;directory&quot;&gt;2011/11&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>Bouchers roumains pour abattoirs bretons</title>
+		<link>http://www.monde-diplomatique.fr/2011/11/GOANEC/46899</link>
+		<dc:subject>Europe</dc:subject>
+<dc:subject>France</dc:subject>
+<dc:subject>Pologne</dc:subject>
+<dc:subject>Roumanie</dc:subject>
+<dc:subject>Agro-alimentaire</dc:subject>
+<dc:subject>Alimentation</dc:subject>
+<dc:subject>Animal</dc:subject>
+<dc:subject>Immigr&#233;s</dc:subject>
+<dc:subject>Migrations</dc:subject>
+<dc:subject>Protection sociale</dc:subject>
+<dc:subject>Travail</dc:subject>
+
+		<dc:date>2012-05-06T13:02:30Z</dc:date>
+		<dc:creator>Mathilde Goanec</dc:creator>
+		<description>Avec le regain du ch&#244;mage en Europe, la course &#224; l'emploi favorise la mise en concurrence des salari&#233;s. En Bretagne, dans les abattoirs, les bouchers polonais ou roumains ont fait leur apparition. / Europe, France, Pologne, Roumanie, Agro-alimentaire, Alimentation, Animal, Immigr&#233;s, Migrations, (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/europe&quot; rel=&quot;tag&quot;&gt;Europe&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/france&quot; rel=&quot;tag&quot;&gt;France&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/pologne&quot; rel=&quot;tag&quot;&gt;Pologne&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/roumanie&quot; rel=&quot;tag&quot;&gt;Roumanie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/agroalimentaire&quot; rel=&quot;tag&quot;&gt;Agro-alimentaire&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/alimentation&quot; rel=&quot;tag&quot;&gt;Alimentation&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/animal&quot; rel=&quot;tag&quot;&gt;Animal&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/immigration&quot; rel=&quot;tag&quot;&gt;Immigr&#233;s&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/migrations&quot; rel=&quot;tag&quot;&gt;Migrations&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/protectionsociale&quot; rel=&quot;tag&quot;&gt;Protection sociale&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/travail&quot; rel=&quot;tag&quot;&gt;Travail&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2011/11/&quot; rel=&quot;directory&quot;&gt;2011/11&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>La fabrique de l'&#226;me standard</title>
+		<link>http://www.monde-diplomatique.fr/2011/11/ILLOUZ/46926</link>
+		<dc:subject>Communication</dc:subject>
+<dc:subject>Id&#233;es</dc:subject>
+<dc:subject>Intellectuels</dc:subject>
+<dc:subject>Recherche</dc:subject>
+<dc:subject>Science</dc:subject>
+<dc:subject>Soci&#233;t&#233;</dc:subject>
+<dc:subject>Travail</dc:subject>
+<dc:subject>Psychanalyse</dc:subject>
+
+		<dc:date>2012-05-05T14:49:56Z</dc:date>
+		<dc:creator>Eva Illouz</dc:creator>
+		<description>Construire le consensus, privil&#233;gier le dialogue, ma&#238;triser ses &#233;motions&#160;: des vertus recommand&#233;es parce qu'elles incarnent un comportement id&#233;alement adulte, ou parce qu'elles favorisent une meilleure rentabilit&#233; de l'individu&#160;? / Communication, Id&#233;es, Intellectuels, Recherche, Science, Soci&#233;t&#233;, (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/communication&quot; rel=&quot;tag&quot;&gt;Communication&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/idees&quot; rel=&quot;tag&quot;&gt;Id&#233;es&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/intellectuels&quot; rel=&quot;tag&quot;&gt;Intellectuels&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/recherche&quot; rel=&quot;tag&quot;&gt;Recherche&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/science&quot; rel=&quot;tag&quot;&gt;Science&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/societe&quot; rel=&quot;tag&quot;&gt;Soci&#233;t&#233;&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/travail&quot; rel=&quot;tag&quot;&gt;Travail&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/psychanalyse&quot; rel=&quot;tag&quot;&gt;Psychanalyse&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2011/11/&quot; rel=&quot;directory&quot;&gt;2011/11&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>La Chine malade de son charbon</title>
+		<link>http://www.monde-diplomatique.fr/2011/11/BOURRIER/46931</link>
+		<dc:subject>Chine</dc:subject>
+<dc:subject>&#201;cologie</dc:subject>
+<dc:subject>&#201;nergie</dc:subject>
+<dc:subject>Industrie</dc:subject>
+<dc:subject>Sant&#233;</dc:subject>
+<dc:subject>Travail</dc:subject>
+<dc:subject>Charbon</dc:subject>
+<dc:subject>Environnement</dc:subject>
+<dc:subject>Pollution</dc:subject>
+
+		<dc:date>2012-05-05T14:49:56Z</dc:date>
+		<dc:creator>Any Bourrier</dc:creator>
+		<description>Mill&#233;naires, les liens qui unissent la Chine et le charbon constituent un pi&#232;ge pour la modernisation du pays. La catastrophe &#233;cologique annonc&#233;e et les drames sociaux li&#233;s &#224; l'extraction du minerai conduisent le gouvernement &#224; miser sur une modernisation et une diversification des sources d'&#233;nergie. (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/chine&quot; rel=&quot;tag&quot;&gt;Chine&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/ecologie&quot; rel=&quot;tag&quot;&gt;&#201;cologie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/energie&quot; rel=&quot;tag&quot;&gt;&#201;nergie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/industrie&quot; rel=&quot;tag&quot;&gt;Industrie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/sante&quot; rel=&quot;tag&quot;&gt;Sant&#233;&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/travail&quot; rel=&quot;tag&quot;&gt;Travail&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/charbon&quot; rel=&quot;tag&quot;&gt;Charbon&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/environnement&quot; rel=&quot;tag&quot;&gt;Environnement&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/pollution&quot; rel=&quot;tag&quot;&gt;Pollution&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2011/11/&quot; rel=&quot;directory&quot;&gt;2011/11&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>Du bon usage de Hannah Arendt</title>
+		<link>http://www.monde-diplomatique.fr/2012/04/RICHARD/47593</link>
+		<dc:subject>G&#233;nocide</dc:subject>
+<dc:subject>Histoire</dc:subject>
+<dc:subject>Id&#233;es</dc:subject>
+<dc:subject>Juda&#239;sme</dc:subject>
+<dc:subject>Nazisme</dc:subject>
+<dc:subject>Personnalit&#233;s</dc:subject>
+<dc:subject>Racisme</dc:subject>
+<dc:subject>Seconde guerre mondiale 1939-1945</dc:subject>
+
+		<dc:date>2012-05-04T14:37:50Z</dc:date>
+		<dc:creator>Lionel Richard</dc:creator>
+		<description>&#171;&#160;Il n'y a pas de juda&#239;sme hors, d'une part, l'orthodoxie et, d'autre part, le peuple juif produisant un folklore et parlant yiddish&#160;&#187;, affirme Hannah Arendt dans une lettre du 7&#160;septembre&#160;1952 au philosophe allemand Karl Jaspers. Ce qui incite &#224; se demander s'il est bien pertinent de lui attribuer des (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/genocide&quot; rel=&quot;tag&quot;&gt;G&#233;nocide&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/histoire&quot; rel=&quot;tag&quot;&gt;Histoire&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/idees&quot; rel=&quot;tag&quot;&gt;Id&#233;es&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/judaisme&quot; rel=&quot;tag&quot;&gt;Juda&#239;sme&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/nazisme&quot; rel=&quot;tag&quot;&gt;Nazisme&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/personnalite&quot; rel=&quot;tag&quot;&gt;Personnalit&#233;s&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/racisme&quot; rel=&quot;tag&quot;&gt;Racisme&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/secondeguerremondiale&quot; rel=&quot;tag&quot;&gt;Seconde guerre mondiale 1939-1945&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2012/04/&quot; rel=&quot;directory&quot;&gt;2012/04&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>La fabrique des d&#233;bats publics</title>
+		<link>http://www.monde-diplomatique.fr/2012/01/BOURDIEU/47159</link>
+		<dc:subject>France</dc:subject>
+<dc:subject>&#201;tat</dc:subject>
+<dc:subject>Id&#233;es</dc:subject>
+<dc:subject>In&#233;galit&#233;s</dc:subject>
+<dc:subject>Politique</dc:subject>
+<dc:subject>Sondage d'opinion</dc:subject>
+
+		<dc:date>2012-05-04T14:37:49Z</dc:date>
+		<dc:creator>Pierre Bourdieu</dc:creator>
+		<description>Comment se d&#233;limite l'espace des discours officiels, par quel prodige l'opinion d'une minorit&#233; se transforme-t-elle en &#171;&#160;opinion publique&#160;&#187;&#160;? C'est ce qu'explique Pierre Bourdieu dans ce cours sur l'Etat donn&#233; en 1990 au Coll&#232;ge de France et publi&#233; ce mois-ci. / France, &#201;tat, Id&#233;es, In&#233;galit&#233;s, (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/france&quot; rel=&quot;tag&quot;&gt;France&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/etat&quot; rel=&quot;tag&quot;&gt;&#201;tat&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/idees&quot; rel=&quot;tag&quot;&gt;Id&#233;es&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/inegalites&quot; rel=&quot;tag&quot;&gt;In&#233;galit&#233;s&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/politique&quot; rel=&quot;tag&quot;&gt;Politique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/sondagedopinion&quot; rel=&quot;tag&quot;&gt;Sondage d'opinion&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2012/01/&quot; rel=&quot;directory&quot;&gt;2012/01&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>Nouvelle donne</title>
+		<link>http://www.monde-diplomatique.fr/2012/05/HALIMI/47654</link>
+		<dc:subject>Argentine</dc:subject>
+<dc:subject>Espagne</dc:subject>
+<dc:subject>&#201;conomie</dc:subject>
+<dc:subject>&#201;nergie</dc:subject>
+<dc:subject>Finance</dc:subject>
+<dc:subject>Multinationales</dc:subject>
+<dc:subject>P&#233;trole</dc:subject>
+<dc:subject>Nationalisation</dc:subject>
+<dc:subject>Privatisation</dc:subject>
+
+		<dc:date>2012-05-03T14:27:11Z</dc:date>
+		<dc:creator>Serge Halimi</dc:creator>
+		<description>Encourag&#233; par sa victoire &#233;lectorale, le chef de l'Etat impose sa volont&#233; au gouverneur de la banque centrale, institue un contr&#244;le des changes et annonce qu'il va nationaliser un secteur-cl&#233; de l'&#233;conomie brad&#233; au priv&#233; treize ans plus t&#244;t. L'Etat dont il est question n'est pas situ&#233; sur le Vieux (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/argentine&quot; rel=&quot;tag&quot;&gt;Argentine&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/espagne&quot; rel=&quot;tag&quot;&gt;Espagne&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/economie&quot; rel=&quot;tag&quot;&gt;&#201;conomie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/energie&quot; rel=&quot;tag&quot;&gt;&#201;nergie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/finance&quot; rel=&quot;tag&quot;&gt;Finance&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/multinationale&quot; rel=&quot;tag&quot;&gt;Multinationales&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/petrole&quot; rel=&quot;tag&quot;&gt;P&#233;trole&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/nationalisation&quot; rel=&quot;tag&quot;&gt;Nationalisation&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/privatisation&quot; rel=&quot;tag&quot;&gt;Privatisation&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2012/05/&quot; rel=&quot;directory&quot;&gt;2012/05&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>&#171;&#160;La France court un danger mortel&#160;&#187;</title>
+		<link>http://www.monde-diplomatique.fr/2012/05/HALIMI/47666</link>
+		<dc:subject>France</dc:subject>
+<dc:subject>&#201;conomie</dc:subject>
+<dc:subject>&#201;lections</dc:subject>
+<dc:subject>Finance</dc:subject>
+<dc:subject>Histoire</dc:subject>
+<dc:subject>Information</dc:subject>
+<dc:subject>M&#233;dias</dc:subject>
+<dc:subject>Parti politique</dc:subject>
+<dc:subject>Politique</dc:subject>
+<dc:subject>Presse</dc:subject>
+
+		<dc:date>2012-05-03T14:27:11Z</dc:date>
+		<dc:creator>Serge Halimi</dc:creator>
+		<description>Le 10&#160;avril 2012, moins de deux semaines avant le premier tour de l'&#233;lection pr&#233;sidentielle fran&#231;aise, le chroniqueur du Figaro Yves de Kerdrel cherche &#224; affoler la droite conservatrice friande de ce quotidien sarkozyste. Il projette donc son lecteur dans les premiers jours de la pr&#233;sidence de (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/france&quot; rel=&quot;tag&quot;&gt;France&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/economie&quot; rel=&quot;tag&quot;&gt;&#201;conomie&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/elections&quot; rel=&quot;tag&quot;&gt;&#201;lections&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/finance&quot; rel=&quot;tag&quot;&gt;Finance&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/histoire&quot; rel=&quot;tag&quot;&gt;Histoire&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/information&quot; rel=&quot;tag&quot;&gt;Information&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/medias&quot; rel=&quot;tag&quot;&gt;M&#233;dias&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/partipolitique&quot; rel=&quot;tag&quot;&gt;Parti politique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/politique&quot; rel=&quot;tag&quot;&gt;Politique&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/presse&quot; rel=&quot;tag&quot;&gt;Presse&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2012/05/&quot; rel=&quot;directory&quot;&gt;2012/05&lt;/a&gt;
+		</description>
+		
+	</item>
+
+
+	<item>
+		<title>R&#233;volte des propri&#233;taires chinois</title>
+		<link>http://www.monde-diplomatique.fr/2012/05/ROCCA/47649</link>
+		<dc:subject>Chine</dc:subject>
+<dc:subject>Logement</dc:subject>
+<dc:subject>Mouvement de contestation</dc:subject>
+<dc:subject>Urbanisme</dc:subject>
+
+		<dc:date>2012-05-02T14:18:15Z</dc:date>
+		<dc:creator>Jean-Louis Rocca</dc:creator>
+		<description>Embl&#233;matique de l'apport des couches moyennes chinoises au changement politique, le mouvement des propri&#233;taires d'appartement conna&#238;t une grande vitalit&#233;. N&#233;anmoins, son succ&#232;s relatif limite ses implications politiques. / Chine, Logement, Mouvement de contestation, Urbanisme - (...)
+ / &lt;a href=&quot;http://www.monde-diplomatique.fr/index/pays/chine&quot; rel=&quot;tag&quot;&gt;Chine&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/logement&quot; rel=&quot;tag&quot;&gt;Logement&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/mouvementsocial&quot; rel=&quot;tag&quot;&gt;Mouvement de contestation&lt;/a&gt;, &lt;a href=&quot;http://www.monde-diplomatique.fr/index/sujet/urbanisme&quot; rel=&quot;tag&quot;&gt;Urbanisme&lt;/a&gt; - &lt;a href=&quot;http://www.monde-diplomatique.fr/2012/05/&quot; rel=&quot;directory&quot;&gt;2012/05&lt;/a&gt;
+		</description>
+		
+	</item>
+</channel>
+</rss>
