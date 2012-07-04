@@ -26,7 +26,7 @@
 	margin:0;
 }
 #rssNews ul li.item-channel{
-	min-height:32px;
+	min-height:22px;
 	padding:0;
 	margin:0 0 8px 0;
 	position:relative;
@@ -66,7 +66,7 @@
 
 .title-item-rssNews {
 	margin:0;
-	padding:6px 0 0 22px;
+	padding:3px 0 0 22px;
 }
 
 .no-agregate .title-item-rssNews {
@@ -82,7 +82,7 @@
 .channelName-rssNews {
 	position:absolute;
 	right:50px;
-	top:0;
+	top:3px;
 	text-align:right;
 	font-size:13px;
 	color:#333;
@@ -91,7 +91,7 @@
 .lastUpdate-item-rssNews {
 	position:absolute;
 	right:50px;
-	top:16px;
+	top:19px;
 	text-align:right;
 	font-size:11px;
 	color:#333;
@@ -108,7 +108,7 @@
 	top:4px;
 	right:4px;
 	max-width:40px;
-	max-height:40px;
+	max-height:30px;
 	height:auto;
 }
 .no-agregate .img-item-rssNews {
@@ -120,7 +120,7 @@
 .deploy-item {
 	position:absolute;
 	left:8px;
-	top:16px;
+	top:11px;
 }
 .no-agregate  .deploy-item {
 	top:10px;
