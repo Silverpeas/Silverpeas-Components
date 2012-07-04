@@ -132,27 +132,6 @@ var askWindow = window;
 function openSPWindow(fonction, windowName){
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
-
-function addAlbum() {
-    windowName = "albumWindow";
-	larg = "570";
-	haut = "250";
-    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-    if (!albumWindow.closed && albumWindow.name== "albumWindow")
-        albumWindow.close();
-    albumWindow = SP_openWindow("NewAlbum", windowName, larg, haut, windowParams);
-}
-
-function editAlbum(id) {
-    url = "EditAlbum?Id="+id;
-    windowName = "albumWindow";
-	larg = "550";
-	haut = "250";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!albumWindow.closed && albumWindow.name== "albumWindow")
-        albumWindow.close();
-    albumWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-}
 	
 function deleteConfirm(id,nom) 
 {
@@ -204,7 +183,7 @@ function sendData()
 	}
 	if ( "admin".equals(profile) || "publisher".equals(profile))
 	{
-		operationPane.addOperation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.ajoutAlbum"), "javaScript:addAlbum()");
+		operationPane.addOperation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.ajoutAlbum"), "javaScript:openGalleryEditor()");
 		operationPane.addLine();
 		
 		//visualisation des photos non visibles par les lecteurs
@@ -420,6 +399,8 @@ out.println("</div>");
 	}
 	%>
 		</table>
+        
+    <%@include file="albumManager.jsp" %>
 	<%
 		
   	out.println(board.printAfter());
