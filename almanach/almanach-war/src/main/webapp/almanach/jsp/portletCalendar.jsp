@@ -39,7 +39,6 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<c:set var="flag"><c:out value="${param['flag']}" default="user"/></c:set>
 <c:set var="calendarView" value="${requestScope.calendarView}"/>
 <c:set var="currentDay" value="${calendarView.currentDay}"/>
 
@@ -50,55 +49,16 @@
     <view:looknfeel />
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
     <style type="text/css">
-      <c:out value=".${instanceId} { border-color: ${calendarView.almanach.color}; color: ${calendarView.almanach.color}; }"/>
-      <c:out value=".${instanceId} .fc-event-skin { background-color: ${calendarView.almanach.color}; border-color: ${calendarView.almanach.color}; color: white; }"/>
-      <c:forEach var="almanach" items="${othersAlmanachs}">
-        <c:out value=".${almanach.instanceId} { border-color: ${almanach.color}; color: ${almanach.color}; }"/>
-        <c:out value=".${almanach.instanceId} .fc-event-skin { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
-      </c:forEach>
     </style>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <view:includePlugin name="calendar"/>
     <script type="text/javascript">
-      function nextView()
-      {
-        document.almanachForm.Action.value = "NextView";
-        document.almanachForm.submit();
-      }
-
-      function previousView()
-      {
-        document.almanachForm.Action.value = "PreviousView";
-        document.almanachForm.submit();
-      }
-      function goToDay()
-      {
-        document.almanachForm.Action.value = "GoToday";
-        document.almanachForm.submit();
-      }
-
-      function clickEvent( idEvent, date, componentId ){
-        viewEvent(idEvent, date, componentId);
-      }
-
-      function clickDay( day ){
-        flag = "<c:out value='${flag}'/>";
-        if(flag == "publisher" || flag == "admin")
-          addEvent(day);
-      }
-
       function viewEvent( id, date, componentId )
       {
         document.viewEventForm.action = "<c:url value='/Ralmanach/'/>"+componentId+"/viewEventContent.jsp";
         document.viewEventForm.Id.value = id;
         document.viewEventForm.Date.value = date;
         document.viewEventForm.submit();
-      }
-
-      function addEvent( day )
-      {
-        document.createEventForm.Day.value = day;
-        document.createEventForm.submit();
       }
       
       function renderNextEvents( target ) {
@@ -150,8 +110,8 @@
           if (event.startTimeDefined)
           {
             var hours = inTwoDigits(startDate.getHours()), minutes = inTwoDigits(startDate.getMinutes());
-            var startTime =  "<fmt:message key='GML.at'/> " + hours + ":" + minutes + " - ";
-            return $("<span>").addClass("eventBeginHours").append(startTime);
+            var startTime =  " <fmt:message key='GML.at'/> " + hours + ":" + minutes;
+            return $("<span>").addClass("eventBeginHours").html(startTime);
           }
           return "";
         }
@@ -162,7 +122,7 @@
           {
             return $("<div>").addClass("eventInfo").
               append($("<div>").addClass("eventPlace").
-                append($("<div>").addClass("bloc").append($("<span>").html(event.location)))).
+              append($("<div>").addClass("bloc").append($("<span>").html(event.location)))).
               append($("<br>", {clear: "left"}));
           }
           return "";
@@ -198,8 +158,8 @@
           if (eventsInSameDay.length == 0)
           {
             eventsInSameDay = $("<li>").attr("id", id).addClass("events").
-               append(shortFormatOf(startDate)).append(longFormatOf(startDate)).appendTo(listOfEvents);
-             slotCount++;
+              append(shortFormatOf(startDate)).append(longFormatOf(startDate)).appendTo(listOfEvents);
+            slotCount++;
           }
           if (event.priority && !eventsInSameDay.hasClass("priority"))
           {
@@ -219,78 +179,27 @@
           
           daySlotOf(event).append($("<div>").attr("id", "event" + i).addClass("event " + eventCss).
             append($("<div>").addClass("eventName").
-              append(startTimeOf(event)).
-              append($("<a>", {
+            append($("<a>", {
               "href": "javascript:viewEvent(" + event.id + ", '" + formatDate(startDate) + "' , '" + event.instanceId + "');",
-              "title": "<fmt:message key='almanach.openEvent'/>"}).addClass(eventCss).html(event.title))).
+              "title": "<fmt:message key='almanach.openEvent'/>"}).addClass(eventCss).html(event.title)).
+            append(startTimeOf(event))).
             append(locationOf(event)));
         }
       }
 
       $(document).ready(function() {
-
         // page is now ready, initialize the calendar...
-      <c:choose>
-        <c:when test='${not calendarView.viewType.nextEventsView}'>
-            var currentDay = new Date();
-            currentDay.setFullYear(${currentDay.year});
-            currentDay.setMonth(${currentDay.month});
-            currentDay.setDate(${currentDay.dayOfMonth});
-            
-            $("#calendar").calendar({
-              view: "${fn:toLowerCase(calendarView.viewType.name)}",
-              weekends: ${calendarView.weekendVisible},
-              firstDayOfWeek: ${calendarView.firstDayOfWeek},
-              currentDate: currentDay,
-              events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>,
-              onday: clickDay,
-              onevent: function(event) {
-                var eventDate = $.fullCalendar.formatDate(event.start, "yyyy/MM/dd");
-                clickEvent(event.id, eventDate, event.instanceId);
-              }
-            });
-        </c:when>
-        <c:otherwise>
-            $("#navigation").remove();
-            renderNextEvents($("#calendar"));
-        </c:otherwise>
-      </c:choose>
-        });
+        renderNextEvents($("#calendar"));
+      });
     </script>
   </head>
   <body class="portlet">
-        <!-- AFFICHAGE HEADER -->
-        <fmt:message key="almanach.icons.leftArrow" var="leftArrow" bundle="${icons}"/>
-        <fmt:message key="almanach.icons.rightArrow" var="rightArrow" bundle="${icons}"/>
-        <fmt:message key="auJour" var="today" />
 
-        <div id="navigation">
-          <fmt:message key="almanach.icons.leftArrow" var="leftArrow" bundle="${icons}"/>
-          <fmt:message key="almanach.icons.rightArrow" var="rightArrow" bundle="${icons}"/>
-          <div id="currentScope">
-            <a href="javascript:onClick=previousView()"><img src="<c:url value='${leftArrow}'/>" border="0" alt="" align="top"/></a>
-            <span class="txtnav"><c:out value="${calendarView.label}" /></span>
-            <a href="javascript:onClick=nextView()"><img src="<c:url value='${rightArrow}'/>" border="0" alt="" align="top"/></a>
-          </div>
-          <div id="today">
-            <a href="javascript:onClick=goToDay()"><c:out value="${today}" /></a>
-          </div>
-        </div>
-
-        <div id="calendar"></div>
-
-    <form name="almanachForm" action="../..<c:out value='${calendarView.almanach.url}'/>almanach.jsp"  method="POST" target="MyMain">
-      <input type="hidden" name="Action"/>
-      <input type="hidden" name="Id"/>
-    </form>
+    <div id="calendar"></div>
 
     <form name="viewEventForm" action=""  method="POST" target="MyMain">
       <input type="hidden" name="Id"/>
       <input type="hidden" name="Date"/>
-    </form>
-
-    <form name="createEventForm" action="../..<c:out value='${calendarView.almanach.url}'/>createEvent.jsp" method="POST" target="MyMain">
-      <input type="hidden" name="Day"/>
     </form>
 
   </body>
