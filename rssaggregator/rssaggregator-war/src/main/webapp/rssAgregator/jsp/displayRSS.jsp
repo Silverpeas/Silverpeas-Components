@@ -143,20 +143,9 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
 <head>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-var addChannelWindow = window;
 var updateChannelWindow = window;
-
-function addChannel() {
-  windowName = "addChannelWindow";
-	larg = "750";
-	haut = "280";
-  windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-  if (!addChannelWindow.closed && addChannelWindow.name== "addChannelWindow") {
-    addChannelWindow.close();
-  }
-  addChannelWindow = SP_openWindow("ToCreateChannel", windowName, larg, haut, windowParams);
-}
 
 function updateChannel(id) {
   windowName = "updateChannelWindow";
@@ -313,11 +302,11 @@ function displayAll() {
 				<c:if test="${fn:contains(role, 'admin')}">
         <!-- Display admin operation for each channel (modify, delete) -->
 				<span class="operation-chanel">
-					<a href="javaScript:onClick=updateChannel('<c:out value="${channel.PK.id}"/>');" class="update" title="update channel">
+					<a href="javaScript:onClick=updateChannel('<c:out value="${channel.PK.id}"/>');" class="update" title="<fmt:message key="GML.modify"/>">
 						<fmt:message key="rss.updateChannel" bundle="${icons}" var="updateChannelIcon"/>
 						<img src="<c:url value="${updateChannelIcon}"/>" border="0" alt="<fmt:message key="GML.modify"/>" />
 					</a>&nbsp;
-					<a href="javaScript:onClick=deleteChannel('<c:out value="${channel.PK.id}"/>');" class="delete" title="delete channel">
+					<a href="javaScript:onClick=deleteChannel('<c:out value="${channel.PK.id}"/>');" class="delete" title="<fmt:message key="GML.delete"/>">
 						<fmt:message key="rss.deleteChannel" bundle="${icons}" var="deleteChannelIcon"/>
 						<img src="<c:url value="${deleteChannelIcon}"/>" border="0" alt="<fmt:message key="GML.delete"/>" />
 					</a>
@@ -423,6 +412,8 @@ if (nbChannelsToLoad > 0) { %>
 </view:window>
 
 <view:progressMessage/>
+
+<%@include file="channelManager.jsp" %>
 
 </body>
 </html>

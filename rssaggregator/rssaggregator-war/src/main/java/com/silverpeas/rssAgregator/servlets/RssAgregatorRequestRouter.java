@@ -80,14 +80,12 @@ public class RssAgregatorRequestRouter extends
         rssSC.getChannelsContent();
 
         destination = getDestination("Main", rssSC, request);
-      } else if (function.equals("ToCreateChannel")) {
-        destination = "/rssAgregator/jsp/newChannel.jsp";
       } else if (function.equals("CreateChannel")) {
         SPChannel channel = buildSPChannelFromRequest(request);
 
         rssSC.addChannel(channel);
 
-        destination = "/rssAgregator/jsp/reload.jsp";
+        destination = getDestination("Main", rssSC, request);
       } else if (function.equals("ToUpdateChannel")) {
         String id = request.getParameter("Id");
         SPChannel channel = rssSC.getChannel(id);
