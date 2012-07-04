@@ -51,6 +51,7 @@
     <style type="text/css">
     </style>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
     <view:includePlugin name="calendar"/>
     <script type="text/javascript">
       function viewEvent( id, date, componentId )
@@ -69,7 +70,7 @@
           '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'];
         var TODAY = "<fmt:message key='GML.Today'/>";
         var TOMORROW = "<fmt:message key='GML.Tomorrow'/>";
-        var SLOTS_MAX = 5;
+        var SLOTS_MAX = 20;
        
         var events = <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>;
         var slotCount = 0;
@@ -95,15 +96,12 @@
           return year + "/" + month + "/" + day;
         }
         
-        function compareDate( date1, date2 )
-        {
-          if (date1.getFullYear() < date2.getFullYear() || date1.getMonth() < date2.getMonth() ||
-            date1.getDate() < date2.getDate())
-            return -1;
-          if (date1.getFullYear() == date2.getFullYear() && date1.getMonth() == date2.getMonth() &&
-            date1.getDate() == date2.getDate())
-            return 0
-          else return 1;
+        function isDate1AfterDate2(date1, date2) {
+        	return isD1AfterD2(date2.getFullYear(), date2.getMonth(), date2.getDate(), date1.getFullYear(), date1.getMonth(), date1.getDate());
+        }
+        
+        function areDateEquals( date1, date2 ) {        	
+          return date1.getFullYear() == date2.getFullYear() && date1.getMonth() == date2.getMonth() && date1.getDate() == date2.getDate();
         }
         
         function startTimeOf( event ) {
@@ -139,9 +137,9 @@
       
         function longFormatOf( date )
         {
-          if (compareDate(date, now) == 0)
+          if (areDateEquals(date, now))
             return $("<div>").addClass("eventLongDate").append(TODAY);
-          else if (compareDate(date, nextday) == 0)
+          else if (areDateEquals(date, nextday))
             return $("<div>").addClass("eventLongDate").append(TOMORROW);
           else
             return $("<div>").addClass("eventLongDate").
@@ -174,8 +172,9 @@
           var event = events[i];
           var eventCss = event.className.join(' ');
           var startDate = $.fullCalendar.parseDate(event.start);
-          if (compareDate(startDate, now) < 0)
+          if (isDate1AfterDate2(now, startDate)) {
             startDate = now;
+          }
           
           daySlotOf(event).append($("<div>").attr("id", "event" + i).addClass("event " + eventCss).
             append($("<div>").addClass("eventName").
@@ -197,7 +196,7 @@
 
     <div id="calendar"></div>
 
-    <form name="viewEventForm" action=""  method="POST" target="MyMain">
+    <form name="viewEventForm" action="" method="post" target="MyMain">
       <input type="hidden" name="Id"/>
       <input type="hidden" name="Date"/>
     </form>
