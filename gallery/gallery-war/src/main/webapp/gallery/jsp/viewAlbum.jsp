@@ -529,12 +529,11 @@
       if (photos.size() > 0) {
         out.println(board.printBefore());
         // affichage de l'entete%>
-    <table width="98%" border="0" cellspacing="0" cellpadding="0"
-           align="center">
-      <form name="photoForm" action="EditSelectedPhoto">
-        <input type="hidden" name="AlbumId" value="<%=albumId%>"/> 
-        <input type="hidden" name="Index"/> 
-        <input type="hidden" name="SelectedIds"/> <input type="hidden" name="NotSelectedIds"/>
+        <form name="photoForm" action="EditSelectedPhoto">
+        	<input type="hidden" name="AlbumId" value="<%=albumId%>"/> 
+        	<input type="hidden" name="Index"/> 
+        	<input type="hidden" name="SelectedIds"/> <input type="hidden" name="NotSelectedIds"/>
+    <table width="98%" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr>
           <%int textColonne = 0;
             if (typeAff.equals("3")) {
@@ -551,8 +550,8 @@
                     }%>
                 </td>
                 <td align="right" nowrap><select name="ChoiceSize"
-                                                 onChange="javascript:choiceGoTo(this.selectedIndex);">
-                    <option selected><%=resource.getString("gallery.choixTaille")%></option>
+                                                 onchange="javascript:choiceGoTo(this.selectedIndex);">
+                    <option selected="selected"><%=resource.getString("gallery.choixTaille")%></option>
                     <option>-------------------------------</option>
                     <%String selected = "";
                       if ("66x50".equals(taille)) {
@@ -570,7 +569,7 @@
                       }%>
                     <option value="266x150" <%=selected%>><%="266x150"%></option>
                   </select> <select name="SortBy"
-                                    onChange="javascript:sortGoTo(this.selectedIndex);">
+                                    onchange="javascript:sortGoTo(this.selectedIndex);">
                     <option selected><%=resource.getString("gallery.orderBy")%></option>
                     <option>-------------------------------</option>
                     <option value="CreationDateAsc"><%=resource.getString("gallery.dateCreatAsc")%></option>
@@ -644,9 +643,7 @@
                        class="cadrePhoto">
                   <tr>
                     <td bgcolor="#FFFFFF"><a
-                        href="PreviewPhoto?PhotoId=<%=idP%>"><IMG
-                          SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>"
-                          title="<%=altTitle%>">
+                        href="PreviewPhoto?PhotoId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
                       </a></td>
                   </tr>
                 </table></td>
@@ -658,7 +655,7 @@
                   usedCheck = "checked";
                 }%>
               <td align="center" width="10"><input type="checkbox"
-                                                   name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>>
+                                                   name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>/>
               </td>
               <td class="txtlibform"><%=photo.getName()%></td>
             </tr>
@@ -680,9 +677,7 @@
                        class="cadrePhoto">
                   <tr>
                     <td bgcolor="#FFFFFF"><a
-                        href="PreviewPhoto?PhotoId=<%=idP%>"><IMG
-                          SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>"
-                          title="<%=altTitle%>">
+                        href="PreviewPhoto?PhotoId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
                       </a></td>
                   </tr>
                 </table></td>
@@ -693,8 +688,7 @@
                 usedCheck = "checked";
               }%>
             <tr>
-              <td align="center"><input type="checkbox" name="SelectPhoto"
-                                        value="<%=idP%>" <%=usedCheck%>>
+              <td align="center"><input type="checkbox" name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>/>
               </td>
             </tr>
           </table></td>
@@ -711,9 +705,7 @@
                        class="cadrePhoto">
                   <tr>
                     <td bgcolor="#FFFFFF"><a
-                        href="PreviewPhoto?PhotoId=<%=idP%>"><IMG
-                          SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>"
-                          title="<%=altTitle%>">
+                        href="PreviewPhoto?PhotoId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/>
                       </a></td>
                   </tr>
                 </table></td>
@@ -777,10 +769,7 @@
                       }%>
 
                 <tr>
-                  <td align="left" valign="top" colspan="2"><input
-                      type="checkbox" name="SelectPhoto" value="<%=idP%>"
-                      <%=usedCheck%>>
-                  </td>
+                  <td align="left" valign="top" colspan="2"><input type="checkbox" name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>/></td>
                 </tr>
                 </table></td>
                 <%}
@@ -801,8 +790,8 @@
               </td>
             </tr>
             <%}%>
-            </form>
           </table>
+          </form>
           <%out.println(board.printAfter());
             }
           %>

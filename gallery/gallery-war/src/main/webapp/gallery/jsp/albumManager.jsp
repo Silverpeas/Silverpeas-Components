@@ -100,18 +100,18 @@
 
 <div id="galleryEditor" style="display: none">
   <form name="galleryForm" method="post" action="">
-    <table CELLPADDING="5" WIDTH="100%">
+    <table cellpadding="5" width="100%">
       <tr>
         <td class="txtlibform"><fmt:message key="GML.name"/>&nbsp;:</td>
-        <TD><input type="text" name="Name" value="" size="60" maxlength="150">
-          <IMG src="${mandatoryIcon}" width="5" height="5" border="0">
-          <input type="hidden" name="Id" value=""></td>
+        <td><input type="text" name="Name" value="" size="60" maxlength="150">
+          <img src="${mandatoryIcon}" width="5" height="5" border="0"/>
+          <input type="hidden" name="Id" value=""/></td>
       </tr>
       <tr>
         <td class="txtlibform"><fmt:message key="GML.description"/>&nbsp;:</td>
-        <TD><input type="text" name="Description" value="" size="60" maxlength="150"></TD>
+        <td><input type="text" name="Description" value="" size="60" maxlength="150"></td>
       </tr>
-      <tr><td colspan="2">(<img border="0" src="${mandatoryIcon}" width="5" height="5">&nbsp;: <fmt:message key="GML.requiredField"/>)</td></tr>
+      <tr><td colspan="2">(<img border="0" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;: <fmt:message key="GML.requiredField"/>)</td></tr>
     </table>
   </form>
 </div>
