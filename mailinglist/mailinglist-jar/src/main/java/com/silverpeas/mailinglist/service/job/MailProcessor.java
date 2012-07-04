@@ -160,6 +160,7 @@ public class MailProcessor {
     newLogicalName = newLogicalName.replace('?', '_');
     newLogicalName = newLogicalName.replace(':', '_');
     newLogicalName = newLogicalName.replace('|', '_');
+    newLogicalName = newLogicalName.replace('"', '_');
     return newLogicalName;
   }
 
