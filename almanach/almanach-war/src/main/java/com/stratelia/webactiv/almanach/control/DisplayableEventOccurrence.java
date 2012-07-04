@@ -144,6 +144,7 @@ public class DisplayableEventOccurrence extends EventOccurrence {
     jsonObject.put("allDay", isAllDay());
     jsonObject.put("startTimeDefined", isStartTimeDefined());
     jsonObject.put("endTimeDefined", isEndTimeDefined());
+    jsonObject.put("priority", event.isPriority());
     if (isDefined(event.getEventUrl())) {
       jsonObject.put("eventURL", event.getEventUrl());
     }

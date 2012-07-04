@@ -37,7 +37,7 @@ public class AlmanachDTO {
   private String url = "";
   private String label = "";
   private String color = "";
-  private boolean agregated = false;
+  private boolean aggregated = false;
 
   /**
    * Gets the color with which the events of this almanach should be displayed in a calendar.
@@ -98,16 +98,16 @@ public class AlmanachDTO {
    * @return true if this almanach is an agregated one, false otherwise.
    */
   public boolean isAgregated() {
-    return agregated;
+    return aggregated;
   }
 
   /**
-   * Indicates whether this almanach is an agregated one.
-   * @param isAgregated true is this almanach an agregated one, false otherwise.
+   * Indicates whether this almanach is an aggregated one.
+   * @param isAggregated true is this almanach an agregated one, false otherwise.
    * @return the almanach DTO itself.
    */
-  public AlmanachDTO setAgregated(boolean isAgregated) {
-    this.agregated = isAgregated;
+  public AlmanachDTO setAggregated(boolean isAggregated) {
+    this.aggregated = isAggregated;
     return this;
   }
 
