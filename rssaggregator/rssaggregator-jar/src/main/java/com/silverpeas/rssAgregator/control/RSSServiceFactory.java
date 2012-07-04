@@ -21,30 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.rssAgregator.control;
 
-import java.util.List;
+import javax.inject.Inject;
 
-import com.silverpeas.rssAgregator.model.RssAgregatorException;
-import com.silverpeas.rssAgregator.model.SPChannel;
-import com.silverpeas.rssAgregator.model.SPChannelPK;
+public class RSSServiceFactory {
 
-/**
- * @author neysseri
- */
-public interface RssAgregatorBm {
+  @Inject
+  private RSSService rssService;
 
-  public SPChannel addChannel(SPChannel channel) throws RssAgregatorException;
+  private static final RSSServiceFactory instance = new RSSServiceFactory();
 
-  public void updateChannel(SPChannel channel) throws RssAgregatorException;
+  public static RSSServiceFactory getFactory() {
+    return instance;
+  }
 
-  public void deleteChannel(SPChannelPK channelPK) throws RssAgregatorException;
+  public static RSSService getRSSService() {
+    return instance.rssService;
+  }
 
-  public void deleteChannels(String instanceId) throws RssAgregatorException;
-
-  public List<SPChannel> getChannels(String instanceId) throws RssAgregatorException;
-
-  public SPChannel getChannel(SPChannelPK channelPK) throws RssAgregatorException;
+  private RSSServiceFactory() {
+  }
 
 }

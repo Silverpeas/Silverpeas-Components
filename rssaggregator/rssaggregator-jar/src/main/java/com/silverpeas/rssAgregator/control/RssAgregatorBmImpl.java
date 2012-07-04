@@ -26,6 +26,8 @@ package com.silverpeas.rssAgregator.control;
 
 import java.util.List;
 
+import javax.inject.Named;
+
 import com.silverpeas.rssAgregator.model.RssAgregatorException;
 import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.rssAgregator.model.SPChannelPK;
@@ -38,9 +40,10 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 /**
  * @author neysseri
  */
+@Named("rssAgregatorBm")
 public class RssAgregatorBmImpl implements RssAgregatorBm {
 
-  private static SilverpeasBeanDAO rssDAO;
+  private static SilverpeasBeanDAO<SPChannel> rssDAO;
 
   public RssAgregatorBmImpl() {
   }
@@ -55,8 +58,8 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
       WAPrimaryKey pk = getDAO().add(channel);
       channel.setPK(pk);
     } catch (PersistenceException pe) {
-      throw new RssAgregatorException("RssAgregatorBmImpl.addChannel()",
-          SilverpeasException.ERROR, "rssAgregator.ADDING_CHANNEL_FAILED", pe);
+      throw new RssAgregatorException("RssAgregatorBmImpl.addChannel()", SilverpeasException.ERROR,
+          "rssAgregator.ADDING_CHANNEL_FAILED", pe);
     }
     return channel;
   }
@@ -98,8 +101,7 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
       getDAO().removeWhere(pk, "instanceId = '" + instanceId + "'");
     } catch (PersistenceException pe) {
       throw new RssAgregatorException("RssAgregatorBmImpl.deleteChannels()",
-          SilverpeasException.ERROR, "rssAgregator.DELETING_CHANNELS_FAILED",
-          pe);
+          SilverpeasException.ERROR, "rssAgregator.DELETING_CHANNELS_FAILED", pe);
     }
   }
 
@@ -117,14 +119,12 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
     }
   }
 
-  private SilverpeasBeanDAO getDAO() throws RssAgregatorException {
+  private SilverpeasBeanDAO<SPChannel> getDAO() throws RssAgregatorException {
     if (rssDAO == null) {
       try {
-        rssDAO = SilverpeasBeanDAOFactory
-            .getDAO("com.silverpeas.rssAgregator.model.SPChannel");
+        rssDAO = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.rssAgregator.model.SPChannel");
       } catch (PersistenceException pe) {
-        throw new RssAgregatorException("RssAgregatorBmImpl.getDAO()",
-            SilverpeasException.ERROR,
+        throw new RssAgregatorException("RssAgregatorBmImpl.getDAO()", SilverpeasException.ERROR,
             "rssAgregator.GETTING_SILVERPEASBEANDAO_FAILED", pe);
       }
     }

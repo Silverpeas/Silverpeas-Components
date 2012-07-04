@@ -76,4 +76,42 @@
       </help>
     </profile>
   </profiles>
+  <parameters>
+    <parameter>
+      <name>defaultView</name>
+      <label>
+        <message lang="fr">Vue RSS par défaut</message>
+        <message lang="en">Default RSS view</message>
+        <message lang="de">RSS Ansicht</message>
+      </label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>SEPARATED</value>
+      <type>select</type>
+      <updatable>always</updatable>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Agrégée</message>
+            <message lang="en">Agregated</message>
+            <message lang="de">Agregated</message>
+          </name>
+          <value>AGREGATED</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Séparée</message>
+            <message lang="en">Separated</message>
+            <message lang="de">getrennt</message>
+          </name>
+          <value>SEPARATED</value>
+        </option>
+      </options>
+      <help>
+        <message lang="fr">Permet de choisir la vue RSS à afficher par défaut lorsque l'utilisateur accède à l'application agregateur RSS.</message>
+        <message lang="en">Choose the view to display by default when the user accesses the RSS Aggregator.</message>
+        <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der Benutzer auf die RSS Aggregator.</message>
+      </help>
+    </parameter>
+  </parameters>  
 </WAComponent>
