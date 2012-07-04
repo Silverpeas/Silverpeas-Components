@@ -24,7 +24,7 @@
 
 package com.silverpeas.mailinglist.service.notification;
 
-import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
+import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
