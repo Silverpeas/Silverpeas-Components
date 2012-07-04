@@ -27,7 +27,6 @@
 <%@ include file="check.jsp" %>
 
 <% 
-	// déclaration des boutons
 	Button validateButton 	= (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
     Button cancelButton 	= (Button) gef.getFormButton(resource.getString("GML.cancel"), "javaScript:window.close()", false);
 %>
