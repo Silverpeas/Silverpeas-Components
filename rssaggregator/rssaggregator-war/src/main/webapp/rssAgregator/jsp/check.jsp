@@ -77,7 +77,10 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 
+<%@ page import="com.silverpeas.rssAgregator.control.RssAgregatorSessionController"%>
 <%@ page import="com.silverpeas.rssAgregator.model.SPChannel"%>
+<%@ page import="com.silverpeas.rssAgregator.model.RSSItem"%>
+<%@ page import="com.silverpeas.rssAgregator.model.RSSViewType"%>
 <%@ page import="de.nava.informa.utils.ItemComparator"%>
 <%@ page import="de.nava.informa.impl.basic.Channel"%>
 <%@ page import="de.nava.informa.impl.basic.Item"%>
@@ -87,7 +90,15 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+/*RssAgregatorSessionController rssSC = (RssAgregatorSessionController) request.getAttribute("agregator");
 
+if (rssSC == null) {
+    // No session controller in the request -> security exception
+    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
+    return;
+}
+*/
 String context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
@@ -99,4 +110,6 @@ Frame frame = gef.getFrame();
  String[] browseContext = (String[]) request.getAttribute("browseContext");
  String spaceLabel = browseContext[0];
  String componentLabel = browseContext[1];
+ String spaceId = browseContext[2];
+ String componentId = browseContext[3];
 %>

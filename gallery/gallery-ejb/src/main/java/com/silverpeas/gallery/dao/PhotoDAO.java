@@ -40,7 +40,7 @@ import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.model.PhotoWithStatus;
 import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
-import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;

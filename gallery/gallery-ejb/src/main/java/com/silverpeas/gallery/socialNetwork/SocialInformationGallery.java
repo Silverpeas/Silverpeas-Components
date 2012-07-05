@@ -21,8 +21,8 @@
 package com.silverpeas.gallery.socialNetwork;
 
 import com.silverpeas.gallery.model.PhotoWithStatus;
-import com.silverpeas.socialNetwork.model.SocialInformation;
-import com.silverpeas.socialNetwork.model.SocialInformationType;
+import com.silverpeas.socialnetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformationType;
 import com.silverpeas.util.StringUtil;
 import java.util.Date;
 

@@ -11,4 +11,29 @@
   <artifactId>rssaggregator-jar</artifactId>
   <packaging>jar</packaging>
   <name>Lib rssaggregator</name>
+  <dependencies>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>ws-test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>    
+  </dependencies>
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+    <filters>
+      <filter>src/test/filters/filters.properties</filter>
+    </filters>
+  </build>
 </project>

@@ -1,60 +1,37 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.almanach.control;
 
-import static com.silverpeas.export.ExportDescriptor.withWriter;
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
-import static com.stratelia.webactiv.util.DateUtil.parse;
-import static com.silverpeas.pdc.model.PdcClassification.*;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.RemoveException;
-
-import org.apache.commons.io.FileUtils;
-
 import com.silverpeas.calendar.CalendarEvent;
+import static com.silverpeas.export.ExportDescriptor.withWriter;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
 import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.pdc.model.PdcClassification;
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
+import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -66,12 +43,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBadParamException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachNoSuchFindEventException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
+import com.stratelia.webactiv.almanach.control.ejb.*;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import com.stratelia.webactiv.almanach.model.EventPK;
@@ -79,25 +52,30 @@ import com.stratelia.webactiv.almanach.model.PeriodicityException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
+import static com.stratelia.webactiv.util.DateUtil.parse;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.*;
+import javax.ejb.RemoveException;
+import org.apache.commons.io.FileUtils;
 
 /**
- * The AlmanachSessionController provides features to handle almanachs and theirs events.
- * A such object wraps in fact the current almanach in the user session; in others words, the
- * almanach on which the user works currently. As the almanach is displayed in a given window time,
- * the AlmanachSessionController instance maintains the current opened window time and provides
- * a way to move this window front or back in the time. The window time depends on the view mode
- * choosen by the user: it can be a monthly view, a weekly view, and so on.
+ * The AlmanachSessionController provides features to handle almanachs and theirs events. A such
+ * object wraps in fact the current almanach in the user session; in others words, the almanach on
+ * which the user works currently. As the almanach is displayed in a given window time, the
+ * AlmanachSessionController instance maintains the current opened window time and provides a way to
+ * move this window front or back in the time. The window time depends on the view mode choosen by
+ * the user: it can be a monthly view, a weekly view, and so on.
  */
 public class AlmanachSessionController extends AbstractComponentSessionController {
 
@@ -106,7 +84,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   private EventDetail currentEvent;
   private static final String AE_MSG1 = "almanach.ASC_NoSuchFindEvent";
   // Almanach Agregation
-  private List<String> agregatedAlmanachsIds = new ArrayList<String>();
+  private List<String> agregateAlmanachsIds = new ArrayList<String>();
   private static final String ALMANACHS_IN_SUBSPACES = "0";
   private static final String ALMANACHS_IN_SPACE_AND_SUBSPACES = "1";
   private static final String ALL_ALMANACHS = "2";
@@ -121,6 +99,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Constructs a new AlmanachSessionController instance.
+   *
    * @param mainSessionCtrl the main session controller of the user.
    * @param context the context of the almanach component.
    */
@@ -140,6 +119,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets the current day in the current window in time.
+   *
    * @return the current day.
    */
   public Date getCurrentDay() {
@@ -148,6 +128,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Sets explicitly the new current day.
+   *
    * @param date the date of the new current day.
    */
   public void setCurrentDay(Date date) {
@@ -156,6 +137,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets the current event, selected by the user.
+   *
    * @return the detail about the current selected event or null if no event is selected.
    */
   public EventDetail getCurrentEvent() {
@@ -164,6 +146,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Sets the current event the user has selected.
+   *
    * @param event the detail of the current selected event.
    */
   public void setCurrentEvent(EventDetail event) {
@@ -208,6 +191,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Sets the current view mode of the almanach rendering.
+   *
    * @param viewMode the view mode (monthly, weekly, ...).
    */
   public void setViewMode(final CalendarViewType viewMode) {
@@ -216,6 +200,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets all events of the underlying almanach.
+   *
    * @return a list with the details of the events registered in the almanach.
    * @throws AlmanachException if an error occurs while getting the list of events.
    * @throws RemoteException if the communication with the remote business object fails.
@@ -227,6 +212,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets all events resulting of the agregation of the current almanach with others'.
+   *
    * @return a list with the details of the all events in the agregation of several almanachs. If
    * the agregation for the current almanach isn't activated, then only the events of the almanach
    * are returned.
@@ -244,6 +230,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets the count of almanachs agregated with the undermying one.
+   *
    * @return the number of agregated almanachs.
    */
   public int getAgregatedAlmanachsCount() {
@@ -252,6 +239,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets the events of the specified almanachs.
+   *
    * @param instanceIds the identifiers of the almanachs.
    * @return a list with the details of the events in the specified almanachs.
    * @throws AlmanachException if an error occurs while getting the list of events.
@@ -266,6 +254,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets the detail of the event identified by the specified identifier.
+   *
    * @param id the unique identifier of the event to get.
    * @return the detail of the event.
    * @throws AlmanachException if an error occurs while getting the detail of the event.
@@ -285,6 +274,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Removes the event identified by the specified identifier.
+   *
    * @param id the identifier of the event to remove.
    * @throws AlmanachException if an error occurs while removing the event.
    * @throws RemoteException if the communication with the remote business object fails.
@@ -310,6 +300,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   /**
    * Removes just an occurrence of the specified event. The occurrence is identified by its start
    * date.
+   *
    * @param eventDetail the detail of the event to which the occurrence belongs.
    * @param startDate the start date of the event occurrence.
    * @param endDate the end date of the event occurrence.
@@ -337,6 +328,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Adds the specified event into the underlying almanach.
+   *
    * @param eventDetail the detail of the event to add.
    * @throws AlmanachBadParamException if the event detail isn't well defined.
    * @throws AlmanachException if an error occurs while adding the event.
@@ -347,9 +339,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
           WysiwygException {
     return addEvent(eventDetail, PdcClassificationEntity.undefinedClassification());
   }
-  
+
   /**
    * Adds the specified event into the underlying almanach.
+   *
    * @param eventDetail the detail of the event to add.
    * @throws AlmanachBadParamException if the event detail isn't well defined.
    * @throws AlmanachException if an error occurs while adding the event.
@@ -395,6 +388,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Updates the specified event into the underlying almanach.
+   *
    * @param eventDetail the detail of the event to update.
    * @throws AlmanachBadParamException if the event detail isn't well defined.
    * @throws AlmanachException if an error occurs while updating the event.
@@ -441,6 +435,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Indexes the specified event for the Silverpeas search engine.
+   *
    * @param event the detail of the event to index.
    * @throws AlmanachException if an error occurs while indexing the event.
    * @throws RemoteException if the communication with the remote business object fails.
@@ -452,6 +447,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets the remote business object for handling almanachs and events.
+   *
    * @return the remote business object.
    * @throws AlmanachException if an error occurs while getting the remote object.
    */
@@ -470,6 +466,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Sets a specific reference to a remote Almanach business object
+   *
    * @param anAlmanachBm the reference to a remote business object.
    */
   protected void setAlmanachBm(final AlmanachBm anAlmanachBm) {
@@ -479,6 +476,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   /**
    * Builds a PDF document with the events of the underlying almanach and that satisfy the specified
    * criteria key.
+   *
    * @param mode the criteria key.
    * @return the content of the PDF document as a String.
    */
@@ -497,8 +495,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * Is this almanach instance is parameterized to use the classification plan (PdC) to classify
-   * the events on it.
+   * Is this almanach instance is parameterized to use the classification plan (PdC) to classify the
+   * events on it.
    */
   public boolean isPdcUsed() {
     String parameterValue = getComponentParameterValue("usepdc");
@@ -507,6 +505,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Is the weekend is taken in charge by the current underlying almanach?
+   *
    * @return true if the weekend should be displayed for the current almanach, false otherwise.
    */
   public boolean isWeekendNotVisible() {
@@ -516,6 +515,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Is RSS information exists for the events in the current underlying almanach?
+   *
    * @return true if the RSS stream is supported for the current almanach, false otherwise.
    */
   private boolean isUseRss() {
@@ -523,8 +523,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /*
-   * (non-Javadoc)
-   * @see com.stratelia.silverpeas.peasCore.AbstractComponentSessionController#getRSSUrl ()
+   * (non-Javadoc) @see
+   * com.stratelia.silverpeas.peasCore.AbstractComponentSessionController#getRSSUrl ()
    */
   @Override
   public String getRSSUrl() {
@@ -536,6 +536,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Is the agregation is activated for the current underlying almanach?
+   *
    * @return true if the agregation is used for the current almanach, false otherwise.
    */
   public boolean isAgregationUsed() {
@@ -545,6 +546,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets policy currently in use to access to the data of the current almanach.
+   *
    * @return the policy identifier.
    */
   private String getAccessPolicy() {
@@ -558,6 +560,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   /**
    * Gets the others almanach instances that are accessible from the current underlying almanach
    * instance.
+   *
    * @return a list of DTO carrying information about the others almanach instances.
    */
   public List<AlmanachDTO> getAccessibleInstances() {
@@ -583,7 +586,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         ComponentInstLight almanachInst = organizationController.getComponentInstLight(
                 instanceId);
 
-        boolean keepIt = false;
+        boolean keepIt;
         if (ACCESS_SPACE.equals(getAccessPolicy())) {
           keepIt = almanachInst.getDomainFatherId().equals(getSpaceId());
         } else {
@@ -608,12 +611,14 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   /**
    * Gets the identifier of the specified event as a Silverpeas object (an object that have a
    * content that can be managed in Silverpeas).
+   *
    * @param eventId the identifier of the event.
    * @return the identifier of the Silverpeas object that represents the specified event.
    * @throws AlmanachBadParamException if parameter is invalid; it doesn't represent an event
    * identifier.
    * @throws AlmanachException if the operation fail.
-   * @throws RemoteException if an error occurs while communicating with the remote almanach service.
+   * @throws RemoteException if an error occurs while communicating with the remote almanach
+   * service.
    */
   public int getSilverObjectId(final String eventId)
           throws AlmanachBadParamException, AlmanachException, RemoteException {
@@ -622,6 +627,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Get the color of the almanach
+   *
    * @author dlesimple
    * @param instanceId
    * @return color of almanach
@@ -642,6 +648,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets the almanachs that can be aggregated with the curren t underlying one.
+   *
    * @return a list of AlmanachDTO instances, each of them carrying some data about an almanach.
    */
   public List<AlmanachDTO> getAggregatedAlmanachs() {
@@ -649,7 +656,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
     String agregationMode =
             getSettings().getString("almanachAgregationMode", ALMANACHS_IN_SUBSPACES);
-    String[] instanceIds = null;
+    String[] instanceIds;
     boolean inCurrentSpace = false;
     boolean inAllSpaces = false;
     if (agregationMode.equals(ALMANACHS_IN_SPACE_AND_SUBSPACES)) {
@@ -668,7 +675,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       if (!instanceId.equals(getComponentId())) {
         ComponentInstLight almanachInst = organizationController.getComponentInstLight(
                 instanceId);
-        AlmanachDTO almanach = new AlmanachDTO().setInstanceId(instanceId).setAgregated(isAlmanachAgregated(
+        AlmanachDTO almanach = new AlmanachDTO().setInstanceId(instanceId).setAggregated(isAlmanachAgregated(
                 instanceId)).setColor(getAlmanachColor(i + 1)).setLabel(almanachInst.getLabel());
         aggregatedAlmanachs.add(almanach);
       }
@@ -679,6 +686,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Is the specified almanach is agregated with the current underlying one.
+   *
    * @param almanachId the unique identifier of the almanach instance.
    * @return boolean true if the almanach is currently agregated with the current one.
    */
@@ -700,6 +708,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Updates the list of the agregated almanachs with the specified ones.
+   *
    * @param instanceIds the identifier of the new agregated almanachs.
    */
   public void updateAgregatedAlmanachs(final String[] instanceIds) {
@@ -711,6 +720,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets the color with which the events in an almanach should be rendered.
+   *
    * @author dlesimple
    * @param position in the array of supported colors. 0 is for the current almanach, other
    * positions are for the agregated almanachs.
@@ -831,6 +841,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Update event occurence (cas particulier de modification d'une occurence d'événement périodique)
+   *
    * @param event
    * @param dateDebutIteration
    * @param dateFinIteration
@@ -861,8 +872,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * Gets a view in time of the current underlying almanach.
-   * The view depends on the current selected view mode and the current selected window in time.
+   * Gets a view in time of the current underlying almanach. The view depends on the current
+   * selected view mode and the current selected window in time.
+   *
    * @return an AlmanachCalendarView instance.
    * @throws AlmanachException if an error occurs while getting the calendar view.
    * @throws AlmanachNoSuchFindEventException if a detail about an event in the almanach cannot be
@@ -883,7 +895,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         view = getWeekyAlmanachCalendarView();
         break;
       case NEXT_EVENTS:
-        view = getAlmanachCalendarViewOnTheNextEvents();
+        view = getAlmanachCalendarViewOnTheNextEvents(isAgregationUsed());
         break;
       default:
         throw new UnsupportedOperationException("The calendar view mode " + viewMode
@@ -894,17 +906,17 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Gets a view in the current year of the current underlying almanach.
+   *
    * @return an AlmanachCalendarView instance.
    * @throws AlmanachException if an error occurs while getting the calendar view.
    * @throws AlmanachNoSuchFindEventException if a detail about an event in the almanach cannot be
    * found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  public AlmanachCalendarView getYearlyAlmanachCalendarView() throws AlmanachException,
+  public AlmanachCalendarView getYearlyAlmanachCalendarView() throws
+          AlmanachException,
           AlmanachNoSuchFindEventException, RemoteException {
-    AlmanachDTO almanachDTO = new AlmanachDTO().setColor(getAlmanachColor(getComponentId())).
-            setInstanceId(getComponentId()).setLabel(getComponentLabel()).setAgregated(
-            isAgregationUsed()).setUrl(getComponentUrl());
+    AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
     AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
     AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, YEARLY);
     view.setLocale(getLanguage());
@@ -912,24 +924,24 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       view.unsetWeekendVisible();
     }
     String label = getString("year") + " " + String.valueOf(currentAlmanachDay.getYear());
-    view.setEvents(listCurrentYearEvents());
+    view.setEvents(listCurrentYearEvents(getAggregationAlmanachIds()));
     view.setLabel(label);
     return view;
   }
 
   /**
    * Gets a view in the current month of the current underlying almanach.
+   *
    * @return an AlmanachCalendarView instance.
    * @throws AlmanachException if an error occurs while getting the calendar view.
    * @throws AlmanachNoSuchFindEventException if a detail about an event in the almanach cannot be
    * found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  public AlmanachCalendarView getMonthlyAlmanachCalendarView() throws AlmanachException,
+  public AlmanachCalendarView getMonthlyAlmanachCalendarView() throws
+          AlmanachException,
           AlmanachNoSuchFindEventException, RemoteException {
-    AlmanachDTO almanachDTO = new AlmanachDTO().setColor(getAlmanachColor(getComponentId())).
-            setInstanceId(getComponentId()).setLabel(getComponentLabel()).setAgregated(
-            isAgregationUsed()).setUrl(getComponentUrl());
+    AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
     AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
     AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, MONTHLY);
     view.setLocale(getLanguage());
@@ -938,24 +950,24 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     }
     String label = getString("GML.mois" + currentAlmanachDay.getMonth())
             + " " + String.valueOf(currentAlmanachDay.getYear());
-    view.setEvents(listCurrentMonthEvents());
+    view.setEvents(listCurrentMonthEvents(getAggregationAlmanachIds()));
     view.setLabel(label);
     return view;
   }
 
   /**
    * Gets a view in the current week of the current underlying almanach.
+   *
    * @return an AlmanachCalendarView instance.
    * @throws AlmanachException if an error occurs while getting the calendar view.
    * @throws AlmanachNoSuchFindEventException if a detail about an event in the almanach cannot be
    * found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  public AlmanachCalendarView getWeekyAlmanachCalendarView() throws AlmanachException,
+  public AlmanachCalendarView getWeekyAlmanachCalendarView() throws
+          AlmanachException,
           AlmanachNoSuchFindEventException, RemoteException {
-    AlmanachDTO almanachDTO = new AlmanachDTO().setColor(getAlmanachColor(getComponentId())).
-            setInstanceId(getComponentId()).setLabel(getComponentLabel()).setAgregated(
-            isAgregationUsed()).setUrl(getComponentUrl());
+    AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
     AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
     AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, WEEKLY);
     view.setLocale(getLanguage());
@@ -973,7 +985,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     }
     String label = view.getFirstDay().getDayOfMonth() + firstDayMonth + " - " + view.getLastDay().
             getDayOfMonth() + lastDayMonth;
-    view.setEvents(listCurrentWeekEvents());
+    view.setEvents(listCurrentWeekEvents(getAggregationAlmanachIds()));
     view.setLabel(label);
     return view;
   }
@@ -981,17 +993,18 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   /**
    * Gets a view on the next events that will occur and that are defined in the current underlying
    * almanach.
+   *
+   * @param aggregated is the calendar view should contains also the events of aggregated almanachs?
    * @return an AlmanachCalendarView instance.
    * @throws AlmanachException if an error occurs while getting the calendar view.
    * @throws AlmanachNoSuchFindEventException if a detail about an event in the almanach cannot be
    * found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  public AlmanachCalendarView getAlmanachCalendarViewOnTheNextEvents() throws AlmanachException,
+  public AlmanachCalendarView getAlmanachCalendarViewOnTheNextEvents(boolean aggregated) throws
+          AlmanachException,
           AlmanachNoSuchFindEventException, RemoteException {
-    AlmanachDTO almanachDTO = new AlmanachDTO().setColor(getAlmanachColor(getComponentId())).
-            setInstanceId(getComponentId()).setLabel(getComponentLabel()).setAgregated(
-            isAgregationUsed()).setUrl(getComponentUrl());
+    AlmanachDTO almanachDTO = getAlmanachDTO(aggregated);
     AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
     AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay,
             NEXT_EVENTS);
@@ -999,13 +1012,18 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
-    view.setEvents(listNextEvents());
+    if (aggregated) {
+      view.setEvents(listNextEvents(getAggregationAlmanachIds()));
+    } else {
+      view.setEvents(listNextEvents(getComponentId()));
+    }
     view.setLabel(getString("almanach.nextEvents"));
     return view;
   }
 
   /**
    * Gets the URL of the ICS representation of the current almamach.
+   *
    * @return the URL of the almanach ICS.
    */
   public String getAlmanachICSURL() {
@@ -1015,15 +1033,15 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * Exports the current almanach in iCal format.
-   * The iCal file is generated into the temporary directory.
-   * If there is no events to export, a NoDataToExportException exception is then thrown.
+   * Exports the current almanach in iCal format. The iCal file is generated into the temporary
+   * directory. If there is no events to export, a NoDataToExportException exception is then thrown.
+   *
    * @return the iCal file name into which is generated the current alamanch.
    * @throws ExportException if an error occurs while exporting the almanach in iCal format. The
-   * errors can come from a failure on getting the events to export, the fact there is no events
-   * to export (empty almanach) or the failure of the export process itself.
-   * @throws IOException if an error occurs while creating or opening the file into which the
-   * export will be done. Such errors can be come from a forbidden write granting, and so on.
+   * errors can come from a failure on getting the events to export, the fact there is no events to
+   * export (empty almanach) or the failure of the export process itself.
+   * @throws IOException if an error occurs while creating or opening the file into which the export
+   * will be done. Such errors can be come from a forbidden write granting, and so on.
    */
   public String exportToICal() throws ExportException, IOException {
     String icsFileName = ICS_PREFIX + "-" + getComponentId() + ".ics";
@@ -1053,77 +1071,90 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * Gets the occurrences of the events defined in the underlying calendar in the current
+   * Gets the occurrences of the events defined in the specified almanachs and in the current
    * selected year.
+   *
+   * @param almanachIds the identifier of the almanachs the events belongs to.
    * @return a list of event occurrences decorated with rendering features.
    * @throws AlmanachException if an error occurs while getting the list of event occurrences.
    * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  protected List<DisplayableEventOccurrence> listCurrentYearEvents() throws AlmanachException,
+  private List<DisplayableEventOccurrence> listCurrentYearEvents(String... almanachIds) throws
+          AlmanachException,
           AlmanachNoSuchFindEventException, RemoteException {
-    String[] almanachIds = new String[getAgregateAlmanachIds().size() + 1];
-    almanachIds = getAgregateAlmanachIds().toArray(almanachIds);
-    almanachIds[almanachIds.length - 1] = getComponentId();
     List<EventOccurrence> occurrencesInYear = getAlmanachBm().getEventOccurrencesInYear(currentDay,
             almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInYear);
   }
 
   /**
-   * Gets the occurrences of the events defined in the underlying calendar in the current
+   * Gets the occurrences of the events defined in the specified almanachs and in the current
    * selected month.
+   *
+   * @param almanachIds the identifier of the almanachs the events belongs to.
    * @return a list of event occurrences decorated with rendering features.
    * @throws AlmanachException if an error occurs while getting the list of event occurrences.
    * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  protected List<DisplayableEventOccurrence> listCurrentMonthEvents() throws AlmanachException,
+  private List<DisplayableEventOccurrence> listCurrentMonthEvents(String... almanachIds) throws
+          AlmanachException,
           AlmanachNoSuchFindEventException, RemoteException {
-    String[] almanachIds = new String[getAgregateAlmanachIds().size() + 1];
-    almanachIds = getAgregateAlmanachIds().toArray(almanachIds);
-    almanachIds[almanachIds.length - 1] = getComponentId();
     List<EventOccurrence> occurrencesInMonth = getAlmanachBm().getEventOccurrencesInMonth(currentDay,
             almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInMonth);
   }
 
   /**
-   * Gets the occurrences of the events defined in the underlying calendar in the current
+   * Gets the occurrences of the events defined in the specified almanachs and in the current
    * selected week.
+   *
+   * @param almanachIds the identifier of the almanachs the events belongs to.
    * @return a list of event occurrences decorated with rendering features.
    * @throws AlmanachException if an error occurs while getting the list of event occurrences.
    * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  protected List<DisplayableEventOccurrence> listCurrentWeekEvents() throws AlmanachException,
+  private List<DisplayableEventOccurrence> listCurrentWeekEvents(String... almanachIds) throws
+          AlmanachException,
           AlmanachNoSuchFindEventException, RemoteException {
-    String[] almanachIds = new String[getAgregateAlmanachIds().size() + 1];
-    almanachIds = getAgregateAlmanachIds().toArray(almanachIds);
-    almanachIds[almanachIds.length - 1] = getComponentId();
     List<EventOccurrence> occurrencesInWeek = getAlmanachBm().getEventOccurrencesInWeek(currentDay,
             almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInWeek);
   }
 
   /**
-   * Gets the occurrences of the next events defined in the underlying calendar.
-   * @return a list of event occurrences decorated with rendering features.
+   * Lists the occurrences of the next events defined in the specified almanachs.
+   *
+   * @param almanachIds the identifier of the almanachs the events belongs to.
+   * @return an ordered list of event occurrences decorated with rendering features.
    * @throws AlmanachException if an error occurs while getting the list of event occurrences.
    * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  protected List<DisplayableEventOccurrence> listNextEvents() throws AlmanachException,
+  private List<DisplayableEventOccurrence> listNextEvents(String... almanachIds) throws
+          AlmanachException,
           AlmanachNoSuchFindEventException, RemoteException {
-    String[] almanachIds = new String[getAgregateAlmanachIds().size() + 1];
-    almanachIds = getAgregateAlmanachIds().toArray(almanachIds);
-    almanachIds[almanachIds.length - 1] = getComponentId();
     List<EventOccurrence> nextOccurrences = getAlmanachBm().getNextEventOccurrences(almanachIds);
     return DisplayableEventOccurrence.decorate(nextOccurrences);
   }
 
   /**
+   * Gets a DTO of the almanach to pass to the view.
+   *
+   * @param aggregated is the DTO should transfer data about an aggregated almanach?
+   * @return a DTO of the current almanach.
+   */
+  private AlmanachDTO getAlmanachDTO(boolean aggregated) {
+    return new AlmanachDTO().setColor(getAlmanachColor(getComponentId())).
+            setInstanceId(getComponentId()).setLabel(getComponentLabel()).setAggregated(
+            aggregated).setUrl(getComponentUrl());
+  }
+
+  /**
    * Converts the specified details on almanach events into a calendar event.
+   *
    * @param eventDetails details about some events in one or several almanachs.
    * @return the calendar events corresponding to the almanach events.
    */
@@ -1133,7 +1164,20 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     return encoder.encode(eventDetails);
   }
 
+  /**
+   * Gets the identifier of the almanachs that compound the current aggregated almanach. Among them,
+   * the identifier of the current almanach is also provided.
+   *
+   * @return an array of almanach identifiers.
+   */
+  private String[] getAggregationAlmanachIds() {
+    String[] almanachIds = new String[getAgregateAlmanachIds().size() + 1];
+    almanachIds = getAgregateAlmanachIds().toArray(almanachIds);
+    almanachIds[almanachIds.length - 1] = getComponentId();
+    return almanachIds;
+  }
+
   private List<String> getAgregateAlmanachIds() {
-    return agregatedAlmanachsIds;
+    return agregateAlmanachsIds;
   }
 }
