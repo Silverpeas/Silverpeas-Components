@@ -239,9 +239,9 @@ function isCorrectForm2()
      var nbPointsMin = Number(document.quizzForm.nbPointsMin.value);
      for (var i = 0; i < nb; i++)
      {
-         var answer=document.quizzForm.elements[<%=nbZone%>*i+7].value;
-         var nbPoints=document.quizzForm.elements[<%=nbZone%>*i+8].value;
-         var comment=document.quizzForm.elements[<%=nbZone%>*i+9].value;
+       var answer = $("#answer"+i).val(); // document.quizzForm.elements[<%=nbZone%>*i+7].value
+       var nbPoints = $("#nbPoints"+i).val(); //document.quizzForm.elements[<%=nbZone%>*i+8].value;
+       var comment = $("#comment"+i).val(); //document.quizzForm.elements[<%=nbZone%>*i+9].value;
 
          if (isWhitespace(nbPoints))
          {
@@ -283,22 +283,22 @@ function isCorrectForm2()
                errorNb++;
           }
    }
-   switch(errorNb) {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resources.getString("GML.ThisFormContain")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resources.getString("GML.ThisFormContain")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+  switch(errorNb) {
+      case 0 :
+          result = true;
+          break;
+      case 1 :
+          errorMsg = "<%=resources.getString("GML.ThisFormContain")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+          window.alert(errorMsg);
+          result = false;
+          break;
+      default :
+          errorMsg = "<%=resources.getString("GML.ThisFormContain")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+          window.alert(errorMsg);
+          result = false;
+          break;
+  }
+  return result;
 }
 function goToEnd() {
     document.quizzForm.Action.value = "End";
@@ -524,7 +524,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
   <div class="fields">
     <div class="field" id="questionArea"> 
       <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
-      <div class="champs"><textarea name="question" cols="49" rows="3" disabled="disabled"><%=EncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+      <div class="champs"><textarea name="questionBis" cols="49" rows="3" disabled="disabled"><%=EncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
     </div>
     <div class="field" id="questionStyleArea">
       <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
@@ -534,35 +534,35 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field" id="nbAnswersArea">
       <label for="nbAnswers" class="txtlibform"><fmt:message key="QuizzCreationNbAnswers" /></label>
       <div class="champs">
-        <input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+        <input type="text" name="nbAnswersBis" value="<%=nbAnswers%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
       </div>
     </div>
 
     <div class="field" id="nbPointsMinArea">
       <label for="nbPointsMin" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMin" /></label>
       <div class="champs">
-        <input type="text" name="nbPointsMin" value="<%=nbPointsMin%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+        <input type="text" name="nbPointsMinBis" value="<%=nbPointsMin%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
       </div>
     </div>
 
     <div class="field" id="nbPointsMaxArea">
       <label for="nbPointsMax" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMax" /></label>
       <div class="champs">
-        <input type="text" name="nbPointsMax" value="<%=nbPointsMax%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+        <input type="text" name="nbPointsMaxBis" value="<%=nbPointsMax%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
       </div>
     </div>
 
     <div class="field" id="clueArea">
       <label for="clue" class="txtlibform"><fmt:message key="QuizzClue" /></label>
       <div class="champs">
-        <textarea name="clue" cols="49" rows="3" disabled="disabled"><%=EncodeHelper.javaStringToHtmlString(clue)%></textarea>
+        <textarea name="clueBis" cols="49" rows="3" disabled="disabled"><%=EncodeHelper.javaStringToHtmlString(clue)%></textarea>
       </div>
     </div>
 
     <div class="field" id="penaltyArea">
       <label for="penalty" class="txtlibform"><fmt:message key="QuizzPenalty" /></label>
       <div class="champs">
-        <input type="text" name="penalty" value="<%=penalty%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+        <input type="text" name="penaltyBis" value="<%=penalty%>" size="5" maxlength="3" disabled="disabled"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
       </div>
     </div>
 
@@ -586,9 +586,9 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field">
       <label for="<%=inputName%>" class="txtlibform"><fmt:message key="QuizzCreationAnswerNb" />&nbsp;<%=(i+1)%></label>
       <div class="champs">
-        <textarea name="<%=inputName%>" cols="49" rows="3"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+        <textarea name="<%=inputName%>" id="<%=inputName%>" cols="49" rows="3"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
         <div class="points">
-          <input type="text" name="nbPoints<%=i%>" value="" size="5" maxlength="3" />&nbsp;<fmt:message key="QuizzNbPoints"/>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+          <input type="text" name="nbPoints<%=i%>" id="nbPoints<%=i%>" value="" size="5" maxlength="3" />&nbsp;<fmt:message key="QuizzNbPoints"/>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
         </div>
       </div>
     </div>
@@ -596,7 +596,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     <div class="field">
       <label for="comment<%=i%>" class="txtlibform"><fmt:message key="QuizzCreationAnswerComment" />&nbsp;<%=(i+1)%></label>
       <div class="champs">
-        <textarea name="comment<%=i%>" cols="49" rows="3"></textarea>
+        <textarea name="comment<%=i%>" id="comment<%=i%>" cols="49" rows="3"></textarea>
       </div>
     </div>
 <%  
