@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.almanach.servlets;
 
@@ -50,7 +47,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
 
   @Override
   public AlmanachSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext context) {
+          MainSessionController mainSessionCtrl, ComponentContext context) {
     return new AlmanachSessionController(mainSessionCtrl, context);
   }
 
@@ -72,7 +69,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
    * @param request
    */
   private void setGlobalInfo(AlmanachSessionController almanach,
-      HttpServletRequest request) {
+          HttpServletRequest request) {
     ResourceLocator settings = almanach.getSettings();
     request.setAttribute("settings", settings);
   }
@@ -81,17 +78,18 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
    * This method has to be implemented by the component request Router it has to compute a
    * destination page
    *
-   * @param function    The entering request function (ex : "Main.jsp")
+   * @param function The entering request function (ex : "Main.jsp")
    * @param almanach The component Session Control, build and initialised.
-   * @param request     The entering request. The request Router need it to get parameters
-   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
+   * @param request The entering request. The request Router need it to get parameters
+   * @return The complete destination URL for a forward (ex :
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, AlmanachSessionController almanach,
-      HttpServletRequest request) {
+          HttpServletRequest request) {
 
     SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
 
     setGlobalInfo(almanach, request);
 
@@ -100,8 +98,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
     // the flag is the best user's profile
     String flag = getFlag(almanach.getUserRoles());
     try {
-      if (function.startsWith("Main") || function.startsWith("almanach") ||
-          function.startsWith("portlet")) {
+      if (function.startsWith("Main") || function.startsWith("almanach")) {
 
         // contrôle de l'Action de l'utilisateur
         String action = request.getParameter("Action");
@@ -135,15 +132,15 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         request.setAttribute("RSSUrl", almanach.getRSSUrl());
         request.setAttribute("almanachURL", almanach.getAlmanachICSURL());
 
-        if (function.startsWith("portlet")) {
-          destination = "/almanach/jsp/portletCalendar.jsp?flag=" + flag;
+        if (view.getViewType() == NEXT_EVENTS) {
+          destination = "/almanach/jsp/listOfEvents.jsp?flag=" + flag;
         } else {
-          if (view.getViewType() == NEXT_EVENTS) {
-            destination = "/almanach/jsp/listOfEvents.jsp?flag=" + flag;
-          } else {
-            destination = "/almanach/jsp/calendar.jsp?flag=" + flag;
-          }
+          destination = "/almanach/jsp/calendar.jsp?flag=" + flag;
         }
+      } else if (function.startsWith("portlet")) {
+        AlmanachCalendarView view = almanach.getAlmanachCalendarViewOnTheNextEvents(false);
+        request.setAttribute("calendarView", view);
+        destination = "/almanach/jsp/portletCalendar.jsp";
       } else if (function.startsWith("viewEventContent")) {
         // initialisation de l'objet event
         String id = request.getParameter("Id");
@@ -200,7 +197,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
           destination = "/almanach/jsp/createEvent.jsp";
         } else {
           destination = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "sessionTimeout");
+                  "sessionTimeout");
         }
       } else if (function.equals("ReallyAddEvent")) {
         EventDetail event = new EventDetail();
@@ -282,7 +279,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
           }
           if (isDefined(periodicityUntilDate)) {
             periodicity.setUntilDatePeriod(DateUtil.stringToDate(periodicityUntilDate, endHour,
-                almanach.getLanguage()));
+                    almanach.getLanguage()));
           }
         } else {// update -> pas de périodicité
           periodicity = null;
@@ -320,7 +317,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
           destination = "/almanach/jsp/editEvent.jsp";
         } else {
           destination = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "sessionTimeout");
+                  "sessionTimeout");
         }
       } else if (function.equals("ReallyUpdateEvent")) {
         String action = request.getParameter("Action");// ReallyUpdateOccurence
@@ -412,7 +409,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
 
           if (periodicityUntilDate != null && periodicityUntilDate.length() > 0) {
             periodicity.setUntilDatePeriod(DateUtil.stringToDate(
-                periodicityUntilDate, almanach.getLanguage()));
+                    periodicityUntilDate, almanach.getLanguage()));
           } else {
             periodicity.setUntilDatePeriod(null);
           }
@@ -428,7 +425,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
           almanach.updateEventOccurence(event, eventStartDate, eventEndDate);
         } else if ("ReallyUpdateSerial".equals(action)) {
           java.util.Date startDateEvent = DateUtil.stringToDate(
-              periodicityStartDate, almanach.getLanguage());
+                  periodicityStartDate, almanach.getLanguage());
           event.setStartDate(startDateEvent);
           java.util.Calendar calStartDate = java.util.Calendar.getInstance();
           calStartDate.setTime(startDateEvent);
@@ -439,7 +436,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
           almanach.updateEvent(event);
         } else if ("ReallyUpdate".equals(action)) {
           java.util.Date startDateEvent = DateUtil.stringToDate(
-              periodicityStartDate, almanach.getLanguage());
+                  periodicityStartDate, almanach.getLanguage());
           event.setStartDate(startDateEvent);
           java.util.Calendar calStartDate = java.util.Calendar.getInstance();
           calStartDate.setTime(startDateEvent);
@@ -464,7 +461,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         request.setAttribute("PdcUsed", almanach.isPdcUsed());
 
         String componentUrl = almanach.getComponentUrl() + "editAttFiles.jsp?Id=" + event.getPK().
-            getId() + "&Date=" + startDate;
+                getId() + "&Date=" + startDate;
         request.setAttribute("ComponentURL", URLEncoder.encode(componentUrl, "UTF-8"));
 
         destination = "/almanach/jsp/editAttFiles.jsp";
@@ -481,7 +478,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         destination = getDestination("viewEventContent", almanach, request);
       } else if (function.startsWith("GoToFilesTab")) { // ??
         destination = "/almanach/jsp/editAttFiles.jsp?Id="
-            + request.getParameter("Id");
+                + request.getParameter("Id");
       } else if (function.equals("RemoveEvent")) {
         String startDate = request.getParameter("EventStartDate"); // format
         // client
@@ -502,13 +499,13 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
       } else if (function.equals("UpdateAgregation")) {
         String[] instanceIds = request.getParameterValues("chk_almanach");
         SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "instanceIds = " + instanceIds);
+                "root.MSG_GEN_PARAM_VALUE", "instanceIds = " + instanceIds);
         almanach.updateAgregatedAlmanachs(instanceIds);
         destination = getDestination("almanach", almanach, request);
       } else if (function.equals("ToAlertUser")) {
         String id = request.getParameter("Id");
         SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "id = " + id);
+                "root.MSG_GEN_PARAM_VALUE", "id = " + id);
         try {
           destination = almanach.initAlertUser(id);
         } catch (Exception e) {
@@ -537,11 +534,11 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
           request.setAttribute("icsURL", FileServerUtils.getUrlToTempDir(icsFile));
         } catch (NoDataToExportException ex) {
           SilverTrace.info("almanach", getClass().getSimpleName() + ".getDestination()",
-              "root.EX_NO_MESSAGE", ex.getMessage());
+                  "root.EX_NO_MESSAGE", ex.getMessage());
           request.setAttribute("messageKey", "almanach.export.ical.empty");
         } catch (ExportException ex) {
           SilverTrace.error("almanach", getClass().getSimpleName() + ".getDestination()",
-              "root.EX_NO_MESSAGE", ex.getMessage());
+                  "root.EX_NO_MESSAGE", ex.getMessage());
           request.setAttribute("messageKey", "almanach.export.ical.failure");
         }
         destination = "/almanach/jsp/exportIcal.jsp";
@@ -554,7 +551,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
     }
 
     SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()",
-        "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
+            "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
     return destination;
   }
 

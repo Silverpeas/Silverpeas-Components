@@ -29,7 +29,7 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>toolbox</name>
   <label>
-    <message lang="fr">Gestion Documentaire II</message>
+    <message lang="fr">Gestion documentaire II</message>
     <message lang="en">Filebox</message>
     <message lang="de">Filebox</message>
   </label>
@@ -63,7 +63,7 @@
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires créent des thèmes et paramètrent le Plan de Classement.</message>
+        <message lang="fr">Les gestionnaires créent des dossiers et paramètrent le Plan de Classement.</message>
         <message lang="en">Administrators create topics and set up the Classification Scheme.</message>
         <message lang="de">Administrator</message>
       </help>
@@ -87,7 +87,7 @@
         <message lang="de">Leser</message>
       </label>
       <help>      
-        <message lang="fr">Les lecteurs accèdent aux publications et peuvent s'abonner aux thèmes.</message>
+        <message lang="fr">Les lecteurs accèdent aux publications et peuvent s'abonner aux dossiers.</message>
         <message lang="en">Readers visualize publications and can subscribe to topics.</message>
         <message lang="de">Leser</message>
       </help>
@@ -126,7 +126,7 @@
       <options>
         <option>
           <name>
-            <message lang="fr">Oui avec explorateur de thèmes</message>
+            <message lang="fr">Oui avec explorateur de dossiers</message>
             <message lang="en">Yes with explorer</message>
             <message lang="de">Ja, mit Explorer</message>
           </name>
@@ -134,7 +134,7 @@
         </option>
         <option>
           <name>
-            <message lang="fr">Oui sans explorateur de thèmes</message>
+            <message lang="fr">Oui sans explorateur de dossiers</message>
             <message lang="en">Yes without explorer</message>
             <message lang="de">Ja, ohne Explorer</message>
           </name>
@@ -152,8 +152,8 @@
       <type>select</type>
       <updatable>creation</updatable>
       <help>
-        <message lang="fr">Active l'organisation arborescente de thèmes.</message>
-        <message lang="en">Activates the tree organization of themes.</message>
+        <message lang="fr">Active l'organisation arborescente de dossiers.</message>
+        <message lang="en">Activates the tree organization of folders.</message>
         <message lang="de">Aktiviert den Baum Organisation von Themen</message>
       </help>
     </parameter>
@@ -334,16 +334,16 @@
       <type>checkbox</type>
       <updatable>never</updatable>
       <help>
-        <message lang="fr">Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au thème, visibilité des thèmes).</message>
-        <message lang="en">Activate functionalities for managing web content (wysiwyg for themes, and themes visibility).</message>
+        <message lang="fr">Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au dossier, visibilité des dossiers).</message>
+        <message lang="en">Activate functionalities for managing web content (wysiwyg for folders, and folders visibility).</message>
         <message lang="de">Funktionalitäten für die Verwaltung von Web-Inhalten Aktivieren (WYSIWYG für Themen und Themen Sichtbarkeit).</message>
       </help>
     </parameter>
     <parameter>
       <name>delegatedTopicManagement</name>
       <label>
-        <message lang="fr">Gestion déléguée des thèmes</message>
-        <message lang="en">Theme management delegation</message>
+        <message lang="fr">Gestion déléguée des dossiers</message>
+        <message lang="en">Folder management delegation</message>
         <message lang="de">A_TRADUIRE</message>
       </label>
       <order>15</order>
@@ -352,8 +352,8 @@
       <type>checkbox</type>
       <updatable>never</updatable>
       <help>
-        <message lang="fr">La gestion des thèmes est déléguée aux publieurs et rédacteurs.</message>
-        <message lang="en">Publishers and writers can manage the themes.</message>
+        <message lang="fr">La gestion des dossiers est déléguée aux publieurs et rédacteurs.</message>
+        <message lang="en">Publishers and writers can manage the folders.</message>
         <message lang="de">Veröffentlicher und Herausgeber können die Themen verwalten.</message>
       </help>
     </parameter>
@@ -532,7 +532,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cette fonction permet de créer des thèmes et des publications par glisser/déposer dans une zone de l'écran.</message>
+        <message lang="fr">Cette fonction permet de créer des dossiers et des publications par glisser/déposer dans une zone de l'écran.</message>
         <message lang="en">This function allow to the manager to create topics and publications using drag and drop.</message>
         <message lang="de">Diese Funktion ermöglicht es dem Manager Themen und Publikationen mit Hilfe von Drag and Drop zu erstellen.</message>
       </help>
@@ -604,16 +604,16 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Affiche le nombre de publications par thème.</message>
-        <message lang="en">Display the number of publications per theme.</message>
+        <message lang="fr">Affiche le nombre de publications par dossier.</message>
+        <message lang="en">Display the number of publications per folder.</message>
         <message lang="de">Anzahl der Veröffentlichungen per Thema zeigen</message>
       </help>
     </parameter>
     <parameter>
       <name>rightsOnTopics</name>
       <label>
-        <message lang="fr">Droits sur les thèmes</message>
-        <message lang="en">Rigths on themes</message>
+        <message lang="fr">Droits sur les dossiers</message>
+        <message lang="en">Rights on folders</message>
         <message lang="de">Rechte auf die Themen</message>
       </label>
       <order>27</order>
@@ -622,8 +622,8 @@
       <type>checkbox</type>
       <updatable>never</updatable>
       <help>
-        <message lang="fr">Permet de définir des droits d'accès au niveau des thèmes.</message>
-        <message lang="en">Allow to define rights on themes.</message>
+        <message lang="fr">Permet de définir des droits d'accès au niveau des dossiers.</message>
+        <message lang="en">Allow to define rights on folders.</message>
         <message lang="de">A_TRADUIRE</message>
       </help>
     </parameter>
@@ -664,8 +664,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème.</message>
-        <message lang="en">This feature allows to make a rich description of a theme.</message>
+        <message lang="fr">Ce paramètre permet de saisir une description Wysiwyg sur un dossier qui sera affichée dans le dossier.</message>
+        <message lang="en">This feature allows to make a rich description of a folder.</message>
         <message lang="de">Diese Funktion ermöglicht es, einen reichen Beschreibung eines Themas zu machen.</message>
       </help>
     </parameter>
@@ -774,7 +774,7 @@
 	<parameter>
       <name>useFolderSharing</name>
       <label>
-        <message lang="fr">Thèmes partageables</message>
+        <message lang="fr">Dossiers partageables</message>
         <message lang="en">Folders sharing</message>
         <message lang="de">Folders sharing</message>
       </label>
@@ -784,7 +784,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet d'activer le partage de thèmes à des tiers non utilisateurs du portail.</message>
+        <message lang="fr">Ce paramètre permet d'activer le partage de dossiers à des tiers non utilisateurs du portail.</message>
         <message lang="en">This feature allows to activate folders sharing with persons who have no access to the portal.</message>
         <message lang="de">This feature allows to activate folders sharing with persons who have no access to the portal.</message>
       </help>

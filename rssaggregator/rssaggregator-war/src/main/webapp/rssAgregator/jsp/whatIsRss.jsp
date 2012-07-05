@@ -36,30 +36,9 @@
 <c:set var="content" value="${requestScope['Content']}" />
 <c:set var="role" value="${requestScope['Role']}"/>
 
-<%
-	String 	role = (String) request.getAttribute("Role");
-%>
-
 <html>
 <head>
 <view:looknfeel />
-<script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript">
-
-var addChannelWindow = window;
-
-function addChannel() {
-    windowName = "addChannelWindow";
-	larg = "600";
-	haut = "350";
-    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-    if (!addChannelWindow.closed && addChannelWindow.name== "addChannelWindow") {
-        addChannelWindow.close();
-    }
-    addChannelWindow = SP_openWindow("ToCreateChannel", windowName, larg, haut, windowParams);
-}
-
-</script>
 </head>
 <body>
 <view:browseBar></view:browseBar>
@@ -68,7 +47,7 @@ function addChannel() {
 <fmt:message var="addChannelLabel" key="rss.addChannel" />
 <fmt:message var="addChannelIcon" key="rss.addChannel" bundle="${icons}"/>
 <view:operationPane>
-  <view:operation altText="${addChannelLabel}" icon="${addChannelIcon}" action="javascript:onClick=addChannel()"></view:operation>
+  <view:operation altText="${addChannelLabel}" icon="${addChannelIcon}" action="javascript:onclick=addChannel()"></view:operation>
 </view:operationPane>
 </c:if>
 
@@ -77,6 +56,8 @@ function addChannel() {
   <c:out escapeXml="false" value="${content}"  />
   </view:frame>
 </view:window>
-<form name="refresh" action="Main" method="post"></form>
+
+<%@include file="channelManager.jsp" %>
+
 </body>
 </html>
