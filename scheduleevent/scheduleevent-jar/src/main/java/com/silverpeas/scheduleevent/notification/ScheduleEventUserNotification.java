@@ -88,7 +88,7 @@ public class ScheduleEventUserNotification extends AbstractTemplateUserNotificat
   @Override
   protected void performTemplateData(final String language, final ScheduleEvent resource,
       final SilverpeasTemplate template) {
-    getNotification().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("eventName", resource.getTitle());
     template.setAttribute("eventDescription", resource.getDescription());
     template.setAttribute("eventCreationDate", DateUtil.getOutputDate(resource.getCreationDate(), language));
