@@ -31,6 +31,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  */
 public class QuizzException extends SilverpeasException {
 
+  private static final long serialVersionUID = 467071564348332518L;
+
   // constructors
   /**
    * Constructor which calls the super constructor

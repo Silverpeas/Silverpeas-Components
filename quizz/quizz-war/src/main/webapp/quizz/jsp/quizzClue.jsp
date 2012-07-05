@@ -35,21 +35,21 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \_______________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \_______________________________</title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 </head>
-<body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<SCRIPT language="JavaScript">
+<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<script language="javascript">
 <!--
 //  InitBulle("txtnote","000000","intfdcolor2",2,90);
 //-->
-</SCRIPT>
+</script>
 <%!
-Vector infos(JspWriter out, Collection Questions, String questionId)  throws QuizzException {
+Vector infos(JspWriter out, Collection<Question> Questions, String questionId)  throws QuizzException {
     String clue = null;
     String label = null;
     Iterator i = Questions.iterator();
@@ -57,9 +57,9 @@ Vector infos(JspWriter out, Collection Questions, String questionId)  throws Qui
 	try{
 		while (i.hasNext() && (clue == null && label == null)) {
 		  Question quizzQuestion = (Question) i.next();
-		  if (new Integer(quizzQuestion.getPK().getId()).intValue() == new Integer(questionId).intValue())
+		  if (Integer.parseInt(quizzQuestion.getPK().getId()) == Integer.parseInt(questionId))
 		  {
-			clue = Encode.javaStringToHtmlParagraphe(quizzQuestion.getClue());
+			clue = EncodeHelper.javaStringToHtmlParagraphe(quizzQuestion.getClue());
 			label = quizzQuestion.getLabel();
 			infos.add(label);
 			infos.add(clue);
@@ -73,7 +73,7 @@ Vector infos(JspWriter out, Collection Questions, String questionId)  throws Qui
 %>
 
 <%
-//R�cup�ration des param�tres
+//Retrieve parameters
   String question_id = (String) request.getParameter("question_id");
   String quizz_id = (String) request.getParameter("quizz_id");
 
@@ -87,7 +87,7 @@ Vector infos(JspWriter out, Collection Questions, String questionId)  throws Qui
   QuestionContainerDetail quizzDetail = quizzScc.getQuizzDetail(quizz_id);
 
   //Questions
-  Collection quizzQuestions = quizzDetail.getQuestions();
+  Collection<Question> quizzQuestions = quizzDetail.getQuestions();
   Vector infos = infos(out, quizzQuestions, question_id);
 
   //objet window
@@ -122,12 +122,12 @@ Vector infos(JspWriter out, Collection Questions, String questionId)  throws Qui
   </table></td></tr></table>
 
 
-<br><center>
+<br></center>
 
 <%
   Button closeButton = (Button) gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(closeButton);
+  ButtonPane buttonPane = gef.getButtonPane();
+  buttonPane.addButton(closeButton);
   out.println(closeButton.print());
 %>
 <%
@@ -136,7 +136,5 @@ Vector infos(JspWriter out, Collection Questions, String questionId)  throws Qui
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
-
-
+</body>
+</html>
