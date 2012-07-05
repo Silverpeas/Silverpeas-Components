@@ -45,7 +45,6 @@ public interface RssAgregatorBm {
 
   public List<SPChannel> getChannels(String instanceId) throws RssAgregatorException;
 
-  public SPChannel getChannel(SPChannelPK channelPK)
-      throws RssAgregatorException;
+  public SPChannel getChannel(SPChannelPK channelPK) throws RssAgregatorException;
 
 }

@@ -36,7 +36,7 @@ boolean 	isPrivateSearch	= ((Boolean) request.getAttribute("IsPrivateSearch")).b
 boolean 	isBasket	 	= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
 boolean 	isOrder		 	= ((Boolean) request.getAttribute("IsOrder")).booleanValue();
 boolean 	isGuest		 	= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
-List      	albums      	= (List) request.getAttribute("Albums");
+List<AlbumDetail> albums    = (List<AlbumDetail>) request.getAttribute("Albums");
 
 // parametrage pour l'affichage des dernieres photos telechargees
 int nbAffiche 	= 0;
@@ -132,27 +132,6 @@ var askWindow = window;
 function openSPWindow(fonction, windowName){
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
-
-function addAlbum() {
-    windowName = "albumWindow";
-	larg = "570";
-	haut = "250";
-    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-    if (!albumWindow.closed && albumWindow.name== "albumWindow")
-        albumWindow.close();
-    albumWindow = SP_openWindow("NewAlbum", windowName, larg, haut, windowParams);
-}
-
-function editAlbum(id) {
-    url = "EditAlbum?Id="+id;
-    windowName = "albumWindow";
-	larg = "550";
-	haut = "250";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!albumWindow.closed && albumWindow.name== "albumWindow")
-        albumWindow.close();
-    albumWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-}
 	
 function deleteConfirm(id,nom) 
 {
@@ -204,7 +183,7 @@ function sendData()
 	}
 	if ( "admin".equals(profile) || "publisher".equals(profile))
 	{
-		operationPane.addOperation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.ajoutAlbum"), "javaScript:addAlbum()");
+		operationPane.addOperation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.ajoutAlbum"), "javaScript:openGalleryEditor()");
 		operationPane.addLine();
 		
 		//visualisation des photos non visibles par les lecteurs
@@ -256,40 +235,38 @@ function sendData()
 		 // ---------------------------------
 		 Board b	= gef.getBoard();
 		 out.println(b.printBefore());
-		 Button validateButton 	= (Button) gef.getFormButton("OK", "javascript:onClick=sendData();", false);
+		 Button validateButton 	= gef.getFormButton("OK", "javascript:onClick=sendData();", false);
 		 %>
 		 <center>
+		 	<form name="searchForm" action="SearchKeyWord" method="post" onsubmit="javascript:sendData();">
 		 	<table border="0" cellpadding="0" cellspacing="0">
-		 		<form name="searchForm" action="SearchKeyWord" method="post" onSubmit="javascript:sendData();">
 		 			<tr>
 		 				<td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("GML.search")%></td>
 		 				<td align="left" valign="middle">
 		 					<table border="0" cellspacing="0" cellpadding="0">
 		 						<tr valign="middle">
-		 							<td valign="middle"><input type="text" name="SearchKeyWord" size="36"></td>
+		 							<td valign="middle"><input type="text" name="SearchKeyWord" size="36"/></td>
 		 							<td valign="middle">&nbsp;</td>
 		 							<td valign="middle" align="left" width="100%"><% out.println(validateButton.print());%></td>
 		 							<td valign="middle">&nbsp;</td>
-		 							<td valign="middle"><a href="SearchAdvanced"><%=resource.getString("gallery.searchAdvanced")%></a>
+		 							<td valign="middle"><a href="SearchAdvanced"><%=resource.getString("gallery.searchAdvanced")%></a></td>
 		 						</tr>
 		 					</table>
 		 				</td>
 		 			</tr>
-		 		</form>
 		     </table>
+		     </form>
 		 </center>
     <%
     out.println(b.printAfter());
-    out.println("<br>");
-  }
+    %>
+    <br/>
+  <% } %>
    
-//affichage des albums de niveau 1
-  // --------------------------------
-  out.println("<div id=\"subTopics\">");
-  out.println("<ul id=\"albumList\">");
-  Iterator it = albums.iterator();
-  while (it.hasNext()) {
-    AlbumDetail unAlbum = (AlbumDetail) it.next();
+  <div id="subTopics">
+  <ul id="albumList">
+<%
+  for (AlbumDetail unAlbum : albums) {
     IconPane icon = gef.getIconPane();
     Icon albumIcon = icon.addIcon();
     albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
@@ -314,18 +291,15 @@ function sendData()
 	 	</a>
     </li>
     <%
-}
-out.println("</ul>");
-out.println("</div>");
-  
+} %>
+</ul>
+</div>
+<br/>
+<%  
            // afficher les dernieres photos telechargees
            // ------------------------------------------
              
            Board board = gef.getBoard();
-
-	%>
-			<br/>
-	<%
 	out.println(board.printBefore());
 	
 	// affichage de l'entete
@@ -389,7 +363,7 @@ out.println("</div>");
 							<td valign="middle" align="center">
 								<table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto"><tr><td align="center">
 									<table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
-										<a href="PreviewPhoto?PhotoId=<%=idP%>"><IMG SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"></a>
+										<a href="PreviewPhoto?PhotoId=<%=idP%>"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/></a>
 									</td></tr></table>
 								</td></tr></table>
 							</td>
@@ -408,11 +382,11 @@ out.println("</div>");
 			%>
 				<tr>
 					<td colspan="5" valign="middle" align="center" width="100%">
-						<br>
+						<br/>
 						<%
 							out.println(resource.getString("gallery.pasPhoto"));
 						%>
-						<br>
+						<br/>
 					</td>
 				</tr>
 			<%
@@ -420,6 +394,8 @@ out.println("</div>");
 	}
 	%>
 		</table>
+        
+    <%@include file="albumManager.jsp" %>
 	<%
 		
   	out.println(board.printAfter());
@@ -427,10 +403,10 @@ out.println("</div>");
   	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-<form name="albumForm" action="" Method="POST">
-	<input type="hidden" name="Id">
-	<input type="hidden" name="Name">
-	<input type="hidden" name="Description">
+<form name="albumForm" action="" method="post">
+	<input type="hidden" name="Id"/>
+	<input type="hidden" name="Name"/>
+	<input type="hidden" name="Description"/>
 </form>
 </div>
 <div id="albums-message" title="<%=resource.getString("gallery.help.albums.title") %>" style="display: none;">

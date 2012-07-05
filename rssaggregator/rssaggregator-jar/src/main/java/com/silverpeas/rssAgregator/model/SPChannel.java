@@ -203,4 +203,18 @@ public class SPChannel extends SilverpeasBean implements Serializable {
     displayImage = i;
   }
 
+  /**
+   * @return the channel
+   */
+  public Channel getChannel() {
+    return channel;
+  }
+
+  /**
+   * @param channel the channel to set
+   */
+  public void setChannel(Channel channel) {
+    this.channel = channel;
+  }
+
 }

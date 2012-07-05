@@ -27,19 +27,19 @@
 
 <%@ include file="check.jsp"%>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<html>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
-<script language="JavaScript">
+<script language="javascript">
 function refresh() {
 	window.opener.document.refresh.submit();
 	window.close();
 }
 </script>
-</HEAD>
-<BODY onLoad=refresh()>
-</BODY>
-</HTML>
+</head>
+<body onLoad=refresh()>
+</body>
+</html>

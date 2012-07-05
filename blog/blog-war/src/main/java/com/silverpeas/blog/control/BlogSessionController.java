@@ -28,14 +28,12 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
+import com.silverpeas.blog.notification.BlogUserNotification;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -44,16 +42,12 @@ import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.ejb.MyLinksBmHome;
 import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -61,7 +55,6 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
@@ -234,57 +227,9 @@ public class BlogSessionController extends AbstractComponentSessionController {
     return AlertUser.getAlertUserURL();
   }
 
-  protected SilverpeasTemplate getNewTemplate() {
-    ResourceLocator rs =
-            new ResourceLocator("com.silverpeas.blog.settings.blogSettings", "");
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString(
-            "templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString(
-            "customersTemplatePath"));
-
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
-  }
-
   private synchronized NotificationMetaData getAlertNotificationMetaData(String postId)
-          throws RemoteException {
-    PostDetail post = getPost(postId);
-
-    ResourceLocator message = new ResourceLocator(
-            "com.silverpeas.blog.multilang.blogBundle", DisplayI18NHelper.getDefaultLanguage());
-    String subject = message.getString("blog.notifSubject");
-
-    Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-    NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
-            "blogNotification");
-    String url = URLManager.getSearchResultURL(post);
-    for (String lang : DisplayI18NHelper.getLanguages()) {
-      SilverpeasTemplate template = getNewTemplate();
-      templates.put(lang, template);
-      template.setAttribute("blog", post);
-      template.setAttribute("blogName", post.getPublication().getName(lang));
-      template.setAttribute("blogDate", DateUtil.getOutputDate(post.getDateEvent(), lang));
-      Category categorie = post.getCategory();
-      String categorieName = null;
-      if (categorie != null) {
-        categorieName = categorie.getName(lang);
-      }
-      template.setAttribute("blogCategorie", categorieName);
-      template.setAttribute("senderName", getUserDetail().getDisplayedName());
-      template.setAttribute("silverpeasURL", url);
-
-      ResourceLocator localizedMessage = new ResourceLocator(
-              "com.silverpeas.blog.multilang.blogBundle", lang);
-      notifMetaData.addLanguage(lang, localizedMessage.getString("blog.notifSubject", subject), "");
-    }
-
-    //TODO : post.getLink() à faire
-    notifMetaData.setLink(url);
-    notifMetaData.setComponentId(getComponentId());
-    notifMetaData.setSender(getUserId());
-
-    return notifMetaData;
+      throws RemoteException {
+    return UserNotificationHelper.build(new BlogUserNotification(getComponentId(), getPost(postId), getUserDetail()));
   }
 
   public synchronized void deletePost(String postId) {
@@ -345,16 +290,6 @@ public class BlogSessionController extends AbstractComponentSessionController {
       throw new BlogRuntimeException("BlogSessionController.getAllLinks()",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-  }
-
-  public void sendSubscriptionsNotification(String postId, String type, String commentId) {
-    // envoie notification si abonnement
-    PostDetail post = getPost(postId);
-    PublicationDetail pub = post.getPublication();
-    NodePK father = new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().getInstanceId());
-    Comment comment = getComment(commentId);
-    getBlogService().sendSubscriptionsNotification(father, post, comment, type,
-            Integer.toString(comment.getOwnerId()));
   }
 
   public Collection<PostDetail> getResultSearch(String word) {

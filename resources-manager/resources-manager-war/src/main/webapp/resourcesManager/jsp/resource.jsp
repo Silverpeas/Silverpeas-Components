@@ -29,6 +29,8 @@
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
 
+<%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="check.jsp" %>
 <% 
 // Recuperation des details de l'ulisateur
@@ -77,9 +79,7 @@
 	%>
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <body>
 <%
@@ -145,14 +145,14 @@ buttonPane.addButton(cancelButton);
      <TD id="managers"> 
       <%        
         if (managers != null  && !managers.isEmpty()) {
-          for(UserDetail manager : managers){
-            out.print(manager.getDisplayedName());
-            out.println("<br/>");
-          }
+          for(UserDetail manager : managers){ %>
+          	<view:username userId="<%=manager.getId()%>"/>
+            <br/>
+          <% }
         } %>
       </TD>
       </tr>
-		<input type="HIDDEN" name="resourceId" value="<%=resourceId%>"/>
+		<input type="hidden" name="resourceId" value="<%=resourceId%>"/>
 	</TABLE>
 	<%out.println(board.printAfter()); %>
 	

@@ -40,8 +40,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 String name				= "";
 String description		= "";
-String creatorName		= "";
-String creationDate		= "";
 String pubName			= "";
 String nextAction 		= "";
 String screenMessage 	= "";
@@ -92,18 +90,10 @@ if (action.equals("UpdateWizard"))
       ownerDetail 	= kmeliaPublication.getCreator();
 
       description 	= pubDetail.getDescription(currentLang);
-      creationDate 	= resources.getOutputDate(pubDetail.getCreationDate());
-      if (ownerDetail != null) {
-          creatorName = ownerDetail.getDisplayedName();
-      } else {
-          creatorName = resources.getString("UnknownAuthor");
-      }
  	  nextAction	= "UpdatePublication";
 } 
 else if (action.equals("Wizard")) 
 {
-      creationDate	= resources.getOutputDate(new Date());
-      creatorName	= kmeliaScc.getUserDetail().getDisplayedName();
       currentTopic 	= kmeliaScc.getSessionTopic();
       if (currentTopic != null) {
     	  Collection pathColl = currentTopic.getPath();

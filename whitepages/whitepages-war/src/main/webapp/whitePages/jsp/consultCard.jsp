@@ -110,6 +110,7 @@
 <title><%=resource.getString("GML.popupTitle")%></title>
 <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <view:looknfeel/>
+<view:includePlugin name="messageme"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
@@ -152,10 +153,6 @@ function openSPWindow(fonction,windowName){
 	function displayPDC() {
 		$(".divSee").hide();
 		$("#expert-classification").show();
-	}
-
-	function OpenPopup(userId, name){
-		initNotification(userId, name);
 	}
    
     $(document).ready(function(){
@@ -200,7 +197,7 @@ String firstName = userRecord.getField("FirstName").getValue(language);
                
 	    <!-- action  -->
         <div class="action">
-        	<a onclick="OpenPopup(<%=card.getUserId()%>,'<%=lastName + " " + firstName%>');" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a>
+        	<a rel="<%=card.getUserId()%>,<%=lastName + " " + firstName%>" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a>
         </div> <!-- /action  -->              
 
         <!-- profilPhoto  -->  
@@ -360,8 +357,6 @@ out.println(window.printAfter());
 <form name="choixFiche" method="post">
 	<input type="hidden" name="userCardId" />
 </form>
-
-	<%@include file="../../socialNetwork/jsp/notificationDialog.jsp" %>
 	<view:progressMessage/>
 </body>
 </html>

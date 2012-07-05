@@ -158,6 +158,10 @@ public final class PostDetail implements SilverpeasContent {
   public String getTitle() {
     return publication.getTitle();
   }
+  @Override
+  public String getDescription() {
+    return publication.getDescription();
+  }
 
   @Override
   public String getContributionType() {

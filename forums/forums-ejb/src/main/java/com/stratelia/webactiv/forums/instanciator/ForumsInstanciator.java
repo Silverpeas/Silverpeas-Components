@@ -97,11 +97,11 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
     } finally {
       try {
         stmt.close();
-      } catch (SQLException err_closeStatement) {
+      } catch (SQLException exCloseStatement) {
         InstanciationException ie = new InstanciationException(
             "ForumsInstanciator.deleteDataOfInstance()", SilverpeasException.ERROR,
             "root.EX_RESOURCE_CLOSE_FAILED",
-            "componentId = " + componentId + " deleteQuery = " + deleteQuery, err_closeStatement);
+            "componentId = " + componentId + " deleteQuery = " + deleteQuery, exCloseStatement);
         throw ie;
       }
     }
