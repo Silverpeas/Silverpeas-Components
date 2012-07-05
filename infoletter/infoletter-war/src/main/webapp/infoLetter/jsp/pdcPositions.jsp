@@ -48,10 +48,11 @@
 	String parution = (String) request.getAttribute("parution");
 	String url = infoLetterUrl+"pdcPositions.jsp?parution="+parution;
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -113,11 +114,11 @@ function goTemplate (){
 	out.println(window.printAfter());
 %>
 
-<FORM NAME="toComponent" ACTION="pdcPositions.jsp" METHOD=POST >
+<FORM NAME="toComponent" ACTION="pdcPositions.jsp" METHOD="post" >
 	<input type="hidden" name="parution" value="<%= parution %>">
 </FORM>
 
-<form name="toWysiwyg" Action="../../wysiwyg/jsp/htmlEditor.jsp" method="Post">
+<form name="toWysiwyg" Action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
     <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>">
     <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>">
     <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>">

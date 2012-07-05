@@ -26,9 +26,10 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 
@@ -36,7 +37,7 @@ String parution = (String) request.getAttribute("parution");
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 	function call_wysiwyg (){
 		document.toWysiwyg.submit();
 	}
@@ -86,7 +87,7 @@ String parution = (String) request.getAttribute("parution");
 	}
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Accueil");
@@ -141,9 +142,9 @@ if (parution.equals("")) {
 %>
 <% // Ici debute le code de la page %>
 <center>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
 <form name="changeParutionHeaders" action="ChangeParutionHeaders" method="post">
-<input type="hidden" name="parution" value="<%= parution %>">
+  <input type="hidden" name="parution" value="<%= parution %>"/>
+<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
 	<tr> 
 		<td nowrap>
 			<table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%"><!--tabl1-->
@@ -152,7 +153,7 @@ if (parution.equals("")) {
 						<span class="txtlibform"><%=resource.getString("infoLetter.name")%> :</span>
 					</td>
 					<td  class="intfdcolor4" valign="baseline" align=left>
-				<input type="text" name="title" size="50" maxlength="50" value="<%= (String) request.getAttribute("title") %>">&nbsp;<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5">
+				<input type="text" name="title" size="50" maxlength="50" value="<%= (String) request.getAttribute("title") %>"/>&nbsp;<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"/>
 					</td>
 				</tr>
 				<tr align=center> 
@@ -165,23 +166,23 @@ if (parution.equals("")) {
 					</td>
 				</tr>
 				<tr align=center>				 
-					<td class="intfdcolor4" valign="baseline" align=left colspan=2><span class="txt">(<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</span> 
+					<td class="intfdcolor4" valign="baseline" align=left colspan=2><span class="txt">(<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%>)</span> 
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
-</form>
 </table>
-<form name="toWysiwyg" Action="../../wysiwyg/jsp/htmlEditor.jsp" method="Post">
-    <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>">
-    <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>">
-    <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>">
-    <input type="hidden" name="ComponentName" value="<%= (String) request.getAttribute("ComponentName") %>">
-    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"> 
-    <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>">
-    <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>">
-    <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>">
+</form>
+<form name="toWysiwyg" action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
+    <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>"/>
+    <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>"/>
+    <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>"/>
+    <input type="hidden" name="ComponentName" value="<%= (String) request.getAttribute("ComponentName") %>"/>
+    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"/> 
+    <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>"/>
+    <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>"/>
+    <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>"/>
 </form>
 
 
@@ -193,22 +194,22 @@ if (parution.equals("")) {
 %>
 </center>
 <form name="validateParution" action="ValidateParution" method="post">			
-	<input type="hidden" name="parution" value="<%= parution %>">
+	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
 <form name="viewParution" action="Preview" method="post">			
-	<input type="hidden" name="parution" value="<%= parution %>">
-  <input type="hidden" name="ReturnUrl" value="ParutionHeaders">
+	<input type="hidden" name="parution" value="<%= parution %>"/>
+  <input type="hidden" name="ReturnUrl" value="ParutionHeaders"/>
 </form>
 <form name="attachedFiles" action="FilesEdit" method="post">			
-	<input type="hidden" name="parution" value="<%= parution %>">
+	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
 <form name="template" action="UpdateTemplateFromHeaders" method="post">			
-	<input type="hidden" name="parution" value="<%= parution %>">
+	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>

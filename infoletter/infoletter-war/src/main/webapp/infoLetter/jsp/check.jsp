@@ -30,6 +30,8 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
+
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
@@ -60,9 +62,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@page import="com.silverpeas.util.StringUtil"%><HTML>
 
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="java.util.Vector"%>
+<%@ page import="java.util.List"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%

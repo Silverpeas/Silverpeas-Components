@@ -79,8 +79,9 @@ public class ByteArrayDataSource implements DataSource {
    * Return an InputStream for the data. Note - a new stream must be returned each time.
    */
   public InputStream getInputStream() throws IOException {
-    if (data == null)
+    if (data == null) {
       throw new IOException("no data");
+    }
     return new ByteArrayInputStream(data);
   }
 

@@ -34,7 +34,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class InfoLetterPublicationPdC extends InfoLetterPublication implements
     SilverContentInterface {
-
+  private static final long serialVersionUID = -2174573301215680444L;
   /** icone d'une publication */
   private String iconUrl = "infoLetterSmall.gif";
 
@@ -113,10 +113,7 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
     return getName();
   }
 
-  public Iterator getLanguages() {
+  public Iterator<String> getLanguages() {
     return null;
   }
 }
-/*************************
- *** Fin du fichier ***
- ************************/

@@ -25,15 +25,16 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 	var importFileWindow = window;
 	var exportFileWindow = window;
 	function deleteCheckedEmails() {
@@ -78,7 +79,7 @@ out.println(gef.getLookStyleSheet());
 
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF">
 <form name="refreshEmails" action="Emails">
 </form>
 <form name="deleteEmails" action="DeleteEmails" method="post">
@@ -98,7 +99,7 @@ out.println(gef.getLookStyleSheet());
 	out.println(frame.printBefore());	
 
 	// Recuperation de la liste des emails
-	Vector emails = (Vector) request.getAttribute("listEmails");
+	List<String> emails = (List<String>) request.getAttribute("listEmails");
 	int i=0;
 	ArrayPane arrayPane = gef.getArrayPane("InfoLetter", "Emails", request, session);
        //arrayPane.setVisibleLineNumber(10);
@@ -111,7 +112,7 @@ out.println(gef.getLookStyleSheet());
 	arrayColumn.setSortable(false);		
 	if (emails.size()>0) {
 		for (i = 0; i < emails.size(); i++) {		
-					String email = (String) emails.elementAt(i);
+					String email = (String) emails.get(i);
 					ArrayLine arrayLine = arrayPane.addArrayLine();
 						
 					IconPane iconPane1 = gef.getIconPane();
@@ -120,7 +121,7 @@ out.println(gef.getLookStyleSheet());
 					arrayLine.addArrayCellIconPane(iconPane1);	
 							
 													
-					arrayLine.addArrayCellText(Encode.javaStringToHtmlString(email));
+					arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(email));
 							
 					arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"mails\" value=\"" + email + "\">");
 		}
@@ -130,5 +131,5 @@ out.println(gef.getLookStyleSheet());
 	out.println(window.printAfter());
 %>
 </form>
-</BODY>
-</HTML>
+</body>
+</html>

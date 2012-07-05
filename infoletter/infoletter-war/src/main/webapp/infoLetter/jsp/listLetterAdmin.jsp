@@ -25,15 +25,16 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 
 var templateWindow = window;
 
@@ -69,7 +70,7 @@ function openSPWindow(fonction, windowName){
 
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Accueil");
@@ -132,11 +133,11 @@ if (showHeader)
 		<% if (isTemplateExist) { %>
 			<tr> 
 				<td class="txtlibform" valign="baseline" align=left nowrap><%=resource.getString("infoLetter.model")%> :</td>
-				<td align=left><a href="javaScript:openTemplate();"><%=Encode.javaStringToHtmlString(resource.getString("infoLetter.modelLink"))%></a></td>
+				<td align=left><a href="javaScript:openTemplate();"><%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.modelLink"))%></a></td>
 			</tr>
 		<% } %>			
 	</table>
-</CENTER>
+</center>
 <%
 	out.println(board.printAfter());
 	out.println("<br>");
@@ -145,7 +146,7 @@ if (showHeader)
 <form name="deletePublications" action="DeletePublications" method="post">
 <%
 // Recuperation de la liste des parutions
-Vector publications = (Vector) request.getAttribute("listParutions");
+List<InfoLetterPublication> publications = (List<InfoLetterPublication>) request.getAttribute("listParutions");
 int i=0;
 
 				ArrayPane arrayPane = gef.getArrayPane("InfoLetter", "Main", request, session);
@@ -165,7 +166,7 @@ int i=0;
 
 if (publications.size()>0) {
 	for (i = 0; i < publications.size(); i++) {
-						InfoLetterPublication pub = (InfoLetterPublication) publications.elementAt(i);
+						InfoLetterPublication pub = (InfoLetterPublication) publications.get(i);
 						ArrayLine arrayLine = arrayPane.addArrayLine();
 						
 						IconPane iconPane1 = gef.getIconPane();
@@ -175,7 +176,7 @@ if (publications.size()>0) {
 						arrayLine.addArrayCellIconPane(iconPane1);	
 						
 						if (pub._isValid()) arrayLine.addArrayCellLink(pub.getTitle(), "javascript:openViewParution('" + pub.getPK().getId() + "');");
-						else arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
+						else arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
 						
 						if (pub._isValid())
 						{
@@ -205,11 +206,11 @@ if (publications.size()>0) {
 %>
 </form>
 <form name="editParution" action="ParutionHeaders" method="post">
-	<input type="hidden" name="parution" value="">
+	<input type="hidden" name="parution" value=""/>
 </form>
 
 <form name="viewParution" action="View" method="post">
-	<input type="hidden" name="parution" value="">
+	<input type="hidden" name="parution" value=""/>
 </form>
 <% // Ici se termine le code de la page %>
 
@@ -218,6 +219,6 @@ if (publications.size()>0) {
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 

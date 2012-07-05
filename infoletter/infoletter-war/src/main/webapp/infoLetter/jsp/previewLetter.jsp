@@ -38,15 +38,16 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 %>
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 	function call_wysiwyg (){
 		document.toWysiwyg.submit();
 	}
@@ -66,14 +67,14 @@ out.println(gef.getLookStyleSheet());
 	}
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF">
 <%
 String parutionTitle = (String) request.getAttribute("parutionTitle");
 String parution = (String) request.getAttribute("parution");
 
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + Encode.javaStringToHtmlString(parutionTitle));	
+	browseBar.setPath("<a href=\"Accueil\"></a> " + EncodeHelper.javaStringToHtmlString(parutionTitle));	
 
 	operationPane.addOperation(resource.getIcon("infoLetter.sendLetterToManager"), resource.getString("infoLetter.sendLetterToManager"), "javascript:sendLetterToManager();");	
 
@@ -103,21 +104,21 @@ out.flush();
 displayViewWysiwyg(parution, spaceId, componentId, request, response);		
 %>
 <form name="headerParution" action="ParutionHeaders" method="post">			
-	<input type="hidden" name="parution" value="<%= parution %>">
-  <input type="hidden" name="ReturnUrl" value="Preview">
+	<input type="hidden" name="parution" value="<%= parution %>"/>
+  <input type="hidden" name="ReturnUrl" value="Preview"/>
 </form>
 <form name="attachedFiles" action="FilesEdit" method="post">			
-	<input type="hidden" name="parution" value="<%= parution %>">
+	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
-<form name="toWysiwyg" Action="../../wysiwyg/jsp/htmlEditor.jsp" method="Post">
-    <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>">
-    <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>">
-    <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>">
-    <input type="hidden" name="ComponentName" value="<%= (String) request.getAttribute("ComponentName") %>">
-    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"> 
-    <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>">
-    <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>">
-    <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>">
+<form name="toWysiwyg" action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
+    <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>"/>
+    <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>"/>
+    <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>"/>
+    <input type="hidden" name="ComponentName" value="<%= (String) request.getAttribute("ComponentName") %>"/>
+    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"/> 
+    <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>"/>
+    <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>"/>
+    <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>"/>
 </form>
 <% // Ici se termine le code de la page %>
 
@@ -126,5 +127,5 @@ out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>
