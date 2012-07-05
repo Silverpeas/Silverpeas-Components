@@ -61,15 +61,13 @@ String displayQuizzHeader(QuizzSessionController quizzScc, QuestionContainerHead
 
   Board board = gef.getBoard();
   String r = "";
-  r += "<center>";
   r += board.printBefore();
   r += "<table border=\"0\" cellspacing=\"3\" cellpadding=\"0\" width=\"100%\">";
   r += "<tr><td>";
   r += "<span class=\"titreFenetre\">"+EncodeHelper.javaStringToHtmlString(title)+"</span>";
   r += "<blockquote>";
   r += "<span class=\"sousTitreFenetre\">"+EncodeHelper.javaStringToHtmlParagraphe(description)+"</span>";
-  if (comment != null)
-  {
+  if (StringUtil.isDefined(comment)) {
     r += "<br><br><span class=txttitrecol>"+resources.getString("QuizzNotice")+"</span>&nbsp;&nbsp;";
     r += EncodeHelper.javaStringToHtmlParagraphe(comment)+"";
   }
@@ -151,7 +149,6 @@ Vector displayQuestions(QuestionContainerDetail quizz, int roundId,GraphicElemen
 				  }
 				  i++;
 			}
-			s += "<center>";
 			s += "<table width=\"98%\" border=\"0\" cellspacing=\"2\" cellpadding=\"5\">";
 			s += "<tr><td nowrap>";
 			s += "<table border=\"0\" cellspacing=\"3\" cellpadding=\"0\" width=\"100%\">";
@@ -192,10 +189,10 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
   r += "<br>";
   r += board.printBefore();
   r += "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\">";
-  r += "<tr><td nowrap class=\"intfdcolor4\">";
+  r += "<tr><td nowrap>";
   r += "<span class=txtlibform>&nbsp;<b>&#149;</b>&nbsp;"+EncodeHelper.javaStringToHtmlString(question.getLabel())+"&nbsp;</span>";
   r += " - "+question.getNbPointsMax()+" pts</td>";
-  r += "<td nowrap class=\"intfdcolor4\" align=\"right\">";
+  r += "<td nowrap align=\"right\">";
   r += "<input type=\"hidden\" name=\"cluePenalty_"+i+"\" value=\"0\">";
 
   if (question.getClue() != null && !question.getClue().equals(""))
@@ -217,7 +214,7 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
             Answer answer = (Answer) itA.next();
             String inputValue = answer.getPK().getId()+","+question.getPK().getId();
             r += "<input type=\"hidden\" name=\"answer_"+i+"\" value=\""+inputValue+"\">";
-            r += "<tr><td colspan=\"2\" class=\"intfdcolor4\"><textarea name=\"openedAnswer_"+i+"\" cols=\"20\" rows=\"3\"></textarea></td></tr>";
+            r += "<tr><td colspan=\"2\"><textarea name=\"openedAnswer_"+i+"\" cols=\"20\" rows=\"3\"></textarea></td></tr>";
         }
   }
   else
@@ -249,13 +246,13 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
           while (itA.hasNext())
           {
               Answer answer = (Answer) itA.next();
-              r += "<tr><td colspan=\"2\"><table class=\"intfdcolor4\" width=\"98%\"><tr>";
+              r += "<tr><td colspan=\"2\"><table width=\"98%\"><tr>";
               String inputValue = answer.getPK().getId()+","+question.getPK().getId();
 
               // traitement de l'affichage des images
               if (answer.getImage() == null)
 	      {
-            	    r += "<td class=\"intfdcolor4\" align=\"left\">&nbsp;</td>";
+            	    r += "<td align=\"left\">&nbsp;</td>";
 	      }
 	      else
 	      {
@@ -269,25 +266,25 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 		        {
 		        	url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 		        }
-		        r += "<td class=\"intfdcolor4\" width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
+		        r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
 	      }
               //if (answer.getImage() != null) {
                 //String url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
-                //r += "<td class=\"intfdcolor4\" width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
+                //r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
               //} else
-                //r += "<td class=\"intfdcolor4\" align=\"left\" width=\"50%\">&nbsp;</td>";
+                //r += "<td align=\"left\" width=\"50%\">&nbsp;</td>";
 
               if (answer.isOpened()) {
                   isOpened = 1;
-                  r += "<td align=\"left\" class=\"intfdcolor4\" width=\"1%\">";
+                  r += "<td align=\"left\" width=\"1%\">";
                   r += "<input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\""+inputValue+"\"></td>";
-                  r += "<td align=\"left\" class=\"intfdcolor4\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"";
+                  r += "<td align=\"left\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"";
                   r += "<input type=\"text\" size=\"20\" name=\"openedAnswer_"+i+"\"></td></tr>";
                   r += "<tr><td colspan=2><br></td></tr></table></td></tr>";
               } else {
-                  r += "<td align=\"left\" class=\"intfdcolor4\" width=\"1%\">";
+                  r += "<td align=\"left\" width=\"1%\">";
                   r += "<input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\""+inputValue+"\"></td>";
-                  r += "<td class=\"intfdcolor4\" width=\"100%\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td>";
+                  r += "<td width=\"100%\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td>";
               }
               r += "</tr></table></td></tr>";
           }
@@ -324,10 +321,10 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 		} else if (question.getNbPointsMin() > questionUserScore) {
 			questionUserScore = question.getNbPointsMin();
 		}
-		r = "<br><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">";
-		r += "<tr><td class=\"intfdcolor4\" nowrap width=\"41%\"><span class=txtlibform>&nbsp;<b>&#149</b>&nbsp;"+Encode.javaStringToHtmlString(question.getLabel())+"&nbsp;</span></td>";
+		r = "<br><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">";
+		r += "<tr><td nowrap width=\"41%\"><span class=txtlibform>&nbsp;<b>&#149</b>&nbsp;"+Encode.javaStringToHtmlString(question.getLabel())+"&nbsp;</span></td>";
 		r += "<td class=\"quizzscore\" width=25% align=\"center\">"+resources.getString("ScoreLib")+" : "+questionUserScore+"/"+question.getNbPointsMax()+" pts</td>";
-		r += "<td class=\"intfdcolor4\" align=\"center\" nowrap>";
+		r += "<td align=\"center\" nowrap>";
 		r += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		r += "</td></tr>";
 		if (question.isOpen()) {
@@ -430,7 +427,6 @@ String displayQuizzHeaderPreview(QuizzSessionController quizzScc, QuestionContai
   String description = EncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getDescription());
   String comment = EncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getComment());
   String r = "";
-  r += "<center>";
   r += board.printBefore();
   r += "<table border=\"0\" cellspacing=\"3\" cellpadding=\"0\" width=\"98%\">";
   r += "<tr><td>";
@@ -488,9 +484,9 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
         Board board = gef.getBoard();
         String r = "<br>";
         r += board.printBefore();
-        r += "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\"><tr><td nowrap class=\"intfdcolor4\"><span class=\"txtlibform\">&nbsp;<b>&#149;</b>&nbsp;"+Encode.javaStringToHtmlString(question.getLabel())+"&nbsp;</span>";
+        r += "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\"><tr><td nowrap><span class=\"txtlibform\">&nbsp;<b>&#149;</b>&nbsp;"+Encode.javaStringToHtmlString(question.getLabel())+"&nbsp;</span>";
         r += " - "+question.getNbPointsMax()+" pts</td>";
-        r += "<td class=\"intfdcolor4\" align=\"right\" nowrap>";
+        r += "<td align=\"right\" nowrap>";
         if ((question.getClue() != null)&&(!question.getClue().equals("")))
         {
           r += "<a href=\"#\" onClick=\"view_cluePreview('"+i+"')\">"+resources.getString("QuizzSeeClue")+"</a>";
@@ -527,12 +523,12 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 	        while (itA.hasNext())
 	        {
 	            Answer answer = (Answer) itA.next();
-	            r += "<tr><td colspan=\"2\"><table class=\"intfdcolor4\" width=\"98%\"><tr>";
+	            r += "<tr><td colspan=\"2\"><table width=\"98%\"><tr>";
 
 	            // traitement de l'affichage des images
 	            if (answer.getImage() == null)
 			      {
-	            	r += "<td class=\"intfdcolor4\" align=\"left\">&nbsp;</td>";
+	            	r += "<td align=\"left\">&nbsp;</td>";
 			      }
 			      else
 			      {
@@ -546,14 +542,14 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 				        {
 				        	url = FileServer.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 				        }
-				        r += "<td class=\"intfdcolor4\" width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
+				        r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
 			      }
 
 	            //if (answer.getImage() != null) {
 	              //String url = FileServer.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
-	              //r += "<td class=\"intfdcolor4\" width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
+	              //r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
 	            //} else
-	              //r += "<td class=\"intfdcolor4\" align=\"left\" width=\"50%\">&nbsp;</td>";
+	              //r += "<td align=\"left\" width=\"50%\">&nbsp;</td>";
 	            r += "<td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\"></td><td align=\"left\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
 	            r += "</tr></table>";
 	        }
@@ -1070,7 +1066,7 @@ else if (action.equals("ViewResult")) {
     userScoreDetail= quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
 
   if ((userScoreDetail.getSuggestion()!=null) && (!userScoreDetail.getSuggestion().equals(""))) {
-    quizzPart += "<center><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\" class=\"intfdcolor4\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
+    quizzPart += "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
     quizzPart += resources.getString("EducationSuggestion") + " :</span><br>";
     quizzPart += EncodeHelper.javaStringToHtmlString(userScoreDetail.getSuggestion())+"</td></tr></table></td></tr></table>";
   }
@@ -1131,7 +1127,7 @@ else if (action.equals("ViewResultAdmin")) {
     userScoreDetail= quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
   }
 
-  quizzPart += "<center><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\" class=\"intfdcolor4\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
+  quizzPart += "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
   quizzPart += resources.getString("EducationSuggestion") + " :</span><br>";
   quizzPart += "<textarea name=\"txa_suggestion\" cols=\"120\" rows=\"4\">";
   if (userScoreDetail.getSuggestion()!=null) {
