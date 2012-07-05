@@ -124,12 +124,14 @@
       <mandatory>true</mandatory>
       <value>no</value>    
       <type>checkbox</type>        
-      <updatable>always</updatable>      
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Le brouillon sera visible entre bloggeurs.</message>
         <message lang="en">Authors will be able to see draft posts.</message>
         <message lang="de">Die Autoren werden in der Lage sein Entwurf Beiträge zu sehen.</message>
       </help>
+      <warning>
+      </warning>
     </parameter>
   </parameters>
 </WAComponent>

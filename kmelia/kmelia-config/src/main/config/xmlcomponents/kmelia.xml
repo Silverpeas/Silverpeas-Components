@@ -1152,9 +1152,7 @@
       <order>47</order>
       <mandatory>true</mandatory>
       <value>2</value>
-      <type>select</type>
-      <updatable>always</updatable>
-	  <options>
+      <options>
         <option>
           <name>
             <message lang="fr">Nom du créateur croissant</message>
@@ -1187,7 +1185,7 @@
           </name>
           <value>3</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Titre croissant</message>
             <message lang="en">Ascending title</message>
@@ -1195,7 +1193,7 @@
           </name>
           <value>4</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Date de création croissante</message>
             <message lang="en">Ascending creation date</message>
@@ -1203,7 +1201,7 @@
           </name>
           <value>5</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Date de création décroissante</message>
             <message lang="en">Descending creation date</message>
@@ -1211,7 +1209,7 @@
           </name>
           <value>6</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Description croissante</message>
             <message lang="en">Ascending description</message>
@@ -1220,6 +1218,8 @@
           <value>7</value>
         </option>
       </options>
+      <type>select</type>
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Permet de définir l'ordre d'affichage des publications par défaut.</message>
         <message lang="en">Sets the display order of publications.</message>
