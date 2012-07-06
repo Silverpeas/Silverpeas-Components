@@ -76,22 +76,15 @@ String url = (String) request.getAttribute("url");
 	out.println(window.printBefore());
  
 	//Instanciation du cadre avec le view generator
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);  
-    tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
-    tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"javascript:goView();",false);
-    tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"#",true);
-	boolean isPdcUsed = ( "yes".equals( (String) request.getAttribute("isPdcUsed") ) );
-	if (isPdcUsed)
-	{
-		tabbedPane.addTab(resource.getString("PdcClassification"),
-						"pdcPositions.jsp?Action=ViewPdcPositions&PubId=" + (String) request.getAttribute("ObjectId") + ""
-						,false);
-	}
-    out.println(tabbedPane.print());
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);  
+  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
+  tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"javascript:goView();",false);
+  tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"#",true);
 
-    
-	out.println(frame.printBefore());	
+  out.println(tabbedPane.print());
+
+  out.println(frame.printBefore());	
 	
 %>
 

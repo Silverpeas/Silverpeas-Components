@@ -25,69 +25,111 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<c:set var="parution" value="${requestScope.parution}"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<view:looknfeel />
 <%
-out.println(gef.getLookStyleSheet());
-
 String parution = (String) request.getAttribute("parution");
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-	function call_wysiwyg (){
-		document.toWysiwyg.submit();
-	}
-	
-	function goValidate (){
-		if (window.confirm("<%= resource.getString("infoLetter.sendLetter")%>"))
-		{
-			$.progressMessage();
-			document.validateParution.submit();
-		}
-	}
-	
-	function goView (){
-		document.viewParution.submit();
-	}
-	
-	function goFiles (){
-		document.attachedFiles.submit();
-	}
-	
-	function goTemplate (){
-		document.template.submit();
-	}
-	
-	function submitForm() {
-		if (!isValidTextArea(document.changeParutionHeaders.description)) {
-			window.alert("<%= resource.getString("infoLetter.soLongPal") %>");
-		} else {
-			if (document.changeParutionHeaders.title.value=="") {
-				alert("<%= resource.getString("infoLetter.fuckingTitleRequired") %>");
-			} else {
-				document.changeParutionHeaders.action = "ChangeParutionHeaders";
-				document.changeParutionHeaders.submit();
-			}
-		}
-	}
-	
-	function cancelForm() {
-	    document.changeParutionHeaders.action = "Accueil";
-	    document.changeParutionHeaders.submit();
-	}
-	
-	function sendLetterToManager (){
+function call_wysiwyg (){
+	document.toWysiwyg.submit();
+}
+
+function goValidate (){
+	if (window.confirm("<%= resource.getString("infoLetter.sendLetter")%>"))
+	{
 		$.progressMessage();
-		document.viewParution.action = "SendLetterToManager";
-		document.viewParution.submit();
+		document.validateParution.submit();
 	}
+}
+
+function goView (){
+	document.viewParution.submit();
+}
+
+function goFiles (){
+	document.attachedFiles.submit();
+}
+
+function goTemplate (){
+	document.template.submit();
+}
+
+function submitForm() {
+  if (isCorrectForm()) {
+    <view:pdcPositions setIn="document.changeParutionHeaders.Positions.value"/>;          
+    document.changeParutionHeaders.action = "ChangeParutionHeaders";
+    document.changeParutionHeaders.submit();
+  }
+}
+/**
+ * This function control form
+ * return true if form can be submitted, false else if
+ */
+function isCorrectForm() {
+  var errorMsg = "";
+  var errorNb = 0;
+
+  if (!isValidTextArea(document.changeParutionHeaders.description)) {
+    errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="GML.description"/>' <fmt:message key="ContainsTooLargeText"/> <%=DBUtil.getTextAreaLength()%> <fmt:message key="Characters"/>\n";
+    errorNb++;
+  }
+  
+  if (isWhitespace(stripInitialWhitespace(document.changeParutionHeaders.title.value))) {
+    errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="infoLetter.name"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+    errorNb++;
+  }
+    
+  <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
+
+  switch(errorNb) {
+  case 0 :
+      result = true;
+      break;
+  case 1 :
+      errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> :\n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+  default :
+      errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+  }
+  return result;  
+}
+
+function cancelForm() {
+    document.changeParutionHeaders.action = "Accueil";
+    document.changeParutionHeaders.submit();
+}
+
+function sendLetterToManager (){
+	$.progressMessage();
+	document.viewParution.action = "SendLetterToManager";
+	document.viewParution.submit();
+}
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF" class="infoletter">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Accueil");
@@ -108,71 +150,56 @@ if (StringUtil.isDefined(parution)) {
 	out.println(window.printBefore());
  
 	//Instanciation du cadre avec le view generator
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"#",true);  
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"#",true);  
 
 // Impossible d'aller sur le WYSIWYG tant que les headers n'ont pas ete valides
-boolean isPdcUsed = ( "yes".equals( (String) request.getAttribute("isPdcUsed") ) );
-if (parution.equals("")) {
-    tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"#",false);
-    tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"#",false);
-    tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"#",false);
-
-	if (isPdcUsed)
-	{
-		tabbedPane.addTab(resource.getString("PdcClassification"),"#",false);
-	}
+if ("".equals(parution)) {
+  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"#",false);
+  tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"#",false);
+  tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"#",false);
 } else {
-    tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
-    tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"javascript:goView();",false);
-    tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"javascript:goFiles();",false);
-	
-	if (isPdcUsed)
-	{
-		tabbedPane.addTab(resource.getString("PdcClassification"),
-						"pdcPositions.jsp?Action=ViewPdcPositions&PubId=" + (String) request.getAttribute("ObjectId") + ""
-						,false);
-	}
+  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
+  tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"javascript:goView();",false);
+  tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"javascript:goFiles();",false);
 }
 
-    out.println(tabbedPane.print());
-
-    
-	out.println(frame.printBefore());
+out.println(tabbedPane.print());
+out.println(frame.printBefore());
 %>
-<% // Ici debute le code de la page %>
-<center>
+
+<%-- Initialize image --%>
+<fmt:message key="infoLetter.mandatory" var="mandatoryIcon" bundle="${icons}" />
+<c:url var="mandatoryIconUrl" value="${mandatoryIcon}" />
+
 <form name="changeParutionHeaders" action="ChangeParutionHeaders" method="post">
   <input type="hidden" name="parution" value="<%= parution %>"/>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
-	<tr> 
-		<td nowrap>
-			<table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%"><!--tabl1-->
-				<tr align=center> 
-					<td  class="intfdcolor4" valign="baseline" align=left>
-						<span class="txtlibform"><%=resource.getString("infoLetter.name")%> :</span>
-					</td>
-					<td  class="intfdcolor4" valign="baseline" align=left>
-				<input type="text" name="title" size="50" maxlength="50" value="<%= (String) request.getAttribute("title") %>"/>&nbsp;<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"/>
-					</td>
-				</tr>
-				<tr align=center> 
+  <input type="hidden" name="Positions" value=""/>
 
-					<td  class="intfdcolor4" valign="top" align=left>
-						<span class="txtlibform"><%=resource.getString("GML.description")%> :</span>
-					</td>
-					<td  class="intfdcolor4" valign="top" align=left>
-					<textarea cols="49" rows="4" name="description"><%= (String) request.getAttribute("description") %></textarea>
-					</td>
-				</tr>
-				<tr align=center>				 
-					<td class="intfdcolor4" valign="baseline" align=left colspan=2><span class="txt">(<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%>)</span> 
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-</table>
+
+
+<fieldset id="infoFieldset" class="skinFieldset">
+  <legend><fmt:message key="infoletter.header.fieldset.info" /></legend>
+  
+  <!-- SAISIE DU FORUM -->
+  <div class="fields">
+    <!-- Info letter title -->
+    <div class="field" id="titleArea">
+      <label class="txtlibform" for="titleName"><fmt:message key="infoLetter.name" /> :&nbsp;</label>
+      <div class="champs">
+        <input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%= (String) request.getAttribute("title") %>" />&nbsp;<img src="${mandatoryIconUrl}" width="5" height="5"/>
+      </div>
+    </div>
+    <!-- Info letter description  -->
+    <div class="field" id="descriptionArea">
+      <label class="txtlibform" for="description"><fmt:message key="GML.description" /> :&nbsp;</label>
+      <div class="champs">
+        <textarea name="description" cols="49" rows="6"><%= (String) request.getAttribute("description") %></textarea>
+      </div>
+    </div>
+  </div>
+</fieldset>
+
 </form>
 <form name="toWysiwyg" action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
     <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>"/>
@@ -184,6 +211,16 @@ if (parution.equals("")) {
     <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>"/>
     <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>"/>
 </form>
+<c:if test="${empty parution}">
+  <view:pdcNewContentClassification componentId="<%=ils.getComponentId()%>" />
+</c:if>
+<c:if test="${not empty parution}">
+  <view:pdcClassification componentId="<%=ils.getComponentId()%>" contentId="${parution}" editable="true" />
+</c:if>
+
+<div class="legend">
+  <fmt:message key="GML.requiredField" /> : <img src="${mandatoryIconUrl}" width="5" height="5" />
+</div>
 
 
 <%
@@ -192,7 +229,6 @@ if (parution.equals("")) {
     buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancelForm();", false));
     out.println(buttonPane.print());
 %>
-</center>
 <form name="validateParution" action="ValidateParution" method="post">			
 	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>

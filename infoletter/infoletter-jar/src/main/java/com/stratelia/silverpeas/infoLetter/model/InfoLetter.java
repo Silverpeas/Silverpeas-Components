@@ -83,9 +83,8 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
    * @author frageade
    * @since February 2002
    */
-  public InfoLetter(WAPrimaryKey pk, String instanceId, String name,
-      String description, String periode, Vector internalSuscribers,
-      Vector externalSuscribers, Vector publications) {
+  public InfoLetter(WAPrimaryKey pk, String instanceId, String name, String description,
+      String periode, Vector internalSuscribers, Vector externalSuscribers, Vector publications) {
     super();
     setPK(pk);
     this.instanceId = instanceId;
@@ -165,8 +164,7 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
     if (!(obj instanceof InfoLetter)) {
       return 0;
     }
-    return (String.valueOf(getPK().getId())).compareTo(String
-        .valueOf(((InfoLetter) obj).getPK().getId()));
+    return (String.valueOf(getPK().getId())).compareTo(String.valueOf(obj.getPK().getId()));
   }
 
   public String _getTableName() {

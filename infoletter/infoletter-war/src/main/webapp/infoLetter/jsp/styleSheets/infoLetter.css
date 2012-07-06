@@ -21,3 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+.infoletter fieldset#infoFieldset legend {
+  background:transparent url(../../../util/icons/component/infoLetterSmall.gif) 11px 0px no-repeat;
+}
+
+#infoFieldset .field {
+  clear: both;
+  display: block;
+  float: none;
+  width: 98%;
+}
+
+#infoFieldset #titleArea input{
+  width: 46%;
+}

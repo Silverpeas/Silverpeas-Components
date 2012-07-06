@@ -438,11 +438,13 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
 
         if (parution.equals("")) {
           InfoLetterPublicationPdC ilp = new InfoLetterPublicationPdC();
-
           ilp.setTitle(title);
           ilp.setDescription(description);
           ilp.setPublicationState(InfoLetterPublication.PUBLICATION_EN_REDACTION);
           ilp.setLetterId(defaultLetter.getPK().getId());
+          // Classify content
+          String positions = request.getParameter("Positions");
+          ilp.setPositions(positions);
           infoLetterSC.createInfoLetterPublication(ilp);
           parution = ilp.getPK().getId();
         } else {
@@ -460,8 +462,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("title", title);
         request.setAttribute("description", description);
 
-        String urlContext = GeneralPropertiesManager.getGeneralResourceLocator()
-            .getString("ApplicationURL");
+        String urlContext =
+            GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
         request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
         request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());

@@ -51,20 +51,13 @@ document.toWysiwyg.submit();
 	out.println(window.printBefore());
  
 	//Instanciation du cadre avec le view generator
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"headerLetter.jsp",false);    			    
-    tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"#",true);
-    tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"previewLetter.jsp",false);
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"headerLetter.jsp",false);    			    
+  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"#",true);
+  tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"previewLetter.jsp",false);
 
-	boolean isPdcUsed = ( "yes".equals( (String) request.getAttribute("isPdcUsed") ) );
-	if (isPdcUsed)
-	{
-		tabbedPane.addTab(resource.getString("PdcClassification"),
-						"pdcPositions.jsp?Action=ViewPdcPositions&PubId=" + (String) request.getAttribute("ObjectId") + ""
-						,false);
-	}
 
-    out.println(tabbedPane.print());
+  out.println(tabbedPane.print());
 	out.println(frame.printBefore());	
 	
 %>

@@ -23,8 +23,9 @@
  */
 package com.stratelia.silverpeas.infoLetter.control;
 
-import java.io.File;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -53,9 +54,15 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.fileupload.FileItem;
 
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
@@ -130,14 +137,14 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         "com.stratelia.silverpeas.infoLetter.multilang.infoLetterBundle",
         "com.stratelia.silverpeas.infoLetter.settings.infoLetterIcons",
         "com.stratelia.silverpeas.infoLetter.settings.infoLetterSettings");
-    // Initialisation de l'interface metier
+    // Initialize business interface
     if (dataInterface == null) {
       dataInterface = ServiceFactory.getInfoLetterData();
     }
   }
 
   /*
-   * Initialisation du UserPanel avec les abonnes Silverpeas
+   * Initialize UserPanel with the list of Silverpeas subscribers
    */
   public String initUserPanel(WAPrimaryKey letterPK) throws InfoLetterException {
     int i = 0;
@@ -228,8 +235,41 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     ilp.setInstanceId(getComponentId());
     dataInterface.createInfoLetterPublication(ilp, getUserId());
     copyWYSIWYG(InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId(), ilp.getPK().getId());
+    // Classify content on PdC
+    classifyInfoLetterPublication(ilp);
   }
 
+  
+  /**
+   * Classify the info letter publication on the PdC only if the positions attribute is filled
+   * inside object parameter
+   * @param ilp the InfoLetterPublication to classify
+   */
+  private void classifyInfoLetterPublication(InfoLetterPublicationPdC ilp) {
+    String positions = ilp.getPositions();
+    if (StringUtil.isDefined(positions)) {
+      PdcClassificationEntity ilClassification = null;
+      try {
+        ilClassification = PdcClassificationEntity.fromJSON(positions);
+      } catch (JAXBException e) {
+        SilverTrace.error("Forum", "ForumActionHelper.actionManagement",
+                  "PdcClassificationEntity error", "Problem to read JSON", e);
+      }
+      if (ilClassification != null && !ilClassification.isUndefined()) {
+        List<PdcPosition> pdcPositions = ilClassification.getPdcPositions();
+        String ilpId = ilp.getPK().getId();
+        PdcClassification classification =
+            aPdcClassificationOfContent(ilpId, ilp.getInstanceId()).withPositions(pdcPositions);
+        if (!classification.isEmpty()) {
+          PdcClassificationService service =
+              PdcServiceFactory.getFactory().getPdcClassificationService();
+          classification.ofContent(ilpId);
+          service.classifyContent(ilp, classification);
+        }
+      }
+    }
+  }
+  
   // Suppression d'une publication
   public void deleteInfoLetterPublication(WAPrimaryKey pk) {
     deleteIndex(getInfoLetterPublication(pk));
@@ -925,4 +965,5 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   private String getSmtpPwd() {
     return smtpSettings.getString("SMTPPwd");
   }
+  
 }

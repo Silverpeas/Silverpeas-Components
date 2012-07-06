@@ -194,7 +194,12 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     }
   }
 
-  // Suppression d'une publication
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface#deleteInfoLetterPublication
+   * (com.stratelia.webactiv.util.WAPrimaryKey, java.lang.String)
+   */
   public void deleteInfoLetterPublication(WAPrimaryKey pk, String componentId) {
     Connection con = openConnection();
     try {
@@ -316,8 +321,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       String selectQuery = "select * from " + TableInternalEmails;
       selectQuery += " where instanceId = '" + letter.getInstanceId() + "' ";
       selectQuery += " and letter = " + letterPK.getId() + " ";
-      SilverTrace.info("infoLetter",
-          "InfoLetterDataManager.getInternalSuscribers()",
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.getInternalSuscribers()",
           "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
       selectStmt = con.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
@@ -628,8 +632,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   /**
-   * Ouverture de la connection vers la source de donnees
-   * @return Connection la connection
+   * open connection
+   * @return Connection
    * @throws InfoLetterException
    * @author frageade
    * @since 26 Fevrier 2002

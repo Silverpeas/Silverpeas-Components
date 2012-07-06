@@ -32,7 +32,7 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 		id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId).include(request, response);
     } catch (Exception e) {
 		throw new com.stratelia.silverpeas.infoLetter.InfoLetterException("viewLetter_JSP.displayViewWysiwyg",
-		com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR, e.getMessage());			
+		com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR, e.getMessage(), e);			
     }
 }
 %>
@@ -42,9 +42,7 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
@@ -81,19 +79,13 @@ String parution = (String) request.getAttribute("parution");
 	out.println(window.printBefore());
  
 	//Instanciation du cadre avec le view generator
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);  
-    tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
-    tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"#",true);
-    tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"javascript:goFiles();",false);
-	boolean isPdcUsed = ( "yes".equals( (String) request.getAttribute("isPdcUsed") ) );
-	if (isPdcUsed)
-	{
-		tabbedPane.addTab(resource.getString("PdcClassification"),
-						"pdcPositions.jsp?Action=ViewPdcPositions&PubId=" + (String) request.getAttribute("ObjectId") + ""
-						,false);
-	}
-    out.println(tabbedPane.print());
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);  
+  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
+  tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"#",true);
+  tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"javascript:goFiles();",false);
+
+  out.println(tabbedPane.print());
     
 	out.println(frame.printBefore());	
 	
