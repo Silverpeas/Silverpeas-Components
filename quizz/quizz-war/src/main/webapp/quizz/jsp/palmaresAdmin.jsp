@@ -40,9 +40,9 @@ String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 String folderSrc = iconsPath + "/util/icons/delete.gif";
 %>
 
-<HTML>
-<HEAD>
-	<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+	<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
   <%
   ResourceLocator settings = quizzScc.getSettings();
   String space = quizzScc.getSpaceLabel();
@@ -69,7 +69,7 @@ out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 </head>
-<body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
 
   <%
   //objet window
@@ -108,8 +108,8 @@ out.println(gef.getLookStyleSheet());
   arrayPane.addArrayColumn(resources.getString("GML.operation"));
 
 
-  Collection quizzList = quizzScc.getAdminQuizzList();
-  Iterator i = quizzList.iterator();
+  Collection<QuestionContainerHeader> quizzList = quizzScc.getAdminQuizzList();
+  Iterator<QuestionContainerHeader> i = quizzList.iterator();
   while (i.hasNext()) {
     QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i.next();
 		IconPane folderPane1 = gef.getIconPane();
@@ -119,7 +119,7 @@ out.println(gef.getLookStyleSheet());
     ArrayLine arrayLine = arrayPane.addArrayLine();
     arrayLine.addArrayCellLink("<img src=\"icons/palmares_30x15.gif\" border=0>","palmaresAdmin.jsp?quizz_id="+quizzHeader.getPK().getId());
     arrayLine.addArrayCellLink(quizzHeader.getTitle(),"quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&Action=ViewQuizz");
-    arrayLine.addArrayCellText(Encode.javaStringToHtmlString(quizzHeader.getDescription()));
+    arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(quizzHeader.getDescription()));
     
     Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
 	ArrayCellText arrayCellText5 = arrayLine.addArrayCellText(resources.getOutputDate(creationDate));
@@ -150,11 +150,11 @@ out.println("<br>&nbsp;&nbsp;<span class=sousTitreFenetre>"+resources.getString(
   arrayPane2.addArrayColumn(resources.getString("ScoreDate"));
   arrayPane2.addArrayColumn(resources.getString("ScoreLib"));
 
-  Collection scoreList = quizzScc.getAdminPalmares(request.getParameter("quizz_id"));
+  Collection<ScoreDetail> scoreList = quizzScc.getAdminPalmares(request.getParameter("quizz_id"));
 
   if (scoreList != null)
   {
-    Iterator j = scoreList.iterator();
+    Iterator<ScoreDetail> j = scoreList.iterator();
     while (j.hasNext()) {
       ScoreDetail scoreDetail = (ScoreDetail) j.next();
       UserDetail userDetail=quizzScc.getUserDetail(scoreDetail.getUserId());
@@ -169,21 +169,22 @@ out.println("<br>&nbsp;&nbsp;<span class=sousTitreFenetre>"+resources.getString(
       }
 
       ArrayLine arrayLine = arrayPane2.addArrayLine();
-      ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(new Integer(scoreDetail.getPosition()).toString());
+      ArrayCellText arrayCellText3 = arrayLine.addArrayCellText(Integer.toString(scoreDetail.getPosition()));
       arrayCellText3.setCompareOn(new Integer(scoreDetail.getPosition()));
       ArrayCellText arrayCellText2;
       if (!recipient.equals(""))
 		  {
 			arrayCellText2 = arrayLine.addArrayCellText("<A HREF=\"javascript:notifyPopup('" + m_Context + "','" + quizzScc.getComponentId() + "','" + recipient + "','')\">" + lastName + " " + firstName +"</A>");
 		  }
-      else
-	 arrayCellText2 = arrayLine.addArrayCellText(lastName + " " + firstName);
+      else {
+        arrayCellText2 = arrayLine.addArrayCellText(lastName + " " + firstName);
+      }
       arrayCellText2.setCompareOn((String) (lastName + " " + firstName).toLowerCase());
       
-		Date participationDate = DateUtil.parse(scoreDetail.getParticipationDate());
+      Date participationDate = DateUtil.parse(scoreDetail.getParticipationDate());
 	    arrayLine.addArrayCellLink(resources.getOutputDate(participationDate),"quizzQuestionsNew.jsp?QuizzId="+request.getParameter("quizz_id")+"&Action=ViewResultAdmin&Page=0"+"&UserId="+scoreDetail.getUserId()+"&ParticipationId="+new Integer(scoreDetail.getParticipationId()).toString());
       
-      ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(new Integer(scoreDetail.getScore()).toString()+"/"+currentQuizzPoints);
+      ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(Integer.toString(scoreDetail.getScore())+"/"+currentQuizzPoints);
       arrayCellText1.setCompareOn(new Integer(scoreDetail.getScore()));
     }
   }

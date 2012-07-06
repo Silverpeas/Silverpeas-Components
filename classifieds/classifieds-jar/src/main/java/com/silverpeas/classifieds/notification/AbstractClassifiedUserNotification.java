@@ -56,7 +56,7 @@ public abstract class AbstractClassifiedUserNotification extends
   @Override
   protected void performTemplateData(final String language, final ClassifiedDetail resource,
       final SilverpeasTemplate template) {
-    getNotification().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("classified", resource);
     template.setAttribute("classifiedName", resource.getTitle());
     template.setAttribute("silverpeasURL", getResourceURL(resource));

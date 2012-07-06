@@ -29,6 +29,9 @@ wiki/wiki-jar/Test de base/
 
 /forums/forums-war/src/main/webapp/META-INF
 /forums/forums-ejb/src/main/resources/META-INF/MANIFEST.MF
+
+/quizz/quizz-war/src/main/webapp/META-INF
+
 /infoletter/infoletter-jar/bin
 /infoletter/infoletter-war/bin
 /infoletter/infoletter-war/src/main/webapp/META-INF

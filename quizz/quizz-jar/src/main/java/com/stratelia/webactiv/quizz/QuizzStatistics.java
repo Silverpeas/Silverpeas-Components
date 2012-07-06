@@ -55,7 +55,7 @@ public class QuizzStatistics implements ComponentStatisticsInterface {
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
     Collection<QuestionContainerHeader> headers = getQuizz(spaceId, componentId);
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList(headers.size());
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(headers.size());
     for (QuestionContainerHeader qcHeader : headers) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(qcHeader.getCreatorId());

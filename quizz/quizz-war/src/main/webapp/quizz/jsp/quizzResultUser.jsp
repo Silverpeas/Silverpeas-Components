@@ -57,14 +57,14 @@ String displayCredits(int nb_max_user_votes , int nb_user_votes)  throws QuizzEx
 <%
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 </head>
-<body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
   <%
   ResourceLocator settings = quizzScc.getSettings();
   String space = quizzScc.getSpaceLabel();
@@ -102,17 +102,17 @@ out.println(gef.getLookStyleSheet());
   arrayPane.addArrayColumn(resources.getString("ScoreLib"));
   arrayPane.addArrayColumn(resources.getString("ScorePosition"));
 
-  Collection quizzList = quizzScc.getUserResults();
-  Iterator i = quizzList.iterator();
+  Collection<QuestionContainerHeader> quizzList = quizzScc.getUserResults();
+  Iterator<QuestionContainerHeader> i = quizzList.iterator();
   while (i.hasNext()) {
     QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i.next();
     int nb_max_participations = quizzHeader.getNbMaxParticipations();
-    Collection scoreDetails = quizzHeader.getScores();
+    Collection<ScoreDetail> scoreDetails = quizzHeader.getScores();
     int nb_user_votes = 0;
     if (scoreDetails != null)
     {
       nb_user_votes = scoreDetails.size();
-      Iterator j = scoreDetails.iterator();
+      Iterator<ScoreDetail> j = scoreDetails.iterator();
       while (j.hasNext()) {
         ScoreDetail scoreDetail = (ScoreDetail) j.next();
     	ArrayLine arrayLine = arrayPane.addArrayLine();
@@ -143,5 +143,5 @@ out.println(gef.getLookStyleSheet());
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
