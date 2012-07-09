@@ -24,12 +24,14 @@
 
 package com.stratelia.webactiv.quickinfo.servlets;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
 import com.stratelia.webactiv.util.DateUtil;
@@ -38,7 +40,11 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 
+import javax.ejb.CreateException;
 import javax.servlet.http.HttpServletRequest;
+
+import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -48,10 +54,7 @@ import java.util.Iterator;
 public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {
   private static final long serialVersionUID = 2256481728385587395L;
 
-  /**
-   * This method has to be implemented in the component request rooter class. returns the session
-   * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   */
+  @Override
   public String getSessionControlBeanName() {
     return "quickinfo";
   }
@@ -174,30 +177,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
             quickInfo.remove(id);
             destination = getDestination("Main", quickInfo, request);
           } else if ("ReallyAdd".equals(action) || "ReallyUpdate".equals(action)) {
-            String name = request.getParameter("Name");
-            String description = request.getParameter("Description");
-            if (description == null) {
-              description = "";
-            }
-            Date beginDate = null;
-            String beginString = request.getParameter("BeginDate");
-
-            if (beginString.trim().length() > 0) {
-              beginDate = DateUtil.stringToDate(beginString, quickInfo.getLanguage());
-            }
-
-            Date endDate = null;
-            String endString = request.getParameter("EndDate");
-            if (endString.trim().length() > 0) {
-              endDate = DateUtil.stringToDate(endString, quickInfo.getLanguage());
-            }
-
-            if ("ReallyAdd".equals(action)) {
-              quickInfo.add(name, description, beginDate, endDate);
-            } else {
-              String id = request.getParameter("Id");
-              quickInfo.update(id, name, description, beginDate, endDate);
-            }
+            createOrUpdateQuickInfo(quickInfo, request, action);
             destination = getDestination("quickInfoPublisher", quickInfo, request);
           }
         } else if ("user".equals(flag)) {
@@ -211,7 +191,8 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
           String paramName, Id;
           PublicationDetail pubDetail;
           PublicationSelection pubSelect;
-          Enumeration parameters = request.getParameterNames();
+          @SuppressWarnings("unchecked")
+          Enumeration<String> parameters = request.getParameterNames();
           while (parameters.hasMoreElements()) {
             paramName = (String) parameters.nextElement();
             if (paramName.startsWith("selectItem")) {
@@ -265,11 +246,10 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
               pubDetail = (PublicationDetail) clipObject
                   .getTransferData(PublicationSelection.PublicationDetailFlavor);
 
-              String description = WysiwygController.load(pubDetail.getPK()
-                  .getInstanceId(), pubDetail.getPK().getId(), null);
+              String description = WysiwygController.load(pubDetail.getPK().getInstanceId(), pubDetail.getPK().getId(), null);
 
               quickInfo.add(pubDetail.getName(), description, pubDetail.getBeginDate(),
-                  pubDetail.getEndDate());
+                  pubDetail.getEndDate(), null);
             }
           }
           quickInfo.clipboardPasteDone();
@@ -288,6 +268,46 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     SilverTrace.info("quickinfo", "QuickInfoRequestRooter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "destination" + destination);
     return destination;
+  }
+
+  /**
+   * This method retrieve all the request parameters before creating or updating a quick info
+   * @param quickInfo the QuickInfoSessionController
+   * @param request the HttpServletRequest
+   * @param action a string representation of an action
+   * @throws ParseException
+   * @throws RemoteException
+   * @throws CreateException
+   * @throws WysiwygException
+   */
+  private void createOrUpdateQuickInfo(QuickInfoSessionController quickInfo,
+      HttpServletRequest request, String action) throws ParseException, RemoteException,
+      CreateException, WysiwygException {
+    String name = request.getParameter("Name");
+    String description = request.getParameter("Description");
+    if (description == null) {
+      description = "";
+    }
+    Date beginDate = null;
+    String beginString = request.getParameter("BeginDate");
+
+    if (StringUtil.isDefined(beginString) && beginString.trim().length() > 0) {
+      beginDate = DateUtil.stringToDate(beginString, quickInfo.getLanguage());
+    }
+
+    Date endDate = null;
+    String endString = request.getParameter("EndDate");
+    if (StringUtil.isDefined(endString) && endString.trim().length() > 0) {
+      endDate = DateUtil.stringToDate(endString, quickInfo.getLanguage());
+    }
+
+    if ("ReallyAdd".equals(action)) {
+      String positions = request.getParameter("Positions");
+      quickInfo.add(name, description, beginDate, endDate, positions);
+    } else {
+      String id = request.getParameter("Id");
+      quickInfo.update(id, name, description, beginDate, endDate);
+    }
   }
 
   public String getFlag(String[] profiles) {

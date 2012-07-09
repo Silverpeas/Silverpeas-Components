@@ -46,9 +46,9 @@ public class QuickInfosPortlet extends GenericPortlet implements FormNames {
   public void doView(RenderRequest request, RenderResponse response) throws PortletException,
       IOException {
     PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-            PortletSession.APPLICATION_SCOPE);
+    MainSessionController m_MainSessionCtrl =
+        (MainSessionController) session.getAttribute(
+            MainSessionController.MAIN_SESSION_CONTROLLER_ATT, PortletSession.APPLICATION_SCOPE);
 
     QuickInfoTransversalSC quickinfoTransversal = new QuickInfoTransversalSC();
     quickinfoTransversal.init(m_MainSessionCtrl);
