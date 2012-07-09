@@ -427,7 +427,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
               "pubBm.getDetailsByFatherPK(pk) BEGIN");
       try {
         // get the publication details linked to this topic
-        pubDetails = pubBm.getDetailsByFatherPK(pk, null, false);
+        pubDetails = pubBm.getDetailsByFatherPK(pk, "P.pubUpdateDate DESC, P.pubId DESC", false);
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()", ERROR,
                 "kmelia.EX_IMPOSSIBLE_DAVOIR_LA_LISTE_DES_PUBLICATIONS", e);
