@@ -213,16 +213,19 @@ public class JSONServlet extends HttpServlet {
     HashMap<String, Boolean> operations = new HashMap<String, Boolean>(10);
 
     boolean isAdmin = SilverpeasRole.admin.isInRole(profile);
+    boolean isPublisher = SilverpeasRole.publisher.isInRole(profile);
+    boolean isWriter = SilverpeasRole.writer.isInRole(profile);
     boolean isRoot = "0".equals(id);
     boolean isBasket = "1".equals(id);
     boolean statisticEnable = kmeliaSC.getSettings().getBoolean("kmelia.stats.enable", false);
     boolean canShowStats =
-        SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.supervisor.isInRole(profile) ||
-            isAdmin && !KmeliaHelper.isToolbox(kmeliaSC.getComponentId());
+        isPublisher || SilverpeasRole.supervisor.isInRole(profile) || isAdmin &&
+            !KmeliaHelper.isToolbox(kmeliaSC.getComponentId());
 
     if (isBasket) {
-      operations.put("emptyTrash", isAdmin || SilverpeasRole.publisher.isInRole(profile)
-              || SilverpeasRole.writer.isInRole(profile));
+      boolean binOperationsAllowed = isAdmin || isPublisher || isWriter;
+      operations.put("emptyTrash", binOperationsAllowed);
+      operations.put("exportSelection", binOperationsAllowed);
     } else {
       // general operations
       operations.put("admin", kmeliaSC.isComponentManageable());
@@ -232,8 +235,7 @@ public class JSONServlet extends HttpServlet {
       operations.put("exporting", kmeliaSC.isExportComponentAllowed()
               && kmeliaSC.isExportZipAllowed() && isAdmin);
       operations.put("exportPDF", kmeliaSC.isExportComponentAllowed()
-              && kmeliaSC.isExportPdfAllowed() && (isAdmin || SilverpeasRole.publisher.isInRole(
-                  profile)));
+              && kmeliaSC.isExportPdfAllowed() && (isAdmin || isPublisher));
 
       // topic operations
       operations.put("addTopic", isAdmin);
@@ -266,7 +268,7 @@ public class JSONServlet extends HttpServlet {
       operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.
               isTopicHaveUpdateChainDescriptor(id));
 
-      operations.put("exportSelection", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
+      operations.put("exportSelection", !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("favorites", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       if (statisticEnable && isRoot && canShowStats) {
