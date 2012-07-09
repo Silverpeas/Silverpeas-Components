@@ -62,9 +62,9 @@ String spaceId = quizzScc.getSpaceId();
 String componentId = quizzScc.getComponentId();
 %>
 
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -77,7 +77,7 @@ function goto_jsp(jsp)
 </script>
 
 </head>
-<body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
   <%
   session.removeAttribute("currentQuizz");
   session.removeAttribute("questionsResponses");
@@ -119,26 +119,28 @@ function goto_jsp(jsp)
   arrayPane.addArrayColumn(resources.getString("QuizzCredits"));
   arrayPane.addArrayColumn(resources.getString("QuizzCreationDate"));
 
-  Collection quizzList = quizzScc.getUserQuizzList();
-  Iterator i = quizzList.iterator();
+  Collection<QuestionContainerHeader> quizzList = quizzScc.getUserQuizzList();
+  Iterator<QuestionContainerHeader> i = quizzList.iterator();
   while (i.hasNext()) {
     QuestionContainerHeader quizzHeader = (QuestionContainerHeader) i.next();
     int nb_max_participations = quizzHeader.getNbMaxParticipations();
-    Collection scoreDetails = quizzHeader.getScores(); 
+    Collection<ScoreDetail> scoreDetails = quizzHeader.getScores(); 
     int nb_user_votes = 0;
-    if (scoreDetails != null)
+    if (scoreDetails != null) {
       nb_user_votes = scoreDetails.size();
+    }
     ArrayLine arrayLine = arrayPane.addArrayLine();
     arrayLine.addArrayCellLink("<img src=\"icons/palmares_30x15.gif\" border=0>","javascript:goto_jsp('../../Rquizz/"+spaceId+"_"+componentId+"/palmares.jsp?quizz_id="+quizzHeader.getPK().getId()+"')");
     ArrayCellText arrayCellText2 = null;
-    if (nb_user_votes == nb_max_participations)
+    if (nb_user_votes == nb_max_participations) {
       arrayCellText2 = arrayLine.addArrayCellText(quizzHeader.getTitle());
-    else
+    } else {
       arrayCellText2 = arrayLine.addArrayCellText("<A target=MyMain  HREF=../../Rquizz/"+spaceId+"_"+componentId+"/quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&ParticipationId="+nb_user_votes+"&Action=ViewCurrentQuestions"+"&Space="+spaceId+"&Component="+componentId +">"+quizzHeader.getTitle()+"</A>");
+    }
 	  /*arrayLine.addArrayCellLink(quizzHeader.getTitle(),"javascript:goto_jsp('../../Rquizz/jsp/quizzQuestionsNew.jsp?QuizzId="+quizzHeader.getPK().getId()+"&Action=ViewQuizz','"+"&Space="+spaceId+"&Component="+componentId+"')");*/
 
     arrayCellText2.setCompareOn(quizzHeader.getTitle().toLowerCase());
-    arrayLine.addArrayCellText(Encode.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
+    arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlParagraphe(quizzHeader.getDescription()));
     arrayLine.addArrayCellText(displayCredits(nb_max_participations, nb_user_votes));
     
     Date creationDate = DateUtil.parse(quizzHeader.getCreationDate());
@@ -157,7 +159,7 @@ function goto_jsp(jsp)
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 
 

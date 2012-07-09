@@ -46,7 +46,7 @@ public abstract class AbstractKmeliaPublicationUserNotification extends
   @Override
   protected void performTemplateData(final String language, final PublicationDetail resource,
       final SilverpeasTemplate template) {
-    getNotification().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("path", getPath(language));
     template.setAttribute("publication", resource);
     template.setAttribute("publicationName", resource.getName(language));

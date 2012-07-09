@@ -36,9 +36,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
 
-<HTML>
-<HEAD>
-	<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
+<html>
+<head>
+	<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -74,7 +74,7 @@ Vector infos(JspWriter out, Collection Questions, String questionId)  throws Qui
 %>
 
 <%
-//R�cup�ration des param�tres
+//Retrieve parameters
   String question_id = (String) request.getParameter("question_id");
   QuestionContainerDetail quizzDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
   
@@ -87,7 +87,7 @@ Vector infos(JspWriter out, Collection Questions, String questionId)  throws Qui
   String component = quizzScc.getComponentLabel(); 
 
     //Questions
-  Collection quizzQuestions = quizzDetail.getQuestions();
+  Collection<Question> quizzQuestions = quizzDetail.getQuestions();
   Vector infos = infos(out, quizzQuestions, question_id);
 
   //objet window
@@ -120,7 +120,7 @@ Vector infos(JspWriter out, Collection Questions, String questionId)  throws Qui
       </td>
     </tr>
   </table></td></tr></table>
-  <br><center>
+  <br></center>
 <%
   Button closeButton = (Button) gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
     ButtonPane buttonPane = gef.getButtonPane();
@@ -133,7 +133,7 @@ Vector infos(JspWriter out, Collection Questions, String questionId)  throws Qui
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 
 

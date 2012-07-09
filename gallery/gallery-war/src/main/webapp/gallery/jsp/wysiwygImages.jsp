@@ -32,21 +32,17 @@
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	
-	ResourceLocator multilang = null;
-%>
+String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-<% 
-  List photos = (List) request.getAttribute("Photos");
-  String language = (String) request.getAttribute("Language");
+List photos = (List) request.getAttribute("Photos");
+String language = (String) request.getAttribute("Language");
     
 // param�trage pour l'affichage des photos 
-  int nbAffiche = 0;
-  int nbParLigne = 4;
+int nbAffiche = 0;
+int nbParLigne = 4;
     
-  multilang = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle", language);
+ResourceLocator multilang = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle", language);
 %>
 
 <html>
@@ -63,7 +59,7 @@ function selectImage(url, idP)
 }
 </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
 
 <table class="Treeview" width="100%" height="100%"><tr><td valign="top">
 <form name="frmVignette">
@@ -111,8 +107,9 @@ if (photos != null) {
 						<table border="0" align="center" width="10" cellspacing="1" cellpadding="0" class="fondPhoto">
 							<tr><td align="center" colspan="2">
 								<table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
-									<a href="javaScript:selectImage('<%=url%>','<%=idP%>');"><IMG SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"></a>
-										<input type="checkbox" name="UseOriginal<%=idP%>" value="true" checked><font style="font-size: 9px"><%=photo.getSizeL()%>x<%=photo.getSizeH()%></font><br>
+									<div style="text-align:right" class="imagename"><%=photo.getImageName() %></div>
+									<a href="javaScript:selectImage('<%=url%>','<%=idP%>');"><img src="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"/></a>
+										<input type="checkbox" name="UseOriginal<%=idP%>" value="true"><font style="font-size: 9px"><%=photo.getSizeL()%>x<%=photo.getSizeH()%></font><br>
 								</td></tr></table>
 							</td></tr>
 						</table>

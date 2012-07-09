@@ -26,8 +26,6 @@ package com.silverpeas.webpages.control;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.DataRecord;
@@ -38,10 +36,12 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.subscribe.SubscriptionService;
+import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.webpages.WebPagesNotifier;
 import com.silverpeas.webpages.model.WebPagesException;
+import com.silverpeas.webpages.notification.WebPagesUserNotifier;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -55,8 +55,6 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class WebPagesSessionController extends AbstractComponentSessionController {
-
-  WebPagesNotifier notifier = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -273,7 +271,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     }
 
     // send subscriptions
-    getNotifier().sendSubscriptionsNotification(getNodePK(), getUserId());
+    WebPagesUserNotifier.notify(getNodePK(), getUserId());
 
     // index updated data
     indexForm(set);
@@ -309,12 +307,5 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       throw new WebPagesException("WebPagesSessionController.indexForm()",
               SilverpeasException.ERROR, "webPages.EX_CANT_INDEX_DATA", e);
     }
-  }
-
-  private WebPagesNotifier getNotifier() {
-    if (notifier == null) {
-      notifier = new WebPagesNotifier();
-    }
-    return notifier;
   }
 }
