@@ -104,17 +104,18 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   // Metier
-  public Collection getQuickInfos() throws RemoteException {
-    List result = (List) getPublicationBm().getOrphanPublications(
-        new PublicationPK("", this.getSpaceId(), this.getComponentId()));
+  public Collection<PublicationDetail> getQuickInfos() throws RemoteException {
+    List<PublicationDetail> result =
+        new ArrayList<PublicationDetail>(getPublicationBm().getOrphanPublications(
+            new PublicationPK("", this.getSpaceId(), this.getComponentId())));
     return sortByDateDesc(result);
   }
 
-  public Collection getVisibleQuickInfos() throws RemoteException {
+  public Collection<PublicationDetail> getVisibleQuickInfos() throws RemoteException {
     // return m_quickInfoSilverObject.getVisibleQuickInfos();
-    Collection quickinfos = getQuickInfos();
-    ArrayList result = new ArrayList();
-    Iterator qi = quickinfos.iterator();
+    Collection<PublicationDetail> quickinfos = getQuickInfos();
+    List<PublicationDetail> result = new ArrayList<PublicationDetail>();
+    Iterator<PublicationDetail> qi = quickinfos.iterator();
 
     Date now = new Date();
 
@@ -122,25 +123,27 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy");
       now = format.parse(format.format(now));
     } catch (Exception e) {
-      SilverTrace.error("quickinfo",
-          "QuickInfoSessionController.getVisibleQuickInfos()",
+      SilverTrace.error("quickinfo", "QuickInfoSessionController.getVisibleQuickInfos()",
           "quickinfo.PARSE_ERROR", e);
     }
 
     while (qi.hasNext()) {
       PublicationDetail detail = (PublicationDetail) qi.next();
       if (detail.getEndDate() == null) {
-        if (detail.getBeginDate() == null)
+        if (detail.getBeginDate() == null) {
           result.add(detail);
-        else if (detail.getBeginDate().compareTo(now) <= 0)
+        } else if (detail.getBeginDate().compareTo(now) <= 0) {
           result.add(detail);
+        }
       } else {
         if (detail.getBeginDate() == null) {
-          if (detail.getEndDate().compareTo(now) >= 0)
+          if (detail.getEndDate().compareTo(now) >= 0) {
             result.add(detail);
+          }
         } else if ((detail.getEndDate().compareTo(now) >= 0)
-            && (detail.getBeginDate().compareTo(now) <= 0))
+            && (detail.getBeginDate().compareTo(now) <= 0)) {
           result.add(detail);
+        }
       }
     }
     return sortByDateDesc(result);
@@ -155,11 +158,12 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   public void add(String name, String description, Date begin, Date end)
       throws RemoteException, CreateException, WysiwygException {
     // m_quickInfoSilverObject.add (name, description, begin, end);
-    if (name == null)
+    if (name == null) {
       throw new javax.ejb.CreateException("titreObligatoire");
-    if (name.length() == 0)
+    }
+    if (name.length() == 0) {
       throw new javax.ejb.CreateException("titreObligatoire");
-
+    }
     if ((begin != null) && (end != null)) {
       if (begin.compareTo(end) > 0) {
         throw new javax.ejb.CreateException("dateDebutAvantDateFin");
@@ -174,11 +178,10 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       PublicationPK pubPK = getPublicationBm().createPublication(detail);
 
       try {
-        getQuickInfoContentManager().createSilverContent(null, detail,
-            getUserId(), true);
+        getQuickInfoContentManager().createSilverContent(null, detail, getUserId(), true);
       } catch (ContentManagerException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        SilverTrace.error("quickinfo", "QuickInfoSessionController.add()",
+            "root.ContentManagerException", e);
       }
 
       // Add the wysiwyg content
@@ -194,39 +197,42 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   public void update(String id, String name, String description, Date begin,
       Date end) throws RemoteException, javax.ejb.CreateException,
       WysiwygException {
-    if (name == null)
+    if (name == null) {
       throw new javax.ejb.CreateException("titreObligatoire");
-    if (name.length() == 0)
+    }
+    if (name.length() == 0) {
       throw new javax.ejb.CreateException("titreObligatoire");
-
-    if ((begin != null) && (end != null)) {
-      if (begin.compareTo(end) > 0)
-        throw new javax.ejb.CreateException("dateDebutAvantDateFin");
     }
 
-    PublicationDetail detail = new PublicationDetail(new PublicationPK(id, this
-        .getSpaceId(), this.getComponentId()), name, null,
-        new java.util.Date(), begin, end, getUserId(), 1, "", "", "");
+    if ((begin != null) && (end != null)) {
+      if (begin.compareTo(end) > 0) {
+        throw new javax.ejb.CreateException("dateDebutAvantDateFin");
+      }
+    }
+
+    PublicationDetail detail =
+        new PublicationDetail(new PublicationPK(id, this.getSpaceId(), this.getComponentId()),
+            name, null, new java.util.Date(), begin, end, getUserId(), 1, "", "", "");
 
     try {
       // Update the Publication
       getPublicationBm().setDetail(detail);
 
       try {
-        getQuickInfoContentManager()
-            .updateSilverContentVisibility(detail, true);
+        getQuickInfoContentManager().updateSilverContentVisibility(detail, true);
       } catch (ContentManagerException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        SilverTrace.error("quickinfo", "QuickInfoSessionController.update()",
+            "root.ContentManagerException", e);
       }
 
       // Update the Wysiwyg if exists, create one otherwise
-      if (detail.getWysiwyg() != null && !"".equals(detail.getWysiwyg()))
+      if (detail.getWysiwyg() != null && !"".equals(detail.getWysiwyg())) {
         WysiwygController.updateFileAndAttachment(description, getSpaceId(),
             getComponentId(), id, getUserId());
-      else
+      } else {
         WysiwygController.createFileAndAttachment(description, getSpaceId(),
             getComponentId(), id);
+      }
 
     } catch (RemoteException e) {
       SilverTrace.error("quickinfo", "QuickInfoSessionController.update()",
@@ -246,8 +252,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       try {
         getQuickInfoContentManager().deleteSilverContent(null, pubPK);
       } catch (ContentManagerException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        SilverTrace.error("quickinfo", "QuickInfoSessionController.remove('" + id + "')",
+            "ContentManagerExceptino", e);
       }
 
       // Delete the Wysiwyg if exists
@@ -255,8 +261,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
         FileFolderManager.deleteFile(WysiwygController.getWysiwygPath(
             getComponentId(), id));
     } catch (RemoteException e) {
-      SilverTrace.error("quickinfo", "QuickInfoSessionController.remove('" + id
-          + "')", "root.REMOTE_EXCEPTION", e);
+      SilverTrace.error("quickinfo", "QuickInfoSessionController.remove('" + id + "')",
+          "root.REMOTE_EXCEPTION", e);
       throw e;
     }
   }
@@ -264,29 +270,30 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   public ResourceLocator getMessage() {
     try {
       String langue = getLanguage();
-      message = new ResourceLocator(
-          "com.stratelia.webactiv.quickinfo.multilang.quickinfo", langue);
+      message = new ResourceLocator("com.stratelia.webactiv.quickinfo.multilang.quickinfo", langue);
     } catch (Exception e) {
       SilverTrace.error("quickinfo", "NewsSessionControl.getMessage()",
           "quickinfo.CANT_GET_LANGUAGE", e);
-      if (message == null)
-        message = new ResourceLocator(
-            "com.stratelia.webactiv.quickinfo.multilang.quickinfo", "fr");
+      if (message == null) {
+        message = new ResourceLocator("com.stratelia.webactiv.quickinfo.multilang.quickinfo", "fr");
+      }
     }
     return message;
   }
 
   public ResourceLocator getSettings() {
-    if (settings == null)
-      settings = new ResourceLocator(
-          "com.stratelia.webactiv.quickinfo.settings.quickInfoSettings", "");
+    if (settings == null) {
+      settings =
+          new ResourceLocator("com.stratelia.webactiv.quickinfo.settings.quickInfoSettings", "");
+    }
     return settings;
   }
 
   public boolean isPdcUsed() {
     String value = getComponentParameterValue("usePdc");
-    if (value != null)
+    if (value != null) {
       return "yes".equals(value.toLowerCase());
+    }
     return false;
   }
 
@@ -308,28 +315,22 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       if (publicationBm != null)
         publicationBm.remove();
     } catch (RemoteException e) {
-      SilverTrace.error("quickInfoSession", "QuickInfoSessionController.close",
-          "", e);
+      SilverTrace.error("quickInfoSession", "QuickInfoSessionController.close", "", e);
     } catch (RemoveException e) {
-      SilverTrace.error("quickInfoSession", "QuickInfoSessionController.close",
-          "", e);
+      SilverTrace.error("quickInfoSession", "QuickInfoSessionController.close", "", e);
     }
   }
 
   public void index() throws RemoteException {
-    Collection infos = getQuickInfos();
-    PublicationDetail detail = null;
-    for (Iterator i = infos.iterator(); i.hasNext();) {
-      detail = (PublicationDetail) i.next();
-      getPublicationBm().createIndex(detail.getPK());
+    Collection<PublicationDetail> infos = getQuickInfos();
+    for (PublicationDetail publicationDetail : infos) {
+      getPublicationBm().createIndex(publicationDetail.getPK());
     }
   }
 
-  public Collection sortByDateDesc(List alPubDetails) {
-    Comparator comparator = QuickInfoDateComparatorDesc.comparator;
-
+  public Collection<PublicationDetail> sortByDateDesc(List<PublicationDetail> alPubDetails) {
+    Comparator<PublicationDetail> comparator = QuickInfoDateComparatorDesc.comparator;
     Collections.sort(alPubDetails, comparator);
-
     return alPubDetails;
   }
 

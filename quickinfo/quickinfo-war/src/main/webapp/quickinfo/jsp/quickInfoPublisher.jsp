@@ -27,6 +27,8 @@
 
 <%@ include file="checkQuickInfo.jsp" %>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%
   //Collection infos = Tous les quickInfos
   Collection infos = (Collection) request.getAttribute("infos");
@@ -45,9 +47,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Quick Info - Publieur</title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>
 <script type="text/javascript">

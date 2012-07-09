@@ -38,6 +38,7 @@ import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -57,17 +58,18 @@ public class QuickInfoContentManager implements ContentInterface {
   /**
    * Find all the SilverContent with the given list of SilverContentId
    * @param ids list of silverContentId to retrieve
-   * @param peasId the id of the instance
+   * @param componentId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
    * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
-  public List getSilverContentById(List ids, String peasId, String userId,
-      List userRoles) {
-    if (getContentManager() == null)
-      return new ArrayList();
+  public List<SilverContentInterface> getSilverContentById(List<Integer> ids,
+      String componentId, String sUserId, List<String> alContentUserRoles) {
+    if (getContentManager() == null) {
+      return new ArrayList<SilverContentInterface>();
+    }
 
-    return getHeaders(makePKArray(ids, peasId));
+    return getHeaders(makePKArray(ids, componentId));
   }
 
   public int getSilverObjectId(String pubId, String peasId) {
@@ -112,10 +114,9 @@ public class QuickInfoContentManager implements ContentInterface {
     int silverContentId = getContentManager().getSilverContentId(
         pubDetail.getPK().getId(), pubDetail.getPK().getComponentName());
     if (silverContentId != -1) {
-      SilverContentVisibility scv = new SilverContentVisibility(pubDetail
-          .getBeginDate(), pubDetail.getEndDate(), isVisible);
-      SilverTrace.info("quickinfo",
-          "QuickInfoContentManager.updateSilverContentVisibility()",
+      SilverContentVisibility scv =
+          new SilverContentVisibility(pubDetail.getBeginDate(), pubDetail.getEndDate(), isVisible);
+      SilverTrace.info("quickinfo", "QuickInfoContentManager.updateSilverContentVisibility()",
           "root.MSG_GEN_ENTER_METHOD", String.valueOf(scv));
       getContentManager().updateSilverContentVisibilityAttributes(scv,
           pubDetail.getPK().getComponentName(), silverContentId);
@@ -132,15 +133,11 @@ public class QuickInfoContentManager implements ContentInterface {
    */
   public void deleteSilverContent(Connection con, PublicationPK pubPK)
       throws ContentManagerException {
-    int contentId = getContentManager().getSilverContentId(pubPK.getId(),
-        pubPK.getComponentName());
+    int contentId = getContentManager().getSilverContentId(pubPK.getId(), pubPK.getComponentName());
     if (contentId != -1) {
-      SilverTrace.info("quickinfo",
-          "QuickInfoContentManager.deleteSilverContent()",
-          "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId()
-          + ", contentId = " + contentId);
-      getContentManager().removeSilverContent(con, contentId,
-          pubPK.getComponentName());
+      SilverTrace.info("quickinfo", "QuickInfoContentManager.deleteSilverContent()",
+          "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId() + ", contentId = " + contentId);
+      getContentManager().removeSilverContent(con, contentId, pubPK.getComponentName());
     }
   }
 
@@ -150,14 +147,14 @@ public class QuickInfoContentManager implements ContentInterface {
    * @param peasId the id of the instance
    * @return a list of publicationPK
    */
-  private ArrayList makePKArray(List idList, String peasId) {
-    ArrayList pks = new ArrayList();
+  private List<PublicationPK> makePKArray(List<Integer> idList, String peasId) {
+    List<PublicationPK> pks = new ArrayList<PublicationPK>();
     PublicationPK pubPK = null;
-    Iterator iter = idList.iterator();
+    Iterator<Integer> iter = idList.iterator();
     String id = null;
     // for each silverContentId, we get the corresponding publicationId
     while (iter.hasNext()) {
-      int contentId = ((Integer) iter.next()).intValue();
+      int contentId = iter.next().intValue();
       try {
         id = getContentManager().getInternalContentId(contentId);
         pubPK = new PublicationPK(id, "useless", peasId);
@@ -173,15 +170,15 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of publicationPK
-   * @param ids a list of publicationPK
+   * @param pubPKs a list of publicationPK
    * @return a list of publicationDetail
    */
-  private List getHeaders(List ids) {
+  private List getHeaders(List<PublicationPK> pubPKs) {
     PublicationDetail pubDetail = null;
-    ArrayList headers = new ArrayList();
+    List<PublicationDetail> headers = new ArrayList<PublicationDetail>();
     try {
-      ArrayList publicationDetails = (ArrayList) getPublicationBm()
-          .getPublications(ids);
+      List<PublicationDetail> publicationDetails =
+          new ArrayList<PublicationDetail>(getPublicationBm().getPublications(pubPKs));
       for (int i = 0; i < publicationDetails.size(); i++) {
         pubDetail = (PublicationDetail) publicationDetails.get(i);
         pubDetail.setIconUrl(CONTENT_ICON);
@@ -197,14 +194,11 @@ public class QuickInfoContentManager implements ContentInterface {
     if (currentPublicationBm == null) {
       try {
         PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class);
+            .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
         currentPublicationBm = publicationBmHome.create();
       } catch (Exception e) {
-        throw new PublicationRuntimeException(
-            "QuickInfoContentManager.getPublicationBm()",
-            PublicationRuntimeException.ERROR,
-            "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new PublicationRuntimeException("QuickInfoContentManager.getPublicationBm()",
+            PublicationRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
     return currentPublicationBm;
@@ -215,8 +209,7 @@ public class QuickInfoContentManager implements ContentInterface {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("quickinfo",
-            "QuickInfoContentManager.getContentManager()",
+        SilverTrace.fatal("quickinfo", "QuickInfoContentManager.getContentManager()",
             "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }

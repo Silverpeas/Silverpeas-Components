@@ -30,24 +30,23 @@
 <%@ page import="com.silverpeas.util.EncodeHelper" %>
 
 <%
-  	PublicationDetail quickInfoDetail = (PublicationDetail) request.getAttribute("info");
-  	String pubId   = (String)request.getAttribute("Id");
-	
-  	String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("quickinfo", quickinfo.getSpaceId(), quickinfo.getComponentId());
+PublicationDetail quickInfoDetail = (PublicationDetail) request.getAttribute("info");
+String pubId   = (String)request.getAttribute("Id");
 
-  	boolean isNewSubscription = true;
-  	String codeHtml = "";
-	if (pubId != null && pubId != "-1") {
-       	isNewSubscription = false;
-		if (quickInfoDetail.getWysiwyg() != null && !"".equals(quickInfoDetail.getWysiwyg())) {
-	       codeHtml = quickInfoDetail.getWysiwyg();
-		} else if (quickInfoDetail.getDescription() != null) {
-	       codeHtml = EncodeHelper.javaStringToHtmlParagraphe(quickInfoDetail.getDescription());
-		}
-  	}
+String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("quickinfo", quickinfo.getSpaceId(), quickinfo.getComponentId());
+
+boolean isNewSubscription = true;
+String codeHtml = "";
+if (pubId != null && pubId != "-1") {
+ 	isNewSubscription = false;
+	if (quickInfoDetail.getWysiwyg() != null && !"".equals(quickInfoDetail.getWysiwyg())) {
+    codeHtml = quickInfoDetail.getWysiwyg();
+	} else if (quickInfoDetail.getDescription() != null) {
+    codeHtml = EncodeHelper.javaStringToHtmlParagraphe(quickInfoDetail.getDescription());
+	}
+}
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>QuickInfo - Edition</title>
@@ -61,9 +60,9 @@ function isCorrectForm() {
  	var errorMsg = "";
  	var errorNb = 0;
  	var beginDate = $("#BeginDate").val();
-    var endDate = $("#EndDate").val();
-    var yearBegin = extractYear(beginDate, '<%=quickinfo.getLanguage()%>');
-    var monthBegin = extractMonth(beginDate, '<%=quickinfo.getLanguage()%>');
+  var endDate = $("#EndDate").val();
+  var yearBegin = extractYear(beginDate, '<%=quickinfo.getLanguage()%>');
+  var monthBegin = extractMonth(beginDate, '<%=quickinfo.getLanguage()%>');
 	var dayBegin = extractDay(beginDate, '<%=quickinfo.getLanguage()%>');
 	var yearEnd = extractYear(endDate, '<%=quickinfo.getLanguage()%>'); 
 	var monthEnd = extractMonth(endDate, '<%=quickinfo.getLanguage()%>');
@@ -153,27 +152,27 @@ $(document).ready(function() {
 <body id="quickinfo">
 <div id="<%=componentId %>">
 <%
-    	Window window = gef.getWindow();
-        BrowseBar browseBar = window.getBrowseBar();
-       	browseBar.setPath(resources.getString("edition"));
+	Window window = gef.getWindow();
+  BrowseBar browseBar = window.getBrowseBar();
+ 	browseBar.setPath(resources.getString("edition"));
 			
-        if (quickInfoDetail != null) {
-        	OperationPane operationPane = window.getOperationPane();
-            operationPane.addOperation(m_context+"/util/icons/quickInfo_to_del.gif", resources.getString("suppression"), "javascript:onClick=quickInfoDeleteConfirm()");
-            operationPane.addOperation(m_context+"/util/icons/copy.gif", generalMessage.getString("GML.copy"), "javascript:onClick=ClipboardCopyOne()");
-        }
+  if (quickInfoDetail != null) {
+  	OperationPane operationPane = window.getOperationPane();
+      operationPane.addOperation(m_context+"/util/icons/quickInfo_to_del.gif", resources.getString("suppression"), "javascript:onClick=quickInfoDeleteConfirm()");
+      operationPane.addOperation(m_context+"/util/icons/copy.gif", generalMessage.getString("GML.copy"), "javascript:onClick=ClipboardCopyOne()");
+  }
 
-        out.println(window.printBefore());
+  out.println(window.printBefore());
 
-        TabbedPane tabbedPane = gef.getTabbedPane();
-        tabbedPane.addTab(resources.getString("GML.head"), routerUrl + "quickInfoEdit.jsp?Action=changePage&amp;Id="+pubId+"&amp;page=1",
-            quickinfo.getPageId() == QuickInfoSessionController.PAGE_HEADER, !isNewSubscription );
-        if (!isNewSubscription && quickinfo.isPdcUsed()) {
-            tabbedPane.addTab( resources.getString("GML.PDC") , routerUrl + "quickInfoEdit.jsp?Action=changePage&amp;Id="+pubId
-            +"&amp;page=2", quickinfo.getPageId() != QuickInfoSessionController.PAGE_HEADER, true);
-        }
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resources.getString("GML.head"), routerUrl + "quickInfoEdit.jsp?Action=changePage&amp;Id="+pubId+"&amp;page=1",
+      quickinfo.getPageId() == QuickInfoSessionController.PAGE_HEADER, !isNewSubscription );
+  if (!isNewSubscription && quickinfo.isPdcUsed()) {
+      tabbedPane.addTab( resources.getString("GML.PDC") , routerUrl + "quickInfoEdit.jsp?Action=changePage&amp;Id="+pubId
+      +"&amp;page=2", quickinfo.getPageId() != QuickInfoSessionController.PAGE_HEADER, true);
+  }
 
-        out.println(tabbedPane.print());
+  out.println(tabbedPane.print());
 %>
 <form name="quickInfoEditForm" action="quickInfoEdit" method="post">
 <view:frame>
