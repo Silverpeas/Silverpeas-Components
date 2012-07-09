@@ -35,6 +35,8 @@ import com.stratelia.webactiv.util.exception.*;
  */
 public class InfoLetterException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = 166786757597185875L;
+
   /**
    * Constructor declaration
    * @param callingClass
@@ -54,8 +56,7 @@ public class InfoLetterException extends SilverpeasRuntimeException {
    * @param extraParams
    * @see
    */
-  public InfoLetterException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public InfoLetterException(String callingClass, int errorLevel, String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
@@ -67,8 +68,7 @@ public class InfoLetterException extends SilverpeasRuntimeException {
    * @param nested
    * @see
    */
-  public InfoLetterException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public InfoLetterException(String callingClass, int errorLevel, String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
@@ -81,8 +81,8 @@ public class InfoLetterException extends SilverpeasRuntimeException {
    * @param nested
    * @see
    */
-  public InfoLetterException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public InfoLetterException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

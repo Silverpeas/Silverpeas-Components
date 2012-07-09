@@ -86,9 +86,9 @@ public class InfoLetterInstanciator extends SQLRequest implements ComponentsInst
     } finally {
       try {
         stmt.close();
-      } catch (SQLException err_closeStatement) {
+      } catch (SQLException exCloseStatement) {
         SilverTrace.error("infoLetter", "InfoLetterInstanciator.deleteDataOfInstance()",
-            "root.EX_RESOURCE_CLOSE_FAILED", "", err_closeStatement);
+            "root.EX_RESOURCE_CLOSE_FAILED", "", exCloseStatement);
       }
     }
   }

@@ -25,6 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "javascript:window.close();");
@@ -42,8 +45,7 @@
 		<%
 	}
 %>
-<html>
-<head>
+
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript">
@@ -77,7 +79,7 @@ function SubmitWithVerif(verifParams)
 
 </script>
 </head>
-<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF">
 
 <%
 out.println(window.printBefore());
@@ -87,8 +89,8 @@ out.println(frame.printBefore());
 <%
 out.println(board.printBefore());
 %>
-<form name="csvFileForm" action="ImportEmailsCsv" method="POST" enctype="multipart/form-data">
-    <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
+<form name="csvFileForm" action="ImportEmailsCsv" method="post" enctype="multipart/form-data">
+    <table cellpadding=5 cellspacing=0 border=0 width="100%">
 			<% if (importOk)
 			{ %>
 				<tr>
@@ -110,11 +112,11 @@ out.println(board.printBefore());
                 <%=resource.getString("GML.csvFile") %> :
             </td>
             <td align=left valign="baseline">
-                <input type="file" name="file_upload" size="50" maxlength="50" VALUE="">&nbsp;<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"> 
+                <input type="file" name="file_upload" size="50" maxlength="50" value=""/>&nbsp;<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/> 
             </td>
         </tr>
         <tr> 
-            <td colspan="2">(<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"> 
+            <td colspan="2">(<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/> 
       : <%=resource.getString("GML.requiredField")%>)</td>
         </tr>
 		<% } %>

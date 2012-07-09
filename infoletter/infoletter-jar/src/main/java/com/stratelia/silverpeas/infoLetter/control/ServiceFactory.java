@@ -29,10 +29,8 @@
 
 package com.stratelia.silverpeas.infoLetter.control;
 
-// Bibliotheques
-
-import com.stratelia.silverpeas.infoLetter.implementation.*;
-import com.stratelia.silverpeas.infoLetter.model.*;
+import com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager;
+import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 
 /**
  * Cette classe est reponsable de la fabrication des services.
@@ -41,7 +39,6 @@ import com.stratelia.silverpeas.infoLetter.model.*;
  */
 public class ServiceFactory {
 
-  // Membres
 
   /**
    * Constructeur sans parametres
@@ -51,14 +48,9 @@ public class ServiceFactory {
   public ServiceFactory() {
   }
 
-  // Methodes
 
   public static InfoLetterDataInterface getInfoLetterData() {
     return new InfoLetterDataManager();
   }
 
 }
-
-/*************************
- *** Fin du fichier ***
- ************************/

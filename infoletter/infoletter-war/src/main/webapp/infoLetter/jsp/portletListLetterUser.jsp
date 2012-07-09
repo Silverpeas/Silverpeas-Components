@@ -25,15 +25,16 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function goto_jsp(jsp, param)
 {
   //    alert("../../RinfoLetter/<%=spaceId%>_<%=componentId%>/"+jsp+"?"+param);
@@ -47,7 +48,7 @@ function openViewParution(par) {
 }
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "javascript:goto_jsp('Main','')");
@@ -58,12 +59,11 @@ if (isSuscriber) operationPane.addOperation(resource.getIcon("infoLetter.desabon
 else operationPane.addOperation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");	
 operationPane.addLine();	
 
-	out.println(window.printBefore());
- 
-	//Instanciation du cadre avec le view generator
+out.println(window.printBefore());
 
-    
-	out.println(frame.printBefore());	
+//Instanciation du cadre avec le view generator
+  
+out.println(frame.printBefore());	
 	
 %>
 
@@ -79,7 +79,7 @@ operationPane.addLine();
 						<span class="txtlibform"><%=resource.getString("infoLetter.name")%> :</span>
 					</td>
 					<td  class="intfdcolor4" valign="baseline" align=left>
-					<input type="text" name="name" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterName") %>" readonly>
+					<input type="text" name="name" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterName") %>" readonly="readonly"/>
 					</td>
 				</tr>
 				<tr align=center> 
@@ -88,7 +88,7 @@ operationPane.addLine();
 						<span class="txtlibform"><%=resource.getString("GML.description")%> :</span>
 					</td>
 					<td  class="intfdcolor4" valign="baseline" align=left>
-					<textarea cols="49" rows="4" name="description" readonly><%= (String) request.getAttribute("letterDescription") %></textarea>
+					<textarea cols="49" rows="4" name="description" readonly="readonly"><%= (String) request.getAttribute("letterDescription") %></textarea>
 					</td>
 				</tr>
 				<tr align=center> 
@@ -97,44 +97,44 @@ operationPane.addLine();
 						<span class="txtlibform"><%=resource.getString("infoLetter.frequence")%> :</span>
 					</td>
 					<td  class="intfdcolor4" valign="baseline" align=left>
-					<input type="text" name="frequence" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterFrequence") %>" readonly>
+					<input type="text" name="frequence" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterFrequence") %>" readonly="readonly"/>
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 </table>
-</CENTER>
-<br>
+</center>
+<br/>
 <%
 // Recuperation de la liste des parutions
-Vector publications = (Vector) request.getAttribute("listParutions");
+List<InfoLetterPublication> publications = (List<InfoLetterPublication>) request.getAttribute("listParutions");
 int i=0;
-				ArrayPane arrayPane = gef.getArrayPane("InfoLetter", "Main", request, session);
-		        //arrayPane.setVisibleLineNumber(10);
-					
-				arrayPane.addArrayColumn(resource.getString(""));
-				arrayPane.addArrayColumn(resource.getString("infoLetter.name"));
-				arrayPane.addArrayColumn(resource.getString("GML.date"));
-				// ArrayColumn arrayColumn = arrayPane.addArrayColumn(resource.getString("GML.operation"));
-				// arrayColumn.setSortable(false);
+ArrayPane arrayPane = gef.getArrayPane("InfoLetter", "Main", request, session);
+//arrayPane.setVisibleLineNumber(10);
+	
+arrayPane.addArrayColumn(resource.getString(""));
+arrayPane.addArrayColumn(resource.getString("infoLetter.name"));
+arrayPane.addArrayColumn(resource.getString("GML.date"));
+// ArrayColumn arrayColumn = arrayPane.addArrayColumn(resource.getString("GML.operation"));
+// arrayColumn.setSortable(false);
 if (publications.size()>0) {
 	for (i = 0; i < publications.size(); i++) {
-						InfoLetterPublication pub = (InfoLetterPublication) publications.elementAt(i);
-						if (pub._isValid()) {
-							ArrayLine arrayLine = arrayPane.addArrayLine();
-						
-							IconPane iconPane1 = gef.getIconPane();
-							Icon debIcon = iconPane1.addIcon();
-							debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "#");
-							arrayLine.addArrayCellIconPane(iconPane1);	
-						
-							arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(pub.getTitle()), "javascript:goto_jsp('View','parution=" + pub.getPK().getId() + "');");
-						
-							java.util.Date date = DateUtil.parse(pub.getParutionDate());
-							ArrayCellText cell = arrayLine.addArrayCellText(resource.getOutputDate(date));
-							cell.setCompareOn(date);
-						}
+		InfoLetterPublication pub = (InfoLetterPublication) publications.get(i);
+		if (pub._isValid()) {
+			ArrayLine arrayLine = arrayPane.addArrayLine();
+		
+			IconPane iconPane1 = gef.getIconPane();
+			Icon debIcon = iconPane1.addIcon();
+			debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "#");
+			arrayLine.addArrayCellIconPane(iconPane1);	
+		
+			arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:goto_jsp('View','parution=" + pub.getPK().getId() + "');");
+		
+			java.util.Date date = DateUtil.parse(pub.getParutionDate());
+			ArrayCellText cell = arrayLine.addArrayCellText(resource.getOutputDate(date));
+			cell.setCompareOn(date);
+		}
 	}
 }
 				
@@ -143,7 +143,7 @@ if (publications.size()>0) {
 		
 %>
 <form name="viewParution" action="View" method="post">
-	<input type="hidden" name="parution" value="">
+	<input type="hidden" name="parution" value=""/>
 </form>
 
 <% // Ici se termine le code de la page %>
@@ -152,6 +152,6 @@ if (publications.size()>0) {
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 

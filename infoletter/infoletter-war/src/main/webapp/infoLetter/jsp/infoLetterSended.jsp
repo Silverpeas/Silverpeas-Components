@@ -30,24 +30,27 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-</HEAD>
+</head>
 
 <%
 	String hostSpaceName = (String) request.getAttribute("SpaceName");
 	String hostComponentName = (String) request.getAttribute("ComponentName");
   String[] emailErrors = (String[])request.getAttribute("EmailErrors");
 	String returnUrl = "Accueil";
-  if (request.getAttribute("ReturnUrl") != null)
+  if (request.getAttribute("ReturnUrl") != null) {
 	  returnUrl = (String) request.getAttribute("ReturnUrl");
+  }
 %>
 
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+<body bgcolor="#FFFFFF">
 
 <%
 	browseBar.setDomainName(hostSpaceName);
@@ -61,35 +64,35 @@ out.println(gef.getLookStyleSheet());
 Button closeButton = (Button) gef.getFormButton(resource.getString("GML.ok"), returnUrl, false);
 %>
 
-<TABLE ALIGN=CENTER CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
+<table align="center" cellpadding="2" cellspacing="0" border="0" width="98%" class="intfdcolor">
 	<tr><td>
-		<TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
+		<table align="center" cellpadding="5" cellspacing="0" border="0" width="100%" class="intfdcolor4">
 			<tr><td>
-				<TABLE border=0 cellPadding=1 cellSpacing=1 align="center">
-					<TR>
-						<TD align="left" class="textePetitBold"><%=Encode.javaStringToHtmlString(resource.getString("infoLetter.sended"))%></TD>
-					</TR>
+				<table border="0" cellpadding="1" cellspacing="1" align="center">
+					<tr>
+						<td align="left" class="textePetitBold"><%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.sended"))%></td>
+					</tr>
                     <% 
                         if (emailErrors.length > 0)
                         {
                     %>
-					<TR><td><br></td>
-					</TR>
-					<TR>
-						<TD align="left"><%=Encode.javaStringToHtmlString(resource.getString("infoLetter.emailErrors"))%></TD>
-					</TR>
+					<tr><td><br/></td>
+					</tr>
+					<tr>
+						<td align="left"><%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.emailErrors"))%></td>
+					</tr>
                     <% 
                             for (int i = 0; i < emailErrors.length; i++)
                             {
                     %>
-					<TR>
-						<TD align="left"><%=Encode.javaStringToHtmlString(emailErrors[i])%></TD>
-					</TR>
+					<tr>
+						<td align="left"><%=EncodeHelper.javaStringToHtmlString(emailErrors[i])%></td>
+					</tr>
                     <% 
                             }
                         }
                     %>
-				</TABLE>
+				</table>
 			</td></tr>
 		</table>
 	</td></tr>
@@ -99,10 +102,10 @@ Button closeButton = (Button) gef.getFormButton(resource.getString("GML.ok"), re
 	buttonPane.addButton(closeButton);
 	buttonPane.setHorizontalPosition();
 	out.println(frame.printMiddle());
-	out.println("<BR><center>"+buttonPane.print()+"<br></center>");
+	out.println("<br/><center>"+buttonPane.print()+"<br/></center>");
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 
-</BODY>
-</HTML>
+</body>
+</html>

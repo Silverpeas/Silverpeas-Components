@@ -23,12 +23,20 @@
  */
 package com.stratelia.silverpeas.infoLetter.implementation;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
+import com.stratelia.silverpeas.infoLetter.model.InternalSubscribers;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -44,17 +52,8 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Vector;
-
 /**
  * Class declaration
- *
  * @author
  */
 public class InfoLetterDataManager implements InfoLetterDataInterface {
@@ -64,8 +63,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   private final static String TableInternalEmails = "SC_IL_IntSus";
 
   // Membres
-  private SilverpeasBeanDAO infoLetterDAO;
-  private SilverpeasBeanDAO infoLetterPublicationDAO;
+  private SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
+  private SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
   private InfoLetterContentManager infoLetterContentManager;
 
   // Constructeur
@@ -79,23 +78,25 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage());
+          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
 
-  // Methodes de l'interface InfoLetterDataInterface
+  /**
+   * Implementation of InfoLetterDataInterface interface
+   */
 
   // Creation d'une lettre d'information
   @Override
-  public void createInfoLetter(InfoLetter ie) {
+  public void createInfoLetter(InfoLetter il) {
     try {
 
-      WAPrimaryKey pk = infoLetterDAO.add(ie);
-      ie.setPK(pk);
+      WAPrimaryKey pk = infoLetterDAO.add(il);
+      il.setPK(pk);
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage());
+          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
 
@@ -107,7 +108,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage());
+          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
 
@@ -119,54 +120,52 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage());
+          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
   }
 
   // Recuperation de la liste des lettres
-  public Vector getInfoLetters(String instanceId) {
-    Vector retour = new Vector();
+  public List<InfoLetter> getInfoLetters(String instanceId) {
+    String whereClause = "instanceId = '" + instanceId + "'";
+    List<InfoLetter> infoLetters = new ArrayList<InfoLetter>();
     try {
-      String whereClause = "instanceId = '" + instanceId + "'";
-      retour = new Vector(infoLetterDAO.findByWhereClause(new IdPK(),
-          whereClause));
-    } catch (PersistenceException pe) {
-      throw new InfoLetterException(
-          "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage());
-    }
-    return retour;
-  }
-
-  // Recuperation de la liste des publications
-  public Vector getInfoLetterPublications(WAPrimaryKey letterPK) {
-    Vector retour = new Vector();
-    try {
-      InfoLetter letter = getInfoLetter(letterPK);
-      String whereClause = "instanceId = '" + letter.getInstanceId()
-          + "' and letterId = " + letterPK.getId();
-      retour = new Vector(infoLetterPublicationDAO.findByWhereClause(letterPK,
-          whereClause));
+      infoLetters =
+          new ArrayList<InfoLetter>(infoLetterDAO.findByWhereClause(new IdPK(), whereClause));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
-    return retour;
+    return infoLetters;
+  }
+
+  // Recuperation de la liste des publications
+  public List<InfoLetterPublication> getInfoLetterPublications(WAPrimaryKey letterPK) {
+
+    List<InfoLetterPublication> publications = new ArrayList<InfoLetterPublication>();
+    try {
+      InfoLetter letter = getInfoLetter(letterPK);
+      String whereClause =
+          "instanceId = '" + letter.getInstanceId() + "' and letterId = " + letterPK.getId();
+      publications =
+          new ArrayList<InfoLetterPublication>(infoLetterPublicationDAO.findByWhereClause(letterPK,
+              whereClause));
+    } catch (PersistenceException pe) {
+      throw new InfoLetterException(
+          "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
+          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
+    }
+    return publications;
   }
 
   // Creation d'une publication
-  public void createInfoLetterPublication(InfoLetterPublicationPdC ilp,
-      String userId) {
-    SilverTrace.info("infoLetter",
-        "InfoLetterDataManager.createInfoLetterPublication()",
-        "root.MSG_GEN_ENTER_METHOD", "ilp = " + ilp.toString() + " userId="
-        + userId);
+  public void createInfoLetterPublication(InfoLetterPublicationPdC ilp, String userId) {
+    SilverTrace.info("infoLetter", "InfoLetterDataManager.createInfoLetterPublication()",
+        "root.MSG_GEN_ENTER_METHOD", "ilp = " + ilp.toString() + " userId=" + userId);
     Connection con = openConnection();
 
     try {
-      WAPrimaryKey pk = infoLetterPublicationDAO.add(con,
-          (InfoLetterPublication) ilp);
+      WAPrimaryKey pk = infoLetterPublicationDAO.add(con, (InfoLetterPublication) ilp);
       ilp.setPK(pk);
       infoLetterContentManager.createSilverContent(con, ilp, userId);
     } catch (Exception pe) {
@@ -195,34 +194,35 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     }
   }
 
-  // Suppression d'une publication
+  /*
+   * (non-Javadoc)
+   * @see
+   * com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface#deleteInfoLetterPublication
+   * (com.stratelia.webactiv.util.WAPrimaryKey, java.lang.String)
+   */
   public void deleteInfoLetterPublication(WAPrimaryKey pk, String componentId) {
     Connection con = openConnection();
     try {
       infoLetterPublicationDAO.remove(pk);
-      infoLetterContentManager
-          .deleteSilverContent(con, pk.getId(), componentId);
+      infoLetterContentManager.deleteSilverContent(con, pk.getId(), componentId);
     } catch (Exception pe) {
       try {
         if (con != null) {
           con.rollback();
         }
       } catch (Exception e) {
-        SilverTrace.error("infoLetter",
-            "InfoLetterDataManager.deleteInfoLetterPublication()",
+        SilverTrace.error("infoLetter", "InfoLetterDataManager.deleteInfoLetterPublication()",
             "root.EX_ERR_ROLLBACK", e);
       }
-      throw new InfoLetterException(
-          "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage());
+      throw new InfoLetterException("InfoLetterDataManager.createInfoLetterPublication()",
+          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     } finally {
       try {
         if (con != null) {
           con.close();
         }
       } catch (Exception e) {
-        SilverTrace.error("infoLetter",
-            "InfoLetterDataManager.createInfoLetterPublication()",
+        SilverTrace.error("infoLetter", "InfoLetterDataManager.createInfoLetterPublication()",
             "root.EX_CONNECTION_CLOSE_FAILED", e);
       }
     }
@@ -248,11 +248,11 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   public InfoLetter getInfoLetter(WAPrimaryKey letterPK) {
     InfoLetter retour = null;
     try {
-      retour = (InfoLetter) infoLetterDAO.findByPrimaryKey(letterPK);
+      retour = infoLetterDAO.findByPrimaryKey(letterPK);
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage());
+          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
     return retour;
   }
@@ -261,13 +261,11 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK) {
     InfoLetterPublicationPdC retour = null;
     try {
-      retour = new InfoLetterPublicationPdC(
-          (InfoLetterPublication) infoLetterPublicationDAO
-              .findByPrimaryKey(publiPK));
+      retour = new InfoLetterPublicationPdC(infoLetterPublicationDAO.findByPrimaryKey(publiPK));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage());
+          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
     return retour;
   }
@@ -302,20 +300,19 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
             infoLetter, infoLetter.getCreatorId());
       }
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager.getSilverObjectId()",
-          SilverpeasRuntimeException.ERROR,
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      throw new InfoLetterException("InfoLetterDataManager.getSilverObjectId()",
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
     }
     return silverObjectId;
   }
 
-  // Recuperation de la liste des abonnes internes
-  public Vector getInternalSuscribers(WAPrimaryKey letterPK) {
+  /**
+   * @see InfoLetterDataInterface
+   */
+  public InternalSubscribers getInternalSuscribers(WAPrimaryKey letterPK) {
     Connection con = openConnection();
-    Vector retour = new Vector();
-    Vector users = new Vector();
-    Vector groups = new Vector();
+    List<UserDetail> users = new ArrayList<UserDetail>();
+    List<Group> groups = new ArrayList<Group>();
     Statement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -323,8 +320,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       String selectQuery = "select * from " + TableInternalEmails;
       selectQuery += " where instanceId = '" + letter.getInstanceId() + "' ";
       selectQuery += " and letter = " + letterPK.getId() + " ";
-      SilverTrace.info("infoLetter",
-          "InfoLetterDataManager.getInternalSuscribers()",
+      SilverTrace.info("infoLetter", "InfoLetterDataManager.getInternalSuscribers()",
           "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
       selectStmt = con.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
@@ -339,8 +335,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
             groups.add(AdminReference.getAdminService().getGroup(id));
           }
         } catch (AdminException ae) {
-          SilverTrace.error("infoLetter",
-              "InfoLetterDataManager.getInternalSuscribers()",
+          SilverTrace.error("infoLetter", "InfoLetterDataManager.getInternalSuscribers()",
               "root.MSG_GEN_PARAM_VALUE", "id = " + id);
         }
       }
@@ -350,7 +345,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, e.getMessage());
+          SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     } finally {
       try {
         if (rs != null) {
@@ -365,66 +360,60 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       } catch (Exception e) {
         throw new InfoLetterException(
             "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-            SilverpeasRuntimeException.FATAL, e.getMessage());
+            SilverpeasRuntimeException.FATAL, e.getMessage(), e);
       }
     }
-    retour.add(groups);
-    retour.add(users);
-    return retour;
+    return new InternalSubscribers(users, groups);
   }
 
   // Mise a jour de la liste des abonnes internes
-  public void setInternalSuscribers(WAPrimaryKey letterPK, Vector abonnes) {
+  public void setInternalSuscribers(WAPrimaryKey letterPK, InternalSubscribers internalSubscribers) {
     Connection con = openConnection();
     Statement stmt = null;
-    UserDetail[] t_users = (UserDetail[]) abonnes.elementAt(1);
-    Group[] t_groups = (Group[]) abonnes.elementAt(0);
-    String query = "";
-    int i = 0;
+    List<UserDetail> users = internalSubscribers.getUsers();
+    List<Group> groups = internalSubscribers.getGroups();
     try {
       InfoLetter letter = getInfoLetter(letterPK);
-      query = "delete from " + TableInternalEmails;
-      query += " where instanceId = '" + letter.getInstanceId() + "' ";
-      query += " and letter = " + letterPK.getId() + " ";
+      String deleteQuery = "DELETE FROM " + TableInternalEmails;
+      deleteQuery += " WHERE instanceId = '" + letter.getInstanceId() + "' ";
+      deleteQuery += " AND letter = " + letterPK.getId() + " ";
       SilverTrace.info("infoLetter",
           "InfoLetterDataManager.setInternalSuscribers()",
-          "root.MSG_GEN_PARAM_VALUE", "query = " + query);
+          "root.MSG_GEN_PARAM_VALUE", "query = " + deleteQuery);
       stmt = con.createStatement();
-      stmt.executeUpdate(query);
-      if (t_groups.length > 0) {
-        for (i = 0; i < t_groups.length; i++) {
-          query = "insert into " + TableInternalEmails
-              + "(letter, userId, instanceId)";
-          query += " values (" + letterPK.getId() + ", 'G"
-              + t_groups[i].getId() + "', ";
-          query += "'" + letter.getInstanceId() + "')";
-          SilverTrace.info("infoLetter",
-              "InfoLetterDataManager.setInternalSuscribers()",
-              "root.MSG_GEN_PARAM_VALUE", "query = " + query);
+      stmt.executeUpdate(deleteQuery);
+      if (!groups.isEmpty()) {
+        for (Group group : groups) {
+          StringBuilder queryBuilder = new StringBuilder();
+          queryBuilder
+              .append("INSERT INTO " + TableInternalEmails + "(letter, userId, instanceId)");
+          queryBuilder.append(" VALUES (" + letterPK.getId() + ", 'G" + group.getId() + "', ");
+          queryBuilder.append("'" + letter.getInstanceId() + "')");
+          SilverTrace.info("infoLetter", "InfoLetterDataManager.setInternalSuscribers()",
+              "root.MSG_GEN_PARAM_VALUE", "query = " + queryBuilder.toString());
           stmt = con.createStatement();
-          stmt.executeUpdate(query);
+          stmt.executeUpdate(queryBuilder.toString());
         }
       }
-      if (t_users.length > 0) {
-        for (i = 0; i < t_users.length; i++) {
-          query = "insert into " + TableInternalEmails
-              + "(letter, userId, instanceId)";
-          query += " values (" + letterPK.getId() + ", 'U" + t_users[i].getId()
-              + "', ";
-          query += "'" + letter.getInstanceId() + "')";
-          SilverTrace.info("infoLetter",
-              "InfoLetterDataManager.setInternalSuscribers()",
-              "root.MSG_GEN_PARAM_VALUE", "query = " + query);
+      if (!users.isEmpty()) {
+        for (UserDetail userDetail : users) {
+          StringBuilder queryBuilder = new StringBuilder();
+          queryBuilder.append("INSERT INTO ").append(TableInternalEmails)
+              .append("(letter, userId, instanceId)");
+          queryBuilder.append(" VALUES (").append(letterPK.getId()).append(", 'U")
+              .append(userDetail.getId()).append("', ");
+          queryBuilder.append("'").append(letter.getInstanceId()).append("')");
+          SilverTrace.info("infoLetter", "InfoLetterDataManager.setInternalSuscribers()",
+              "root.MSG_GEN_PARAM_VALUE", "query = " + queryBuilder.toString());
           stmt = con.createStatement();
-          stmt.executeUpdate(query);
+          stmt.executeUpdate(queryBuilder.toString());
         }
       }
       // stmt.close();
       // con.close();
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, e.getMessage());
+      throw new InfoLetterException("InfoLetterDataManager.setInternalSuscribers()",
+          SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     } finally {
       try {
         if (stmt != null) {
@@ -434,9 +423,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
           con.close();
         }
       } catch (Exception e) {
-        throw new InfoLetterException(
-            "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-            SilverpeasRuntimeException.FATAL, e.getMessage());
+        throw new InfoLetterException("InfoLetterDataManager.setInternalSuscribers()",
+            SilverpeasRuntimeException.FATAL, "error when closing connection :" + e.getMessage(), e);
       }
     }
   }
@@ -466,7 +454,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, e.getMessage());
+          SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     } finally {
       try {
         if (rs != null) {
@@ -481,7 +469,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       } catch (Exception e) {
         throw new InfoLetterException(
             "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-            SilverpeasRuntimeException.FATAL, e.getMessage());
+            SilverpeasRuntimeException.FATAL, e.getMessage(), e);
       }
     }
 
@@ -529,7 +517,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       } catch (Exception e) {
         throw new InfoLetterException(
             "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-            SilverpeasRuntimeException.FATAL, e.getMessage());
+            SilverpeasRuntimeException.FATAL, e.getMessage(), e);
       }
     }
   }
@@ -564,7 +552,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, e.getMessage());
+          SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     } finally {
       try {
         if (stmt != null) {
@@ -576,7 +564,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       } catch (Exception e) {
         throw new InfoLetterException(
             "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-            SilverpeasRuntimeException.FATAL, e.getMessage());
+            SilverpeasRuntimeException.FATAL, e.getMessage(), e);
       }
     }
   }
@@ -606,7 +594,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, e.getMessage());
+          SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     } finally {
       try {
         if (rs != null) {
@@ -621,7 +609,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       } catch (Exception e) {
         throw new InfoLetterException(
             "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-            SilverpeasRuntimeException.FATAL, e.getMessage());
+            SilverpeasRuntimeException.FATAL, e.getMessage(), e);
       }
     }
     return retour;
@@ -637,14 +625,13 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-          SilverpeasRuntimeException.ERROR, e.getMessage());
+          SilverpeasRuntimeException.ERROR, e.getMessage(), e);
     }
   }
 
   /**
-   * Ouverture de la connection vers la source de donnees
-   *
-   * @return Connection la connection
+   * open connection
+   * @return Connection
    * @throws InfoLetterException
    * @author frageade
    * @since 26 Fevrier 2002
@@ -654,9 +641,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     try {
       con = DBUtil.makeConnection(JNDINames.INFOLETTER_DATASOURCE);
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, e.getMessage());
+      throw new InfoLetterException("InfoLetterDataManager.openConnection()",
+          SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     }
     return con;
   }

@@ -25,33 +25,34 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
-out.println(gef.getLookStyleSheet());
+  out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function openViewParution(par) {
     document.viewParution.parution.value = par;
     document.viewParution.submit();
 }
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Accueil");
 	
 boolean showHeader = ( (Boolean) request.getAttribute("showHeader") ).booleanValue();
 boolean isSuscriber = ((String)request.getAttribute("userIsSuscriber")).equals("true");
-if (isSuscriber) 
+if (isSuscriber) {
 	operationPane.addOperation(resource.getIcon("infoLetter.desabonner"), resource.getString("infoLetter.desabonner"), "UnsuscribeMe");
-else 
+} else {
 	operationPane.addOperation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");	
-
+}
 	out.println(window.printBefore());
 	out.println(frame.printBefore());	
 %>
@@ -76,14 +77,14 @@ if (showHeader)
 				<td align=left><%= (String) request.getAttribute("letterFrequence") %></td>
 			</tr>
 		</table>
-</CENTER>
+</center>
 <%
 	out.println(board.printAfter());
-	out.println("<br>");
+	out.println("<br/>");
 }
 
 // Recuperation de la liste des parutions
-Vector publications = (Vector) request.getAttribute("listParutions");
+List<InfoLetterPublication> publications = (List<InfoLetterPublication>) request.getAttribute("listParutions");
 int i=0;
 				ArrayPane arrayPane = gef.getArrayPane("InfoLetter", "Main", request, session);
 		        //arrayPane.setVisibleLineNumber(10);
@@ -99,7 +100,7 @@ int i=0;
 				// arrayColumn.setSortable(false);
 if (publications.size()>0) {
 	for (i = 0; i < publications.size(); i++) {
-						InfoLetterPublication pub = (InfoLetterPublication) publications.elementAt(i);
+						InfoLetterPublication pub = (InfoLetterPublication) publications.get(i);
 						if (pub._isValid()) {
 							ArrayLine arrayLine = arrayPane.addArrayLine();
 						
@@ -108,7 +109,7 @@ if (publications.size()>0) {
 							debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "#");
 							arrayLine.addArrayCellIconPane(iconPane1);	
 						
-							arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(pub.getTitle()), "javascript:openViewParution('" + pub.getPK().getId() + "');");
+							arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openViewParution('" + pub.getPK().getId() + "');");
 						
 							java.util.Date date = DateUtil.parse(pub.getParutionDate());
 							ArrayCellText cell = arrayLine.addArrayCellText(resource.getOutputDate(date));
@@ -120,11 +121,11 @@ if (publications.size()>0) {
 		
 %>
 <form name="viewParution" action="View" method="post">
-	<input type="hidden" name="parution" value="">
+	<input type="hidden" name="parution" value=""/>
 </form>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
