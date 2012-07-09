@@ -129,7 +129,7 @@ function sendLetterToManager (){
 }
 </script>
 </head>
-<body bgcolor="#FFFFFF" class="infoletter">
+<body class="infoletter">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Accueil");
@@ -194,7 +194,7 @@ out.println(frame.printBefore());
     <div class="field" id="descriptionArea">
       <label class="txtlibform" for="description"><fmt:message key="GML.description" /> :&nbsp;</label>
       <div class="champs">
-        <textarea name="description" cols="49" rows="6"><%= (String) request.getAttribute("description") %></textarea>
+        <textarea name="description" cols="60" rows="6"><%= (String) request.getAttribute("description") %></textarea>
       </div>
     </div>
   </div>
@@ -222,11 +222,10 @@ out.println(frame.printBefore());
   <fmt:message key="GML.requiredField" /> : <img src="${mandatoryIconUrl}" width="5" height="5" />
 </div>
 
-
 <%
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:submitForm();", false));
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancelForm();", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:submitForm();", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancelForm();", false));
     out.println(buttonPane.print());
 %>
 <form name="validateParution" action="ValidateParution" method="post">			

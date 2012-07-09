@@ -65,14 +65,12 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 	}
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 <%
 String parutionTitle = (String) request.getAttribute("parutionTitle");
 String parution = (String) request.getAttribute("parution");
 
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + EncodeHelper.javaStringToHtmlString(parutionTitle));	
+	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));	
 
 	operationPane.addOperation(resource.getIcon("infoLetter.sendLetterToManager"), resource.getString("infoLetter.sendLetterToManager"), "javascript:sendLetterToManager();");	
 
@@ -112,7 +110,6 @@ displayViewWysiwyg(parution, spaceId, componentId, request, response);
     <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>"/>
     <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>"/>
 </form>
-<% // Ici se termine le code de la page %>
 
 <%
 out.println(frame.printAfter());

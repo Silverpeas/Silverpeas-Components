@@ -30,11 +30,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
-
 <body>
 <form name="exportForm" action="ExportEmailsCsv" method="post">
 </form>
@@ -70,8 +67,9 @@ out.println(gef.getLookStyleSheet());
   out.println(frame.printBefore());
   out.println(board.printBefore());
 %>
-<center>
+
 <% if (exportOk) { %>
+	<center>
 	<table width="100%" cellpadding="2" cellspacing="2" border="0">
 		<tr>
 			<td align="center"><span class="txtlibform"><%=statusMessage%></span></td>
@@ -80,14 +78,12 @@ out.println(gef.getLookStyleSheet());
 	    	<td align="center"><a href="<%=urlEmailCsv%>"><%=emailCsvFileName%></a></td>
 	    </tr>
 	 </table>
-	<% } %>
+	 </center>
+<% } %>
 <%
 	out.println(board.printAfter());
 	Button button = gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false);
-	out.print("<br/><center>"+button.print()+"</center>");
-%>
-</center>
-<%
+	out.print("<br/>"+button.print());
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>

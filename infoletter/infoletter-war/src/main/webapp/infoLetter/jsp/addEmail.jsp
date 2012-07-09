@@ -50,42 +50,29 @@ out.println(gef.getLookStyleSheet());
 	}
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\">" + resource.getString("infoLetter.listParutions") + "</a> > " + resource.getString("infoLetter.externSubscribers")+ " > " + resource.getString("infoLetter.addExternSubscribers"));
-
-
+	browseBar.setPath(resource.getString("infoLetter.externSubscribers")+ " > " + resource.getString("infoLetter.addExternSubscribers"));
 
 	out.println(window.printBefore());
- 
-	//Instanciation du cadre avec le view generator
-
-    
-	out.println(frame.printBefore());	
-	
+	out.println(frame.printBefore());		
 %>
 
-<% // Ici debute le code de la page %>
-
-<center>
 <form name="addmails" action="" method="post">
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
+<table width="98%" border="0" cellspacing="0" cellpadding="0" class="intfdcolor4"><!--tablcontour-->
 	<tr> 
 		<td>
 			<table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%"><!--tabl1-->
-				<tr align=center> 
-
-					<td  class="intfdcolor4" valign="top" align=left>
+				<tr align="center"> 
+					<td class="intfdcolor4" valign="top" align="left">
 						<span class="txtlibform"><%=resource.getString("infoLetter.emailExternSubscribers")%> :</span>
 					</td>
-					<td  class="intfdcolor4" valign="top" align=left>
+					<td class="intfdcolor4" valign="top" align="left">
 					<textarea cols="49" rows="8" name="newmails"></textarea>&nbsp;<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"/>
 					</td>
 				</tr>
-				<tr align=center>				 
-					<td class="intfdcolor4" valign="baseline" align=left colspan=2><span class="txt">(<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"/> : <%=resource.getString("infoLetter.infoComboEmail")%>)</span> 
+				<tr align="center">				 
+					<td class="intfdcolor4" valign="baseline" align="left" colspan="2"><span class="txt">(<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"/> : <%=resource.getString("infoLetter.infoComboEmail")%>)</span> 
 					</td>
 				</tr>
 			</table>
@@ -93,23 +80,15 @@ out.println(gef.getLookStyleSheet());
 	</tr>
 </table>
 </form>
-
 <br/>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:submitForm();", false));
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancelForm();", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:submitForm();", false));
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:cancelForm();", false));
     out.println(buttonPane.print());
-%>
-</center>
 
-
-<% // Ici se termine le code de la page %>
-
-<%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>
 </html>
-

@@ -29,9 +29,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "javascript:window.close();");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + resource.getString("infoLetter.importEmailsCsv"));
+	browseBar.setPath(resource.getString("infoLetter.importEmailsCsv"));
 	
 	String result = (String) request.getParameter("Result");
 	boolean importOk = false;
@@ -48,7 +46,7 @@
 
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 
 function SubmitWithVerif(verifParams)
 {
@@ -79,7 +77,7 @@ function SubmitWithVerif(verifParams)
 
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 
 <%
 out.println(window.printBefore());
@@ -90,34 +88,29 @@ out.println(frame.printBefore());
 out.println(board.printBefore());
 %>
 <form name="csvFileForm" action="ImportEmailsCsv" method="post" enctype="multipart/form-data">
-    <table cellpadding=5 cellspacing=0 border=0 width="100%">
-			<% if (importOk)
-			{ %>
+    <table cellpadding="5" cellspacing="0" border="0" width="100%">
+			<% if (importOk) { %>
 				<tr>
 					<td colspan="2" align="center">
 						<%=resource.getString("infoLetter.importEmailsCsvSucceed") %>
 					</td>
 				</tr>
-			<%
-			}
-			else
-			{ %>
+			<% } else { %>
 				<tr>
 					<td colspan="2">
 						<%=resource.getString("infoLetter.importEmailsCsvWarning") %>
 					</td>
 				</tr>
         <tr>			
-            <td valign="baseline" align=left  class="txtlibform">
+            <td valign="baseline" class="txtlibform">
                 <%=resource.getString("GML.csvFile") %> :
             </td>
-            <td align=left valign="baseline">
+            <td align="left" valign="baseline">
                 <input type="file" name="file_upload" size="50" maxlength="50" value=""/>&nbsp;<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/> 
             </td>
         </tr>
         <tr> 
-            <td colspan="2">(<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/> 
-      : <%=resource.getString("GML.requiredField")%>)</td>
+            <td colspan="2">(<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%>)</td>
         </tr>
 		<% } %>
     </table>
@@ -131,12 +124,12 @@ out.println(board.printAfter());
 		  ButtonPane bouton = gef.getButtonPane();
 			if (importOk)
 			{
-				  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
+				  bouton.addButton(gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
 			}
 			else
 			{
-				  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
-		      bouton.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false));
+				bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
+		      	bouton.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false));
 			}
 		  out.println(bouton.print());
 		%>
@@ -145,6 +138,5 @@ out.println(board.printAfter());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 	%>
-
 </body>
 </html>

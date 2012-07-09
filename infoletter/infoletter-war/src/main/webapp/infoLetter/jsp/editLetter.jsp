@@ -40,13 +40,9 @@ document.toWysiwyg.submit();
 }
 </script>
 </head>
-<body bgcolor="#FFFFFF" onload="javascript:call_wysiwyg();">
+<body onload="javascript:call_wysiwyg();">
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\">" + resource.getString("infoLetter.listParutions") + "</a> > " + resource.getString("infoLetter.newLetterEdit"));
-
-
+	browseBar.setPath(resource.getString("infoLetter.newLetterEdit"));
 
 	out.println(window.printBefore());
  
@@ -56,13 +52,10 @@ document.toWysiwyg.submit();
   tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"#",true);
   tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"previewLetter.jsp",false);
 
-
   out.println(tabbedPane.print());
 	out.println(frame.printBefore());	
-	
 %>
 
-<% // Ici debute le code de la page %>
   <form name="toWysiwyg" Action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
     <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>"/>
     <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>"/>
@@ -72,20 +65,10 @@ document.toWysiwyg.submit();
     <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>"/>
     <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>"/>
     <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>"/>
-
-    <!-- Bouton a virer -->
-    <!--<input type="submit" value="WYSIWYG">-->
-
   </form>
-    			
-
-
-<% // Ici se termine le code de la page %>
-
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>
 </html>
-

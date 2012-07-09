@@ -63,15 +63,13 @@ function goView (){
 }
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 <%
 String parutionTitle = (String) request.getAttribute("parutionTitle");
 String parution = (String) request.getAttribute("parution");
 String url = (String) request.getAttribute("url");
 
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + EncodeHelper.javaStringToHtmlString(parutionTitle));	
+	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));	
 
 	out.println(window.printBefore());
  
@@ -83,12 +81,9 @@ String url = (String) request.getAttribute("url");
   tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"#",true);
 
   out.println(tabbedPane.print());
-
   out.println(frame.printBefore());	
-	
 %>
 
-<% // Ici debute le code de la page %>
 <%
 out.flush();
 displayAttachmentEdit(parution, spaceId, componentId, url, request, response);		
@@ -109,7 +104,6 @@ displayAttachmentEdit(parution, spaceId, componentId, url, request, response);
     <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>"/>
     <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>"/>
 </form>
-<% // Ici se termine le code de la page %>
 
 <%
 out.println(frame.printAfter());
@@ -117,4 +111,3 @@ out.println(window.printAfter());
 %>
 </body>
 </html>
-

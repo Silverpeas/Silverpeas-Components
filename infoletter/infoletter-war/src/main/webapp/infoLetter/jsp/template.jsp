@@ -33,7 +33,6 @@ InfoLetter infoLetter = (InfoLetter) request.getAttribute("InfoLetter");
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -41,9 +40,6 @@ out.println(gef.getLookStyleSheet());
 </head>
 <body>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "#");
-	
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
 	out.flush();

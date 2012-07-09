@@ -79,14 +79,12 @@ out.println(gef.getLookStyleSheet());
 
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 <form name="refreshEmails" action="Emails">
 </form>
 <form name="deleteEmails" action="DeleteEmails" method="post">
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + resource.getString("infoLetter.externSubscribers"));
+	browseBar.setPath(resource.getString("infoLetter.externSubscribers"));
 
 	operationPane.addOperation(resource.getIcon("infoLetter.addMail"), resource.getString("infoLetter.addMail"), "addEmail.jsp");	
 	operationPane.addOperation(resource.getIcon("infoLetter.importEmailsCsv"), resource.getString("infoLetter.importEmailsCsv"), "javascript:displayEmailsCsvImport();");	

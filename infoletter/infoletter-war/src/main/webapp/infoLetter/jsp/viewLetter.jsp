@@ -54,16 +54,13 @@ function goFiles (){
 }
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + EncodeHelper.javaStringToHtmlString(parutionTitle));
+	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));
 	out.println(window.printBefore());
  
 	//Instanciation du cadre avec le view generator
-	out.println(frame.printBefore());	
-
+	out.println(frame.printBefore());
 %>
 
 	<table width="100%">
@@ -89,4 +86,3 @@ function goFiles (){
 %>
 </body>
 </html>
-

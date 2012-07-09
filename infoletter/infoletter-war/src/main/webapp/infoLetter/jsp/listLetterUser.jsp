@@ -41,11 +41,8 @@ function openViewParution(par) {
 }
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	
 boolean showHeader = ( (Boolean) request.getAttribute("showHeader") ).booleanValue();
 boolean isSuscriber = ((String)request.getAttribute("userIsSuscriber")).equals("true");
 if (isSuscriber) {
@@ -58,26 +55,23 @@ if (isSuscriber) {
 %>
 
 <%
-if (showHeader)
-{
+if (showHeader) {
 	out.println(board.printBefore());
 %>
-<center>
-		<table border="0" cellspacing="0" cellpadding="5" width="100%">
-			<tr>
-				<td class="txtlibform" valign="baseline" align=left nowrap><%=resource.getString("infoLetter.name")%> :</td>
-				<td align=left width="100%"><%= (String) request.getAttribute("letterName") %></td>
-			</tr>
-			<tr> 
-				<td class="txtlibform" valign="top" align=left nowrap><%=resource.getString("GML.description")%> :</td>
-				<td align=left><%= (String) request.getAttribute("letterDescription") %></td>
-			</tr>
-			<tr> 
-				<td class="txtlibform" valign="baseline" align=left nowrap><%=resource.getString("infoLetter.frequence")%> :</td>
-				<td align=left><%= (String) request.getAttribute("letterFrequence") %></td>
-			</tr>
-		</table>
-</center>
+	<table border="0" cellspacing="0" cellpadding="5" width="100%">
+		<tr>
+			<td class="txtlibform" valign="baseline" nowrap="nowrap"><%=resource.getString("infoLetter.name")%> :</td>
+			<td align="left" width="100%"><%= (String) request.getAttribute("letterName") %></td>
+		</tr>
+		<tr> 
+			<td class="txtlibform" valign="top" nowrap="nowrap"><%=resource.getString("GML.description")%> :</td>
+			<td align="left"><%= EncodeHelper.javaStringToHtmlParagraphe((String) request.getAttribute("letterDescription")) %></td>
+		</tr>
+		<tr> 
+			<td class="txtlibform" valign="baseline" nowrap="nowrap"><%=resource.getString("infoLetter.frequence")%> :</td>
+			<td align="left"><%= (String) request.getAttribute("letterFrequence") %></td>
+		</tr>
+	</table>
 <%
 	out.println(board.printAfter());
 	out.println("<br/>");

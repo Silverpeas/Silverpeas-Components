@@ -70,44 +70,38 @@ function openSPWindow(fonction, windowName){
 
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	
-			
 boolean isSuscriber = ((String)request.getAttribute("userIsSuscriber")).equals("true");
 boolean isAdmin = ( ((String)request.getAttribute("userIsAdmin")).equals("true") );
 boolean isPdcUsed = ( "yes".equals( (String) request.getAttribute("isPdcUsed") ) );
 boolean showHeader = ( (Boolean) request.getAttribute("showHeader") ).booleanValue();
 boolean isTemplateExist = ( (Boolean) request.getAttribute("IsTemplateExist") ).booleanValue();
 
-if (isAdmin && isPdcUsed)
-{
+if (isAdmin && isPdcUsed) {
 	operationPane.addOperation(resource.getIcon("infoLetter.pdcUtilization"), resource.getString("PDCUtilization"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+componentId+"','utilizationPdc1')");
 	operationPane.addLine();
 }
-if (isSuscriber) 
-	operationPane.addOperation(resource.getIcon("infoLetter.desabonner"), resource.getString("infoLetter.desabonner"), "UnsuscribeMe");
-else 
-	operationPane.addOperation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");	
-operationPane.addLine();
 
-if (showHeader)
-{
+if (showHeader) {
 	operationPane.addOperation(resource.getIcon("infoLetter.modifierHeader"), resource.getString("infoLetter.modifierHeader"), "LetterHeaders");	
 	operationPane.addLine();
 }
 operationPane.addOperation(resource.getIcon("infoLetter.newPubli"), resource.getString("infoLetter.newPubli"), "ParutionHeaders");	
-operationPane.addLine();
 operationPane.addOperation(resource.getIcon("infoLetter.delPubli"), resource.getString("GML.delete"), "javascript:submitForm();");	
 operationPane.addLine();
 operationPane.addOperation(resource.getIcon("infoLetter.access_SilverAbonnes"), resource.getString("infoLetter.access_SilverAbonnes"), "Suscribers");	
+operationPane.addOperation(resource.getIcon("infoLetter.access_ExternAbonnes"), resource.getString("infoLetter.access_ExternAbonnes"), "Emails");
 operationPane.addLine();
-operationPane.addOperation(resource.getIcon("infoLetter.access_ExternAbonnes"), resource.getString("infoLetter.access_ExternAbonnes"), "Emails");	
 
-	out.println(window.printBefore());
-	out.println(frame.printBefore());		
+if (isSuscriber) {
+	operationPane.addOperation(resource.getIcon("infoLetter.desabonner"), resource.getString("infoLetter.desabonner"), "UnsuscribeMe");
+} else { 
+	operationPane.addOperation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");
+}
+
+out.println(window.printBefore());
+out.println(frame.printBefore());		
 %>
 
 <%
@@ -120,15 +114,15 @@ if (showHeader)
 	<table border="0" cellspacing="0" cellpadding="5" width="100%">
 		<tr> 
 			<td class="txtlibform" valign="baseline" align=left nowrap><%=resource.getString("infoLetter.name")%> :</td>
-			<td align=left width="100%"><%= (String) request.getAttribute("letterName") %></td>
+			<td align="left" width="100%"><%= (String) request.getAttribute("letterName") %></td>
 		</tr>
 		<tr> 
 			<td class="txtlibform" valign="top" align=left nowrap><%=resource.getString("GML.description")%> :</td>
-			<td align=left><%= (String) request.getAttribute("letterDescription") %></td>
+			<td align="left"><%= EncodeHelper.javaStringToHtmlParagraphe((String) request.getAttribute("letterDescription")) %></td>
 		</tr>
 		<tr> 
 			<td class="txtlibform" valign="top" align=left nowrap><%=resource.getString("infoLetter.frequence")%> :</td>
-			<td align=left><%= (String) request.getAttribute("letterFrequence") %></td>
+			<td align="left"><%= (String) request.getAttribute("letterFrequence") %></td>
 		</tr>
 		<% if (isTemplateExist) { %>
 			<tr> 
@@ -212,8 +206,6 @@ if (publications.size()>0) {
 <form name="viewParution" action="View" method="post">
 	<input type="hidden" name="parution" value=""/>
 </form>
-<% // Ici se termine le code de la page %>
-
 
 <%
 out.println(frame.printAfter());
@@ -221,4 +213,3 @@ out.println(window.printAfter());
 %>
 </body>
 </html>
-

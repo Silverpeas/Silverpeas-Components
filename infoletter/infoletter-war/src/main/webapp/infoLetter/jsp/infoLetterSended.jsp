@@ -50,62 +50,34 @@ out.println(gef.getLookStyleSheet());
   }
 %>
 
-<body bgcolor="#FFFFFF">
+<body>
 
 <%
-	browseBar.setDomainName(hostSpaceName);
-	browseBar.setComponentName(hostComponentName);
-
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
 %>
 
-<%
-Button closeButton = (Button) gef.getFormButton(resource.getString("GML.ok"), returnUrl, false);
-%>
-
-<table align="center" cellpadding="2" cellspacing="0" border="0" width="98%" class="intfdcolor">
-	<tr><td>
-		<table align="center" cellpadding="5" cellspacing="0" border="0" width="100%" class="intfdcolor4">
-			<tr><td>
-				<table border="0" cellpadding="1" cellspacing="1" align="center">
-					<tr>
-						<td align="left" class="textePetitBold"><%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.sended"))%></td>
-					</tr>
-                    <% 
-                        if (emailErrors.length > 0)
-                        {
-                    %>
-					<tr><td><br/></td>
-					</tr>
-					<tr>
-						<td align="left"><%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.emailErrors"))%></td>
-					</tr>
-                    <% 
-                            for (int i = 0; i < emailErrors.length; i++)
-                            {
-                    %>
-					<tr>
-						<td align="left"><%=EncodeHelper.javaStringToHtmlString(emailErrors[i])%></td>
-					</tr>
-                    <% 
-                            }
-                        }
-                    %>
-				</table>
-			</td></tr>
-		</table>
-	</td></tr>
-</table>
+<div class="inlineMessage">
+<%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.sended"))%>
+</div>
+<br clear="all"/>
+<% if (emailErrors.length > 0) { %>
+	<div class="inlineMessage-nok">
+		<%=EncodeHelper.javaStringToHtmlString(resource.getString("infoLetter.emailErrors"))%> : <br/>
+		<ul>
+		<% for (int i = 0; i < emailErrors.length; i++) { %>
+			<li><%=EncodeHelper.javaStringToHtmlString(emailErrors[i])%></li>
+		<% } %>
+		</ul>
+	</div>
+<% } %>
+<br clear="all"/>
 <%		
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton(closeButton);
-	buttonPane.setHorizontalPosition();
-	out.println(frame.printMiddle());
-	out.println("<br/><center>"+buttonPane.print()+"<br/></center>");
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.ok"), returnUrl, false));
+	out.println("<center>"+buttonPane.print()+"</center>");
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-
 </body>
 </html>
