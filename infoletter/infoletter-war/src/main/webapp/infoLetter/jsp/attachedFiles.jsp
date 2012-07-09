@@ -40,15 +40,16 @@ void displayAttachmentEdit(String id, String spaceId, String componentId, String
 }
 %>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function call_wysiwyg (){
 	document.toWysiwyg.submit();
 }
@@ -62,7 +63,7 @@ function goView (){
 }
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF">
 <%
 String parutionTitle = (String) request.getAttribute("parutionTitle");
 String parution = (String) request.getAttribute("parution");
@@ -70,27 +71,20 @@ String url = (String) request.getAttribute("url");
 
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + Encode.javaStringToHtmlString(parutionTitle));	
+	browseBar.setPath("<a href=\"Accueil\"></a> " + EncodeHelper.javaStringToHtmlString(parutionTitle));	
 
 	out.println(window.printBefore());
  
 	//Instanciation du cadre avec le view generator
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);  
-    tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
-    tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"javascript:goView();",false);
-    tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"#",true);
-	boolean isPdcUsed = ( "yes".equals( (String) request.getAttribute("isPdcUsed") ) );
-	if (isPdcUsed)
-	{
-		tabbedPane.addTab(resource.getString("PdcClassification"),
-						"pdcPositions.jsp?Action=ViewPdcPositions&PubId=" + (String) request.getAttribute("ObjectId") + ""
-						,false);
-	}
-    out.println(tabbedPane.print());
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);  
+  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
+  tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"javascript:goView();",false);
+  tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"#",true);
 
-    
-	out.println(frame.printBefore());	
+  out.println(tabbedPane.print());
+
+  out.println(frame.printBefore());	
 	
 %>
 
@@ -100,20 +94,20 @@ out.flush();
 displayAttachmentEdit(parution, spaceId, componentId, url, request, response);		
 %>
 <form name="headerParution" action="ParutionHeaders" method="post">			
-	<input type="hidden" name="parution" value="<%= parution %>">
+	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
 <form name="viewParution" action="Preview" method="post">			
-	<input type="hidden" name="parution" value="<%= parution %>">
+	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
-<form name="toWysiwyg" Action="../../wysiwyg/jsp/htmlEditor.jsp" method="Post">
-    <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>">
-    <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>">
-    <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>">
-    <input type="hidden" name="ComponentName" value="<%= (String) request.getAttribute("ComponentName") %>">
-    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"> 
-    <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>">
-    <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>">
-    <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>">
+<form name="toWysiwyg" action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
+    <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>"/>
+    <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>"/>
+    <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>"/>
+    <input type="hidden" name="ComponentName" value="<%= (String) request.getAttribute("ComponentName") %>"/>
+    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"/> 
+    <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>"/>
+    <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>"/>
+    <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>"/>
 </form>
 <% // Ici se termine le code de la page %>
 
@@ -121,7 +115,6 @@ displayAttachmentEdit(parution, spaceId, componentId, url, request, response);
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</form>
-</BODY>
-</HTML>
+</body>
+</html>
 

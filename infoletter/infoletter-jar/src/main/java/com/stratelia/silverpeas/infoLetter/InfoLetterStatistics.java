@@ -31,6 +31,7 @@ import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.silverpeas.infoLetter.control.ServiceFactory;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
+import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -39,7 +40,6 @@ import java.util.List;
 
 /**
  * Class declaration
- *
  * @author
  */
 public class InfoLetterStatistics implements ComponentStatisticsInterface {
@@ -47,13 +47,13 @@ public class InfoLetterStatistics implements ComponentStatisticsInterface {
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    List publications = getInfoLetters(componentId);
+    List<InfoLetterPublication> publications = getInfoLetters(componentId);
     if (publications == null) {
       return null;
     }
 
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(
-        publications.size());
+    List<UserIdCountVolumeCouple> myArrayList =
+        new ArrayList<UserIdCountVolumeCouple>(publications.size());
 
     for (int i = 0; i < publications.size(); i++) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
@@ -65,13 +65,14 @@ public class InfoLetterStatistics implements ComponentStatisticsInterface {
     return myArrayList;
   }
 
-  public List getInfoLetters(String componentId) throws RemoteException {
-    List publications = new ArrayList();
+  public List<InfoLetterPublication> getInfoLetters(String componentId) throws RemoteException {
+    List<InfoLetterPublication> publications = new ArrayList<InfoLetterPublication>();
     InfoLetterDataInterface dataInterface = ServiceFactory.getInfoLetterData();
-    List<InfoLetter> listLettres = (List<InfoLetter>) dataInterface.getInfoLetters(componentId);
+    List<InfoLetter> listLettres = dataInterface.getInfoLetters(componentId);
     if (listLettres != null) {
       for (InfoLetter defaultLetter : listLettres) {
-        List listParutions = dataInterface.getInfoLetterPublications(defaultLetter.getPK());
+        List<InfoLetterPublication> listParutions =
+            dataInterface.getInfoLetterPublications(defaultLetter.getPK());
         publications.addAll(listParutions);
       }
     }

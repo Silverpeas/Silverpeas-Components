@@ -25,15 +25,16 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function submitForm() {
 	if (!isValidTextArea(document.changeLetterHeaders.description)) {
 		window.alert("<%= resource.getString("infoLetter.soLongPal") %>");
@@ -53,7 +54,7 @@ function cancelForm() {
 }
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Accueil");
@@ -79,8 +80,8 @@ operationPane.addOperation(m_context+icon.getString("fileBoxPlus.delete"), scc.g
 <% // Ici debute le code de la page %>
 
 <center>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
 <form name="changeLetterHeaders" action="ChangeLetterHeaders" method="post">
+<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
 	<tr> 
 		<td nowrap>
 			<table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%"><!--tabl1-->
@@ -89,7 +90,7 @@ operationPane.addOperation(m_context+icon.getString("fileBoxPlus.delete"), scc.g
 						<span class="txtlibform"><%=resource.getString("infoLetter.name")%> :</span>
 					</td>
 					<td  class="intfdcolor4" valign="baseline" align=left>
-					<input type="text" name="name" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterName") %>">&nbsp;<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5">
+					<input type="text" name="name" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterName") %>"/>&nbsp;<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"/>
 					</td>
 				</tr>
 				<tr align=center> 
@@ -107,20 +108,20 @@ operationPane.addOperation(m_context+icon.getString("fileBoxPlus.delete"), scc.g
 						<span class="txtlibform"><%=resource.getString("infoLetter.frequence")%> :</span>
 					</td>
 					<td  class="intfdcolor4" valign="baseline" align=left>
-					<input type="text" name="frequence" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterFrequence") %>">
+					<input type="text" name="frequence" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterFrequence") %>"/>
 					</td>
 				</tr>
 				<tr align=center>				 
-					<td class="intfdcolor4" valign="baseline" align=left colspan=2><span class="txt">(<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</span> 
+					<td class="intfdcolor4" valign="baseline" align=left colspan=2><span class="txt">(<img src="<%=resource.getIcon("infoLetter.mandatory")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%>)</span> 
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
-</form>
 </table>
+</form>
 
-<br>
+<br/>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:submitForm();", false));
@@ -135,6 +136,6 @@ operationPane.addOperation(m_context+icon.getString("fileBoxPlus.delete"), scc.g
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 
