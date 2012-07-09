@@ -956,14 +956,14 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail.</message>
-        <message lang="en">This feature allows to activate file sharing with persons who have no access to the portal.</message>
+        <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs de la plate-forme.</message>
+        <message lang="en">This feature allows to activate file sharing with persons who have no access to the platform.</message>
         <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
       </help>
       <warning>
-        <message lang="fr">Vous voulez activer le partage de fichiers à des tiers non utilisateurs du portail.</message>
-        <message lang="en">You want to activate file sharing with persons who have no access to the portal.</message>
-        <message lang="de">Sie wollen die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
+        <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les fichiers avec des utilisateurs non référencés dans la plate-forme.</message>
+        <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
+        <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
       </warning>
       <personalSpaceValue>yes</personalSpaceValue>
     </parameter>
@@ -1012,13 +1012,13 @@
       </help>
       <warning>
         <message lang="fr">
-          En cochant cette case, les contributions gérées par cette application sont librement utilisables (sans tenir compte des droits) par les autres applications.
+          En cochant cette case, les fichiers joints aux publications de cette application seront librement utilisables (sans tenir compte des droits) par les autres applications.
         </message>
         <message lang="en">
-          By checking this box, contributions managed by this application are available for use (regardless of Rights) by other applications.
+          By checking this box, attached files to publications of this application will be available for use (regardless of rights) by other applications.
         </message>
         <message lang="de">
-          By checking this box, contributions managed by this application are available for use (regardless of Rights) by other applications.
+		  By checking this box, attached files to publications of this application will be available for use (regardless of rights) by other applications.
         </message>
       </warning>
     </parameter>
@@ -1254,14 +1254,14 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet d'activer le partage de dossiers à des tiers non utilisateurs du portail.</message>
-        <message lang="en">This feature allows to activate folders sharing with persons who have no access to the portal.</message>
-        <message lang="de">This feature allows to activate folders sharing with persons who have no access to the portal.</message>
+        <message lang="fr">Ce paramètre permet d'activer le partage de dossiers à des tiers non utilisateurs de la plate-forme.</message>
+        <message lang="en">This feature allows to activate folders sharing with persons who have no access to the platform.</message>
+        <message lang="de">This feature allows to activate folders sharing with persons who have no access to the platform.</message>
       </help>
       <warning>
-        <message lang="fr">Vous voulez activer le partage de dossiers à des tiers non utilisateurs du portail.</message>
-        <message lang="en">You want to activate folders sharing with persons who have no access to the portal.</message>
-        <message lang="de">You want to activate folders sharing with persons who have no access to the portal.</message>
+        <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les dossiers avec des utilisateurs non référencés dans la plate-forme.</message>
+        <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
+        <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
       </warning>
       <personalSpaceValue>no</personalSpaceValue>
     </parameter>

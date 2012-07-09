@@ -687,9 +687,9 @@
         <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
       </help>
       <warning>
-        <message lang="fr">Vous voulez activer le partage de fichiers à des tiers non utilisateurs du portail.</message>
-        <message lang="en">You want to activate file sharing with persons who have no access to the portal.</message>
-        <message lang="de">Sie wollen die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
+        <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les fichiers avec des utilisateurs non référencés dans le portail.</message>
+        <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the portal.</message>
+        <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the portal.</message>
       </warning>
     </parameter>
 	<parameter>

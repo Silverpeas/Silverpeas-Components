@@ -277,9 +277,9 @@
         <message lang="de">Bilder werden von WYSIWYG-Editor, Abstimmung und Umfrage Komponent verfügbar sein</message>
       </help>
       <warning>
-        <message lang="fr">En cochant cette case, les images gérées par cette application sont librement utilisables (sans tenir compte des droits) par les autres applications.</message>
-        <message lang="en">By checking this box, the images managed by this application are available for use (regardless of Rights) by other applications.</message>
-        <message lang="de">By checking this box, the images managed by this application are available for use (regardless of Rights) by other applications.</message>
+        <message lang="fr">En cochant cette case, les images gérées par cette application seront librement utilisables (sans tenir compte des droits) par les autres applications.</message>
+        <message lang="en">By checking this box, images managed by this application will be available for use (regardless of rights) by other applications.</message>
+        <message lang="de">By checking this box, images managed by this application will be available for use (regardless of rights) by other applications.</message>
       </warning>
     </parameter>
     <parameter>
