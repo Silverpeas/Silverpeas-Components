@@ -29,7 +29,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
@@ -37,6 +36,7 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
+import com.stratelia.silverpeas.infoLetter.model.InternalSubscribers;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -309,11 +309,10 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   /**
    * @see InfoLetterDataInterface
    */
-  public Vector getInternalSuscribers(WAPrimaryKey letterPK) {
+  public InternalSubscribers getInternalSuscribers(WAPrimaryKey letterPK) {
     Connection con = openConnection();
-    Vector retour = new Vector();
-    Vector<UserDetail> users = new Vector<UserDetail>();
-    Vector<Group> groups = new Vector<Group>();
+    List<UserDetail> users = new ArrayList<UserDetail>();
+    List<Group> groups = new ArrayList<Group>();
     Statement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -364,58 +363,57 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
             SilverpeasRuntimeException.FATAL, e.getMessage(), e);
       }
     }
-    retour.add(groups);
-    retour.add(users);
-    return retour;
+    return new InternalSubscribers(users, groups);
   }
 
   // Mise a jour de la liste des abonnes internes
-  public void setInternalSuscribers(WAPrimaryKey letterPK, Vector abonnes) {
+  public void setInternalSuscribers(WAPrimaryKey letterPK, InternalSubscribers internalSubscribers) {
     Connection con = openConnection();
     Statement stmt = null;
-    UserDetail[] t_users = (UserDetail[]) abonnes.elementAt(1);
-    Group[] t_groups = (Group[]) abonnes.elementAt(0);
-    String query = "";
-    int i = 0;
+    List<UserDetail> users = internalSubscribers.getUsers();
+    List<Group> groups = internalSubscribers.getGroups();
     try {
       InfoLetter letter = getInfoLetter(letterPK);
-      query = "delete from " + TableInternalEmails;
-      query += " where instanceId = '" + letter.getInstanceId() + "' ";
-      query += " and letter = " + letterPK.getId() + " ";
+      String deleteQuery = "DELETE FROM " + TableInternalEmails;
+      deleteQuery += " WHERE instanceId = '" + letter.getInstanceId() + "' ";
+      deleteQuery += " AND letter = " + letterPK.getId() + " ";
       SilverTrace.info("infoLetter",
           "InfoLetterDataManager.setInternalSuscribers()",
-          "root.MSG_GEN_PARAM_VALUE", "query = " + query);
+          "root.MSG_GEN_PARAM_VALUE", "query = " + deleteQuery);
       stmt = con.createStatement();
-      stmt.executeUpdate(query);
-      if (t_groups.length > 0) {
-        for (i = 0; i < t_groups.length; i++) {
-          query = "insert into " + TableInternalEmails + "(letter, userId, instanceId)";
-          query += " values (" + letterPK.getId() + ", 'G"
-              + t_groups[i].getId() + "', ";
-          query += "'" + letter.getInstanceId() + "')";
+      stmt.executeUpdate(deleteQuery);
+      if (!groups.isEmpty()) {
+        for (Group group : groups) {
+          StringBuilder queryBuilder = new StringBuilder();
+          queryBuilder
+              .append("INSERT INTO " + TableInternalEmails + "(letter, userId, instanceId)");
+          queryBuilder.append(" VALUES (" + letterPK.getId() + ", 'G" + group.getId() + "', ");
+          queryBuilder.append("'" + letter.getInstanceId() + "')");
           SilverTrace.info("infoLetter", "InfoLetterDataManager.setInternalSuscribers()",
-              "root.MSG_GEN_PARAM_VALUE", "query = " + query);
+              "root.MSG_GEN_PARAM_VALUE", "query = " + queryBuilder.toString());
           stmt = con.createStatement();
-          stmt.executeUpdate(query);
+          stmt.executeUpdate(queryBuilder.toString());
         }
       }
-      if (t_users.length > 0) {
-        for (i = 0; i < t_users.length; i++) {
-          query = "insert into " + TableInternalEmails + "(letter, userId, instanceId)";
-          query += " values (" + letterPK.getId() + ", 'U" + t_users[i].getId() + "', ";
-          query += "'" + letter.getInstanceId() + "')";
+      if (!users.isEmpty()) {
+        for (UserDetail userDetail : users) {
+          StringBuilder queryBuilder = new StringBuilder();
+          queryBuilder.append("INSERT INTO ").append(TableInternalEmails)
+              .append("(letter, userId, instanceId)");
+          queryBuilder.append(" VALUES (").append(letterPK.getId()).append(", 'U")
+              .append(userDetail.getId()).append("', ");
+          queryBuilder.append("'").append(letter.getInstanceId()).append("')");
           SilverTrace.info("infoLetter", "InfoLetterDataManager.setInternalSuscribers()",
-              "root.MSG_GEN_PARAM_VALUE", "query = " + query);
+              "root.MSG_GEN_PARAM_VALUE", "query = " + queryBuilder.toString());
           stmt = con.createStatement();
-          stmt.executeUpdate(query);
+          stmt.executeUpdate(queryBuilder.toString());
         }
       }
       // stmt.close();
       // con.close();
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager.setInternalSuscribers()", SilverpeasRuntimeException.FATAL, e
-              .getMessage(), e);
+      throw new InfoLetterException("InfoLetterDataManager.setInternalSuscribers()",
+          SilverpeasRuntimeException.FATAL, e.getMessage(), e);
     } finally {
       try {
         if (stmt != null) {

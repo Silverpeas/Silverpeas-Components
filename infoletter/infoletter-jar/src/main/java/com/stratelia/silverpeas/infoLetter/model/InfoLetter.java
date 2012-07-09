@@ -23,35 +23,26 @@
  */
 package com.stratelia.silverpeas.infoLetter.model;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import java.util.Vector;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter> {
 
   private static final long serialVersionUID = -4798869204934629386L;
 
-  /** id de l'instance */
+  /** InfoLetter instance identifier */
   private String instanceId;
 
-  /** nom de la liste */
+  /** InfoLetter name */
   private String name;
 
-  /** description de la liste */
+  /** Info Letter description */
   private String description;
 
-  /** periodicite de la liste */
+  /** InfoLetter frequency */
   private String periode;
 
-  /** abonnes internes */
-  private Vector internalSuscribers;
-
-  /** abonnes externes */
-  private Vector externalSuscribers;
-
-  /** publications */
-  private Vector publications;
 
   // Constructeurs
 
@@ -66,9 +57,6 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
     name = "";
     description = "";
     periode = "";
-    internalSuscribers = new Vector();
-    externalSuscribers = new Vector();
-    publications = new Vector();
   }
 
   /**
@@ -84,16 +72,13 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
    * @since February 2002
    */
   public InfoLetter(WAPrimaryKey pk, String instanceId, String name, String description,
-      String periode, Vector internalSuscribers, Vector externalSuscribers, Vector publications) {
+      String periode) {
     super();
     setPK(pk);
     this.instanceId = instanceId;
     this.name = name;
     this.description = description;
     this.periode = periode;
-    this.internalSuscribers = internalSuscribers;
-    this.externalSuscribers = externalSuscribers;
-    this.publications = publications;
   }
 
   // Assesseurs
@@ -128,30 +113,6 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
 
   public void setPeriode(String periode) {
     this.periode = periode;
-  }
-
-  public Vector readInternalSuscribers() {
-    return internalSuscribers;
-  }
-
-  public void writeInternalSuscribers(Vector internalSuscribers) {
-    this.internalSuscribers = internalSuscribers;
-  }
-
-  public Vector readExternalSuscribers() {
-    return externalSuscribers;
-  }
-
-  public void writeExternalSuscribers(Vector externalSuscribers) {
-    this.externalSuscribers = externalSuscribers;
-  }
-
-  public Vector readPublications() {
-    return publications;
-  }
-
-  public void writePublications(Vector publications) {
-    this.publications = publications;
   }
 
   // Methodes

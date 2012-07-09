@@ -32,6 +32,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -76,6 +76,7 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
+import com.stratelia.silverpeas.infoLetter.model.InternalSubscribers;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -147,7 +148,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * Initialize UserPanel with the list of Silverpeas subscribers
    */
   public String initUserPanel(WAPrimaryKey letterPK) throws InfoLetterException {
-    int i = 0;
     String context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
         "ApplicationURL");
     String hostSpaceName = getSpaceLabel();
@@ -167,16 +167,16 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     sel.setMultiSelect(true);
     sel.setPopupMode(false);
 
-    Vector v = dataInterface.getInternalSuscribers(letterPK);
-    Vector groups = (Vector) v.elementAt(0);
-    Vector users = (Vector) v.elementAt(1);
+    InternalSubscribers internalSubs = dataInterface.getInternalSuscribers(letterPK);
+    List<UserDetail> users = internalSubs.getUsers();
     String[] usersArray = new String[users.size()];
-    for (i = 0; i < users.size(); i++) {
-      usersArray[i] = ((UserDetail) users.elementAt(i)).getId();
+    for (UserDetail userDetail : users) {
+      usersArray[users.indexOf(userDetail)] = userDetail.getId();
     }
+    List<Group> groups = internalSubs.getGroups();
     String[] groupsArray = new String[groups.size()];
-    for (i = 0; i < groups.size(); i++) {
-      groupsArray[i] = ((Group) groups.elementAt(i)).getId();
+    for (Group group : groups) {
+      groupsArray[groups.indexOf(group)] = group.getId();
     }
     sel.setSelectedElements(usersArray);
     sel.setSelectedSets(groupsArray);
@@ -193,12 +193,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    */
   public void retourUserPanel(WAPrimaryKey letterPK) {
     Selection sel = getSelection();
-    Vector abonnes = new Vector();
     UserDetail[] users = SelectionUsersGroups.getUserDetails(sel.getSelectedElements());
     Group[] groups = SelectionUsersGroups.getGroups(sel.getSelectedSets());
-    abonnes.add(groups);
-    abonnes.add(users);
-    dataInterface.setInternalSuscribers(letterPK, abonnes);
+    InternalSubscribers internalSubs =
+        new InternalSubscribers(Arrays.asList(users), Arrays.asList(groups));
+    dataInterface.setInternalSuscribers(letterPK, internalSubs);
   }
 
   // Creation d'une lettre d'information
@@ -239,7 +238,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     classifyInfoLetterPublication(ilp);
   }
 
-  
   /**
    * Classify the info letter publication on the PdC only if the positions attribute is filled
    * inside object parameter
@@ -253,7 +251,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         ilClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (JAXBException e) {
         SilverTrace.error("Forum", "ForumActionHelper.actionManagement",
-                  "PdcClassificationEntity error", "Problem to read JSON", e);
+            "PdcClassificationEntity error", "Problem to read JSON", e);
       }
       if (ilClassification != null && !ilClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = ilClassification.getPdcPositions();
@@ -269,7 +267,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       }
     }
   }
-  
+
   // Suppression d'une publication
   public void deleteInfoLetterPublication(WAPrimaryKey pk) {
     deleteIndex(getInfoLetterPublication(pk));
@@ -318,22 +316,15 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public void notifySuscribers(InfoLetterPublicationPdC ilp) {
     NotificationSender ns = new NotificationSender(getComponentId());
     IdPK pk = new IdPK();
-    int i = 0;
     pk.setId(String.valueOf(ilp.getLetterId()));
-    InfoLetter il = dataInterface.getInfoLetter(pk);
     String sSubject = getString("infoLetter.emailSubject") + ilp.getName();
 
-    Vector v = dataInterface.getInternalSuscribers(pk);
-    Vector groups = (Vector) v.elementAt(0);
-    Vector users = (Vector) v.elementAt(1);
-    UserDetail[] usersArray = new UserDetail[users.size()];
-    for (i = 0; i < users.size(); i++) {
-      usersArray[i] = (UserDetail) users.elementAt(i);
-    }
-    Group[] groupsArray = new Group[groups.size()];
-    for (i = 0; i < groups.size(); i++) {
-      groupsArray[i] = (Group) groups.elementAt(i);
-    }
+    InternalSubscribers internalSubs = dataInterface.getInternalSuscribers(pk);
+    List<UserDetail> users = internalSubs.getUsers();
+    UserDetail[] usersArray = users.toArray(new UserDetail[users.size()]);
+
+    List<Group> groups = internalSubs.getGroups();
+    Group[] groupsArray = groups.toArray(new Group[groups.size()]);
 
     try {
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
@@ -381,9 +372,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   // Notification des abonnes externes
   public String[] notifyExternals(InfoLetterPublicationPdC ilp, String server, List<String> emails) {
-    IdPK letterPK = new IdPK(String.valueOf(ilp.getLetterId()));
-
-    // Infos du serveur SMTP
+    // Retrieve SMTP server information
     String host = getSmtpHost();
     boolean isSmtpAuthentication = isSmtpAuthentication();
     int smtpPort = getSmtpPort();
@@ -398,7 +387,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       int i = 0;
 
       // Corps et sujet du message
-      InfoLetter il = dataInterface.getInfoLetter(letterPK);
+      //InfoLetter il = dataInterface.getInfoLetter(letterPK);
       String subject = getString("infoLetter.emailSubject") + ilp.getName();
 
       // Email du publieur
@@ -441,6 +430,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           msgText1.append((char) c);
           c = htmlCodeFile.read();
         }
+        
+        htmlCodeFile.close();
 
         // mbp1.setText(msgText1.toString());
         mbp1.setDataHandler(new DataHandler(
@@ -568,8 +559,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             // add Transport Listener to the transport connection.
             if (isSmtpAuthentication) {
               SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-                  "root.MSG_GEN_PARAM_VALUE", "host = " + host + " m_Port=" + smtpPort + " m_User=" +
-                      smtpUser);
+                  "root.MSG_GEN_PARAM_VALUE", "host = " + host + " m_Port=" + smtpPort +
+                      " m_User=" + smtpUser);
               transport.connect(host, smtpPort, smtpUser, smtpPwd);
               msg.saveChanges();
             } else {
@@ -965,5 +956,5 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   private String getSmtpPwd() {
     return smtpSettings.getString("SMTPPwd");
   }
-  
+
 }
