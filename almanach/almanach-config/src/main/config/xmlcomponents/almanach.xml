@@ -163,8 +163,6 @@
       <order>4</order>
       <mandatory>true</mandatory>
       <value>MONTHLY</value>
-      <type>select</type>
-      <updatable>always</updatable>
       <options>
         <option>
           <name>
@@ -191,6 +189,8 @@
           <value>NEXT_EVENTS</value>
         </option>
       </options>
+      <type>select</type>
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Permet de choisir la vue calendaire à afficher par défaut lorsque l'utilisateur accède à l'almanach.</message>
         <message lang="en">Choose the view to display by default when the user accesses the almanach.</message>
