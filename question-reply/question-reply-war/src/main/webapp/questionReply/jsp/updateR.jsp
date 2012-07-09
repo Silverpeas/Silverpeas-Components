@@ -56,17 +56,11 @@ function isCorrectForm() {
      	var errorNb = 0;
 
 	var title = document.forms[0].title.value;
-	var content = document.forms[0].content;
 
 	if (isWhitespace(title)) {
            errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
            errorNb++;
-        }
-
-     	if (!isValidTextArea(content)) {
-     		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("questionReply.containsTooLargeText")+resource.getString("questionReply.nbMaxTextArea")+resource.getString("questionReply.characters")%>\n";
-           	errorNb++;
-		}
+    }
 
      switch(errorNb) {
         case 0 :
@@ -101,7 +95,6 @@ $(document).ready(function() {
 <body id="<%=componentId%>" class="questionReply updateR" onload="document.forms[0].title.focus();">
 
 <%
-	browseBar.setDomainName(spaceLabel);
 	browseBar.setPath(resource.getString("questionReply.modif"));
 
 	tabbedPane.addTab(resource.getString("GML.head"), "#", true, false);
@@ -136,18 +129,12 @@ $(document).ready(function() {
 	</tr>
 </table>
 </form>
-<% out.println(board.printAfter()); %>
-<br />
-<div class="buttonPane">
-<%
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
-    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "ConsultQuestionQuery", false));
-    out.println(buttonPane.print());
-%>
-</div>
-
-<%
+<% 
+out.println(board.printAfter());
+ButtonPane buttonPane = gef.getButtonPane();
+buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
+buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "ConsultQuestionQuery", false));
+out.println(buttonPane.print());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
