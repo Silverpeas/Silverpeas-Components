@@ -34,12 +34,7 @@
 <%@ include file="checkQuestionReply.jsp" %>
 <%
 	Reply reply = (Reply) request.getAttribute("reply");
-	Boolean isUsedPrivateReplies = (Boolean) request.getAttribute("UsedPrivateReplies");
-
-	String creationDate = resource.getOutputDate(reply.getCreationDate());
-	String creator = reply.readCreatorName();
-	boolean usedPrivateReplies = isUsedPrivateReplies.booleanValue();
-
+	boolean usedPrivateReplies = (Boolean) request.getAttribute("UsedPrivateReplies");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -55,17 +50,11 @@ function isCorrectForm() {
      	var errorNb = 0;
 
 	var title = document.forms[0].title.value;
-	var content = document.forms[0].content;
 
 	if (isWhitespace(title)) {
            errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
            errorNb++;
-        }
-
-     	if (!isValidTextArea(content)) {
-     		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("questionReply.containsTooLargeText")+resource.getString("questionReply.nbMaxTextArea")+resource.getString("questionReply.characters")%>\n";
-           	errorNb++;
-		}
+    }
 
      switch(errorNb)
      {
@@ -101,8 +90,6 @@ $(document).ready(function() {
 <body id="<%=componentId%>" class="questionReply addR" onload="document.forms[0].title.focus();">
 
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel);
 	browseBar.setExtraInformation(resource.getString("questionReply.reponse"));
 
 	tabbedPane.addTab(resource.getString("GML.head"), "#", true, false);
@@ -124,14 +111,6 @@ $(document).ready(function() {
 		<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
 		<td><textarea cols="120" rows="5" name="content" id="content"></textarea></td>
 	</tr>
-	<tr>
-		<td class="txtlibform"><%=resource.getString("GML.date")%> :</td>
-		<td><%=creationDate%></td>
-	</tr>
-	<tr>
-		<td class="txtlibform"><%=resource.getString("GML.publisher")%> :</td>
-		<td><%=creator%></td>
-	</tr>
 	<% if (usedPrivateReplies) { %>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("questionReply.Rprivee")%> :</td>
@@ -142,7 +121,7 @@ $(document).ready(function() {
 			<td><input type="radio" name="publicReply" value="1" /></td>
 		</tr>
 	<% } else { %>
-		<td><input type="hidden" name="publicReply" value="1" /></td>
+		<tr><td><input type="hidden" name="publicReply" value="1" /></td></tr>
 	<% } %>
 	<tr>
 		<td colspan=2><span class="txt">(<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /> : <%=resource.getString("GML.requiredField")%>)</span></td>

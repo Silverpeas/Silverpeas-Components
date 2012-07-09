@@ -1509,7 +1509,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   
   private boolean isManualSortingUsed(List<KmeliaPublication> publications) {
     for (KmeliaPublication publication : publications) {
-      if (publication.getRank() != 0) {
+      if (publication.getDetail().getExplicitRank() > 0) {
         return true;
       }
     }

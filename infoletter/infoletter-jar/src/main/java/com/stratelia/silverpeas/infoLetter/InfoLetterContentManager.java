@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.infoLetter.control.ServiceFactory;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
@@ -53,11 +54,11 @@ public class InfoLetterContentManager implements ContentInterface {
    * @return a List of SilverContent
    */
   @Override
-  public List getSilverContentById(List ids, String peasId, String userId,
-      List userRoles) {
-    if (getContentManager() == null)
-      return new ArrayList();
-
+  public List<SilverContentInterface> getSilverContentById(List<Integer> ids, String peasId,
+      String userId, List<String> userRoles) {
+    if (getContentManager() == null) {
+      return new ArrayList<SilverContentInterface>();
+    }
     return getHeaders(makePKArray(ids), peasId);
   }
 
@@ -86,12 +87,10 @@ public class InfoLetterContentManager implements ContentInterface {
       InfoLetterPublicationPdC ilPub, String userId)
       throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(ilPub));
-    SilverTrace.info("infoletter",
-        "InfoLetterContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
-    return getContentManager().addSilverContent(con, ilPub.getId(),
-        ilPub.getInstanceId(), userId, scv);
+    SilverTrace.info("infoletter", "InfoLetterContentManager.createSilverContent()",
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+    return getContentManager().addSilverContent(con, ilPub.getId(), ilPub.getInstanceId(), userId,
+        scv);
   }
 
   /**
@@ -105,15 +104,13 @@ public class InfoLetterContentManager implements ContentInterface {
     int silverContentId = getContentManager().getSilverContentId(ilPub.getId(),
         ilPub.getInstanceId());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(ilPub));
-    SilverTrace.info("infoletter",
-        "InfoLetterContentManager.updateSilverContentVisibility()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
+    SilverTrace.info("infoletter", "InfoLetterContentManager.updateSilverContentVisibility()",
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
     if (silverContentId == -1) {
       createSilverContent(null, ilPub, ilPub.getCreatorId());
     } else {
-      getContentManager().updateSilverContentVisibilityAttributes(scv,
-          ilPub.getInstanceId(), silverContentId);
+      getContentManager().updateSilverContentVisibilityAttributes(scv, ilPub.getInstanceId(),
+          silverContentId);
       ClassifyEngine.clearCache();
     }
 
@@ -129,10 +126,8 @@ public class InfoLetterContentManager implements ContentInterface {
       String componentId) throws ContentManagerException {
     int contentId = getContentManager().getSilverContentId(pubId, componentId);
     if (contentId != -1) {
-      SilverTrace.info("infoletter",
-          "InfoLetterContentManager.deleteSilverContent()",
-          "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId + ", contentId = "
-          + contentId);
+      SilverTrace.info("infoletter", "InfoLetterContentManager.deleteSilverContent()",
+          "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId, componentId);
     }
   }
@@ -146,10 +141,10 @@ public class InfoLetterContentManager implements ContentInterface {
    * @param idList a list of silverContentId
    * @return a list of ids
    */
-  private ArrayList makePKArray(List idList) {
-    Iterator iter = idList.iterator();
+  private List<String> makePKArray(List<Integer> idList) {
+    Iterator<Integer> iter = idList.iterator();
     String id = null;
-    ArrayList pks = new ArrayList();
+    List<String> pks = new ArrayList<String>();
 
     // for each silverContentId, we get the corresponding
     // infoLetterPublicationId
@@ -173,15 +168,15 @@ public class InfoLetterContentManager implements ContentInterface {
    * @param peasId the id of the instance
    * @return a list of publicationDetail
    */
-  private List getHeaders(List ids, String peasId) {
-    Iterator iter = ids.iterator();
-    ArrayList headers = new ArrayList();
+  private List getHeaders(List<String> ids, String peasId) {
+    Iterator<String> iter = ids.iterator();
+    List<InfoLetterPublicationPdC> headers = new ArrayList<InfoLetterPublicationPdC>();
     InfoLetterPublicationPdC ilPub = null;
     String pubId = null;
     IdPK pubPK = null;
 
     while (iter.hasNext()) {
-      pubId = (String) iter.next();
+      pubId = iter.next();
       pubPK = new IdPK();
       pubPK.setId(pubId);
 
