@@ -439,15 +439,17 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         out
             .write("<li onmouseover=\"showPublicationOperations(this);\" onmouseout=\"hidePublicationOperations(this);\">");
         out.write("<div class=\"firstColumn\">");
-        String checked = "";
-        if (selectedIds != null && selectedIds.contains(pub.getPK().getId())) {
-          checked = "checked=\"checked\"";
+        if (!kmeliaScc.getUserDetail().isAnonymous()) {
+          String checked = "";
+          if (selectedIds != null && selectedIds.contains(pub.getPK().getId())) {
+            checked = "checked=\"checked\"";
+          }
+          out.write("<span class=\"selection\">");
+          out.write("<input type=\"checkbox\" name=\"C1\" value=\""
+              + pub.getPK().getId() + "/" + pub.getPK().getInstanceId() + "\" " + checked
+              + " onclick=\"sendPubId(this.value, this.checked);\"/>");
+          out.write("</span>");
         }
-        out.write("<span class=\"selection\">");
-        out.write("<input type=\"checkbox\" name=\"C1\" value=\""
-            + pub.getPK().getId() + "/" + pub.getPK().getInstanceId() + "\" " + checked
-            + " onclick=\"sendPubId(this.value, this.checked);\"/>");
-        out.write("</span>");
         if (!seeAlso) {
           ThumbnailDetail thumbnail = pub.getThumbnail();
           if (thumbnail != null && Boolean.valueOf(resources.getSetting("isVignetteVisible"))) {
