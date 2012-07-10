@@ -26,14 +26,16 @@ package com.stratelia.webactiv.kmelia.model;
 
 import java.util.List;
 
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+
 public class Treeview {
 
   private String path = null;
-  private List tree = null;
+  private List<NodeDetail> tree = null;
   private int nbAliases = 0;
   private String componentId = null;
 
-  public Treeview(String path, List tree, String componentId) {
+  public Treeview(String path, List<NodeDetail> tree, String componentId) {
     this.path = path;
     this.tree = tree;
     this.componentId = componentId;
@@ -51,11 +53,11 @@ public class Treeview {
     this.path = path;
   }
 
-  public List getTree() {
+  public List<NodeDetail> getTree() {
     return tree;
   }
 
-  public void setTree(List tree) {
+  public void setTree(List<NodeDetail> tree) {
     this.tree = tree;
   }
 

@@ -1078,17 +1078,19 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         // paramètre du wizard
         request.setAttribute("Wizard", kmelia.getWizard());
 
-        PublicationDetail publication =
-                kmelia.getSessionPublication().getDetail();
+        PublicationDetail publication = kmelia.getSessionPublication().getDetail();
         String pubId = publication.getPK().getId();
         request.setAttribute("Publication", publication);
-        request.setAttribute("PathList", kmelia.getPublicationFathers(pubId));
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
-        request.setAttribute("Topics", kmelia.getAllTopics());
-
-        List<Alias> aliases = kmelia.getAliases();
-        request.setAttribute("Aliases", aliases);
-        request.setAttribute("OtherComponents", kmelia.getOtherComponents(aliases));
+        request.setAttribute("PathList", kmelia.getPublicationFathers(pubId));
+        
+        if (toolboxMode) {
+          request.setAttribute("Topics", kmelia.getAllTopics());
+        } else {
+          List<Alias> aliases = kmelia.getAliases();
+          request.setAttribute("Aliases", aliases);
+          request.setAttribute("Components", kmelia.getComponents(aliases));
+        }
 
         destination = rootDestination + "publicationPaths.jsp";
       } else if (function.equals("SetPath")) {
