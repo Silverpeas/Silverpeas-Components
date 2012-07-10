@@ -51,7 +51,7 @@
     <style type="text/css">
     </style>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/util/javaScript/date.js'/>"></script>
     <view:includePlugin name="calendar"/>
     <script type="text/javascript">
       function viewEvent( id, date, componentId )
@@ -94,10 +94,6 @@
         {
           var year = date.getFullYear(), month = inTwoDigits(date.getMonth()+1), day = inTwoDigits(date.getDate());
           return year + "/" + month + "/" + day;
-        }
-        
-        function isDate1AfterDate2(date1, date2) {
-        	return isD1AfterD2(date2.getFullYear(), date2.getMonth(), date2.getDate(), date1.getFullYear(), date1.getMonth(), date1.getDate());
         }
         
         function areDateEquals( date1, date2 ) {        	
@@ -172,7 +168,7 @@
           var event = events[i];
           var eventCss = event.className.join(' ');
           var startDate = $.fullCalendar.parseDate(event.start);
-          if (isDate1AfterDate2(now, startDate)) {
+          if (Date.today().compareTo(startDate) == 1) {
             startDate = now;
           }
           
