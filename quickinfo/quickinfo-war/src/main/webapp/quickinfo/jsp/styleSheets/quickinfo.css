@@ -21,3 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+ 
+ fieldset#infoFieldset legend {
+  background:transparent url(../../../util/icons/component/quickinfoSmall.gif) 11px 0px no-repeat;
+}
+
+fieldset#datesFieldset legend {
+  background:transparent url(../../../util/icons/calendar_1.png) 11px 0px no-repeat;
+}
+
+#infoFieldset .field, 
+#datesFieldset .field {
+  clear: both;
+  display: block;
+  float: none;
+  width: 98%;
+}
+
+#infoFieldset #nameArea input {
+  width: 46%;
+}

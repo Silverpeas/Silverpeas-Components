@@ -111,9 +111,9 @@ out.println(gef.getLookStyleSheet());
 %>
 
 <form name="toComponent" action="quickInfoEdit.jsp" method="post">
-        <input type="hidden" name="Action" value="changePage"/>
-        <input type="hidden" name="Id" value="<%=pubId%>"/>
-        <input type="hidden" name="page" value="2"/>
+  <input type="hidden" name="Action" value="changePage"/>
+  <input type="hidden" name="Id" value="<%=pubId%>"/>
+  <input type="hidden" name="page" value="2"/>
 </form>
 
 </body>
