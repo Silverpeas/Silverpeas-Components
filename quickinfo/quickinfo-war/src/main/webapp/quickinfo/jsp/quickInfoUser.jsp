@@ -54,7 +54,7 @@ function clipboardCopy() {
 	OperationPane operationPane = mainWin.getOperationPane();
 
 	// Clipboard
-	operationPane.addOperation(m_context+"/util/icons/copy.gif", generalMessage.getString("GML.copy"), "javascript:onClick=ClipboardCopy()");
+	operationPane.addOperation(m_context+"/util/icons/copy.gif", resources.getString("GML.copy"), "javascript:onClick=ClipboardCopy()");
 
 	out.println(mainWin.printBefore());
 	out.println(maFrame.printBefore());

@@ -36,7 +36,6 @@ import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 
@@ -64,15 +63,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     return new QuickInfoSessionController(mainSessionCtrl, componentContext);
   }
 
-  private void setGlobalInfo(QuickInfoSessionController quickInfo,
-      HttpServletRequest request) {
-    ResourceLocator settings = quickInfo.getSettings();
-    ResourceLocator messages = quickInfo.getMessage();
-
-    request.setAttribute("settings", settings);
-    request.setAttribute("messages", messages);
-  }
-
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
@@ -94,7 +84,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       if (function.startsWith("Main") || function.startsWith("quickInfoUser")
           || function.startsWith("quickInfoPublisher")) {
         Collection<PublicationDetail> infos = null;
-        setGlobalInfo(quickInfo, request);
         if ("publisher".equals(flag)) {
           infos = quickInfo.getQuickInfos();
           request.setAttribute("infos", infos);
@@ -121,7 +110,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         }
         Iterator<PublicationDetail> iterator = infos.iterator();
         request.setAttribute("infos", iterator);
-        setGlobalInfo(quickInfo, request);
         destination = "/quickinfo/jsp/portlet.jsp";
       } else if (function.startsWith("quickInfoEdit") || function.startsWith("searchResult")) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
@@ -136,7 +124,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
           }
 
           if ("Edit".equals(action)) {
-            setGlobalInfo(quickInfo, request);
             String id = request.getParameter("Id");
             request.setAttribute("Id", id);
             quickInfo.setPageId(QuickInfoSessionController.PAGE_HEADER);
@@ -146,30 +133,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
             request.setAttribute("info", quickInfoDetail);
             destination = "/quickinfo/jsp/quickInfoEdit.jsp";
 
-          } else if ("changePage".equals(action)) {
-            setGlobalInfo(quickInfo, request);
-            String id = request.getParameter("Id");
-            request.setAttribute("Id", id);
-            quickInfoDetail = quickInfo.getDetail(id);
-            request.setAttribute("info", quickInfoDetail);
-
-            String strPageId = request.getParameter("page");
-            int pageId = QuickInfoSessionController.PAGE_HEADER;
-            if (strPageId != null && !"".equals(strPageId)) {
-              pageId = Integer.parseInt(strPageId);
-            }
-            if (!quickInfo.isPdcUsed()) {
-              pageId = QuickInfoSessionController.PAGE_HEADER;
-            }
-            quickInfo.setPageId(pageId);
-            if (pageId == QuickInfoSessionController.PAGE_HEADER) {
-              destination = "/quickinfo/jsp/quickInfoEdit.jsp";
-            } else {
-              destination = "/quickinfo/jsp/pdcPositions.jsp";
-            }
-
           } else if ("Add".equals(action)) {
-            setGlobalInfo(quickInfo, request);
             request.setAttribute("info", null);
             destination = "/quickinfo/jsp/quickInfoEdit.jsp";
           } else if ("ReallyRemove".equals(action)) {

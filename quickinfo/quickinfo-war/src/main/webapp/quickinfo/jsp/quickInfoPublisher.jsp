@@ -95,8 +95,8 @@ function addQuickInfo() {
         operationPane.addOperation(m_context+"/util/icons/quickInfo_to_add.gif", resources.getString("creation"), "javascript:onClick=addQuickInfo()");
 
         // Clipboard
-        operationPane.addOperation(m_context+"/util/icons/copy.gif", generalMessage.getString("GML.copy"), "javascript:onClick=ClipboardCopyAll()");
-        operationPane.addOperation(m_context+"/util/icons/paste.gif", generalMessage.getString("GML.paste"),    "javascript:onClick=ClipboardPaste()");
+        operationPane.addOperation(m_context+"/util/icons/copy.gif", resources.getString("GML.copy"), "javascript:onClick=ClipboardCopyAll()");
+        operationPane.addOperation(m_context+"/util/icons/paste.gif", resources.getString("GML.paste"), "javascript:onClick=ClipboardPaste()");
 
         out.println(window.printBefore());
         out.println(maFrame.printBefore());

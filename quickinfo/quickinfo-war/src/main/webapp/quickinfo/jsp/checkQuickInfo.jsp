@@ -75,7 +75,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
 
   String language = resources.getLanguage();
-  ResourceLocator settings = (ResourceLocator) request.getAttribute("settings");
   String[] browseContext = (String[]) request.getAttribute("browseContext");
   String spaceLabel = browseContext[0];
   String componentLabel = browseContext[1];
@@ -83,16 +82,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   String componentId = browseContext[3];
   String quickinfoUrl = browseContext[4];
 
-  if (quickinfo == null)
-  {
+  if (quickinfo == null) {
       // No quickinfo session controller in the request -> security exception
       String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
       getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
       return;
-  }        
+  }
 
-  String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-  ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(quickinfo.getLanguage());
-  String m_context = iconsPath;
-        
+  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
