@@ -26,16 +26,14 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<html>
-<HEAD>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<TITLE></TITLE>
-</HEAD>
-
-<BODY>
-<form name="exportForm" action="ExportEmailsCsv" METHOD=POST>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<view:looknfeel/>
+</head>
+<body>
+<form name="exportForm" action="ExportEmailsCsv" method="post">
 </form>
 <%
 	String statusMessage = "";
@@ -57,7 +55,7 @@ out.println(gef.getLookStyleSheet());
 	}
 	else
 	{ %>
-		<script language="javascript">
+		<script type="text/javascript">
 			$.progressMessage();
 			document.exportForm.submit();
 		</script>
@@ -69,27 +67,26 @@ out.println(gef.getLookStyleSheet());
   out.println(frame.printBefore());
   out.println(board.printBefore());
 %>
-<CENTER>
+
 <% if (exportOk) { %>
+	<center>
 	<table width="100%" cellpadding="2" cellspacing="2" border="0">
 		<tr>
 			<td align="center"><span class="txtlibform"><%=statusMessage%></span></td>
 	    </tr>
 	    <tr>
-	    	<td align="center"><a href="<%=urlEmailCsv%>"><%=emailCsvFileName%></a>
+	    	<td align="center"><a href="<%=urlEmailCsv%>"><%=emailCsvFileName%></a></td>
 	    </tr>
 	 </table>
-	<% } %>
+	 </center>
+<% } %>
 <%
 	out.println(board.printAfter());
 	Button button = gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false);
-	out.print("<br/><center>"+button.print()+"</center>");
-%>
-</CENTER>
-<%
+	out.print("<br/>"+button.print());
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>

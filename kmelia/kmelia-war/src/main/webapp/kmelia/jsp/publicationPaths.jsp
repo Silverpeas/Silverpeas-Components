@@ -37,24 +37,20 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="tabManager.jsp.inc" %>
 
 <%
-//R�cup�ration des param�tres
 String 				wizard				= (String) request.getAttribute("Wizard");
 PublicationDetail 	publication 		= (PublicationDetail) request.getAttribute("Publication");
-Collection			pathList 			= (Collection) request.getAttribute("PathList");
+Collection<NodePK>	pathList 			= (Collection<NodePK>) request.getAttribute("PathList");
 String 				linkedPathString 	= (String) request.getAttribute("LinkedPathString");
-Collection 			topics				= (Collection) request.getAttribute("Topics");
+Collection<NodeDetail> topics			= (Collection<NodeDetail>) request.getAttribute("Topics");
 String				currentLang 		= (String) request.getAttribute("Language");
-List				otherComponents		= (List) request.getAttribute("OtherComponents");
-List				aliases				= (List) request.getAttribute("Aliases");
+List<Treeview>		components			= (List<Treeview>) request.getAttribute("Components");
+List<Alias>			aliases				= (List<Alias>) request.getAttribute("Aliases");
 
-// d�claration des variables
 String pubName 	= publication.getName(currentLang);
 String id 		= publication.getPK().getId();
 
-// d�claration des boutons
-Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "ViewPublication?PubId="+id, false);
-
+Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "ViewPublication?PubId="+id, false);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -124,7 +120,7 @@ out.println(gef.getLookStyleSheet());
 function sendData() {
 	var selectedPaths = getSelectedOjects();
 	if (selectedPaths.indexOf(',<%=componentId%>,') == -1) {
-		alert('<%=Encode.javaStringToHtmlString(Encode.javaStringToJsString(resources.getString("kmelia.LocalPathMandatory")))%>');
+		alert('<%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(resources.getString("kmelia.paths.mandatory")))%>');
 	} else {
 		document.getElementById("LoadedComponentIds").value=","+loadedPanes+",";
 		document.paths.submit();
@@ -159,7 +155,6 @@ function getObjects(selected) {
 	}
 	return items;
 }
-
 </script>
 </head>
 <body>
@@ -195,11 +190,8 @@ function getObjects(selected) {
         out.println(board.printBefore());
         
      	//regarder si la publication est dans la corbeille
-		Iterator itB = pathList.iterator();
-		while (itB.hasNext()) {
-    		NodePK node = (NodePK) itB.next();
-    		String nodeId = node.getId();
-    		if (nodeId.equals("1")) {
+		for (NodePK node : pathList) {
+    		if ("1".equals(node.getId())) {
     			//la publi est dans la corbeille
         		out.println(kmeliaScc.getString("kmelia.PubInBasket")+"<br/><br/>");
     		}
@@ -210,150 +202,129 @@ function getObjects(selected) {
         	<input type="hidden" name="LoadedComponentIds" id="LoadedComponentIds" value=""/> 
         	
         <%
-    	if(otherComponents.size() == 1 && topics != null && !topics.isEmpty())
-    	{
+    	if(topics != null && !topics.isEmpty()) {
+    	  	// toolbox case
     		out.println("<table>");
-    		Iterator iter = topics.iterator();
-    		while(iter.hasNext())
-    		{
-    			NodeDetail topic = (NodeDetail) iter.next();
-     			
-    			if (topic.getId() != 1 && topic.getId() != 2)
-    			{
-	    			//if(topic.getLevel() > 1)
-	    			//{ // on n'affiche pas le noeud racine
-	    				String name = topic.getName(currentLang);
-	    				
-	    				String ind = "";
-	    				if(topic.getLevel() > 2)
-	    				{// calcul chemin arbre
-	    					int sizeOfInd = topic.getLevel() - 2;
-	    					if(sizeOfInd > 0)
-	    					{
-	    						for(int i=0;i<sizeOfInd;i++)
-	    						{
-	    							ind += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-	    						}
-	    					}
+    		for (NodeDetail topic : topics) {
+    			if (topic.getId() != 1 && topic.getId() != 2) {
+    				String name = topic.getName(currentLang);
+    				
+    				String ind = "";
+    				if(topic.getLevel() > 2) { // calcul chemin arbre
+    					int sizeOfInd = topic.getLevel() - 2;
+    					if(sizeOfInd > 0) {
+    						for(int i=0;i<sizeOfInd;i++) {
+    							ind += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    						}
+    					}
+    				}
+    				name = ind + name;	
+    				
+    				// recherche si ce th�me est dans la liste des alias de la publication
+					String usedCheck = "";
+    				for (NodePK node : pathList) {
+	    				String nodeId = node.getId();
+	    				if (Integer.toString(topic.getId()).equals(nodeId)) {
+	    					usedCheck = " checked=\"checked\"";
 	    				}
-	    				name = ind + name;	
-	    				
-	    				// recherche si ce th�me est dans la liste des alias de la publication
-						String usedCheck = "";
-	    				Iterator it = pathList.iterator();
-	    				while (it.hasNext()) 
-		    			{
-		    				NodePK node = (NodePK) it.next();
-		    				String nodeId = node.getId();
-
-		    				if (Integer.toString(topic.getId()).equals(nodeId))
-		    					usedCheck = " checked";
-		    			}
-	    				
-	    				boolean displayCheckbox = false;
-	    				if (topic.getUserRole() == null  || !topic.getUserRole().equals("user"))
-	    					displayCheckbox = true;
-	    				
-	    	        	out.println("<tr><td width=\"10px\">");
-	    	        	if (displayCheckbox)
-	    	        		out.println("<input type=\"checkbox\" valign=\"absmiddle\" name=\"topicChoice\" value=\""+topic.getId()+","+topic.getNodePK().getInstanceId()+"\""+usedCheck+">");
-	    	        	else
-	    	        		out.println("&nbsp;");
-	    		    		    					
-	    	        	out.println("</td><td>"+name+"</td></tr>");
-	    			//}
+	    			}
+    				
+    				boolean displayCheckbox = false;
+    				if (topic.getUserRole() == null || !topic.getUserRole().equals("user")) {
+    					displayCheckbox = true;
+    				}
+    				
+    	        	out.println("<tr><td width=\"10px\">");
+    	        	if (displayCheckbox) {
+    	        		out.println("<input type=\"checkbox\" valign=\"absmiddle\" name=\"topicChoice\" value=\""+topic.getId()+","+topic.getNodePK().getInstanceId()+"\""+usedCheck+"/>");
+    	        	} else {
+    	        		out.println("&nbsp;");
+    	        	}
+    		    		    					
+    	        	out.println("</td><td>"+name+"</td></tr>");
     			}
     		}
     		out.println("</table>");
-    	}
-    	
-		out.println("<div id=\"accordion\" class=\"basic\">");
-
-    	Treeview treeview = null;
-    	String nbAliases = "";
-    	String panelTitle = "";
-    	for (int t=0; otherComponents.size() > 1 && t<otherComponents.size(); t++)
-    	{
-    		treeview = (Treeview) otherComponents.get(t);
-    		
-    		nbAliases = "";
-    		if (t == 0)
-    			panelTitle = "Emplacements locaux";
-    		else
-    			panelTitle = treeview.getPath();
-    		
-    		if (treeview.getNbAliases() > 0)
-    			nbAliases = "<span align=\"right\">"+treeview.getNbAliases()+" emplacement(s)</span>";
-%>
-			<a href="javascript: void(0)" id="<%=treeview.getComponentId()%>"><table width="100%" cellspacing="0" cellpadding="0"><tr><td><%=panelTitle%></td><td align="right"><%=nbAliases%></td></tr></table></a>
-				<div id="content_<%=treeview.getComponentId()%>" class="content">
-<%
-				out.println("<table border=\"0\">");
-				if (t == 0)
-				{
-	    			List otherTree = (List) treeview.getTree();
-	    			Iterator otherTopics = otherTree.iterator();
-	    			while(otherTopics.hasNext())
-	        		{
-	        			NodeDetail topic = (NodeDetail) otherTopics.next();
-	         			
-	        			if (topic.getId() != 1 && topic.getId() != 2)
-	        			{
+    	} else {
+    	  	// kmelia case
+			out.println("<div id=\"accordion\" class=\"basic\">");
+	
+	    	Treeview treeview = null;
+	    	String nbAliases = "";
+	    	String panelTitle = "";
+	    	for (int t=0; components != null && t<components.size(); t++) {
+	    		treeview = components.get(t);
+	    		
+	    		nbAliases = "";
+	    		if (t == 0) {
+	    			panelTitle = resources.getString("kmelia.paths.local");
+	    		} else {
+	    			panelTitle = treeview.getPath();
+	    		}
+	    		
+	    		if (treeview.getNbAliases() == 1) {
+	    			nbAliases = "<span align=\"right\">"+treeview.getNbAliases()+" "+resources.getString("kmelia.paths.path")+"</span>";
+	    		} else if (treeview.getNbAliases() > 1) {
+	    			nbAliases = "<span align=\"right\">"+treeview.getNbAliases()+" "+resources.getString("kmelia.paths.paths")+"</span>";
+	    		}  
+	%>
+				<a href="javascript: void(0)" id="<%=treeview.getComponentId()%>"><table width="100%" cellspacing="0" cellpadding="0"><tr><td><%=panelTitle%></td><td align="right"><%=nbAliases%></td></tr></table></a>
+					<div id="content_<%=treeview.getComponentId()%>" class="content">
+	<%
+					out.println("<table border=\"0\">");
+					if (t == 0) {
+		    			List<NodeDetail> otherTree = (List<NodeDetail>) treeview.getTree();
+		    			for (NodeDetail topic : otherTree) {
+		        			if (topic.getId() != 1 && topic.getId() != 2) {
 	    	    				String name = topic.getName(currentLang);
 	    	    				    	    			
 	    	    				String ind = "";
-	    	    				if(topic.getLevel() > 2)
-	    	    				{// calcul chemin arbre
+	    	    				if(topic.getLevel() > 2) { // calcul chemin arbre
 	    	    					int sizeOfInd = topic.getLevel() - 2;
-	    	    					if(sizeOfInd > 0)
-	    	    					{
-	    	    						for(int i=0;i<sizeOfInd;i++)
-	    	    						{
+	    	    					if(sizeOfInd > 0) {
+	    	    						for(int i=0;i<sizeOfInd;i++) {
 	    	    							ind += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	    	    						}
 	    	    					}
 	    	    				}
 	    	    				name = ind + name;
 	    	    				
-	    	    				// recherche si ce th�me est dans la liste des th�mes de la publication
+	    	    				// recherche si ce dossier est dans la liste des dossiers de la publication
 	    	    				String aliasDecoration = "&nbsp;";
 	    	    				String checked = "";
-	    	    				Iterator it = aliases.iterator();
-	    	    				while (it.hasNext()) 
-	    		    			{
-	    		    				Alias alias = (Alias) it.next();
-	    		    				String nodeId = alias.getId();
-	    		    				
-	    		    				if (Integer.toString(topic.getId()).equals(nodeId) && topic.getNodePK().getInstanceId().equals(alias.getInstanceId()))
-	    		    				{
-	    		    					checked = " checked";
-	    		    					if (!alias.getInstanceId().equals(componentId))
+	    	    				for (Alias alias : aliases) {
+	    		    				String nodeId = alias.getId();	    		    				
+	    		    				if (Integer.toString(topic.getId()).equals(nodeId) && topic.getNodePK().getInstanceId().equals(alias.getInstanceId())) {
+	    		    					checked = " checked=\"checked\"";
+	    		    					if (!alias.getInstanceId().equals(componentId)) {
 	    		    						aliasDecoration = "<i>"+alias.getUserName()+" - "+resources.getOutputDateAndHour(alias.getDate())+"</i>";
+	    		    					}
 	    		    				}
 	    		    			}
 	    	    				boolean displayCheckbox = false;
-	    	    				if (topic.getUserRole() ==null  || topic.getUserRole().equals("admin") || topic.getUserRole().equals("publisher"))
+	    	    				if (topic.getUserRole()==null || topic.getUserRole().equals("admin") || topic.getUserRole().equals("publisher")) {
 	    	    					displayCheckbox = true;
+	    	    				}
 	    	    	        	out.println("<tr><td width=\"10px\">");
-	    	    	        	if (displayCheckbox)
+	    	    	        	if (displayCheckbox) {
 	    	    	        		out.println("<input type=\"checkbox\" valign=\"absmiddle\" name=\"topicChoice\" value=\""+topic.getId()+","+topic.getNodePK().getInstanceId()+"\""+checked+">");
-	    	    	        	else
+	    	    	        	} else {
 	    	    	        		out.println("&nbsp;");
+	    	    	        	}
 	    	    	        	out.println("</td><td nowrap=\"nowrap\">"+name+"</td><td align=\"right\">"+aliasDecoration+"</td></tr>");
-	        			}
-	        			
-	        		}
-				}
-				else
-				{
-					out.println("<tr><td>Chargement en cours...</td></tr>");
-				}
-				out.println("</table>");
-%>
-				</div>
-<%  			
+		        			}
+		        			
+		        		}
+					} else {
+						out.println("<tr><td>Chargement en cours...</td></tr>");
+					}
+					out.println("</table>");
+	%>
+					</div>
+	<%  			
+	    	}
+	    	out.println("</div>");
     	}
-    	out.println("</div>"); 
     	out.println("</form>");
     	
     	out.println(board.printAfter());
@@ -361,7 +332,7 @@ function getObjects(selected) {
     	ButtonPane buttonPane = gef.getButtonPane();
     	buttonPane.addButton(validateButton);
     	buttonPane.addButton(cancelButton);
-    	out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
+    	out.println("<br/>"+buttonPane.print());
     	
         out.println(frame.printAfter());
         out.println(window.printAfter());

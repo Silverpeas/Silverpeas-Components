@@ -45,7 +45,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -1509,7 +1508,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   
   private boolean isManualSortingUsed(List<KmeliaPublication> publications) {
     for (KmeliaPublication publication : publications) {
-      if (publication.getRank() != 0) {
+      if (publication.getDetail().getExplicitRank() > 0) {
         return true;
       }
     }
@@ -4000,70 +3999,59 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @return a List of Treeview
    * @throws RemoteException
    */
-  public List<Treeview> getOtherComponents(List<Alias> aliases) throws RemoteException {
+  public List<Treeview> getComponents(List<Alias> aliases) throws RemoteException {
     List<String> instanceIds = new ArrayList<String>();
     List<Treeview> result = new ArrayList<Treeview>();
     String instanceId = null;
     List<NodeDetail> tree = null;
     NodePK root = new NodePK(NodePK.ROOT_NODE_ID);
 
-    if (KmeliaHelper.isToolbox(getComponentId())) {
-      root.setComponentName(getComponentId());
-      tree = getKmeliaBm().getTreeview(root, "useless", false, false, getUserId(), false,
-              StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
-                  instanceId, "rightsOnTopics")));
+    List<SpaceInstLight> spaces = getOrganizationController().getSpaceTreeview(getUserId());
+    for (SpaceInstLight space : spaces) {
+      String path = "";
+      String[] componentIds = getOrganizationController().getAvailCompoIdsAtRoot(
+              space.getFullId(), getUserId());
+      for (String componentId : componentIds) {
+        instanceId = componentId;
 
-      Treeview treeview = new Treeview(getComponentLabel(), tree, getComponentId());
+        if (instanceId.startsWith("kmelia")) {
+          String[] profiles =
+              getOrganizationController().getUserProfiles(getUserId(), instanceId);
+          String bestProfile = KmeliaHelper.getProfile(profiles);
+          if (SilverpeasRole.admin.isInRole(bestProfile) ||
+              SilverpeasRole.publisher.isInRole(bestProfile) ||
+              instanceId.equals(getComponentId())) {
+            instanceIds.add(instanceId);
+            root.setComponentName(instanceId);
 
-      treeview.setNbAliases(getNbAliasesInComponent(aliases, instanceId));
+            if (instanceId.equals(getComponentId())) {
+              tree = getKmeliaBm().getTreeview(root, "useless", false, false, getUserId(),
+                      false, StringUtil.getBooleanValue(getOrganizationController().
+                          getComponentParameterValue(instanceId, "rightsOnTopics")));
+            }
 
-      result.add(treeview);
-    } else {
-      List<SpaceInstLight> spaces = getOrganizationController().getSpaceTreeview(getUserId());
-      for (SpaceInstLight space : spaces) {
-        String path = "";
-        String[] componentIds = getOrganizationController().getAvailCompoIdsAtRoot(
-                space.getFullId(), getUserId());
-        for (String componentId : componentIds) {
-          instanceId = componentId;
-
-          if (instanceId.startsWith("kmelia")) {
-            String[] profiles =
-                getOrganizationController().getUserProfiles(getUserId(), instanceId);
-            String bestProfile = KmeliaHelper.getProfile(profiles);
-            if ("admin".equalsIgnoreCase(bestProfile) || "publisher".equalsIgnoreCase(bestProfile)) {
-              instanceIds.add(instanceId);
-              root.setComponentName(instanceId);
-
-              if (instanceId.equals(getComponentId())) {
-                tree = getKmeliaBm().getTreeview(root, "useless", false, false, getUserId(),
-                        false, StringUtil.getBooleanValue(getOrganizationController().
-                            getComponentParameterValue(instanceId, "rightsOnTopics")));
-              }
-
-              if (!StringUtil.isDefined(path)) {
-                List<SpaceInst> sPath = getOrganizationController().getSpacePath(space.getFullId());
-                boolean first = true;
-                for (SpaceInst spaceInPath : sPath) {
-                  if (!first) {
-                    path += " > ";
-                  }
-                  path += spaceInPath.getName();
-                  first = false;
+            if (!StringUtil.isDefined(path)) {
+              List<SpaceInst> sPath = getOrganizationController().getSpacePath(space.getFullId());
+              boolean first = true;
+              for (SpaceInst spaceInPath : sPath) {
+                if (!first) {
+                  path += " > ";
                 }
+                path += spaceInPath.getName();
+                first = false;
               }
+            }
 
-              Treeview treeview = new Treeview(path + " > "
-                      + getOrganizationController().getComponentInstLight(instanceId).getLabel(),
-                      tree, instanceId);
+            Treeview treeview = new Treeview(path + " > "
+                    + getOrganizationController().getComponentInstLight(instanceId).getLabel(),
+                    tree, instanceId);
 
-              treeview.setNbAliases(getNbAliasesInComponent(aliases, instanceId));
+            treeview.setNbAliases(getNbAliasesInComponent(aliases, instanceId));
 
-              if (instanceId.equals(getComponentId())) {
-                result.add(0, treeview);
-              } else {
-                result.add(treeview);
-              }
+            if (instanceId.equals(getComponentId())) {
+              result.add(0, treeview);
+            } else {
+              result.add(treeview);
             }
           }
         }

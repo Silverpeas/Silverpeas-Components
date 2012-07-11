@@ -111,7 +111,7 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
   @Override
   protected void performTemplateData(final String language, final PostDetail resource,
       final SilverpeasTemplate template) {
-    getNotification().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData().addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("blog", resource);
     template.setAttribute("blogName", resource.getPublication().getName(language));
     template.setAttribute("blogDate", DateUtil.getOutputDate(resource.getDateEvent(), language));
@@ -128,7 +128,7 @@ public class BlogUserNotification extends AbstractTemplateUserNotificationBuilde
     }
     template.setAttribute("blogCategorie", categorieName);
     template.setAttribute("senderName", (userDetail != null ? userDetail.getDisplayedName() : ""));
-    template.setAttribute("silverpeasURL", getNotification().getLink());
+    template.setAttribute("silverpeasURL", getNotificationMetaData().getLink());
   }
 
   @Override

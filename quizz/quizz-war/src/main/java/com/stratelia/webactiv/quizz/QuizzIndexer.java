@@ -25,7 +25,6 @@
 package com.stratelia.webactiv.quizz;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -41,12 +40,9 @@ public class QuizzIndexer implements ComponentIndexerInterface {
       ComponentContext context) throws QuizzException {
     try {
       scc = new QuizzSessionController(mainSessionCtrl, context);
-      Collection quizzes = scc.getAdminQuizzList();
-      Iterator itQ = quizzes.iterator();
-      while (itQ.hasNext()) {
-        QuestionContainerHeader quizzHeader = (QuestionContainerHeader) itQ
-            .next();
-        scc.updateQuizzHeader(quizzHeader, quizzHeader.getPK().getId());
+      Collection<QuestionContainerHeader> quizzes = scc.getAdminQuizzList();
+      for (QuestionContainerHeader questionContainerHeader : quizzes) {
+        scc.updateQuizzHeader(questionContainerHeader, questionContainerHeader.getPK().getId());
       }
     } catch (Exception e) {
       throw new QuizzException("QuizzIndexer.index", QuizzException.WARNING,

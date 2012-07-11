@@ -40,6 +40,8 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHead
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 
 public class GoToQuizz extends GoTo {
+  private static final long serialVersionUID = -25530750219633841L;
+
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     QuestionContainerPK questionContainerPK = new QuestionContainerPK(objectId);

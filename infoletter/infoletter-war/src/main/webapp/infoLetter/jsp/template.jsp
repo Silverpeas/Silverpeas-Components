@@ -23,28 +23,23 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 
 <%
 InfoLetter infoLetter = (InfoLetter) request.getAttribute("InfoLetter");
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="Javascript">
-</script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "#");
-	
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
 	out.flush();
@@ -54,6 +49,5 @@ out.println(gef.getLookStyleSheet());
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-
-</BODY>
-</HTML>
+</body>
+</html>

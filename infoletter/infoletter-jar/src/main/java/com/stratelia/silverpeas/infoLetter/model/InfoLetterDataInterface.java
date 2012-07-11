@@ -23,11 +23,12 @@
  */
 package com.stratelia.silverpeas.infoLetter.model;
 
-import com.stratelia.silverpeas.infoLetter.*;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.sql.Connection;
 import java.util.Collection;
-import java.util.Vector;
+import java.util.List;
+
+import com.stratelia.silverpeas.infoLetter.InfoLetterException;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * Interface declaration
@@ -44,64 +45,122 @@ public interface InfoLetterDataInterface {
    */
   public Connection openConnection() throws InfoLetterException;
 
-  // Creation d'une lettre d'information
-  public void createInfoLetter(InfoLetter ie);
+  /**
+   * Create information letter
+   * @param il the information letter to create
+   */
+  public void createInfoLetter(InfoLetter il);
 
-  // Suppression d'une lettre d'information
+  /**
+   * Delete information letter
+   * @param pk the information letter primary key to delete
+   */
   public void deleteInfoLetter(WAPrimaryKey pk);
 
-  // Mise a jour d'une lettre d'information
-  public void updateInfoLetter(InfoLetter ie);
+  /**
+   * Update information letter
+   * @param il the information letter to update
+   */
+  public void updateInfoLetter(InfoLetter il);
 
-  // Recuperation de la liste des lettres
-  public Vector getInfoLetters(String instanceId);
+  /**
+   * Retrieve information letters
+   * @param applicationId the application identifier
+   * @return the information letters of the current application identifier given in parameter
+   */
+  public List<InfoLetter> getInfoLetters(String applicationId);
 
-  // Recuperation de la liste des publications
-  public Vector getInfoLetterPublications(WAPrimaryKey letterPK);
+  /**
+   * Retrieve information letter publications
+   * @param letterPK the information letter primary key
+   * @return the list of information letter publications of an information letter
+   */
+  public List<InfoLetterPublication> getInfoLetterPublications(WAPrimaryKey letterPK);
 
-  // Creation d'une publication
-  public void createInfoLetterPublication(InfoLetterPublicationPdC ilp,
-      String userId);
+  /**
+   * Create information letter publication
+   * @param ilp the information letter publication pdc to create
+   * @param userId the creator user identifier
+   */
+  public void createInfoLetterPublication(InfoLetterPublicationPdC ilp, String userId);
 
-  // Suppression d'une publication
+  /**
+   * Delete information letter publication
+   * @param pk the information letter publication primary key
+   * @param componentId the component identifier
+   */
   public void deleteInfoLetterPublication(WAPrimaryKey pk, String componentId);
 
-  // Mise a jour d'une publication
+  /**
+   * Update information letter publication
+   * @param ilp the information letter publication to update
+   */
   public void updateInfoLetterPublication(InfoLetterPublicationPdC ilp);
 
-  // Validation d'une publication
+  /**
+   * Validate information letter publication
+   * @param ilp the information letter publication to validate
+   */
   public void validateInfoLetterPublication(InfoLetterPublication ilp);
 
-  // Recuperation d'une lettre par sa clef
+  /**
+   * Retrieve an information letter from his primary key
+   * @param letterPK the letter primary key
+   * @return the infirmation letter
+   */
   public InfoLetter getInfoLetter(WAPrimaryKey letterPK);
 
-  // Recuperation d'une publication par sa clef
+  /**
+   * Retrieve information letter publication from his key
+   * @param publiPK the information letter publication primary key
+   * @return an Information Letter Publication PdC
+   */
   public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK);
 
-  // Creation de la lettre par defaut a l'instanciation
+  /**
+   * Create a default Info Letter when instanciated
+   * @param spaceId the space identifier
+   * @param componentId the component identifier
+   * @return a default Info Letter
+   */
   public InfoLetter createDefaultLetter(String spaceId, String componentId);
 
-  // Recuperation de la liste des abonnes internes
-  public Vector getInternalSuscribers(WAPrimaryKey letterPK);
+  /**
+   * @param letterPK the information letter primary key
+   * @return the list of internal subscribers link to the Information Letter given in parameter
+   */
+  public InternalSubscribers getInternalSuscribers(WAPrimaryKey letterPK);
 
-  // Mise a jour de la liste des abonnes internes
-  public void setInternalSuscribers(WAPrimaryKey letterPK, Vector abonnes);
+  /**
+   * Update internal user subscribers list
+   * @param letterPK the information letter identifier (primary key)
+   * @param internalSubscribers the InternalSubscribers which contains users and groups of users
+   */
+  public void setInternalSuscribers(WAPrimaryKey letterPK, InternalSubscribers internalSubscribers);
 
   // Recuperation de la liste des emails externes
   public Collection<String> getExternalsSuscribers(WAPrimaryKey letterPK);
 
-  // Sauvegarde de la liste des emails externes
+  /**
+   * Save external subscriber emails address 
+   * @param letterPK the letter primary key
+   * @param emails the list of external emails to save
+   */
   public void setExternalsSuscribers(WAPrimaryKey letterPK, Collection<String> emails);
 
   // abonnement ou desabonnement d'un utilisateur interne
   public void toggleSuscriber(String userId, WAPrimaryKey letterPK, boolean flag);
 
-  // test d'abonnement d'un utilisateur interne
+  /**
+   * Check if use is an internal subscriber of the information letter
+   * @param userId the user identifier
+   * @param letterPK the letter primary key
+   * @return true if user is a subscriber, false else if
+   */
   public boolean isSuscriber(String userId, WAPrimaryKey letterPK);
 
   // initialisation du template
-  public void initTemplate(String spaceId, String componentId,
-      WAPrimaryKey letterPK);
+  public void initTemplate(String spaceId, String componentId, WAPrimaryKey letterPK);
 
   public int getSilverObjectId(String pubId, String componentId);
 }

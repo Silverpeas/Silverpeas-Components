@@ -32,15 +32,18 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ include file="checkQuizz.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+
 <%
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
-
-<% out.println(gef.getLookStyleSheet()); %>
-<script language="JavaScript">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<view:looknfeel />
+<script language="javascript">
 <!--
 function MM_openBrWindow(theURL,winName,features) { //v2.0
   window.open(theURL,winName,features);
@@ -48,8 +51,8 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
 //-->
 </script>
 </head>
-<body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<SCRIPT language="JavaScript">
+<body bgcolor="#FFFFFF">
+<script language="javascript">
 <!--
 //  InitBulle("txtnote","000000","intfdcolor2",2,90);
 //-->
@@ -57,7 +60,7 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
   {
     return;
   }
-</SCRIPT>
+</script>
 <!--  -->
 
 <%
@@ -90,51 +93,53 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
   out.println(frame.printBefore());
 
   // Quizz Header %>
-  <span class="titreFenetre"><br>&nbsp;&nbsp;&nbsp;<%=quizzDetail.getHeader().getTitle()%></span>
+  <span class="titreFenetre"><br/>&nbsp;&nbsp;&nbsp;<%=quizzDetail.getHeader().getTitle()%></span>
   <blockquote> 
     <p><span class="sousTitreFenetre"><%=quizzDetail.getHeader().getDescription()%></span></p>
     <%
-    if (quizzDetail.getHeader().getComment() != null)
-    {
-      out.println("<p>"+resources.getString("QuizzNotice")+"&nbsp;&nbsp;");
+    if (quizzDetail.getHeader().getComment() != null) {
+%>
+      <p>
+<%      
+      out.println(resources.getString("QuizzNotice")+"&nbsp;&nbsp;");
       out.println(quizzDetail.getHeader().getComment()); %>
-      <br>
-      <br>
+      <br/>
+      <br/>
       </p>
     <% } %>
   </blockquote>
-  <FORM>
+  <form>
   <table width="100%" border="0">
   <%  //Questions
-    Collection quizzQuestions = quizzDetail.getQuestions();
-    Iterator i = quizzQuestions.iterator();
+    Collection<Question> quizzQuestions = quizzDetail.getQuestions();
+    Iterator<Question> i = quizzQuestions.iterator();
     while (i.hasNext()) {
       Question quizzQuestion = (Question) i.next(); %>
-      <tr><td class="intfdcolor4" nowrap width="41%"><span class="txtlibform">&nbsp;<img src="icons/1pxRouge.gif" width=5 height=5>&nbsp;<%=quizzQuestion.getLabel()%>&nbsp;</td>
+      <tr><td class="intfdcolor4" nowrap width="41%"><span class="txtlibform">&nbsp;<img src="icons/1pxRouge.gif" width=5 height=5/>&nbsp;<%=quizzQuestion.getLabel()%>&nbsp;</td>
           <td class="intfdcolor4" align="center" nowrap><%=quizzQuestion.getNbPointsMax()%> pts</td>
           <td class="intfdcolor4" align="center" nowrap> <%
             if (quizzQuestion.getClue() != null){ %>
-              <a href="#" onClick="MM_openBrWindow('quizzClue.jsp?quizz_id='+<%=quizzDetail.getHeader().getPK().getId()%>+'&question_id='+<%=quizzQuestion.getPK().getId()%>,'indice','width=570,height=220')"><%=resources.getString("QuizzSeeClue")%></a> (<%=resources.getString("QuizzPenalty")%> = <%=quizzQuestion.getCluePenalty()%> pts)
+              <a href="#" onclick="MM_openBrWindow('quizzClue.jsp?quizz_id='+<%=quizzDetail.getHeader().getPK().getId()%>+'&question_id='+<%=quizzQuestion.getPK().getId()%>,'indice','width=570,height=220')"><%=resources.getString("QuizzSeeClue")%></a> (<%=resources.getString("QuizzPenalty")%> = <%=quizzQuestion.getCluePenalty()%> pts)
               <% } %>
           </td>
       </tr> <%
       //Answers
-      Collection questionAnswers = quizzQuestion.getAnswers();
-      Iterator j = questionAnswers.iterator();
+      Collection<Answer> questionAnswers = quizzQuestion.getAnswers();
+      Iterator<Answer> j = questionAnswers.iterator();
       while (j.hasNext()) {
         Answer questionAnswer = (Answer) j.next(); %>
         <tr><td colspan="3"><table><tr>
             <% if (questionAnswer.getImage() != null) { %>
-                <td><img src="icons/<%=questionAnswer.getImage()%>" align="left"></td>
+                <td><img src="icons/<%=questionAnswer.getImage()%>" align="left"/></td>
             <% } else { %>
                 <td width=50>&nbsp;</td>
             <% } %>
             <% if (quizzQuestion.isQCM()) { %>
-                <td><input type="checkbox" name="chk_<%=quizzQuestion.getPK().getId()%>_<%=j%>" value="on">&nbsp;<%=questionAnswer.getLabel()%></td>
+                <td><input type="checkbox" name="chk_<%=quizzQuestion.getPK().getId()%>_<%=j%>" value="on"/>&nbsp;<%=questionAnswer.getLabel()%></td>
             <% } else { %>
-                <td><input type="radio" name="opt_question<%=quizzQuestion.getPK().getId()%>" value="<%=questionAnswer.getPK().getId()%>">&nbsp;<%=questionAnswer.getLabel()%>
+                <td><input type="radio" name="opt_question<%=quizzQuestion.getPK().getId()%>" value="<%=questionAnswer.getPK().getId()%>"/>&nbsp;<%=questionAnswer.getLabel()%>
                 <% if (questionAnswer.isOpened()) { %>
-                    <br><textarea rows=5 cols=40 name="txa_question<%=quizzQuestion.getPK().getId()%>"></textarea><% } %>
+                    <br/><textarea rows=5 cols=40 name="txa_question<%=quizzQuestion.getPK().getId()%>"></textarea><% } %>
                 </td><% } %>
             </tr></table></td>
         </tr><%
@@ -142,7 +147,7 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
       <tr><td colspan="3"><hr noshade size=1 width=98% align=center></td></tr><%
     } %>
     <tr> 
-      <td colspan="3"><span class="txtnote">(<img src="icons/1pxRouge.gif" width="5" height="5">&nbsp;=&nbsp;<%=resources.getString("GML.requiredField")%>)</td>
+      <td colspan="3"><span class="txtnote">(<img src="icons/1pxRouge.gif" width="5" height="5"/>&nbsp;=&nbsp;<%=resources.getString("GML.requiredField")%>)</td>
     </tr>
    </table>
      <%
@@ -156,8 +161,8 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
       out.println(frame.printAfter());
       out.println(window.printAfter());
       %>
-</FORM>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>
 
 

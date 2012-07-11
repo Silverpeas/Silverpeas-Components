@@ -37,9 +37,10 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 }
 %>
 <%@ include file="check.jsp" %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 String parutionTitle = (String) request.getAttribute("parutionTitle");
@@ -47,22 +48,19 @@ String parution = (String) request.getAttribute("parution");
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function goFiles (){
 	document.attachedFiles.submit();
 }
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + Encode.javaStringToHtmlString(parutionTitle));
+	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));
 	out.println(window.printBefore());
  
 	//Instanciation du cadre avec le view generator
-	out.println(frame.printBefore());	
-
+	out.println(frame.printBefore());
 %>
 
 	<table width="100%">
@@ -80,13 +78,11 @@ function goFiles (){
 		</td></tr>
 	</table>
 	<form name="attachedFiles" action="FilesView" method="post">			
-		<input type="hidden" name="parution" value="<%= parution %>">
+		<input type="hidden" name="parution" value="<%= parution %>"/>
 	</form>
 <%
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</form>
-</BODY>
-</HTML>
-
+</body>
+</html>

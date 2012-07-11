@@ -29,6 +29,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -575,41 +576,32 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     loadCurrentAlbum();
   }
 
-  public void sortPhotos() {
-    if (tri.equals("CreationDateAsc")) {
-      GSCCreationDateComparatorAsc comparateur = new GSCCreationDateComparatorAsc();
-      Collections.sort(currentAlbum.getPhotos(), comparateur);
-    } else if (tri.equals("CreationDateDesc")) {
-      GSCCreationDateComparatorDesc comparateur = new GSCCreationDateComparatorDesc();
-      Collections.sort(currentAlbum.getPhotos(), comparateur);
-    } else if (tri.equals("Size")) {
-      GSCSizeComparatorAsc comparateur = new GSCSizeComparatorAsc();
-      Collections.sort(currentAlbum.getPhotos(), comparateur);
-    } else if (tri.equals("Title")) {
-      GSCTitleComparatorAsc comparateur = new GSCTitleComparatorAsc();
-      Collections.sort(currentAlbum.getPhotos(), comparateur);
-    } else if (tri.equals("Author")) {
-      GSCAuthorComparatorAsc comparateur = new GSCAuthorComparatorAsc();
-      Collections.sort(currentAlbum.getPhotos(), comparateur);
-    }
+  private void sortPhotos() {
+    sort(currentAlbum.getPhotos());
   }
 
-  public void sortPhotosSearch() {
+  private void sortPhotosSearch() {
+    sort((List<PhotoDetail>) getSearchResultListPhotos());
+    sort((List<PhotoDetail>) getRestrictedListPhotos());
+  }
+
+  private void sort(final List<PhotoDetail> photos) {
+    final Comparator<PhotoDetail> comparateur;
     if (tri.equals("CreationDateAsc")) {
-      GSCCreationDateComparatorAsc comparateur = new GSCCreationDateComparatorAsc();
-      Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
+      comparateur = new GSCCreationDateComparatorAsc();
     } else if (tri.equals("CreationDateDesc")) {
-      GSCCreationDateComparatorDesc comparateur = new GSCCreationDateComparatorDesc();
-      Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
+      comparateur = new GSCCreationDateComparatorDesc();
     } else if (tri.equals("Size")) {
-      GSCSizeComparatorAsc comparateur = new GSCSizeComparatorAsc();
-      Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
+      comparateur = new GSCSizeComparatorAsc();
     } else if (tri.equals("Title")) {
-      GSCTitleComparatorAsc comparateur = new GSCTitleComparatorAsc();
-      Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
+      comparateur = new GSCTitleComparatorAsc();
     } else if (tri.equals("Author")) {
-      GSCAuthorComparatorAsc comparateur = new GSCAuthorComparatorAsc();
-      Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
+      comparateur = new GSCAuthorComparatorAsc();
+    } else {
+      comparateur = null;
+    }
+    if (comparateur != null) {
+      Collections.sort(photos, comparateur);
     }
   }
 
@@ -875,7 +867,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       result = getGalleryBm().search(query);
 
       // mise à jour de la liste
-      // setSearchResultListPhotos(result);
       isSearchResult = true;
 
       // sauvegarde de la recherche

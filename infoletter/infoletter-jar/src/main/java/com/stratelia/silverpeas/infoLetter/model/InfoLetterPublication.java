@@ -27,8 +27,8 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
-public class InfoLetterPublication extends SilverpeasBean implements Comparable {
-
+public class InfoLetterPublication extends SilverpeasBean implements Comparable<InfoLetter> {
+  private static final long serialVersionUID = 2579802983989822400L;
   public final static int PUBLICATION_EN_REDACTION = 1;
   public final static int PUBLICATION_VALIDEE = 2;
 
@@ -153,9 +153,10 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable 
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
-  public int compareTo(Object obj) {
-    if (!(obj instanceof InfoLetter))
+  public int compareTo(InfoLetter obj) {
+    if (!(obj instanceof InfoLetter)) {
       return 0;
+    }
     return (String.valueOf(getPK().getId())).compareTo(String
         .valueOf(((InfoLetter) obj).getPK().getId()));
   }
@@ -168,6 +169,3 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable 
     return (publicationState == PUBLICATION_VALIDEE);
   }
 }
-/*************************
- *** Fin du fichier ***
- ************************/

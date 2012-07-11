@@ -38,11 +38,7 @@
 <%@ include file="checkQuestionReply.jsp" %>
 <%
 	Question question = (Question) request.getAttribute("question");
-	String creationDate = resource.getOutputDate(question.getCreationDate());
-	String creator = question.readCreatorName();
 	Reply reply = (Reply) request.getAttribute("reply");
-	String creationDateR = resource.getOutputDate(reply.getCreationDate());
-	String creatorR = reply.readCreatorName();
 	
 	Collection<NodeDetail> allCategories = (Collection) request.getAttribute("AllCategories");
 	String categoryId = null;
@@ -63,8 +59,6 @@ function isCorrectForm() {
 	var title = document.forms[0].title.value;
 	var content = document.forms[0].content;
 	var titleR = document.forms[0].titleR.value;
-	var contentR = document.forms[0].contentR;
-
         
 	if (isWhitespace(title)) {
            errorMsg+="  - '<fmt:message key="questionReply.question"/>' <fmt:message key="GML.MustBeFilled"/>\n";
@@ -78,12 +72,7 @@ function isCorrectForm() {
 	if (isWhitespace(titleR)) {
            errorMsg+="  - '<fmt:message key="questionReply.reponse"/>'<fmt:message key="GML.MustBeFilled"/>\n";
            errorNb++; 
-        }              
-	
-     	if (!isValidTextArea(contentR)) {
-     		errorMsg+="  - '<fmt:message key="GML.description" />'<fmt:message key="questionReply.containsTooLargeText" /><fmt:message key="questionReply.nbMaxTextArea" /><fmt:message key="questionReply.characters" />\n";
-           	errorNb++; 
-		}  	  	
+        }
 		
      switch(errorNb)
      {
@@ -122,8 +111,6 @@ $(document).ready(function() {
 <view:window>
 <view:frame>
 <view:board>
-
-
   <form method="post" name="myForm" action="<%=routerUrl%>EffectiveCreateQR">
     <table cellpadding="5" width="100%">
 	<tr>
@@ -159,18 +146,10 @@ $(document).ready(function() {
 		<td><textarea cols="120" rows="5" name="content"></textarea></td>
 	</tr>
 	<tr> 
-		<td class="txtlibform"><fmt:message key="GML.date" /> :</td>
-		<td><%=creationDate%></td>
-	</tr>
-	<tr> 
-		<td class="txtlibform"><fmt:message key="GML.publisher" /> :</td>
-		<td><%=creator%></td>
-	</tr>
-	<tr> 
 		<td colspan="2">
-			<table width="70%" align="center" border=0 cellpadding=0 cellspacing=0>
+			<table width="70%" align="center" border="0" cellpadding="0" cellspacing="0">
 				<tr>
-					<td align="center" class="intfdcolor"  height="1px"><img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("pdcPeas.noColorPix")%>" /></td>
+					<td align="center" class="intfdcolor" height="1px"><img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("pdcPeas.noColorPix")%>" /></td>
 				</tr>
 			</table>
 		</td>
@@ -183,21 +162,13 @@ $(document).ready(function() {
 		<td class="txtlibform"><fmt:message key="GML.description" /> :</td>
 		<td><textarea cols="120" rows="5" name="contentR" id="contentR"></textarea></td>
 	</tr>
-	<tr> 
-		<td class="txtlibform"><fmt:message key="GML.date" /> :</td>
-		<td><%=creationDateR%></td>
-	</tr>
-	<tr> 
-		<td class="txtlibform"><fmt:message key="GML.publisher" /> :</td>
-		<td><%=creatorR%></td>
-	</tr>
 	<tr>				 
 		<td colspan="2"><span class="txt">(<img alt="<%=resource.getString("GML.requiredField")%>"  src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /> :<fmt:message key="GML.requiredField" />)</span></td>
 	</tr>
 </table>
   </form>
 </view:board>
-<br/>
+</br>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));

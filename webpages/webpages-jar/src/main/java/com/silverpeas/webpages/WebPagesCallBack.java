@@ -25,6 +25,7 @@
 package com.silverpeas.webpages;
 
 import com.silverpeas.webpages.model.WebPagesRuntimeException;
+import com.silverpeas.webpages.notification.WebPagesUserNotifier;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -101,11 +102,8 @@ public class WebPagesCallBack implements CallBack {
     return (!pubId.startsWith("Node") && (action == CallBackManager.ACTION_ON_WYSIWYG));
   }
 
-  public void externalElementsOfWebPagesHaveChanged(String componentId,
-      String userId) {
-    NodePK nodePK = new NodePK("0", componentId);
-    WebPagesNotifier notifier = new WebPagesNotifier();
-    notifier.sendSubscriptionsNotification(nodePK, userId);
+  public void externalElementsOfWebPagesHaveChanged(String componentId, String userId) {
+    WebPagesUserNotifier.notify(new NodePK("0", componentId), userId);
   }
 
 }

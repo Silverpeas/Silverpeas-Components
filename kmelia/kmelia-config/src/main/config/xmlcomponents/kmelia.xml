@@ -34,7 +34,7 @@
     <message lang="de">Dokumentenverwaltung</message>
   </label>
   <description>
-    <message lang="fr">Les publications offrent la possibilité de regrouper en 
+    <message lang="fr">Les publications offrent la possibilité de regrouper en
 		une seule et même page des méta-données, des fichiers joints (avec suivi des
 		modifications) ainsi qu’un contenu libre (Wysiwyg) ou structuré (formulaire).
 		Elles sont organisées dans une arborescence de dossiers. Les utilisateurs peuvent
@@ -103,12 +103,12 @@
       </help>
     </profile>
     <profile name="user">
-      <label>      
+      <label>
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
-      <help>      
+      <help>
         <message lang="fr">Les lecteurs accèdent aux publications, s'abonnent aux différents dossiers et peuvent laisser des commentaires sur les publications.</message>
         <message lang="en">Readers have access to publications, subscribe to various folders and can leave comments on publications.</message>
         <message lang="de">Leser</message>
@@ -124,7 +124,7 @@
         <message lang="de">Anzahl der letzten Veröffentlichungen</message>
       </label>
       <order>1</order>
-      <mandatory>true</mandatory>      
+      <mandatory>true</mandatory>
       <value>15</value>
       <type>text</type>
       <size>5</size>
@@ -135,13 +135,13 @@
           Si la valeur saisie est égale à 0, la publication à la racine est alors possible mais
           les dernières publications ne sont pas affichées sur la page d'accueil.
         </message>
-        <message lang="en">Defines the number of publications displayed on the home page of the application. If not set to 0 
+        <message lang="en">Defines the number of publications displayed on the home page of the application. If not set to 0
         you can't create publications in the root directory. When set to 0 you can create
-        publications on the root directory but the last publications are no longer displayed on the home page. 
+        publications on the root directory but the last publications are no longer displayed on the home page.
         </message>
-        <message lang="de">Definiert die Anzahl der Veröffentlichungen auf der Homepage des component. Falls nicht auf 0 gesetzt, 
+        <message lang="de">Definiert die Anzahl der Veröffentlichungen auf der Homepage des component. Falls nicht auf 0 gesetzt,
         können Sie keine Veröffentlichungen im Root-Verzeichnis machen. Wenn auf 0 gesetzt, können Sie Veröffentlichungen
-        in das Root-Verzeichnis machen, aber die letzten Publikationen werden nicht mehr angezeigt angezeigt. 
+        in das Root-Verzeichnis machen, aber die letzten Publikationen werden nicht mehr angezeigt angezeigt.
         </message>
       </help>
     </parameter>
@@ -151,7 +151,7 @@
         <message lang="fr">Nb Publi / Page</message>
         <message lang="en">Number of publications per page.</message>
         <message lang="de">Anzahl der Veröffentlichungen pro Seite</message>
-      </label>      
+      </label>
       <order>2</order>
       <mandatory>false</mandatory>
       <value></value>
@@ -279,7 +279,7 @@
         <message lang="en">Indicates publications you might want to see after looking at the current publication.</message>
         <message lang="de">Um anderen Veröffentlichungen, im Zusammenhang mit der aktuellen Veröffentlichung anzugeben.</message>
       </help>
-    </parameter>    
+    </parameter>
     <parameter>
       <name>tabAccessPaths</name>
       <label>
@@ -407,10 +407,10 @@
         <message lang="en">Access rights on the files with versions : Writers and readers,
           Writers only, Readers only or rights inherited from the application.
         </message>
-        <message lang="de">Zugriffsrechte auf die Dateien mit den Versionen: Autoren und Leser, 
+        <message lang="de">Zugriffsrechte auf die Dateien mit den Versionen: Autoren und Leser,
           nur Autoren, nur Leser oder Rechte von der Komponente geerbt.
         </message>
-      </help>      
+      </help>
     </parameter>
     <parameter>
       <name>draft</name>
@@ -601,7 +601,7 @@
         </option>
       </options>
       <type>select</type>
-      <updatable>always</updatable>      
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Classique : un valideur doit valider la publication, Ciblée (un seul
           valideur) : Le rédacteur choisit le valideur devant valider la publication. Ceci permet
@@ -610,16 +610,16 @@
           publication.
         </message>
         <message lang="en">Classical : once validator must validate publication, Targeted (only one
-          validator) : Writer choose one validator. This avoid spam behaviour., Targeted (various 
+          validator) : Writer choose one validator. This avoid spam behaviour., Targeted (various
           validators) : Writer choose many validators, Collegiate : All validators must validate
           publication
         </message>
         <message lang="de">Klassisch: Ein Validator muss die Veröffentlichung Prüfen.
-          Gezielte (nur eine Prüfung): Der Redaktor wählt einen Validator aus. Dieses Verhalten Vermeidet Spam. 
+          Gezielte (nur eine Prüfung): Der Redaktor wählt einen Validator aus. Dieses Verhalten Vermeidet Spam.
           Gezielte (verschiedene Prüfungen): Der Redaktor wählt mehrere Validator aus.
           Kollegial: Alle Validatoren müssen die Veröffentlichung validieren
         </message>
-      </help>      
+      </help>
     </parameter>
     <parameter>
       <name>exportComponent</name>
@@ -671,7 +671,7 @@
         <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles de l'application.</message>
         <message lang="en">This function allow the user to export all the visible publications of the application.</message>
         <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
-      </help>     
+      </help>
     </parameter>
     <parameter>
       <name>massiveDragAndDrop</name>
@@ -956,11 +956,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail.</message>
-        <message lang="en">This feature allows to activate file sharing with persons who have no access to the portal.</message>
-        <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.
-</message>
+        <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs de la plate-forme.</message>
+        <message lang="en">This feature allows to activate file sharing with persons who have no access to the platform.</message>
+        <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
       </help>
+      <warning>
+        <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les fichiers avec des utilisateurs non référencés dans la plate-forme.</message>
+        <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
+        <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
+      </warning>
       <personalSpaceValue>yes</personalSpaceValue>
     </parameter>
     <parameter>
@@ -1006,6 +1010,17 @@
         </message>
         <message lang="de">Diese Funktion ermöglicht es diese Komponente als eine Bank von Dateien zu bestimmen. Das hizufügen einer Datei im Körper einer Veröffentlichung wird mit der Hilfe vom Wysiwyg-Editor erfolgen.</message>
       </help>
+      <warning>
+        <message lang="fr">
+          En cochant cette case, les fichiers joints aux publications de cette application seront librement utilisables (sans tenir compte des droits) par les autres applications.
+        </message>
+        <message lang="en">
+          By checking this box, attached files to publications of this application will be available for use (regardless of rights) by other applications.
+        </message>
+        <message lang="de">
+		  By checking this box, attached files to publications of this application will be available for use (regardless of rights) by other applications.
+        </message>
+      </warning>
     </parameter>
     <parameter>
       <name>axisIdGlossary</name>
@@ -1152,9 +1167,7 @@
       <order>47</order>
       <mandatory>true</mandatory>
       <value>2</value>
-      <type>select</type>
-      <updatable>always</updatable>
-	  <options>
+      <options>
         <option>
           <name>
             <message lang="fr">Nom du créateur croissant</message>
@@ -1187,7 +1200,7 @@
           </name>
           <value>3</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Titre croissant</message>
             <message lang="en">Ascending title</message>
@@ -1195,7 +1208,7 @@
           </name>
           <value>4</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Date de création croissante</message>
             <message lang="en">Ascending creation date</message>
@@ -1203,7 +1216,7 @@
           </name>
           <value>5</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Date de création décroissante</message>
             <message lang="en">Descending creation date</message>
@@ -1211,7 +1224,7 @@
           </name>
           <value>6</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Description croissante</message>
             <message lang="en">Ascending description</message>
@@ -1220,13 +1233,15 @@
           <value>7</value>
         </option>
       </options>
+      <type>select</type>
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Permet de définir l'ordre d'affichage des publications par défaut.</message>
         <message lang="en">Sets the display order of publications.</message>
         <message lang="de">Sets the display order of publications.</message>
       </help>
     </parameter>
-	<parameter>
+    <parameter>
       <name>useFolderSharing</name>
       <label>
         <message lang="fr">Dossiers partageables</message>
@@ -1239,10 +1254,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet d'activer le partage de dossiers à des tiers non utilisateurs du portail.</message>
-        <message lang="en">This feature allows to activate folders sharing with persons who have no access to the portal.</message>
-        <message lang="de">This feature allows to activate folders sharing with persons who have no access to the portal.</message>
+        <message lang="fr">Ce paramètre permet d'activer le partage de dossiers à des tiers non utilisateurs de la plate-forme.</message>
+        <message lang="en">This feature allows to activate folders sharing with persons who have no access to the platform.</message>
+        <message lang="de">This feature allows to activate folders sharing with persons who have no access to the platform.</message>
       </help>
+      <warning>
+        <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les dossiers avec des utilisateurs non référencés dans la plate-forme.</message>
+        <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
+        <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
+      </warning>
       <personalSpaceValue>no</personalSpaceValue>
     </parameter>
   </parameters>

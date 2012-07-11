@@ -58,7 +58,7 @@ public class KmeliaDefermentPublicationUserNotification extends AbstractKmeliaAc
   @Override
   protected void perform(final PublicationDetail resource) {
     super.perform(resource);
-    getNotification().setOriginalExtraMessage(refusalMotive);
+    getNotificationMetaData().setOriginalExtraMessage(refusalMotive);
   }
 
   @Override

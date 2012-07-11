@@ -620,8 +620,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         destination = returnToAlbum(request, gallerySC);
 
       } else if (function.equals("SortBy")) {
-        // traitement du tri
+        // traitement du tri selon l'écran en cours
         String tri = request.getParameter("Tri");
+        if ((!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible())) {
+          gallerySC.setTri(tri);
+        } else {
+          gallerySC.setTriSearch(tri);
+        }
         destination = returnToAlbum(request, gallerySC);
       } else if (function.equals("ToAlertUser")) {
         String photoId = request.getParameter("PhotoId");
@@ -725,18 +730,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // liste des photos sélectionnées
         if (gallerySC.getListSelected().size() > 0) {
-          List<String> selectedIds = (List<String>) gallerySC.getListSelected();
+          final List<String> selectedIds = (List<String>) gallerySC.getListSelected();
 
           // get silverObjectIds according to selected photoIds
-          List<String> silverObjectIds = new ArrayList<String>();
-          String selectedId = null;
-          String silverObjectId = null;
-          for (int s = 0; s < selectedIds.size(); s++) {
-            selectedId = (String) selectedIds.get(s);
-
-            silverObjectId = Integer.toString(gallerySC.getSilverObjectId(selectedId));
-
-            silverObjectIds.add(silverObjectId);
+          final List<String> silverObjectIds = new ArrayList<String>();
+          for (final String selectedId : selectedIds) {
+            silverObjectIds.add(Integer.toString(gallerySC.getSilverObjectId(selectedId)));
           }
 
           request.setAttribute("ObjectIds", silverObjectIds);
@@ -1052,13 +1051,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           // store xml search data in session
           gallerySC.setXMLSearchContext(data);
 
-          String[] fieldNames = searchTemplate.getFieldNames();
-          String fieldValue = "";
-          String fieldName = "";
-          String fieldQuery = "";
-          Field field = null;
-          for (int f = 0; f < fieldNames.length; f++) {
-            fieldName = fieldNames[f];
+          Field field;
+          String fieldValue;
+          String fieldQuery;
+          for (final String fieldName : searchTemplate.getFieldNames()) {
             field = data.getField(fieldName);
             fieldValue = field.getStringValue();
             if (fieldValue != null && fieldValue.trim().length() > 0) {
