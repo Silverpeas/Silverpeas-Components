@@ -24,6 +24,8 @@
 
 package com.stratelia.webactiv.quickinfo.control;
 
+import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,8 +33,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.EJBException;
+import javax.naming.NamingException;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -65,8 +69,8 @@ public class QuickInfoTransversalSC {
 
   public void init(MainSessionController mainSC) {
     this.userId = mainSC.getUserId();
-    SilverTrace.info("quickinfo", "QuickInfoTransversalSC.init()",
-        "root.MSG_GEN_PARAM_VALUE", "Init Quick Info : User=" + userId);
+    SilverTrace.info("quickinfo", "QuickInfoTransversalSC.init()", "root.MSG_GEN_PARAM_VALUE",
+        "Init Quick Info : User=" + userId);
   }
 
   public String getUserId() {
@@ -79,8 +83,7 @@ public class QuickInfoTransversalSC {
         publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
             JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
       } catch (Exception e) {
-        SilverTrace.error("quickinfo",
-            "QuickInfoTransversalSC.getPublicationBm()",
+        SilverTrace.error("quickinfo", "QuickInfoTransversalSC.getPublicationBm()",
             "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
         throw new EJBException(e);
       }
@@ -89,66 +92,61 @@ public class QuickInfoTransversalSC {
     return publicationBm;
   }
 
-  private Collection filterVisibleQuickInfos(Collection all) {
-    ArrayList result = new ArrayList();
-    Iterator qi = all.iterator();
+  private Collection<PublicationDetail> filterVisibleQuickInfos(Collection<PublicationDetail> all) {
+    List<PublicationDetail> result = new ArrayList<PublicationDetail>();
+    Iterator<PublicationDetail> qi = all.iterator();
 
     Date now = new Date();
 
-    SilverTrace.info("quickinfo",
-        "QuickInfoTransversalSC.filterVisibleQuickInfos()",
+    SilverTrace.info("quickinfo", "QuickInfoTransversalSC.filterVisibleQuickInfos()",
         "root.MSG_GEN_PARAM_VALUE", "Enter filterVisibleQuickInfos");
     try {
       SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy");
       now = format.parse(format.format(now));
     } catch (Exception e) {
-      SilverTrace.error("quickinfo",
-          "QuickInfoTransversalSC.filterVisibleQuickInfos()",
+      SilverTrace.error("quickinfo", "QuickInfoTransversalSC.filterVisibleQuickInfos()",
           "quickinfo.PARSE_ERROR", e);
     }
 
     while (qi.hasNext()) {
       PublicationDetail detail = (PublicationDetail) qi.next();
       if (detail.getEndDate() == null) {
-        if (detail.getBeginDate() == null)
+        if (detail.getBeginDate() == null) {
           result.add(detail);
-        else if (detail.getBeginDate().compareTo(now) <= 0)
+        } else if (detail.getBeginDate().compareTo(now) <= 0) {
           result.add(detail);
+        }
       } else {
         if (detail.getBeginDate() == null) {
-          if (detail.getEndDate().compareTo(now) >= 0)
+          if (detail.getEndDate().compareTo(now) >= 0) {
             result.add(detail);
+          }
         } else if ((detail.getEndDate().compareTo(now) >= 0)
-            && (detail.getBeginDate().compareTo(now) <= 0))
+            && (detail.getBeginDate().compareTo(now) <= 0)) {
           result.add(detail);
+        }
       }
     }
     return result;
   }
 
-  public Collection getAllQuickInfos() throws java.rmi.RemoteException,
-      javax.naming.NamingException, java.sql.SQLException {
-    SilverTrace
-        .info("quickinfo", "QuickInfoTransversalSC.getAllQuickInfos()",
-        "root.MSG_GEN_PARAM_VALUE", "Enter Get All Quick Info : User="
-        + userId);
-    ArrayList result = new ArrayList();
-    CompoSpace[] compoSpaces = getOrganizationControl().getCompoForUser(
-        this.userId, "quickinfo");
+  public Collection<PublicationDetail> getAllQuickInfos() throws RemoteException, NamingException,
+      SQLException {
+    SilverTrace.info("quickinfo", "QuickInfoTransversalSC.getAllQuickInfos()",
+        "root.MSG_GEN_PARAM_VALUE", "Enter Get All Quick Info : User=" + userId);
+    List<PublicationDetail> result = new ArrayList<PublicationDetail>();
+    CompoSpace[] compoSpaces = getOrganizationControl().getCompoForUser(this.userId, "quickinfo");
     for (int i = 0; i < compoSpaces.length; i++) {
       String spaceId = compoSpaces[i].getSpaceId();
       String componentId = compoSpaces[i].getComponentId();
-      SilverTrace.info("quickinfo",
-          "QuickInfoTransversalSC.getAllQuickInfos()",
-          "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId
-          + ", componentId = " + componentId);
+      SilverTrace.info("quickinfo", "QuickInfoTransversalSC.getAllQuickInfos()",
+          "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId + ", componentId = " + componentId);
       try {
-        Collection quickinfos = getPublicationBm().getOrphanPublications(
+        Collection<PublicationDetail> quickinfos = getPublicationBm().getOrphanPublications(
             new PublicationPK("", spaceId, componentId));
         result.addAll(filterVisibleQuickInfos(quickinfos));
       } catch (Exception e) {
-        SilverTrace.error("quickinfo",
-            "QuickInfoTransversalSC.getAllQuickInfos()",
+        SilverTrace.error("quickinfo", "QuickInfoTransversalSC.getAllQuickInfos()",
             "quickinfo.CANT_GET_QUICKINFOS", spaceId, e);
       }
     }
@@ -156,23 +154,22 @@ public class QuickInfoTransversalSC {
   }
 
   public OrganizationController getOrganizationControl() {
-    if (organizationControl == null)
+    if (organizationControl == null) {
       organizationControl = new OrganizationController();
+    }
     return organizationControl;
   }
 
   public ResourceLocator getMessage() {
-    if (message == null)
-      message = new ResourceLocator(
-          "com.stratelia.webactiv.quickinfo.multilang.quickinfo", "");
+    if (message == null) {
+      message = new ResourceLocator("com.stratelia.webactiv.quickinfo.multilang.quickinfo", "");
+    }
     return message;
   }
 
-  public Collection sortByDateDesc(ArrayList alPubDetails) {
-    Comparator comparator = QuickInfoDateComparatorDesc.comparator;
-
+  public Collection<PublicationDetail> sortByDateDesc(List<PublicationDetail> alPubDetails) {
+    Comparator<PublicationDetail> comparator = QuickInfoDateComparatorDesc.comparator;
     Collections.sort(alPubDetails, comparator);
-
     return alPubDetails;
   }
 

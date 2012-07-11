@@ -68,31 +68,26 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-        GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+  GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-        QuickInfoSessionController quickinfo = (QuickInfoSessionController) request.getAttribute("quickinfo");
-        
-        ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+  QuickInfoSessionController quickinfo = (QuickInfoSessionController) request.getAttribute("quickinfo");
+  
+  ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
 
-        String language = resources.getLanguage();
-        ResourceLocator settings = (ResourceLocator) request.getAttribute("settings");
-        String[] browseContext = (String[]) request.getAttribute("browseContext");
-        String spaceLabel = browseContext[0];
-        String componentLabel = browseContext[1];
-        String spaceId = browseContext[2];
-        String componentId = browseContext[3];
-        String quickinfoUrl = browseContext[4];
+  String language = resources.getLanguage();
+  String[] browseContext = (String[]) request.getAttribute("browseContext");
+  String spaceLabel = browseContext[0];
+  String componentLabel = browseContext[1];
+  String spaceId = browseContext[2];
+  String componentId = browseContext[3];
+  String quickinfoUrl = browseContext[4];
 
-        if (quickinfo == null)
-        {
-            // No quickinfo session controller in the request -> security exception
-            String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
-            getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
-            return;
-        }        
+  if (quickinfo == null) {
+      // No quickinfo session controller in the request -> security exception
+      String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+      getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
+      return;
+  }
 
-        String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-	    ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(quickinfo.getLanguage());
-        String m_context = iconsPath;
-        
+  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>

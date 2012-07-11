@@ -37,7 +37,6 @@ import javax.ejb.EJBException;
 
 /**
  * Class declaration
- *
  * @author
  */
 public class QuickinfoStatistics implements ComponentStatisticsInterface {
@@ -46,9 +45,10 @@ public class QuickinfoStatistics implements ComponentStatisticsInterface {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws
-          Exception {   
+      Exception {
     Collection<PublicationDetail> infos = getQuickInfos(spaceId, componentId);
-     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(infos.size());
+    List<UserIdCountVolumeCouple> myArrayList =
+        new ArrayList<UserIdCountVolumeCouple>(infos.size());
     for (PublicationDetail detail : infos) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(detail.getCreatorId());
@@ -62,17 +62,18 @@ public class QuickinfoStatistics implements ComponentStatisticsInterface {
     if (publicationBm == null) {
       try {
         publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-                PublicationBmHome.class).create();
+            PublicationBmHome.class).create();
       } catch (Exception e) {
         SilverTrace.error("quickinfo", "QuickinfoStatistics.getPublicationBm()",
-                "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
+            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
         throw new EJBException(e);
       }
     }
     return publicationBm;
   }
 
-  public Collection<PublicationDetail> getQuickInfos(String spaceId, String componentId) throws RemoteException {
+  public Collection<PublicationDetail> getQuickInfos(String spaceId, String componentId)
+      throws RemoteException {
     return getPublicationBm().getOrphanPublications(new PublicationPK("", spaceId, componentId));
   }
 }
