@@ -1905,9 +1905,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       // attachments --> versioning
       // paste versioning documents
       pasteAttachmentsAsDocuments(pubPKFrom, pubId);
-
-      SilverTrace.error("kmelia", "KmeliaRequestRouter.processPublicationsPaste",
-              "CANNOT_PASTE_FROM_ATTACHMENTS_TO_VERSIONING");
     } else {
       // versioning --> versioning
       // paste versioning documents
@@ -3906,22 +3903,30 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     // move pdc positions
+    // Careful! positions must be moved according to taxonomy restrictions of target application
     int fromSilverObjectId = getKmeliaBm().getSilverObjectId(fromPubPK);
-    int toSilverObjectId = getKmeliaBm().getSilverObjectId(toPubPK);
 
-    getPdcBm().copyPositions(fromSilverObjectId, fromComponentId, toSilverObjectId,
-            getComponentId());
+    // get positions of cutted publication
+    List<ClassifyPosition> positions = getPdcBm().getPositions(fromSilverObjectId, fromComponentId);
+
+    // delete taxonomy data relative to cutted publication
     getKmeliaBm().deleteSilverContent(fromPubPK);
-
-    if (indexIt) {
-      getPublicationBm().createIndex(toPubPK);
-    }
 
     // move statistics
     getStatisticBm().moveStat(toForeignPK, 1, "Publication");
 
     // move publication itself
     getKmeliaBm().movePublicationInAnotherApplication(publi, nodePK, getUserId());
+
+    if (indexIt) {
+      getPublicationBm().createIndex(toPubPK);
+    }
+
+    // reference pasted publication on taxonomy service
+    int toSilverObjectId = getKmeliaBm().getSilverObjectId(toPubPK);
+
+    // add original positions to pasted publication
+    getPdcBm().addPositions(positions, toSilverObjectId, getComponentId());   
   }
 
   /**
