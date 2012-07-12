@@ -56,17 +56,11 @@ function isCorrectForm() {
      	var errorNb = 0;
 
 	var title = document.forms[0].title.value;
-	var content = document.forms[0].content;
 
 	if (isWhitespace(title)) {
            errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
            errorNb++;
-        }
-
-     	if (!isValidTextArea(content)) {
-     		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("questionReply.containsTooLargeText")+resource.getString("questionReply.nbMaxTextArea")+resource.getString("questionReply.characters")%>\n";
-           	errorNb++;
-		}
+    }
 
      switch(errorNb)
      {
@@ -98,7 +92,6 @@ function save()
 <body id="<%=componentId%>" class="questionReply updateR" onLoad="document.forms[0].title.focus();">
 
 <%
-	browseBar.setDomainName(spaceLabel);
 	browseBar.setPath(resource.getString("questionReply.modif"));
 
 	tabbedPane.addTab(resource.getString("GML.head"), "#", true, false);
@@ -110,9 +103,8 @@ function save()
 	out.println(board.printBefore());
 %>
 
-
+<form method="post" name="myForm" action="EffectiveUpdateR">
 <table cellpadding="5" width="100%">
-	<form method="post" name="myForm" action="EffectiveUpdateR">
 	<tr>
 		<td class="txtlibform"><%=resource.getString("questionReply.reponse")%>&nbsp;:</td>
 		<td><input type="text" name="title" size="120" maxlength="100" value="<%=title%>" /> <img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /></td>
@@ -132,8 +124,8 @@ function save()
 	<tr>
 		<td colspan=2><span class="txt">(<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" /> : <%=resource.getString("GML.requiredField")%>)</span></td>
 	</tr>
-	</form>
 </table>
+</form>
 <% out.println(board.printAfter()); %>
 <br />
 <div class="buttonPane">

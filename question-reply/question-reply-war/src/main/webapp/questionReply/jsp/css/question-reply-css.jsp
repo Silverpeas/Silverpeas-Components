@@ -1,14 +1,21 @@
 <%@page contentType="text/css; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-ul, li, h4, h3, h5{
+.hautFrame form > ul,
+ul.questions, 
+ul.questions > li, 
+li.category, 
+.answers > ul, 
+li.answer, 
+.questionTitle > h4, 
+.categoryTitle > h3, 
+h5.answerTitle{
   margin:0;
   padding:0;
   list-style-type:none;
-  line-height:11px;
 }
 
-.category {
+li.category {
   margin-top:10px;
 }
 
@@ -107,7 +114,7 @@ div.question{
   font-weight:100;
 }
 
-.answer {
+li.answer {
   position:relative;    
   color: #333333;
   padding: 4px 0 10px 2px;
@@ -137,7 +144,7 @@ div.question{
   padding:10px 0;
 }
 
-.answerTitle {
+h5.answerTitle {
   font-size:100%;
   padding:5px 50px 10px 24px;
 }
@@ -147,11 +154,11 @@ div.question{
   overflow:auto;
 }
 
-.answerContent ul, .answerContent li{
-	list-style:disc inside none;
-	padding:inherit;
-	margin:inherit;
-}
+/* pour que les listes de l'éditeur est le bon comportement */
+
+.answerContent  ul 			{ list-style-type:disc;}
+.answerContent  ul ul		{ list-style-type:circle;}
+.answerContent  ul ul ul	{ list-style-type:square;}
 
 .answerContent table.tableBoard {
   width:auto !important;
