@@ -206,7 +206,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     int i = 0;
 
     while (results != null && results.hasMore()) {
-      SearchResult entry = (SearchResult) results.next();
+      SearchResult entry = results.next();
       if (StringUtil.isDefined(entry.getName())) {
         Attributes attrs = entry.getAttributes();
         if (isUserActive(config.getLdapAttActif(), attrs)) {
@@ -646,11 +646,12 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
    */
   private boolean isUserActive(String activeAttribute, Attributes attrs) {
     // if no ldap attribute specified in configuration, let's consider user is always valid
-    if (activeAttribute == null)
+    if (activeAttribute == null) {
       return true;
+    }
 
     String actif = getFirstAttributeValue(attrs.get(activeAttribute));
-    return !StringUtil.getBooleanValue(actif);
+    return StringUtil.getBooleanValue(actif);
   }
 
 }
