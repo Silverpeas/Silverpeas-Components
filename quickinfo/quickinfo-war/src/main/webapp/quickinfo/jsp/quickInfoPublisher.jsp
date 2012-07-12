@@ -27,6 +27,8 @@
 
 <%@ include file="checkQuickInfo.jsp" %>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%
   //Collection infos = Tous les quickInfos
   Collection infos = (Collection) request.getAttribute("infos");
@@ -45,9 +47,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Quick Info - Publieur</title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>
 <script type="text/javascript">
@@ -95,8 +95,8 @@ function addQuickInfo() {
         operationPane.addOperation(m_context+"/util/icons/quickInfo_to_add.gif", resources.getString("creation"), "javascript:onClick=addQuickInfo()");
 
         // Clipboard
-        operationPane.addOperation(m_context+"/util/icons/copy.gif", generalMessage.getString("GML.copy"), "javascript:onClick=ClipboardCopyAll()");
-        operationPane.addOperation(m_context+"/util/icons/paste.gif", generalMessage.getString("GML.paste"),    "javascript:onClick=ClipboardPaste()");
+        operationPane.addOperation(m_context+"/util/icons/copy.gif", resources.getString("GML.copy"), "javascript:onClick=ClipboardCopyAll()");
+        operationPane.addOperation(m_context+"/util/icons/paste.gif", resources.getString("GML.paste"), "javascript:onClick=ClipboardPaste()");
 
         out.println(window.printBefore());
         out.println(maFrame.printBefore());

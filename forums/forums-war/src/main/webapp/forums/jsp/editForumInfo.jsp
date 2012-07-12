@@ -186,13 +186,22 @@ function isCorrectForm() {
   
   <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
 
-  if (errorNb == 0) {
-    result = true;
-  } else if (errorNb > 0) {
-    errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-    window.alert(errorMsg);
-    result = false;
+  switch(errorNb) {
+  case 0 :
+      result = true;
+      break;
+  case 1 :
+      errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> :\n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+  default :
+      errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
   }
+
   
   return result;
 }
