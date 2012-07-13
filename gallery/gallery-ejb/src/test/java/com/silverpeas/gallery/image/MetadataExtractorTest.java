@@ -80,7 +80,7 @@ public class MetadataExtractorTest {
     assertEquals(0, metadata.size());
     metadata = extractor.extractImageIptcMetaData(sunset);
     assertNotNull(metadata);
-    assertEquals(17, metadata.size());
+    assertEquals(19, metadata.size());
 
     MetaData meta = metadata.get(0);
     assertEquals("622", meta.getProperty());
