@@ -567,6 +567,7 @@
 			              if (!isOwner) {
 			                attProfile = "user";
 			              }
+                          System.out.println("Grosse trace de merde !!!!!!!!!!!!!!!!!");
 			              getServletConfig().getServletContext().getRequestDispatcher(
 			                  "/versioningPeas/jsp/displayDocuments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
 			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo + "&UpdateOfficeMode=" + kmeliaScc.
