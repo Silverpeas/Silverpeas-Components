@@ -4,13 +4,14 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>23-SNAPSHOT</version>
+    <version>23</version>
   </parent>
 
   <scm>
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</developerConnection>
     <url>http://github.com/Silverpeas/Silverpeas-Components</url>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
@@ -30,12 +31,12 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>5.10-SNAPSHOT</version>
+  <version>5.11-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
 
   <properties>
-    <core.version>5.10-SNAPSHOT</core.version>
+    <core.version>5.11-SNAPSHOT</core.version>
   </properties>
 
   <dependencies>

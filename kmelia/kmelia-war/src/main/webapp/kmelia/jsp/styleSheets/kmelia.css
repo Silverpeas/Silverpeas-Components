@@ -242,6 +242,11 @@
 	white-space: normal;
 }
 
+#pubList .publication .files {
+	padding-left: 45px;
+	display:block;
+}
+
 #pubList .publication .line3 {
 	margin-top: 2px;
 }

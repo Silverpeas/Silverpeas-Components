@@ -20,19 +20,22 @@
  */
 package com.silverpeas.gallery.image;
 
-import java.util.List;
-import org.junit.Before;
-import com.silverpeas.gallery.model.MetaData;
+import static com.silverpeas.gallery.image.ImageMetadataExtractor.COMMA_SPLITTER;
+import static com.silverpeas.util.PathTestUtil.SEPARATOR;
+import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
 import java.util.Calendar;
+import java.util.List;
+
+import org.junit.Before;
 import org.junit.Test;
-import static com.silverpeas.gallery.image.ImageMetadataExtractor.*;
 
-
-
-import static com.silverpeas.util.PathTestUtil.*;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import com.silverpeas.gallery.model.MetaData;
 
 /**
  *
@@ -44,7 +47,6 @@ public class MetadataExtractorTest {
   private final File koala = new File(TARGET_DIR + "test-classes" + SEPARATOR + "Koala.jpg");
   private final File sunset = new File(
     TARGET_DIR + "test-classes" + SEPARATOR + "Coucher de soleil.jpg");
-  private final File gmt = new File(TARGET_DIR + "test-classes" + SEPARATOR + "w40_DSC_7481.jpg");
   private final File dauphins = new File(
     TARGET_DIR + "test-classes" + SEPARATOR + "Dauphins-100.jpg");
   private final File chefsUtf8 = new File(
@@ -78,13 +80,12 @@ public class MetadataExtractorTest {
     assertEquals(0, metadata.size());
     metadata = extractor.extractImageIptcMetaData(sunset);
     assertNotNull(metadata);
-    assertEquals(17, metadata.size());
-
+    assertEquals(19, metadata.size());
 
     MetaData meta = metadata.get(0);
     assertEquals("622", meta.getProperty());
     assertEquals("(IPTC) Crédit", meta.getLabel());
-    assertEquals("Crédit", meta.getValue().replace('ý', 'é').replace('È', 'é'));
+    assertEquals("Crédit", meta.getValue());
 
     meta = metadata.get(1);
     assertEquals("634", meta.getProperty());
@@ -94,9 +95,7 @@ public class MetadataExtractorTest {
     meta = metadata.get(2);
     assertEquals("592", meta.getProperty());
     assertEquals("Créateur", meta.getLabel());
-    assertEquals("Nom du créateur : Tag_by_line",
-      meta.getValue().replace('ý', 'é').replace('È', 'é'));
-
+    assertEquals("Nom du créateur : Tag_by_line", meta.getValue());
   }
 
   /**
