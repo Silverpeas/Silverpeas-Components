@@ -60,7 +60,6 @@ public class ComponentRequestRouterFilter implements Filter {
    */
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
-    HttpSession session = ((HttpServletRequest) request).getSession(true);
 
     HttpServletRequest hsRequest = (HttpServletRequest) request;
     String sURI = hsRequest.getRequestURI();
@@ -69,6 +68,11 @@ public class ComponentRequestRouterFilter implements Filter {
       /*
        * Retrieve main session controller
        */
+      HttpSession session = hsRequest.getSession(false);
+      if(session == null){
+        chain.doFilter(request, response);
+        return;
+      }
       String componentId = (String) session
           .getAttribute(LoginFilter.ATTRIBUTE_FORCE_CARD_CREATION);
       // String sServletPath = hsRequest.getServletPath();
