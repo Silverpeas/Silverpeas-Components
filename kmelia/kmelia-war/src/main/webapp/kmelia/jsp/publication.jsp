@@ -776,14 +776,14 @@
               String checked = "";
               String disabled = "";
               if (!exportFormats.contains(format)) {
-                disabled = "disabled='disabled'";
+                disabled = "disabled=\"disabled\"";
               }
               if (!selectedFormat && disabled.isEmpty()) {
-                checked = "checked='checked'";
+                checked = "checked=\"checked\"";
                 selectedFormat = true;
               }
             %>
-            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %>/><%=resources.getString("kmelia.export.format." + format)%></input>
+            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %>/><%=resources.getString("kmelia.export.format." + format)%>
             <% } %>
             <input type="hidden" name="PubId" value="<%=id%>"/>
             <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
