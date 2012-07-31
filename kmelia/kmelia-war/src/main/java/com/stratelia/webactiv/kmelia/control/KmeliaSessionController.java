@@ -978,9 +978,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return getKmeliaBm().getPublicationDetail(getPublicationPK(pubId));
   }
 
-  public synchronized Collection<Collection<NodeDetail>> getPathList(String pubId)
-          throws RemoteException {
-    return getKmeliaBm().getPathList(getPublicationPK(pubId));
+  private Collection<Collection<NodeDetail>> getPathList(PublicationPK pk) throws RemoteException {
+    return getKmeliaBm().getPathList(pk);
   }
 
   public synchronized Collection<NodePK> getPublicationFathers(String pubId)
@@ -1307,23 +1306,30 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     setSessionPublication(completPub);
   }
 
+  /**
+   * Get publications explicitly referenced by current publication. Only valid publications which
+   * are not in bin are returned. Rights of user are checked (applications and folders).
+   * @return a List of KmeliaPublication
+   * @see KmeliaPublication
+   * @throws RemoteException
+   */
   public List<KmeliaPublication> getLinkedVisiblePublications() throws RemoteException {
     List<ForeignPK> seeAlsoList = getSessionPublication().getCompleteDetail().getLinkList();
     List<ForeignPK> authorizedSeeAlsoList = new ArrayList<ForeignPK>();
-    List<KmeliaPublication> authorizedAndValidSeeAlsoList = new ArrayList<KmeliaPublication>();
-    String curComponentId = null;
     for (ForeignPK curFPK : seeAlsoList) {
-      curComponentId = curFPK.getComponentName();
+      String curComponentId = curFPK.getComponentName();
+      // check if user have access to application
       if (curComponentId != null &&
-          getOrganizationController().isComponentAvailable(curComponentId,
-              getUserId())) {
+          getOrganizationController().isComponentAvailable(curComponentId, getUserId())) {
         authorizedSeeAlsoList.add(curFPK);
       }
     }
 
     Collection<KmeliaPublication> linkedPublications = getPublications(authorizedSeeAlsoList);
+    List<KmeliaPublication> authorizedAndValidSeeAlsoList = new ArrayList<KmeliaPublication>();
     for (KmeliaPublication pub : linkedPublications) {
-      if (pub.getDetail().isValid()) {
+      // check if publication is valid and not in bin
+      if (pub.getDetail().isValid() && !isPublicationDeleted(pub.getDetail().getPK())) {
         authorizedAndValidSeeAlsoList.add(pub);
       }
     }
@@ -2680,10 +2686,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @param pubId
    * @return true or false
    */
-  public boolean isPublicationDeleted(String pubId) {
+  public boolean isPublicationDeleted(PublicationPK pk) {
     boolean isPublicationDeleted = false;
     try {
-      Collection<Collection<NodeDetail>> pathList = getPathList(pubId);
+      Collection<Collection<NodeDetail>> pathList = getPathList(pk);
       SilverTrace.debug("kmelia", "KmeliaSessionController.isPublicationDeleted()",
               "root.MSG_GEN_PARAM_VALUE", "pathList = " + pathList);
       if (pathList.size() == 1) {
@@ -2691,7 +2697,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           for (NodeDetail nodeInPath : path) {
             SilverTrace.debug("kmelia", "KmeliaSessionController.isPublicationDeleted()",
                     "root.MSG_GEN_PARAM_VALUE", "nodeInPath = " + nodeInPath);
-            if (nodeInPath.getNodePK().getId().equals("1")) {
+            if (nodeInPath.getNodePK().getId().equals(NodePK.BIN_NODE_ID)) {
               isPublicationDeleted = true;
             }
           }
