@@ -2379,6 +2379,16 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
     }
   }
+  
+  private int getValidationType(String instanceId) {
+    String sParam =
+        getOrganizationController().getComponentParameterValue(instanceId, "targetValidation");
+    if (isDefined(sParam)) {
+      return Integer.parseInt(sParam);
+    } else {
+      return KmeliaHelper.VALIDATION_CLASSIC;
+    }
+  }
 
   @Override
   public List<String> getAllValidators(PublicationPK pubPK, int validationType) throws
@@ -2387,13 +2397,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId()
             + ", validationType = " + validationType);
     if (validationType == -1) {
-      String sParam = getOrganizationController().getComponentParameterValue(
-              pubPK.getInstanceId(), "targetValidation");
-      if (isDefined(sParam)) {
-        validationType = Integer.parseInt(sParam);
-      } else {
-        validationType = KmeliaHelper.VALIDATION_CLASSIC;
-      }
+      validationType = getValidationType(pubPK.getInstanceId());
     }
     SilverTrace.debug("kmelia", "KmeliaBmEJB.getAllValidators",
             "root.MSG_GEN_PARAM_VALUE", "validationType = " + validationType);
@@ -2450,8 +2454,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return allValidators;
   }
 
-  private boolean isValidationComplete(PublicationPK pubPK, int validationType)
-          throws RemoteException {
+  private boolean isValidationComplete(PublicationPK pubPK, List<String> allValidators,
+      int validationType) throws RemoteException {
     List<ValidationStep> steps = getPublicationBm().getValidationSteps(pubPK);
 
     // get users who have already validate
@@ -2459,9 +2463,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     for (ValidationStep step : steps) {
       stepUserIds.add(step.getUserId());
     }
-
-    // get all users who have to validate
-    List<String> allValidators = getAllValidators(pubPK, validationType);
 
     // check if all users have validate
     boolean validationOK = true;
@@ -2480,36 +2481,39 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
     boolean validationComplete = false;
     try {
-      if (force) { /* remove all todos attached to that publication */
-        removeAllTodosForPublication(pubPK);
-
+      if (force) {
         validationComplete = true;
       } else {
-        ValidationStep validation = null;
         switch (validationType) {
           case KmeliaHelper.VALIDATION_CLASSIC:
           case KmeliaHelper.VALIDATION_TARGET_1:
-            /* remove all todos attached to that publication */
-            removeAllTodosForPublication(pubPK);
             validationComplete = true;
             break;
-
           case KmeliaHelper.VALIDATION_COLLEGIATE:
           case KmeliaHelper.VALIDATION_TARGET_N:
-            // remove todo to this user. Job is done !
-            removeTodoForPublication(pubPK, userId);
-            // save his decision
-            validation = new ValidationStep(pubPK, userId, PublicationDetail.VALID);
-            getPublicationBm().addValidationStep(validation);
-            // check if all validators have give their decision
-            validationComplete = isValidationComplete(pubPK, validationType);
-            if (validationComplete) {
-              removeAllTodosForPublication(pubPK);
+            // get all users who have to validate
+            List<String> allValidators = getAllValidators(pubPK, validationType);
+            if (allValidators.size() == 1) {
+              // special case : only once user is concerned by validation
+              validationComplete = true;
+            } else if (allValidators.size() > 1) {
+              // remove todo for this user. His job is done !
+              removeTodoForPublication(pubPK, userId);
+              // save his decision
+              ValidationStep validation =
+                  new ValidationStep(pubPK, userId, PublicationDetail.VALID);
+              getPublicationBm().addValidationStep(validation);
+              // check if all validators have give their decision
+              validationComplete = isValidationComplete(pubPK, allValidators, validationType);
             }
         }
       }
 
       if (validationComplete) {
+        
+        /* remove all todos attached to that publication */
+        removeAllTodosForPublication(pubPK);
+        
         CompletePublication currentPub = getPublicationBm().getCompletePublication(pubPK);
         PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
 
@@ -3158,7 +3162,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
     if (pubDetail.isValidationRequired()
             || PublicationDetail.TO_VALIDATE.equalsIgnoreCase(pubDetail.getCloneStatus())) {
-      List<String> validators = getAllValidators(pubDetail.getPK(), -1);
+      int validationType = getValidationType(pubDetail.getPK().getInstanceId());
+      if (validationType == KmeliaHelper.VALIDATION_TARGET_N ||
+          validationType == KmeliaHelper.VALIDATION_COLLEGIATE) {
+        // removing potential older validation decision
+        getPublicationBm().removeValidationSteps(pubDetail.getPK());
+      }
+      List<String> validators = getAllValidators(pubDetail.getPK(), validationType);
       String[] users = validators.toArray(new String[validators.size()]);
       // For each publisher create a todo
       addTodo(pubDetail, users);

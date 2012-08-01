@@ -1781,7 +1781,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public ValidationStep getValidationStep() throws RemoteException {
-    if (getValidationType() == 2) {
+    if (getValidationType() == KmeliaHelper.VALIDATION_TARGET_N) {
       return getPublicationBm().getValidationStepByUser(
               getSessionPubliOrClone().getDetail().getPK(), getUserId());
     }
