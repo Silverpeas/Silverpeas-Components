@@ -379,25 +379,22 @@
           location.href= "<%=routerUrl%>ViewPublication";
         }
 
-        function addFavorite()
-        {
-          var name = encodeURI($("#breadCrumb").text());
-          var description = encodeURI("<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>");
-          var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI,
-              pubDetail.getPK().getId())%>";
-                  urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
+        function addFavorite() {
+          var name = encodeURIComponent($("#breadCrumb").text());
+          var description = encodeURIComponent("<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>");
+          var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId())%>";
+          urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
   
-                  if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow") {
-                    favoriteWindow.close();
-                  }
+		  if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow") {
+            favoriteWindow.close();
+          }
   
-                  favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
-                }
+          favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
+        }
 
-                function suggestDelegatedNews() {
-                  location.href= "<%=routerUrl%>SuggestDelegatedNews";
-                }
-
+        function suggestDelegatedNews() {
+          location.href= "<%=routerUrl%>SuggestDelegatedNews";
+        }
     </script>
   </head>
   <body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()" id="<%=componentId%>">
