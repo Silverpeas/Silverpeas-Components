@@ -622,18 +622,17 @@
 							  	 
 							  	  <%
 						          // Displaying all validator's name and final validation date 
-						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) {
-						            List validationSteps = pubComplete.getValidationSteps();
-						            if (validationSteps != null && !validationSteps.isEmpty()) { %>
-						            	<p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/> 
-						            		<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <%=resources.getString("GML.by")%>
-						            <%
+						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) { %>
+						            <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/> 
+						            	<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <%=resources.getString("GML.by")%>
+						            <% List<ValidationStep> validationSteps = pubComplete.getValidationSteps();
+						            if (validationSteps != null && !validationSteps.isEmpty()) {
 						              Collections.reverse(validationSteps); //display steps from in order of validation
 						              for (int v = 0; v < validationSteps.size(); v++) {
 						                if (v != 0) { %>
 						                  , 
 						                <% }
-						                ValidationStep vStep = (ValidationStep) validationSteps.get(v);
+						                ValidationStep vStep = validationSteps.get(v);
 						                if (vStep != null) { %>
 						                	<view:username userId="<%=vStep.getUserId()%>"/>
 						                <% }
