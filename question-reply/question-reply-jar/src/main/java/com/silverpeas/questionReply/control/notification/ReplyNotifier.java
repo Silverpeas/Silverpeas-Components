@@ -89,7 +89,7 @@ public class ReplyNotifier extends Notifier {
         template.setAttribute("QuestionDetail", question);
         template.setAttribute("ReplyDetail", reply);
         template.setAttribute("replyTitle", reply.getTitle());
-        template.setAttribute("replyContent", reply.getContent());
+        template.setAttribute("replyContent", reply.loadWysiwygContent());
         templates.put(language, template);
         notifMetaData.addLanguage(language, message.getString("questionReply.notification", "")
                 + componentLabel, "");
