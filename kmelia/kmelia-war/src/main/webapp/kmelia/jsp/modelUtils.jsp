@@ -38,7 +38,7 @@
 <%@ page import="com.stratelia.webactiv.util.publication.info.model.InfoDetail, com.stratelia.webactiv.util.publication.info.model.ModelDetail, com.stratelia.webactiv.util.publication.info.model.InfoTextDetail, com.stratelia.webactiv.util.publication.info.model.InfoImageDetail"%>
 <%@ page import="java.util.Iterator, java.util.ArrayList, java.util.Collection, java.util.Date, com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="javax.ejb.RemoveException, javax.ejb.EJBException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@ page import="org.silverpeas.servlets.FileServer"%>
 <%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>

@@ -53,7 +53,7 @@
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@ page import="org.silverpeas.servlets.FileServer"%>
 
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
@@ -89,8 +89,6 @@
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="com.stratelia.webactiv.util.statistic.model.HistoryByUser"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate" %>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplateException" %>
 <%@ page import="com.silverpeas.form.DataRecord" %>
 <%@ page import="com.silverpeas.form.Form" %>

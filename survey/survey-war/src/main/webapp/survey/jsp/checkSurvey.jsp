@@ -49,7 +49,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.survey.control.SurveySessionController "%>
 <%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
 
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@ page import="org.silverpeas.servlets.FileServer"%>
 
 <%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
 <%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
@@ -59,7 +59,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="com.stratelia.webactiv.util.DateUtil"%>
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.question.model.Question "%>
 <%@ page import="com.stratelia.webactiv.util.questionResult.model.QuestionResult "%>
 <%@ page import="com.stratelia.webactiv.util.answer.model.Answer "%>
@@ -83,7 +82,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.questionContainer.model.Comment"%>
 <%@ page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader "%>
 <%@ page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail "%>
-<%@ page import="com.stratelia.webactiv.util.questionResult.model.QuestionResult "%>
 
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@ page import="com.stratelia.webactiv.util.FileServerUtils"%>

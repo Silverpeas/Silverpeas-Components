@@ -10,4 +10,4 @@
 
 <%@ page import="java.util.Iterator, java.util.ArrayList, java.util.Collection, java.util.Date, com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="javax.ejb.RemoveException, javax.ejb.EJBException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@ page import="org.silverpeas.servlets.FileServer"%>

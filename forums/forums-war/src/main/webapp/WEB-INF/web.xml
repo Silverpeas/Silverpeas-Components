@@ -39,17 +39,17 @@
   <servlet>
     <display-name>ForumsRequestRouter</display-name>
     <servlet-name>ForumsRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.servlets.ForumsRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.servlets.ForumsRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>ForumsRssServlet</display-name>
     <servlet-name>ForumsRssServlet</servlet-name>
-    <servlet-class>com.stratelia.webactiv.servlets.ForumsRssServlet</servlet-class>
+    <servlet-class>org.silverpeas.servlets.ForumsRssServlet</servlet-class>
   </servlet>
   <servlet>
     <display-name>GoToMessage</display-name>
     <servlet-name>GoToMessage</servlet-name>
-    <servlet-class>com.stratelia.webactiv.servlets.GoToMessage</servlet-class>
+    <servlet-class>org.silverpeas.servlets.GoToMessage</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ForumsRequestRouter</servlet-name>

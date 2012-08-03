@@ -122,7 +122,7 @@ function compileResult(fileName) {
 	catch(NewsEditoException e){
 		throw new NewsEditoException("pdfCompile_JSP.showPdfGeneration",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_SHOW_PDF_GENERATION",e);			
 	}
-		link = com.stratelia.webactiv.servlets.FileServer.getUrlToTempDir(name, name, "application/pdf");
+		link = org.silverpeas.servlets.FileServer.getUrlToTempDir(name, name, "application/pdf");
 		out.println("<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad=\"compileResult('"+link+"')\">");
 		out.println("</BODY>");
 

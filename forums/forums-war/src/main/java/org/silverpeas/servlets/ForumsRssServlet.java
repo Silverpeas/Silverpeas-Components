@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.servlets;
+package org.silverpeas.servlets;
 
 import java.rmi.RemoteException;
 import java.util.Collection;

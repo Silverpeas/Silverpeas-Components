@@ -21,10 +21,9 @@
 <%@ page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail "%>
 <%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry"%>
-
+<%@ page import="org.silverpeas.servlets.FileServer"%>
 <%!
 
 String displayImportance(int importance, int maxImportance, String fullStar, String emptyStar, JspWriter out) throws IOException {
