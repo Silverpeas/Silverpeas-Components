@@ -32,7 +32,7 @@
 	// récupération des paramètres :
       PhotoDetail photo = (PhotoDetail) request.getAttribute("Photo");
       String repertoire = (String) request.getAttribute("Repertoire");
-      List<NodeDetail> path = (List) request.getAttribute("Path");
+      List<NodeDetail> path = (List<NodeDetail> ) request.getAttribute("Path");
       String userName = (String) request.getAttribute("UserName");
         
       boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();

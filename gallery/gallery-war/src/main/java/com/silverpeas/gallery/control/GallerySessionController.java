@@ -66,8 +66,8 @@ import com.silverpeas.gallery.model.PhotoSelection;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.ConfigurationClassLoader;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
@@ -135,14 +135,11 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private int indexOfFirstItemToDisplay = 0;
   // panier en cours
   private List<String> basket = new ArrayList<String>(); // liste des photos mise dans le panier
-  static final Properties defaultSettings = new Properties();
-  static final ConfigurationClassLoader loader = new ConfigurationClassLoader(
-      ImageMetadataExtractor.class.getClassLoader());
+  static final Properties defaultSettings = new Properties(); 
 
   static {
     try {
-      defaultSettings.load(loader.getResourceAsStream(
-          "com/silverpeas/gallery/settings/metadataSettings.properties"));
+      FileUtil.loadProperties(defaultSettings, "org/silverpeas/gallery/settings/metadataSettings.properties");
     } catch (IOException e) {
       SilverTrace.fatal("gallery", "GallerySessionController()", "root.EX_CANT_GET_REMOTE_OBJECT",
           e);
@@ -1649,8 +1646,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public List<MetaData> getMetaDataKeys() {
     List<MetaData> metaDatas = new ArrayList<MetaData>();
     try {
-      settings.load(loader.getResourceAsStream("com/silverpeas/gallery/settings/metadataSettings_"
-          + getComponentId() + ".properties"));
+      FileUtil.loadProperties(settings, "org/silverpeas/gallery/settings/metadataSettings_"
+          + getComponentId() + ".properties");
     } catch (Exception e) {
       settings = defaultSettings;
     }
