@@ -494,11 +494,11 @@
 	<div class="inlineMessage">
 		<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
 		<%=resources.getString("kmelia.HelpPubli") %>
-	</div>
+	</div><br clear="all"/>
 <%
         }
         if (screenMessage != null && screenMessage.length() > 0) {
-          out.println("<center>" + screenMessage + "</center>");
+          out.println(screenMessage + "<br clear=\"all\"/>");
         }
 
         InfoDetail infos = pubComplete.getInfoDetail();
