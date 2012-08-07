@@ -1984,6 +1984,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         // paste file on fileserver
         newVersionFile = pasteVersionFile(version.getPhysicalName(), pathFrom, pathTo);
         version.setPhysicalName(newVersionFile);
+        version.setInstanceId(getComponentId());
       }
 
       // create the document with its first version
@@ -1993,6 +1994,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       for (int v = 1; v < versions.size(); v++) {
         version = versions.get(v);
         version.setDocumentPK(documentPK);
+        version.setInstanceId(getComponentId());
         SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
                 "root.MSG_GEN_PARAM_VALUE", "paste version = " + version.getLogicalName());
 
