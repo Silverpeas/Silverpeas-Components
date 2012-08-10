@@ -198,7 +198,6 @@ public class ForumHelper {
           // Dernier post
           out.print("    <td align=\"center\"><span class=\"txtnote\">");
           int lastMessageId = -1;
-          Date dateLastMessage = null;
           String lastMessageDate = "";
           String lastMessageUser = "";
           Object[] lastMessage = fsc.getLastMessage(forumId, messageId);

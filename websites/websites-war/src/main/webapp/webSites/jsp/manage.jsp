@@ -63,22 +63,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.publication.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.publication.info.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="checkScc.jsp" %>
 <%@ include file="util.jsp" %>
 
 <%
-
-ResourceLocator settings;
-//CBO : REMOVE Collection listeSites;
-ArrayList arraySites;
-
-settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
-
-//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
 
 String role 		= (String) request.getAttribute("BestRole");
 
@@ -95,26 +88,16 @@ String localLink		= m_context+"/util/icons/computer.gif";
 String check			= m_context+"/util/icons/ok.gif";
 String pdcUtilizationSrc = m_context+"/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
 
-
-/* recup parametres */
-
-
-//CBO : ADD
 Collection listeSites = (Collection) request.getAttribute("ListSites");
-
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-
-<%
-out.println(gef.getLookStyleSheet());
-%>
-
 <title><%=resources.getString("GML.popupTitle")%></title>
+<view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
-
+<script type="text/javascript">
 function URLENCODE(URL){
     URL = escape(URL);
     URL = URL.replace(/\+/g, "%2B");
@@ -188,26 +171,23 @@ function designSite(path, id) {
 function openSPWindow(fonction, windowName){
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
-
 </script>
 </head>
 <body>
 
 <form name="descriptionSite" action="descUpload.jsp" method="post" enctype="multipart/form-data">
-  <input type="hidden" name="Action">
+  <input type="hidden" name="Action"/>
 </form>
 
 
 <form name="liste_liens" action="manage.jsp" >
-  <input type="hidden" name="Action">
-  <input type="hidden" name="SiteList">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="SiteList"/>
 
 <%
 
-	//CBO : REMOVE listeSites = scc.getAllWebSite();
-    arraySites = new ArrayList(listeSites);
+	ArrayList arraySites = new ArrayList(listeSites);
     SilverTrace.info("websites", "JSPmanage", "root.MSG_GEN_PARAM_VALUE", "taille de l'arraySites= "+arraySites.size());
-
 
     Window window = gef.getWindow();
     String bodyPart="";
@@ -223,33 +203,31 @@ function openSPWindow(fonction, windowName){
 		operationPane.addLine();
 	}
 
-    operationPane.addOperation(bookmark, resources.getString("BookmarkSite"), "javascript:onClick=B_SPECIFIER_BOOK_ONCLICK();");
-    if (bookmarkMode)
-    {
+    operationPane.addOperationOfCreation(bookmark, resources.getString("BookmarkSite"), "javascript:onClick=B_SPECIFIER_BOOK_ONCLICK();");
+    if (bookmarkMode) {
     	operationPane.addOperation(bookmarkDelete, resources.getString("SupprimerSite"), "javascript:onClick=deleteWebSites('"+listeSites.size()+"')");
-    } 
-    else 
-    {
-		operationPane.addOperation(upload, resources.getString("UploadSite"), "javascript:onClick=B_SPECIFIER_UPLOAD_ONCLICK();");
-		operationPane.addOperation(create, resources.getString("DesignSite"), "javascript:onClick=B_SPECIFIER_DESIGN_ONCLICK();");
+    } else {
+		operationPane.addOperationOfCreation(upload, resources.getString("UploadSite"), "javascript:onClick=B_SPECIFIER_UPLOAD_ONCLICK();");
+		operationPane.addOperationOfCreation(create, resources.getString("DesignSite"), "javascript:onClick=B_SPECIFIER_DESIGN_ONCLICK();");
 		operationPane.addOperation(belpou, resources.getString("SupprimerSite"), "javascript:onClick=deleteWebSites('"+listeSites.size()+"')");
 	}
 	
-
-    //Les onglets
+    out.println(window.printBefore());
+    
     TabbedPane tabbedPane = gef.getTabbedPane();
     tabbedPane.addTab(resources.getString("Consulter"), "listSite.jsp", false);
     tabbedPane.addTab(resources.getString("Organiser"), "organize.jsp", false);
     tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", true);
-
-    //Le cadre
-    Frame frame = gef.getFrame();
-
+    
+    out.println(tabbedPane.print());
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<%
     //Le tableau de tri
     ArrayPane arrayPane = gef.getArrayPane("foldersList", "manage.jsp", request, session);
 	arrayPane.setVisibleLineNumber(10);
 	arrayPane.setTitle(resources.getString("ListeSites"));
-	//Definition des colonnes du tableau
 	arrayPane.addArrayColumn(resources.getString("GML.name"));
 	arrayPane.addArrayColumn(resources.getString("GML.description"));
 	if (! bookmarkMode) {
@@ -283,7 +261,6 @@ function openSPWindow(fonction, windowName){
 			arrayLine.addArrayCellLink(nom, "javascript:onClick=updateDescription('"+theId+"')");
 		}
 		else {//site interne
-			//CBO : UPDATE
 			arrayLine.addArrayCellLink(nom, "javascript:onClick=designSite('"+doubleAntiSlash(settings.getString("uploadsPath")+componentId+"/"+theId)+"', '"+theId+"')");
 		}
 
@@ -320,20 +297,16 @@ function openSPWindow(fonction, windowName){
 		}
 
 		//check
-		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"supLien\" value=\""+theId+"\">");
+		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"supLien\" value=\""+theId+"\"/>");
 
 		i++;
   }
-
-	//Recuperation du tableau dans le haut du cadre
-	frame.addTop(arrayPane.print());
-	frame.addBottom("");
-
-	//On crache le HTML ;o)
-	bodyPart+=tabbedPane.print();
-	bodyPart+=frame.print();
-	window.addBody(bodyPart);
-	out.println(window.print());
+	
+	out.println(arrayPane.print());
+%>
+</view:frame>
+<%
+	out.println(window.printAfter());
 %>
 </form>
 </body>

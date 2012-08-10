@@ -25,13 +25,14 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="init.jsp" %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-	<link rel="stylesheet" type="text/css" href="<%=applicationURL%>/myDB/jsp/styleSheet/consultation.css">
+<view:looknfeel/>
+	<link rel="stylesheet" type="text/css" href="<%=applicationURL%>/myDB/jsp/styleSheet/consultation.css"></link>
 	<script type="text/javascript" src="<%=applicationURL%>/myDB/jsp/javaScript/consultation.js"></script>
 	<script type="text/javascript" src="<%=applicationURL%>/myDB/jsp/javaScript/util.js"></script>
 	<script type="text/javascript">
@@ -41,7 +42,7 @@
 	</script>
 </head>
 
-<body marginwidth="5" marginheight="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<body>
 <%
 	DbTable dbTable = myDBSC.getDbTable();
 	StringBuffer pageTitleSb = new StringBuffer(resource.getString("PageTitleConsultation"));	
@@ -57,12 +58,9 @@
 			+ "?command=init"
 			+ "&mode=" + TableManager.MODE_CREATION
 			+ "&originPage=" + MyDBConstants.PAGE_CONSULTATION;
-		operationPane.addOperation(
-			resource.getIcon("myDB.addTable"), resource.getString("OperationCreateTable"), tableAction);
-	    if (dbTable != null)
-	    {
-	    	operationPane.addOperation(resource.getIcon("myDB.addRecord"), resource.getString("OperationAddRecord"),
-	    		MyDBConstants.ACTION_ADD_LINE);
+		operationPane.addOperationOfCreation(resource.getIcon("myDB.addTable"), resource.getString("OperationCreateTable"), tableAction);
+	    if (dbTable != null) {
+	    	operationPane.addOperationOfCreation(resource.getIcon("myDB.addRecord"), resource.getString("OperationAddRecord"), MyDBConstants.ACTION_ADD_LINE);
 	    }
 	}
 
@@ -71,12 +69,12 @@
 	// Current page tab index.
 	int tabIndex = 1;
 %>
+	<view:areaOfOperationOfCreation/>
 	<%@ include file="tabs.jsp" %>
 <%
 	out.println(frame.printBefore());
 
-	if (dbTable != null)
-	{
+	if (dbTable != null) {
 		String[] columnsNames = dbTable.getColumnsNames();
 		int n = columnsNames.length;
 		
@@ -88,7 +86,7 @@
 		String compare;
 		String value;
 %>
-	<form name="filterForm" action="<%=MyDBConstants.ACTION_FILTER%>" method="POST">
+	<form name="filterForm" action="<%=MyDBConstants.ACTION_FILTER%>" method="post">
 		<center>
 			<table cellpadding="0" cellspacing="0" border="0" width="98%" bgcolor="000000">
 				<tr>
@@ -130,12 +128,12 @@
 									</span>
 								</td>
 								<td class="intfdcolor" align="center" nowrap height="24">
-									<span class="selectNS">&nbsp;<%=resource.getString("Value")%> : <input type="text" name="filterValue" size="30" value="<%=filterValue%>"></span>&nbsp;
+									<span class="selectNS">&nbsp;<%=resource.getString("Value")%> : <input type="text" name="filterValue" size="30" value="<%=filterValue%>"/></span>&nbsp;
 								</td>
 								<td class="intfdcolor">
 <%
 		ButtonPane buttonPane = gef.getButtonPane();
-		buttonPane.addButton((Button) gef.getFormButton(resource.getString("Ok"), "javascript:filterData()", false));
+		buttonPane.addButton(gef.getFormButton(resource.getString("Ok"), "javascript:filterData()", false));
 		out.println(buttonPane.print());
 %>
 								</td>
@@ -147,7 +145,7 @@
 			</table>
 		</center>
 	</form>
-	<br>
+	<br/>
 	<form name="processFormTest" action="<%=MyDBConstants.ACTION_MAIN%>">
 <%
 		boolean userPublisherOrAdmin = (userRoleLevel.equals("publisher") || userRoleLevel.equals("admin"));

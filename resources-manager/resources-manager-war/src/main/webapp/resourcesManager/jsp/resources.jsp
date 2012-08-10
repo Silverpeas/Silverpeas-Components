@@ -65,19 +65,20 @@ while(!listCategory.isEmpty()){
 ArrayLine arrayLine;
 ArrayCellText arrayCellText2;
 %>
-<html>
-	<head>
-	<view:looknfeel />
-	<script language="JavaScript">
-	function deleteResource(resourceId, name,categoryId) {
-  		  if (confirm("<%=resource.getString("resourcesManager.deleteResource")%>" + " " + name + " ?")) {
-			location.href="DeleteRessource?resourceId="+resourceId+"&categoryId="+categoryId;
-		  }
-	}
-	</script>
-	</head>
-	<body>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<view:looknfeel />
+<script type="text/javascript">
+function deleteResource(resourceId, name,categoryId) {
+	if (confirm("<%=resource.getString("resourcesManager.deleteResource")%>" + " " + name + " ?")) {
+		location.href="DeleteRessource?resourceId="+resourceId+"&categoryId="+categoryId;
+	}
+}
+</script>
+</head>
+<body>
 	<%
 		browseBar.setDomainName(spaceLabel);
 		browseBar.setComponentName(componentLabel,"Main");
@@ -86,7 +87,7 @@ ArrayCellText arrayCellText2;
 		browseBar.setExtraInformation(resource.getString("resourcesManager.gererresource") + " " + categoryName);	
 		browseBar.setPath(chemin);
 
-		operationPane.addOperation(resource.getIcon("resourcesManager.creerResource"), resource.getString("resourcesManager.creerressource"),"NewResource?categoryId="+idCategory);
+		operationPane.addOperationOfCreation(resource.getIcon("resourcesManager.creerResource"), resource.getString("resourcesManager.creerressource"),"NewResource?categoryId="+idCategory);
 		
 //		Definition du tableau et des colonnes
 		ArrayPane arrayPane = gef.getArrayPane("resourceList", "ViewResources?id="+idCategory, request, session);
@@ -120,11 +121,15 @@ ArrayCellText arrayCellText2;
 		}
 		
 		out.println(window.printBefore());
-		out.println(frame.printBefore());
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<%		
 		out.println(arrayPane.print());
-		out.println(frame.printAfter());
+%>
+</view:frame>
+<%
 		out.println(window.printAfter());
 %>
-
 </body>
 </html>

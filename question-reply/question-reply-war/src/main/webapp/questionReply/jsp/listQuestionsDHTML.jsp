@@ -485,16 +485,16 @@ function subscribe() {
             "javascript:onClick=openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" + componentId + "','utilizationPdc1')");
     operationPane.addLine();
     // creation des categories
-    operationPane.addOperation(resource.getIcon("questionReply.createCategory"), resource.getString(
+    operationPane.addOperationOfCreation(resource.getIcon("questionReply.createCategory"), resource.getString(
             "questionReply.createCategory"), "NewCategory");
     operationPane.addLine();
   }
   if (!profil.equals("user")) {
-    operationPane.addOperation(resource.getIcon("questionReply.addQ"), resource.getString(
+    operationPane.addOperationOfCreation(resource.getIcon("questionReply.addQ"), resource.getString(
             "questionReply.addQ"), "CreateQQuery");
   }
   if (profil.equals("admin") || profil.equals("writer")) {
-    operationPane.addOperation(resource.getIcon("questionReply.addQR"), resource.getString(
+    operationPane.addOperationOfCreation(resource.getIcon("questionReply.addQR"), resource.getString(
             "questionReply.addQR"), "CreateQueryQR");
     operationPane.addLine();
     operationPane.addOperation(resource.getIcon("questionReply.delQ"), resource.getString(
@@ -510,13 +510,14 @@ function subscribe() {
     operationPane.addOperation(resource.getIcon("GML.unsubscribe"), resource.getString(
           "GML.unsubscribe"), "javascript:unsubscribe();");
   }else {
-    operationPane.addOperation(resource.getIcon("GML.subscribe"), resource.getString(
+    operationPane.addOperationOfCreation(resource.getIcon("questionReply.subscribe"), resource.getString(
           "GML.subscribe"), "javascript:subscribe();");
   }
             
   out.println(window.printBefore());
-  out.println(frame.printBefore());
 %>
+<view:frame>
+<view:areaOfOperationOfCreation/>
 <form method="post" action="">
   <ul>
     <fmt:message key="questionReply.updateCategory" bundle="${icons}" var="updateCategoryIcon"/>
@@ -556,8 +557,8 @@ function subscribe() {
   <input type="hidden" name="replyId" />
   <input type="hidden" name="QuestionId" />
 </form>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>

@@ -351,7 +351,7 @@ function removeAllUsers()
     </div>
 
 <%
-        if (fsc.forumInsideForum()) {
+        if (fsc.isForumInsideForum()) {
 %>
     <!-- Forum folder inside  -->
     <div class="field" id="folderArea">

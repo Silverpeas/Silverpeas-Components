@@ -210,11 +210,13 @@ function initOperations(id, op) {
 	$("#menutoggle").css({'display':'block'});
 	
 	oMenu.clearContent();
+	$('#menubar-creation-actions').empty();
 	
 	var menuItem;
 	var groupIndex = 0;
 	var groupEmpty = true;
 	var menuEmpty = true;
+	var menuBarEmpty = true;
 	
 	if (op.emptyTrash) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.emptyTrash"], {url: "javascript:onClick=emptyTrash()"});
@@ -269,9 +271,13 @@ function initOperations(id, op) {
 	}
 	
 	if (op.addTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.addTopic"], {url: "javascript:onclick=addNodeToCurrentNode()"});
+		var label = labels["operation.addTopic"];
+		var url = "javascript:onclick=addNodeToCurrentNode()";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
+		addCreationItem(url, icons["operation.addTopic"], label);
+		menuBarEmpty = false;
 	}
 	if (op.updateTopic) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.updateTopic"], {url: "javascript:onclick=updateCurrentNode()"});
@@ -326,24 +332,40 @@ function initOperations(id, op) {
 	}
 	
 	if (op.addPubli) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.addPubli"], {url: "NewPublication"});
+		var label = labels["operation.addPubli"];
+		var url = "NewPublication";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
+		addCreationItem(url, icons["operation.addPubli"], label);
+		menuBarEmpty = false;
 	}
 	if (op.wizard) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.wizard"], {url: "WizardStart"});
+		var label = labels["operation.wizard"];
+		var url = "WizardStart";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
+		addCreationItem(url, icons["operation.wizard"], label);
+		menuBarEmpty = false;
 	}
 	if (op.importFile) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.importFile"], {url: "javascript:onclick=importFile()"});
+		var label = labels["operation.importFile"];
+		var url = "javascript:onclick=importFile()";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
+		addCreationItem(url, icons["operation.importFile"], label);
+		menuBarEmpty = false;
 	}
 	if (op.importFiles) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.importFiles"], {url: "javascript:onclick=importFiles()"});
+		var label = labels["operation.importFiles"];
+		var url = "javascript:onclick=importFiles()";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
+		addCreationItem(url, icons["operation.importFiles"], label);
+		menuBarEmpty = false;
 	}
 	if (op.sortPublications) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.sortPublis"], {url: "ToOrderPublications"});
@@ -370,18 +392,24 @@ function initOperations(id, op) {
 	if (op.exportSelection) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.exportSelection"], {url: "javascript:onclick=exportPublications()"});
 		oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
+		groupEmpty = false;
 	}
 	
 	if (op.subscriptions) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.subscribe"], {url: "javascript:onclick=addSubscription()"});
+		var label = labels["operation.subscribe"];
+		var url = "javascript:onclick=addSubscription()";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
+		groupEmpty = false;
+		//addCreationItem(url, icons["operation.subscribe"], label);
 	}
 	if (op.favorites) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.favorites"], {url: "javascript:onclick=addCurrentNodeAsFavorite()"});
+		var label = labels["operation.favorites"];
+		var url = "javascript:onclick=addCurrentNodeAsFavorite()";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
+		groupEmpty = false;
+		//addCreationItem(url, icons["operation.favorites"], label);
 	}
   
   if (!groupEmpty) {
@@ -400,6 +428,25 @@ function initOperations(id, op) {
 	
 	if (menuEmpty) {
 		$("#menutoggle").css({'display':'none'});
+	}
+	if (menuBarEmpty) {
+		$('#menubar-creation-actions').css({'display':'none'});
+	}
+}
+
+function addCreationItem(url, icon, label) {
+	if ($('#menubar-creation-actions').length > 0) {
+		var creationItem = "<a href=\""+url+"\" class=\"menubar-creation-actions-item\"><span><img src=\""+icon+"\" alt=\"\"/>" + label + "</span></a>";
+		$('#menubar-creation-actions').css({'display':'block'});
+		$('#menubar-creation-actions').append(creationItem);
+	}
+}
+
+function hideOperations() {
+	$("#menutoggle").css({'display':'none'}); //hide operations
+	if ($('#menubar-creation-actions').length > 0) {
+		$('#menubar-creation-actions').empty();
+		$('#menubar-creation-actions').css({'display':'none'});
 	}
 }
 

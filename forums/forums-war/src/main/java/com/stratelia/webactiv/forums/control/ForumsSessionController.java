@@ -1020,7 +1020,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return "yes".equalsIgnoreCase(getComponentParameterValue("rss"));
   }
 
-  public boolean forumInsideForum() {
+  public boolean isForumInsideForum() {
     String value = getComponentParameterValue("forumInsideForum");
     return (value != null && "yes".equals(value.toLowerCase()));
   }

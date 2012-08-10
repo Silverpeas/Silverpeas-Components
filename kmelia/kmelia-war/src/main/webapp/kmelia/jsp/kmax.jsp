@@ -44,6 +44,8 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="kmax_axisReport.jsp" %>
 
@@ -71,13 +73,11 @@ if (action == null) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
-<script type="text/javascript" language="JavaScript1.2">
+<script type="text/javascript">
 <!--
 var subscriptionWindow = window;
 var favoriteWindow = window;
@@ -202,7 +202,7 @@ function exportPublications()
 -->
 </script>
 </head>
-<body  id="<%=componentId %>" class="kmax" onload="init()">
+<body id="<%=componentId %>" class="kmax" onload="init()">
 <%
 Window window = gef.getWindow();
 
@@ -216,11 +216,10 @@ if (action.equals("KmaxView")) {
     //Display operations by profile
     if (profile.equals("admin") || profile.equals("publisher") || profile.equals("writer")) {
 		OperationPane operationPane = window.getOperationPane();
-		operationPane.addOperation(publicationAddSrc, kmeliaScc.getString("PubCreer"), "javascript:onClick=publicationAdd()");
-		if (kmeliaScc.isWizardEnabled())
-    	{
+		operationPane.addOperationOfCreation(publicationAddSrc, kmeliaScc.getString("PubCreer"), "javascript:onClick=publicationAdd()");
+		if (kmeliaScc.isWizardEnabled()) {
     		// ajout assistant de publication
-    		operationPane.addOperation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
+    		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
     	}
 		operationPane.addLine();
 		operationPane.addOperation(unbalancedSrc, kmeliaScc.getString("PubDeclassified"), "javascript:onClick=viewUnbalanced()");
@@ -237,23 +236,23 @@ if (action.equals("KmaxView")) {
 			operationPane.addOperation(exportComponentSrc, kmeliaScc.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
 		}
     }
-
-    
+ 
     TabbedPane tabbedPane = gef.getTabbedPane();
     if (profile.equals("admin")) {
         tabbedPane.addTab(kmeliaScc.getString("Consultation"), "#", true);
         tabbedPane.addTab(kmeliaScc.getString("Management"), "KmaxAxisManager", false);
     }
 
-    Frame frame = gef.getFrame();
     out.println(window.printBefore());
     
-    frame.addTop(displayAxisToUsers(kmeliaScc, gef, translation));
+    if (profile.equals("admin")) {
+    	out.println(tabbedPane.print());
+  	}
+%>
+<view:areaOfOperationOfCreation/>
+<%    
+    out.println(displayAxisToUsers(kmeliaScc, gef, translation));
 
-    if (profile.equals("admin"))
-        out.println(tabbedPane.print());
-
-    out.println(frame.print());
     out.println(window.printAfter());
 
 } else if (action.equals("KmaxSearchResult")) {
@@ -266,11 +265,11 @@ if (action.equals("KmaxView")) {
     //Display operations by profile
     if (profile.equals("admin") || profile.equals("publisher") || profile.equals("writer")) {
 			OperationPane operationPane = window.getOperationPane();
-			operationPane.addOperation(publicationAddSrc, kmeliaScc.getString("PubCreer"), "javascript:onClick=publicationAdd()");
+			operationPane.addOperationOfCreation(publicationAddSrc, kmeliaScc.getString("PubCreer"), "javascript:onClick=publicationAdd()");
 			if (kmeliaScc.isWizardEnabled())
         	{
         		// ajout assistant de publication
-        		operationPane.addOperation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
+        		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
         	}
 			operationPane.addLine();
 			operationPane.addOperation(unbalancedSrc, kmeliaScc.getString("PubDeclassified"), "javascript:onClick=viewUnbalanced()");
@@ -295,24 +294,25 @@ if (action.equals("KmaxView")) {
         tabbedPane.addTab(kmeliaScc.getString("Management"), "KmaxAxisManager", false);
       }
 
-      Frame frame = gef.getFrame();
       out.println(window.printBefore());
       
-      if (profile.equals("admin"))
+      if (profile.equals("admin")) {
           out.println(tabbedPane.print());
-      
-	  out.println(frame.printBefore());
-      
+      }
+%>
+	  <view:areaOfOperationOfCreation/>
+	  <view:frame>
+<%            
       out.println(displayAxisCombinationToUsers(kmeliaScc, gef, combination, timeCriteria, translation));
-      Board board = gef.getBoard();
-      out.println("<div id=\"pubList\">");
-      out.println("<br/>");
-      out.println(board.printBefore());
-      out.println("<br/><center>"+resources.getString("kmelia.inProgressPublications")+"<br/><br/><img src=\""+resources.getIcon("kmelia.progress")+"\"/></center><br/>");
-      out.println(board.printAfter());
-      out.println("</div>");
-
-      out.println(frame.printAfter());
+%>
+	<div id="pubList">
+	<br/>
+	<view:board>
+      <br/><center><%=resources.getString("kmelia.inProgressPublications") %><br/><br/><img src="<%=resources.getIcon("kmelia.progress") %>"/></center>
+	</view:board>
+	</div>
+	</view:frame>
+<%
       out.println(window.printAfter());
 
 } else if ("KmaxViewUnbalanced".equals(action) || "KmaxViewBasket".equals(action) || "KmaxViewToValidate".equals(action)) {

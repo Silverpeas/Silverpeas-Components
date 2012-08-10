@@ -24,14 +24,15 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
 <%@page import="java.util.List"%>
 <%@page import="com.silverpeas.formsonline.model.FormDetail"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
@@ -42,63 +43,41 @@
 	String Published=iconsPath+"/util/icons/unlock.gif";
 	String Create=iconsPath+"/util/icons/formManager_to_add.gif";
 	String Suppr=iconsPath+"/util/icons/delete.gif";
-
-	/**
-	 * @param text The string to truncate if its size is greater than the maximum length given as
-	 * 		  parameter.
-	 * @param maxLength The maximum length required.
-	 * @return The truncated string followed by '...' if needed. Returns the string itself if its
-	 * 		   length is smaller than the required maximum length.
-	 */
-	String truncate(String text, int maxLength)
-	{
-		if (text == null || text.length() <= maxLength)
-		{
-			return text;
-		}
-		else if (maxLength <= 3)
-		{
-			return "...";
-		}
-		else
-		{
-			return text.substring(0, maxLength - 3) + "...";
-		}
-	}
-	
 %>
 
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-
-	<script type="text/javascript">
-	    function deleteForm(idModel) {    
-	         if (window.confirm("<%=resource.getString("formsOnline.deleteFormConfirm")%>")) { 
-	            document.deleteForm.formId.value = idModel;
-	            document.deleteForm.submit();
-	         }
-	    }
-	</script>
-
+<view:looknfeel/>
+<script type="text/javascript">
+function deleteForm(idModel) {    
+	if (window.confirm("<%=resource.getString("formsOnline.deleteFormConfirm")%>")) { 
+    	document.deleteForm.formId.value = idModel;
+        document.deleteForm.submit();
+    }
+}
+</script>
 </head>
 <body>
-
 <form name="deleteForm" action="DeleteForm">
   <input type="hidden" name="formId"/>
 </form>
 
 <%
-    List formsList = (List) request.getAttribute("formsList");
+    List<FormDetail> formsList = (List<FormDetail>) request.getAttribute("formsList");
   
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel);
     
+    operationPane.addOperationOfCreation(Create, resource.getString("formsOnline.createForm") , "CreateForm");
+    
+    out.println(window.printBefore());
+  
     TabbedPane tabbedPane = gef.getTabbedPane(1);
     tabbedPane.addTab(resource.getString("formsOnline.formsList"), "Main", true,1);  
     tabbedPane.addTab(resource.getString("formsOnline.outbox"), "OutBox", false,1);
     tabbedPane.addTab(resource.getString("formsOnline.inbox"), "InBox", false,1);
-   
+    out.println(tabbedPane.print());
+%>
+<view:areaOfOperationOfCreation/>
+<%
     ArrayPane arrayPane = gef.getArrayPane("Forms", "Main", request, session);
     arrayPane.setVisibleLineNumber(10);
     arrayPane.setTitle(resource.getString("formsOnline.formsList"));
@@ -107,15 +86,11 @@
     ArrayColumn arrayColumnState = arrayPane.addArrayColumn(resource.getString("GML.operation"));
     arrayColumnState.setSortable(false);
 
-    FormDetail form;
-    int i=0;
-    while (i < formsList.size()) {
-	    form = (FormDetail) formsList.get(i);           
-	
+    for (FormDetail form : formsList) {
 	    /* ecriture des lignes du tableau */
 	    String formId = String.valueOf(form.getId());//idForm externe (FormDesigner)
-	    String nom = truncate( form.getName(), 40);
-	    String description = truncate( form.getDescription(), 80 );
+	    String nom = StringUtil.truncate( form.getName(), 40);
+	    String description = StringUtil.truncate( form.getDescription(), 80 );
 	    int state = form.getState();
 	    boolean alreadyUsed = form.isAlreadyUsed();
 	
@@ -160,18 +135,10 @@
 	    }		
 
         arrayLine.addArrayCellIconPane(iconPane);
-
-	 	i++;
     }
-      
-    operationPane.addOperation(Create, resource.getString("formsOnline.createForm") , "CreateForm");
     
-    frame.addTop(arrayPane.print());
-
-    frame.addBottom("");
-
-    window.addBody(tabbedPane.print()+frame.print());
-    out.println( window.print());
+    out.println(arrayPane.print());
+    out.println(window.printAfter());
 	%>
 </body>
 </html>

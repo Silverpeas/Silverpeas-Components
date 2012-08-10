@@ -80,7 +80,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 %>
 <fmt:message key="confirmDeleteForum" var="removeForum" />
 <fmt:message key="confirmDeleteCategory" var="removeCategory" />
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
     <view:looknfeel />
@@ -138,16 +138,17 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
             <c:param name="params" value="0"/>
           </c:url>
           <c:url var="addForumIconUrl" value="/util/icons/forums_to_add.gif" />
-          <view:operation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
+          <view:operationOfCreation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
           <fmt:message key="forums.addCategory" var="addCategoryAltText" />
           <c:set var="addCategoryOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>','<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
           <c:url var="addCategoryIconUrl" value="/util/icons/folderAddBig.gif" />
-          <view:operation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
+          <view:operationOfCreation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
         </c:if>
       </view:operationPane>
     </c:if>
     <view:window>
       <view:frame>
+      	  <view:areaOfOperationOfCreation/>
           <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
             <tr>
               <th class="ArrayColumn" colspan="2" nowrap="nowrap"><fmt:message key="theme" /></td>

@@ -25,9 +25,8 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="checkQuickInfo.jsp" %>
-
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ include file="checkQuickInfo.jsp" %>
 
 <%
   //Collection infos = Tous les quickInfos
@@ -42,8 +41,7 @@
   }
 
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Quick Info - Publieur</title>
@@ -85,22 +83,23 @@ function addQuickInfo() {
         Window window = gef.getWindow();
 
         BrowseBar browseBar = window.getBrowseBar();
-        Frame maFrame = gef.getFrame();
 
         OperationPane operationPane = window.getOperationPane();
         if (isAdmin && quickinfo.isPdcUsed()) {
             operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId=" + quickinfo.getComponentId() + "','utilizationPdc1')");
             operationPane.addLine();
         }
-        operationPane.addOperation(m_context+"/util/icons/quickInfo_to_add.gif", resources.getString("creation"), "javascript:onClick=addQuickInfo()");
+        operationPane.addOperationOfCreation(m_context+"/util/icons/quickInfo_to_add.gif", resources.getString("creation"), "javascript:onClick=addQuickInfo()");
 
         // Clipboard
         operationPane.addOperation(m_context+"/util/icons/copy.gif", resources.getString("GML.copy"), "javascript:onClick=ClipboardCopyAll()");
         operationPane.addOperation(m_context+"/util/icons/paste.gif", resources.getString("GML.paste"), "javascript:onClick=ClipboardPaste()");
 
         out.println(window.printBefore());
-        out.println(maFrame.printBefore());
-
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<%
           ArrayPane arrayPane = gef.getArrayPane("quickinfoList", pageContext);
           arrayPane.setXHTML(true);
           arrayPane.addArrayColumn(null);
@@ -146,8 +145,9 @@ function addQuickInfo() {
                                 index++;
           }
           out.println(arrayPane.print());
-
-        out.println(maFrame.printAfter());
+%>
+</view:frame>
+<%
         out.println(window.printAfter());
 %>
 </form>

@@ -352,12 +352,14 @@
   surveyScc.removeSessionSurvey();
   surveyScc.removeSessionResponses();
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <view:looknfeel />
 <script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
-<script language="javascript1.2">
+<script type="text/javascript">
 function viewOpenedSurveys() {
   document.surveysForm.Action.value = "ViewOpenedSurveys";
   document.surveysForm.submit();
@@ -410,7 +412,6 @@ function openSPWindow(fonction, windowName){
 }
 </script>
 </head>
-
 <body>
 <%
   Window window = gef.getWindow();
@@ -428,17 +429,17 @@ function openSPWindow(fonction, windowName){
       operationPane.addLine();
     }
     if (pollingStationMode) {
-      operationPane.addOperation(addSurveySrc, resources.getString("PollingStationNewVote"),
+      operationPane.addOperationOfCreation(addSurveySrc, resources.getString("PollingStationNewVote"),
           "javaScript:createPollingStation()");
     } else {
-      operationPane.addOperation(addSurveySrc, resources.getString("SurveyNewSurvey"),
+      operationPane.addOperationOfCreation(addSurveySrc, resources.getString("SurveyNewSurvey"),
           "javaScript:createSurvey()");
     }
     operationPane.addOperation(resources.getIcon("survey.paste"), resources
         .getString("GML.paste"), "javascript:onClick=clipboardPaste()");
   }
-
-  String bodyPart = "";
+  
+  out.println(window.printBefore());
 
   int view = surveyScc.getViewType();
   Collection<QuestionContainerHeader> surveys = surveyScc.getSurveys();
@@ -453,11 +454,13 @@ function openSPWindow(fonction, windowName){
   tabbedPane.addTab(resources.getString("SurveyInWait"),
       "javaScript:onClick=viewInWaitSurveys()",
       (view == SurveySessionController.INWAIT_SURVEYS_VIEW));
-
-  bodyPart += tabbedPane.print();
-
-  Frame frame = gef.getFrame();
-
+  
+  out.println(tabbedPane.print());
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<center><table cellpadding="0" cellspacing="0" border="0" width="98%"><tr><td>
+<%
   ArrayPane arrayPane = null;
   if (profile.equals("admin") || profile.equals("publisher")) {
     arrayPane =
@@ -466,33 +469,30 @@ function openSPWindow(fonction, windowName){
     arrayPane =
         buildSurveyArrayToUser(gef, surveyScc, view, surveys, resources, request, session, pollingStationMode);
   }
-
-  //Retrieve array in the top corner           
-  frame.addTop("<center><table cellpadding=0 cellspacing=0 border=0 width='98%'><tr><td>" +
-      arrayPane.print() + "</td></tr></table></center>");
-
-  bodyPart += frame.print();
-
-  window.addBody(bodyPart);
-  out.println(window.print());
+  out.println(arrayPane.print());
+%>
+</td></tr></table></center>
+</view:frame>
+<%
+  out.println(window.printAfter());
 %>
 
 <form name="surveysForm" action="surveyList.jsp" method="post">
-  <input type="hidden" name="Action" value=""> 
-  <input type="hidden" name="SurveyId" value="">
+  <input type="hidden" name="Action" value=""/> 
+  <input type="hidden" name="SurveyId" value=""/>
 </form>
 
 <form name="updateForm" action="UpdateSurvey" method="post">
-  <input type="hidden" name="Action" value=""> 
-  <input type="hidden" name="SurveyId" value="">
+  <input type="hidden" name="Action" value=""/> 
+  <input type="hidden" name="SurveyId" value=""/>
 </form>
 
 <form name="newSurveyForm" action="surveyCreator.jsp" method="post">
-  <input type="hidden" name="Action" value="">
+  <input type="hidden" name="Action" value=""/>
 </form>
 
 <form name="newPollingStationForm" action="pollCreator.jsp" method="post" enctype="multipart/form-data">
-  <input type="hidden" name="Action" value="">
+  <input type="hidden" name="Action" value=""/>
 </form>
 
 </body>

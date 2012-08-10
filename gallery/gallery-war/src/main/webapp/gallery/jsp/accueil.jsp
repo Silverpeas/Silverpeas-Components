@@ -25,6 +25,8 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <% 
 AlbumDetail root 			= (AlbumDetail) request.getAttribute("root");
@@ -46,16 +48,12 @@ int nbTotal 	= 15;
 session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
-
 <script type="text/javascript">
   
 	  $(document).ready(function(){
@@ -165,7 +163,6 @@ function sendData()
 
 </script>
 </head>
-
 <body>
 <div id="<%=componentId %>">
 <%
@@ -183,7 +180,7 @@ function sendData()
 	}
 	if ( "admin".equals(profile) || "publisher".equals(profile))
 	{
-		operationPane.addOperation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.ajoutAlbum"), "javaScript:openGalleryEditor()");
+		operationPane.addOperationOfCreation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.ajoutAlbum"), "javaScript:openGalleryEditor()");
 		operationPane.addLine();
 		
 		//visualisation des photos non visibles par les lecteurs
@@ -208,7 +205,7 @@ function sendData()
 	if (!"admin".equals(profile) && !isGuest)
 	{
 		// demande de photo aupres du gestionnaire
-		operationPane.addOperation(resource.getIcon("gallery.askPhoto"),resource.getString("gallery.askPhoto"), "javaScript:askPhoto()");
+		operationPane.addOperationOfCreation(resource.getIcon("gallery.askPhoto"),resource.getString("gallery.askPhoto"), "javaScript:askPhoto()");
 		operationPane.addLine();
 	}
 
@@ -264,6 +261,7 @@ function sendData()
   <% } %>
    
   <div id="subTopics">
+  <view:areaOfOperationOfCreation/>
   <ul id="albumList">
 <%
   for (AlbumDetail unAlbum : albums) {
