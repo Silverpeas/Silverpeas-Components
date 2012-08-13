@@ -379,25 +379,22 @@
           location.href= "<%=routerUrl%>ViewPublication";
         }
 
-        function addFavorite()
-        {
-          var name = encodeURI($("#breadCrumb").text());
-          var description = encodeURI("<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>");
-          var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI,
-              pubDetail.getPK().getId())%>";
-                  urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
+        function addFavorite() {
+          var name = encodeURIComponent($("#breadCrumb").text());
+          var description = encodeURIComponent("<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>");
+          var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId())%>";
+          urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
   
-                  if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow") {
-                    favoriteWindow.close();
-                  }
+		  if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow") {
+            favoriteWindow.close();
+          }
   
-                  favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
-                }
+          favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
+        }
 
-                function suggestDelegatedNews() {
-                  location.href= "<%=routerUrl%>SuggestDelegatedNews";
-                }
-
+        function suggestDelegatedNews() {
+          location.href= "<%=routerUrl%>SuggestDelegatedNews";
+        }
     </script>
   </head>
   <body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()" id="<%=componentId%>">
@@ -497,11 +494,11 @@
 	<div class="inlineMessage">
 		<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
 		<%=resources.getString("kmelia.HelpPubli") %>
-	</div>
+	</div><br clear="all"/>
 <%
         }
         if (screenMessage != null && screenMessage.length() > 0) {
-          out.println("<center>" + screenMessage + "</center>");
+          out.println(screenMessage + "<br clear=\"all\"/>");
         }
 
         InfoDetail infos = pubComplete.getInfoDetail();
@@ -622,18 +619,17 @@
 							  	 
 							  	  <%
 						          // Displaying all validator's name and final validation date 
-						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) {
-						            List validationSteps = pubComplete.getValidationSteps();
-						            if (validationSteps != null && !validationSteps.isEmpty()) { %>
-						            	<p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/> 
-						            		<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <%=resources.getString("GML.by")%>
-						            <%
+						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) { %>
+						            <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/> 
+						            	<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <%=resources.getString("GML.by")%>
+						            <% List<ValidationStep> validationSteps = pubComplete.getValidationSteps();
+						            if (validationSteps != null && !validationSteps.isEmpty()) {
 						              Collections.reverse(validationSteps); //display steps from in order of validation
 						              for (int v = 0; v < validationSteps.size(); v++) {
 						                if (v != 0) { %>
 						                  , 
 						                <% }
-						                ValidationStep vStep = (ValidationStep) validationSteps.get(v);
+						                ValidationStep vStep = validationSteps.get(v);
 						                if (vStep != null) { %>
 						                	<view:username userId="<%=vStep.getUserId()%>"/>
 						                <% }
@@ -776,14 +772,14 @@
               String checked = "";
               String disabled = "";
               if (!exportFormats.contains(format)) {
-                disabled = "disabled='disabled'";
+                disabled = "disabled=\"disabled\"";
               }
               if (!selectedFormat && disabled.isEmpty()) {
-                checked = "checked='checked'";
+                checked = "checked=\"checked\"";
                 selectedFormat = true;
               }
             %>
-            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %>/><%=resources.getString("kmelia.export.format." + format)%></input>
+            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %>/><%=resources.getString("kmelia.export.format." + format)%>
             <% } %>
             <input type="hidden" name="PubId" value="<%=id%>"/>
             <input type="hidden" name="ComponentId" value="<%=componentId%>"/>

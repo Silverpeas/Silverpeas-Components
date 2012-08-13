@@ -20,11 +20,27 @@
  */
 package com.silverpeas.questionReply.control;
 
-import com.silverpeas.questionReply.control.notification.ReplyNotifier;
-import com.silverpeas.questionReply.control.notification.QuestionNotifier;
+import static com.google.common.base.Charsets.UTF_8;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.control.notification.NotificationData;
+import com.silverpeas.questionReply.control.notification.QuestionNotifier;
+import com.silverpeas.questionReply.control.notification.ReplyNotifier;
 import com.silverpeas.questionReply.model.Category;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Recipient;
@@ -64,18 +80,8 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import edu.emory.mathcs.backport.java.util.Collections;
-import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
 
@@ -849,10 +855,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
     // création du fichier html
     File fileHTML = new File(dir + File.separator + thisExportDir + ".html");
-    FileWriter fileWriter = null;
+    Writer fileWriter = null;
     try {
       if (fileHTML.createNewFile()) {
-        fileWriter = new FileWriter(fileHTML.getPath());
+        fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), UTF_8);
         fileWriter.write(toHTML(fileHTML, resource));
       }
     } catch (IOException ex) {

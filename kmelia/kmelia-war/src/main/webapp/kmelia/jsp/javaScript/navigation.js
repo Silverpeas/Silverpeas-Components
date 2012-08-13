@@ -682,7 +682,7 @@ function addCurrentNodeAsFavorite() {
 		url = $("#topicPermalink").attr("href");
 		description = currentTopicDescription;
 	}
-	addFavorite(encodeURI(path), encodeURI(description), url);
+	addFavorite(encodeURIComponent(path), encodeURIComponent(description), url);
 }
 
 function updateCurrentTopicWysiwyg() {
