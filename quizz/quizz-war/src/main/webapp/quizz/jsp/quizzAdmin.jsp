@@ -119,7 +119,7 @@ function clipboardPaste() {
 				operationPane.addLine();
 			}
 			operationPane.addOperationOfCreation(m_context
-					+ "/util/icons/quizz_to_add.gif", resources
+					+ "/util/icons/create-action/add-quizz.png", resources
 					.getString("QuizzNewQuizz"), "quizzCreator.jsp");
 			if (isAdmin) {
 				operationPane.addOperation(resources.getIcon("quizz.paste"),

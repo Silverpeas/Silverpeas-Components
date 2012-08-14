@@ -89,7 +89,7 @@ function addQuickInfo() {
             operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId=" + quickinfo.getComponentId() + "','utilizationPdc1')");
             operationPane.addLine();
         }
-        operationPane.addOperationOfCreation(m_context+"/util/icons/quickInfo_to_add.gif", resources.getString("creation"), "javascript:onClick=addQuickInfo()");
+        operationPane.addOperationOfCreation(m_context+"/util/icons/create-action/add-news.png", resources.getString("creation"), "javascript:onClick=addQuickInfo()");
 
         // Clipboard
         operationPane.addOperation(m_context+"/util/icons/copy.gif", resources.getString("GML.copy"), "javascript:onClick=ClipboardCopyAll()");
@@ -118,7 +118,7 @@ function addQuickInfo() {
 			ArrayLine line = arrayPane.addArrayLine();
 		IconPane iconPane1 = gef.getIconPane();
 		Icon debIcon = iconPane1.addIcon();
-		debIcon.setProperties(m_context+"/util/icons/quickInfoLittleIcon.gif", "", "");
+		debIcon.setProperties(m_context+"/util/icons/Actualite.gif", "", "");
 		line.addArrayCellIconPane(iconPane1);	
             line.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getName()), "javascript:onClick=editQuickInfo('"+pub.getPK().getId()+"')");
                                                 try {

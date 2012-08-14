@@ -47,8 +47,8 @@ public class ForumHelper {
   public static final String IMAGE_LOCK = "../../util/icons/unlock.gif";
   public static final String IMAGE_DELETE = "../../util/icons/delete.gif";
   public static final String IMAGE_MOVE = "../../util/icons/moveMessage.gif";
-  public static final String IMAGE_ADD_FORUM = "../../util/icons/forums_to_add.gif";
-  public static final String IMAGE_ADD_CATEGORY = "../../util/icons/folderAddBig.gif";
+  public static final String IMAGE_ADD_FORUM = "../../util/icons/create-action/add-forum.png";
+  public static final String IMAGE_ADD_CATEGORY = "../../util/icons/create-action/add-folder.png";
   public static final String IMAGE_WORD = "icons/word.gif";
   public static final String IMAGE_NOTATION_OFF = "../../util/icons/starEmpty.gif";
   public static final String IMAGE_NOTATION_ON = "../../util/icons/starFilled.gif";

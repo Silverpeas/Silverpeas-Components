@@ -76,11 +76,11 @@ ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.
 String role 		= (String) request.getAttribute("BestRole");
 
 //Icons
-String bookmark			= m_context+"/util/icons/bookmark_to_add.gif";
+String bookmark			= m_context+"/util/icons/create-action/add-bookmark.png";
 String bookmarkDelete	= m_context+"/util/icons/bookmark_to_remove.gif";
 
-String upload			= m_context+"/util/icons/webSites_upload.gif";
-String create			= m_context+"/util/icons/webSites_to_design.gif";
+String upload			= m_context+"/util/icons/create-action/download-website.png";
+String create			= m_context+"/util/icons/create-action/create-website.png";
 String belpou 			= m_context+"/util/icons/webSites_to_del.gif";
 
 String webLink			= m_context+"/util/icons/webLink.gif";

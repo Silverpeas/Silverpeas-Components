@@ -56,7 +56,7 @@ String 	profile 	= request.getParameter("Profile");
 String 	translation = (String) request.getAttribute("Language");
 
 //Icons
-String publicationAddSrc 	= m_context + "/util/icons/publicationAdd.gif";
+String publicationAddSrc 	= m_context + "/util/icons/create-action/add-publication.png";
 String publicationSrc 		= m_context + "/util/icons/publication.gif";
 String fullStarSrc 			= m_context + "/util/icons/starFilled.gif";
 String emptyStarSrc 		= m_context + "/util/icons/starEmpty.gif";

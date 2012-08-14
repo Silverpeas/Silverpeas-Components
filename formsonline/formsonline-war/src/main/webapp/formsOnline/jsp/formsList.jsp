@@ -41,7 +41,7 @@
 	String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	String NotPublished=iconsPath+"/util/icons/lock.gif";
 	String Published=iconsPath+"/util/icons/unlock.gif";
-	String Create=iconsPath+"/util/icons/formManager_to_add.gif";
+	String Create=iconsPath+"/util/icons/create-action/add-form.png";
 	String Suppr=iconsPath+"/util/icons/delete.gif";
 %>
 

@@ -58,8 +58,8 @@
   public static String IMAGE_LOCK = "../../util/icons/unlock.gif";
   public static String IMAGE_DELETE = "../../util/icons/delete.gif";
   public static String IMAGE_MOVE = "../../util/icons/moveMessage.gif";
-  public static String IMAGE_ADD_FORUM = "../../util/icons/forums_to_add.gif";
-  public static String IMAGE_ADD_CATEGORY = "../../util/icons/folderAddBig.gif";
+  public static String IMAGE_ADD_FORUM = "../../util/icons/create-action/add-forum.png";
+  public static String IMAGE_ADD_CATEGORY = "../../util/icons/create-action/add-folder.png";
   public static String IMAGE_WORD = "icons/word.gif";
   public static String IMAGE_NOTATION_OFF = "../../util/icons/starEmpty.gif";
   public static String IMAGE_NOTATION_ON = "../../util/icons/starFilled.gif";

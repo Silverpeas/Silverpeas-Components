@@ -176,7 +176,7 @@
             <c:param name="forumId" value="${param.forumId}"/>
             <c:param name="params" value="${param.forumId}"/>
           </c:url>
-          <c:url var="addForumIconUrl" value="/util/icons/forums_to_add.gif" />
+          <c:url var="addForumIconUrl" value="/util/icons/create-action/add-forum.png" />
           <view:operationOfCreation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
         </c:if>
         <c:if test="${isActive}">

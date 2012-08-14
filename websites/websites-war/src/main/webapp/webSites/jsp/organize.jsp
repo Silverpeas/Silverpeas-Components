@@ -95,13 +95,13 @@ String pathString = "";
 
 ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
 
-String addFolder=m_context+"/util/icons/folderAddBig.gif";
-String addSite=m_context+"/util/icons/webSites_classify.gif";
+String addFolder=m_context+"/util/icons/create-action/add-folder.png";
+String addSite=m_context+"/util/icons/create-action/add-website-to-topic.png";
 String belpou=m_context+"/util/icons/webSites_topic_to_trash.gif";
 
 if (bookmarkMode)
 {
-	addSite	= m_context+"/util/icons/bookmark_to_addin_topic.gif";
+	addSite	= m_context+"/util/icons/create-action/add-bookmark-to-topic.png";
 	belpou	= m_context+"/util/icons/bookmark_topic_to_trash.gif";
 }
 

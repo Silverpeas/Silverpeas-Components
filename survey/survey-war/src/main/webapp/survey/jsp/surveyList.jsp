@@ -315,9 +315,9 @@
   pdcUtilizationSrc = iconsPath + "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
   linkSrc = iconsPath + "/util/icons/link.gif";
   if (pollingStationMode) {
-    addSurveySrc = iconsPath + "/util/icons/polling_to_add.gif";
+    addSurveySrc = iconsPath + "/util/icons/create-action/add-polling.png";
   } else {
-    addSurveySrc = iconsPath + "/util/icons/survey_to_add.gif";
+    addSurveySrc = iconsPath + "/util/icons/create-action/add-survey.png";
   }
 
   //Update space

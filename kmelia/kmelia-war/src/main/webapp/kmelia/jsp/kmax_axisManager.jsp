@@ -66,7 +66,7 @@ String action 		= request.getParameter("Action");
 String translation 	= (String) request.getAttribute("Language");
 
 //Icons
-String axisAddSrc = m_context + "/util/icons/kmax_to_add.gif";
+String axisAddSrc = m_context + "/util/icons/create-action/add-axis.png";
 String publicationSrc = m_context + "/util/icons/publication.gif";
 String mandatoryFieldSrc = m_context + "/util/icons/mandatoryField.gif";
 

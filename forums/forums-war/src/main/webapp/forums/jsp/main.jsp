@@ -137,11 +137,11 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
             <c:param name="forumId" value="0"/>
             <c:param name="params" value="0"/>
           </c:url>
-          <c:url var="addForumIconUrl" value="/util/icons/forums_to_add.gif" />
+          <c:url var="addForumIconUrl" value="/util/icons/create-action/add-forum.png" />
           <view:operationOfCreation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
           <fmt:message key="forums.addCategory" var="addCategoryAltText" />
           <c:set var="addCategoryOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>','<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
-          <c:url var="addCategoryIconUrl" value="/util/icons/folderAddBig.gif" />
+          <c:url var="addCategoryIconUrl" value="/util/icons/create-action/add-folder.png" />
           <view:operationOfCreation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
         </c:if>
       </view:operationPane>
