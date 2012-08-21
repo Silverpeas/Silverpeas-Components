@@ -60,7 +60,7 @@ function goToWysiwyg() {
 	<input type="hidden" name="ReturnUrl" value="<%=m_context%><%=webPagesUrl%>Preview">
 	</form>
 
-	<SCRIPT>goToWysiwyg()</SCRIPT>
+	<script>goToWysiwyg()</script>
 
 <%
 	out.println(window.printAfter());

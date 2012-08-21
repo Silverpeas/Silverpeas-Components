@@ -66,12 +66,12 @@ out.println(gef.getLookStyleSheet());
 	 	}
 	}
 	
-	if (action.equals("Preview") || operationsVisibles) {
+	if ("Preview".equals(action) || "Display".equals(action) || operationsVisibles) {
 		out.println(window.printBefore());
 	}
 
 	//Les onglets
-	if (action.equals("Preview")) {
+	if ("Preview".equals(action)) {
 		TabbedPane tabbedPane = gef.getTabbedPane();
 		tabbedPane.addTab(resource.getString("webPages.preview"), "Preview", true);
 		tabbedPane.addTab(resource.getString("webPages.edit"), "Edit", false);
@@ -102,11 +102,11 @@ out.println(gef.getLookStyleSheet());
 	</table>
 <%
 	
-	if (action.equals("Preview")) {
+	if ("Preview".equals(action)) {
 		out.println(frame.printAfter());
 	}
 		
-	if (action.equals("Preview") || operationsVisibles) {
+	if ("Preview".equals(action) || "Display".equals(action) || operationsVisibles) {
 		out.println(window.printAfter());
 	}
 %>	
