@@ -295,10 +295,8 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         destination = "/webSites/jsp/organize.jsp?Action=Search&Id=" + id;
       } else if (function.startsWith("modifDesc.jsp")) {
         String id = (String) request.getParameter("Id");
-        String currentPath = (String) request.getParameter("path"); /*
-                                                                     * = null ou rempli si type=
-                                                                     * design
-                                                                     */
+        // = null ou rempli si type= design
+        String currentPath = (String) request.getParameter("path");
         String type = (String) request.getParameter("type"); // null ou design
 
         request.setAttribute("Site", scc.getWebSite(id));
@@ -362,11 +360,10 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
               new NodeDetail(childId, name, description, null, null, null, "0", "X");
           scc.updateFolderHeader(folder, "");
           action = "Search";
-        } else if (action.equals("Delete")) { /*
-                                               * declassification des sites et suppression des
-                                               * themes
-                                               */
-
+        } else if (action.equals("Delete")) {
+          /*
+           * declassification des sites et suppression des themes
+           */
           /* delete folder */
           int i = 0;
           String[] listeId = request.getParameterValues("checkbox");
@@ -546,6 +543,8 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
           String tempPopup = (String) request.getParameter("popup");
           String listeIcones = (String) request.getParameter("ListeIcones");
           String listeTopics = (String) request.getParameter("ListeTopics");
+          // Retrieve positions
+          String positions = request.getParameter("Positions");
 
           int popup = 0;
           if ((tempPopup != null) && (tempPopup.length() > 0)) {
@@ -567,13 +566,11 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
           /* recuperation de l'id */
           String id = scc.getNextId();
 
-          /* creation en BD */
+          /* Persist siteDetail inside database, type 1 = bookmark */
           SiteDetail descriptionSite =
-              new SiteDetail(id, nomSite, description, nomPage, 1, null, null, 0, popup); /*
-                                                                                           * type 1
-                                                                                           * =
-                                                                                           * bookmark
-                                                                                           */
+              new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, 1, null,
+                  null, 0, popup);
+          descriptionSite.setPositions(positions);
 
           String pubId = scc.createWebSite(descriptionSite);
 
@@ -626,10 +623,8 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
             // recup info sur ce webSite
             info = scc.getWebSite(idToDelete);
-            type = info.getType(); /*
-                                    * type = 0 : site cree, type = 1 : site bookmark, type = 2 :
-                                    * site upload
-                                    */
+            // type = 0 : site cree, type = 1 : site bookmark, type = 2 : site upload
+            type = info.getType();
 
             if (type != 1) { // type != bookmark
               StringBuilder deletedDir = new StringBuilder();
@@ -688,7 +683,8 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
           /* update description en BD */
           SiteDetail descriptionSite2 =
-              new SiteDetail(id, nomSite, description, nomPage, type, null, null, etat, popup);
+              new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, type, null,
+                  null, etat, popup);
 
           scc.updateWebSite(descriptionSite2);
 
@@ -733,10 +729,10 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
       else if (function.startsWith("design.jsp")) {
         // Action = newSite the firt time, never null
-        String action = (String) request.getParameter("Action"); 
+        String action = (String) request.getParameter("Action");
         String id = (String) request.getParameter("Id"); // jamais null sauf en creation ou en
-        //Retrieve currentPath parameter : null when creating a webSite
-        
+        // Retrieve currentPath parameter : null when creating a webSite
+
         String currentPath = (String) request.getParameter("path");
         if (currentPath != null) {
           currentPath = doubleAntiSlash(currentPath);
@@ -747,17 +743,19 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
         // ADD NEW SITE -------------------------------------------------------------
         if (action.equals("newSite")) {
-          // = rempli au premier acces a designSite pui toujours null
-          String nomSite = (String) request.getParameter("nomSite"); 
-          // = rempli la premiere fois a la creation, puis toujours null
-          String description = (String) request.getParameter("description");
-          // = rempli la premiere fois a la creation, puis toujours null
-          String nomPage = (String) request.getParameter("nomPage"); 
-          String tempPopup = (String) request.getParameter("popup");
-          //= rempli la premiere fois a la creation, puis toujours null
-          String listeIcones = (String) request.getParameter("ListeIcones"); 
+          // Filled at first access then null
+          String nomSite = request.getParameter("nomSite");
+          // Filled at first access then null
+          String description = request.getParameter("description");
+          // Filled at first access then null
+          String nomPage = request.getParameter("nomPage");
+          String tempPopup = request.getParameter("popup");
+          // Filled at first creation then null
+          String listeIcones = request.getParameter("ListeIcones");
           // = en cas de new Site ou de classifySite
-          String listeTopics = (String) request.getParameter("ListeTopics"); 
+          String listeTopics = request.getParameter("ListeTopics");
+          // Retrieve positions
+          String positions = request.getParameter("Positions");
 
           int popup = 0;
           if ((tempPopup != null) && (tempPopup.length() > 0)) {
@@ -783,10 +781,11 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
           scc.createFolder(settings.getString("uploadsPath") + File.separator +
               scc.getComponentId() + File.separator + id);
 
-          /* creation en BD */
-          // type 0 = site cree
+          // Persist siteDetail inside database type 0 = site cree
           SiteDetail descriptionSite =
-              new SiteDetail(id, nomSite, description, nomPage, 0, null, null, 0, popup); 
+              new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, 0, null,
+                  null, 0, popup);
+          descriptionSite.setPositions(positions);
 
           String pubId = scc.createWebSite(descriptionSite);
           descriptionSite = scc.getWebSite(id);
@@ -834,27 +833,19 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
           request.setAttribute("Site", descriptionSite);
         } else if (action.equals("updateDescription")) { // type 0 design ou 2 upload
-          String nomSite = (String) request.getParameter("nomSite"); /*
-                                                                      * = rempli au premier acces a
-                                                                      * designSite pui toujours null
-                                                                      */
-          String description = (String) request.getParameter("description"); /*
-                                                                              * = rempli la premiere
-                                                                              * fois a la creation,
-                                                                              * puis toujours null
-                                                                              */
-          String nomPage = (String) request.getParameter("nomPage"); /*
-                                                                      * = rempli la premiere fois a
-                                                                      * la creation, puis toujours
-                                                                      * null
-                                                                      */
+
+          // = rempli au premier acces a designSite pui toujours null
+          String nomSite = (String) request.getParameter("nomSite");
+
+          // = rempli la premiere fois a la creation, puis toujours null
+          String description = (String) request.getParameter("description");
+
+          // = rempli la premiere fois a la creation, puis toujours null
+          String nomPage = (String) request.getParameter("nomPage");
           String tempPopup = (String) request.getParameter("popup");
           String etat = (String) request.getParameter("etat");
-          String listeIcones = (String) request.getParameter("ListeIcones"); /*
-                                                                              * = rempli la premiere
-                                                                              * fois a la creation,
-                                                                              * puis toujours null
-                                                                              */
+          // = rempli la premiere fois a la creation, puis toujours null
+          String listeIcones = (String) request.getParameter("ListeIcones");
 
           int popup = 0;
           if ((tempPopup != null) && (tempPopup.length() > 0)) {
@@ -893,8 +884,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
           boolean searchOk = ok;
 
           SiteDetail descriptionSite2 =
-              new SiteDetail(id, nomSite, description, nomPage, type, null, null, Integer
-                  .parseInt(etat), popup);
+              new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, type, null,
+                  null, Integer
+                      .parseInt(etat), popup);
 
           if (searchOk) {
 
@@ -913,10 +905,8 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
           scc.setSessionSite(descriptionSite2);
           request.setAttribute("Site", descriptionSite2);
         } else if (action.equals("addFolder")) {
-          String name = (String) request.getParameter("name"); /*
-                                                                * = null la premiere fois, puis =
-                                                                * nom du repertoire courant
-                                                                */
+          // = null la premiere fois, puis = nom du repertoire courant
+          String name = (String) request.getParameter("name");
 
           // ADD FOLDER -------------------------------------------------------------
           /* Creer le nouveau repertoire */
@@ -925,14 +915,10 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
           request.setAttribute("Site", scc.getSessionSite());
 
         } else if (action.equals("renameFolder")) {
-          String name = (String) request.getParameter("name"); /*
-                                                                * = null la premiere fois, puis =
-                                                                * nom du repertoire courant
-                                                                */
-          String newName = (String) request.getParameter("newName"); /*
-                                                                      * = changement de noms des
-                                                                      * fichiers et repertoires
-                                                                      */
+          // = null la premiere fois, puis = nom du repertoire courant
+          String name = (String) request.getParameter("name");
+          // = changement de noms des fichiers et repertoires
+          String newName = (String) request.getParameter("newName");
 
           // RENAME FOLDER -------------------------------------------------------------
 
@@ -943,10 +929,8 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
           request.setAttribute("Site", scc.getSessionSite());
 
         } else if (action.equals("deleteFolder")) {
-          String name = (String) request.getParameter("name"); /*
-                                                                * = null la premiere fois, puis =
-                                                                * nom du repertoire courant
-                                                                */
+          // null la premiere fois, puis = nom du repertoire courant
+          String name = (String) request.getParameter("name");
 
           // DELETE FOLDER -------------------------------------------------------------
 
@@ -955,45 +939,24 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
           request.setAttribute("Site", scc.getSessionSite());
         } else if (action.equals("addPage")) {
-          String nomPage = (String) request.getParameter("nomPage"); /*
-                                                                      * = rempli la premiere fois a
-                                                                      * la creation, puis toujours
-                                                                      * null
-                                                                      */
+          // = rempli la premiere fois a la creation, puis toujours null
+          String nomPage = (String) request.getParameter("nomPage");
 
           // ADD PAGE -------------------------------------------------------------
           String code = (String) request.getParameter("Code"); // = code de la page a parser
 
           code = EncodeHelper.htmlStringToJavaString(code);
 
-          String newCode = parseCodeSupprImage(scc, code, request, settings, currentPath); /*
-                                                                                            * enleve
-                                                                                            * les
-                                                                                            * http
-                                                                                            * ://
-                                                                                            * localhost
-                                                                                            * :8000/
-                                                                                            * WAwebSiteUploads
-                                                                                            * /
-                                                                                            * WA0webSite17
-                                                                                            * /18/
-                                                                                            * et on
-                                                                                            * garde
-                                                                                            * seulement
-                                                                                            * rep
-                                                                                            * /icon
-                                                                                            * .gif
-                                                                                            */
-
-          newCode = parseCodeSupprHref(scc, newCode, settings, currentPath); /*
-                                                                              * enleve les
-                                                                              * http://localhost
-                                                                              * :8000
-                                                                              * /webactiv/RwebSite
-                                                                              * /jsp/ et on garde
-                                                                              * seulement
-                                                                              * rep/page.html
-                                                                              */
+          /*
+           * enleve les http :// localhost :8000/ WAwebSiteUploads / WA0webSite17 /18/ et on garde
+           * seulement rep /icon .gif
+           */
+          String newCode = parseCodeSupprImage(scc, code, request, settings, currentPath);
+          /*
+           * enleve les http://localhost :8000 /webactiv/RwebSite /jsp/ et on garde seulement
+           * rep/page.html
+           */
+          newCode = parseCodeSupprHref(scc, newCode, settings, currentPath);
 
           // Creer une nouvelle page
           scc.createFile(currentPath, nomPage, newCode);
@@ -1001,15 +964,10 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
           request.setAttribute("Site", scc.getSessionSite());
         } else if (action.equals("renamePage")) {
           // RENAME PAGE -------------------------------------------------------------
-
-          String name = (String) request.getParameter("name"); /*
-                                                                * = null la premiere fois, puis =
-                                                                * nom du repertoire courant
-                                                                */
-          String newName = (String) request.getParameter("newName"); /*
-                                                                      * = changement de noms des
-                                                                      * fichiers et repertoires
-                                                                      */
+          // = null la premiere fois, puis = nom du repertoire courant
+          String name = (String) request.getParameter("name");
+          // = changement de noms des fichiers et repertoires
+          String newName = (String) request.getParameter("newName");
 
           /* Modifier le nom du fichier */
           scc.renameFile(currentPath, name, newName);
@@ -1019,10 +977,8 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
         else if (action.equals("deletePage")) {
           // DELETE PAGE -------------------------------------------------------------
-          String name = (String) request.getParameter("name"); /*
-                                                                * = null la premiere fois, puis =
-                                                                * nom du repertoire courant
-                                                                */
+          // = null la premiere fois, puis = nom du repertoire courant
+          String name = (String) request.getParameter("name");
 
           /* Supprimer la page */
           scc.deleteFile(currentPath + File.separator + name);
@@ -1032,11 +988,8 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
 
         else if (action.equals("classifySite")) { // cas de l'upload et du design
           // CLASSIFY SITE -------------------------------------------------------------
-
-          String listeTopics = (String) request.getParameter("ListeTopics"); /*
-                                                                              * = en cas de new Site
-                                                                              * ou de classifySite
-                                                                              */
+          // = en cas de new Site ou de classifySite
+          String listeTopics = (String) request.getParameter("ListeTopics");
 
           request.setAttribute("Site", scc.getSessionSite());
 
@@ -1122,18 +1075,19 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         String nomPage = FileUploadUtil.getParameter(items, "nomPage");
         String listeIcones = FileUploadUtil.getParameter(items, "ListeIcones");
         String listeTopics = FileUploadUtil.getParameter(items, "ListeTopics");
+        String positions = FileUploadUtil.getParameter(items, "Positions");
 
         FileItem fileItem = FileUploadUtil.getFile(items);
         if (fileItem != null) {
           /* recuperation de l'id = nom du directory */
           String id = scc.getNextId();
 
+          // Persist uploaded website inside database, type=2
           SiteDetail descriptionSite =
-              new SiteDetail(id, nomSite, description, nomPage, 2, null, null, 0, popup); /*
-                                                                                           * type 2
-                                                                                           * = site
-                                                                                           * uploade
-                                                                                           */
+              new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, 2, null,
+                  null, 0, popup);
+
+          descriptionSite.setPositions(positions);
 
           /* Création du directory */
           String cheminZip =

@@ -101,9 +101,9 @@ out.println(gef.getLookStyleSheet());
 	out.println(window.printAfter());
 %>
 
-<FORM NAME="toComponent" ACTION="pdcPositions.jsp" METHOD=POST >
+<form name="toComponent" action="pdcPositions.jsp" method="post">
 	<input type="hidden" name="Action" value="ViewPdcPositions">
 	<input type="hidden" name="Id" value="<%=id%>">
-</FORM>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>

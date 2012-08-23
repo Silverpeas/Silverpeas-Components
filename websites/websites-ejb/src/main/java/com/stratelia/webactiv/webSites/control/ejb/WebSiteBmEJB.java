@@ -1020,8 +1020,7 @@ public class WebSiteBmEJB implements SessionBean {
 
       // register the new publication as a new content to content manager
       con = getConnection(); // connection usefull for content service
-      createSilverContent(con, description, currentUser.getId(),
-          prefixTableName, componentId);
+      createSilverContent(con, description, currentUser.getId(), prefixTableName, componentId);
 
       return pubPk;
     } catch (Exception e) {

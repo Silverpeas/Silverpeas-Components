@@ -31,47 +31,19 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
 
-<%@ page import="java.util.*"%>
-<%@ page import="java.lang.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 
+<%@ page import="java.io.*"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="java.util.Date"%>
-<%@ page import="com.stratelia.webactiv.webSites.siteManage.model.SiteDetail"%>
 <%@ page import="com.stratelia.webactiv.webSites.control.*"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.publication.info.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="java.io.*"%>
 
 <%@ page import="com.stratelia.webactiv.util.exception.*"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-<%@ page import="com.silverpeas.util.EncodeHelper" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -82,20 +54,20 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 
 	String addFolder=m_context+"/util/icons/folderAddBig.gif";
-    String addPage=m_context+"/util/icons/webSites_page_to_add.gif";
-    String addPic=m_context+"/util/icons/webSites_upload_file.gif";
-    String addLib=m_context+"/util/icons/webSites_classify.gif";
-    String updateDescription=m_context+"/util/icons/webSites_to_modify.gif";
-    String belpou=m_context+"/util/icons/basket.gif";
-    String update=m_context+"/util/icons/update.gif";
-    String delete = m_context + "/util/icons/delete.gif";
+  String addPage=m_context+"/util/icons/webSites_page_to_add.gif";
+  String addPic=m_context+"/util/icons/webSites_upload_file.gif";
+  String addLib=m_context+"/util/icons/webSites_classify.gif";
+  String updateDescription=m_context+"/util/icons/webSites_to_modify.gif";
+  String belpou=m_context+"/util/icons/basket.gif";
+  String update=m_context+"/util/icons/update.gif";
+  String delete = m_context + "/util/icons/delete.gif";
 
-    String action = request.getParameter("Action");
-    String id = request.getParameter("Id"); //jamais null sauf en creation ou en update de description
-    String currentPath = request.getParameter("path");
-    String date = "";
-    String auteur = "";
-    int popup = 0;
+  String action = request.getParameter("Action");
+  String id = request.getParameter("Id"); //jamais null sauf en creation ou en update de description
+  String currentPath = request.getParameter("path");
+  String date = "";
+  String auteur = "";
+  int popup = 0;
 	String nomSite = null;
 	String description = null;
 	String nomPage = null;
@@ -106,7 +78,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		description = siteDetail.getDescription();
 		auteur = siteDetail.getCreatorId();
 		date = resources.getOutputDate(siteDetail.getCreationDate());
-        popup = siteDetail.getPopup();
+    popup = siteDetail.getPopup();
 		nomPage = siteDetail.getContent();
 	}
 	boolean searchOk = true;
@@ -116,17 +88,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		searchOk = false;
 	}
 
-    if (currentPath != null) {
-		currentPath = doubleAntiSlash(currentPath);
-    }
+  if (currentPath != null) {
+	  currentPath = doubleAntiSlash(currentPath);
+  }
 
 
-    SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION = "+action);
-    
-   	UserDetail user = scc.getUserDetail(auteur);
-   	if (user != null)
-    	auteur = user.getDisplayedName();
-    	
+  SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION = "+action);
+  
+ 	UserDetail user = scc.getUserDetail(auteur);
+ 	if (user != null) {
+  	auteur = user.getDisplayedName();
+ 	}
 	Collection collectionRep = affichageChemin(scc, currentPath);
 	String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&path=", nomSite);
 	SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "infoPath = "+infoPath);
@@ -138,7 +110,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <head>
 <view:looknfeel/>
 <title><%=resources.getString("GML.popupTitle")%></title>
-<script language="javascript">
+<script type="text/javascript">
 
 <%
 
@@ -375,7 +347,7 @@ function deletePage(id, path, name) {
 	//Le cadre
 	Frame frame = gef.getFrame();
 
-	//Le tableau des r�pertoires
+	//Le tableau des repertoires
 	ArrayPane arrayPaneRep = gef.getArrayPane("foldersList", "design.jsp?Action=design&path="+currentPath+"&Id="+id, request, session);
 	arrayPaneRep.setVisibleLineNumber(10);
 	arrayPaneRep.setTitle(resources.getString("ListeRepertoires"));
@@ -417,8 +389,8 @@ function deletePage(id, path, name) {
 		arrayLine.addArrayCellIconPane(iconPane);
 	}
 
-    bodyRep += arrayPaneRep.print();
-    frame.addTop(bodyRep);
+  bodyRep += arrayPaneRep.print();
+  frame.addTop(bodyRep);
 	bodyRep += "<BR><BR><BR><BR>";
 /**-------------------------------------------------------------------------------------*/
 
@@ -448,11 +420,13 @@ function deletePage(id, path, name) {
 			ArrayLine arrayLine = arrayPaneFile.addArrayLine();
 
 			//nom
-			if (type.startsWith("htm") || type.startsWith("HTM"))
+			if (type.startsWith("htm") || type.startsWith("HTM")) {
 				arrayLine.addArrayCellLink(folderName, "javascript:onClick=pageRedesign('"+ EncodeHelper.javaStringToJsString(currentPath)+"', '"+EncodeHelper.javaStringToJsString(folderName)+"', '"+EncodeHelper.javaStringToJsString(nomSite)+"')");
-			else if (folderName.equals(nomPage))
+			} else if (folderName.equals(nomPage)) {
 				arrayLine.addArrayCellText(folderName);
-			else arrayLine.addArrayCellText(folderName);
+			} else {
+			  arrayLine.addArrayCellText(folderName);
+			}
 
 			//operation
 			if (! folderName.equals(nomPage)) {
@@ -469,46 +443,38 @@ function deletePage(id, path, name) {
 			else {
 				arrayLine.addArrayCellText("");
 			}
-
 		}
 	}
 
-    //Recuperation du tableau dans le bas du cadre
-    String bodyFile = "<br><br>";
-    bodyFile+=arrayPaneFile.print();
-    bodyFile += "<br><br>";
+  //Recuperation du tableau dans le bas du cadre
+  String bodyFile = "<br><br>";
+  bodyFile+=arrayPaneFile.print();
+  bodyFile += "<br><br>";
 
-    frame.addBottom(bodyFile);
+  frame.addBottom(bodyFile);
 
 
-    //Les op�rations
-    OperationPane operationPane = window.getOperationPane();
-    operationPane.addOperation(addFolder,resources.getString("FolderAdd"), "javascript:onClick=folderAdd('"+id+"', '"+EncodeHelper.javaStringToJsString(currentPath)+"')");
-    operationPane.addLine();
-    operationPane.addOperation(addPage,resources.getString("PageAdd"), "javascript:onClick=pageAdd('"+EncodeHelper.javaStringToJsString(currentPath)+"', '"+EncodeHelper.javaStringToJsString(nomSite)+"')");
-    operationPane.addLine();
-    operationPane.addOperation(addPic,resources.getString("FileUploadAdd"), "javascript:onClick=uploadFile('"+EncodeHelper.javaStringToJsString(currentPath)+"')");
-    operationPane.addLine();
-    operationPane.addOperation(addLib,resources.getString("ClasserSite"), "classifySite.jsp?Id="+id+"&path="+currentPath);
+  //Les operations
+  OperationPane operationPane = window.getOperationPane();
+  operationPane.addOperation(addFolder,resources.getString("FolderAdd"), "javascript:onClick=folderAdd('"+id+"', '"+EncodeHelper.javaStringToJsString(currentPath)+"')");
+  operationPane.addLine();
+  operationPane.addOperation(addPage,resources.getString("PageAdd"), "javascript:onClick=pageAdd('"+EncodeHelper.javaStringToJsString(currentPath)+"', '"+EncodeHelper.javaStringToJsString(nomSite)+"')");
+  operationPane.addLine();
+  operationPane.addOperation(addPic,resources.getString("FileUploadAdd"), "javascript:onClick=uploadFile('"+EncodeHelper.javaStringToJsString(currentPath)+"')");
+  operationPane.addLine();
+  operationPane.addOperation(addLib,resources.getString("ClasserSite"), "classifySite.jsp?Id="+id+"&path="+currentPath);
 
-    int indexSup = infoPath.indexOf(" > ");
+  int indexSup = infoPath.indexOf(" > ");
 
-    if (indexSup == -1) {//on est a la racine
-    	operationPane.addLine();
-    	operationPane.addOperation(updateDescription,resources.getString("ModificationDescription"), "modifDesc.jsp?Id="+id+"&path="+currentPath+"&type=design");
-    }
+  if (indexSup == -1) {//on est a la racine
+  	operationPane.addLine();
+  	operationPane.addOperation(updateDescription,resources.getString("ModificationDescription"), "modifDesc.jsp?Id="+id+"&path="+currentPath+"&type=design");
+  }
 
-    //On crache le HTML ;o)
-	if (scc.isPdcUsed()) {
-		TabbedPane tabbedPane = gef.getTabbedPane();
-		tabbedPane.addTab(resources.getString("GML.description"), "#", true, false);
-		tabbedPane.addTab(resources.getString("GML.PDC"), "pdcPositionsSite.jsp?Action=ViewPdcPositions&Id="+id+"&Path="+currentPath, false, true);
-		bodyPart += tabbedPane.print();
-	}
 
 	bodyPart += frame.print();
-    window.addBody(bodyPart);
-    out.println(window.print());
+  window.addBody(bodyPart);
+  out.println(window.print());
 %>
 </form>
 </body>
