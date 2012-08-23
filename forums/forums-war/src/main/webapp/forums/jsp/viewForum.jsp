@@ -181,7 +181,7 @@
         </c:if>
         <c:if test="${isActive}">
           <fmt:message key="newMessage" var="newMessageAltText" />
-          <c:url var="newMessageIconUrl" value="/util/icons/forums_addMessage.gif" />
+          <c:url var="newMessageIconUrl" value="/util/icons/create-action/add-message.png" />
           <c:set var="newMessagePage">/Rforums/<c:out value="${componentId}" />/editMessage.jsp</c:set>
           <c:url var="newMessageOperation" value="${newMessagePage}"><c:param name="call" value="viewForum"/><c:param name="action" value="1"/><c:param name="forumId" value="${param.forumId}"/><c:param name="params" value="${param.forumId}"/></c:url>
           <view:operationOfCreation altText="${newMessageAltText}" icon="${newMessageIconUrl}" action="${newMessageOperation}" />

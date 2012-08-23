@@ -70,6 +70,7 @@
 		<view:operationPane>
 			<fmt:message var="addOp" key="classifieds.addClassified" />
 			<fmt:message var="addIcon" key="classifieds.addClassified" bundle="${icons}" />
+			<c:url var="addIcon" value="${addIcon}"/>
 			<view:operationOfCreation action="NewClassified" altText="${addOp}" icon="${addIcon}" />
 		</view:operationPane>
 	</c:if>

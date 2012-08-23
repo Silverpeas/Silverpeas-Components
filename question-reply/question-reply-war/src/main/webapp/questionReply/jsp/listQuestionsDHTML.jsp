@@ -510,7 +510,7 @@ function subscribe() {
     operationPane.addOperation(resource.getIcon("GML.unsubscribe"), resource.getString(
           "GML.unsubscribe"), "javascript:unsubscribe();");
   }else {
-    operationPane.addOperationOfCreation(resource.getIcon("questionReply.subscribe"), resource.getString(
+    operationPane.addOperation(resource.getIcon("questionReply.subscribe"), resource.getString(
           "GML.subscribe"), "javascript:subscribe();");
   }
             

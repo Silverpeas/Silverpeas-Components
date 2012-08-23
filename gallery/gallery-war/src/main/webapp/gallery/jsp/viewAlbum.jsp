@@ -426,7 +426,7 @@
 
       // favoris
       if (!isGuest) {
-        operationPane.addOperationOfCreation(resource.getIcon("gallery.addFavorite"), resource.getString(
+        operationPane.addOperation(resource.getIcon("gallery.addFavorite"), resource.getString(
                 "gallery.addFavorite"), "javaScript:addFavorite('"
                 + URLManager.getServerURL(request) + "','" + m_context + "','" + EncodeHelper.
                 javaStringToHtmlString(EncodeHelper.javaStringToJsString(galleryName)) + "','"

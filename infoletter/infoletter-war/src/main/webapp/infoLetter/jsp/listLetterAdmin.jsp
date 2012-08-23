@@ -98,7 +98,7 @@ operationPane.addLine();
 if (isSuscriber) {
 	operationPane.addOperation(resource.getIcon("infoLetter.desabonner"), resource.getString("infoLetter.desabonner"), "UnsuscribeMe");
 } else { 
-	operationPane.addOperationOfCreation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");
+	operationPane.addOperation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");
 }
 
 out.println(window.printBefore());

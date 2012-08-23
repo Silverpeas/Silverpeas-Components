@@ -94,6 +94,7 @@
 						test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
 						<fmt:message var="addOp" key="classifieds.addClassified" />
 						<fmt:message var="addIcon" key="classifieds.addClassified" bundle="${icons}" />
+						<c:url var="addIcon" value="${addIcon}"/>
 						<view:operationOfCreation action="NewClassified" altText="${addOp}" icon="${addIcon}" />
 					</c:if>
 
@@ -105,7 +106,7 @@
 
 					<fmt:message var="subAddOp" key="classifieds.addSubscription" />
 					<fmt:message var="subAddIcon" key="classifieds.subscriptionsAdd" bundle="${icons}" />
-					<view:operationOfCreation action="javascript:addSubscription()" altText="${subAddOp}" icon="${subAddIcon}" />
+					<view:operation action="javascript:addSubscription()" altText="${subAddOp}" icon="${subAddIcon}" />
 
 					<fmt:message var="mySubOp" key="classifieds.mySubscriptions" />
 					<fmt:message var="mySubIcon" key="classifieds.mySubscriptions" bundle="${icons}" />
