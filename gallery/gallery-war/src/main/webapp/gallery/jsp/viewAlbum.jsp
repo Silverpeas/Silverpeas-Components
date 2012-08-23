@@ -25,6 +25,8 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp"%>
 <%
   // recuperation des parametres :
@@ -110,15 +112,12 @@
   largeurCellule = 100 / nbParLigne;
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <%
-      out.println(gef.getLookStyleSheet());
-    %>
+    <view:looknfeel/>
     <script type="text/javascript" src="<%=m_context%>/gallery/jsp/javaScript/dragAndDrop.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
     <script type="text/javascript">
 
       var currentGallery = {
@@ -368,82 +367,61 @@
       displayPath(path, browseBar);
 
       if ("admin".equals(profile) || "publisher".equals(profile)) {
-        operationPane.addOperation(resource.getIcon("gallery.addAlbum"), resource.getString(
-                "gallery.ajoutSousAlbum"), "javaScript:openGalleryEditor()");
+        operationPane.addOperationOfCreation(resource.getIcon("gallery.addAlbum"), resource.getString("gallery.ajoutSousAlbum"), "javaScript:openGalleryEditor()");
         // modification et suppression de l'album courant
-        if ("admin".equals(profile) || ("publisher".equals(profile) && currentAlbum.getCreatorId().
-                equals(userId))) {
+        if ("admin".equals(profile) || ("publisher".equals(profile) && currentAlbum.getCreatorId().equals(userId))) {
           // avec gestion des droits pour les publieurs
-          operationPane.addOperation(resource.getIcon("gallery.updatelbum"), resource.getString(
-                  "gallery.updateAlbum"), "javaScript:openGalleryEditor(currentGallery)");
-          operationPane.addOperation(resource.getIcon("gallery.deleteAlbum"), resource.getString(
-                  "gallery.deleteThisAlbum"), "javaScript:deleteConfirm('" + albumId + "','"
-                  + EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumName))
-                  + "')");
+          operationPane.addOperation(resource.getIcon("gallery.updatelbum"), resource.getString("gallery.updateAlbum"), "javaScript:openGalleryEditor(currentGallery)");
+          operationPane.addOperation(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteThisAlbum"), "javaScript:deleteConfirm('" + albumId + "','"
+                  + EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumName))+ "')");
           operationPane.addLine();
         }
 
         if ("admin".equals(profile)) {
-          operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString(
-                  "gallery.copyAlbum"), "javascript:onClick=clipboardCopy()");
-          operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString(
-                  "gallery.cutAlbum"), "javascript:onClick=clipboardCut()");
+          operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("gallery.copyAlbum"), "javascript:onClick=clipboardCopy()");
+          operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("gallery.cutAlbum"), "javascript:onClick=clipboardCut()");
           operationPane.addLine();
         }
 
         // possibilite de modifier ou supprimer les photos par lot
-        operationPane.addOperation(resource.getIcon("gallery.updateSelectedPhoto"), resource.
-                getString("gallery.updateSelectedPhoto"), "javascript:onClick=sendData();");
-        operationPane.addOperation(resource.getIcon("gallery.deleteSelectedPhoto"), resource.
-                getString("gallery.deleteSelectedPhoto"), "javascript:onClick=sendDataDelete();");
+        operationPane.addOperation(resource.getIcon("gallery.updateSelectedPhoto"), resource.getString("gallery.updateSelectedPhoto"), "javascript:onClick=sendData();");
+        operationPane.addOperation(resource.getIcon("gallery.deleteSelectedPhoto"), resource.getString("gallery.deleteSelectedPhoto"), "javascript:onClick=sendDataDelete();");
         if (isPdcUsed) {
           // si on a le classement Pdc : possibilite de classer par lot
-          operationPane.addOperation(resource.getIcon("gallery.categorizeSelectedPhoto"), resource.
-                  getString("gallery.categorizeSelectedPhoto"),
-                  "javascript:onClick=sendDataCategorize();");
+          operationPane.addOperation(resource.getIcon("gallery.categorizeSelectedPhoto"), resource.getString("gallery.categorizeSelectedPhoto"), "javascript:onClick=sendDataCategorize();");
         }
         if ("admin".equals(profile)) {
           // possibilite de placer les photos par lot
-          operationPane.addOperation(resource.getIcon("gallery.addPathForSelectedPhoto"), resource.
-                  getString("gallery.addPathForSelectedPhoto"),
-                  "javascript:onClick=sendDataForAddPath()");
+          operationPane.addOperation(resource.getIcon("gallery.addPathForSelectedPhoto"), resource.getString("gallery.addPathForSelectedPhoto"), "javascript:onClick=sendDataForAddPath()");
         }
       }
 
       // bouton pour tout selectionner ou tout deselectionner
-      operationPane.addOperation(resource.getIcon("gallery.allSelect"), resource.getString(
-              "gallery.allSelect"), "AllSelected");
+      operationPane.addOperation(resource.getIcon("gallery.allSelect"), resource.getString("gallery.allSelect"), "AllSelected");
 
       if ("admin".equals(profile)) {
-        operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString(
-                "gallery.copySelectedPhoto"), "javascript:onClick=CopySelectedPhoto()");
-        operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString(
-                "gallery.cutSelectedPhoto"), "javascript:onClick=CutSelectedPhoto()");
-        operationPane.addOperation(resource.getIcon("gallery.paste"),
-                resource.getString("GML.paste"), "javascript:onClick=clipboardPaste()");
+        operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("gallery.copySelectedPhoto"), "javascript:onClick=CopySelectedPhoto()");
+        operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("gallery.cutSelectedPhoto"), "javascript:onClick=CutSelectedPhoto()");
+        operationPane.addOperation(resource.getIcon("gallery.paste"), resource.getString("GML.paste"), "javascript:onClick=clipboardPaste()");
         operationPane.addLine();
       }
       if ("admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)) {
         // possibilite d'ajouter des photos pour les "admin", "publisher" et "writer"
-        operationPane.addOperation(resource.getIcon("gallery.addPhoto"), resource.getString(
-                "gallery.ajoutPhoto"), "AddPhoto");
+        operationPane.addOperationOfCreation(resource.getIcon("gallery.addPhoto"), resource.getString("gallery.ajoutPhoto"), "AddPhoto");
         operationPane.addLine();
       }
 
       if ("user".equals(profile) && isBasket) {
         // ajouter les photos selectionnees au panier
-        operationPane.addOperation(resource.getIcon("gallery.addToBasketSelectedPhoto"), resource.
-                getString("gallery.addToBasketSelectedPhoto"), "javascript:onClick=sendToBasket();");
+        operationPane.addOperation(resource.getIcon("gallery.addToBasketSelectedPhoto"), resource.getString("gallery.addToBasketSelectedPhoto"), "javascript:onClick=sendToBasket();");
         // voir le panier
-        operationPane.addOperation(resource.getIcon("gallery.viewBasket"), resource.getString(
-                "gallery.viewBasket"), "BasketView");
+        operationPane.addOperation(resource.getIcon("gallery.viewBasket"), resource.getString("gallery.viewBasket"), "BasketView");
         operationPane.addLine();
       }
 
       if (photos.size() > 1) {
         // diaporama
-        operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString(
-                "gallery.diaporama"), "StartDiaporama?Debut=" + "ok");
+        operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString("gallery.diaporama"), "StartDiaporama?Debut=" + "ok");
       }
 
       // favoris
@@ -459,13 +437,14 @@
       if (isPrivateSearch) {
         // derniers resultat de la recherche
         operationPane.addLine();
-        operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString(
-                "gallery.lastResult"), "LastResult");
+        operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
       }
 
       out.println(window.printBefore());
       out.println(frame.printBefore());
-
+%>      
+<view:areaOfOperationOfCreation/>    
+<%
       // afficher les sous albums
       // ------------------------
       if (currentAlbum.getChildrenDetails() != null) {
@@ -841,6 +820,5 @@
           <form name="favorite" action="" method="post">
             <input type="hidden" name="Id"/>
           </form>
-
-          </body>
-          </html>
+</body>
+</html>

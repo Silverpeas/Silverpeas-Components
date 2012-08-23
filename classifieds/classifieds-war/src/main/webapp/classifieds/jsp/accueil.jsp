@@ -86,50 +86,38 @@
 				<c:if test="${profile.name != 'anonymous'}">
 					<c:if test="${(profile.name == 'admin') && (isWysiwygHeaderEnabled)}">
 						<fmt:message var="updateWysiwygLabel" key="classifieds.updateWysiwygClassified" />
-						<fmt:message var="updateWysiwygIcon" key="classifieds.updateWysiwygClassified"
-							bundle="${icons}" />
-						<view:operation action="ToWysiwygHeader" altText="${updateWysiwygLabel}"
-							icon="${updateWysiwygIcon}" />
+						<fmt:message var="updateWysiwygIcon" key="classifieds.updateWysiwygClassified" bundle="${icons}" />
+						<view:operation action="ToWysiwygHeader" altText="${updateWysiwygLabel}" icon="${updateWysiwygIcon}" />
 					</c:if>
 
 					<c:if
 						test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
 						<fmt:message var="addOp" key="classifieds.addClassified" />
-						<fmt:message var="addIcon" key="classifieds.addClassified"
-							bundle="${icons}" />
-						<view:operation action="NewClassified" altText="${addOp}"
-							icon="${addIcon}" />
+						<fmt:message var="addIcon" key="classifieds.addClassified" bundle="${icons}" />
+						<c:url var="addIcon" value="${addIcon}"/>
+						<view:operationOfCreation action="NewClassified" altText="${addOp}" icon="${addIcon}" />
 					</c:if>
 
 					<fmt:message var="myOp" key="classifieds.myClassifieds" />
-					<fmt:message var="myIcon" key="classifieds.myClassifieds"
-						bundle="${icons}" />
-					<view:operation action="ViewMyClassifieds" altText="${myOp}"
-						icon="${myIcon}" />
+					<fmt:message var="myIcon" key="classifieds.myClassifieds" bundle="${icons}" />
+					<view:operation action="ViewMyClassifieds" altText="${myOp}" icon="${myIcon}" />
 
 					<view:operationSeparator />
 
 					<fmt:message var="subAddOp" key="classifieds.addSubscription" />
-					<fmt:message var="subAddIcon" key="classifieds.subscriptionsAdd"
-						bundle="${icons}" />
-					<view:operation action="javascript:addSubscription()"
-						altText="${subAddOp}" icon="${subAddIcon}" />
+					<fmt:message var="subAddIcon" key="classifieds.subscriptionsAdd" bundle="${icons}" />
+					<view:operation action="javascript:addSubscription()" altText="${subAddOp}" icon="${subAddIcon}" />
 
 					<fmt:message var="mySubOp" key="classifieds.mySubscriptions" />
-					<fmt:message var="mySubIcon" key="classifieds.mySubscriptions"
-						bundle="${icons}" />
-					<view:operation action="ViewMySubscriptions" altText="${mySubOp}"
-						icon="${mySubIcon}" />
+					<fmt:message var="mySubIcon" key="classifieds.mySubscriptions" bundle="${icons}" />
+					<view:operation action="ViewMySubscriptions" altText="${mySubOp}" icon="${mySubIcon}" />
 				</c:if>
 
 				<c:if test="${(profile.name == 'admin') && (validation)}">
 					<view:operationSeparator />
-					<fmt:message var="toValidateOp"
-						key="classifieds.viewClassifiedToValidate" />
-					<fmt:message var="toValidateIcon"
-						key="classifieds.viewClassifiedToValidate" bundle="${icons}" />
-					<view:operation action="ViewClassifiedToValidate"
-						altText="${toValidateOp}" icon="${toValidateIcon}" />
+					<fmt:message var="toValidateOp" key="classifieds.viewClassifiedToValidate" />
+					<fmt:message var="toValidateIcon" key="classifieds.viewClassifiedToValidate" bundle="${icons}" />
+					<view:operation action="ViewClassifiedToValidate" altText="${toValidateOp}" icon="${toValidateIcon}" />
 				</c:if>
 			</view:operationPane>
 
@@ -140,6 +128,7 @@
 				</div>
 
 				<view:frame>
+					<view:areaOfOperationOfCreation/>
 					<jsp:include page="subscriptionManager.jsp"/>
 					<form name="classifiedForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
 						<c:if test="${not empty formSearch}">

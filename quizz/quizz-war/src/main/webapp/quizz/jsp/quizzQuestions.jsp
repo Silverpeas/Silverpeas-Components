@@ -34,10 +34,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkQuizz.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-
 <%
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -51,17 +51,13 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
 //-->
 </script>
 </head>
-<body bgcolor="#FFFFFF">
+<body>
 <script language="javascript">
-<!--
-//  InitBulle("txtnote","000000","intfdcolor2",2,90);
-//-->
   function validate_form()
   {
     return;
   }
 </script>
-<!--  -->
 
 <%
   //get SessionController, Language & Settings
@@ -153,8 +149,8 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
      <%
       out.println(frame.printMiddle());
       ButtonPane buttonPane = gef.getButtonPane();
-      buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:validate_form()", true));
-      buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false));
+      buttonPane.addButton(gef.getFormButton(resources.getString("GML.validate"), "javascript:validate_form()", true));
+      buttonPane.addButton(gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false));
       out.println("<br>");
       out.println("<table width=\"100%\"><tr><td align=\"center\">"+buttonPane.print()+"</td></tr></table>");
       out.println("<br><br>");
@@ -164,5 +160,3 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
 </form>
 </body>
 </html>
-
-

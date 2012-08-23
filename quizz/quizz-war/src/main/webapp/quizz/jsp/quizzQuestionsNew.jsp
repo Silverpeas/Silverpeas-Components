@@ -775,7 +775,7 @@ else {
 }
 </style>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 <!--
 function confirmCancel()
 {
@@ -1074,11 +1074,11 @@ else if (action.equals("ViewResult")) {
   out.println(quizzPart);
   out.println(frame.printMiddle());
 
-  Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.back"), "Main.jsp", false);
+  Button cancelButton = gef.getFormButton(resources.getString("GML.back"), "Main.jsp", false);
   if (origin.equals("1")) {
-    cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "quizzResultUser.jsp", false);
+    cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "quizzResultUser.jsp", false);
   } else if (origin.equals("0")) {
-    cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "palmares.jsp?quizz_id="+quizzId, false);
+    cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "palmares.jsp?quizz_id="+quizzId, false);
   }
   out.println("<table width=100% border=\"0\">");
   out.println("<tr><td align=\"center\">"+cancelButton.print()+"</td></tr>");
@@ -1140,13 +1140,13 @@ else if (action.equals("ViewResultAdmin")) {
 
   out.println(quizzPart);
   out.println(frame.printMiddle());
-  Button cancelButton=(Button) gef.getFormButton(resources.getString("GML.back"), "quizzAdmin.jsp", false);
+  Button cancelButton= gef.getFormButton(resources.getString("GML.back"), "quizzAdmin.jsp", false);
   if (origin.equals("1")) {
-    cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "quizzResultAdmin.jsp", false);
+    cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "quizzResultAdmin.jsp", false);
   } else if (origin.equals("0")) {
-    cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "palmaresAdmin.jsp?quizz_id="+quizzId, false);
+    cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "palmaresAdmin.jsp?quizz_id="+quizzId, false);
   }
-  Button voteButton = (Button) gef.getFormButton(resources.getString("QuestionUpdate"), "javascript:update_suggestion("+quizz.getHeader().getPK().getId()+")", false);
+  Button voteButton = gef.getFormButton(resources.getString("QuestionUpdate"), "javascript:update_suggestion("+quizz.getHeader().getPK().getId()+")", false);
   out.println("<table width=100% border=\"0\">");
   out.println("<tr><td align=\"center\"><table><tr><td align=center>"+voteButton.print()+"</td><td align=center>"+cancelButton.print()+"</td></tr></table></td></tr>");
   out.println("</table>");
@@ -1154,7 +1154,7 @@ else if (action.equals("ViewResultAdmin")) {
   out.println(window.printAfter());
 }
 else if (action.equals("UpdateSuggestion")) {
-  String suggestion = (String) request.getParameter("txa_suggestion");
+  String suggestion = request.getParameter("txa_suggestion");
   participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();
   quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
   ScoreDetail userScoreDetail = null;
@@ -1166,7 +1166,7 @@ else if (action.equals("UpdateSuggestion")) {
   if (origin.equals("0"))
   {
 %>
-          <script language="JavaScript">
+          <script type="text/javascript">
           <!--
           self.location="palmaresAdmin.jsp?quizz_id=<%=quizzId%>";
           //-->
@@ -1174,7 +1174,7 @@ else if (action.equals("UpdateSuggestion")) {
 <%
   } else if (origin.equals("1")) {
 %>
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
 self.location="quizzResultAdmin.jsp";
 //-->

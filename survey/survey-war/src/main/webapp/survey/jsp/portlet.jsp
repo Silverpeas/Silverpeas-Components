@@ -66,7 +66,7 @@ lockSrc = iconsPath + "/util/icons/lock.gif";
 unlockSrc = iconsPath + "/util/icons/unlock.gif";
 surveyDeleteSrc = iconsPath + "/util/icons/delete.gif";
 surveyUpdateSrc = iconsPath + "/util/icons/update.gif";
-addSurveySrc = iconsPath + "/util/icons/survey_to_add.gif";
+addSurveySrc = iconsPath + "/util/icons/create-action/add-survey.png";
 
 //Mise a jour de l'espace
 if (action == null) {

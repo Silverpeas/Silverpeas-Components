@@ -25,8 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="checkKmelia.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ include file="checkKmelia.jsp" %>
+
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 
@@ -79,7 +80,8 @@ boolean userCanSeeStats =
 
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
@@ -190,15 +192,15 @@ $(document).ready(function() {
 			operationPane.addLine();
         }
         if (userCanCreatePublications) {
-	        operationPane.addOperation("useless", kmeliaScc.getString("PubCreer"), "NewPublication");
+	        operationPane.addOperationOfCreation("useless", kmeliaScc.getString("PubCreer"), "NewPublication");
 	        if (kmeliaScc.isWizardEnabled()) {
-	      		operationPane.addOperation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
+	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
 	        }
 	        if (kmeliaScc.isImportFileAllowed()) {
-	      		operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
+	      		operationPane.addOperationOfCreation("useless", kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
 	        }
 	        if (kmeliaScc.isImportFilesAllowed()) {
-	        	operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
+	        	operationPane.addOperationOfCreation("useless", kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
 	        }
 	        if (updateChain) {
 	        	operationPane.addOperation(resources.getIcon("kmelia.updateByChain"), kmeliaScc.getString("kmelia.updateByChain"), "javascript:onClick=updateChain()");
@@ -209,8 +211,8 @@ $(document).ready(function() {
                     	
     	if (!isGuest) {
     	  	operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
-    		operationPane.addOperation("useless", resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
-      		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(description))+"','"+urlTopic+"')");
+    		operationPane.addOperationOfCreation("useless", resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
+      		operationPane.addOperationOfCreation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(description))+"','"+urlTopic+"')");
     	}
     	
     	if (userCanCreatePublications) {
@@ -225,24 +227,21 @@ $(document).ready(function() {
         operationPane.addOperation("useless", resources.getString("kmelia.operation.statistics"), "javascript:showStats();");
       }
       
-    //Instanciation du cadre avec le view generator
-	Frame frame = gef.getFrame();
-
     out.println(window.printBefore());
-    out.println(frame.printBefore());
 %>
+<view:frame>
 					<% if (displaySearch.booleanValue()) {
-					  	Board board = gef.getBoard();
-						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false);
-						out.println("<div id=\"searchZone\">");
-						out.println(board.printBefore());
-						out.println("<table id=\"searchLine\">");
-						out.println("<tr><td><div id=\"searchLabel\">"+resources.getString("kmelia.SearchInTopics")+"</div>&nbsp;<input type=\"text\" id=\"topicQuery\" size=\"50\" onkeydown=\"checkSubmitToSearch(event)\"/></td><td>"+searchButton.print()+"</td></tr>");
-						out.println("</table>");
-						out.println(board.printAfter());
-						out.println("</div>");
-					} %>
+						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
+						<div id="searchZone">
+						<view:board>
+						<table id="searchLine">
+						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+						</table>
+						</view:board>
+						</div>
+					<% } %>					
 					<div id="topicDescription"></div>
+					<view:areaOfOperationOfCreation/>
 				<%
 					  if (dragAndDropEnable && userCanCreatePublications) {
 						%>
@@ -276,17 +275,14 @@ $(document).ready(function() {
 						</div>
 				<% }  %>
 					<div id="pubList">
-					<%
-						 Board board = gef.getBoard();
-						 out.println("<br/>");
-						 out.println(board.printBefore());
-						 out.println("<br/><center>"+resources.getString("kmelia.inProgressPublications")+"<br/><br/><img src=\""+resources.getIcon("kmelia.progress")+"\"/></center><br/>");
-						 out.println(board.printAfter());
-					 %>
+					<br/>
+					<view:board>
+					<br/><center><%=resources.getString("kmelia.inProgressPublications") %><br/><br/><img src="<%=resources.getIcon("kmelia.progress") %>"/></center><br/>
+					</view:board>
 					</div>
-					<div id="footer" class="txtBaseline">
+					<div id="footer" class="txtBaseline"></div>
+	</view:frame>
 	<%
-		out.println(frame.printAfter());
 		out.println(window.printAfter());
 	%>
 

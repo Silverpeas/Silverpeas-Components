@@ -362,7 +362,7 @@
             <fmt:message key="creerEvenement" var="opLabel" />
             <fmt:message key="almanach.icons.addEvent" var="opIcon" bundle="${icons}"/>
             <c:url var="opIcon" value="${opIcon}"/>
-            <view:operation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=addEvent('')"/>
+            <view:operationOfCreation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=addEvent('')"/>
             <view:operationSeparator/>
           </c:if>
 
@@ -412,6 +412,8 @@
     </view:operationPane>
 
     <view:window>
+    
+    <view:areaOfOperationOfCreation/>
 
       <c:if test="${calendarView.viewType.nextEventsView}">
         <view:tabs>

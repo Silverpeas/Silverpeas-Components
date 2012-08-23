@@ -64,10 +64,12 @@ String flag = (String)request.getAttribute("Profile");
 boolean isResponsible = ((Boolean) request.getAttribute("IsResponsible")).booleanValue();
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/overlib.js" />"></script>
+<view:looknfeel />
+<script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
+<script type="text/javascript" src="<c:url value="/util/javaScript/overlib.js" />"></script>
 <script type="text/javascript">
 
 function nextMonth(object)
@@ -150,8 +152,6 @@ function viewOtherPlanning()
 }
 
 </script>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <view:looknfeel />
 </head>
 <body id="resourcesManager">
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
@@ -161,7 +161,7 @@ function viewOtherPlanning()
 	
   	browseBar.setPath(resource.getString("resourcesManager.accueil"));
 	if(!"user".equals(flag)){
-		operationPane.addOperation(resource.getIcon("resourcesManager.createReservation"), resource.getString("resourcesManager.creerReservation"),"NewReservation");
+		operationPane.addOperationOfCreation(resource.getIcon("resourcesManager.createReservation"), resource.getString("resourcesManager.creerReservation"),"NewReservation");
 		operationPane.addOperation(resource.getIcon("resourcesManager.viewMyReservations"), resource.getString("resourcesManager.Reservation"),"Calendar?objectView="+personalReservation);
 		operationPane.addOperation(resource.getIcon("resourcesManager.viewUserReservation"), resource.getString("resourcesManager.viewUserReservation"), "javascript:onClick=viewOtherPlanning()");
 		if(isResponsible){
@@ -170,13 +170,13 @@ function viewOtherPlanning()
 		}
 		if("admin".equals(flag)){
       		operationPane.addLine();
-      		operationPane.addOperation(resource.getIcon("resourcesManager.gererCategorie"), resource.getString("resourcesManager.gererCategorieRessource"),"ViewCategories");
+      		operationPane.addOperationOfCreation(resource.getIcon("resourcesManager.gererCategorie"), resource.getString("resourcesManager.gererCategorieRessource"),"ViewCategories");
     	}
 	}
   	out.println(window.printBefore());
-	out.println(frame.printBefore());
 %>
-
+<view:frame>
+<view:areaOfOperationOfCreation/>
 <!-- AFFICHAGE HEADER -->
 <center>
   <table width="98%" border="0" cellspacing="0" cellpadding="1">
@@ -187,8 +187,8 @@ function viewOtherPlanning()
             <td>
               <table cellpadding="2" cellspacing="1" border="0" width="100%">
                   <tr> 
-                    <td class="intfdcolor" align="center" nowrap width="100%" height="24"> 
-                      <select id="selectCategory" name="selectCategory" onChange="getReservationsOfCategory(this)" class="selectNS">
+                    <td class="intfdcolor" align="center" nowrap="nowrap" width="100%" height="24"> 
+                      <select id="selectCategory" name="selectCategory" onchange="getReservationsOfCategory(this)" class="selectNS">
                         <% if(listOfCategories != null){
                         	%><option value=""><%=resource.getString("resourcesManager.categories")%></option>
                         	<option value="">-----------------</option>
@@ -214,8 +214,8 @@ function viewOtherPlanning()
       		<td> 
               <table cellpadding="2" cellspacing="1" border="0" width="100%">    
                   <tr> 
-                   	<td class="intfdcolor" align="center" nowrap width="100%" height="24"> 
-                      <select name="selectResource" onChange="getReservationsOfResource(this)">
+                   	<td class="intfdcolor" align="center" nowrap="nowrap" width="100%" height="24"> 
+                      <select name="selectResource" onchange="getReservationsOfResource(this)">
                       <option value=""><%=resource.getString("resourcesManager.allResources")%></option>
                       	<option value="">-----------------</option>
                       	<% for(int i=0; i<listResourcesofCategory.size(); i++){
@@ -240,7 +240,7 @@ function viewOtherPlanning()
             <td> 
               <table cellpadding=2 cellspacing=1 border=0 width="100%" >
                 <tr> 
-                  <td class=intfdcolor align=center nowrap width="100%" height="24"><a href="javascript:onClick=goToDay('<%=objectView%>')" onFocus="this.blur()" class=hrefComponentName><%=resource.getString("resourcesManager.auJour")%></a></td>
+                  <td class=intfdcolor align=center nowrap="nowrap" width="100%" height="24"><a href="javascript:onClick=goToDay('<%=objectView%>')" onfocus="this.blur()" class=hrefComponentName><%=resource.getString("resourcesManager.auJour")%></a></td>
                 </tr>
               </table>
             </td>
@@ -255,9 +255,9 @@ function viewOtherPlanning()
             <td> 
               <table cellpadding=0 cellspacing=1 border=0 width="100%" >
                 <tr> 
-                  <td class=intfdcolor><a href="javascript:onClick=previousMonth('<%=objectView%>')" onFocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrLeft")%>" border="0"></a></td>
-                  <td class=intfdcolor align=center nowrap width="100%" height="24"><span class="txtnav"><%=resource.getString("GML.mois" + resourcesManagerSC.getCurrentDay().get(Calendar.MONTH))%> <%=String.valueOf(resourcesManagerSC.getCurrentDay().get(Calendar.YEAR))%></span></td>
-                  <td class=intfdcolor><a href="javascript:onClick=nextMonth('<%=objectView%>')" onFocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrRight")%>" border="0"></a></td>
+                  <td class=intfdcolor><a href="javascript:onClick=previousMonth('<%=objectView%>')" onfocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrLeft")%>" border="0"/></a></td>
+                  <td class=intfdcolor align=center nowrap="nowrap" width="100%" height="24"><span class="txtnav"><%=resource.getString("GML.mois" + resourcesManagerSC.getCurrentDay().get(Calendar.MONTH))%> <%=String.valueOf(resourcesManagerSC.getCurrentDay().get(Calendar.YEAR))%></span></td>
+                  <td class=intfdcolor><a href="javascript:onClick=nextMonth('<%=objectView%>')" onfocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrRight")%>" border="0"/></a></td>
                 </tr>
               </table>
             </td>
@@ -271,7 +271,7 @@ function viewOtherPlanning()
 	            <td> 
 	              <table cellpadding=2 cellspacing=1 border=0 width="100%" >
 	                <tr> 
-	                  <td align=center nowrap width="100%" height="24"><%=resource.getString("resourcesManager.planningFrom") + " " + firstNameUser + " " + lastName %></td>
+	                  <td align=center nowrap="nowrap" width="100%" height="24"><%=resource.getString("resourcesManager.planningFrom") + " " + firstNameUser + " " + lastName %></td>
 	                </tr>
 	              </table>
 	            </td>
@@ -286,8 +286,8 @@ function viewOtherPlanning()
 <%=monthC.print()%>
 
 </center>
+</view:frame>
 <%		
-	out.println(frame.printAfter());				
 	out.println(window.printAfter());
 %>
 <form name="almanachForm" action="" method="post">

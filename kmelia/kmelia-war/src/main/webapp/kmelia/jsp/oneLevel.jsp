@@ -141,31 +141,26 @@ function getTranslation() {
 	OperationPane operationPane = window.getOperationPane();
 	operationPane.addOperation("", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
 
-	Frame frame = gef.getFrame();
-
     out.println(window.printBefore());
-    out.println(frame.printBefore());
 %>
+<view:frame>
 					<div id="subTopics"></div>
 					
 					<% if (displaySearch.booleanValue()) {
-					  	Board board = gef.getBoard();
-						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false);
-						out.println("<div id=\"searchZone\">");
-						out.println(board.printBefore());
-						out.println("<table id=\"searchLine\">");
-						out.println("<tr><td><div id=\"searchLabel\">"+resources.getString("kmelia.SearchInTopics")+"</div>&nbsp;<input type=\"text\" id=\"topicQuery\" size=\"50\" onkeydown=\"checkSubmitToSearch(event)\"/></td><td>"+searchButton.print()+"</td></tr>");
-						out.println("</table>");
-						out.println(board.printAfter());
-						out.println("</div>");
-					} %>
+						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
+						<div id="searchZone">
+						<view:board>
+						<table id="searchLine">
+						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+						</table>
+						</view:board>
+						</div>
+					<% } %>
 					
 					<div id="topicDescription"></div>
+					<view:areaOfOperationOfCreation/>
 					
-				<%
-					  if (dragAndDropEnable)
-					  {
-						%>
+				<% if (dragAndDropEnable) { %>
 						<div id="DnD">
 						<table width="98%" cellpadding="0" cellspacing="0"><tr><td align="right">
 						<a href="javascript:showDnD()" id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a>
@@ -197,19 +192,16 @@ function getTranslation() {
 						<% } %>
 						</tr></table>
 						</div>
-				<% }  %>
+				<% } %>
 					<div id="pubList">
-					<%
-						 Board board = gef.getBoard();
-						 out.println("<br/>");
-						 out.println(board.printBefore());
-						 out.println("<br/><center>"+resources.getString("kmelia.inProgressPublications")+"<br/><br/><img src=\""+resources.getIcon("kmelia.progress")+"\"/></center><br/>");
-						 out.println(board.printAfter());
-					 %>
+					<br/>
+					<view:board>
+					<br/><center><%=resources.getString("kmelia.inProgressPublications") %><br/><br/><img src="<%=resources.getIcon("kmelia.progress") %>"/></center><br/>
+					</view:board>
 					</div>
 					<div id="footer" class="txtBaseline"></div>
+		</view:frame>
 	<%
-		out.println(frame.printAfter());
 		out.println(window.printAfter());
 	%>
 
@@ -279,6 +271,13 @@ labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
 
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
+icons["operation.addTopic"] = "<%=resources.getIcon("kmelia.operation.addTopic")%>";
+icons["operation.addPubli"] = "<%=resources.getIcon("kmelia.operation.addPubli")%>";
+icons["operation.wizard"] = "<%=resources.getIcon("kmelia.operation.wizard")%>";
+icons["operation.importFile"] = "<%=resources.getIcon("kmelia.operation.importFile")%>";
+icons["operation.importFiles"] = "<%=resources.getIcon("kmelia.operation.importFiles")%>";
+icons["operation.subscribe"] = "<%=resources.getIcon("kmelia.operation.subscribe")%>";
+icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites")%>";
 
 var params = new Object();
 params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
@@ -311,7 +310,7 @@ function displayTopicContent(id) {
 		$("#subTopics").empty();
 
 		if (id == "tovalidate")	{
-			$("#menutoggle").css({'display':'none'}); //hide operations
+			hideOperations();
 			displayPublicationsToValidate();
 
 			//update breadcrumb
@@ -417,7 +416,7 @@ $(document).ready(function() {
            
          <tr>
            <td class="txtlibform"><fmt:message key="TopicDescription" /> :</td>
-           <td><input type="text" name="Description" id="topicDescription" size="60" maxlength="200"></td>
+           <td><input type="text" name="Description" id="topicDescription" size="60" maxlength="200"/></td>
          </tr>
            
          <% if (kmeliaScc.isNotificationAllowed()) { %>

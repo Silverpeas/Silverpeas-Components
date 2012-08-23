@@ -23,8 +23,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
@@ -98,16 +100,14 @@ if (path != null)
 
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/silverCrawler/javaScript/dragAndDrop.js"></script>
-
 <style>
 .alert-message .close {
     color: #000000;
@@ -156,8 +156,7 @@ if (path != null)
     margin-right: 15px;
 }
 </style>
-
-<script language="javascript">
+<script type="text/javascript">
 
 var downloadWindow = window;
 
@@ -468,10 +467,8 @@ $(document).ready(function(){
     $("#modalDialog").dialog(dialogOpts);    //end dialog
 });
 </script>
-
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-
+<body>
 <%
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel, "Main");
@@ -501,12 +498,12 @@ if ( ("admin".equals(profile)) || ("publisher".equals(profile)) )
 	  	operationPane.addLine();
 	  	if ("admin".equals(profile))
  		{
-			operationPane.addOperation(resource.getIcon("silverCrawler.createFolder"), resource.getString("silverCrawler.createFolder"), "javascript:createFolder()");
+			operationPane.addOperationOfCreation(resource.getIcon("silverCrawler.createFolder"), resource.getString("silverCrawler.createFolder"), "javascript:createFolder()");
  		}
 
 	  	if ( ("admin".equals(profile)) || ("publisher".equals(profile)) )
  		{
-			operationPane.addOperation(resource.getIcon("silverCrawler.uploadFile"), resource.getString("silverCrawler.uploadFile"), "javascript:uploadFile()");
+			operationPane.addOperationOfCreation(resource.getIcon("silverCrawler.uploadFile"), resource.getString("silverCrawler.uploadFile"), "javascript:uploadFile()");
  		}
 
 	  	operationPane.addLine();
@@ -553,44 +550,36 @@ if (StringUtil.isDefined(successMessage)) {
       </div>
   <%
 }
-
-out.println(frame.printBefore());
-
-Board board	= gef.getBoard();
-
-out.println(board.printBefore());
-
+%>
+<view:frame>
+<view:board>
+<%
 // affichage de la zone de recherche
 // ---------------------------------
-Button validateButton 	= (Button) gef.getFormButton("OK", "javascript:onClick=sendData();", false);
+Button validateButton 	= gef.getFormButton("OK", "javascript:onClick=sendData();", false);
 %>
 <center>
+	<form name="searchForm" action="Search" method="post" onsubmit="javascript:sendData();">
 	<table border="0" cellpadding="0" cellspacing="0">
-		<form name="searchForm" action="Search" method="POST" onSubmit="javascript:sendData();">
 			<tr>
 				<td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("GML.search")%></td>
 				<td align="left" valign="middle">
 					<table border="0" cellspacing="0" cellpadding="0">
 						<tr valign="middle">
-							<td valign="middle"><input type="text" name="WordSearch" size="36" onkeydown="checkSubmitToSearch(event)"></td>
+							<td valign="middle"><input type="text" name="WordSearch" size="36" onkeydown="checkSubmitToSearch(event)"/></td>
 							<td valign="middle">&nbsp;</td>
 							<td valign="middle" align="left" width="100%"><% out.println(validateButton.print());%></td>
 						</tr>
 					</table>
 				</td>
 			</tr>
-		</form>
     </table>
+    </form>
 </center>
-<%
-out.println(board.printAfter());
-out.println("<br>");
-%>
-
-<%
-if ( ( ("admin".equals(profile)) || ("publisher".equals(profile)) ) && folderIsWritable && readWriteActivated )
-{
-%>
+</view:board>
+<br/>
+<view:areaOfOperationOfCreation/>
+<% if ( ( ("admin".equals(profile)) || ("publisher".equals(profile)) ) && folderIsWritable && readWriteActivated ) { %>
 <div id="DnD">
 <table width="98%" cellpadding="0" cellspacing="0"><tr><td align="right">
 <a href="javascript:showDnD()" id="dNdActionLabel"><%=resource.getString("GML.DragNDropExpand")%></a>
@@ -604,8 +593,7 @@ if ( ( ("admin".equals(profile)) || ("publisher".equals(profile)) ) && folderIsW
 </div>
 <% }  %>
 
-
-<FORM NAME="liste_dir" >
+<form name="liste_dir">
 <%
 
 // remplissage de l'ArrayPane avec la liste des sous répertoires
@@ -656,11 +644,11 @@ if (nav || (!nav && !isRootPath))
 	        if (nav)
 	        {
 	        	//arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(fileName), "SubDirectory?DirectoryPath="+fileName);
-	        	nameCell = "<a href=\"SubDirectory?DirectoryPath="+fileName + "\">" + Encode.javaStringToHtmlString(fileName)+"</a>";
+	        	nameCell = "<a href=\"SubDirectory?DirectoryPath="+fileName + "\">" + EncodeHelper.javaStringToHtmlString(fileName)+"</a>";
 	        }
 	        else
 	        {
-	        	nameCell = Encode.javaStringToHtmlString(fileName);
+	        	nameCell = EncodeHelper.javaStringToHtmlString(fileName);
 	        }
 	        //  permalien
 	        //link = URLManager.getApplicationURL() + "/SubDir/" + Encode.javaStringToHtmlString(fileName)+"?ComponentId="+componentId;
@@ -721,18 +709,15 @@ if (nav || (!nav && !isRootPath))
 			   	if ("admin".equals(profile))
 				{
 			   		// case à cocher pour traitement par lot
-			   		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedDir\" value=\""+Encode.javaStringToHtmlString(fileName)+"\">");
+			   		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedDir\" value=\""+EncodeHelper.javaStringToHtmlString(fileName)+"\">");
 				}
 	        }
 	     }
 	    out.println(arrayPane.print());
 	}
-
-
-	out.println("</FORM>");
-
 	%>
-	<FORM NAME="liste_file" >
+	</form>
+	<form name="liste_file" >
 	<%
 
 	//affichage des fichiers
@@ -780,7 +765,7 @@ if (nav || (!nav && !isRootPath))
 
 		    boolean indexed = fileDetail.isIsIndexed();
 
-		    ArrayCellLink cellLink = arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(userId, componentId));
+		    ArrayCellLink cellLink = arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(userId, componentId));
 		    cellLink.setTarget("_blank");
 
 		    ArrayCellText cellSize = arrayLine.addArrayCellText(fileDetail.getFileSize());
@@ -828,30 +813,26 @@ if (nav || (!nav && !isRootPath))
 		   		if ("admin".equals(profile))
 				{
 			   		// case à cocher pour traitement par lot
-			   		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedFile\" value=\""+Encode.javaStringToHtmlString(fileName)+"\">");
+			   		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedFile\" value=\""+EncodeHelper.javaStringToHtmlString(fileName)+"\">");
 				}
 			}
 		 }
 		out.println(arrayPane.print());
 	}
 }
-
-out.println("</FORM>");
-
-out.println(frame.printAfter());
+%>
+</form>
+</view:frame>
+<%
 out.println(window.printAfter());
-
 %>
 
 <div id="modalDialog"></div>
 
-<FORM name="folderDetailForm" action="viewDirectory" method="post">
-<input type="hidden" name="FolderName">
-<input type="hidden" name="FileName">
-</FORM>
+<form name="folderDetailForm" action="viewDirectory" method="post">
+<input type="hidden" name="FolderName"/>
+<input type="hidden" name="FileName"/>
+</form>
 <view:progressMessage/>
-
-
-
 </body>
 </html>

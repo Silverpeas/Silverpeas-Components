@@ -164,7 +164,7 @@ if(isAdmin){
 	operationPane.addLine();
 	operationPane.addOperation(pdcUtilizationSrc, resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+scc.getComponentId()+"','utilizationPdc1')");
 	operationPane.addLine();
-	operationPane.addOperation(resource.getIcon("whitePages.newCard"), resource.getString("whitePages.op.createUser"), "javascript:onClick=B_CREATE_ONCLICK();");
+	operationPane.addOperationOfCreation(resource.getIcon("whitePages.newCard"), resource.getString("whitePages.op.createUser"), "javascript:onClick=B_CREATE_ONCLICK();");
 	if(cards != null && cards.size() > 0){
 		operationPane.addOperation(resource.getIcon("whitePages.delCard"), resource.getString("whitePages.op.deleteUser"), "javascript:onClick=B_DELETE_ONCLICK('"+cards.size()+"');");
 		operationPane.addOperation(resource.getIcon("whitePages.hideCard"), resource.getString("whitePages.op.hideCard"), "javascript:onClick=B_HIDE_ONCLICK('"+cards.size()+"');");
@@ -268,6 +268,7 @@ if (searchFields != null && !searchFields.isEmpty()) {
 <%
 }
 %>
+<view:areaOfOperationOfCreation/>
 <div class="listinUsers">
 <form name="liste_card" action="">
   <ol class="message_list aff_colonnes">

@@ -31,6 +31,7 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
 
@@ -69,11 +70,10 @@ if (!StringUtil.isDefined(action) || id == null) {
 }
 %>
 
-<HTML>
-<HEAD>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
 <script type="text/javascript">
@@ -211,7 +211,7 @@ function consult() {
 }
 
 </script>
-</HEAD>
+</head>
 <%
 if ("Add".equals(action)) {
     name = request.getParameter("Name");
@@ -240,8 +240,8 @@ if ("Add".equals(action)) {
 
 if ("Search".equals(action)) {
 %>
-    <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
-    <FORM NAME="topicDetailForm" action="topicManager.jsp" METHOD=POST >
+    <body>
+    <form name="topicDetailForm" action="topicManager.jsp" method="post">
 <%
     currentTopic = yellowpagesScc.getTopic(id);
     yellowpagesScc.setCurrentTopic(currentTopic);
@@ -263,8 +263,8 @@ if ("Search".equals(action)) {
 		if (!id.equals(TRASHCAN_ID)){
 			operationPane.addOperation(resources.getIcon("yellowpages.modelUsed"), resources.getString("yellowpages.ModelUsed"), "ModelUsed");
 			operationPane.addLine();
-			operationPane.addOperation(resources.getIcon("yellowpages.folderAdd"), resources.getString("CreerSousTheme"), "javascript:onClick=topicAdd('"+id+"')");
-			operationPane.addOperation(resources.getIcon("yellowpages.groupAdd"), resources.getString("GroupAdd"), "javascript:onClick=addGroup()");
+			operationPane.addOperationOfCreation(resources.getIcon("yellowpages.folderAdd"), resources.getString("CreerSousTheme"), "javascript:onClick=topicAdd('"+id+"')");
+			operationPane.addOperationOfCreation(resources.getIcon("yellowpages.groupAdd"), resources.getString("GroupAdd"), "javascript:onClick=addGroup()");
 			operationPane.addLine();
 		}
 		else
@@ -275,8 +275,8 @@ if ("Search".equals(action)) {
     
 	// Si nous sommes dans la corbeille, alors nous ne pouvons cr�er un contact dedans !!
 	if (!id.equals(TRASHCAN_ID)){
-		operationPane.addOperation(resources.getIcon("yellowpages.contactAdd"), yellowpagesScc.getString("ContactCreer"), "javascript:onClick=contactAdd()");
-		operationPane.addOperation(resources.getIcon("yellowpages.importCSV"), resources.getString("yellowpages.importCSV"), "javascript:onClick=importCSV('"+id+"')");
+		operationPane.addOperationOfCreation(resources.getIcon("yellowpages.contactAdd"), yellowpagesScc.getString("ContactCreer"), "javascript:onClick=contactAdd()");
+		operationPane.addOperationOfCreation(resources.getIcon("yellowpages.importCSV"), resources.getString("yellowpages.importCSV"), "javascript:onClick=importCSV('"+id+"')");
 		operationPane.addLine();
 		operationPane.addOperation(resources.getIcon("yellowpages.basket"), yellowpagesScc.getString("ContactBasket"), "javascript:onClick=topicGoTo('1')");
   	}
@@ -285,16 +285,13 @@ if ("Search".equals(action)) {
     TabbedPane tabbedPane = gef.getTabbedPane();
     tabbedPane.addTab(yellowpagesScc.getString("Consultation"),"javascript:consult();",false);
     tabbedPane.addTab(resources.getString("GML.management"),"#",true);
-
-    Frame frame = gef.getFrame();
           
     out.println(window.printBefore());
     out.println(tabbedPane.print());
-    out.println(frame.printBefore());
 %>
+<view:frame>
+<view:areaOfOperationOfCreation/>
 <!-- AFFICHAGE HEADER -->
-<CENTER>
-
 <%
     if (!id.equals(TRASHCAN_ID) && !id.equals("2")) {
         if (profile.equals("admin"))
@@ -309,31 +306,30 @@ if ("Search".equals(action)) {
     	DisplayContactsHelper.displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.contactDelete"), gef, request, session, resources, out);
     else
       	DisplayContactsHelper.displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.delete"), gef, request, session, resources, out);
-                  
-    out.println(frame.printAfter());
+%>
+</view:frame>
+<%
     out.println(window.printAfter());
 %>
 
-</CENTER>
+<input type="hidden" name="Action"/><input type="hidden" name="Id" value="<%=id%>"/>
+<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"/><input type="hidden" name="ChildId"/>
+<input type="hidden" name="Name"/><input type="hidden" name="Description"/><input type="hidden" name="ModelId"/>
+</form>
 
-<input type="hidden" name="Action"><input type="hidden" name="Id" value="<%=id%>">
-<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"><input type="hidden" name="ChildId">
-<input type="hidden" name="Name"><input type="hidden" name="Description"><input type="hidden" name="ModelId">
-</FORM>
+<form name="contactForm" action="contactManager.jsp" target="contactWindow" method="post">
+<input type="hidden" name="Action"/>
+<input type="hidden" name="ContactId"/>
+</form>
 
-<FORM NAME="contactForm" ACTION="contactManager.jsp" target="contactWindow" METHOD="POST">
-<input type="hidden" name="Action">
-<input type="hidden" name="ContactId">
-</FORM>
-
-<FORM NAME="contactDeleteForm" ACTION="topicManager.jsp" METHOD="POST">
-<input type="hidden" name="Action">
-<input type="hidden" name="ContactId">
-<input type="hidden" name="Id" value="<%=id%>">
-</FORM>
+<form name="contactDeleteForm" action="topicManager.jsp" method="post">
+<input type="hidden" name="Action"/>
+<input type="hidden" name="ContactId"/>
+<input type="hidden" name="Id" value="<%=id%>"/>
+</form>
 <form name="refreshList" action="topicManager"></form>
 
-</BODY>
+</body>
 <%
 	if (updateFailed)
 	{
@@ -346,4 +342,4 @@ if ("Search".equals(action)) {
 		<%
 	}
 } //End if action = search %>
-</HTML>
+</html>

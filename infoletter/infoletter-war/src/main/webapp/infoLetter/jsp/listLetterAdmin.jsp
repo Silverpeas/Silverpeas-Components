@@ -24,14 +24,15 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
@@ -87,7 +88,7 @@ if (showHeader) {
 	operationPane.addOperation(resource.getIcon("infoLetter.modifierHeader"), resource.getString("infoLetter.modifierHeader"), "LetterHeaders");	
 	operationPane.addLine();
 }
-operationPane.addOperation(resource.getIcon("infoLetter.newPubli"), resource.getString("infoLetter.newPubli"), "ParutionHeaders");	
+operationPane.addOperationOfCreation(resource.getIcon("infoLetter.newPubli"), resource.getString("infoLetter.newPubli"), "ParutionHeaders");	
 operationPane.addOperation(resource.getIcon("infoLetter.delPubli"), resource.getString("GML.delete"), "javascript:submitForm();");	
 operationPane.addLine();
 operationPane.addOperation(resource.getIcon("infoLetter.access_SilverAbonnes"), resource.getString("infoLetter.access_SilverAbonnes"), "Suscribers");	
@@ -101,15 +102,10 @@ if (isSuscriber) {
 }
 
 out.println(window.printBefore());
-out.println(frame.printBefore());		
 %>
-
-<%
-if (showHeader)
-{
-	out.println(board.printBefore());
-%>
-
+<view:frame>
+<% if (showHeader) { %>
+<view:board>
 <center>
 	<table border="0" cellspacing="0" cellpadding="5" width="100%">
 		<tr> 
@@ -132,11 +128,10 @@ if (showHeader)
 		<% } %>			
 	</table>
 </center>
-<%
-	out.println(board.printAfter());
-	out.println("<br>");
-}
-%>
+</view:board>
+<br/>
+<% } %>
+<view:areaOfOperationOfCreation/>
 <form name="deletePublications" action="DeletePublications" method="post">
 <%
 // Recuperation de la liste des parutions
@@ -190,13 +185,10 @@ if (publications.size()>0) {
 						
 						arrayLine.addArrayCellIconPane(iconPane2);					
 						
-						arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"publis\" value=\"" + pub.getPK().getId() + "\">");
+						arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"publis\" value=\"" + pub.getPK().getId() + "\"/>");
 	}
 }
-				
-				
-		out.println(arrayPane.print());
-		
+	out.println(arrayPane.print());		
 %>
 </form>
 <form name="editParution" action="ParutionHeaders" method="post">
@@ -206,9 +198,8 @@ if (publications.size()>0) {
 <form name="viewParution" action="View" method="post">
 	<input type="hidden" name="parution" value=""/>
 </form>
-
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>
