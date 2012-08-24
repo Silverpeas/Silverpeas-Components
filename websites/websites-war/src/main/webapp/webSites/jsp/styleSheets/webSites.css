@@ -47,9 +47,11 @@ fieldset#foldersFieldset legend {
 #infoFieldset #nomSiteArea input,
 #infoFieldset #descriptionArea textarea,
 #infoFieldset #nomPageArea input,
-#specificationsFieldset #radioArea input,
-#specificationsFieldset #popupArea input,
-#infoFieldset #iconeArea input
-{
+#infoFieldset #iconeArea input {
   width: 46%;
+}
+
+#specificationsFieldset #popupArea input,
+#specificationsFieldset #radioArea input {
+  width:0;
 }

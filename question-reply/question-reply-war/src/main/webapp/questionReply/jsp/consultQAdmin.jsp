@@ -28,6 +28,7 @@
 <%@ page import="java.util.*"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkQuestionReply.jsp" %>
 <%@ include file="tabManager.jsp.inc" %>
 <%
@@ -43,73 +44,65 @@
 	Iterator it = replies.iterator();
 %>
 
-
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-
-<%
-out.println(gef.getLookStyleSheet());
-%>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
+</head>
+<body>
 <%
 	browseBar.setDomainName(spaceLabel);
    	browseBar.setPath("<a href="+routerUrl+"Main>"+resource.getString("questionReply.listQ")+ "</a> > " + title);
 	
 	operationPane.addOperation(resource.getIcon("questionReply.modifQ"), resource.getString("questionReply.modifQ"), "javascript:updQ();");	
-	if (status == 0)
-	{
+	if (status == 0) {
 		operationPane.addOperation(resource.getIcon("questionReply.relanceQ"), resource.getString("questionReply.relanceQ"), routerUrl+"RelaunchQuery");
 	}
 	if (status == 1)
 		operationPane.addOperation(resource.getIcon("questionReply.cloreQ"), resource.getString("questionReply.cloreQ"), "javascript:onClick=CloseQ('"+id+"');");	
 	if (status == 2)
 		operationPane.addOperation(resource.getIcon("questionReply.delQ"), resource.getString("questionReply.delQ"), "javascript:onClick=DeleteQ('"+id+"');");	
-	if (status != 2)
-	{
+	if (status != 2) {
 		operationPane.addLine();
-		operationPane.addOperation(resource.getIcon("questionReply.ajoutR"), resource.getString("questionReply.ajoutR"), "javascript:addR();");	
+		operationPane.addOperationOfCreation(resource.getIcon("questionReply.ajoutR"), resource.getString("questionReply.ajoutR"), "javascript:addR();");	
 	}
-	if (existPublicR(replies))
-	{
+	if (existPublicR(replies)) {
 		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("questionReply.delR"), resource.getString("questionReply.delPublicRs"), "javascript:onClick=DeletesR();");	
 	}
 
 	out.println(window.printBefore());    
 
-	if (status == 0)
-	{
+	if (status == 0) {
 		displayTabs(true, true, id, resource, gef, "ViewQuestion", routerUrl, out);
 	}
-	out.println(frame.printBefore());
-	out.println(board.printBefore());
 %>
-
+<view:frame>
+<view:board>
 <center>
-<table CELLPADDING=5 width="100%">
+<table cellpadding="5" width="100%">
 	<tr align=center> 
-		<td  class="intfdcolor4" valign="baseline" align=left width="100" class="txtlibform"><%=resource.getString("questionReply.question")%> :</td>
-		<td  class="intfdcolor4" valign="baseline" align=left><%=title%></td>
+		<td class="intfdcolor4" valign="baseline" align=left width="100" class="txtlibform"><%=resource.getString("questionReply.question")%> :</td>
+		<td class="intfdcolor4" valign="baseline" align=left><%=title%></td>
 	</tr>
 	<tr align=center> 
-		<td  class="intfdcolor4" valign="top" align=left class="txtlibform"><%=resource.getString("GML.description")%> :</td>
-		<td  class="intfdcolor4" valign="top" align=left><%=content%></td>
+		<td class="intfdcolor4" valign="top" align=left class="txtlibform"><%=resource.getString("GML.description")%> :</td>
+		<td class="intfdcolor4" valign="top" align=left><%=content%></td>
 	</tr>
 	<tr align=center> 
-		<td  class="intfdcolor4" valign="baseline" align=left class="txtlibform"><%=resource.getString("GML.date")%> :</td>
-		<td  class="intfdcolor4" valign="baseline" align=left><%=date%></td>
+		<td class="intfdcolor4" valign="baseline" align=left class="txtlibform"><%=resource.getString("GML.date")%> :</td>
+		<td class="intfdcolor4" valign="baseline" align=left><%=date%></td>
 	</tr>
 	<tr align=center> 
-		<td  class="intfdcolor4" valign="baseline" align=left class="txtlibform"><%=resource.getString("GML.publisher")%> :</td>
-		<td  class="intfdcolor4" valign="baseline" align=left><%=creator%></td>
+		<td class="intfdcolor4" valign="baseline" align=left class="txtlibform"><%=resource.getString("GML.publisher")%> :</td>
+		<td class="intfdcolor4" valign="baseline" align=left><%=creator%></td>
 	</tr>
 </table>
-</CENTER>
-<% out.println(board.printAfter()); %>
-<br>
+</center>
+</view:board>
+<view:areaOfOperationOfCreation/>
+<br/>
 <%
 	ArrayPane arrayPane = gef.getArrayPane("questionReply", routerUrl+"ConsultQuestion", request, session);		
 	ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
@@ -150,9 +143,10 @@ out.println(gef.getLookStyleSheet());
 		
 	}
 	out.println(arrayPane.print());
-
-out.println(frame.printAfter());
+%>
+</view:frame>
+<%
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

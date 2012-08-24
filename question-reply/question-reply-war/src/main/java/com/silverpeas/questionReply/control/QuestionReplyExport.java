@@ -70,7 +70,7 @@ public class QuestionReplyExport {
     sb.append("<tr>\n");
     sb.append("<td colspan=\"2\">\n");
     sb.append("<span class=\"txtBaseline\">");
-    sb.append("Question de").append(question.readCreatorName()).append(" - ").append(
+    sb.append(question.readCreatorName()).append(" - ").append(
         resource.getOutputDate(question.getCreationDate()));
     sb.append("</span>\n");
     sb.append("</td>\n");
@@ -141,7 +141,7 @@ public class QuestionReplyExport {
     sb.append("<table>\n");
     sb.append("<tr>\n");
     sb.append("<td width=\"90%\">");
-    sb.append(EncodeHelper.javaStringToHtmlParagraphe(reply.getContent()));
+    sb.append(reply.readCurrentWysiwygContent());
     sb.append("</td>\n");
     // récupération des fichiers joints : copie de ces fichiers dans le dossier "files"
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
@@ -183,8 +183,8 @@ public class QuestionReplyExport {
     sb.append("</table>\n");
     sb.append("<br>\n");
     sb.append("<span class=\"txtBaseline\">");
-    sb.append("Réponse de ").append(reply.readCreatorName()).append(" - ").append(
-        resource.getOutputDate(reply.getCreationDate()));
+    sb.append(resource.getString("questionReply.replyOf")).append(" ").append(reply.readCreatorName());
+    sb.append(" - ").append(resource.getOutputDate(reply.getCreationDate()));
     sb.append("</span>\n");
     sb.append("</td>\n");
     sb.append("</tr>\n");

@@ -40,6 +40,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class GoToMessage extends GoTo {
 
+  private static final long serialVersionUID = -2368464620933821332L;
+
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     int forumId = Integer.parseInt(req.getParameter("ForumId"));

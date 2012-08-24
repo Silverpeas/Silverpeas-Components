@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.connecteurJDBC.control;
 
@@ -59,9 +56,8 @@ import java.util.Vector;
 public class ConnecteurJDBCSessionController extends AbstractComponentSessionController {
 
   private static final String CONFIGURATION_FILE =
-      "com.stratelia.silverpeas.connecteurJDBC.control.settings.connecteurJDBCSettings".replace(
-          '.', File.separatorChar);
-
+      "org.silverpeas.connecteurJDBC.control.settings.connecteurJDBCSettings".replace('.',
+      File.separatorChar);
   private String table = null;
   private String column = null;
   private String selected = null;
@@ -120,7 +116,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
         Collection<ConnecteurJDBCConnectionInfoDetail> c = connecteurJDBCBm.getConnectionList(
             new ConnecteurJDBCConnectionInfoPK("", getSpaceId(), getComponentId()));
         if (c.size() > 1) {
-          throw new ConnecteurJDBCException( "connecteurJDBCSessionControl.initConnecteur()",
+          throw new ConnecteurJDBCException("connecteurJDBCSessionControl.initConnecteur()",
               SilverpeasException.FATAL, "connecteurJDBC.EX_THERE_MUST_BE_ONLY_ONE_CONECTION");
         }
         Iterator<ConnecteurJDBCConnectionInfoDetail> i = c.iterator();
@@ -128,7 +124,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           connecteurJDBCDetail = i.next();
         }
       } catch (Exception e) {
-        throw new ConnecteurJDBCRuntimeException( "connecteurJDBCSessionControl.initConnecteur()",
+        throw new ConnecteurJDBCRuntimeException("connecteurJDBCSessionControl.initConnecteur()",
             SilverpeasException.FATAL, "connecteurJDBC.EX_INIT_CONNECTEUR_FAIL", e);
       }
     }
@@ -661,13 +657,13 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           "ConnecteurJDBCSessionController.searchDriverIndice()",
           "connecteurJDBC.MSG_DRIVER_NAME", "driver n°" + i + "="
           + driversNames[i]);
-      if(driversNames[i].equals(driverName)){
+      if (driversNames[i].equals(driverName)) {
         return i;
       }
       i++;
     }
-    throw new ConnecteurJDBCRuntimeException( "ConnecteurJDBCSessionController.searchDriverIndice()",
-              SilverpeasException.ERROR, "connecteurJDBC.EX_UNK_DRIVER_NAME", driverName);
+    throw new ConnecteurJDBCRuntimeException("ConnecteurJDBCSessionController.searchDriverIndice()",
+        SilverpeasException.ERROR, "connecteurJDBC.EX_UNK_DRIVER_NAME", driverName);
   }
 
   private Driver registerAndInstanciateDriver(String driverName)
@@ -815,7 +811,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
               "ConnecteurJDBCSessionControl.getDriver()",
               "root.MSG_GEN_PARAM_VALUE",
               "driverName undefined ! default one used instead = "
-                  + driverName);
+              + driverName);
           driverName = driversNames[0];
         }
         driver = registerAndInstanciateDriver(driverName);
@@ -896,5 +892,4 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     }
     return (null);
   }
-
 }

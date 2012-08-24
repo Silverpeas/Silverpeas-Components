@@ -29,6 +29,7 @@
 <%@ page import="java.util.*"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkQuestionReply.jsp" %>
 <%@ include file="tabManager.jsp.inc" %>
 <%
@@ -46,20 +47,14 @@
 	Iterator it = replies.iterator();
 %>
 
-
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
-<script language="javascript">
-
-function deleteConfirm(replyId)
-{
+<script type="text/javascript">
+function deleteConfirm(replyId) {
 	//confirmation de suppression de la question
 	if(window.confirm("<%=resource.getString("MessageSuppressionR")%>"))
 	{
@@ -69,16 +64,13 @@ function deleteConfirm(replyId)
 	}
 }
 </script>
-
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
-
+</head>
+<body>
 <%
 	browseBar.setDomainName(spaceLabel);
    	browseBar.setPath(title);
 	
-   	if (profil.equals("admin") || profil.equals("writer"))
-   	{
+   	if (profil.equals("admin") || profil.equals("writer")) {
 		/* Pour relance vers les experts
 		if (status == 0)
 			operationPane.addOperation(resource.getIcon("questionReply.relanceQ"), resource.getString("questionReply.relanceQ"), routerUrl+"RelaunchQuery");
@@ -87,7 +79,7 @@ function deleteConfirm(replyId)
 			operationPane.addOperation(resource.getIcon("questionReply.cloreQ"), resource.getString("questionReply.cloreQ"), "javascript:onClick=CloseQ('"+id+"');");	
 		if (status != 2)
 		{
-			operationPane.addOperation(resource.getIcon("questionReply.ajoutR"), resource.getString("questionReply.ajoutR"), "CreateRQuery?QuestionId="+id);	
+			operationPane.addOperationOfCreation(resource.getIcon("questionReply.ajoutR"), resource.getString("questionReply.ajoutR"), "CreateRQuery?QuestionId="+id);	
 		}
 		if (status == 2)
 			operationPane.addOperation(resource.getIcon("questionReply.delQ"), resource.getString("questionReply.delQ"), "javascript:onClick=DeleteQ('"+id+"');");
@@ -107,16 +99,14 @@ function deleteConfirm(replyId)
 		pdc = false;
 	if (!profil.equals("user"))
 		displayTabs(updateQ, pdc, id, resource, gef, "ViewQuestion", routerUrl, out);
-
-	out.println(frame.printBefore());
-	out.println(board.printBefore());
 %>
-
+<view:frame>
+<view:board>
 <!-- affichage de la question -->
 <table width="100%">
 	<tr>
 		<td nowrap>
-			<img src="<%=resource.getIcon("questionReply.miniconeQuestion")%>">
+			<img src="<%=resource.getIcon("questionReply.miniconeQuestion")%>"/>
 		</td>
 		<td width="100%" class="titreQuestionReponse">
 			<%=EncodeHelper.javaStringToHtmlParagraphe(title)%>
@@ -136,11 +126,11 @@ function deleteConfirm(replyId)
 		</td>
 	</tr>
 </table>
-<% out.println(board.printAfter()); 
+</view:board>
+<view:areaOfOperationOfCreation/>
+<% 
 // affichage des r�ponses
-
-	while(it.hasNext())
-	{
+	while(it.hasNext()) {
 		Reply reply = (Reply) it.next();
 		String titleR = EncodeHelper.javaStringToHtmlString(reply.getTitle());
 		String contentR = EncodeHelper.javaStringToHtmlString(reply.getContent());
@@ -148,9 +138,9 @@ function deleteConfirm(replyId)
 		String dateR = resource.getOutputDate(reply.getCreationDate());
 		String idR = reply.getPK().getId();
 		int statusR = reply.getPublicReply();
-		out.println("<br>");
-		out.println(board.printBefore());
+		out.println("<br/>");
 		%>
+		<view:board>
 		<table width="100%">
 			<tr>
 				<td nowrap>
@@ -188,17 +178,16 @@ function deleteConfirm(replyId)
 				</td>
 			</tr>
 		</table>
-		<%
-		out.println(board.printAfter());
-		
+		</view:board>
+		<%		
 	}
-
-out.println(frame.printAfter());
+%>
+</view:frame>
+<%
 out.println(window.printAfter());
 %>
-<form name="RForm" action="" Method="POST">
-	<input type="hidden" name="replyId">
+<form name="RForm" action="" method="post">
+	<input type="hidden" name="replyId"/>
 </form>
-
-</BODY>
-</HTML>
+</body>
+</html>

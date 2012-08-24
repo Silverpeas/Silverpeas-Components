@@ -256,7 +256,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         List<KmeliaPublication> publicationsToDisplay = new ArrayList<KmeliaPublication>();
         KmeliaSecurity kmeliaSecurity = new KmeliaSecurity();
         for (KmeliaPublication aPublication : currentTopic.getKmeliaPublications()) {
-          if (!kmeliaSC.isPublicationDeleted(aPublication.getPk().getId())
+          if (!kmeliaSC.isPublicationDeleted(aPublication.getPk())
               && kmeliaSecurity.isObjectAvailable(componentId, kmeliaSC.getUserId(), aPublication.
                   getPk().getId(), "Publication")) {
             publicationsToDisplay.add(aPublication);

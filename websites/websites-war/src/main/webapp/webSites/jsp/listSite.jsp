@@ -99,7 +99,7 @@ String redFlag = iconsPath+"/util/icons/urgent.gif";
 */
 String pxmag = m_context + "/util/icons/colorPix/1px.gif";
 String flea = m_context + "/util/icons/buletGrey.gif";
-String suggerer=m_context+"/util/icons/bookmark_to_add.gif";
+String suggerer=m_context+"/util/icons/create-action/add-bookmark.png";
 String redFlag = m_context+"/util/icons/urgent.gif";
 
 String bodyPart="";

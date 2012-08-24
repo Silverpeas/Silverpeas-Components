@@ -51,7 +51,7 @@ public class QuestionIndexer {
       indexEntry.addTextContent(question.getTitle());
       for (Reply reply : replies) {
         indexEntry.addTextContent(reply.getTitle());
-        indexEntry.addTextContent(reply.getContent());
+        indexEntry.addTextContent(reply.loadWysiwygContent());
       }
       IndexEngineProxy.addIndexEntry(indexEntry);
     }

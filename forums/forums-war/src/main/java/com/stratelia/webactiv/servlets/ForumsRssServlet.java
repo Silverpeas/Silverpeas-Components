@@ -40,6 +40,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class ForumsRssServlet extends RssServlet {
 
+  private static final long serialVersionUID = -1153108746674900992L;
+
   /*
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)

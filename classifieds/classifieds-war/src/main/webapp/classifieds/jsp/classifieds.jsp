@@ -27,8 +27,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
-	prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@page import="com.silverpeas.util.StringUtil"%>
 
@@ -46,8 +45,7 @@
 <c:set var="profile" value="${requestScope.Profile}" />
 
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
@@ -68,17 +66,18 @@
 		<view:browseBarElt label="${classifiedPath}" link="#" />
 	</view:browseBar>
 
-	<c:if
-		test="${(profile.name == 'manager') || (profile.name == 'publisher') }">
+	<c:if test="${(profile.name == 'manager') || (profile.name == 'publisher') }">
 		<view:operationPane>
 			<fmt:message var="addOp" key="classifieds.addClassified" />
 			<fmt:message var="addIcon" key="classifieds.addClassified" bundle="${icons}" />
-			<view:operation action="NewClassified" altText="${addOp}" icon="${addIcon}" />
+			<c:url var="addIcon" value="${addIcon}"/>
+			<view:operationOfCreation action="NewClassified" altText="${addOp}" icon="${addIcon}" />
 		</view:operationPane>
 	</c:if>
 
 	<view:window>
 		<view:frame>
+			<view:areaOfOperationOfCreation/>
 			<view:board>
 					<c:if test="${not empty classifieds}">
 					<ul class="list_result_classifieds">

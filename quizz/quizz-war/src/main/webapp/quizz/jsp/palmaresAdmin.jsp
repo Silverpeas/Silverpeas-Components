@@ -83,7 +83,7 @@ out.println(gef.getLookStyleSheet());
   browseBar.setExtraInformation(resources.getString("QuizzList"));
 
   OperationPane operationPane = window.getOperationPane();
-  operationPane.addOperation(m_context + "/util/icons/quizz_to_add.gif",resources.getString("QuizzNewQuizz"), "quizzCreator.jsp");
+  operationPane.addOperation(m_context + "/util/icons/create-action/add-quizz.png",resources.getString("QuizzNewQuizz"), "quizzCreator.jsp");
 
   out.println(window.printBefore());
 

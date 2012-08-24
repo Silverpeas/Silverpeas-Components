@@ -53,10 +53,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
 
-	String addFolder=m_context+"/util/icons/folderAddBig.gif";
+	String addFolder=m_context+"/util/icons/create-action/add-folder.png";
   String addPage=m_context+"/util/icons/webSites_page_to_add.gif";
-  String addPic=m_context+"/util/icons/webSites_upload_file.gif";
-  String addLib=m_context+"/util/icons/webSites_classify.gif";
+  String addPic=m_context+"/util/icons/create-action/download-website.png";
+  String addLib=m_context+"/util/icons/create-action/add-website-to-topic.png";
   String updateDescription=m_context+"/util/icons/webSites_to_modify.gif";
   String belpou=m_context+"/util/icons/basket.gif";
   String update=m_context+"/util/icons/update.gif";

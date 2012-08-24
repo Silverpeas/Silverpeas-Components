@@ -34,6 +34,7 @@ import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.session.SessionInfo;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.whitePages.WhitePagesException;
@@ -68,7 +69,6 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
-import static com.silverpeas.util.StringUtil.isDefined;
 
 public class WhitePagesSessionController extends AbstractComponentSessionController {
 

@@ -126,7 +126,7 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 	String updaterId = pubDetail.getUpdaterId();
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
@@ -239,7 +239,7 @@ function pubDraftOut() {
         OperationPane operationPane = window.getOperationPane();
         if (!"supervisor".equals(profile)) {
           if (attachmentsEnabled) {
-          	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
+          	operationPane.addOperationOfCreation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
           }
           if (kmeliaScc.isDraftEnabled()) {
             if (pubDetail.isDraft()) {
@@ -303,7 +303,9 @@ function pubDraftOut() {
 		out.println("<br><b>"+EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper.convertHTMLEntities(pubDetail.getDescription()))+"<b><BR><BR>");
 
 		out.println("</TD></TR></table>");
-
+%>		
+	<view:areaOfOperationOfCreation/>	
+<%
 		/*********************************************************************************************************************/
 		/** Affichage du contenu de la publication																			**/
 		/*********************************************************************************************************************/

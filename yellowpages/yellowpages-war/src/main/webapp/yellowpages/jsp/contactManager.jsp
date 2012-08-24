@@ -124,9 +124,10 @@ if (action.equals("Delete") == false) {
 %>
 
 <%@page import="com.silverpeas.util.StringUtil"%>
-<HTML>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
@@ -214,7 +215,7 @@ function autoSubmit(){
 	document.enctypeForm.submit();
 }
 </script>
-</HEAD>
+</head>
 <% } // fin action != Delete
 
 
@@ -241,11 +242,11 @@ if (action.equals("Add")) {
 
 	if (yellowpagesScc.useForm())
 	{
-		%><BODY onload = "autoSubmit()"><%
+		%><body onload = "autoSubmit()"><%
 	}
 	else
 	{
-		%><BODY onload = "reallyClose()"><%
+		%><body onload = "reallyClose()"><%
    }
 }
 
@@ -361,9 +362,9 @@ else if (action.equals("New") || action.equals("SelectUser")) {
 
      		//routage vers le UserPanel
 	      %>
-				<Script language="JavaScript">
+				<script language="JavaScript">
 					SP_openWindow('selectUser.jsp','selectUser','750','650','scrollbars=yes, resizable, alwaysRaised');
-				</Script>
+				</script>
 	      <%
       }
 }
@@ -390,25 +391,25 @@ Frame frame = gef.getFrame();
 
 /* Update */
 if (action.equals("Update"))
-	out.println("<BODY onload = \"reallyClose()\">");
+	out.println("<body onload = \"reallyClose()\">");
 
 /* New || UpdateView */
 else if (action.equals("New") || action.equals("UpdateView")) {
 	/* New */
 	if (action.equals("New")) {
-		out.println("<BODY onLoad=\"init()\">");
+		out.println("<body onload=\"init()\">");
 	}
 
 	/* UpdateView */
 	else {
-		out.println("<BODY onLoad=\"document.contactForm.LastName.focus();\">");
+		out.println("<body onload=\"document.contactForm.LastName.focus();\">");
 	}
 
 	/* New */
 	if (action.equals("New"))
 	{
 		browseBar.setPath(resources.getString("ContactCreation"));
-		operationPane.addOperation(resources.getIcon("yellowpages.contactAdd2"), resources.getString("UserCreer"), "javascript:selectUser();");
+		operationPane.addOperationOfCreation(resources.getIcon("yellowpages.contactAdd2"), resources.getString("UserCreer"), "javascript:selectUser();");
 	}
 
 	/* UpdateView */
@@ -425,67 +426,60 @@ else if (action.equals("New") || action.equals("UpdateView")) {
 		boolean useModel = yellowpagesScc.getCurrentTopic().getNodeDetail().getId() != ROOT_TOPIC;
 		displayContactOperations(resources, id, gef, action, out, useModel);
 	}
-
-	out.println(frame.printBefore());
-	out.println(board.printBefore());
 %>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<view:board>
 <center>
-<FORM Name="contactForm" Action="contactManager.jsp" Method="POST">
-<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%">
-    <tr><td NOWRAP>
-            <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
-<%
-    if ((userId != null) && (!userId.equals("")))
-    {
-%>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:</TD>
-      <TD><input type="text" name="LastName" value="<%=EncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60" readonly>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.surname")%>&nbsp;:</TD>
-      <TD><input type="text" name="FirstName" value="<%=EncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60" readonly>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</TD>
-      <TD><input type="text" name="Email" value="<%=EncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="100" readonly></TD></TR>
-<%
-    }
-    else
-    {
-%>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:</TD>
-      <TD><input type="text" name="LastName" value="<%=EncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60">&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.surname")%>&nbsp;:</TD>
-      <TD><input type="text" name="FirstName" value="<%=EncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60">&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"></TD></TR>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</TD>
-      <TD><input type="text" name="Email" value="<%=EncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="100"></TD></TR>
-<%
-    }
-%>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.phoneNumber")%>&nbsp;:</TD>
-      <TD><input type="text" name="Phone" value="<%=EncodeHelper.javaStringToHtmlString(phone)%>" size="20" maxlength="20"></TD></TR>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.faxNumber")%>&nbsp;:</TD>
-      <TD><input type="text" name="Fax" value="<%=EncodeHelper.javaStringToHtmlString(fax)%>" size="20" maxlength="20"></TD></TR>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.publisher")%>&nbsp;:</TD>
-      <TD><%=creatorName%></TD></TR>
-  <TR><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("ContactDateCreation")%>&nbsp;:</TD>
-      <TD><%=creationDate%></TD></TR>
-  <tr><td colspan="2">(<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%>)</td></tr>
+<form name="contactForm" action="contactManager.jsp" method="post">
+<table cellpadding="0" cellspacing="2" border="0" width="98%">
+    <tr><td nowrap="nowrap">
+            <table cellpadding="5" cellspacing="0" border="0" width="100%">
+<% if ((userId != null) && (!userId.equals(""))) { %>
+  <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:</td>
+      <td><input type="text" name="LastName" value="<%=EncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60" readonly="readonly"/>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/></td></tr>
+  <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.surname")%>&nbsp;:</td>
+      <td><input type="text" name="FirstName" value="<%=EncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60" readonly="readonly"/>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/></td></tr>
+  <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</td>
+      <td><input type="text" name="Email" value="<%=EncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="100" readonly="readonly"/></td></tr>
+<% } else { %>
+  <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:</td>
+      <td><input type="text" name="LastName" value="<%=EncodeHelper.javaStringToHtmlString(lastName)%>" size="60" maxlength="60"/>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/></td></tr>
+  <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.surname")%>&nbsp;:</td>
+      <td><input type="text" name="FirstName" value="<%=EncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60"/>&nbsp;<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/></td></tr>
+  <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.eMail")%>&nbsp;:</td>
+      <td><input type="text" name="Email" value="<%=EncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="100"/></td></tr>
+<% } %>
+  <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.phoneNumber")%>&nbsp;:</td>
+      <td><input type="text" name="Phone" value="<%=EncodeHelper.javaStringToHtmlString(phone)%>" size="20" maxlength="20"/></td></tr>
+  <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.faxNumber")%>&nbsp;:</td>
+      <td><input type="text" name="Fax" value="<%=EncodeHelper.javaStringToHtmlString(fax)%>" size="20" maxlength="20"/></td></tr>
+  <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.publisher")%>&nbsp;:</td>
+      <td><%=creatorName%></td></tr>
+  <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("ContactDateCreation")%>&nbsp;:</td>
+      <td><%=creationDate%></td></tr>
+  <tr><td colspan="2">(<img border="0" src="<%=resources.getIcon("yellowpages.mandatory")%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%>)</td></tr>
   </table></td></tr></table>
-  <input type="hidden" name="Action"><input type="hidden" name="ContactId" value="<%=id%>">
-	<input type="hidden" name="UserId" value="<%=EncodeHelper.javaStringToHtmlString(userId)%>">
-  </FORM>
+  <input type="hidden" name="Action"/><input type="hidden" name="ContactId" value="<%=id%>"/>
+	<input type="hidden" name="UserId" value="<%=EncodeHelper.javaStringToHtmlString(userId)%>"/>
+  </form>
 </center>
-<br>
+</view:board>
+<br/>
   <%
-		out.println(board.printAfter());
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
     buttonPane.setHorizontalPosition();
-    out.println("<br><center>"+buttonPane.print()+"</center><br>");
-   	out.println(frame.printAfter());
-		out.println(window.printAfter());
+    out.println(buttonPane.print());
 %>
-<FORM NAME="topicDetailForm" ACTION="topicManager.jsp" METHOD=POST >
-  <input type="hidden" name="Action"><input type="hidden" name="Id" value="<%=id%>">
-</FORM>
+</view:frame>
+<%
+	out.println(window.printAfter());
+%>
+<form name="topicDetailForm" action="topicManager.jsp" method="post">
+  <input type="hidden" name="Action"/><input type="hidden" name="Id" value="<%=id%>"/>
+</form>
 <% } // fin du action = "New" or "UpdateView"
 
 /* ViewContact */
@@ -516,24 +510,24 @@ else if (action.equals("ViewContact")) {
 		out.println(window.printAfter());
 		%>
 
-		<FORM NAME="contactForm" ACTION="contactManager.jsp" METHOD="POST">
-			<input type="hidden" name="Action">
-			<input type="hidden" name="ContactId">
-			<input type="hidden" name="CheckPath">
-		</FORM>
+		<form name="contactForm" action="contactManager.jsp" method="post">
+			<input type="hidden" name="Action"/>
+			<input type="hidden" name="ContactId"/>
+			<input type="hidden" name="CheckPath"/>
+		</form>
 
-		<FORM NAME="topicDetailForm" ACTION="topicManager.jsp" METHOD=POST >
-		  <input type="hidden" name="Action">
-		  <input type="hidden" name="Id" value="<%=id%>">
-		</FORM>
+		<form name="topicDetailForm" action="topicManager.jsp" method="post">
+		  <input type="hidden" name="Action"/>
+		  <input type="hidden" name="Id" value="<%=id%>"/>
+		</form>
 <% } // fin du if action == "ViewContact" %>
 
-<FORM NAME="topicAddLink" ACTION="TopicLink.jsp" METHOD=POST >
-	<input type=hidden name="ContactId" value="<%=id%>">
-</FORM>
-<Form Name="enctypeForm" ACTION="modelManager.jsp" Method="POST" ENCTYPE="multipart/form-data">
-	<input type="hidden" name="ContactId" VALUE="<%=newContactId%>">
-	<input type="hidden" name="Action" VALUE="NewModel">
-</Form>
-</BODY>
-</HTML>
+<form name="topicAddLink" action="TopicLink.jsp" method="post">
+	<input type=hidden name="ContactId" value="<%=id%>"/>
+</form>
+<form name="enctypeForm" action="modelManager.jsp" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="ContactId" value="<%=newContactId%>"/>
+	<input type="hidden" name="Action" value="NewModel"/>
+</form>
+</body>
+</html>
