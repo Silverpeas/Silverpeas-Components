@@ -62,8 +62,9 @@ public class TestHtml2Text {
     parser.parse(reader);
     String summary = parser.getSummary();
     assertThat(summary, is(notNullValue()));
-    if ("Oracle Corporation".equals(System.getProperty("java.vendor")) && "1.6.0_30".compareTo(
-        System.getProperty("java.version")) < 0) {
+    if ("Oracle Corporation".equals(System.getProperty("java.vendor"))  ||  
+        ("Sun Microsystems Inc.".equals(System.getProperty("java.vendor")) && "1.6.0_30".compareTo(
+        System.getProperty("java.version")) < 0)) {
       assertThat(summary, is("Politique Recherchez depuis sur Le Monde.fr A la Une Le Desk Vidéos "
           + "International *Elections américaines Europe Politique *Municipales & Cantonales 2008 "
           + "Société Carnet Economie Médias Météo Rendez-vou"));
