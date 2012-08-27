@@ -24,14 +24,15 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
@@ -43,21 +44,18 @@ function openViewParution(par) {
 </head>
 <body>
 <%
-boolean showHeader = ( (Boolean) request.getAttribute("showHeader") ).booleanValue();
+boolean showHeader = (Boolean) request.getAttribute("showHeader");
 boolean isSuscriber = ((String)request.getAttribute("userIsSuscriber")).equals("true");
 if (isSuscriber) {
 	operationPane.addOperation(resource.getIcon("infoLetter.desabonner"), resource.getString("infoLetter.desabonner"), "UnsuscribeMe");
 } else {
 	operationPane.addOperation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");	
 }
-	out.println(window.printBefore());
-	out.println(frame.printBefore());	
+out.println(window.printBefore());
 %>
-
-<%
-if (showHeader) {
-	out.println(board.printBefore());
-%>
+<view:frame>
+<% if (showHeader) { %>
+<view:board>
 	<table border="0" cellspacing="0" cellpadding="5" width="100%">
 		<tr>
 			<td class="txtlibform" valign="baseline" nowrap="nowrap"><%=resource.getString("infoLetter.name")%> :</td>
@@ -72,11 +70,11 @@ if (showHeader) {
 			<td align="left"><%= (String) request.getAttribute("letterFrequence") %></td>
 		</tr>
 	</table>
+</view:board>
+<br/>	
+<% } %>
+<view:areaOfOperationOfCreation/>
 <%
-	out.println(board.printAfter());
-	out.println("<br/>");
-}
-
 // Recuperation de la liste des parutions
 List<InfoLetterPublication> publications = (List<InfoLetterPublication>) request.getAttribute("listParutions");
 int i=0;
@@ -117,8 +115,8 @@ if (publications.size()>0) {
 <form name="viewParution" action="View" method="post">
 	<input type="hidden" name="parution" value=""/>
 </form>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>

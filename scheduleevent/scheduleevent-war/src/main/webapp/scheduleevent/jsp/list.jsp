@@ -68,8 +68,6 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
 	    }
   </script>
   </head>
-  
-  
   <body>
   
   <fmt:message key="scheduleevent" var="scheduleEventTitle" />
@@ -80,7 +78,7 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   <fmt:message key="scheduleevent.icons.add.alt" var="addScheduleEventAlt" />
   <fmt:message key="scheduleevent.icons.add" var="addScheduleEventIconPath" bundle="${icons}" />
   <view:operationPane>
-    <view:operation altText="${addScheduleEventAlt}" icon="${addScheduleEventIconPath}" action="${'javascript: addScheduleEvent();'}" />
+    <view:operationOfCreation altText="${addScheduleEventAlt}" icon="${addScheduleEventIconPath}" action="${'javascript: addScheduleEvent();'}" />
   </view:operationPane>
   
   <fmt:message key="scheduleevent.icons.open" var="openIcon" bundle="${icons}" />
@@ -100,6 +98,7 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
   	<form id="utilForm" name="utilForm" method="post">
   		<input type="hidden" name="scheduleEventId"/>
   	</form>
+  	<view:areaOfOperationOfCreation/>
   	<table id="scheduleEvents" class="tableArrayPane" width="98%" cellspacing="2" cellpadding="2" border="0">
   		<tr align="center">
   			<td valign="top" align="center" class="ArrayColumn"><fmt:message key="scheduleevent.column.title"/></td>
@@ -130,9 +129,7 @@ ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.
       		</tr>
     		</c:forEach>
   		</c:if>
-  	
-  	</table>
-  	
+  	</table>  	
   </view:window>
   </body>
 </html>

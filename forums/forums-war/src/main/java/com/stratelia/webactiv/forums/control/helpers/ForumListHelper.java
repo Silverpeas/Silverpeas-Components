@@ -86,7 +86,6 @@ public class ForumListHelper {
       String nbMessages = Integer.toString(fsc.getNbMessages(forumId));
 
       int lastMessageId = -1;
-      Date dateLastMessage = null;
       String lastMessageDate = "";
       String lastMessageUser = "";
       Object[] lastMessage = fsc.getLastMessage(forumId);
@@ -105,13 +104,13 @@ public class ForumListHelper {
         // rechercher si l'utilisateur a des messages non lus sur ce forum
         boolean isNewMessage = fsc.isNewMessageByForum(fsc.getUserId(), forumId);
         out.print(
-            "<img src=\"icons/" + (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\">");
+            "<img src=\"icons/" + (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\"/>");
       }
 
       // Icone de deploiement
       out.print("<img src=\"icons/1px.gif\">");
       if (depth > 0) {
-        out.print("<img src=\"icons/1px.gif\" width=\"" + (depth * 10) + "\" height=\"1\">");
+        out.print("<img src=\"icons/1px.gif\" width=\"" + (depth * 10) + "\" height=\"1\"/>");
       }
       out.println("</td>");
 

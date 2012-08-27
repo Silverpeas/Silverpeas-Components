@@ -168,7 +168,7 @@
         <c:set var="mail2AdminOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>', '<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
         <c:url var="mail2AdminIconUrl" value="/util/icons/forums_mailtoAdmin.gif" />
         <view:operation altText="${mail2AdminAltText}" icon="${mail2AdminIconUrl}" action="${mail2AdminOperation}" />
-        <c:if test="${isAdmin}">
+        <c:if test="${isAdmin && sessionController.forumInsideForum}">
           <fmt:message key="newForum" var="addForumAltText" />
           <c:url var="addForumOperation" value="editForumInfo.jsp">
             <c:param name="call" value="viewForum"/>
@@ -176,24 +176,21 @@
             <c:param name="forumId" value="${param.forumId}"/>
             <c:param name="params" value="${param.forumId}"/>
           </c:url>
-          <c:url var="addForumIconUrl" value="/util/icons/forums_to_add.gif" />
-          <view:operation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
-          <fmt:message key="forums.addCategory" var="addCategoryAltText" />
-          <c:set var="addCategoryOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>', '<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
-          <c:url var="addCategoryIconUrl" value="/util/icons/folderAddBig.gif" />
-          <view:operation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
+          <c:url var="addForumIconUrl" value="/util/icons/create-action/add-forum.png" />
+          <view:operationOfCreation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
         </c:if>
         <c:if test="${isActive}">
           <fmt:message key="newMessage" var="newMessageAltText" />
-          <c:url var="newMessageIconUrl" value="/util/icons/forums_addMessage.gif" />
+          <c:url var="newMessageIconUrl" value="/util/icons/create-action/add-message.png" />
           <c:set var="newMessagePage">/Rforums/<c:out value="${componentId}" />/editMessage.jsp</c:set>
           <c:url var="newMessageOperation" value="${newMessagePage}"><c:param name="call" value="viewForum"/><c:param name="action" value="1"/><c:param name="forumId" value="${param.forumId}"/><c:param name="params" value="${param.forumId}"/></c:url>
-          <view:operation altText="${newMessageAltText}" icon="${newMessageIconUrl}" action="${newMessageOperation}" />
+          <view:operationOfCreation altText="${newMessageAltText}" icon="${newMessageIconUrl}" action="${newMessageOperation}" />
         </c:if>
       </view:operationPane>
     </c:if>
     <view:window>
       <view:frame>
+      	<view:areaOfOperationOfCreation/>
         <table class="intfdcolor4" border="0" cellspacing="0" cellpadding="0" width="98%">
           <c:if test="${requestScope.nbChildrens > 0}">
             <tr>

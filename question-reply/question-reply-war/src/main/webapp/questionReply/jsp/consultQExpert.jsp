@@ -27,9 +27,9 @@
 
 <%@ page import="java.util.*"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkQuestionReply.jsp" %>
 <%
-
 	Question question = (Question) request.getAttribute("question");
 	String title = Encode.javaStringToHtmlString(question.getTitle());
 	String content = Encode.javaStringToHtmlParagraphe(question.getContent());
@@ -40,15 +40,14 @@
 	Collection replies = question.readReplies();
 	Iterator it = replies.iterator();
 %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
 
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
+</head>
+<body>
 <%
 	browseBar.setDomainName(spaceLabel);
    	browseBar.setPath("<a href="+routerUrl+"Main>"+resource.getString("questionReply.listQ")+ "</a> > " + title);
@@ -62,7 +61,7 @@ out.println(gef.getLookStyleSheet());
 	if (status != 2)
 	{
 		operationPane.addLine();
-		operationPane.addOperation(resource.getIcon("questionReply.ajoutR"), resource.getString("questionReply.ajoutR"), "javascript:addR();");	
+		operationPane.addOperationOfCreation(resource.getIcon("questionReply.ajoutR"), resource.getString("questionReply.ajoutR"), "javascript:addR();");	
 	}
 	if (existPublicR(replies))
 	{
@@ -71,12 +70,11 @@ out.println(gef.getLookStyleSheet());
 	}
 	
 	out.println(window.printBefore());
- 	out.println(frame.printBefore());
- 	out.println(board.printBefore());
 %>
-
+<view:frame>
+<view:board>
 <center>
-<table CELLPADDING=5 width="100%">
+<table cellpadding="5" width="100%">
 	<tr align=center> 
 		<td class="intfdcolor4" valign="baseline" align=left width="100" class="txtlibform"><%=resource.getString("questionReply.question")%> :</td>
 		<td class="intfdcolor4" valign="baseline" align=left><%=title%></td>
@@ -94,10 +92,11 @@ out.println(gef.getLookStyleSheet());
 		<td class="intfdcolor4" valign="baseline" align=left><%=creator%></td>
 	</tr>
 </table>
-</CENTER>
-<% out.println(board.printAfter()); %>
-<br>
-<FORM METHOD=POST ACTION="">
+</center>
+</view:board>
+<view:areaOfOperationOfCreation/>
+<br/>
+<form method="post" action="">
 <%
 	ArrayPane arrayPane = gef.getArrayPane("questionReply", routerUrl+"ConsultQuestion", request, session);		
 	ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
@@ -138,10 +137,10 @@ out.println(gef.getLookStyleSheet());
 	}
 	out.println(arrayPane.print());
 %>
-</FORM>
+</form>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

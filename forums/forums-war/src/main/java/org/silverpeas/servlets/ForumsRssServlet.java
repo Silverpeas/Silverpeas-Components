@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Vector;
 
 import com.silverpeas.peasUtil.RssServlet;
+
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
@@ -39,6 +40,8 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class ForumsRssServlet extends RssServlet {
+
+  private static final long serialVersionUID = -1153108746674900992L;
 
   /*
    * (non-Javadoc)

@@ -47,6 +47,8 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="kmax_axisReport.jsp" %>
 
@@ -64,7 +66,7 @@ String action 		= request.getParameter("Action");
 String translation 	= (String) request.getAttribute("Language");
 
 //Icons
-String axisAddSrc = m_context + "/util/icons/kmax_to_add.gif";
+String axisAddSrc = m_context + "/util/icons/create-action/add-axis.png";
 String publicationSrc = m_context + "/util/icons/publication.gif";
 String mandatoryFieldSrc = m_context + "/util/icons/mandatoryField.gif";
 
@@ -74,18 +76,15 @@ if (action == null) {
 }
 %>
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-<script type="text/javascript" language="JavaScript1.2">
+<script type="text/javascript">
 <!--
 var axisAddWindow = window;
 var componentAddWindow = window;
@@ -289,7 +288,7 @@ if (action.equals("KmaxViewAxis") || action.equals("KmaxManageAxis") || action.e
 
 	  OperationPane operationPane = window.getOperationPane();
 	  if (profile.equals("admin")) {
-		  operationPane.addOperation(axisAddSrc, kmeliaScc.getString("AddAxis"), "javascript:onClick=axisAdd()");
+		  operationPane.addOperationOfCreation(axisAddSrc, kmeliaScc.getString("AddAxis"), "javascript:onClick=axisAdd()");
 		  operationPane.addLine();
 		  operationPane.addOperation(resources.getIcon("kmelia.modelUsed"), resources.getString("kmelia.ModelUsed"), "ModelUsed");
 	  }
@@ -301,14 +300,19 @@ if (action.equals("KmaxViewAxis") || action.equals("KmaxManageAxis") || action.e
 	  Frame frame = gef.getFrame();
 
 	  out.println(window.printBefore());
-
-	  frame.addTop(displayAxisToAdmins(kmeliaScc, gef, translation));
+	  
+	  out.println(tabbedPane.print());
+%>
+	  <view:areaOfOperationOfCreation/>
+	  <view:frame>
+<%
+		out.println(displayAxisToAdmins(kmeliaScc, gef, translation));
 
 	  if (action.equals("KmaxManageAxis")) {
 	      String axisId = (String) request.getParameter("AxisId");
 		    NodeDetail nodeDetail = kmeliaScc.getNodeHeader(axisId);
 	      out.println(codeJSForTranslation(nodeDetail));
-	      frame.addBottom(displayAxisManageView(kmeliaScc, gef, axisId, mandatoryFieldSrc, resources, translation));
+	      out.println(displayAxisManageView(kmeliaScc, gef, axisId, mandatoryFieldSrc, resources, translation));
 
 	  } else if (action.equals("KmaxManagePosition")) {
 	      String positionPath = (String) request.getParameter("PositionId");
@@ -318,13 +322,11 @@ if (action.equals("KmaxViewAxis") || action.equals("KmaxManageAxis") || action.e
 	      //get path to selected component
 	      Collection path = kmeliaScc.getPath(positionId);
 	      String pathStr = displayPath(path, false, 3, translation);
-	      frame.addBottom(displayComponentManageView(kmeliaScc, gef, positionId, pathStr, mandatoryFieldSrc, resources, translation));
-	  } else {
-		  frame.addBottom("");
+	      out.println(displayComponentManageView(kmeliaScc, gef, positionId, pathStr, mandatoryFieldSrc, resources, translation));
 	  }
-
-	  out.println(tabbedPane.print());
-	  out.println(frame.print());
+%>
+	</view:frame>
+<%
 	  out.println(window.printAfter());
 }
 %>

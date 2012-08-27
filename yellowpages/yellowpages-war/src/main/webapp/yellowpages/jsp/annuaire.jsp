@@ -31,6 +31,7 @@
 			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
 			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkYellowpages.jsp"%>
 <%!
 private String afficheArbo(String idNodeSelected,
@@ -96,14 +97,13 @@ private String afficheArbo(String idNodeSelected,
 				id = "group_" + group.getId();
 			}
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
-<script LANGUAGE="JAVASCRIPT" SRC="<%=m_context%>/util/javaScript/animation.js"></script>
-<script LANGUAGE="JAVASCRIPT" SRC="<%=m_context%>/util/javaScript/overlib.js"></script>
-<script LANGUAGE="JavaScript">
+<view:looknfeel/>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
+<script type="text/javascript">
 var printWindow = window;
 var contactWindow = window;
 function printList(){
@@ -208,24 +208,20 @@ function exportCSV(){
 					&& ("admin".equals(profile) || "publisher".equals(profile))) {
 				//Onglets
 				TabbedPane tabbedPane = gef.getTabbedPane();
-				tabbedPane.addTab(resources.getString("Consultation"), "#",
-						true);
-				tabbedPane.addTab(resources.getString("GML.management"),
-						"javascript:manage('" + profile + "');", false);
+				tabbedPane.addTab(resources.getString("Consultation"), "#",	true);
+				tabbedPane.addTab(resources.getString("GML.management"), "javascript:manage('" + profile + "');", false);
 				out.println(tabbedPane.print());
 			}
 			out.println(frame.printBefore());
 			out.println(board.printBefore());
 %>
-
+<form name="topicDetailForm" action="javaScript:search()" method="post">
+<input type="hidden" name="Action"/> <input type="hidden" name="Id" value="<%=id%>"/>
 <table cellpadding="1" cellspacing="0" border="0" width="98%">
-	<form name="topicDetailForm" action="javaScript:search()" method="post">
-	<input type="hidden" name="Action"/> <input type="hidden"
-		name="Id" value="<%=id%>"/>
 	<tr>
 		<td><!--Recherche-->
 		<table cellpadding="5" cellspacing="2" border="0" width="98%">
-			<TR>
+			<tr>
 				<td class="intfdcolor4" nowrap="nowrap">
 				<table cellpadding="0" cellspacing="0" border="0" width="100%">
 					<tr>
@@ -235,7 +231,7 @@ function exportCSV(){
 							onmouseover="return overlib('<%=EncodeHelper.javaStringToJsString(resources
 					.getString("ExplikRecherche"))%>', CAPTION, '<%=EncodeHelper.javaStringToJsString(resources
 					.getString("GML.search"))%>', WIDTH, 500);"
-							onmouseout="return nd();"> &nbsp; </span> <span class=selectNS>
+							onmouseout="return nd();"/> &nbsp; </span> <span class=selectNS>
 						<select name="selectTypeRech">
 							<option value="All"
 								<%if (typeSearch == null || "All".equals(typeSearch)) {
@@ -254,13 +250,13 @@ function exportCSV(){
 				out.print("selected");
 			}%>><%=resources.getString("SearchLastNameFirstName")%></option>
 						</select> &nbsp; </span> <input type="text" name="SearchCriteria"
-							onCLick="javaScript:clearCell('<%=resources.getString("GML.search")%>');"
+							onclick="javaScript:clearCell('<%=resources.getString("GML.search")%>');"
 							size="15" maxlength="50"
 							value="<%if (searchCriteria == null) {
 				out.print(resources.getString("GML.search"));
 			} else {
 				out.print(searchCriteria);
-			}%>">
+			}%>"/>
 						</td>
 						<td valign="middle">
 						<%
@@ -321,7 +317,7 @@ function exportCSV(){
 			<tr>
 				<td align="center" nowrap="nowrap" width="100%" height="24"><span
 					class="selectNS"> <select name="selectTopic"
-					onChange="topicGoToSelected()">
+					onchange="topicGoToSelected()">
 					<%=afficheArbo(id, yellowpagesScc, 0)%>
 				</select> </span></td>
 			</tr>
@@ -359,10 +355,11 @@ function exportCSV(){
 			out.println(window.printAfter());
 %>
 </form>
-<form name="contactForm" action="contactManager.jsp"
-	target="contactWindow" method="POST"><input type="hidden"
-	name="Action"/> <input type="hidden" name="ContactId"/> <input
-	type="hidden" name="TopicId"/> <input type="hidden" name="Path"/>
+<form name="contactForm" action="contactManager.jsp" target="contactWindow" method="post">
+	<input type="hidden" name="Action"/> 
+	<input type="hidden" name="ContactId"/> 
+	<input type="hidden" name="TopicId"/> 
+	<input type="hidden" name="Path"/>
 </form>
 </body>
 </html>

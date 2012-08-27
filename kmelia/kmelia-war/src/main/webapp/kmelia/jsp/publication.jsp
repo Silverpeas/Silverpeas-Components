@@ -203,8 +203,7 @@
   boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <view:looknfeel/>
@@ -678,15 +677,11 @@
         /*********************************************************************************************************************/
         /** Colonne Pricipale																									**/
         /*********************************************************************************************************************/
-    	 out.println("<div  class=\"principalContent\">");
-    	 
+    	 out.println("<div class=\"principalContent\">");
     	 
 				        /*********************************************************************************************************************/
 				        /** Affichage du header de la publication																			**/
 				        /*********************************************************************************************************************/
-		       
-		
-		
 				        out.print("<h2 class=\"publiName\">");
 				        
 				     		   out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
@@ -715,7 +710,7 @@
 				        if (StringUtil.isDefined(description)) {
 				        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
 				        }
-				
+			
 				        /*********************************************************************************************************************/
 				        /** Affichage du contenu de la publication																			**/
 				        /*********************************************************************************************************************/

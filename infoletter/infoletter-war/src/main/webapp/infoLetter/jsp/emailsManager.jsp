@@ -24,14 +24,15 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
@@ -86,21 +87,22 @@ out.println(gef.getLookStyleSheet());
 <%
 	browseBar.setPath(resource.getString("infoLetter.externSubscribers"));
 
-	operationPane.addOperation(resource.getIcon("infoLetter.addMail"), resource.getString("infoLetter.addMail"), "addEmail.jsp");	
-	operationPane.addOperation(resource.getIcon("infoLetter.importEmailsCsv"), resource.getString("infoLetter.importEmailsCsv"), "javascript:displayEmailsCsvImport();");	
+	operationPane.addOperationOfCreation(resource.getIcon("infoLetter.addMail"), resource.getString("infoLetter.addMail"), "addEmail.jsp");	
+	operationPane.addOperationOfCreation(resource.getIcon("infoLetter.importEmailsCsv"), resource.getString("infoLetter.importEmailsCsv"), "javascript:displayEmailsCsvImport();");	
 	operationPane.addOperation(resource.getIcon("infoLetter.exportEmailsCsv"), resource.getString("infoLetter.exportEmailsCsv"), "javascript:displayEmailsCsvExport();");	
 	operationPane.addLine();
 	operationPane.addOperation(resource.getIcon("infoLetter.delMail"), resource.getString("GML.delete"), "javascript:deleteCheckedEmails();");	
 	operationPane.addOperation(resource.getIcon("infoLetter.delAllMail"), resource.getString("GML.deleteAll"), "javascript:deleteAllEmails();");	
 	
 	out.println(window.printBefore());
-	out.println(frame.printBefore());	
-
+	out.println(frame.printBefore());
+%>
+<view:areaOfOperationOfCreation/>
+<%
 	// Recuperation de la liste des emails
 	List<String> emails = (List<String>) request.getAttribute("listEmails");
 	int i=0;
 	ArrayPane arrayPane = gef.getArrayPane("InfoLetter", "Emails", request, session);
-       //arrayPane.setVisibleLineNumber(10);
 		
 	ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
 	arrayColumn0.setSortable(false);
