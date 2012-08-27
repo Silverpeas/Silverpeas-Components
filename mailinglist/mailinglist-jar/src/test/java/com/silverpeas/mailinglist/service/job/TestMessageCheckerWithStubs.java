@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,6 @@
 
 package com.silverpeas.mailinglist.service.job;
 
-import com.silverpeas.mailinglist.PathTestUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,27 +31,34 @@ import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.Date;
 
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Transport;
-import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.lang3.CharEncoding;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
-import org.springframework.test.AbstractSingleSpringContextTests;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.silverpeas.mailinglist.service.event.MessageEvent;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import static com.silverpeas.mailinglist.PathTestUtil.*;
 
-public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTests {
+import static com.silverpeas.mailinglist.PathTestUtil.BUILD_PATH;
+import static com.silverpeas.mailinglist.PathTestUtil.SEPARATOR;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+public class TestMessageCheckerWithStubs {
 
   private static final String theSimpsonsAttachmentPath = BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR +
       "thesimpsons@silverpeas.com" + SEPARATOR + "{0}" + SEPARATOR +
@@ -62,16 +68,23 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
       "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
       "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
       "l'homme canon dans la prochaine émission.\r\nBart";
+  
+  private ApplicationContext applicationContext;
+
+  @Before
+  public void loadContext() {
+    applicationContext = new ClassPathXmlApplicationContext("spring-checker.xml",
+          "spring-notification.xml", "spring-fake-services.xml");
+  }
 
   protected String loadHtml() throws IOException {
     StringWriter buffer = null;
     BufferedReader reader = null;
     try {
       buffer = new StringWriter();
-      reader =
-          new BufferedReader(new InputStreamReader(
-          TestMessageCheckerWithStubs.class.getResourceAsStream("lemonde.html")));
-      String line = null;
+      reader = new BufferedReader(new InputStreamReader(
+          TestMessageCheckerWithStubs.class.getResourceAsStream("lemonde.html"), CharEncoding.UTF_8));
+      String line;
       while ((line = reader.readLine()) != null) {
         buffer.write(line);
       }
@@ -86,11 +99,7 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
     }
   }
 
-  protected String[] getConfigLocations() {
-    return new String[]{"spring-checker.xml",
-          "spring-notification.xml", "spring-fake-services.xml"};
-  }
-
+  @Test
   public void testCheckNewMessages() throws MessagingException, IOException {
     org.jvnet.mock_javamail.Mailbox.clearAll();
     MessageChecker messageChecker = getMessageChecker();
@@ -146,54 +155,46 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
     mail.setSentDate(new Date());
     Transport.send(mail);
 
-    assertEquals(3, org.jvnet.mock_javamail.Mailbox.get(
-        "thesimpsons@silverpeas.com").size());
+    assertThat(org.jvnet.mock_javamail.Mailbox.get("thesimpsons@silverpeas.com").size(), is(3));
 
     messageChecker.checkNewMessages(new Date());
-    assertNull(mockListener2.getMessageEvent());
+    assertThat(mockListener2.getMessageEvent(), is(nullValue()));
     MessageEvent event = mockListener1.getMessageEvent();
-    assertNotNull(event);
-    assertNotNull(event.getMessages());
-    assertEquals(2, event.getMessages().size());
-    Message message = (Message) event.getMessages().get(0);
-    assertEquals("bart.simpson@silverpeas.com", message.getSender());
-    assertEquals("Plain text Email test with attachment", message.getTitle());
-    assertEquals(textEmailContent, message.getBody());
-    assertEquals(textEmailContent.substring(0, 200), message.getSummary());
-    assertEquals(sentDate1.getTime(), message.getSentDate().getTime());
-    assertTrue(message.getAttachmentsSize() > 0l);
-    assertEquals(1, message.getAttachments().size());
+    assertThat(event, is(notNullValue()));
+    assertThat(event.getMessages(), is(notNullValue()));
+    assertThat(event.getMessages(), hasSize(2));
+    Message message = event.getMessages().get(0);
+    assertThat(message.getSender(), is("bart.simpson@silverpeas.com"));
+    assertThat(message.getTitle(), is("Plain text Email test with attachment"));
+    assertThat(message.getBody(), is(textEmailContent));
+    assertThat(message.getSummary(), is(textEmailContent.substring(0, 200)));
+    assertThat(message.getSentDate().getTime(), is(sentDate1.getTime()));
+    assertThat(message.getAttachmentsSize() , greaterThan(0L));
+    assertThat(message.getAttachments(), hasSize(1));
     String path = MessageFormat.format(theSimpsonsAttachmentPath,
-        new String[]{messageChecker.getMailProcessor().replaceSpecialChars(
+        new Object[]{messageChecker.getMailProcessor().replaceSpecialChars(
           message.getMessageId())});
-    Attachment attached =
-        (Attachment) message.getAttachments().iterator().next();
-    assertEquals(path, attached.getPath());
-    assertEquals("thesimpsons@silverpeas.com", message.getComponentId());
+    Attachment attached = message.getAttachments().iterator().next();
+    assertThat(attached.getPath(), is(path));
+    assertThat(message.getComponentId(), is("thesimpsons@silverpeas.com"));
 
-    message = (Message) event.getMessages().get(1);
-    assertEquals("bart.simpson@silverpeas.com", message.getSender());
-    assertEquals("Plain text Email test", message.getTitle());
-    assertEquals(textEmailContent, message.getBody());
-    assertEquals(textEmailContent.substring(0, 200), message.getSummary());
-    assertEquals(0, message.getAttachmentsSize());
-    assertEquals(0, message.getAttachments().size());
-    assertEquals("thesimpsons@silverpeas.com", message.getComponentId());
-    assertEquals(sentDate2.getTime(), message.getSentDate().getTime());
+    message = event.getMessages().get(1);
+    assertThat(message.getSender(), is("bart.simpson@silverpeas.com"));
+    assertThat(message.getTitle(), is("Plain text Email test"));
+    assertThat(message.getBody(), is(textEmailContent));
+    assertThat(message.getSummary(), is(textEmailContent.substring(0, 200)));
+    assertThat(message.getAttachmentsSize(), is(0L));
+    assertThat(message.getAttachments(), hasSize(0));
+    assertThat(message.getComponentId(),is("thesimpsons@silverpeas.com"));
+    assertThat(message.getSentDate().getTime(), is(sentDate2.getTime()));
   }
 
   protected MessageChecker getMessageChecker() {
     return (MessageChecker) applicationContext.getBean("messageChecker");
   }
 
-  @Override
-  protected void onTearDown() {
-    Mailbox.clearAll();
-    try {
-      FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
-    } catch (UtilException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+  @After
+  public void cleaAll() {
+    Mailbox.clearAll();    
   }
 }
