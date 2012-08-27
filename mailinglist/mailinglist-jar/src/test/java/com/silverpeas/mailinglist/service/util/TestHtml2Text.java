@@ -51,16 +51,22 @@ public class TestHtml2Text extends TestCase {
     parser.parse(reader);
     String summary = parser.getSummary();
     assertNotNull(summary);
-    assertEquals(
-        "Politique Recherchez depuis sur Le Monde.fr A la Une Le Desk Vidéos International "
-        + "*Elections américaines Europe Politique *Municipales & Cantonales 2008 "
-        + "Société Carnet Economie Médias Météo Rendez-vou", summary);
-
+     if ("Oracle Corporation".equals(System.getProperty("java.vendor"))  ||  
+        ("Sun Microsystems Inc.".equals(System.getProperty("java.vendor")) && "1.6.0_30".compareTo(
+        System.getProperty("java.version")) < 0)) {
+      assertEquals("Politique Recherchez depuis sur Le Monde.fr A la Une Le Desk Vidéos "
+          + "International *Elections américaines Europe Politique *Municipales & Cantonales 2008 "
+          + "Société Carnet Economie Médias Météo Rendez-vou", summary);
+    } else {
+      assertEquals("<!------ OAS SETUP end ------> Oa name=\"top\"> Politique < "
+          + "< Recherchez depuis sur Le Monde.fr < <!-- info_sq_1_zone --> "
+          + "A la Une Le Desk Vidéos International *Elections américaines Europe " + "Politique *M",
+          summary);
+    }
   }
 
   public void testParseInraContent() throws Exception {
-    Reader reader = new InputStreamReader(TestHtml2Text.class
-        .getResourceAsStream("mailInra.html"));
+    Reader reader = new InputStreamReader(TestHtml2Text.class.getResourceAsStream("mailInra.html"));
     parser.parse(reader);
     String summary = parser.getSummary();
     assertNotNull(summary);
