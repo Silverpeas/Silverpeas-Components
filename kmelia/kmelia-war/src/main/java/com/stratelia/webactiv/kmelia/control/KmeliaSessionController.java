@@ -56,6 +56,7 @@ import javax.ejb.RemoveException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.search.SearchEngineFactory;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
@@ -222,7 +223,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private List<KmeliaPublication> sessionPublicationsList = null;
   private List<String> sessionCombination = null; // Specific Kmax
   private String sessionTimeCriteria = null; // Specific Kmax
-  private List<NodeDetail> sessionTreeview = null;
   private String sortValue = null;
   private String defaultSortValue = "2";
   private String autoRedirectURL = null;
@@ -237,7 +237,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public final static String TAB_SEE_ALSO = "tabseealso";
   public final static String TAB_ACCESS_PATHS = "tabaccesspaths";
   public final static String TAB_READER_LIST = "tabreaderslist";
-  public final static String TAB_PDC = "usepdc";
   // For import files
   public final static String UNITARY_IMPORT_MODE = "0";
   public final static String MASSIVE_IMPORT_MODE_ONE_PUBLICATION = "1";
@@ -247,10 +246,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public final static String VER_USE_WRITERS = "1";
   public final static String VER_USE_READERS = "2";
   public final static String VER_USE_NONE = "3";
-  // For Office files direct update
-  public final static String NO_UPDATE_MODE = "0";
-  public final static String UPDATE_DIRECT_MODE = "1";
-  public final static String UPDATE_SHORTCUT_MODE = "2";
   // utilisation de userPanel/ userpanelPeas
   String[] idSelectedUser = null;
   // pagination de la liste des publications
@@ -282,9 +277,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @param context
    */
   public KmeliaSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
-    super(mainSessionCtrl, context, "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle",
-            "com.stratelia.webactiv.kmelia.settings.kmeliaIcons",
-            "com.stratelia.webactiv.kmelia.settings.kmeliaSettings");
+    super(mainSessionCtrl, context, "org.silverpeas.kmelia.multilang.kmeliaBundle",
+            "org.silverpeas.kmelia.settings.kmeliaIcons",
+            "org.silverpeas.kmelia.settings.kmeliaSettings");
     init();
   }
 
@@ -367,7 +362,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public ResourceLocator getPublicationSettings() {
     if (publicationSettings == null) {
       publicationSettings =
-              new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings",
+              new ResourceLocator("org.silverpeas.util.publication.publicationSettings",
                   getLanguage());
     }
     return publicationSettings;
@@ -506,35 +501,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public boolean isUpdateOfficeFilesUsed() {
-    String parameterValue = this.getComponentParameterValue("useModifyOfficeFiles");
-    if (parameterValue == null || parameterValue.length() <= 0) {
-      return false;
-    } else {
-      if ("1".equalsIgnoreCase(parameterValue)) {
-        return true;
-      } else if ("2".equalsIgnoreCase(parameterValue)) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  }
-
-  public String getUpdateOfficeMode() {
-    String parameterValue = this.getComponentParameterValue("useModifyOfficeFiles");
-    if (parameterValue == null || parameterValue.length() <= 0) {
-      return NO_UPDATE_MODE;
-    }
-    if (UPDATE_DIRECT_MODE.equalsIgnoreCase(parameterValue)) {
-      return UPDATE_DIRECT_MODE;
-    }
-    if (UPDATE_SHORTCUT_MODE.equalsIgnoreCase(parameterValue)) {
-      return UPDATE_SHORTCUT_MODE;
-    }
-    return NO_UPDATE_MODE;
-  }
-
   public boolean isExportComponentAllowed() {
     return "yes".equals(getSettings().getString("exportComponentAllowed"));
   }
@@ -552,11 +518,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean displayNbPublis() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("displayNB"));
+    return StringUtil.getBooleanValue(getComponentParameterValue(InstanceParameters.displayNbItemsOnFolders));
   }
 
   public boolean isRightsOnTopicsEnabled() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("rightsOnTopics"));
+    return StringUtil.getBooleanValue(getComponentParameterValue(InstanceParameters.rightsOnFolders));
   }
 
   public boolean isFoldersLinkedEnabled() {
@@ -738,25 +704,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public String getUserTopicProfile(String id) throws RemoteException {
-    if (!isRightsOnTopicsEnabled()) {
-      return KmeliaHelper.getProfile(getUserRoles());
+    if (!StringUtil.isDefined(id)) {
+      id = getSessionTopic().getNodeDetail().getNodePK().getId();
     }
-
-    NodeDetail node = null;
-    if (StringUtil.isDefined(id)) {
-      node = getKmeliaBm().getNodeHeader(id, getComponentId());
-    } else if (getSessionTopic() != null) {
-      node = getSessionTopic().getNodeDetail();
-    }
-
-    // check if we have to take care of topic's rights
-    if (node != null && node.haveRights()) {
-      int rightsDependsOn = node.getRightsDependsOn();
-      return KmeliaHelper.getProfile(getOrganizationController().getUserProfiles(getUserId(),
-              getComponentId(), rightsDependsOn, ObjectType.NODE));
-    } else {
-      return KmeliaHelper.getProfile(getUserRoles());
-    }
+    return getKmeliaBm().getUserTopicProfile(getNodePK(id), getUserId());
   }
 
   public List<String> getUserIdsOfTopic() {
@@ -830,19 +781,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                   getUserTopicProfile(id), isRightsOnTopicsEnabled());
     }
 
-    List<NodeDetail> treeview = null;
-    if (isTreeviewUsed() || displayNbPublis()) {
-      if (isUserComponentAdmin()) {
-        treeview = getKmeliaBm().getTreeview(getNodePK("0"), "admin", isCoWritingEnable(),
-                isDraftVisibleWithCoWriting(), getUserId(), displayNbPublis(), false);
-      } else {
-        treeview = getKmeliaBm().getTreeview(getNodePK("0"), getProfile(), isCoWritingEnable(),
-                isDraftVisibleWithCoWriting(), getUserId(), displayNbPublis(),
-                isRightsOnTopicsEnabled());
-      }
-      setSessionTreeview(treeview);
-    }
     if (displayNbPublis()) {
+      List<NodeDetail> treeview = getTreeview("0");
       // set nb objects of current root
       currentTopic.getNodeDetail().setNbObjects(treeview.get(0).getNbObjects());
       // set nb objects of children
@@ -863,6 +803,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     applyVisibilityFilter();
     return currentTopic;
   }
+  
+  public List<NodeDetail> getTreeview(String nodeId) throws RemoteException {
+    if (isUserComponentAdmin()) {
+      return getKmeliaBm().getTreeview(getNodePK(nodeId), "admin", isCoWritingEnable(),
+              isDraftVisibleWithCoWriting(), getUserId(), displayNbPublis(), false);
+    } else {
+      return getKmeliaBm().getTreeview(getNodePK(nodeId), getProfile(), isCoWritingEnable(),
+              isDraftVisibleWithCoWriting(), getUserId(), displayNbPublis(),
+              isRightsOnTopicsEnabled());
+    }
+  }
 
   public synchronized TopicDetail getPublicationTopic(String pubId) throws RemoteException {
     TopicDetail currentTopic = getKmeliaBm().getPublicationFather(getPublicationPK(pubId),
@@ -874,14 +825,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized List<NodeDetail> getAllTopics() throws RemoteException {
     return getNodeBm().getSubTree(getNodePK(NodePK.ROOT_NODE_ID));
-  }
-
-  public synchronized List<NodeDetail> getTreeview() throws RemoteException {
-    if (isTreeviewUsed()) {
-      return getSessionTreeview();// getKmeliaBm().getTreeview(getNodePK("0"), getProfile(),
-    } // isCoWritingEnable(), isDraftVisibleWithCoWriting(),
-    // getUserId(), displayNbPublis());
-    return null;
   }
 
   public synchronized void flushTrashCan() throws RemoteException {
@@ -2495,7 +2438,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isCoWritingEnable() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("coWriting"));
+    return StringUtil.getBooleanValue(getComponentParameterValue(InstanceParameters.coWriting));
   }
 
   public String[] getSelectedUsers() {
@@ -3034,14 +2977,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return (param != null && param.length() > 0 && !"".equals(param) && !"null".equals(param));
   }
 
-  public List<NodeDetail> getSessionTreeview() {
-    return sessionTreeview;
-  }
-
-  public void setSessionTreeview(List<NodeDetail> sessionTreeview) {
-    this.sessionTreeview = new ArrayList<NodeDetail>(sessionTreeview);
-  }
-
   private synchronized boolean isDragAndDropEnableByUser() {
     return getPersonalization().isDragAndDropEnabled();
   }
@@ -3290,63 +3225,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isUserCanValidate() throws RemoteException {
-    if (KmeliaHelper.isToolbox(getComponentId())) {
-      return false;
-    }
-
-    String profile = getUserTopicProfile();
-    boolean isPublisherOrAdmin =
-            SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile);
-
-    if (!isPublisherOrAdmin && isRightsOnTopicsEnabled()) {
-      // check if current user is publisher or admin on at least one descendant
-      Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(getRootPK()).iterator();
-      while (!isPublisherOrAdmin && descendants.hasNext()) {
-        NodeDetail descendant = descendants.next();
-        if (descendant.haveLocalRights()) {
-          // check if user is admin or publisher on this topic
-          String[] profiles =
-                  getAdmin().getProfilesByObjectAndUserId(descendant.getId(),
-                      ObjectType.NODE.getCode(), getComponentId(), getUserId());
-          if (profiles != null && profiles.length > 0) {
-            List<String> lProfiles = Arrays.asList(profiles);
-            isPublisherOrAdmin =
-                    lProfiles.contains(SilverpeasRole.admin.name())
-                        || lProfiles.contains(SilverpeasRole.publisher.name());
-          }
-        }
-      }
-    }
-    return isPublisherOrAdmin;
+    return getKmeliaBm().isUserCanValidate(getComponentId(), getUserId());
   }
 
   public boolean isUserCanWrite() throws RemoteException {
-    String profile = getUserTopicProfile();
-    boolean userCanWrite =
-            SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile)
-                || SilverpeasRole.writer.isInRole(profile);
-
-    if (!userCanWrite && isRightsOnTopicsEnabled()) {
-      // check if current user is publisher or admin on at least one descendant
-      Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(getRootPK()).iterator();
-      while (!userCanWrite && descendants.hasNext()) {
-        NodeDetail descendant = descendants.next();
-        if (descendant.haveLocalRights()) {
-          // check if user is admin, publisher or writer on this topic
-          String[] profiles =
-                  getAdmin().getProfilesByObjectAndUserId(descendant.getId(),
-                      ObjectType.NODE.getCode(), getComponentId(), getUserId());
-          if (profiles != null && profiles.length > 0) {
-            List<String> lProfiles = Arrays.asList(profiles);
-            userCanWrite =
-                    lProfiles.contains(SilverpeasRole.admin.name())
-                        || lProfiles.contains(SilverpeasRole.publisher.name())
-                        || lProfiles.contains(SilverpeasRole.writer.name());
-          }
-        }
-      }
-    }
-    return userCanWrite;
+    return getKmeliaBm().isUserCanWrite(getComponentId(), getUserId());
   }
 
   public void copyPublication(String pubId) throws RemoteException {
@@ -3400,8 +3283,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
     addClipboardSelection(nodeSelect);
   }
-
+  
   public List<Object> paste() throws RemoteException {
+    return paste(getSessionTopic().getNodeDetail());
+  }
+  
+  public List<Object> paste(String nodeId) throws RemoteException {
+    return paste(getNodeHeader(nodeId));
+  }
+
+  private List<Object> paste(NodeDetail folder) throws RemoteException {
     List<Object> pastedItems = new ArrayList<Object>();
     try {
       SilverTrace.info("kmelia", "KmeliaRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
@@ -3412,7 +3303,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           if (clipObject.isDataFlavorSupported(PublicationSelection.CompletePublicationFlavor)) {
             CompletePublication pub = (CompletePublication) clipObject.getTransferData(
                     PublicationSelection.CompletePublicationFlavor);
-            pastePublication(pub, clipObject.isCutted());
+            pastePublication(pub, clipObject.isCutted(), folder.getNodePK(), null);
             pastedItems.add(pub.getPublicationDetail());
           } else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
             NodeDetail node =
@@ -3421,14 +3312,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             // check if current topic is a subTopic of node
             boolean pasteAllowed = true;
             if (getComponentId().equals(node.getNodePK().getInstanceId())) {
-              if (node.getNodePK().getId().equals(getSessionTopic().getNodePK().getId())) {
+              if (node.getNodePK().getId().equals(folder.getNodePK().getId())) {
                 pasteAllowed = false;
               }
 
               String nodePath = node.getPath() + node.getId() + "/";
-              String currentPath =
-                      getSessionTopic().getNodeDetail().getPath()
-                          + getSessionTopic().getNodePK().getId() + "/";
+              String currentPath = folder.getPath() + folder.getNodePK().getId() + "/";
               SilverTrace.info("kmelia", "KmeliaRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
                       "nodePath = " + nodePath + ", currentPath = " + currentPath);
               if (pasteAllowed && currentPath.startsWith(nodePath)) {
@@ -3437,8 +3326,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             }
 
             if (pasteAllowed) {
-              NodeDetail newNode =
-                      pasteNode(node, getSessionTopic().getNodeDetail(), clipObject.isCutted());
+              NodeDetail newNode = pasteNode(node, folder, clipObject.isCutted());
               pastedItems.add(newNode);
             }
           }
@@ -3540,18 +3428,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private void pastePublicationsOfTopic(NodePK fromPK, NodePK toPK, boolean isCutted,
           List<NodePK> nodePKsToPaste) throws RemoteException {
     Collection<PublicationDetail> publications = getPublicationBm().getDetailsByFatherPK(fromPK);
-    Iterator<PublicationDetail> itPublis = publications.iterator();
-    PublicationDetail publi = null;
     CompletePublication completePubli = null;
-    while (itPublis.hasNext()) {
-      publi = itPublis.next();
+    for (PublicationDetail publi : publications) {
       completePubli = getPublicationBm().getCompletePublication(publi.getPK());
       pastePublication(completePubli, isCutted, toPK, nodePKsToPaste);
     }
-  }
-
-  private void pastePublication(CompletePublication pub, boolean isCutted) {
-    pastePublication(pub, isCutted, null, null);
   }
 
   private void pastePublication(CompletePublication completePub, boolean isCutted, NodePK nodePK,

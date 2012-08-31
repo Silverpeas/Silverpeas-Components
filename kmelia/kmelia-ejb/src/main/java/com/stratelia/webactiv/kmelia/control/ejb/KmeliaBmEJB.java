@@ -58,8 +58,11 @@ import java.util.StringTokenizer;
 import javax.activation.FileTypeMap;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.component.kmelia.InstanceParameters;
 
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -112,6 +115,7 @@ import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
@@ -216,10 +220,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         return 0;
       }
       // lecture du properties
-      ResourceLocator settings = new ResourceLocator(
-              "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "fr");
+      ResourceLocator settings = getSettings();
       return Integer.parseInt(settings.getString("HomeNbPublications"));
     }
+  }
+  
+  private ResourceLocator getSettings() {
+    return new ResourceLocator("org.silverpeas.kmelia.settings.kmeliaSettings", "fr");
   }
 
   private boolean isDraftModeUsed(String componentId) {
@@ -343,40 +350,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                 ObjectType.NODE, pk.getInstanceId(), userId)) {
           nodeDetail.setUserRole("noRights");
         }
-        List<NodeDetail> children = (List<NodeDetail>) nodeDetail.getChildrenDetails();
-        List<NodeDetail> availableChildren = new ArrayList<NodeDetail>();
-        for (NodeDetail child : children) {
-          String childId = child.getNodePK().getId();
-          if (child.getNodePK().isTrash() || childId.equals("2") || !child.haveRights()) {
-            availableChildren.add(child);
-          } else {
-            int rightsDependsOn = child.getRightsDependsOn();
-            boolean nodeAvailable = orga.isObjectAvailable(rightsDependsOn, ObjectType.NODE, pk.
-                    getInstanceId(), userId);
-            if (nodeAvailable) {
-              availableChildren.add(child);
-            } else { // check if at least one descendant is available
-              Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(child).iterator();
-              NodeDetail descendant = null;
-              boolean childAllowed = false;
-              while (!childAllowed && descendants.hasNext()) {
-                descendant = descendants.next();
-                if (descendant.getRightsDependsOn() == rightsDependsOn) {
-                  // same rights of father (which is not available) so it is not available too
-                } else {
-                  // different rights of father check if it is available
-                  if (orga.isObjectAvailable(descendant.getRightsDependsOn(), ObjectType.NODE, pk.
-                          getInstanceId(), userId)) {
-                    childAllowed = true;
-                    if (!availableChildren.contains(child)) {
-                      availableChildren.add(child);
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+        List<NodeDetail> availableChildren = getAllowedSubfolders(nodeDetail, userId);
         nodeDetail.setChildrenDetails(availableChildren);
       }
     } catch (Exception e) {
@@ -449,6 +423,47 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     // set the currentTopic and return it
     return new TopicDetail(newPath, nodeDetail, pubDetails2userPubs(pubDetails));
+  }
+  
+  public List<NodeDetail> getAllowedSubfolders(NodeDetail folder, String userId)
+      throws RemoteException {
+    OrganizationController orga = getOrganizationController();
+    NodePK pk = folder.getNodePK();
+    List<NodeDetail> children = (List<NodeDetail>) folder.getChildrenDetails();
+    List<NodeDetail> availableChildren = new ArrayList<NodeDetail>();
+    for (NodeDetail child : children) {
+      String childId = child.getNodePK().getId();
+      if (child.getNodePK().isTrash() || childId.equals("2") || !child.haveRights()) {
+        availableChildren.add(child);
+      } else {
+        int rightsDependsOn = child.getRightsDependsOn();
+        boolean nodeAvailable = orga.isObjectAvailable(rightsDependsOn, ObjectType.NODE, pk.
+                getInstanceId(), userId);
+        if (nodeAvailable) {
+          availableChildren.add(child);
+        } else { // check if at least one descendant is available
+          Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(child).iterator();
+          NodeDetail descendant = null;
+          boolean childAllowed = false;
+          while (!childAllowed && descendants.hasNext()) {
+            descendant = descendants.next();
+            if (descendant.getRightsDependsOn() == rightsDependsOn) {
+              // same rights of father (which is not available) so it is not available too
+            } else {
+              // different rights of father check if it is available
+              if (orga.isObjectAvailable(descendant.getRightsDependsOn(), ObjectType.NODE, pk.
+                      getInstanceId(), userId)) {
+                childAllowed = true;
+                if (!availableChildren.contains(child)) {
+                  availableChildren.add(child);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return availableChildren;
   }
 
   private Collection<NodeDetail> getPathFromAToZ(NodeDetail nd) {
@@ -4614,5 +4629,299 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       commentService = CommentServiceFactory.getFactory().getCommentService();
     }
     return commentService;
+  }
+  
+  private ResourceLocator getMultilang() {
+    return new ResourceLocator("org.silverpeas.kmelia.multilang.kmeliaBundle", "fr");
+  }
+  
+  public NodeDetail getRoot(String componentId, String userId) throws RemoteException {
+    NodePK rootPK = new NodePK(NodePK.ROOT_NODE_ID, componentId);
+    NodeDetail root = getNodeBm().getDetail(rootPK);
+    setRole(root, userId);
+    root.setChildrenDetails(getRootChildren(root, userId));
+    return root;
+  }
+  
+  private List<NodeDetail> getRootChildren(NodeDetail root, String userId) {
+    String instanceId = root.getNodePK().getInstanceId();
+    List<NodeDetail> children = new ArrayList<NodeDetail>();
+    try {
+      setAllowedSubfolders(root, userId);
+      List<NodeDetail> nodes = (List<NodeDetail>) root.getChildrenDetails();
+      
+      // set nb objects in nodes
+      setNbItemsOfSubfolders(root, null, userId);
+      
+      NodeDetail trash = null;
+      for (NodeDetail node : nodes) {
+        if (node.getNodePK().isTrash()) {
+          trash = node;
+        } else if (node.getNodePK().isUnclassed()) {
+          // do not return it cause it is useless
+        } else {
+          children.add(node);
+        }
+      }
+
+      // adding special folder "to validate"
+      if (isUserCanValidate(instanceId, userId)) {
+        NodeDetail temp = new NodeDetail();
+        temp.getNodePK().setId("tovalidate");
+        temp.setName(getMultilang().getString("ToValidateShort"));
+        if (isNbItemsDisplayed(instanceId)) {
+          int nbPublisToValidate = getPublicationsToValidate(instanceId).size();
+          temp.setNbObjects(nbPublisToValidate);
+        }
+        children.add(temp);
+      }
+      
+      // adding special folder "trash"
+      if (isUserCanWrite(instanceId, userId)) {
+        children.add(trash);
+      }
+      
+      root.setChildrenDetails(children);
+    } catch (RemoteException e) {
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    }
+    return children;
+  }
+  
+  public Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId) throws RemoteException {
+    NodeDetail node = getNodeBm().getDetail(nodePK);
+    if (node.getNodePK().isRoot()) {
+      node.setChildrenDetails(getRootChildren(node, userId));
+    } else {
+      setAllowedSubfolders(node, userId);
+    }
+    
+    // set nb objects in nodes
+    setNbItemsOfSubfolders(node, null, userId);
+    
+    return node.getChildrenDetails();
+  }
+  
+  private void setNbItemsOfSubfolders(NodeDetail node, List<NodeDetail> treeview, String userId)
+      throws RemoteException {
+    String instanceId = node.getNodePK().getInstanceId();
+    if (isNbItemsDisplayed(instanceId)) {
+      if (treeview == null) {
+        treeview = getTreeview(node.getNodePK(), userId);
+      }
+      // set nb objects in each nodes
+      setNbItemsOfFolders(instanceId, node.getChildrenDetails(), treeview);
+    }
+  }
+  
+  private List<NodeDetail> getTreeview(NodePK pk, String userId) throws RemoteException {
+    String instanceId = pk.getInstanceId();
+    if (isUserComponentAdmin(instanceId, userId)) {
+      return getTreeview(pk, "admin", isCoWritingEnable(instanceId),
+              isDraftVisibleWithCoWriting(), userId, isNbItemsDisplayed(instanceId), false);
+    } else {
+      return getTreeview(pk, getUserTopicProfile(pk, userId), isCoWritingEnable(instanceId),
+              isDraftVisibleWithCoWriting(), userId, isNbItemsDisplayed(instanceId),
+              isRightsOnTopicsEnabled(instanceId));
+    }
+  }
+  
+  private void setNbItemsOfFolders(String componentId, Collection<NodeDetail> nodes,
+      List<NodeDetail> treeview) throws RemoteException {
+    if (isNbItemsDisplayed(componentId)) {
+      for (NodeDetail child : nodes) {
+        int index = treeview.indexOf(child);
+        if (index != -1) {
+          child.setNbObjects(treeview.get(index).getNbObjects());
+        }
+      }
+    }
+  }
+  
+  private void setAllowedSubfolders(NodeDetail node, String userId) throws RemoteException {
+    String instanceId = node.getNodePK().getInstanceId();
+    if (isRightsOnTopicsEnabled(instanceId)) {
+      if (isUserComponentAdmin(instanceId, userId)) {
+        // user is admin of application, all folders must be shown
+        setRole(node.getChildrenDetails(), userId);
+      } else {
+        Collection<NodeDetail> allowedChildren = getAllowedSubfolders(node, userId);
+        setRole(allowedChildren, userId);
+        node.setChildrenDetails(allowedChildren);
+      }
+    } else {
+      // no rights are used
+      // keep children as they are 
+    }
+  }
+  
+  private boolean isUserComponentAdmin(String componentId, String userId) {
+    return "admin".equalsIgnoreCase(KmeliaHelper.getProfile(getUserRoles(componentId, userId)));
+  }
+  
+  private void setRole(NodeDetail node, String userId) throws RemoteException {
+    if (isRightsOnTopicsEnabled(node.getNodePK().getInstanceId())) {
+      node.setUserRole(getUserTopicProfile(node.getNodePK(), userId));
+    }
+  }
+  
+  private void setRole(Collection<NodeDetail> nodes, String userId) throws RemoteException {
+    for (NodeDetail node : nodes) {
+      setRole(node, userId);
+    }
+  }
+  
+  private boolean isRightsOnTopicsEnabled(String componentId) {
+    return StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
+        componentId, InstanceParameters.rightsOnFolders));
+  }
+
+  private boolean isNbItemsDisplayed(String componentId) {
+    return StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
+        componentId, InstanceParameters.displayNbItemsOnFolders));
+  }
+
+  private boolean isCoWritingEnable(String componentId) {
+    return StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
+        componentId, InstanceParameters.coWriting));
+  }
+  
+  private boolean isDraftVisibleWithCoWriting() {
+    return getSettings().getBoolean("draftVisibleWithCoWriting", false);
+  }
+  
+  public String getUserTopicProfile(NodePK pk, String userId) throws RemoteException {
+    if (!isRightsOnTopicsEnabled(pk.getInstanceId())) {
+      return KmeliaHelper.getProfile(getUserRoles(pk.getInstanceId(), userId));
+    }
+
+    NodeDetail node = getNodeHeader(pk.getId(), pk.getInstanceId());
+
+    // check if we have to take care of topic's rights
+    if (node != null && node.haveRights()) {
+      int rightsDependsOn = node.getRightsDependsOn();
+      return KmeliaHelper.getProfile(getOrganizationController().getUserProfiles(userId,
+          pk.getInstanceId(), rightsDependsOn, ObjectType.NODE));
+    } else {
+      return KmeliaHelper.getProfile(getUserRoles(pk.getInstanceId(), userId));
+    }
+  }
+  
+  private String[] getUserRoles(String componentId, String userId) {
+    return getOrganizationController().getUserProfiles(userId, componentId);
+  }
+  
+  private NodePK getRootPK(String componentId) {
+    return new NodePK(NodePK.ROOT_NODE_ID, componentId);
+  }
+  
+  public boolean isUserCanValidate(String componentId, String userId) throws RemoteException {
+    if (KmeliaHelper.isToolbox(componentId)) {
+      return false;
+    }
+
+    String profile = KmeliaHelper.getProfile(getUserRoles(componentId, userId));
+    boolean isPublisherOrAdmin =
+            SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile);
+
+    if (!isPublisherOrAdmin && isRightsOnTopicsEnabled(componentId)) {
+      // check if current user is publisher or admin on at least one descendant
+      Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(getRootPK(componentId)).iterator();
+      while (!isPublisherOrAdmin && descendants.hasNext()) {
+        NodeDetail descendant = descendants.next();
+        AdminController admin = null;
+        if (descendant.haveLocalRights()) {
+          // check if user is admin or publisher on this topic
+          if (admin == null) {
+            admin = new AdminController(userId);
+          }
+          String[] profiles =
+                  admin.getProfilesByObjectAndUserId(descendant.getId(),
+                      ObjectType.NODE.getCode(), componentId, userId);
+          if (profiles != null && profiles.length > 0) {
+            List<String> lProfiles = Arrays.asList(profiles);
+            isPublisherOrAdmin =
+                    lProfiles.contains(SilverpeasRole.admin.name())
+                        || lProfiles.contains(SilverpeasRole.publisher.name());
+          }
+        }
+      }
+    }
+    return isPublisherOrAdmin;
+  }
+  
+  public boolean isUserCanWrite(String componentId, String userId) throws RemoteException {
+    String profile = KmeliaHelper.getProfile(getUserRoles(componentId, userId));
+    boolean userCanWrite =
+            SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile)
+                || SilverpeasRole.writer.isInRole(profile);
+
+    if (!userCanWrite && isRightsOnTopicsEnabled(componentId)) {
+      // check if current user is publisher or admin on at least one descendant
+      Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(getRootPK(componentId)).iterator();
+      while (!userCanWrite && descendants.hasNext()) {
+        NodeDetail descendant = descendants.next();
+        AdminController admin = null;
+        if (descendant.haveLocalRights()) {
+          // check if user is admin, publisher or writer on this topic
+          if (admin == null) {
+            admin = new AdminController(userId);
+          }
+          String[] profiles =
+              admin.getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE.getCode(),
+                  componentId, userId);
+          if (profiles != null && profiles.length > 0) {
+            List<String> lProfiles = Arrays.asList(profiles);
+            userCanWrite =
+                    lProfiles.contains(SilverpeasRole.admin.name())
+                        || lProfiles.contains(SilverpeasRole.publisher.name())
+                        || lProfiles.contains(SilverpeasRole.writer.name());
+          }
+        }
+      }
+    }
+    return userCanWrite;
+  }
+  
+  public NodeDetail getExpandedPathToNode(NodePK pk, String userId) throws RemoteException {
+    String instanceId = pk.getInstanceId();
+    List<NodeDetail> nodes = new ArrayList<NodeDetail>(getNodeBm().getPath(pk));
+    Collections.reverse(nodes);
+    NodeDetail root = nodes.remove(0);
+    root = getRoot(instanceId, userId);
+
+    // set nb objects in nodes
+    List<NodeDetail> treeview = null;
+    if (isNbItemsDisplayed(instanceId)) {
+      treeview = getTreeview(getRootPK(instanceId), userId);
+      // set nb objects on root
+      root.setNbObjects(treeview.get(0).getNbObjects());
+      // set nb objects in each allowed nodes
+      setNbItemsOfFolders(instanceId, nodes, treeview);
+    }
+
+    NodeDetail currentNode = root;
+    for (NodeDetail node : nodes) {
+      currentNode = find(currentNode.getChildrenDetails(), node);
+      // get children of each node on path to target node
+      Collection<NodeDetail> children = getNodeBm().getChildrenDetails(node.getNodePK());
+      node.setChildrenDetails(children);
+      setAllowedSubfolders(node, userId);
+      if (treeview != null) {
+        setNbItemsOfSubfolders(node, treeview, userId);
+      }
+      currentNode.setChildrenDetails(node.getChildrenDetails());
+    }
+    return root;
+
+  }
+  
+  private NodeDetail find(Collection<NodeDetail> nodes, NodeDetail toFind) {
+    for (NodeDetail node : nodes) {
+      if (node.getNodePK().getId().equals(toFind.getNodePK().getId())) {
+        return node;
+      }
+    }
+    return null;
   }
 }

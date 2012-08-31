@@ -107,7 +107,7 @@ public class JSONServlet extends HttpServlet {
       List<NodeDetail> nodes = (List<NodeDetail>) getNodeBm().getPath(nodePK);
       writer.write(getListAsJSONArray(nodes, language, kmeliaSC));
     } else if ("Paste".equals(action)) {
-      List<Object> pastedItems = kmeliaSC.paste();
+      List<Object> pastedItems = kmeliaSC.paste(id);
       List<NodeDetail> nodes = new ArrayList<NodeDetail>();
       for (Object pastedItem : pastedItems) {
         if (pastedItem instanceof NodeDetail) {

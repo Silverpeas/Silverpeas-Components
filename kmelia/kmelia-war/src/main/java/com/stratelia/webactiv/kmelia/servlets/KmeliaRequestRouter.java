@@ -230,27 +230,22 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("CurrentTopic", currentTopic);
         request.setAttribute("PathString", kmelia.getSessionPathString());
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
-        request.setAttribute("Treeview", kmelia.getTreeview());
         request.setAttribute("DisplayNBPublis", kmelia.displayNbPublis());
         request.setAttribute("DisplaySearch", kmelia.isSearchOnTopicsEnabled());
 
         // rechercher si le theme a un descripteur
         request.setAttribute("HaveDescriptor", kmelia.isTopicHaveUpdateChainDescriptor());
 
-        if ("noRights".equalsIgnoreCase(currentTopic.getNodeDetail().getUserRole())) {
-          destination = rootDestination + "toCrossTopic.jsp";
+        request.setAttribute("Profile", kmelia.getUserTopicProfile(topicId));
+        request.setAttribute("IsGuest", kmelia.getUserDetail().isAccessGuest());
+        request.setAttribute("RightsOnTopicsEnabled", kmelia.isRightsOnTopicsEnabled());
+        request.setAttribute("WysiwygDescription", kmelia.getWysiwygOnTopic());
+        if (kmelia.isTreeviewUsed()) {
+          destination = rootDestination + "treeview.jsp";
+        } else if (kmelia.isTreeStructure()) {
+          destination = rootDestination + "oneLevel.jsp";
         } else {
-          request.setAttribute("Profile", kmelia.getUserTopicProfile(topicId));
-          request.setAttribute("IsGuest", kmelia.getUserDetail().isAccessGuest());
-          request.setAttribute("RightsOnTopicsEnabled", kmelia.isRightsOnTopicsEnabled());
-          request.setAttribute("WysiwygDescription", kmelia.getWysiwygOnTopic());
-          if (kmelia.isTreeviewUsed()) {
-            destination = rootDestination + "topicManager.jsp";
-          } else if (kmelia.isTreeStructure()) {
-            destination = rootDestination + "oneLevel.jsp";
-          } else {
-            destination = rootDestination + "simpleListOfPublications.jsp";
-          }
+          destination = rootDestination + "simpleListOfPublications.jsp";
         }
       } else if (function.equals("GoToCurrentTopic")) {
         if (kmelia.getSessionTopic() != null) {
