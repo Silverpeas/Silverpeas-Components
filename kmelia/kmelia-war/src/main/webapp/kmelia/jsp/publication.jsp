@@ -563,15 +563,12 @@
 			              if (!isOwner) {
 			                attProfile = "user";
 			              }
-			              getServletConfig().getServletContext().getRequestDispatcher(
-			                  "/versioningPeas/jsp/displayDocuments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
-			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo + "&UpdateOfficeMode=" + kmeliaScc.
-			                  getUpdateOfficeMode() + "&Profile=" + attProfile + "&NodeId=" + kmeliaScc.
-			                  getSessionTopic().getNodePK().getId() + "&TopicRightsEnabled=" + kmeliaScc.
-			                  isRightsOnTopicsEnabled() + "&VersionningFileRightsMode=" + kmeliaScc.
-			                  getVersionningFileRightsMode() + "&CallbackUrl=" + URLManager.getURL(
-			                  "useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
-			                  include(request, response);
+                            getServletConfig().getServletContext().getRequestDispatcher(
+                                    "/attachment/jsp/displayAttachments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
+                                    getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo + "&UpdateOfficeMode=" + kmeliaScc.
+                                    getUpdateOfficeMode() + "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
+                                    getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
+                                    include(request, response);
 			            } else {
 				              if (!attachmentsUpdatable) {
 				                attProfile = "user";
