@@ -92,10 +92,9 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.Calendar"%>
 
-<%@ page import="com.stratelia.webactiv.searchEngine.model.* "%>
+<%@ page import="org.silverpeas.search.searchEngine.model.* "%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail "%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination"%>
 <%@ page import="java.text.SimpleDateFormat"%>
