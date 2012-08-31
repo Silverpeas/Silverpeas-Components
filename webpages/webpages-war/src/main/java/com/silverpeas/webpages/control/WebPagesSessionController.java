@@ -50,8 +50,8 @@ import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class WebPagesSessionController extends AbstractComponentSessionController {

@@ -61,9 +61,9 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 public class CardManager {
   private static CardManager instance;

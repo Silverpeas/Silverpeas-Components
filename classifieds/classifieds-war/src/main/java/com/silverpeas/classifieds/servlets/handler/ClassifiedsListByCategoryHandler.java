@@ -9,8 +9,8 @@ import com.silverpeas.classifieds.control.ClassifiedsSessionController;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.servlets.FunctionHandler;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
 
 /**
  * Use Case : for all users, show all adds of given category

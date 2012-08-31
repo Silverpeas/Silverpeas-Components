@@ -44,7 +44,7 @@
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
 
-<%@ page import="com.stratelia.webactiv.searchEngine.control.ejb.*"%>
+<%@ page import="org.silverpeas.search.searchEngine.searchEngine.control.ejb.*"%>
 <%@ page import="java.util.*"%>
 <%@ page import="java.sql.*"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
