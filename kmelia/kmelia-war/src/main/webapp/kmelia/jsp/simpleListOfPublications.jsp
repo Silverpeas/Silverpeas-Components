@@ -142,11 +142,16 @@ function topicWysiwyg() {
 function pasteFromOperations() {
 	$.progressMessage();
 	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/KmeliaJSONServlet', {Action:'Paste',ComponentId:'<%=componentId%>',Language:'<%=language%>',IEFix:ieFix},
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, {ComponentId:getComponentId(),Action:'Paste',Id:'0',IEFix:ieFix},
 			function(data){
-				displayPublications("0");
 				$.closeProgressMessage();
-			},"json");
+				if (data == "ok") {
+					displayPublications("0");
+				} else {
+					alert(data);
+				}
+			}, 'text');
 }
 
 $(document).ready(function() {

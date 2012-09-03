@@ -78,6 +78,7 @@ String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute)
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
 <view:includePlugin name="userZoom"/>
+<view:includePlugin name="datepicker" />
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
@@ -267,6 +268,9 @@ labels["js.contains"] = "<fmt:message key="GML.ThisFormContains"/>";
 labels["js.error"] = "<fmt:message key="GML.error"/>";
 labels["js.errors"] = "<fmt:message key="GML.errors"/>";
 
+labels["js.status.visible2invisible"] = "<fmt:message key="TopicVisible2InvisibleRecursive"/>";
+labels["js.status.invisible2visible"] = "<fmt:message key="TopicInvisible2VisibleRecursive"/>";
+
 labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
 
 var icons = new Object();
@@ -296,7 +300,12 @@ function cutCurrentNode() {
 }
 
 function changeCurrentTopicStatus() {
-	changeStatus(getCurrentNodeId());
+	changeStatus(getCurrentNodeId(), getCurrentTopicStatus());
+}
+
+function updateUIStatus(nodeId, newStatus) {
+	setCurrentTopicStatus(newStatus);
+	displayOperations(nodeId);
 }
 
 function displayTopicContent(id) {
@@ -337,19 +346,20 @@ function displayTopicContent(id) {
 }
 	
 function displaySubTopics(id) {
-	var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=GetSubTopics&ComponentId=<%=componentId%>&IEFix="+new Date().getTime()+"&Id="+id;
+	var sUrl = "<%=m_context%>/services/folders/<%=componentId%>/"+id+"/children?lang="+getTranslation();
 	$.getJSON(sUrl, function(data){
 		$("#subTopics").empty();
 		$("#subTopics").append("<ul>");
 		var basket = "";
 		var tovalidate = "";
-		$.each(data, function(i, topic) {
-				if (topic.id == "1") {
-					basket = getSubTopic(topic);
-				} else if (topic.id == "tovalidate") {
-					tovalidate = getSubTopic(topic);
-				} else if (topic.id != "2") {
-					$("#subTopics ul").append(getSubTopic(topic));
+		$.each(data, function(i, folder) {
+				var folderId = folder.attr["id"];
+				if (folderId == "1") {
+					basket = getSubFolder(folder);
+				} else if (folderId == "tovalidate") {
+					tovalidate = getSubFolder(folder);
+				} else if (folderId != "2") {
+					$("#subTopics ul").append(getSubFolder(folder));
 				}
 		});
 		if (id == "0") {
@@ -358,26 +368,29 @@ function displaySubTopics(id) {
 		}
 		$("#subTopics").append("</ul>");
 		$("#subTopics").append("<br clear=\"all\">");
-		
 	});
 }
 
-function getSubTopic(topic) {
-	var str = '<li id="topic_'+topic.id+'">';
-	str += '<a href="#" onclick="topicGoTo(\''+topic.id+'\')" ';
-	if (topic.id == "tovalidate") {
+function getSubFolder(folder) {
+	var id = folder.attr["id"];
+	var nbItems = folder.attr["nbItems"];
+	var name = folder.data;
+	var desc = folder.attr["description"];
+	var str = '<li id="topic_'+id+'">';
+	str += '<a href="#" onclick="topicGoTo(\''+id+'\')" ';
+	if (id == "tovalidate") {
 		str += 'class="toValidate"';
-	} else if (topic.id == "1") {
+	} else if (id == "1") {
 		str += 'class="trash"';
 	}
 	str += '>';
-	str += '<strong>'+topic.name+' ';
-	if (topic.nbObjects != -1) {
-		str += '<span>'+topic.nbObjects+'</span>';
+	str += '<strong>'+name+' ';
+	if (nbItems != -1) {
+		str += '<span>'+nbItems+'</span>';
 	}
 	str += '</strong>';
-	if (typeof(topic.description) != "undefined" && topic.description.length > 0) {
-		str += '<span title="'+topic.description+'">'+topic.description+'</span>';
+	if (typeof(desc) != "undefined" && desc.length > 0) {
+		str += '<span title="'+desc+'">'+desc+'</span>';
 	}
 	str += '</a>';
 	str += '</li>';

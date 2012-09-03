@@ -38,8 +38,6 @@
 
 <%
 String		rootId				= "0";
-String		name				= "";
-String		description			= "";
 
 //R?cup?ration des param?tres
 String 	profile			= (String) request.getAttribute("Profile");
@@ -58,18 +56,6 @@ String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //
 String id = currentTopic.getNodeDetail().getNodePK().getId();
 String language = kmeliaScc.getLanguage();
 
-NodeDetail nodeDetail = currentTopic.getNodeDetail();
-
-List path = (List) kmeliaScc.getNodeBm().getPath(currentTopic.getNodePK());
-//Icons
-String subscriptionAddSrc	= m_context + "/util/icons/subscribeAdd.gif";
-String favoriteAddSrc		= m_context + "/util/icons/addFavorit.gif";
-String publicationAddSrc	= m_context + "/util/icons/publicationAdd.gif";
-String pdcUtilizationSrc	= m_context + "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
-String importFileSrc		= m_context + "/util/icons/importFile.gif";
-String importFilesSrc		= m_context + "/util/icons/importFiles.gif";
-String exportComponentSrc	= m_context + "/util/icons/exportComponent.gif";
-
 if (id == null) {
 	id = rootId;
 }
@@ -87,7 +73,6 @@ String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute)
 
 boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
 boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
-
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -96,7 +81,6 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.jstree.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/splitter.js"></script>
@@ -109,11 +93,11 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
-<script type="text/javascript" src="javaScript/treeview.js"></script>
 
 <style type="text/css" >
 #treeDiv1 {
 	/*width: 20%;*/
+	width: 250px;
 	height : 500px;
 	float: left;
 	padding-right: 5px; /*do not forget to change end minus if this value change !*/
@@ -127,15 +111,6 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 	/*width: 675px;*/
 	overflow: hidden;
 	/*border: 1px solid blue;*/
-}
-
-/** operations */
-.operationHidden {
-	display: none;
-}
-
-.operationVisible {
-	display: block;
 }
 
 #footer {
@@ -158,9 +133,6 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 	width: 5px;
 	background: #DEDEDE;
 }
-#treeDiv1 {
-	width: 250px;
-}
 </style>
 <script type="text/javascript">
 function topicGoTo(id) {
@@ -168,14 +140,6 @@ function topicGoTo(id) {
     displayTopicContent(id);
     getTreeview().deselect_all();
     getTreeview().select_node($('#'+id));
-}
-
-function clipboardCopy() {
-    top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>copy?Object=Node&Id=<%=id%>';
-}
-
-function clipboardCut() {
-    top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut?Object=Node&Id=<%=id%>';
 }
 
 function showDnD() {
@@ -255,6 +219,9 @@ labels["js.contains"] = "<fmt:message key="GML.ThisFormContains"/>";
 labels["js.error"] = "<fmt:message key="GML.error"/>";
 labels["js.errors"] = "<fmt:message key="GML.errors"/>";
 
+labels["js.status.visible2invisible"] = "<fmt:message key="TopicVisible2InvisibleRecursive"/>";
+labels["js.status.invisible2visible"] = "<fmt:message key="TopicInvisible2VisibleRecursive"/>";
+
 labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
 
 var icons = new Object();
@@ -281,7 +248,7 @@ params["i18n"] = <%=I18NHelper.isI18N%>;
 
     //Display operations - following lines are mandatory to init menu correctly
     OperationPane operationPane = window.getOperationPane();
-   	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+resources.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
+   	operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+resources.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
 
     out.println(window.printBefore());
 %>
@@ -419,37 +386,19 @@ function changeCurrentTopicStatus() {
 	changeStatus(getCurrentNodeId(), node.attr("status"));
 }
 
-function changeStatus(nodeId, currentStatus) {
-	closeWindows();
-	var newStatus = "Visible";
-	if (currentStatus == "Visible") {
-		newStatus = "Invisible";
+function updateUIStatus(nodeId, newStatus) {
+	// updating data stored in treeview
+	var node = getTreeview()._get_node("#"+nodeId);
+	node.attr("status", newStatus);
+
+	//changing label style according to topic's new status
+	node.removeClass("Visible Invisible");
+	node.addClass(newStatus);
+	
+	if (nodeId == getCurrentNodeId()) {
+		// refreshing operations of current folder
+		displayOperations(nodeId);
 	}
-
-	if (newStatus == 'Invisible') {
-		question = '<%=kmeliaScc.getString("TopicVisible2InvisibleRecursive")%>';
-	} else {
-		question = '<%=kmeliaScc.getString("TopicInvisible2VisibleRecursive")%>';
-	}
-
-	var recursive = "0";
-	if(window.confirm(question)){
-		recursive = "1";
-	}
-
-	$.get('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'UpdateTopicStatus',Id:nodeId,Status:newStatus,Recursive:recursive},
-			function(data){
-				if (data == "ok") {
-					var node = getTreeview()._get_node("#"+nodeId);
-					node.attr("status", newStatus);
-
-					//changing label style according to topic's new status
-					node.removeClass("Visible Invisible");
-					node.addClass(newStatus);
-				} else {
-					alert(data);
-				}
-			}, 'text');
 }
 
 function displayTopicContent(id) {
@@ -525,7 +474,10 @@ function customMenu(node) {
 	
 	var nodeType = node.attr("rel");
 	var nodeId = node.attr("id");
-	var userRole = node.attr("role");
+	var userRole = '<%=profile%>';
+	if (params["rightsOnTopic"]) {
+		userRole = node.attr("role");
+	}
 	if (nodeType == "tovalidate") {
     	return false;
     } else if (nodeType == "bin") {
@@ -551,21 +503,18 @@ function customMenu(node) {
     	editItem: {
             label: "<%=resources.getString("ModifierSousTheme")%>",
             action: function (obj) {
-            	$.getJSON("<%=m_context%>/KmeliaJSONServlet?Id="+obj.attr("id")+"&Action=GetTopic&ComponentId=<%=componentId%>&IEFix="+new Date().getTime(),
-						function(data){
-							try {
-								// translations
-								if (params["i18n"]) {
-									storeTranslations(data[0].translations);
-								} else {
-									$("#addOrUpdateNode #topicName").val(data[0].name);
-									$("#addOrUpdateNode #topicDescription").val(data[0].description);
-								}
-								topicUpdate(data[0].id);
-							} catch (e) {
-							}
-            			}
-            	);
+            	var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+obj.attr("id");
+        		$.getJSON(url, function(topic){
+        					var name = topic.data;
+        					var desc = topic.attr["description"];
+        					if (params["i18n"]) {
+        						storeTranslations(topic.translations);
+        					} else {
+        						$("#addOrUpdateNode #topicName").val(name);
+								$("#addOrUpdateNode #topicDescription").val(desc);
+        					}
+        					topicUpdate(topic.attr["id"]);
+        				});
             }
         },
         deleteItem: {
@@ -637,6 +586,7 @@ function customMenu(node) {
     	<% } %>
     	delete items.editItem;
         delete items.deleteItem;
+        delete items.copyItem;
         delete items.cutItem;
         delete items.statusItem;
     } 
@@ -720,8 +670,6 @@ function spreadNbItems(children) {
 $(document).ready(
 	function () {
 		//build the tree
-		//$.treeview("treeDiv1", '<%=componentId%>', [], "#<%=id%>");
-		
 		$("#treeDiv1").bind("loaded.jstree", function (event, data) {
 			//alert("TREE IS LOADED");
 		}).bind("select_node.jstree", function (e, data) {
@@ -734,16 +682,15 @@ $(document).ready(
     	},
     	"ui" :{
             "select_limit" : 1,
-          	"initially_select" : "#<%=id%>",
+          	"initially_select" : "#<%=id%>"
         },
     	"json_data" : { 
 			"ajax" : {
 				"url": function (node) {
 					var nodeId = "";
-					var url = "/silverpeas/services/folders/<%=componentId%>/<%=id%>/treeview";
+					var url = "<%=m_context%>/services/folders/<%=componentId%>/<%=id%>/treeview?lang="+getTranslation()+"&IEFix="+new Date().getTime();
 					if (node != -1) {
-						url = "/silverpeas/services/folders/<%=componentId%>/"+node.attr("id")+"/children";
-						//url = node.attr("childrenURI");
+						url = "<%=m_context%>/services/folders/<%=componentId%>/"+node.attr("id")+"/children?lang="+getTranslation()+"&IEFix="+new Date().getTime();
 					}
 					return url;
 				},
@@ -783,12 +730,11 @@ $(document).ready(
 			"types" : {
 				// The `root` node 
 				"root" : {
-					// can have files and folders inside, but NOT other `drive` nodes
 					"valid_children" : [ "bin", "tovalidate" ],
 					/*"icon" : {
 						"image" : "/static/v.1.0pre/_demo/root.png"
 					},*/
-					// those prevent the functions with the same name to be used on `drive` nodes
+					// those prevent the functions with the same name to be used on `root` nodes
 					// internally the `before` event is used
 					"start_drag" : false,
 					"move_node" : false,
@@ -802,7 +748,7 @@ $(document).ready(
 					"icon" : {
 						"image" : "icons/treeview/basket.jpg"
 					},
-					// those prevent the functions with the same name to be used on `drive` nodes
+					// those prevent the functions with the same name to be used on `bin` nodes
 					// internally the `before` event is used
 					"start_drag" : false,
 					"move_node" : false,
@@ -814,9 +760,9 @@ $(document).ready(
 					// can have files and folders inside, but NOT other `drive` nodes
 					"valid_children" : "none",
 					"icon" : {
-						"image" : "/silverpeas/util/icons/ok_alpha.gif"
+						"image" : "<%=m_context%>/util/icons/ok_alpha.gif"
 					},
-					// those prevent the functions with the same name to be used on `drive` nodes
+					// those prevent the functions with the same name to be used on `tovalidate` nodes
 					// internally the `before` event is used
 					"start_drag" : false,
 					"move_node" : false,

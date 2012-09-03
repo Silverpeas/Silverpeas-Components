@@ -36,6 +36,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -74,7 +75,7 @@ public class FolderResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity getRoot() {
+  public NodeEntity getRoot(@QueryParam("lang") String language) {
     NodeDetail root = null;
     try {
       root = getKmeliaBm().getRoot(componentId, getUserDetail().getId());
@@ -86,7 +87,7 @@ public class FolderResource extends RESTWebService {
     if (getUriInfo().getRequestUri().toString().endsWith("/"+NodePK.ROOT_NODE_ID)) {
       uri = getUriInfo().getRequestUri();
     }
-    NodeEntity entity = NodeEntity.fromNodeDetail(root, uri);
+    NodeEntity entity = NodeEntity.fromNodeDetail(root, uri, language);
     decorateRoot(entity);
     
     return entity;
@@ -99,14 +100,45 @@ public class FolderResource extends RESTWebService {
   @GET
   @Path("{path: [0-9]+(/[0-9]+)*}")
   @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity getNode(@PathParam("path") String path) {
+  public NodeEntity getNode(@PathParam("path") String path, @QueryParam("lang") String language) {
     String nodeId = getNodeIdFromURI(path);
     if (nodeId.equals(NodePK.ROOT_NODE_ID)) {
-      return getRoot();
+      return getRoot(language);
     } else {
       NodeDetail node = getNodeDetail(nodeId);
       URI uri = getUriInfo().getRequestUri();
-      return NodeEntity.fromNodeDetail(node, uri);
+      return NodeEntity.fromNodeDetail(node, uri, language);
+    }
+  }
+  
+  /**
+   * Get all children of any node of the application.
+   * @return an array of NodeEntity representing children
+   */
+  @GET
+  @Path("{path: [0-9]+(/[0-9]+)*/path}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public NodeEntity[] getPath(@PathParam("path") String path, @QueryParam("lang") String language) {
+    String[] nodeIds = path.split("/");
+    String nodeId = nodeIds[nodeIds.length - 2];
+    NodePK nodePK = new NodePK(nodeId, componentId);
+    
+    List<NodeDetail> nodes;
+    try {
+      nodes = new ArrayList<NodeDetail>(getNodeBm().getPath(nodePK));
+      Collections.reverse(nodes);
+      
+      String requestUri = getUriInfo().getRequestUri().toString();
+      String uri = requestUri.substring(0, requestUri.lastIndexOf("/"));
+      
+      List<NodeEntity> entities = new ArrayList<NodeEntity>();
+      for (NodeDetail node : nodes) {
+        entities.add(NodeEntity.fromNodeDetail(node, uri, language));
+      }
+      
+      return entities.toArray(new NodeEntity[0]);
+    } catch (RemoteException e1) {
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
   }
   
@@ -117,7 +149,7 @@ public class FolderResource extends RESTWebService {
   @GET
   @Path("{path: [0-9]+(/[0-9]+)*/children}")
   @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity[] getChildren(@PathParam("path") String path) {
+  public NodeEntity[] getChildren(@PathParam("path") String path, @QueryParam("lang") String language) {
     String[] nodeIds = path.split("/");
     String nodeId = nodeIds[nodeIds.length - 2];
     NodePK nodePK = new NodePK(nodeId, componentId);
@@ -134,7 +166,7 @@ public class FolderResource extends RESTWebService {
     
     List<NodeEntity> entities = new ArrayList<NodeEntity>();
     for (NodeDetail child : children) {
-      entities.add(NodeEntity.fromNodeDetail(child, uri));
+      entities.add(NodeEntity.fromNodeDetail(child, uri, language));
     }
     
     NodeEntity[] aEntities = entities.toArray(new NodeEntity[0]);
@@ -173,7 +205,7 @@ public class FolderResource extends RESTWebService {
   @GET
   @Path("{path: [0-9]+/treeview}")
   @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity getTreeview(@PathParam("path") String path) {
+  public NodeEntity getTreeview(@PathParam("path") String path, @QueryParam("lang") String language) {
     String[] nodeIds = path.split("/");
     String nodeId = nodeIds[nodeIds.length - 2];
     
@@ -185,7 +217,7 @@ public class FolderResource extends RESTWebService {
       String requestUri = getUriInfo().getRequestUri().toString();
       String uri = requestUri.substring(0, requestUri.lastIndexOf("/"));
       
-      NodeEntity rootEntity = NodeEntity.fromNodeDetail(root, uri);
+      NodeEntity rootEntity = NodeEntity.fromNodeDetail(root, uri, language);
       decorateRoot(rootEntity);
       
       setOpenState(rootEntity.getChildren(), nodes);
