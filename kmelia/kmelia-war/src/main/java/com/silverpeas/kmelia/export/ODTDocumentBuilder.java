@@ -23,6 +23,48 @@
  */
 package com.silverpeas.kmelia.export;
 
+import static com.silverpeas.converter.DocumentFormat.inFormat;
+import static com.silverpeas.converter.DocumentFormat.odt;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_AUTHOR;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_CREATION_DATE;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_LAST_MODIFIER;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_MODIFICATION_DATE;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_URL;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.FIELD_VERSION;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.LIST_OF_ATTACHMENTS;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.LIST_OF_COMMENTS;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.SECTION_ATTACHMENTS;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.SECTION_CLASSIFICATION;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.SECTION_COMMENTS;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.SECTION_CONTENT;
+import static com.silverpeas.kmelia.export.DocumentTemplateParts.SECTION_SEEALSO;
+import static com.silverpeas.kmelia.export.ODTDocumentTextTranslator.aTranslatorWith;
+import static com.silverpeas.kmelia.export.ODTDocumentsMerging.atSection;
+import static com.silverpeas.kmelia.export.ODTDocumentsMerging.decorates;
+import static com.silverpeas.kmelia.export.VersionedAttachmentHolder.hold;
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.util.StringUtil.isInteger;
+import static com.stratelia.webactiv.util.DateUtil.dateToString;
+import static com.stratelia.webactiv.util.DateUtil.formatDate;
+import static com.stratelia.webactiv.util.DateUtil.getOutputDate;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.odftoolkit.odfdom.dom.element.text.TextAElement;
+import org.odftoolkit.simple.TextDocument;
+import org.odftoolkit.simple.meta.Meta;
+import org.odftoolkit.simple.table.Cell;
+import org.odftoolkit.simple.table.Row;
+import org.odftoolkit.simple.table.Table;
+import org.odftoolkit.simple.text.Paragraph;
+import org.odftoolkit.simple.text.Section;
+import org.odftoolkit.simple.text.list.ListItem;
+
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
 import com.silverpeas.converter.HTMLConverter;
@@ -45,42 +87,14 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import org.odftoolkit.odfdom.dom.element.text.TextAElement;
-import org.odftoolkit.simple.TextDocument;
-import org.odftoolkit.simple.meta.Meta;
-import org.odftoolkit.simple.table.Cell;
-import org.odftoolkit.simple.table.Row;
-import org.odftoolkit.simple.table.Table;
-import org.odftoolkit.simple.text.Paragraph;
-import org.odftoolkit.simple.text.Section;
-import org.odftoolkit.simple.text.list.ListItem;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
-
-import static com.silverpeas.converter.DocumentFormat.inFormat;
-import static com.silverpeas.converter.DocumentFormat.odt;
-import static com.silverpeas.kmelia.export.DocumentTemplateParts.*;
-import static com.silverpeas.kmelia.export.ODTDocumentTextTranslator.aTranslatorWith;
-import static com.silverpeas.kmelia.export.ODTDocumentsMerging.atSection;
-import static com.silverpeas.kmelia.export.ODTDocumentsMerging.decorates;
-import static com.silverpeas.kmelia.export.VersionedAttachmentHolder.hold;
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.util.StringUtil.isInteger;
-import static com.stratelia.webactiv.util.DateUtil.*;
 
 /**
  * A builder of an ODT document based on a given template and from a specified
@@ -93,7 +107,7 @@ public class ODTDocumentBuilder {
       "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
   private UserDetail user;
   private String language = "";
-  private TopicDetail topicToConsider;
+  private String topicIdToConsider;
   private ResourceLocator messages;
 
   /**
@@ -137,8 +151,8 @@ public class ODTDocumentBuilder {
    * @param topic the topic to explicitly consider.
    * @return itself.
    */
-  public ODTDocumentBuilder inTopic(final TopicDetail topic) {
-    this.topicToConsider = topic;
+  public ODTDocumentBuilder inTopic(final String topicId) {
+    this.topicIdToConsider = topicId;
     return this;
   }
 
@@ -324,7 +338,7 @@ public class ODTDocumentBuilder {
       context.setBorderPrinted(false);
       context.setContentLanguage(getLanguage());
       context.setUserId(getUser().getId());
-      context.setNodeId(getTopicOf(publication).getNodeDetail().getNodePK().getId());
+      context.setNodeId(getTopicIdOf(publication));
       String htmlText = viewForm.toString(context, dataRecord);
       if (isDefined(htmlText)) {
         buildWithHTMLText(htmlText, in(odtDocument));
@@ -507,14 +521,15 @@ public class ODTDocumentBuilder {
     return "0".equals(isTree) || "1".equals(isTree);
   }
 
-  private TopicDetail getTopicOf(final KmeliaPublication publication) throws Exception {
-    TopicDetail theTopic = this.topicToConsider;
-    if (theTopic == null) {
+  private String getTopicIdOf(final KmeliaPublication publication) throws Exception {
+    String theTopicId = this.topicIdToConsider;
+    if (theTopicId == null) {
       String componentId = publication.getPk().getInstanceId();
-      theTopic = getKmeliaService().getPublicationFather(publication.getPk(), isTree(componentId),
+      NodePK pk = getKmeliaService().getPublicationFatherPK(publication.getPk(), isTree(componentId),
           getUser().getId(), isRightsOnTopicsEnabled(componentId));
+      theTopicId = pk.getId();
     }
-    return theTopic;
+    return theTopicId;
   }
 
   private String getLanguage() {

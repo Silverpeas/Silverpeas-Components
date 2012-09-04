@@ -32,10 +32,10 @@
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 
 <%
-String		rootId				= "0";
-String		description			= "";
-String		namePath			= "";
-String		urlTopic			= "";
+String id = "0";
+
+// création du nom pour les favoris
+String namePath = spaceLabel + " > " + componentLabel;
 
 //R?cup?ration des param?tres
 String 	profile			= (String) request.getAttribute("Profile");
@@ -44,32 +44,16 @@ boolean	isGuest			= (Boolean) request.getAttribute("IsGuest");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
 boolean updateChain		= ((Boolean) request.getAttribute("HaveDescriptor")).booleanValue();
 
-TopicDetail currentTopic 		= (TopicDetail) request.getAttribute("CurrentTopic");
-
-String 		pathString 			= (String) request.getAttribute("PathString");
-
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
-String id = currentTopic.getNodeDetail().getNodePK().getId();
 String language = kmeliaScc.getLanguage();
 
-NodeDetail nodeDetail = currentTopic.getNodeDetail();
-
-List path = (List) kmeliaScc.getNodeBm().getPath(currentTopic.getNodePK());
-
-if (id == null) {
-	id = rootId;
-}
+String urlTopic	= URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, true);;
 
 //For Drag And Drop
 boolean dragAndDropEnable = kmeliaScc.isDragAndDropEnable();
 
-String sRequestURL = request.getRequestURL().toString();
-String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-
 String userId = kmeliaScc.getUserId();
-
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 
 boolean userCanCreatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.writer.isInRole(profile);
 boolean userCanValidatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile);
@@ -163,16 +147,9 @@ $(document).ready(function() {
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
 <div id="<%=componentId %>">
 <%
-        urlTopic = nodeDetail.getLink();
-
         Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setI18N("GoToCurrentTopic", translation);
-
-        // cr?ation du nom pour les favoris
-        namePath = spaceLabel + " > " + componentLabel;
-         if (!pathString.equals(""))
-        	namePath = namePath + " > " + pathString;
 
         //Display operations
         OperationPane operationPane = window.getOperationPane();
@@ -293,7 +270,7 @@ $(document).ready(function() {
 
 <form name="topicDetailForm" method="post">
 	<input type="hidden" name="Id" value="<%=id%>"/>
-	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"/>
+	<input type="hidden" name="Path" value=""/>
 	<input type="hidden" name="ChildId"/>
 	<input type="hidden" name="Status"/><input type="hidden" name="Recursive"/>
 </form>

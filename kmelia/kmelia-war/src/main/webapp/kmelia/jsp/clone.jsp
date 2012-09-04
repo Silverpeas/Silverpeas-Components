@@ -324,7 +324,7 @@ function pubDraftOut() {
               PagesContext xmlContext = new PagesContext("myForm", "0", resources.getLanguage(),
                   false, componentId, kmeliaScc.getUserId());
               xmlContext.setObjectId(id);
-              xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
+              xmlContext.setNodeId(kmeliaScc.getCurrentFolderId());
               xmlContext.setBorderPrinted(false);
               xmlContext.setContentLanguage(currentLang);
                 

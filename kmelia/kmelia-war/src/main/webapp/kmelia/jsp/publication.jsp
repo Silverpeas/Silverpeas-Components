@@ -96,7 +96,6 @@
   //surcharge le componentId du composant courant (cas de l'alias)
   componentId = pubDetail.getPK().getInstanceId();
 
-  TopicDetail currentTopic = null;
   String linkedPathString = kmeliaScc.getSessionPath();
 
   boolean debut = rang.intValue() == 0;
@@ -566,8 +565,7 @@
 			              getServletConfig().getServletContext().getRequestDispatcher(
 			                  "/versioningPeas/jsp/displayDocuments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
 			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
-			                  "&Profile=" + attProfile + "&NodeId=" + kmeliaScc.
-			                  getSessionTopic().getNodePK().getId() + "&TopicRightsEnabled=" + kmeliaScc.
+			                  "&Profile=" + attProfile + "&NodeId=" + kmeliaScc.getCurrentFolderId() + "&TopicRightsEnabled=" + kmeliaScc.
 			                  isRightsOnTopicsEnabled() + "&VersionningFileRightsMode=" + kmeliaScc.
 			                  getVersionningFileRightsMode() + "&CallbackUrl=" + URLManager.getURL(
 			                  "useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
@@ -730,7 +728,7 @@
 				                false, componentId, kmeliaScc.getUserId());
 				            xmlContext.setObjectId(id);
 				            if (kmeliaMode) {
-				              xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
+				              xmlContext.setNodeId(kmeliaScc.getCurrentFolderId());
 				            }
 				            xmlContext.setBorderPrinted(false);
 				            xmlContext.setContentLanguage(language);

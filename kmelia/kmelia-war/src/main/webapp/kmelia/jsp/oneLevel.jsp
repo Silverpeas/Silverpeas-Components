@@ -43,13 +43,10 @@ String  translation 	= (String) request.getAttribute("Language");
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
 
-TopicDetail currentTopic 		= (TopicDetail) request.getAttribute("CurrentTopic");
-
-String 		pathString 			= (String) request.getAttribute("PathString");
+String id 		= (String) request.getAttribute("CurrentFolderId");
 
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
-String id = currentTopic.getNodeDetail().getNodePK().getId();
 String language = kmeliaScc.getLanguage();
 
 if (id == null) {
@@ -208,7 +205,6 @@ function getTranslation() {
 
 <form name="topicDetailForm" method="post">
 	<input type="hidden" name="Id" value="<%=id%>"/>
-	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"/>
 	<input type="hidden" name="ChildId"/>
 	<input type="hidden" name="Status"/>
 	<input type="hidden" name="Recursive"/>

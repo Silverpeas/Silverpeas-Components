@@ -47,13 +47,9 @@ boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).bo
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
 
-TopicDetail currentTopic 		= (TopicDetail) request.getAttribute("CurrentTopic");
-
-String 		pathString 			= (String) request.getAttribute("PathString");
-
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
-String id = currentTopic.getNodeDetail().getNodePK().getId();
+String id = (String) request.getAttribute("CurrentFolderId");
 String language = kmeliaScc.getLanguage();
 
 if (id == null) {
@@ -314,7 +310,6 @@ params["i18n"] = <%=I18NHelper.isI18N%>;
 
 <form name="topicDetailForm" method="post">
 	<input type="hidden" name="Id" value="<%=id%>"/>
-	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"/>
 	<input type="hidden" name="ChildId"/>
 	<input type="hidden" name="Status"/>
 	<input type="hidden" name="Recursive"/>

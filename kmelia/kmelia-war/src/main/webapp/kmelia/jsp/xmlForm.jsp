@@ -60,7 +60,7 @@
       PagesContext context = new PagesContext("myForm", "2", resources.getLanguage(), false, componentId, kmeliaScc.getUserId());
       context.setObjectId(pubId);
       if (kmeliaMode) {
-        context.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
+        context.setNodeId(kmeliaScc.getCurrentFolderId());
       }
       context.setBorderPrinted(false);
       context.setContentLanguage(currentLang);

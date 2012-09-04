@@ -336,8 +336,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
     NodeDetail nodeDetail = null;
     NodeBm nodeBm = getNodeBm();
-    PublicationBm pubBm = getPublicationBm();
-    PublicationPK pubPK = new PublicationPK("unknown", pk);
 
     // get the basic information (Header) of this topic
     SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()",
@@ -354,75 +352,86 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         nodeDetail.setChildrenDetails(availableChildren);
       }
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()",
-              ERROR,
-              "kmelia.EX_IMPOSSIBLE_DACCEDER_AU_THEME", e);
+      throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()", ERROR,
+          "kmelia.EX_IMPOSSIBLE_DACCEDER_AU_THEME", e);
     }
-    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()",
-            "root.MSG_GEN_PARAM_VALUE", "nodeBm.getDetail(pk) END");
+    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE",
+        "nodeBm.getDetail(pk) END");
 
+    // get publications
+    List<KmeliaPublication> pubDetails =
+        getPublicationsOfFolder(pk, userProfile, userId, isTreeStructureUsed, isRightsOnTopicsUsed);
+    
+    // get the path to this topic
+    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE", "GetPath BEGIN");
+    if (pk.isRoot()) {
+      newPath.add(nodeDetail);
+    } else {
+      newPath = getPathFromAToZ(nodeDetail);
+    }
+    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE", "GetPath END");
+    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_EXIT_METHOD");
+
+    // set the currentTopic and return it
+    return new TopicDetail(newPath, nodeDetail, pubDetails);
+  }
+  
+  public List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile,
+      String userId, boolean isTreeStructureUsed, boolean isRightsOnTopicsUsed) {
     Collection<PublicationDetail> pubDetails = null;
+    PublicationBm pubBm = getPublicationBm();
     // get the publications associated to this topic
     if (pk.isTrash()) {
       // Topic = Basket
       pubDetails = getPublicationsInBasket(pk, userProfile, userId);
     } else if (pk.isRoot()) {
-      SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE",
-              "pubBm.getUnavailablePublicationsByPublisherId(pubPK, currentUser.getId()) BEGIN");
       try {
         int nbPublisOnRoot = getNbPublicationsOnRoot(pk.getInstanceId());
         if (nbPublisOnRoot == 0 || !isTreeStructureUsed
                 || KmeliaHelper.isToolbox(pk.getInstanceId())) {
           pubDetails = pubBm.getDetailsByFatherPK(pk, "P.pubUpdateDate desc", false);
         } else {
-          pubDetails = pubBm.getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK,
-                  PublicationDetail.VALID, nbPublisOnRoot, NodePK.BIN_NODE_ID);
-          if (isRightsOnTopicsUsed) {// The list of publications must be filtered
-            List<PublicationDetail> filteredList = new ArrayList<PublicationDetail>();
-            KmeliaSecurity security = new KmeliaSecurity();
-            for (PublicationDetail pubDetail : pubDetails) {
-              if (security.isObjectAvailable(pk.getInstanceId(), userId, pubDetail.getPK().getId(),
-                      "Publication")) {
-                filteredList.add(pubDetail);
-              }
-            }
-            pubDetails.clear();
-            pubDetails.addAll(filteredList);
-          }
+          return getLatestPublications(pk.getInstanceId(), nbPublisOnRoot, isRightsOnTopicsUsed, userId);
         }
       } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()", ERROR,
+        throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationsOfFolder()", ERROR,
                 "kmelia.EX_IMPOSSIBLE_DAVOIR_LES_DERNIERES_PUBLICATIONS", e);
       }
-      SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE",
-              "pubBm.getUnavailablePublicationsByPublisherId(pubPK, currentUser.getId()) END");
     } else {
-      SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsOfFolder()", "root.MSG_GEN_PARAM_VALUE",
               "pubBm.getDetailsByFatherPK(pk) BEGIN");
       try {
         // get the publication details linked to this topic
         pubDetails = pubBm.getDetailsByFatherPK(pk, "P.pubUpdateDate DESC, P.pubId DESC", false);
       } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()", ERROR,
+        throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationsOfFolder()", ERROR,
                 "kmelia.EX_IMPOSSIBLE_DAVOIR_LA_LISTE_DES_PUBLICATIONS", e);
       }
-      SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsOfFolder()", "root.MSG_GEN_PARAM_VALUE",
               "pubBm.getDetailsByFatherPK(pk) END");
     }
-    // get the path to this topic
-    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE", "GetPath BEGIN");
-
-    if (pk.isRoot()) {
-      newPath.add(nodeDetail);
-    } else {
-      newPath = getPathFromAToZ(nodeDetail);
+    return pubDetails2userPubs(pubDetails);
+  }
+  
+  public List<KmeliaPublication> getLatestPublications(String instanceId, int nbPublisOnRoot,
+      boolean isRightsOnTopicsUsed, String userId) throws RemoteException {
+    PublicationPK pubPK = new PublicationPK("unknown", instanceId);
+    Collection<PublicationDetail> pubDetails =
+        getPublicationBm().getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK,
+            PublicationDetail.VALID, nbPublisOnRoot, NodePK.BIN_NODE_ID);
+    if (isRightsOnTopicsUsed) {// The list of publications must be filtered
+      List<PublicationDetail> filteredList = new ArrayList<PublicationDetail>();
+      KmeliaSecurity security = new KmeliaSecurity();
+      for (PublicationDetail pubDetail : pubDetails) {
+        if (security
+            .isObjectAvailable(instanceId, userId, pubDetail.getPK().getId(), "Publication")) {
+          filteredList.add(pubDetail);
+        }
+      }
+      pubDetails.clear();
+      pubDetails.addAll(filteredList);
     }
-
-    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE", "GetPath END");
-    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_EXIT_METHOD");
-
-    // set the currentTopic and return it
-    return new TopicDetail(newPath, nodeDetail, pubDetails2userPubs(pubDetails));
+    return pubDetails2userPubs(pubDetails);
   }
   
   public List<NodeDetail> getAllowedSubfolders(NodeDetail folder, String userId)
@@ -2163,7 +2172,19 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           boolean isTreeStructureUsed, String userId, boolean isRightsOnTopicsUsed) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFather()",
             "root.MSG_GEN_ENTER_METHOD");
-    TopicDetail fatherDetail = null;
+    // fetch one of the publication fathers
+    NodePK fatherPK = getPublicationFatherPK(pubPK, isTreeStructureUsed, userId, isRightsOnTopicsUsed);
+    String profile = KmeliaHelper.getProfile(getOrganizationController().getUserProfiles(userId,
+            pubPK.getInstanceId()));
+    TopicDetail fatherDetail = goTo(fatherPK, userId, isTreeStructureUsed, profile, isRightsOnTopicsUsed);
+    SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFather()", "root.MSG_GEN_EXIT_METHOD");
+    return fatherDetail;
+  }
+  
+  public NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed,
+      String userId, boolean isRightsOnTopicsUsed) {
+    SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFatherId()",
+        "root.MSG_GEN_ENTER_METHOD");
     // fetch one of the publication fathers
     Collection<NodePK> fathers = getPublicationFathers(pubPK);
     NodePK fatherPK = new NodePK("0", pubPK); // By default --> Root
@@ -2179,7 +2200,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           fatherPK = it.next();
           NodeDetail father = getNodeHeader(fatherPK);
           if (!father.haveRights() || getOrganizationController().isObjectAvailable(
-                  father.getRightsDependsOn(), ObjectType.NODE, fatherPK.getInstanceId(), userId)) {
+              father.getRightsDependsOn(), ObjectType.NODE, fatherPK.getInstanceId(), userId)) {
             allowedFather = father;
           }
         }
@@ -2188,11 +2209,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         }
       }
     }
-    String profile = KmeliaHelper.getProfile(getOrganizationController().getUserProfiles(userId,
-            pubPK.getInstanceId()));
-    fatherDetail = goTo(fatherPK, userId, isTreeStructureUsed, profile, isRightsOnTopicsUsed);
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFather()", "root.MSG_GEN_EXIT_METHOD");
-    return fatherDetail;
+    return fatherPK;
   }
 
   @Override
@@ -4636,23 +4653,28 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
   
   public NodeDetail getRoot(String componentId, String userId) throws RemoteException {
+    return getRoot(componentId, userId, null);
+  }
+  
+  private NodeDetail getRoot(String componentId, String userId, List<NodeDetail> treeview)
+      throws RemoteException {
     NodePK rootPK = new NodePK(NodePK.ROOT_NODE_ID, componentId);
     NodeDetail root = getNodeBm().getDetail(rootPK);
     setRole(root, userId);
-    root.setChildrenDetails(getRootChildren(root, userId));
+    root.setChildrenDetails(getRootChildren(root, userId, treeview));
     return root;
   }
   
-  private List<NodeDetail> getRootChildren(NodeDetail root, String userId) {
+  private List<NodeDetail> getRootChildren(NodeDetail root, String userId, List<NodeDetail> treeview) {
     String instanceId = root.getNodePK().getInstanceId();
     List<NodeDetail> children = new ArrayList<NodeDetail>();
     try {
       setAllowedSubfolders(root, userId);
       List<NodeDetail> nodes = (List<NodeDetail>) root.getChildrenDetails();
-      
+
       // set nb objects in nodes
-      setNbItemsOfSubfolders(root, null, userId);
-      
+      setNbItemsOfSubfolders(root, treeview, userId);
+
       NodeDetail trash = null;
       for (NodeDetail node : nodes) {
         if (node.getNodePK().isTrash()) {
@@ -4675,12 +4697,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         }
         children.add(temp);
       }
-      
+
       // adding special folder "trash"
       if (isUserCanWrite(instanceId, userId)) {
         children.add(trash);
       }
-      
+
       root.setChildrenDetails(children);
     } catch (RemoteException e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
@@ -4688,17 +4710,18 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return children;
   }
   
-  public Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId) throws RemoteException {
+  public Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId)
+      throws RemoteException {
     NodeDetail node = getNodeBm().getDetail(nodePK);
     if (node.getNodePK().isRoot()) {
-      node.setChildrenDetails(getRootChildren(node, userId));
+      node.setChildrenDetails(getRootChildren(node, userId, null));
     } else {
       setAllowedSubfolders(node, userId);
     }
-    
+
     // set nb objects in nodes
     setNbItemsOfSubfolders(node, null, userId);
-    
+
     return node.getChildrenDetails();
   }
   
@@ -4888,12 +4911,16 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     List<NodeDetail> nodes = new ArrayList<NodeDetail>(getNodeBm().getPath(pk));
     Collections.reverse(nodes);
     NodeDetail root = nodes.remove(0);
-    root = getRoot(instanceId, userId);
-
-    // set nb objects in nodes
+    
     List<NodeDetail> treeview = null;
     if (isNbItemsDisplayed(instanceId)) {
       treeview = getTreeview(getRootPK(instanceId), userId);
+    }
+    
+    root = getRoot(instanceId, userId, treeview);
+
+    // set nb objects in nodes
+    if (treeview != null) {
       // set nb objects on root
       root.setNbObjects(treeview.get(0).getNbObjects());
       // set nb objects in each allowed nodes

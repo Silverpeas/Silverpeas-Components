@@ -125,25 +125,6 @@ function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;
 }
 
-function publicationGoTo(id, action){
-    document.pubForm.Action.value = "ViewPublication";
-    document.pubForm.CheckPath.value = "1";
-    document.pubForm.PubId.value = id;
-    document.pubForm.submit();
-}
-
-function sendOperation(operation) {
-    document.pubForm.Action.value = operation;
-    document.pubForm.submit();
-}
-
-function sendPublicationData(operation) {
-    if (isCorrectForm()) {
-         document.pubForm.Action.value = operation;
-         document.pubForm.submit();
-     }
-}
-
 function sendPublicationDataToRouter(func) {
 	if (isCorrectForm()) {
 		<% if (!kmeliaScc.isKmaxMode) { %>
