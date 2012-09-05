@@ -972,7 +972,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           allowedNodes.put(allowedNode.getNodePK(), allowedNode);
         }
         
-        countPublisInNode(allowedNodes, root);
+        countPublisInNodes(allowedNodes, root);
       }
       return allowedTree;
     } catch (RemoteException e) {
@@ -1002,19 +1002,61 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
               "kmelia.EX_IMPOSSIBLE_DAVOIR_LE_CONTENU_DE_LA_CORBEILLE", e);
     }
   }
-
-  public int countPublisInNode(Map<NodePK, NodeDetail> allowedNodes, NodeTree currentNode) {
-    int result = currentNode.getNbPublications();
-    for (NodeTree child : currentNode.getChildren()) {
-      if (allowedNodes.containsKey(child.getKey())) {
-        result = result + countPublisInNode(allowedNodes, child);
+  
+  private void countPublisInNodes(Map<NodePK, NodeDetail> allowedNodes, NodeTree tree) {
+    for (NodeDetail node : allowedNodes.values()) {
+      NodeTree nodeTree = findNode(node, tree);
+      if (nodeTree != null) {
+        int nbPublis = countNbPublis(nodeTree);
+        SilverTrace.debug("kmelia", "KmeliaBmEJB.countPublisInNodes", "root.MSG_GEN_PARAM_VALUE",
+            nbPublis + " pubs in node " + node.getNodePK().getId());
+        node.setNbObjects(nbPublis);
       }
     }
-    NodeDetail node = allowedNodes.get(currentNode.getKey());
-    if (node != null) {
-      node.setNbObjects(result);
+  }
+  
+  private NodeTree findNode(NodeDetail node, NodeTree tree) {
+    SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_ENTER_METHOD",
+        "looking for node " + node.getNodePK().getId());
+    String path = node.getFullPath();
+    if (path.length() > 1) {
+      path = path.substring(1, path.length()-1); // remove starting and ending slash
+      SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_PARAM_VALUE", " path = " + path);
+      ArrayList<String> pathItems = new ArrayList<String>(Arrays.asList(path.split("/")));
+      pathItems.remove(0); // remove root
+      NodeTree current = tree;
+      for (String pathItem : pathItems) {
+        if (current != null) {
+          current = findNodeTree(pathItem, current.getChildren());
+        }
+      }
+      SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
+          "node " + current.getKey().getId()+" found");
+      return current;
     }
-    return result;
+    SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
+        "node " + node.getNodePK().getId()+" not found");
+    return null;
+  }
+  
+  private NodeTree findNodeTree(String nodeId, List<NodeTree> children) {
+    for (NodeTree node : children) {
+      if (node.getKey().getId().equals(nodeId)) {
+        return node;
+      }
+    }
+    return null;
+  }
+  
+  private int countNbPublis(NodeTree tree) {
+    SilverTrace.debug("kmelia", "KmeliaBmEJB.countNbPublis", "root.MSG_GEN_ENTER_METHOD",
+        "id = " + tree.getKey().getId());
+    int nb = tree.getNbPublications();
+    // add nb of each descendant
+    for (NodeTree node : tree.getChildren()) {
+      nb += countNbPublis(node);
+    }
+    return nb;
   }
 
   /**

@@ -216,7 +216,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (!StringUtil.isDefined(topicId)) {
           topicId = request.getParameter("Id");
           if (!StringUtil.isDefined(topicId)) {
-            topicId = "0";
+            topicId = NodePK.ROOT_NODE_ID;
           }
         }
 

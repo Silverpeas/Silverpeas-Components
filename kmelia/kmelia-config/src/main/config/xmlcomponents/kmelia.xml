@@ -416,7 +416,7 @@
       <name>draft</name>
       <label>
         <message lang="fr">Mode brouillon</message>
-        <message lang="en">Draf</message>
+        <message lang="en">Draft mode</message>
         <message lang="de">Entwurf</message>
       </label>
       <order>13</order>
