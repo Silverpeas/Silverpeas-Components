@@ -122,7 +122,7 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 	width: 100%;
 	border: 0px solid #aaa;
 }
-#splitter div {
+#splitter #treeDiv1 {
 	overflow: auto;
 }
 .vsplitbar {
