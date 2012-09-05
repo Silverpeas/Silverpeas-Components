@@ -134,7 +134,7 @@ function topicGoTo(id) {
 	if (kmeliaScc.isVersionControlled()) 
 	{
 		//Versioning links
-		getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/documents.jsp?Id="+URLEncoder.encode(pubId)+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images&IndexIt="+pIndexIt+"&Url="+URLEncoder.encode(url)+"&SL="+URLEncoder.encode(kmeliaScc.getSpaceLabel())+"&NodeId="+kmeliaScc.getSessionTopic().getNodePK().getId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CL="+URLEncoder.encode(kmeliaScc.getComponentLabel())+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
+		getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/documents.jsp?Id="+URLEncoder.encode(pubId)+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images&IndexIt="+pIndexIt+"&Url="+URLEncoder.encode(url)+"&SL="+URLEncoder.encode(kmeliaScc.getSpaceLabel())+"&NodeId="+kmeliaScc.getCurrentFolderId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CL="+URLEncoder.encode(kmeliaScc.getComponentLabel())+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
 	} 
 	else
 	{

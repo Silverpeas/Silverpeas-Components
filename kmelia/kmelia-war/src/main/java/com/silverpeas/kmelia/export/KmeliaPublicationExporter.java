@@ -30,7 +30,6 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
-import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 
@@ -94,13 +93,13 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
     OutputStream output = descriptor.getOutputStream();
     UserDetail user = descriptor.getParameter(EXPORT_FOR_USER);
     String language = descriptor.getParameter(EXPORT_LANGUAGE);
-    TopicDetail topic = descriptor.getParameter(EXPORT_TOPIC);
+    String folderId = descriptor.getParameter(EXPORT_TOPIC);
     DocumentFormat targetFormat = DocumentFormat.inFormat(descriptor.getFormat());
     String documentPath = getTemporaryExportFilePathFor(publication);
     File odtDocument = null, exportFile = null;
     try {
       ODTDocumentBuilder builder = anODTDocumentBuilder().forUser(user).inLanguage(language).
-              inTopic(topic);
+              inTopic(folderId);
       odtDocument = builder.buildFrom(publication, anODTAt(documentPath));
       if (targetFormat != odt) {
         ODTConverter converter = DocumentFormatConverterFactory.getFactory().getODTConverter();

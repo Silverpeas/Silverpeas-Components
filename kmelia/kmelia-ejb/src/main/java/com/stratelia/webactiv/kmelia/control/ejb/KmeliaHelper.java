@@ -131,4 +131,8 @@ public class KmeliaHelper implements Serializable {
   public static boolean isKmax(String componentId) {
     return componentId.startsWith("kmax");
   }
+  
+  public static boolean isKmelia(String componentId) {
+    return componentId.startsWith("kmelia");
+  }
 }

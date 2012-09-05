@@ -96,7 +96,6 @@
   //surcharge le componentId du composant courant (cas de l'alias)
   componentId = pubDetail.getPK().getInstanceId();
 
-  TopicDetail currentTopic = null;
   String linkedPathString = kmeliaScc.getSessionPath();
 
   boolean debut = rang.intValue() == 0;
@@ -565,9 +564,8 @@
 			              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
 			                  "/versioningPeas/jsp/displayDocuments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
-			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo + "&UpdateOfficeMode=" + kmeliaScc.
-			                  getUpdateOfficeMode() + "&Profile=" + attProfile + "&NodeId=" + kmeliaScc.
-			                  getSessionTopic().getNodePK().getId() + "&TopicRightsEnabled=" + kmeliaScc.
+			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
+			                  "&Profile=" + attProfile + "&NodeId=" + kmeliaScc.getCurrentFolderId() + "&TopicRightsEnabled=" + kmeliaScc.
 			                  isRightsOnTopicsEnabled() + "&VersionningFileRightsMode=" + kmeliaScc.
 			                  getVersionningFileRightsMode() + "&CallbackUrl=" + URLManager.getURL(
 			                  "useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
@@ -578,8 +576,8 @@
 				              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
 			                  "/attachment/jsp/displayAttachments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
-			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo + "&UpdateOfficeMode=" + kmeliaScc.
-			                  getUpdateOfficeMode() + "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
+			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo + 
+			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
 			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
 			                  include(request, response);
 			            }
@@ -730,7 +728,7 @@
 				                false, componentId, kmeliaScc.getUserId());
 				            xmlContext.setObjectId(id);
 				            if (kmeliaMode) {
-				              xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
+				              xmlContext.setNodeId(kmeliaScc.getCurrentFolderId());
 				            }
 				            xmlContext.setBorderPrinted(false);
 				            xmlContext.setContentLanguage(language);
