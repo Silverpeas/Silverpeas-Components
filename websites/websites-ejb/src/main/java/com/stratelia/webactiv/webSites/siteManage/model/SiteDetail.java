@@ -31,6 +31,10 @@ package com.stratelia.webactiv.webSites.siteManage.model;
 import java.text.ParseException;
 import java.util.Date;
 
+import com.stratelia.silverpeas.contentManager.ContentManager;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
@@ -45,6 +49,40 @@ public class SiteDetail extends PublicationDetail {
                      */
   private int state; /* site non publie (0) ou publie (1) */
   private int popup = 1;
+
+  private String silverObjectId;
+  public static final String SITETYPE = "Website";
+  private String positions;
+
+  /**
+   * SiteDetail default constructor
+   * @param idSite
+   * @param applicationId TODO
+   * @param name
+   * @param description
+   * @param page
+   * @param type
+   * @param creatorId
+   * @param date
+   * @param state
+   * @param popup
+   */
+  public SiteDetail(String idSite, String applicationId, String name, String description, String page,
+      int type, String creatorId, String date, int state, int popup) {
+    super("X", name, description, null, null, null, creatorId, Integer.toString(type), idSite, "",
+        page);
+    if (date != null) {
+      Date theCreationDate = null;
+      try {
+        theCreationDate = DateUtil.parse(date);
+      } catch (ParseException e) {
+        SilverTrace.error(SITETYPE, "SiteDetail constructor", "Problem to parse date", e);
+      }
+      this.setCreationDate(theCreationDate);
+    }
+    SitePK sitePK = new SitePK(idSite, null, applicationId);
+    init(sitePK, type, state, popup);
+  }
 
   /*-------------- Methodes des attributs ------------------*/
   // sitePk
@@ -84,34 +122,25 @@ public class SiteDetail extends PublicationDetail {
     return getSitePK().getComponentName();
   }
 
-  /*-------------- Methodes ------------------*/
+  /**
+   * @return the positions
+   */
+  public String getPositions() {
+    return positions;
+  }
 
   /**
-   * SiteDetail
-   * @throws ParseException
+   * @param positions the positions to set
    */
-  public SiteDetail(String idSite, String name, String description,
-      String page, int type, String creatorId, String date, int state, int popup) {
-    super("X", name, description, null, null, null, creatorId, Integer.toString(type), idSite, "",
-        page);
-
-    if (date != null) {
-      Date theCreationDate = null;
-      try {
-        theCreationDate = DateUtil.parse(date);
-      } catch (ParseException e) {
-
-      }
-      this.setCreationDate(theCreationDate);
-    }
-    init(idSite, type, state, popup);
+  public void setPositions(String positions) {
+    this.positions = positions;
   }
 
   /**
    * init
    */
-  public void init(String idSite, int type, int state, int popup) {
-    this.sitePk.setId(idSite);
+  private void init(SitePK sitePK, int type, int state, int popup) {
+    this.setSitePK(sitePK);
     this.type = type;
     this.state = state;
     this.popup = popup;
@@ -133,4 +162,31 @@ public class SiteDetail extends PublicationDetail {
   public void setPopup(int popup) {
     this.popup = popup;
   }
+
+  @Override
+  public String getComponentInstanceId() {
+    return this.getInstanceId();
+  }
+
+  @Override
+  public String getContributionType() {
+    return SITETYPE;
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    if (this.silverObjectId == null) {
+      ContentManager contentManager = ContentManagerFactory.getFactory().getContentManager();
+      try {
+        int objectId = contentManager.getSilverContentId(this.getId(), this.getInstanceId());
+        if (objectId >= 0) {
+          this.silverObjectId = String.valueOf(objectId);
+        }
+      } catch (ContentManagerException ex) {
+        this.silverObjectId = null;
+      }
+    }
+    return this.silverObjectId;
+  }
+
 }
