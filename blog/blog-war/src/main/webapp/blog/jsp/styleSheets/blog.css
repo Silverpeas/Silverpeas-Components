@@ -1,44 +1,35 @@
-@CHARSET "ISO-8859-1";
-
 #blog {
-	/*text-align: center;*/
+	overflow-x:hidden;
 }
-
-#blog #blogContainer { 
-	/*width:750px; */
-	margin: 0 auto;
-	text-align: left;
+.cellBrowseBar {
+    height: 3em;
+	margin-bottom:1em;
 }
-
 #blog #blogContainer #bandeau {
-	background-image: url(/silverpeas/blog/jsp/icons/fondBandeau.jpg);
-	background-repeat: repeat-x;
-	height: 90px;
-	text-align: center;
-	line-height: 90px;
-	margin-top: 10px;
+	height:50px;
+	background-color:#F0F0F0;
+	border-top: 1px solid #D6D6D6;
+	border-bottom: 1px solid #D6D6D6;
+	margin-bottom:10px;
 }
 
-#blog #blogContainer #bandeau a {
-	font-size: 18px;
-	font-weight: bold;
-	text-align: center;
+#blog #blogContainer #bandeau h2 {
+	font-size:170%;
+	line-height:50px;
+	padding:0;
+	margin:0;
+}
+#blog #blogContainer #bandeau h2 a{
+	font-size:100%;
+	font-weight:100;
+	color:#333;
+	padding-left:7px;
 }
 
-#blog #blogContainer #backHomeBlog { 
-	/* text-align: center; */	
-}
-
-#blog #blogContainer #postsList,#blog #blogContainer #viewPost {
-	width: 70%;
-	padding: 10px;
-	float: left;
-}
-
-#blog #blogContainer #postsList,#blog #blogContainer #viewPostDraft {
-	width: 70%;
-	padding: 10px;
-	float: left;
+#blog #blogContainer #postsList,
+#blog #blogContainer #viewPost,
+#blog #blogContainer #viewPostDraft {
+	margin-right:330px;
 }
 
 #blog #blogContainer #postsList div.post {
@@ -46,93 +37,140 @@
 }
 
 #blog #blogContainer #navBlog {
-	width: 180px;
+	width: 310px;
 	float: right;
-	margin-bottom: 15px;
-	margin-right: 15px;
 }
 
-#blog #blogContainer #footer {
-	clear: both;
+#blog #blogContainer #navBlog .yuimenu {
+	margin:0;
+	margin-bottom:10px;
+}
+ #navBlog .bgDegradeGris ul{
+	list-style-type:none;
+	margin:0;
+	padding:0;
+ } 
+
+ #navBlog .bgDegradeGris ul li{
+	margin:3px 0 3px 0;
+	padding:0
+ }
+ #navBlog .bgDegradeGris ul li a{
+	padding:0 0 0 5px;
+	display:block;
+	color:#4D4D4D;
+	line-height:1.5em;
+ }
+#navBlog .bgDegradeGris ul li a:hover {
+	background-color:#fafafa;
 }
 
-#blog .versCommentaires,#blog .categoryTicket,#blog .creatorTicket {
-	color: #999999;
+#navBlog #menubar-creation-actions {
+    margin: 1em 0;
+}
+
+#blog .versCommentaires,
+#blog .categoryTicket,
+#blog .creatorTicket,
+#blog .versTopic  {
+	color:#999;
 }
 
 #blog .comment {
-	color: black;
-}
-
-#blog .versTopic {
-	color: #999999;
+	color:#000;
 }
 
 #blog #operationBlog a {
-	color: #999999;
+	display:block;
+	line-height:2em;
+	padding-left:1em;
 }
 
 #blog .separateur {
 	background-image: url(/silverpeas/blog/jsp/icons/separateur.gif);
 	background-repeat: repeat-x;
 	height: 20px;
+	color:#FFF;
+}
+#blog .separateur hr {
+	display:none;
 }
 
-#blog .zoneRecherche {
-	font-size: 12px;
+#blog #zoneRecherche {
+	font-size:100%;
 	color: #999999;
 }
 
-#blog .zoneRecherche form {
+#blog #zoneRecherche form {
    margin:0;
-   padding:0;
+   padding:10px 10px 5px 10px;
+   height:25px;
+}
+
+#blog #zoneRecherche table {
+	width:15%;
+	float:right
 }
 
 #blog .inputRecherche {
-	height: 20px;
-	width: 140px;
-}
-
-#blog .okRecherche {
-	font-size: 14px;
-	font-weight: bolder;
+	height:15px;
+	width:80%;
+	margin-bottom:5px;
+	float:left;
 }
 
 #blog .titreRecherche {
-	font-size: 12px;
+	font-size: 100%;
 	font-weight: bold;
 	color: #999999;
 }
-
-#blog #titreTopics {
-	font-size: 16px;
-	font-weight: bolder;
-	color: #666666;
-	background-image: url(/silverpeas/blog/jsp/icons/fondTitresDroite.gif);
-	background-repeat: repeat-x;
-	height: 20px;
+.header h4  {
+	margin:0;
+	padding:0;
+	font-size:100%;
 }
 
-#blog #titreTopics a {
-	text-decoration: none;
-	font-size: 16px;
-	font-weight: bolder;
-	color: #666666;
+.header h4 a {
+   color:#333;
+}
+#titreRecherche h4 {
+    background:transparent url("/silverpeas/util/icons/Mot.gif") right top  no-repeat ;
+    height: 16px;
+}
+#titreLiens h4 {
+    background:transparent url("/silverpeas/util/icons/webLink.gif") right top  no-repeat ;
+    height: 16px;
 }
 
-#blog #topics a {
-	color: #999999;
+#topics h4 {
+    background:transparent url("/silverpeas/util/icons/component/kmeliaSmall.gif") right top  no-repeat ;
+    height: 16px;
+}
+
+#calendar td.txtnav3 , 
+#calendar th.txtnav,
+#calendar td.intfdcolor3
+{
+	padding:6px 0;
+}
+#calendar table table td.intfdcolor3 {
+	background-color:#4D4D4D;
+}
+#archives ul {
+	max-height:185px;
+	height:185px;
+	overflow:auto;
+	overflow-x:hidden;
 }
 
 .titreTicket a {
-	/*width: 550px;*/
-	font-size: 16px;
+	font-size:140%;
 	font-weight: bold;
 	color: #666666;
 }
 
 .infoTicket {
-	font-size: 12px;
+	font-size: 110%;
 	font-weight: bold;
 	color: #999999;
 }
@@ -146,7 +184,7 @@
 }
 
 .postDraft .titreTicket .status {
-	font-size: 16px;
+	font-size: 140%;
 	font-weight: bold;
 	color: #FF6F6F;
 }
@@ -160,15 +198,13 @@
 }
 
 #viewPost .titreTicket {
-	/*width: 550px;*/
-	font-size: 16px;
+	font-size: 140%;
 	font-weight: bold;
 	color: #666666;
 }
 
 #viewPostDraft .titreTicket {
-	/*width: 550px;*/
-	font-size: 16px;
+	font-size: 140%;
 	font-weight: bold;
 	color: #FF6F6F;
 }
@@ -177,41 +213,28 @@
 	color: #FF6F6F;
 }
 
-#blog #titreArchive {
-	font-size: 16px;
-	font-weight: bolder;
-	color: #666666;
-	background-image: url(/silverpeas/blog/jsp/icons/fondTitresDroite.gif);
-	background-repeat: repeat-x;
-	height: 20px;
+#blog #blogContainer #footer {
+	clear: both;
+	margin-top:10px;
 }
 
-#blog #archives a {
-	color: #999999;
+#calendar .txtnav {
+	font-size:11px;
+}
+#calendar  {
+	width:162px;
+	float:left;
+	height:210px;
 }
 
-#blog #titreLiens {
-	font-size: 16px;
-	font-weight: bolder;
-	color: #666666;
-	background-image: url(/silverpeas/blog/jsp/icons/fondTitresDroite.gif);
-	background-repeat: repeat-x;
-	height: 20px;
+#archives {
+	width:138px;
+	float:left;
+	margin-right:6px;
 }
-
-#blog #titreLiens a {
-	text-decoration: none;
-	font-size: 16px;
-	font-weight: bolder;
-	color: #666666;
+#archives .header h4{
+	min-width:122px;
 }
-
-#blog #liens a {
-	color: #999999;
-}
-
-.newCommentLabel {
-	font-size: 12px;
-	font-weight: bold;
-	color: #999999;
+#liens {
+	clear:both;
 }
