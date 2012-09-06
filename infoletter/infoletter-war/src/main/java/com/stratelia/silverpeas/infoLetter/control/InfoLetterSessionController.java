@@ -115,14 +115,11 @@ import org.silverpeas.search.indexEngine.model.IndexEntryPK;
  */
 public class InfoLetterSessionController extends AbstractComponentSessionController {
 
-  // Membres roides de bon aloi
   /** Interface metier du composant */
   private InfoLetterDataInterface dataInterface = null;
   /** the tuning parameters */
   private static final ResourceLocator smtpSettings = new ResourceLocator(
-      "com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
-  /** the current publication id */
-  private String currentPublicationId = null;
+      "org.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
   public final static String EXPORT_CSV_NAME = "_emails.csv";
   public final static boolean EXPORT_OK = true;
 
@@ -135,9 +132,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public InfoLetterSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.infoLetter.multilang.infoLetterBundle",
-        "com.stratelia.silverpeas.infoLetter.settings.infoLetterIcons",
-        "com.stratelia.silverpeas.infoLetter.settings.infoLetterSettings");
+        "org.silverpeas.infoLetter.multilang.infoLetterBundle",
+        "org.silverpeas.infoLetter.settings.infoLetterIcons",
+        "org.silverpeas.infoLetter.settings.infoLetterSettings");
     // Initialize business interface
     if (dataInterface == null) {
       dataInterface = ServiceFactory.getInfoLetterData();
@@ -296,13 +293,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   // Recuperation d'une publication par sa clef
   public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK) {
-    currentPublicationId = publiPK.getId();
     return dataInterface.getInfoLetterPublication(publiPK);
   }
 
   protected SilverpeasTemplate getNewTemplate() {
     ResourceLocator rs =
-        new ResourceLocator("com.stratelia.silverpeas.infoLetter.settings.infoLetterSettings", "");
+        new ResourceLocator("org.silverpeas.infoLetter.settings.infoLetterSettings", "");
     Properties templateConfiguration = new Properties();
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString(
         "templatePath"));
@@ -347,7 +343,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         template.setAttribute("silverpeasURL", url);
 
         ResourceLocator localizedMessage = new ResourceLocator(
-            "com.stratelia.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
+            "org.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
         notifMetaData.addLanguage(lang, localizedMessage.getString("infoLetter.emailSubject",
             getString("infoLetter.emailSubject")) + ilp.getName(), "");
       }
@@ -793,10 +789,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     return "yes".equals(parameterValue.toLowerCase());
   }
 
-  public int getCurrentSilverObjectId() {
-    return dataInterface.getSilverObjectId(currentPublicationId, getComponentId());
-  }
-
   /**
    * Method declaration
    * @return
@@ -826,7 +818,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       throw ie;
     }
     CSVReader csvReader = new CSVReader(getLanguage());
-    csvReader.initCSVFormat("com.stratelia.silverpeas.infoLetter.settings.usersCSVFormat", "User",
+    csvReader.initCSVFormat("org.silverpeas.infoLetter.settings.usersCSVFormat", "User",
         ";");
 
     Variant[][] csvValues;
@@ -891,7 +883,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       List<String> emails = getExternalsSuscribers(getCurrentLetter().getPK());
 
       CSVWriter csvWriter = new CSVWriter(getLanguage());
-      csvWriter.initCSVFormat("com.stratelia.silverpeas.infoLetter.settings.usersCSVFormat",
+      csvWriter.initCSVFormat("org.silverpeas.infoLetter.settings.usersCSVFormat",
           "User", ";");
 
       String email;

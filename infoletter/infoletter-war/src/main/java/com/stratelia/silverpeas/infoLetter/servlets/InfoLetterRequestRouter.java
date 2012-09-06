@@ -608,41 +608,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
             destination = setMainContext(infoLetterSC, request);
           }
         }
-      }
-      // PdC classification
-      else if (function.startsWith("pdcPositions.jsp")) {
-        String parution = param(request, "parution");
-
-        if (parution == null || parution.equals("")) {
-          parution = request.getParameter("PubId");
-        }
-        if (parution != null && !parution.equals("")) {
-          String urlContext =
-              GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-          String url =
-              "/RinfoLetter/" + infoLetterSC.getComponentId() + "/FilesEdit?parution=" + parution;
-          IdPK publiPK = new IdPK();
-
-          publiPK.setId(parution);
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-
-          request.setAttribute("parution", parution);
-          request.setAttribute("url", java.net.URLEncoder.encode(url, "UTF-8"));
-          request.setAttribute("parutionTitle", ilp.getTitle());
-          request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
-          request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
-          request.setAttribute("ComponentId", infoLetterSC.getComponentId());
-          request.setAttribute("ComponentName", infoLetterSC.getComponentLabel());
-          request.setAttribute("BrowseInfo", "Editeur de parution");
-          request.setAttribute("ObjectId", parution);
-          request.setAttribute("Language", infoLetterSC.getLanguage());
-          request.setAttribute("ReturnUrl", urlContext + "/RinfoLetter/"
-              + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
-        }
-        request.setAttribute("silverObjectId", String.valueOf(infoLetterSC
-            .getCurrentSilverObjectId()));
-
-        destination = "pdcPositions.jsp";
       } else if (function.startsWith("ImportEmailsCsv")) {
         FileItem fileItem = FileUploadUtil.getFile(request);
 
