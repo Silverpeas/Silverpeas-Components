@@ -103,36 +103,27 @@ private int nbThemes(String idNode, WebSiteSessionController scc, int nb) throws
   }
   return N;
 }
-
-
 %>
 
-
 <%
-    //CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     String mandatoryField=m_context+"/util/icons/mandatoryField.gif";
-
     String action = (String) request.getAttribute("Action");
     if (action == null) {// action = desc || suggest
         action = "desc";
     }
 
-	//CBO : ADD
 	Collection allIcons = (Collection) request.getAttribute("AllIcons");
 %>
 <c:set var="allIcons" value="${requestScope.AllIcons}"/>
 
-<!-- descBookmark -->
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-
 <script type="text/javascript">
-
 function isCorrect(nom) {
   if (nom.indexOf("\"")>-1 || nom.indexOf("'")>-1) {
       return false;
@@ -261,54 +252,41 @@ function B_ANNULER_ONCLICK() {
     document.descriptionSite.Action.value="view";
     document.descriptionSite.submit();
 }
-
 </script>
 </head>
-
 <body class="websites bookmarks" onload="document.descriptionSite.nomSite.focus()">
 <%
   Window window = gef.getWindow();
   BrowseBar browseBar = window.getBrowseBar();
-  //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
+  browseBar.setDomainName(spaceLabel);
   if (action.equals("suggest")) {
-    //CBO : UPDATE
-		//browseBar.setComponentName(scc.getComponentLabel(), "listSite_reader.jsp");
-		browseBar.setComponentName(componentLabel, "listSite_reader.jsp");
+  	browseBar.setComponentName(componentLabel, "listSite_reader.jsp");
     browseBar.setPath(resources.getString("Suggerer"));
   } else {
-		//CBO : UPDATE
-    //browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp?Action=view");
-		browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
+	browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
     browseBar.setPath(resources.getString("CreationSite"));
   }
 
   //Le cadre
   Frame frame = gef.getFrame();
-
-	//Le board
-	Board board = gef.getBoard();
-
+  
   //Start code
   out.println(window.printBefore());
   out.println(frame.printBefore());
-	out.print(board.printBefore());
 
   //current User
   UserDetail actor = scc.getUserDetail();
   
   //currentDate
   String creationDate = resources.getOutputDate(new Date());
-
 %>
 
 <form name="descriptionSite" action="manage.jsp" method="post">
-  <input type="hidden" name="Action" value="addBookmark">
-  <input type="hidden" name="ListeIcones">
-  <input type="hidden" name="ListeTopics">
-  <input type="hidden" name="auteur" value="<%=actor.getLastName()+" "+actor.getFirstName()%>">
-  <input type="hidden" name="date" value="<%=creationDate%>">
+  <input type="hidden" name="Action" value="addBookmark"/>
+  <input type="hidden" name="ListeIcones"/>
+  <input type="hidden" name="ListeTopics"/>
+  <input type="hidden" name="auteur" value="<%=actor.getLastName()+" "+actor.getFirstName()%>"/>
+  <input type="hidden" name="date" value="<%=creationDate%>"/>
   <input type="hidden" name="Positions" />
 
 
@@ -326,7 +304,7 @@ function B_ANNULER_ONCLICK() {
     <div class="field" id="descriptionArea">
       <label class="txtlibform" for="description"><fmt:message key="GML.description" /> </label>
       <div class="champs">
-        <textarea name="description" id="description" rows="6" cols="60"></textarea>
+        <textarea name="description" id="description" rows="4" cols="60"></textarea>
       </div>
     </div>
     <div class="field" id="nomPageArea">
@@ -360,7 +338,7 @@ function B_ANNULER_ONCLICK() {
     <div class="field" id="popupArea">
       <label class="txtlibform" for="popup"><fmt:message key="OuvrirPopup" /> </label>
       <div class="champs">
-        <input type="checkbox" name="popup" checked/>
+        <input type="checkbox" name="popup" checked="checked"/>
       </div>
     </div>
     <div class="field" id="iconArea">
@@ -369,9 +347,11 @@ function B_ANNULER_ONCLICK() {
         <c:forEach var="icon" items="${allIcons}" varStatus="iconStatus">
           <!-- Dont display the first element (important site) -->
           <c:if test="${not iconStatus.first}">
-        <input type="checkbox" name="icon" value="${icon.iconPK.id}"/>&nbsp;
-        <fmt:message var="iconTitleMsg" key="${icon.description}" />
-        <img src="${icon.address}" alt="${icon.description}" title="${iconTitleMsg}"/>&nbsp;&nbsp;<fmt:message key="${icon.name}" /><br/>
+          	<div class="specification-tag">
+		        <input type="checkbox" name="icon" value="${icon.iconPK.id}"/>&nbsp;
+		        <fmt:message var="iconTitleMsg" key="${icon.description}" />
+	    	    <img src="${icon.address}" alt="${icon.description}" title="${iconTitleMsg}"/>&nbsp;&nbsp;<fmt:message key="${icon.name}" />
+	    	</div>
           </c:if>
         </c:forEach>
       </div>
@@ -413,17 +393,13 @@ function B_ANNULER_ONCLICK() {
 </form>
 
 <%
-
   //fin du code
-  out.print(board.printAfter());
   out.println(frame.printMiddle());
   
   ButtonPane buttonPane = gef.getButtonPane();
   Button validerButton = null;
   Button annulerButton = null;
   
-  //CBO : UPDATE
-  //int size = c.size() - 1;
   int size = allIcons.size() - 1;
   Iterator i = allIcons.iterator();
 
@@ -431,11 +407,11 @@ function B_ANNULER_ONCLICK() {
   String nameReference = resources.getString(icon.getName());
   
   if (action.equals("suggest")) {
-      validerButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_SUGGERER_ONCLICK("+size+", '"+nameReference+"');", false);
-      annulerButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "listSite_reader.jsp", false);
+      validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_SUGGERER_ONCLICK("+size+", '"+nameReference+"');", false);
+      annulerButton = gef.getFormButton(resources.getString("GML.cancel"), "listSite_reader.jsp", false);
   } else {
-      validerButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+");", false);
-      annulerButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
+      validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+");", false);
+      annulerButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
   }
   buttonPane.addButton(validerButton);
   buttonPane.addButton(annulerButton);
@@ -457,5 +433,4 @@ function B_ANNULER_ONCLICK() {
   <input type="hidden" name="ListeIcones"/>
 </form>
 </body>
-
 </html>

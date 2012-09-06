@@ -101,17 +101,11 @@ private int nbThemes(String idNode, WebSiteSessionController scc, int nb) throws
        }
        return N;
 }
-
-
 %>
 
-
 <%
-  //CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
   String mandatoryField=m_context+"/util/icons/mandatoryField.gif";
-
-	//CBO : ADD
-	Collection allIcons = (Collection) request.getAttribute("AllIcons");
+  Collection allIcons = (Collection) request.getAttribute("AllIcons");
 %>
 <c:set var="allIcons" value="${requestScope.AllIcons}"/>
 
@@ -309,24 +303,14 @@ function B_ANNULER_ONCLICK() {
 <%
   Window window = gef.getWindow();
   BrowseBar browseBar = window.getBrowseBar();
-	//CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-  //CBO : UPDATE
-	//browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp?Action=view");
-	browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
+  browseBar.setDomainName(spaceLabel);
+  browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
   browseBar.setPath(resources.getString("CreationSite"));
 
-  //Le cadre
   Frame frame = gef.getFrame();
 
-	//Le board
-	Board board = gef.getBoard();
-
-  //Debut code
   out.println(window.printBefore());
   out.println(frame.printBefore());
-	out.print(board.printBefore());
 
   //currentDate
   String creationDate = resources.getOutputDate(new Date());
@@ -355,7 +339,7 @@ function B_ANNULER_ONCLICK() {
     <div class="field" id="descriptionArea">
       <label class="txtlibform" for="description"><fmt:message key="GML.description" /> </label>
       <div class="champs">
-        <textarea name="description" id="description" rows="6" cols="60"></textarea>
+        <textarea name="description" id="description" rows="4" cols="60"></textarea>
       </div>
     </div>
     <div class="field" id="nomPageArea">
@@ -398,9 +382,11 @@ function B_ANNULER_ONCLICK() {
         <c:forEach var="icon" items="${allIcons}" varStatus="iconStatus">
           <!-- Dont display the first element (important site) -->
           <c:if test="${not iconStatus.first}">
-        <input type="checkbox" name="icon" value="${icon.iconPK.id}"/>&nbsp;
-        <fmt:message var="iconTitleMsg" key="${icon.description}" />
-        <img src="${icon.address}" alt="${icon.description}" title="${iconTitleMsg}"/>&nbsp;&nbsp;<fmt:message key="${icon.name}" /><br/>
+          	<div class="specification-tag">
+	        	<input type="checkbox" name="icon" value="${icon.iconPK.id}"/>&nbsp;
+	        	<fmt:message var="iconTitleMsg" key="${icon.description}" />
+	        	<img src="${icon.address}" alt="${icon.description}" title="${iconTitleMsg}"/>&nbsp;&nbsp;<fmt:message key="${icon.name}" />
+        	</div>
           </c:if>
         </c:forEach>
       </div>
@@ -440,31 +426,22 @@ function B_ANNULER_ONCLICK() {
 
 	</form>
 <%
-
-	//fin du code
-	out.print(board.printAfter());
 	out.println(frame.printMiddle());
 
 	ButtonPane buttonPane = gef.getButtonPane();
-	Button validerButton = null;
-	Button annulerButton = null;
 
-	//CBO : UPDATE
-	//int size = c.size() - 1;
 	int size = allIcons.size() - 1;
 
-	validerButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+");", false);
-	annulerButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
+	Button validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+");", false);
+	Button annulerButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
 	buttonPane.addButton(validerButton);
 	buttonPane.addButton(annulerButton);
 	buttonPane.setHorizontalPosition();
 
-	out.println("<br><center>"+buttonPane.print()+"</center><br>");
+	out.println("<br/><center>"+buttonPane.print()+"</center>");
 
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
-
 %>
 </body>
-
 </html>

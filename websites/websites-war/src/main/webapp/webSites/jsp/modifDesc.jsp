@@ -101,19 +101,7 @@ private boolean appartientId(IconDetail iconDetail, Collection c) {
    private boolean isPublishedInTopic(WebSiteSessionController scc, String idSite, String idNode) throws Exception {
         // est ce que l'id Site est publie dans l'id Node
 
-		//CBO : UPDATE
-        /*Collection coll = scc.getAllPublication(idSite);
-        Iterator i = coll.iterator();
-
-        while(i.hasNext()) {
-              String idPub = (String) i.next(); // idPub
-              FolderDetail folder = scc.getPublicationFather(idPub);
-              if (idNode.equals(folder.getNodeDetail().getNodePK().getId()))
-                  return true;
-        }
-        return false;*/
 		String idPub = scc.getIdPublication(idSite);
-		//CBO : FIN UPDATE
 
 		Collection listFatherPK = scc.getAllFatherPK(idPub);
 		Iterator i = listFatherPK.iterator();
@@ -190,22 +178,17 @@ private boolean appartientId(IconDetail iconDetail, Collection c) {
 
 
 <%
-	//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	String mandatoryField=m_context+"/util/icons/mandatoryField.gif";
 
 	String id = request.getParameter("Id");
 	String currentPath = request.getParameter("path"); /* = null ou rempli si type= design */
 	String type = request.getParameter("type"); // null  ou design
 
-	//CBO : UPDATE
-	//SiteDetail site = scc.getWebSite(id);
 	SiteDetail site = (SiteDetail) request.getAttribute("Site");
 
-	//CBO : ADD
 	Collection listIcons = (Collection) request.getAttribute("ListIcons");
 	Collection allIcons = (Collection) request.getAttribute("AllIcons");
-	//CBO : FIN ADD
-
+	
 	String recupParam = request.getParameter("RecupParam"); //=null ou oui
 	String nom;
 	String description;
@@ -249,20 +232,10 @@ private boolean appartientId(IconDetail iconDetail, Collection c) {
       description = "";
     }
 
-		//CBO : UPDATE
-		//lapage = site.getPage();
 		lapage = site.getContent();
-
-
-		//CBO : REMOVE Collection ic = scc.getIcons(id);
-
-		//CBO : UPDATE
-		//icones = new ArrayList(ic);
 		icones = new ArrayList(listIcons);
 
 		//site de reference ou pas
-		//CBO : UPDATE
-		//Iterator i = ic.iterator();
 		Iterator i = listIcons.iterator();
 		while (i.hasNext()) {
 			IconDetail icon = (IconDetail) i.next();
@@ -275,15 +248,12 @@ private boolean appartientId(IconDetail iconDetail, Collection c) {
 
 	Collection collectionRep = affichageChemin(scc, currentPath);
 	String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&path=", nom);
-
-
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><fmt:message key="GML.popupTitle"/></title>
-
 <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -435,11 +405,8 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
     }
 
 </script>
-
 </head>
-
 <body class="websites"  onload="document.descriptionSite.nomSite.focus()">
-
 <%
 	String theAction = "";
 	if (type == null) { //pour sites bookmark
@@ -450,28 +417,17 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
 
   Window window = gef.getWindow();
   BrowseBar browseBar = window.getBrowseBar();
-  //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-	//CBO : UPDATE
-    //browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp?Action=view");
-	browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
+  browseBar.setDomainName(spaceLabel);
+  browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
   if (site.getType() == 1) { //bookmark
     browseBar.setPath(resources.getString("ModificationSite"));
-  }
-  else { //autres sites
+  } else { //autres sites
     browseBar.setPath(infoPath+" - "+resources.getString("ModificationSite"));
   }
 
-  //Le cadre
   Frame frame = gef.getFrame();
-
-	//Le board
-	Board board = gef.getBoard();
-
- //Debut code
+ 
   out.println(window.printBefore());
-
   out.println(frame.printBefore());
 
 	String creationDate = resources.getOutputDate(site.getCreationDate());
@@ -500,7 +456,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones, type) {
     <div class="field" id="descriptionArea">
       <label class="txtlibform" for="description"><fmt:message key="GML.description" /> </label>
       <div class="champs">
-        <textarea name="description" id="description" rows="6" cols="60"><%=description%></textarea>
+        <textarea name="description" id="description" rows="4" cols="60"><%=description%></textarea>
       </div>
     </div>
     <div class="field" id="nomPageArea">
@@ -550,6 +506,7 @@ iconIterator.next(); // on saute la premiere icone (site important)
 
 while (iconIterator.hasNext()) {
   IconDetail icon = (IconDetail) iconIterator.next();
+  out.println("<div class=\"specification-tag\">");
   if (recupParam != null) {//=oui
       if (appartientId(icon, icones)) {
           out.println("<input type=\"checkbox\" name=\"icon\" value = \""+icon.getIconPK().getId()+"\" checked>&nbsp;");
@@ -565,22 +522,16 @@ while (iconIterator.hasNext()) {
       }
   }
     out.println("<img src=\""+icon.getAddress()+"\" alt=\""+resources.getString(icon.getDescription())+"\" align=absmiddle title=\""+resources.getString(icon.getDescription())+"\">&nbsp;&nbsp;");
-    out.println(resources.getString(icon.getName())+"<br>");
+    out.println(resources.getString(icon.getName()));
+    out.println("</div>");
 }
-
-
-
 %>
       </div>
     </div>
   </div>
 </fieldset>
 
-
-<%
-
-if (type == null) {
-%>
+<% if (type == null) { %>
 <fieldset id="foldersFieldset" class="skinFieldset">
   <legend><fmt:message key="websites.header.fieldset.folders" /></legend>
 
@@ -599,9 +550,7 @@ if (type == null) {
 	out.println(resultat);
 %>
 </fieldset>
-<%  
-}
-%>
+<% } %>
 
 <view:pdcClassification componentId="<%=scc.getComponentId()%>" contentId="${curWebSiteId}" editable="true" />
 
@@ -612,27 +561,24 @@ if (type == null) {
 </form>
 
 <%
-	//fin du code
 	out.println(frame.printMiddle());
 
-	//CBO : UPDATE
-	//int size = c.size() - 1;
 	int size = allIcons.size() - 1;
 
 	ButtonPane buttonPane = gef.getButtonPane();
 	Button validerButton = null;
 	if (type == null) {
-		  validerButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+", '"+site.getType()+"');", false);
+		validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+", '"+site.getType()+"');", false);
 	} else {
-    validerButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK(0, "+size+", '"+site.getType()+"');", false);
-  }
+    	validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK(0, "+size+", '"+site.getType()+"');", false);
+  	}
 
-	Button annulerButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
+	Button annulerButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
 	buttonPane.addButton(validerButton);
 	buttonPane.addButton(annulerButton);
 	buttonPane.setHorizontalPosition();
 
-	out.println("<br><center>"+buttonPane.print()+"</center><br>");
+	out.println("<br/><center>"+buttonPane.print()+"</center>");
 
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
