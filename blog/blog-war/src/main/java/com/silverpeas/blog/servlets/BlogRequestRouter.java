@@ -286,11 +286,6 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
       } else if (function.equals("ViewCategory")) {
         request.setAttribute("Categories", blogSC.getAllCategories());
         destination = rootDest + "viewCategory.jsp";
-      } else if (function.equals("NewCategory")) {
-        request.setAttribute("UserName", blogSC.getUserDetail(blogSC.getUserId())
-            .getDisplayedName());
-
-        destination = rootDest + "categoryManager.jsp";
       } else if (function.equals("CreateCategory")) {
         // récupération des paramètres
         String name = request.getParameter("Name");
@@ -301,21 +296,11 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         blogSC.createCategory(category);
 
         destination = getDestination("ViewCategory", blogSC, request);
-      } else if (function.equals("EditCategory")) {
-        // récupération des paramètres
-        String categoryId = request.getParameter("CategoryId");
-        Category category = blogSC.getCategory(categoryId);
-        request.setAttribute("Category", category);
-
-        destination = rootDest + "categoryManager.jsp";
       } else if (function.equals("UpdateCategory")) {
         String categoryId = request.getParameter("CategoryId");
         Category category = blogSC.getCategory(categoryId);
-        String name = request.getParameter("Name");
-        category.setName(name);
-        String desc = request.getParameter("Description");
-        category.setDescription(desc);
-        // MAJ base
+        category.setName(request.getParameter("Name"));
+        category.setDescription(request.getParameter("Description"));
         blogSC.updateCategory(category);
 
         destination = getDestination("ViewCategory", blogSC, request);
