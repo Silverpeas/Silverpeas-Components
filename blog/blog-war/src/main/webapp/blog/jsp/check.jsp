@@ -84,7 +84,6 @@ MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getA
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
-ResourceLocator settings = (ResourceLocator) request.getAttribute("settings");
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();

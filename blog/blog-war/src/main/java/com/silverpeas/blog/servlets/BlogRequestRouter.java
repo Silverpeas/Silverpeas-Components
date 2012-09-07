@@ -26,6 +26,7 @@ package com.silverpeas.blog.servlets;
 import com.silverpeas.blog.control.BlogSessionController;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -41,7 +42,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 
 public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionController> {
 
@@ -98,7 +98,6 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
     // paramètres généraux
     request.setAttribute("Profile", getFlag(blogSC.getUserRoles()));
-    request.setAttribute("settings", blogSC.getSettings());
 
     try {
       if (function.startsWith("Main")) {
@@ -122,10 +121,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("NewPost")) {
         request.setAttribute("AllCategories", blogSC.getAllCategories());
-        request.setAttribute("UserName", blogSC.getUserDetail(blogSC.getUserId())
-            .getDisplayedName());
-        request.setAttribute("IsUsePdc", blogSC.isPdcUsed());
-
+        
         // appel de la page de création
         destination = rootDest + "postManager.jsp";
       } else if (function.equals("CreatePost")) {
@@ -139,22 +135,28 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         } else {
           dateEvent = new Date();
         }
-        String postId = blogSC.createPost(title, categoryId, dateEvent);
+        
+        // Classification
+        String positions = request.getParameter("Positions");
+        PdcClassificationEntity classification =
+            PdcClassificationEntity.undefinedClassification();
+        if (StringUtil.isDefined(positions)) {
+          classification = PdcClassificationEntity.fromJSON(positions);
+        }
+  
+        String postId = blogSC.createPost(title, categoryId, dateEvent, classification);
 
         // appel de la page pour saisir le contenu du billet
         request.setAttribute("PostId", postId);
         destination = getDestination("ViewContent", blogSC, request);
       } else if (function.equals("EditPost")) {
         String postId = request.getParameter("PostId");
-        if (postId == null || postId.length() == 0 || "null".equals(postId)) {
+        if (!StringUtil.isDefined(postId)) {
           postId = (String) request.getAttribute("PostId");
         }
         PostDetail post = blogSC.getPost(postId);
         request.setAttribute("Post", post);
-        request.setAttribute("UserName", blogSC.getUserDetail(post.getPublication().getCreatorId())
-            .getDisplayedName());
         request.setAttribute("AllCategories", blogSC.getAllCategories());
-        request.setAttribute("IsUsePdc", blogSC.isPdcUsed());
         request.setAttribute("Updater", blogSC.getUserDetail(post.getPublication().getUpdaterId()));
         // appel de la page de modification
         destination = rootDest + "postManager.jsp";
@@ -181,7 +183,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         destination = getDestination("Main", blogSC, request);
       } else if (function.equals("ViewContent")) {
         String postId = request.getParameter("PostId");
-        if (postId == null || postId.length() == 0 || "null".equals(postId)) {
+        if (!StringUtil.isDefined(postId)) {
           postId = (String) request.getAttribute("PostId");
         }
 
@@ -213,7 +215,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
       } else if (function.equals("PostByCategory")) {
         // récupération des paramètres
         String categoryId = request.getParameter("CategoryId");
-        if (categoryId == null || categoryId.length() == 0 || "null".equals(categoryId)) {
+        if (!StringUtil.isDefined(categoryId)) {
           categoryId = (String) request.getAttribute("CategoryId");
         }
         // récupération des billets par catégorie
@@ -231,11 +233,11 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
       } else if (function.equals("PostByArchive")) {
         // récupération des paramètres
         String beginDate = request.getParameter("BeginDate");
-        if (beginDate == null || beginDate.length() == 0 || "null".equals(beginDate)) {
+        if (!StringUtil.isDefined(beginDate)) {
           beginDate = (String) request.getAttribute("BeginDate");
         }
         String endDate = request.getParameter("EndDate");
-        if (endDate == null || endDate.length() == 0 || "null".equals(endDate)) {
+        if (!StringUtil.isDefined(endDate)) {
           endDate = (String) request.getAttribute("EndDate");
         }
 
@@ -343,18 +345,6 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
 
         destination = rootDest + "accueil.jsp";
-      } else if (function.equals("PdcPositions")) {
-        // traitement du plan de classement
-        String postId = request.getParameter("PostId");
-        if (postId == null || postId.length() == 0 || "null".equals(postId)) {
-          postId = (String) request.getAttribute("PostId");
-        }
-        PostDetail post = blogSC.getPost(postId);
-        request.setAttribute("Post", post);
-
-        request.setAttribute("SilverObjetId", new Integer(blogSC.getSilverObjectId(postId)));
-
-        destination = rootDest + "pdcPositions.jsp";
       } else if (function.startsWith("searchResult")) {
         // traiter les recherches
         String id = request.getParameter("Id");
@@ -413,10 +403,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
   private Collection<Event> getEvents(BlogSessionController blogSC, Collection<PostDetail> posts) {
     Collection<Event> events = new ArrayList<Event>();
     Date dateEvent;
-    Iterator<PostDetail> it = (Iterator<PostDetail>) posts.iterator();
-    while (it.hasNext()) {
-      PostDetail post = (PostDetail) it.next();
-
+    for (PostDetail post : posts) {
       // chercher la date de l'évènement
       String pubId = post.getPublication().getPK().getId();
       try {
