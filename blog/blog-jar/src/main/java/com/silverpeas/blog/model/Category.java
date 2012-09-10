@@ -26,6 +26,9 @@ package com.silverpeas.blog.model;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 public class Category extends NodeDetail {
+
+  private static final long serialVersionUID = 28169347801351585L;
+
   public Category(NodeDetail node) {
     setNodePK(node.getNodePK());
     setName(node.getName());

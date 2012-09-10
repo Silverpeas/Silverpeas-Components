@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import com.stratelia.webactiv.util.DBUtil;
 
@@ -154,7 +155,7 @@ public class PostDAO {
   public static Collection<String> getAllEvents(Connection con, String instanceId)
       throws SQLException {
     // récupérer les derniers posts par date d'évènement
-    ArrayList listEvents = new ArrayList<String>();
+    List<String> listEvents = new ArrayList<String>();
     String query = "select pubId from SC_Blog_Post where instanceId = ? order by dateEvent DESC";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -163,7 +164,7 @@ public class PostDAO {
       prepStmt.setString(1, instanceId);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        String pubId = "" + rs.getInt("pubId");
+        String pubId = String.valueOf(rs.getInt("pubId"));
         listEvents.add(pubId);
       }
     } finally {

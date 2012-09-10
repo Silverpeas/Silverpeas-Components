@@ -238,3 +238,55 @@
 #liens {
 	clear:both;
 }
+
+fieldset#infoFieldset legend {
+  background:transparent url(../../../util/icons/component/blogSmall.gif) 11px 0px no-repeat;
+}
+
+fieldset#infoFieldset .field {
+	width: 100%;
+}
+
+fieldset#infoFieldset #creationArea .champs,
+fieldset#infoFieldset #updateArea .champs {
+	position:relative;
+	padding-left:40px;
+}
+
+fieldset#infoFieldset #creationArea .champs {
+	margin-left: 0px;
+}
+
+fieldset#infoFieldset #updateArea.field,
+fieldset#infoFieldset #creationArea.field {
+	width: 46%;
+}
+
+#infoFieldset #creationArea .profilPhoto,
+#infoFieldset #updateArea .profilPhoto {
+	position:absolute;
+	top:0;
+	left:0;
+	width:30px;
+	height:30px;
+	text-align:center;
+}
+* html #creationArea .profilPhoto,
+* html #updateArea .profilPhoto { 
+	left:-40px; 
+}
+
+#infoFieldset #creationArea .profilPhoto img, 
+#infoFieldset #updateArea .profilPhoto img {
+	height:30px;
+	position:relative;
+}
+
+#header .legend {
+    clear: both;
+    padding-left: 15px;
+}
+
+#header .classification .legende {
+	display: none;
+}
