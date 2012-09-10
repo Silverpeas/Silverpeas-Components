@@ -35,6 +35,9 @@ import com.silverpeas.peasUtil.GoTo;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class GoToPost extends GoTo {
+
+  private static final long serialVersionUID = 4824194822323955033L;
+
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {

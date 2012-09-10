@@ -28,6 +28,11 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
+import org.silverpeas.search.indexEngine.model.IndexManager;
 
 import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
@@ -43,6 +48,9 @@ import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.ejb.MyLinksBmHome;
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -57,11 +65,9 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 public class BlogSessionController extends AbstractComponentSessionController {
 
@@ -77,8 +83,8 @@ public class BlogSessionController extends AbstractComponentSessionController {
    */
   public BlogSessionController(MainSessionController mainSessionCtrl,
           ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext, "com.silverpeas.blog.multilang.blogBundle",
-            "com.silverpeas.blog.settings.blogIcons");
+    super(mainSessionCtrl, componentContext, "org.silverpeas.blog.multilang.blogBundle",
+            "org.silverpeas.blog.settings.blogIcons");
     AdminController admin = new AdminController("useless");
     Domain defaultDomain = admin.getDomain(getUserDetail().getDomainId());
     serverURL = defaultDomain.getSilverpeasServerURL();
@@ -137,7 +143,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
     // rechercher la publication associé au billet
     PostDetail post = getBlogService().getContentById(postId);
 
-    // mettre à jours les dates de début et de fin en fonction de la date du post
+    // mettre à jour les dates de début et de fin en fonction de la date du post
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(post.getPublication().getCreationDate());
     setMonthFirstDay(calendar);
@@ -146,12 +152,8 @@ public class BlogSessionController extends AbstractComponentSessionController {
     return post;
   }
 
-  public synchronized String createPost(String title, String categoryId) {
-    return createPost(title, categoryId, new Date());
-  }
-
-  public synchronized String createPost(String title, String categoryId, Date dateEvent) {
-    // création du billet
+  public synchronized String createPost(String title, String categoryId, Date dateEvent,
+      PdcClassificationEntity classification) {
     PublicationDetail pub =
             new PublicationDetail("X", title, "", null, null, null, null, "1", null, null, "");
     pub.getPK().setComponentName(getComponentId());
@@ -159,12 +161,18 @@ public class BlogSessionController extends AbstractComponentSessionController {
     pub.setCreatorName(getUserDetail(getUserId()).getDisplayedName());
     pub.setCreationDate(new Date());
     pub.setIndexOperation(IndexManager.NONE);
-    SilverTrace.info("blog", "BlogSessionContreller.createPost()", "root.MSG_GEN_PARAM_VALUE",
-            "CreatorName=" + pub.getCreatorName());
+    
     PostDetail newPost = new PostDetail(pub, categoryId, dateEvent);
-
-    // création du billet
-    return getBlogService().createPost(newPost);
+    
+    // creating post
+    if (classification.isUndefined()) {
+      return getBlogService().createPost(newPost);
+    } else {
+      List<PdcPosition> pdcPositions = classification.getPdcPositions();
+      PdcClassification withClassification = aPdcClassificationOfContent("unknown",
+            getComponentId()).withPositions(pdcPositions);
+      return getBlogService().createPost(newPost, withClassification);
+    }
   }
 
   public synchronized void updatePost(String postId, String title, String categoryId) {
@@ -321,20 +329,6 @@ public class BlogSessionController extends AbstractComponentSessionController {
 
   public Boolean isDraftVisible() {
     return "yes".equalsIgnoreCase(getComponentParameterValue("draftVisible"));
-  }
-
-  public int getSilverObjectId(String objectId) {
-
-    int silverObjectId = -1;
-    try {
-      silverObjectId =
-              getBlogService().getSilverObjectId(new PublicationPK(objectId, getSpaceId(),
-              getComponentId()));
-    } catch (Exception e) {
-      SilverTrace.error("blog", "BlogSessionController.getSilverObjectId()",
-              "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
-    }
-    return silverObjectId;
   }
 
   /**
