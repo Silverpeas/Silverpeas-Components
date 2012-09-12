@@ -20,9 +20,7 @@
  */
 package com.silverpeas.gallery.servlets;
 
-import java.io.File;
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -36,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -45,9 +45,9 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
-import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.ParameterNames;
 import com.silverpeas.gallery.control.GallerySessionController;
+import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.MetaData;
@@ -59,7 +59,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -73,12 +72,8 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import org.silverpeas.search.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
@@ -335,24 +330,24 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // destination = rootDest + "photoManager.jsp";
         destination = rootDest + "information.jsp";
       } else if (function.equals("CreatePhoto")) {
+
         // création de la photo dans la base de donnée
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
         }
-        List<FileItem> parameters = FileUploadUtil.parseRequest(request);
-        String photoId = createPhoto(parameters, gallerySC, request.getCharacterEncoding());
 
         // check user rights
-        if (!gallerySC.isPhotoAdmin(flag, photoId, userId)) {
+        if (!gallerySC.isPhotoAdmin(flag, null, userId)) {
           throw new AccessForbiddenException("GalleryRequestRouter.CreatePhoto",
               SilverpeasException.WARNING, null);
         }
 
-        // création du répertoire sur disque contenant la photo ainsi que les vignettes
-        processPhoto(photoId, parameters, gallerySC);
+        final String photoId =
+            createPhotoData(FileUploadUtil.parseRequest(request), gallerySC,
+                request.getCharacterEncoding());
 
-        // récupération du formulaire
-        createXMLFormImage(photoId, parameters, gallerySC);
+        // Reload the album
+        gallerySC.loadCurrentAlbum();
 
         // preview de la nouvelle image
         request.setAttribute("PhotoId", photoId);
@@ -379,7 +374,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // appel jsp
         destination = rootDest + "photoManager.jsp";
-      } else if (function.equals("UpdatePhoto")) {
+      } else if (function.equals("UpdatePhoto") || function.equals("UpdateInformation")) {
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
         }
@@ -387,7 +382,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         String photoId =
             FileUploadUtil.getParameter(parameters, "PhotoId", null,
             request.getCharacterEncoding());
-        updateHeaderImage(photoId, parameters, gallerySC, request.getCharacterEncoding());
+        updatePhotoData(photoId, parameters, gallerySC, request.getCharacterEncoding());
         // retour à la preview
         request.setAttribute("PhotoId", photoId);
         destination = getDestination("PreviewPhoto", gallerySC, request);
@@ -406,22 +401,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // retour à l'album courant
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-      } else if (function.equals("UpdateInformation")) {
-        if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-          request.setCharacterEncoding("UTF-8");
-        }
-        List<FileItem> parameters = FileUploadUtil.parseRequest(request);
-        String photoId =
-            FileUploadUtil.getParameter(parameters, "PhotoId", null,
-            request.getCharacterEncoding());
-        updateHeaderImage(photoId, parameters, gallerySC, request.getCharacterEncoding());
-
-        // récupération du formulaire
-        updateXMLFormImage(photoId, parameters, gallerySC);
-
-        // retour à la preview
-        request.setAttribute("PhotoId", photoId);
-        destination = getDestination("PreviewPhoto", gallerySC, request);
       } else if (function.equals("PreviewPhoto")) {
         // mise à blanc de la liste restreintes des photos (pour les photos non visibles)
         gallerySC.setRestrictedListPhotos(new ArrayList<PhotoDetail>());
@@ -1580,142 +1559,50 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     return new Integer(nb);
   }
 
-  private PhotoDetail updateFilePhoto(String photoId, List<FileItem> parameters,
-      GallerySessionController gallerySC) throws Exception {
-    PhotoDetail photo = gallerySC.getPhoto(photoId);
-
-    FileItem file = getUploadedFile(parameters, "WAIMGVAR0");
-    String name = file.getName();
-    if (StringUtil.isDefined(name)) {
-      // suppression du répertoire contenant les anciennes photos
-      FileRepositoryManager.deleteAbsolutePath(null, gallerySC.getComponentId(), gallerySC
-          .getSettings().getString("imagesSubDirectory")
-          + photoId);
-
-      // création du répertoire et création de la preview et des vignettes avec la nouvelle photo
-      boolean watermark = gallerySC.isMakeWatermark().booleanValue();
-      String watermarkHD = gallerySC.getWatermarkHD();
-      String watermarkOther = gallerySC.getWatermarkOther();
-
-      ImageHelper.processImage(photo, file,
-          gallerySC.getSettings().getString("imagesSubDirectory"), watermark, watermarkHD,
-          watermarkOther);
-
-      // mettre à jour la table avec les données de la photo
-      gallerySC.updatePhoto(photo);
-    }
-
-    return photo;
-  }
-
-  private void processPhoto(String photoId, List<FileItem> parameters,
-      GallerySessionController gallerySC)
-      throws Exception {
-    FileItem file = getUploadedFile(parameters, "WAIMGVAR0");
-    PhotoDetail photo = gallerySC.getPhoto(photoId);
-
-    boolean watermark = gallerySC.isMakeWatermark().booleanValue();
-    String watermarkHD = gallerySC.getWatermarkHD();
-    String watermarkOther = gallerySC.getWatermarkOther();
-
-    ImageHelper.processImage(photo, file, gallerySC.getSettings().getString("imagesSubDirectory"),
-        watermark, watermarkHD, watermarkOther);
-
-    // mettre à jour la table avec les données de la photo
-    gallerySC.updatePhoto(photo);
-  }
-
-  private String extractFileNameFromFilePath(FileItem file) {
-    String name = file.getName();
-    boolean runOnUnix = !FileUtil.isWindows();
-    if (runOnUnix) {
-      name = name.replace('\\', File.separatorChar);
-      SilverTrace.info("gallery", "GalleryRequestRouter.createPhoto", "root.MSG_GEN_PARAM_VALUE",
-          "fileName on Unix = " + name);
-    }
-
-    name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
-    return name;
-  }
-
-  private String createPhoto(List<FileItem> parameters, GallerySessionController gallerySC,
+  private String createPhotoData(List<FileItem> parameters, GallerySessionController gallerySC,
       String encoding)
-      throws ParseException {
-    // récupération des paramètres
-    String title =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageTitle, null, encoding);
-    String description =
-        FileUploadUtil
-        .getParameter(parameters, ParameterNames.ImageDescription, null, encoding);
-    String author =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageAuthor, null, encoding);
-    FileItem file = getUploadedFile(parameters, "WAIMGVAR0");
-    String beginDownloadDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate, null,
-        encoding);
-    String endDownloadDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDownloadDate, null,
-        encoding);
-    String beginDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDate, null, encoding);
-    String endDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDate, null, encoding);
-    String keyWord =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageKeyWord, null, encoding);
+      throws Exception {
 
-    if (!StringUtil.isDefined(title)) {
-      title = extractFileNameFromFilePath(file);
-    }
+    final PhotoDataCreateDelegate delegate =
+        new PhotoDataCreateDelegate(gallerySC.getLanguage(), gallerySC.getCurrentAlbumId(),
+            parameters);
 
-    // mettre à null les valeurs non remplies
-    if (!StringUtil.isDefined(description)) {
-      description = null;
-    }
-    if (!StringUtil.isDefined(author)) {
-      author = null;
-    }
-    // récupération des booléens
-    boolean download = false;
-    boolean albumLabel = false;
-    if ("true".equals(FileUploadUtil.getParameter(parameters, "Download", null, encoding))) {
-      download = true;
-    }
-    if ("true".equals(FileUploadUtil.getParameter(parameters, "AlbumLabel", null, encoding))) {
-      albumLabel = true;
-    }
-    // récupération et transformation des dates de téléchargement
-    Date jBeginDownloadDate = null;
-    Date jEndDownloadDate = null;
-    if (StringUtil.isDefined(beginDownloadDate)) {
-      jBeginDownloadDate = DateUtil.stringToDate(beginDownloadDate, gallerySC.getLanguage());
-    }
-    if (StringUtil.isDefined(endDownloadDate)) {
-      jEndDownloadDate = DateUtil.stringToDate(endDownloadDate, gallerySC.getLanguage());
-    }
-    Date jBeginDate = null;
-    Date jEndDate = null;
-    if (StringUtil.isDefined(beginDate)) {
-      jBeginDate = DateUtil.stringToDate(beginDate, gallerySC.getLanguage());
-    } else {
-      jBeginDate = null;
-    }
-    if (StringUtil.isDefined(endDate)) {
-      jEndDate = DateUtil.stringToDate(endDate, gallerySC.getLanguage());
-    } else {
-      jEndDate = null;
-    }
-    if (!StringUtil.isDefined(keyWord)) {
-      keyWord = null;
+    // 1. Récupération des données de l'entête
+    delegate.getHeaderData().setAlbumLabel(
+        FileUploadUtil.getParameter(parameters, "AlbumLabel", null, encoding));
+    delegate.getHeaderData().setTitle(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageTitle, null, encoding));
+    delegate.getHeaderData().setDescription(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageDescription, null, encoding));
+    delegate.getHeaderData().setAuthor(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageAuthor, null, encoding));
+    delegate.getHeaderData().setKeyWord(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageKeyWord, null, encoding));
+    delegate.getHeaderData().setDownload(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageDownload, null, encoding));
+    delegate.getHeaderData().setBeginDownloadDate(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate, null, encoding));
+    delegate.getHeaderData().setEndDownloadDate(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDownloadDate, null, encoding));
+    delegate.getHeaderData().setBeginDate(
+        FileUploadUtil.getParameter(parameters,  ParameterNames.ImageBeginDate, null, encoding));
+    delegate.getHeaderData().setEndDate(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDate, null, encoding));
+
+    // 2. Récupération des données du formulaire
+    final String xmlFormName = gallerySC.getXMLFormName();
+    if (isDefined(xmlFormName)) {
+      final String xmlFormShortName =
+          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+      PublicationTemplate pub =
+          getPublicationTemplateManager().getPublicationTemplate(
+          gallerySC.getComponentId() + ":"
+          + xmlFormShortName);
+      delegate.setForm(pub.getRecordSet(), pub.getUpdateForm());
     }
 
-    // création de la photo dans la base de donnée
-    PhotoDetail newPhoto;
-    newPhoto =
-        new PhotoDetail(title, description, new Date(), null, null, author, download,
-        albumLabel,
-        jBeginDate, jEndDate, keyWord, jBeginDownloadDate, jEndDownloadDate);
-    String photoId = gallerySC.createPhoto(newPhoto);
-    return photoId;
+    // Persisting the photon in database & on file system
+    return gallerySC.createPhoto(delegate);
   }
 
   private void updateOrder(HttpServletRequest request, GallerySessionController gallerySC,
@@ -1767,7 +1654,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       }
     }
 
-    final PhotoDataUpdateDelegate delegate = new PhotoDataUpdateDelegate(gallerySC.getLanguage());
+    final PhotoDataUpdateDelegate delegate =
+        new PhotoDataUpdateDelegate(gallerySC.getLanguage(), gallerySC.getCurrentAlbumId(),
+            parameters);
 
     // 1. Récupération des données de l'entête
     delegate.getHeaderData().setTitle(
@@ -1798,7 +1687,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           getPublicationTemplateManager().getPublicationTemplate(
           gallerySC.getComponentId() + ":"
           + xmlFormShortName);
-      delegate.setForm(pub.getRecordSet(), pub.getUpdateForm(), paramForm);
+      delegate.setForm(pub.getRecordSet(), pub.getUpdateForm());
     }
 
     // Enregistrement des informations des photos
@@ -1894,152 +1783,52 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     gallerySC.updatePhoto(photo);
   }
 
-  private void createXMLFormImage(String photoId, List<FileItem> parameters,
-      GallerySessionController gallerySC) throws Exception {
-    String xmlFormName = gallerySC.getXMLFormName();
-    if (!StringUtil.isDefined(xmlFormName)) {
-      return;
-    }
-    // récup&ration de la photo
-    PhotoDetail photo = gallerySC.getPhoto(photoId);
-
-    String xmlFormShortName =
-        xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
-
-    PublicationTemplate pub =
-        getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId() + ":"
-        + xmlFormShortName);
-    RecordSet set = pub.getRecordSet();
-    Form form = pub.getUpdateForm();
-    DataRecord data = set.getRecord(photo.getId());
-    if (data == null) {
-      data = set.getEmptyRecord();
-      data.setId(photo.getId());
-    }
-
-    PagesContext context =
-        new PagesContext("myForm", "0", gallerySC.getLanguage(), false,
-        gallerySC.getComponentId(),
-        gallerySC.getUserId(), gallerySC.getAlbum(gallerySC.getCurrentAlbumId())
-        .getNodePK().getId());
-    context.setEncoding("UTF-8");
-    context.setObjectId(photo.getId());
-
-    // mise à jour des données saisies
-    form.update(parameters, data, context);
-    set.save(data);
-
-    // mise à jour de la photo
-    gallerySC.updatePhoto(photo);
-  }
-
-  private void updateHeaderImage(String photoId, List<FileItem> parameters,
+  private void updatePhotoData(String photoId, List<FileItem> parameters,
       GallerySessionController gallerySC, String encoding)
       throws Exception {
-    // récupération des paramètres
-    String title =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageTitle, null, encoding);
-    String description =
-        FileUploadUtil
-        .getParameter(parameters, ParameterNames.ImageDescription, null, encoding);
-    String author =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageAuthor, null, encoding);
-    FileItem file = getUploadedFile(parameters, "WAIMGVAR0");
-    String beginDownloadDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate, null,
-        encoding);
-    String endDownloadDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDownloadDate, null,
-        encoding);
-    String beginDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDate, null, encoding);
-    String endDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDate, null, encoding);
-    String keyWord =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageKeyWord, null, encoding);
-    // formatage des paramètres
-    if (!StringUtil.isDefined(title)) {
-      // le titre est vide
-      String name = extractFileNameFromFilePath(file);
 
-      // si la photo est changée, mettre le nom de la photo dans le titre
-      if (StringUtil.isDefined(name)) {
-        title = name;
-      }
-      // NOTE : si le titre est vide mais sans changement de photo, on mettra le nom du fichier de
-      // la base plus tard
-    }
-    if (description.equals("")) {
-      description = null;
-    }
-    if (author.equals("")) {
-      author = null;
-    }
-    boolean download = false;
-    boolean albumLabel = false;
-    if ("true".equals(FileUploadUtil.getParameter(parameters, ParameterNames.ImageDownload, null,
-        encoding))) {
-      download = true;
-    }
-    // if ("true".equals(getParameterValue(parameters, "AlbumLabel")))
-    // albumLabel = true;
-    if (beginDownloadDate.equals("")) {
-      beginDownloadDate = null;
-    }
-    if (endDownloadDate.equals("")) {
-      endDownloadDate = null;
-    }
-    if (keyWord.equals("")) {
-      keyWord = null;
-    }
-    if (beginDate.equals("")) {
-      beginDate = null;
-    }
-    if (endDate.equals("")) {
-      endDate = null;
+    final PhotoDataUpdateDelegate delegate =
+        new PhotoDataUpdateDelegate(gallerySC.getLanguage(), gallerySC.getCurrentAlbumId(),
+            parameters, false);
+
+    // 1. Récupération des données de l'entête
+    delegate.getHeaderData().setTitle(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageTitle, null, encoding));
+    delegate.getHeaderData().setDescription(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageDescription, null, encoding));
+    delegate.getHeaderData().setAuthor(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageAuthor, null, encoding));
+    delegate.getHeaderData().setKeyWord(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageKeyWord, null, encoding));
+    delegate.getHeaderData().setDownload(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageDownload, null, encoding));
+    delegate.getHeaderData().setBeginDownloadDate(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate, null, encoding));
+    delegate.getHeaderData().setEndDownloadDate(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDownloadDate, null, encoding));
+    delegate.getHeaderData().setBeginDate(
+        FileUploadUtil.getParameter(parameters,  ParameterNames.ImageBeginDate, null, encoding));
+    delegate.getHeaderData().setEndDate(
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDate, null, encoding));
+
+    // 2. Récupération des données du formulaire
+    final String xmlFormName = gallerySC.getXMLFormName();
+    if (isDefined(xmlFormName)) {
+      final String xmlFormShortName =
+          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+      PublicationTemplate pub =
+          getPublicationTemplateManager().getPublicationTemplate(
+          gallerySC.getComponentId() + ":"
+          + xmlFormShortName);
+      delegate.setForm(pub.getRecordSet(), pub.getUpdateForm());
     }
 
-    // mise à jour des attributs
-    PhotoDetail photo = updateFilePhoto(photoId, parameters, gallerySC);
-    // traitement du nom de la photo si il est vide (dans le cas ou il serait vide sans modif de
-    // photo)
-    if (title.equals("")) {
-      title = photo.getImageName();
-    }
-    photo.setTitle(title);
-    photo.setDescription(description);
-    photo.setAuthor(author);
-    photo.setDownload(download);
-    photo.setAlbumLabel(albumLabel);
-    // traitement des dates
-    Date jBeginDownloadDate = null;
-    Date jEndDownloadDate = null;
-    if (beginDownloadDate != null && !beginDownloadDate.trim().equals("")) {
-      jBeginDownloadDate = DateUtil.stringToDate(beginDownloadDate, gallerySC.getLanguage());
-    }
-    if (endDownloadDate != null && !endDownloadDate.trim().equals("")) {
-      jEndDownloadDate = DateUtil.stringToDate(endDownloadDate, gallerySC.getLanguage());
-    }
-    photo.setBeginDownloadDate(jBeginDownloadDate);
-    photo.setEndDownloadDate(jEndDownloadDate);
-    photo.setKeyWord(keyWord);
-    Date jBeginDate = null;
-    Date jEndDate = null;
-    if (beginDate != null && !beginDate.trim().equals("")) {
-      jBeginDate = DateUtil.stringToDate(beginDate, gallerySC.getLanguage());
-    }
-    if (endDate != null && !endDate.trim().equals("")) {
-      jEndDate = DateUtil.stringToDate(endDate, gallerySC.getLanguage());
-    }
-    photo.setBeginDate(jBeginDate);
-    photo.setEndDate(jEndDate);
-
-    // modification de la photo
-    gallerySC.updatePhotoByUser(photo);
+    // Enregistrement des informations des photos
+    gallerySC.updatePhotoByUser(photoId, delegate);
 
     // mise à jour de l'album courant
     // String albumId = photo.getAlbumId();
-    Collection<String> albumIds = gallerySC.getPathList(photo.getId());
+    Collection<String> albumIds = gallerySC.getPathList(photoId);
     // regarder si l'album courant est dans la liste des albums
     boolean inAlbum = false;
     boolean first = true;

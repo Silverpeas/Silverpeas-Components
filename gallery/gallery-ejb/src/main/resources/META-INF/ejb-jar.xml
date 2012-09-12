@@ -20,7 +20,7 @@
 		this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 <ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>GalleryJar</display-name>
@@ -61,7 +61,79 @@
       <method>
         <ejb-name>GalleryBm</ejb-name>
         <method-intf>Remote</method-intf>
+        <method-name>getSilverObjectId</method-name>
+      </method>
+      <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>createAlbum</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>updateAlbum</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
         <method-name>deleteAlbum</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>createPhoto</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>updatePhoto</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>deletePhoto</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>paste</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>importFromRepository</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>executeProcessList</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>

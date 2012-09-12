@@ -29,6 +29,7 @@ import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
@@ -65,7 +66,8 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
     SilverTrace.info("gallery", "GalleryInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     try {
-      getGalleryBm().deleteAlbum(new NodePK(NodePK.ROOT_NODE_ID, componentId));
+      getGalleryBm().deleteAlbum(UserDetail.getById(userId), componentId,
+          new NodePK(NodePK.ROOT_NODE_ID, componentId));
     } catch (RemoteException e) {
       SilverTrace.error("gallery", "GalleryInstanciator.delete()", e.getMessage(), e);
     }

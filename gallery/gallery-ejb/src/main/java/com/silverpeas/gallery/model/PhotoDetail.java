@@ -23,14 +23,6 @@
  */
 package com.silverpeas.gallery.model;
 
-import com.silverpeas.gallery.ImageHelper;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileServerUtils;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,9 +31,17 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.silverpeas.gallery.process.photo.GalleryLoadMetaDataProcess;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileServerUtils;
+
 public class PhotoDetail implements SilverContentInterface, Serializable {
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
   private static final String TYPE = "Photo";
@@ -381,12 +381,12 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   public void setPermalink(String permalink) {
     this.permalink = permalink;
   }
-  
+
   private Map<String, MetaData> getAllMetaData() {
     if (metaData == null) {
       metaData = new LinkedHashMap<String, MetaData>();
       try {
-        ImageHelper.setMetaData(this);
+        GalleryLoadMetaDataProcess.load(this);
       } catch (Exception e) {
         SilverTrace.error("gallery", "PhotoDetail.getAllMetaData",
             "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + getId());
@@ -467,41 +467,41 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
 
   /**
    * Get url to access photo from a web site.
-   * 
+   *
    * @param size  the expecting size of photo (tiny, small, normal, preview, original)
-   * 
+   *
    * @return the url
    */
   public String getWebURL(String size) {
     PhotoSize photoSize = PhotoSize.get(size);
-    
+
     return getWebURL(photoSize);
   }
-   
+
   /**
    * Get url to access photo from a web site.
-   * 
+   *
    * @param size  the expecting size of photo
-   * 
+   *
    * @return the url
    */
   public String getWebURL(PhotoSize size) {
     String idPhoto = photoPK.getId();
-    String path = "image" + idPhoto;    
+    String path = "image" + idPhoto;
     String name = getImageName();
     if (name != null)
     {
       name = (size.getPrefix().equals(".jpg")) ? name : (getId() + size.getPrefix());
       return FileServerUtils.getWebUrl(photoPK.getSpaceId(), photoPK.getInstanceId(), name, name, getImageMimeType(), path);
     }
-    
+
     return null;
   }
-  
+
   public String getContributionType() {
     return TYPE;
   }
-  
+
   /**
    * The type of this resource
    * @return the same value returned by getContributionType()
