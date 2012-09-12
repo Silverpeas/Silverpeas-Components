@@ -39,6 +39,7 @@ public class ViewDirectoryHandler extends FunctionHandler {
     request.setAttribute("RootPath", sessionController.getRootPath());
     request.setAttribute("isReadWriteActivated", sessionController.isReadWriteActivated());
     request.setAttribute("userAllowedToSetRWAccess", sessionController.checkRWSettingsAccess(false));
+    request.setAttribute("userAllowedToLANAccess", sessionController.checkUserLANAccess(request.getRemoteAddr()));
 
     // tables settings (nb files/folders per page)
     request.setAttribute("MaxDirectories", sessionController.getNbMaxDirectoriesByPage());
