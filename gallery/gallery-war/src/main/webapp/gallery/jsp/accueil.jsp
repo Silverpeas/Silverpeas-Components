@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -314,7 +315,6 @@ function sendData()
 	if (photos != null)
 	{
 		String	vignette_url 	= null;
-		String 	altTitle 		= ""; 
 		int		nbPhotos	 	= photos.size();
 
 		if (nbPhotos>0) 
@@ -331,26 +331,22 @@ function sendData()
 				while (itP.hasNext() && nbAffiche < nbParLigne)
 				{			
 					photo 		= (PhotoDetail) itP.next();
-					altTitle 	= "";
-					if (photo != null)
-					{
+					if (photo != null) {
 						idP = photo.getPhotoPK().getId();
 						String nomRep = resource.getSetting("imagesSubDirectory") + idP;
 						String name = photo.getImageName();
-						if (name != null)
-						{
+						String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
+						if (StringUtil.isDefined(photo.getDescription())) {
+							altTitle += " : "+EncodeHelper.javaStringToHtmlString(photo.getDescription());
+						}
+						if (name != null) {
 							String type = name.substring(name.lastIndexOf(".") + 1, name.length());
 							name = photo.getId() + "_133x100.jpg";
 							vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
-							if ("bmp".equalsIgnoreCase(type))
+							if (!ImageType.isPreviewable(name)) {
 								vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_133x100.jpg";
-																
-							altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-							if (photo.getDescription() != null && photo.getDescription().length() > 0)
-								altTitle += " : "+EncodeHelper.javaStringToHtmlString(photo.getDescription());
-						}
-						else
-						{
+							}
+						} else {
 							vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_133x100.jpg";
 						}
 						nbTotal 	= nbTotal - 1 ;	
