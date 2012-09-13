@@ -233,6 +233,7 @@ icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites
 var params = new Object();
 params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
 params["i18n"] = <%=I18NHelper.isI18N%>;
+params["nbPublisDisplayed"] = <%=displayNBPublis%>;
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
@@ -332,16 +333,20 @@ function getComponentPermalink() {
 }
 
 function deleteNode(nodeId, nodeLabel) {
-	if(window.confirm("<%=kmeliaScc.getString("ConfirmDeleteTopic")%> '" + nodeLabel + "' ?")) {
-		$.get('<%=m_context%>/KmeliaAJAXServlet', { Id:nodeId,ComponentId:'<%=componentId%>',Action:'Delete'},
-				function(data){
-					if ((data - 0) == data && data.length > 0) {
-						$("#treeDiv1").jstree("delete_node", "#"+nodeId);
-					} else {
-						alert(data);
-					}
-				}, 'text');
+	// removing nb items displayed in nodeLabel
+	if (params["nbPublisDisplayed"]) {
+		var idx = nodeLabel.lastIndexOf('(');
+		if (idx > 1) {
+			nodeLabel = nodeLabel.substring(0, idx-1);
+		}
 	}
+	deleteFolder(nodeId, nodeLabel);
+}
+
+function nodeDeleted(nodeId) {
+	var node = getTreeview()._get_node("#"+nodeId);
+	alert(node.data);
+	getTreeview().delete_node("#"+nodeId);
 }
 
 function emptyTrash() {
@@ -505,8 +510,8 @@ function customMenu(node) {
         					if (params["i18n"]) {
         						storeTranslations(topic.translations);
         					} else {
-        						$("#addOrUpdateNode #topicName").val(name);
-								$("#addOrUpdateNode #topicDescription").val(desc);
+        						$("#addOrUpdateNode #folderName").val(name);
+								$("#addOrUpdateNode #folderDescription").val(desc);
         					}
         					topicUpdate(topic.attr["id"]);
         				});
@@ -817,14 +822,14 @@ $(document).ready(
               <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
               <tr>
                 <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
-                <td><input type="text" name="Name" id="topicName" size="60" maxlength="60"/>
+                <td><input type="text" name="Name" id="folderName" size="60" maxlength="60"/>
                 <input type="hidden" name="ParentId" id="parentId"/>
                 <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
               </tr>
                 
               <tr>
                 <td class="txtlibform"><fmt:message key="TopicDescription" /> :</td>
-                <td><input type="text" name="Description" id="topicDescription" size="60" maxlength="200"/></td>
+                <td><input type="text" name="Description" id="folderDescription" size="60" maxlength="200"/></td>
               </tr>
                 
               <% if (kmeliaScc.isNotificationAllowed()) { %>

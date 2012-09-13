@@ -474,12 +474,12 @@ function setCurrentTopicStatus(status) {
 
 function setCurrentTopicName(name) {
 	currentTopicName = name;
-	$("#addOrUpdateNode #topicName").val(name);
+	$("#addOrUpdateNode #folderName").val(name);
 }
 
 function setCurrentTopicDescription(desc) {
 	currentTopicDescription = desc;
-	$("#addOrUpdateNode #topicDescription").val(desc);
+	$("#addOrUpdateNode #folderDescription").val(desc);
 }
 function setCurrentTopicTranslations(trans) {
 	currentTopicTranslations = trans;
@@ -510,15 +510,15 @@ function showTranslation(lang) {
 	while (!found && i<translations.length) {
 		if (translations[i].language == lang) {
 			found = true;
-			$("#addOrUpdateNode #topicName").val(translations[i].name);
-			$("#addOrUpdateNode #topicDescription").val(translations[i].description);
+			$("#addOrUpdateNode #folderName").val(translations[i].name);
+			$("#addOrUpdateNode #folderDescription").val(translations[i].description);
 			$('select[name="I18NLanguage"] option:selected').val(translations[i].language+"_"+translations[i].id);
 		}
 		i++;
 	}
 	if (!found) {
-		$("#addOrUpdateNode #topicName").val("");
-		$("#addOrUpdateNode #topicDescription").val("");
+		$("#addOrUpdateNode #folderName").val("");
+		$("#addOrUpdateNode #folderDescription").val("");
 	}
 }
 
@@ -555,13 +555,18 @@ function displayTopicInformation(id) {
 	}
 }
 
-function deleteNode(nodeId, nodeLabel) {
+function deleteFolder(nodeId, nodeLabel) {
 	if(window.confirm(labels["ConfirmDeleteTopic"]+ " '" + nodeLabel + "' ?")) {
 		var componentId = getComponentId();
 		var url = getWebContext()+'/KmeliaAJAXServlet';
 		$.get(url, { Id:nodeId,ComponentId:componentId,Action:'Delete'},
 				function(data){
 					if ((data - 0) == data && data.length > 0) {
+						// fires event
+						try {
+							nodeDeleted(nodeId);
+						} catch (e) {
+						}
 						// go to parent node
 						displayTopicContent(data);
 					} else {
@@ -572,7 +577,7 @@ function deleteNode(nodeId, nodeLabel) {
 }
 
 function deleteCurrentNode() {
-	deleteNode(getCurrentNodeId(), currentTopicName);
+	deleteFolder(getCurrentNodeId(), currentTopicName);
 }
 
 function sortSubTopics() {
@@ -595,8 +600,8 @@ function topicAdd(topicId, isLinked) {
 		location.href = url;
 	} else {
 		document.topicForm.action = "AddTopic";
-		$("#addOrUpdateNode #topicName").val("");
-		$("#addOrUpdateNode #topicDescription").val("");
+		$("#addOrUpdateNode #folderName").val("");
+		$("#addOrUpdateNode #folderDescription").val("");
 		$("#addOrUpdateNode #parentId").val(topicId);
 		translations = null;
 		//remove delete operation
@@ -638,8 +643,8 @@ function updateCurrentNode() {
 	if (params["i18n"]) {
 		storeTranslations(currentTopicTranslations);
 	} else {
-		$("#addOrUpdateNode #topicName").val(currentTopicName);
-		$("#addOrUpdateNode #topicDescription").val(currentTopicDescription);
+		$("#addOrUpdateNode #folderName").val(currentTopicName);
+		$("#addOrUpdateNode #folderDescription").val(currentTopicDescription);
 	}
 	topicUpdate(getCurrentNodeId());
 }
@@ -655,7 +660,7 @@ function topicUpdate(id) {
 		
 		// display path of parent
 		var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+id+"/path?lang="+getTranslation()+"&IEFix="+new Date().getTime();
-	    $.getJSON(sUrl, function(data){
+	    $.getJSON(url, function(data){
 	    	//remove topic breadcrumb
 	    	$("#addOrUpdateNode #path").html("");
 	    	$(data).each(function(i, topic) {
