@@ -252,7 +252,17 @@ public class KmeliaSecurity implements ComponentSecurity {
       }
       for (NodePK fatherPK : fatherPKs) {
         if (!fatherPK.isTrash()) {
-          objectAvailable = isNodeAvailable(fatherPK, userId);
+          try {
+            objectAvailable = isNodeAvailable(fatherPK, userId);
+          } catch (Exception e) {
+            // don't throw exception, log only error
+            SilverTrace.error("kmelia", "KmeliaSecurity.isNodeAvailable",
+                "root.MSG_GEN_PARAM_VALUE",
+                "Node (" + fatherPK.getId() + ", " + fatherPK.getInstanceId() +
+                    ") no more exist but still referenced by a publication (" + pk.getId() + ", " +
+                    pk.getInstanceId() + ")");
+            objectAvailable = false;
+          }
         }
         if (objectAvailable) {
           break;

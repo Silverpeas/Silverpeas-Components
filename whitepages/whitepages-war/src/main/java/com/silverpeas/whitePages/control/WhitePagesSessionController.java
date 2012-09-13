@@ -64,7 +64,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;

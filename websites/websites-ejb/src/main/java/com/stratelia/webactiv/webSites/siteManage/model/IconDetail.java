@@ -99,16 +99,14 @@ public class IconDetail implements Serializable {
   /**
    * IconDetail
    */
-  public IconDetail(String idIcon, String name, String description,
-      String address) {
+  public IconDetail(String idIcon, String name, String description, String address) {
     init(idIcon, name, description, address);
   }
 
   /**
    * init
    */
-  public void init(String idIcon, String name, String description,
-      String address) {
+  public void init(String idIcon, String name, String description, String address) {
     this.iconPk.setId(idIcon);
     this.name = name;
     this.description = description;

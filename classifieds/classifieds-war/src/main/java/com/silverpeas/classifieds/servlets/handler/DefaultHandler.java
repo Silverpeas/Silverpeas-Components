@@ -14,8 +14,8 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
 
 /**
  * Default use case : show all categories and for each one, list last published adds

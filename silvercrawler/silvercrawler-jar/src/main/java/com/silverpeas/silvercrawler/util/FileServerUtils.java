@@ -23,6 +23,9 @@
  */
 package com.silverpeas.silvercrawler.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 
@@ -35,7 +38,7 @@ public class FileServerUtils extends com.stratelia.webactiv.util.FileServerUtils
     url.append(URLManager.getApplicationURL());
     url.append("/SilverCrawlerFileServer/");
     url.append(replaceSpecialChars(logicalName));
-    url.append("?SourceFile=").append(physicalName);
+    url.append("?SourceFile=").append(encode(physicalName));
     url.append("&TypeUpload=link&MimeType=").append(mimeType);
     url.append("&UserId=").append(userId);
     url.append("&ComponentId=").append(componentId);
@@ -48,12 +51,20 @@ public class FileServerUtils extends com.stratelia.webactiv.util.FileServerUtils
     url.append(URLManager.getApplicationURL());
     url.append("/SilverCrawlerFileServer/");
     url.append(replaceSpecialChars(logicalName));
-    url.append("?SourceFile=").append(physicalName);
+    url.append("?SourceFile=").append(encode(physicalName));
     url.append("&TypeUpload=zip&MimeType=").append(mimeType);
     url.append("&UserId=").append(userId);
     url.append("&ComponentId=").append(componentId);
     url.append("&Path=").append(path);
     return url.toString();
+  }
+  
+  private static String encode(String path) {
+    try {
+      return URLEncoder.encode(path, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      return path;
+    }
   }
 
 }

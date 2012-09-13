@@ -27,8 +27,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 
 /**
  *

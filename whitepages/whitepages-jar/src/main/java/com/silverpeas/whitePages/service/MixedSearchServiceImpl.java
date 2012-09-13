@@ -20,7 +20,6 @@
  */
 package com.silverpeas.whitePages.service;
 
-import java.rmi.NoSuchObjectException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,13 +37,14 @@ import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContentI18N;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.searchEngine.model.ScoreComparator;
+
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.search.searchEngine.model.ScoreComparator;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.SearchEngineFactory;
 
 public class MixedSearchServiceImpl implements MixedSearchService {

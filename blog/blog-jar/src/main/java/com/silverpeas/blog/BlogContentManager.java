@@ -46,6 +46,8 @@ import java.util.Collection;
  * The blog implementation of ContentInterface.
  */
 public class BlogContentManager implements ContentInterface, java.io.Serializable {
+
+  private static final long serialVersionUID = 8619139224896358447L;
   /**
    * Find all the SilverContent with the given list of SilverContentId
    * @param ids list of silverContentId to retrieve

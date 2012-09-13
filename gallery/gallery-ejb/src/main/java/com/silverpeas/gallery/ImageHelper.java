@@ -38,7 +38,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -182,7 +181,13 @@ public class ImageHelper {
       String nameForWatermark = computeWatermarkText(watermarkHD, watermark, type, imageFile, photo,
         pathFile, percentSize, watermarkOther);
       // création de la preview et des vignettes
-      createVignettes(photo, pathFile, image, watermark, nameForWatermark);
+      try {
+        createVignettes(photo, pathFile, image, watermark, nameForWatermark);
+      } catch (Exception e) {
+        SilverTrace.error("gallery", "ImageHelper.createImage",
+            "gallery.ERR_CANT_CREATE_THUMBNAILS",
+            "image = " + photo.getTitle() + " (#" + photo.getId() + ")");
+      }
     }
   }
 

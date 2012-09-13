@@ -50,7 +50,7 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import java.util.Collections;
 import java.util.HashMap;

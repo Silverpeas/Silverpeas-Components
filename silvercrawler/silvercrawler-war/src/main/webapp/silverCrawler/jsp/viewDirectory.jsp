@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="java.net.URLEncoder"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -88,9 +89,9 @@ if (path != null)
 				namePath = " > " + namePath;
 			}
 			if (nav)
-				chemin = chemin + "<a href=\"GoToDirectory?DirectoryPath="+ directory + "\">" + Encode.javaStringToHtmlString(directory)+"</a>";
+				chemin = chemin + "<a href=\"GoToDirectory?DirectoryPath="+ directory + "\">" + EncodeHelper.javaStringToHtmlString(directory)+"</a>";
 			else
-				chemin = chemin + Encode.javaStringToHtmlString(directory);
+				chemin = chemin + EncodeHelper.javaStringToHtmlString(directory);
 
 			namePath = namePath + directory;
 			suivant = itPath.hasNext();
@@ -395,7 +396,7 @@ function indexFileByLot()
 
 function downloadFolder(folderName)
 {
-	url = "DownloadFolder?FolderName="+folderName;
+	url = "DownloadFolder?FolderName="+encodeURIComponent(folderName);
     windowName = "downloadWindow";
 	larg = "650";
 	haut = "200";
@@ -407,7 +408,7 @@ function downloadFolder(folderName)
 
 function viewDownloadHistory(name)
 {
-	url = "ViewDownloadHistory?Name="+name;
+	url = "ViewDownloadHistory?Name="+encodeURIComponent(name);
     windowName = "downloadWindow";
 	larg = "650";
 	haut = "350";
@@ -604,7 +605,6 @@ if (nav || (!nav && !isRootPath))
 	if (files != null && files.size() > 0)
 	{
 	    Iterator i = files.iterator();
-	    String   fileName = "";
 	    String link = "";
 
 	    ArrayPane arrayPane = gef.getArrayPane("folderList", "ViewDirectory", request, session);
@@ -635,7 +635,8 @@ if (nav || (!nav && !isRootPath))
 	   		icon.setSpacing("30px");
 	   		arrayLine.addArrayCellIconPane(icon);
 
-	        fileName = file.getName();
+	        String fileName = file.getName();
+	        String encodedFileName = URLEncoder.encode(fileName, "UTF-8");
 
 	        boolean indexed = file.isIsIndexed();
 
@@ -643,18 +644,16 @@ if (nav || (!nav && !isRootPath))
 
 	        if (nav)
 	        {
-	        	//arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(fileName), "SubDirectory?DirectoryPath="+fileName);
-	        	nameCell = "<a href=\"SubDirectory?DirectoryPath="+fileName + "\">" + EncodeHelper.javaStringToHtmlString(fileName)+"</a>";
+	        	nameCell = "<a href=\"SubDirectory?DirectoryPath="+encodedFileName + "\">" + EncodeHelper.javaStringToHtmlString(fileName)+"</a>";
 	        }
 	        else
 	        {
 	        	nameCell = EncodeHelper.javaStringToHtmlString(fileName);
 	        }
 	        //  permalien
-	        //link = URLManager.getApplicationURL() + "/SubDir/" + Encode.javaStringToHtmlString(fileName)+"?ComponentId="+componentId;
 	        String filePath = file.getPath();
 	        filePath = filePath.substring(rootPath.length()+1);
-	        link = URLManager.getApplicationURL() + "/SubDir/" + componentId +"?Path="+filePath;
+	        link = URLManager.getApplicationURL() + "/SubDir/" + componentId +"?Path="+URLEncoder.encode(filePath, "UTF-8");
 	        nameCell = nameCell + "&nbsp;<a href=\"" + link + "\">"+ "<img border=\"0\" src=\""+resource.getIcon("silverCrawler.permalien")+"\">" + "</a>";
 
 	        // affichage de la cellule
@@ -668,19 +667,19 @@ if (nav || (!nav && !isRootPath))
 				{
 		        	//icône de l'historique
 		    	   	Icon historyIcon = iconPane.addIcon();
-		    	   	historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+Encode.javaStringToJsString(fileName)+"')");
+		    	   	historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+EncodeHelper.javaStringToJsString(fileName)+"')");
 		    	   	iconPane.setSpacing("20px");
 
 					// icône "réindexer"
 					Icon indexIcon = iconPane.addIcon();
-					indexIcon.setProperties(resource.getIcon("silverCrawler.reIndexer"), resource.getString("silverCrawler.reIndexer"), "javaScript:indexFolder('"+Encode.javaStringToJsString(fileName)+"')");
+					indexIcon.setProperties(resource.getIcon("silverCrawler.reIndexer"), resource.getString("silverCrawler.reIndexer"), "javaScript:indexFolder('"+EncodeHelper.javaStringToJsString(fileName)+"')");
 			   		iconPane.setSpacing("20px");
 				}
 			   	if (download)
 			   	{
 			   		// icône "télécharger le répertoire"
 			   		Icon downloadIcon = iconPane.addIcon();
-			   		downloadIcon.setProperties(resource.getIcon("silverCrawler.download"), resource.getString("silverCrawler.download"), "javaScript:downloadFolder('"+Encode.javaStringToJsString(fileName)+"')");
+			   		downloadIcon.setProperties(resource.getIcon("silverCrawler.download"), resource.getString("silverCrawler.download"), "javaScript:downloadFolder('"+EncodeHelper.javaStringToJsString(fileName)+"')");
 			   		iconPane.setSpacing("20px");
 			   	}
 
@@ -696,12 +695,12 @@ if (nav || (!nav && !isRootPath))
 			   	{
 			   		// icône "Suppression"
 			   		Icon deleteIcon = iconPane.addIcon();
-			   		deleteIcon.setProperties(resource.getIcon("silverCrawler.removeFolder"), resource.getString("silverCrawler.removeFolder"), "javaScript:removeFolder('"+Encode.javaStringToJsString(fileName)+"')");
+			   		deleteIcon.setProperties(resource.getIcon("silverCrawler.removeFolder"), resource.getString("silverCrawler.removeFolder"), "javaScript:removeFolder('"+EncodeHelper.javaStringToJsString(fileName)+"')");
 			   		iconPane.setSpacing("20px");
 
 			   		// icône "Renommage"
 			   		Icon renameIcon = iconPane.addIcon();
-			   		renameIcon.setProperties(resource.getIcon("silverCrawler.renameFolder"), resource.getString("silverCrawler.renameFolder"), "javaScript:renameFolder('"+Encode.javaStringToJsString(fileName)+"')");
+			   		renameIcon.setProperties(resource.getIcon("silverCrawler.renameFolder"), resource.getString("silverCrawler.renameFolder"), "javaScript:renameFolder('"+EncodeHelper.javaStringToJsString(fileName)+"')");
 			   		iconPane.setSpacing("20px");
 			   	}
 
@@ -754,10 +753,6 @@ if (nav || (!nav && !isRootPath))
 			ArrayLine  arrayLine = arrayPane.addArrayLine();
 
 		    // icone du type du fichier
-		    /*IconPane icon = gef.getIconPane();
-			Icon fileIcon = icon.addIcon();
-			fileIcon.setProperties(fileDetail.getFileIcon(), "");
-			icon.setSpacing("30px");*/
 			ArrayCellText cell = arrayLine.addArrayCellText("<img src=\""+fileDetail.getFileIcon()+"\" width=\"20\" height=\"20\"/>");
 			cell.setCompareOn(FileRepositoryManager.getFileExtension(fileDetail.getName()));
 
@@ -778,12 +773,12 @@ if (nav || (!nav && !isRootPath))
 		    	if ("admin".equals(profile)) {
 		        	//icône de l'historique
 		    	   	Icon historyIcon = iconPane.addIcon();
-		    	   	historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+Encode.javaStringToJsString(fileName)+"')");
+		    	   	historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+EncodeHelper.javaStringToJsString(fileName)+"')");
 		    	   	iconPane.setSpacing("20px");
 
 		    	   	//icône "réindexer"
 					Icon indexIcon = iconPane.addIcon();
-					indexIcon.setProperties(resource.getIcon("silverCrawler.reIndexer"), resource.getString("silverCrawler.reIndexer"), "javaScript:indexFile('"+Encode.javaStringToJsString(fileName)+"')");
+					indexIcon.setProperties(resource.getIcon("silverCrawler.reIndexer"), resource.getString("silverCrawler.reIndexer"), "javaScript:indexFile('"+EncodeHelper.javaStringToJsString(fileName)+"')");
 			   		iconPane.setSpacing("20px");
 
 			   		if (indexed)
@@ -799,12 +794,12 @@ if (nav || (!nav && !isRootPath))
 			   	{
 			   		// icône "Suppression"
 			   		Icon deleteIcon = iconPane.addIcon();
-			   		deleteIcon.setProperties(resource.getIcon("silverCrawler.removeFile"), resource.getString("silverCrawler.removeFile"), "javaScript:removeFile('"+Encode.javaStringToJsString(fileName)+"')");
+			   		deleteIcon.setProperties(resource.getIcon("silverCrawler.removeFile"), resource.getString("silverCrawler.removeFile"), "javaScript:removeFile('"+EncodeHelper.javaStringToJsString(fileName)+"')");
 			   		iconPane.setSpacing("20px");
 
 			   		// icône "Renommage"
 			   		Icon renameIcon = iconPane.addIcon();
-			   		renameIcon.setProperties(resource.getIcon("silverCrawler.renameFile"), resource.getString("silverCrawler.renameFile"), "javaScript:renameFile('"+Encode.javaStringToJsString(fileName)+"')");
+			   		renameIcon.setProperties(resource.getIcon("silverCrawler.renameFile"), resource.getString("silverCrawler.renameFile"), "javaScript:renameFile('"+EncodeHelper.javaStringToJsString(fileName)+"')");
 			   		iconPane.setSpacing("20px");
 			   	}
 

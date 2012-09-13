@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
@@ -487,9 +488,6 @@ function hideTip() {
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
     out.println(frame.printBefore());
-    
-    //out.println(board.printBefore());
-    
 %>
 <form name="photoForm" action="<%=action%>" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <table cellpadding="5" width="100%">
@@ -500,8 +498,9 @@ function hideTip() {
 		<%if (vignette_url != null) { 
 			
 			String type = nameFile.substring(nameFile.lastIndexOf(".") + 1, nameFile.length());
-			if ("bmp".equalsIgnoreCase(type))
+			if (!ImageType.isPreviewable(nameFile)) {
 				vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_266x150.jpg";
+			}
 		%> 
 			
       		<center>

@@ -15,7 +15,7 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.net.URLEncoder"%>
 
-<%@ page import="com.stratelia.webactiv.searchEngine.model.* "%>
+<%@ page import="org.silverpeas.search.searchEngine.model.* "%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
 <%@ page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication"%>
@@ -23,7 +23,6 @@
 <%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
 <%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@page import="com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry"%>
 
 <%!
 

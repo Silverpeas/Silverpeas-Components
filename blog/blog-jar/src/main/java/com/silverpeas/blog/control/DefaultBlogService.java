@@ -25,7 +25,6 @@ package com.silverpeas.blog.control;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -53,6 +52,9 @@ import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.notification.CommentUserNotificationService;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
@@ -63,8 +65,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -73,7 +75,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -92,8 +94,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 public class DefaultBlogService implements BlogService {
 
   public static final String COMPONENT_NAME = "blog";
-  private static final String MESSAGES_PATH = "com.silverpeas.blog.multilang.blogBundle";
-  private static final String SETTINGS_PATH = "com.silverpeas.blog.settings.blogSettings";
+  private static final String MESSAGES_PATH = "org.silverpeas.blog.multilang.blogBundle";
+  private static final String SETTINGS_PATH = "org.silverpeas.blog.settings.blogSettings";
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
 
   @Inject
@@ -156,6 +158,11 @@ public class DefaultBlogService implements BlogService {
 
   @Override
   public String createPost(PostDetail post) {
+    return createPost(post, null);
+  }
+  
+  @Override
+  public String createPost(final PostDetail post, PdcClassification classification) {
     Connection con = openConnection();
     try {
       PublicationDetail pub = post.getPublication();
@@ -166,6 +173,15 @@ public class DefaultBlogService implements BlogService {
         setCategory(pk, post.getCategoryId());
       }
       createSilverContent(con, pub, pub.getCreatorId());
+      
+      // classify the publication on the PdC if its classification is defined
+      if (classification != null && !classification.isEmpty()) {
+        PdcClassificationService service = PdcServiceFactory.getFactory().
+                getPdcClassificationService();
+        classification.ofContent(pk.getId());
+        service.classifyContent(pub, classification);
+      }
+      
       return pk.getId();
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.createPost()", SilverpeasRuntimeException.ERROR,
@@ -298,13 +314,7 @@ public class DefaultBlogService implements BlogService {
   }
 
   private void closeConnection(Connection con) {
-    try {
-      con.close();
-    } catch (SQLException e) {
-      // traitement des exceptions
-      throw new BlogRuntimeException("GalleryBmEJB.fermerCon()", SilverpeasException.ERROR,
-          "root.EX_CONNECTION_CLOSE_FAILED", e);
-    }
+    DBUtil.close(con);
   }
 
   private PostDetail getPost(PublicationDetail publication) {
@@ -485,10 +495,7 @@ public class DefaultBlogService implements BlogService {
       // création des billets à partir des résultats
       // rechercher la liste des posts trié par date
       Collection<String> allEvents = PostDAO.getAllEvents(con, instanceId);
-      Iterator<String> it = allEvents.iterator();
-      while (it.hasNext()) {
-        String pubId = it.next();
-
+      for (String pubId : allEvents) {
         for (MatchingIndexEntry matchIndex : result) {
           String objectType = matchIndex.getObjectType();
           String objectId = matchIndex.getObjectId();
@@ -553,8 +560,7 @@ public class DefaultBlogService implements BlogService {
   @Override
   public Category getCategory(NodePK pk) {
     try {
-      Category category = new Category(getNodeBm().getDetail(pk));
-      return category;
+      return new Category(getNodeBm().getDetail(pk));
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.getCategory()", SilverpeasRuntimeException.ERROR,
           "post.MSG_CATEGORY_NOT_EXIST", e);
@@ -565,8 +571,7 @@ public class DefaultBlogService implements BlogService {
   public Collection<NodeDetail> getAllCategories(String instanceId) {
     try {
       NodePK nodePK = new NodePK("0", instanceId);
-      Collection<NodeDetail> categories = getNodeBm().getChildrenDetails(nodePK);
-      return categories;
+      return getNodeBm().getChildrenDetails(nodePK);
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.getAllCategories()",
           SilverpeasRuntimeException.ERROR, "post.MSG_CATEGORIES_NOT_EXIST", e);
@@ -584,9 +589,7 @@ public class DefaultBlogService implements BlogService {
       // rechercher tous les posts par date d'évènements
       Collection<Date> lastEvents = PostDAO.getAllDateEvents(con, instanceId);
 
-      Iterator<Date> it = lastEvents.iterator();
-      while (it.hasNext()) {
-        Date dateEvent = it.next();
+      for (Date dateEvent : lastEvents) {
         calendar.setTime(dateEvent);
         // pour chaque date regarder si l'archive existe
         archive = createArchive(calendar, instanceId);
@@ -737,26 +740,6 @@ public class DefaultBlogService implements BlogService {
     int monthLastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
     calendar.set(Calendar.DAY_OF_MONTH, monthLastDay);
     return calendar.getTime();
-  }
-
-  @Override
-  public int getSilverObjectId(PublicationPK pubPK) {
-    SilverTrace.info("blog", "BlogBmEJB.getSilverObjectId()", "root.MSG_GEN_ENTER_METHOD",
-        "pubId = " + pubPK.getId());
-    int silverObjectId = -1;
-    PublicationDetail pubDetail = null;
-    try {
-      silverObjectId =
-          getBlogContentManager().getSilverObjectId(pubPK.getId(), pubPK.getInstanceId());
-      if (silverObjectId == -1) {
-        pubDetail = getPublicationBm().getDetail(pubPK);
-        silverObjectId = createSilverContent(null, pubDetail, pubDetail.getCreatorId());
-      }
-    } catch (Exception e) {
-      throw new BlogRuntimeException("BlogBmEJB.getSilverObjectId()",
-          SilverpeasRuntimeException.ERROR, "blog.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
-    }
-    return silverObjectId;
   }
 
   private BlogContentManager getBlogContentManager() {

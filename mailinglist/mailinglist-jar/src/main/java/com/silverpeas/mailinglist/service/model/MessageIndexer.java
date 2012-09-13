@@ -27,9 +27,9 @@ import java.util.Set;
 
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 public class MessageIndexer {
 

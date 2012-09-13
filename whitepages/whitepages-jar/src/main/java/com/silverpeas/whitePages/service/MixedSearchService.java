@@ -30,7 +30,7 @@ import java.util.List;
 
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
-import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
 
 
 

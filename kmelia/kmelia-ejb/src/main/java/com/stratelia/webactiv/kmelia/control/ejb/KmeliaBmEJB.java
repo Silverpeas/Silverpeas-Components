@@ -144,7 +144,7 @@ import com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
-import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;

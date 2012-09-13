@@ -27,7 +27,7 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.clipboard.SKDException;
 import com.silverpeas.util.clipboard.SilverpeasKeyData;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEntry;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;

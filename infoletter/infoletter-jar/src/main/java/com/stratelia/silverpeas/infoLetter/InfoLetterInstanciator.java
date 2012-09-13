@@ -35,8 +35,8 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 
 public class InfoLetterInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
