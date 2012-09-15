@@ -133,13 +133,9 @@ public class KmeliaCallBack implements CallBack {
         .subscribeAction(CallBackManager.ACTION_ATTACHMENT_ADD, this);
     callBackManager.subscribeAction(CallBackManager.ACTION_ATTACHMENT_UPDATE,
         this);
-    callBackManager.subscribeAction(CallBackManager.ACTION_ATTACHMENT_REMOVE,
-        this);
     callBackManager
         .subscribeAction(CallBackManager.ACTION_VERSIONING_ADD, this);
     callBackManager.subscribeAction(CallBackManager.ACTION_VERSIONING_UPDATE,
-        this);
-    callBackManager.subscribeAction(CallBackManager.ACTION_VERSIONING_REMOVE,
         this);
     callBackManager.subscribeAction(CallBackManager.ACTION_CUTANDPASTE, this);
   }
@@ -149,9 +145,8 @@ public class KmeliaCallBack implements CallBack {
         (action == CallBackManager.ACTION_ON_WYSIWYG
             || action == CallBackManager.ACTION_ATTACHMENT_ADD
             || action == CallBackManager.ACTION_ATTACHMENT_UPDATE
-            || action == CallBackManager.ACTION_ATTACHMENT_REMOVE
             || action == CallBackManager.ACTION_VERSIONING_ADD
-            || action == CallBackManager.ACTION_VERSIONING_UPDATE || action == CallBackManager.ACTION_VERSIONING_REMOVE))
+            || action == CallBackManager.ACTION_VERSIONING_UPDATE))
       return true;
     else
       return false;
