@@ -343,10 +343,49 @@ function deleteNode(nodeId, nodeLabel) {
 	deleteFolder(nodeId, nodeLabel);
 }
 
+function getNodeTitle(nodeId) {
+	var nodeTitle = getTreeview().get_text("#"+nodeId);
+	var idx = nodeTitle.lastIndexOf('(');
+	if (idx > 1) {
+		nodeTitle = nodeTitle.substring(0, idx-1);
+	}
+	return nodeTitle;
+}
+
+function getNbPublis(nodeId) {
+	var nodeLabel = getTreeview().get_text("#"+nodeId);
+	var idx = nodeLabel.lastIndexOf('(');
+	var nbPublis = nodeLabel.substring(idx+1, nodeLabel.length-1);
+	return eval(nbPublis);
+}
+
+function addNbPublis(nodeId, nb) {
+	var previousNbPublis = getNbPublis(nodeId);
+	var nodeTitle = getNodeTitle(nodeId);
+	var nbPublis = eval(previousNbPublis+nb);
+	getTreeview().rename_node("#"+nodeId, nodeTitle+" ("+nbPublis+")");
+}
+
 function nodeDeleted(nodeId) {
-	var node = getTreeview()._get_node("#"+nodeId);
-	alert(node.data);
+	if (params["nbPublisDisplayed"]) {
+		// change nb publications on each parent of deleted node (except root)
+		var nbPublisRemoved = getNbPublis(nodeId);
+		var path = getTreeview().get_path("#"+nodeId, true);
+		for (i=0; i<path.length; i++) {
+			var elementId = path[i];
+			if (elementId != "0" && elementId != nodeId) {
+				addNbPublis(elementId, 0-nbPublisRemoved);
+			}
+		}
+		// add nb of removed publis in bin
+		addNbPublis("1", nbPublisRemoved);
+	}
 	getTreeview().delete_node("#"+nodeId);
+}
+
+function resetNbPublis(nodeId) {
+	var nodeTitle = getNodeTitle(nodeId);
+	getTreeview().rename_node("#"+nodeId, nodeTitle+" (0)");
 }
 
 function emptyTrash() {
@@ -356,7 +395,13 @@ function emptyTrash() {
 				function(data){
 					$.closeProgressMessage();
 					if (data == "ok") {
-						getTreeview().rename_node("#1", "<%=resources.getString("kmelia.basket")%> (0)");
+						if (params["nbPublisDisplayed"]) {
+							// remove nb publis to root
+							var nbPublisDeleted = getNbPublis("1");
+							addNbPublis("0", 0-nbPublisDeleted);
+						}
+						// set nb publis on bin to 0
+						resetNbPublis("1");
 						displayTopicContent("1");
 					} else {
 						alert(data);
@@ -682,7 +727,8 @@ $(document).ready(
     	},
     	"ui" :{
             "select_limit" : 1,
-          	"initially_select" : "#<%=id%>"
+          	"initially_select" : "#<%=id%>",
+          	"select_prev_on_delete" : false
         },
     	"json_data" : { 
 			"ajax" : {

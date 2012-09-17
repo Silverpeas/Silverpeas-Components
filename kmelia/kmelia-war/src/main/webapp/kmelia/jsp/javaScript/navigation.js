@@ -555,6 +555,14 @@ function displayTopicInformation(id) {
 	}
 }
 
+function writeInConsole(text) {
+    if (typeof console !== 'undefined') {
+        console.log(text);    
+    } else {
+        alert(text);    
+    }
+}
+
 function deleteFolder(nodeId, nodeLabel) {
 	if(window.confirm(labels["ConfirmDeleteTopic"]+ " '" + nodeLabel + "' ?")) {
 		var componentId = getComponentId();
@@ -566,6 +574,7 @@ function deleteFolder(nodeId, nodeLabel) {
 						try {
 							nodeDeleted(nodeId);
 						} catch (e) {
+							writeInConsole(e);
 						}
 						// go to parent node
 						displayTopicContent(data);
