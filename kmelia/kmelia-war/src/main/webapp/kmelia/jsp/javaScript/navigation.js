@@ -78,8 +78,7 @@ function openPredefinedPdCClassification(nodeId) {
   SP_openWindow(uri, "Classification", '650', '600','scrollbars=yes, resizable, alwaysRaised');
 }
 
-function displayTopicDescription(id)
-{
+function displayTopicDescription(id) {
 	//display rich description of topic
 	var ieFix = new Date().getTime();
 	var componentId = getComponentId();
@@ -152,13 +151,13 @@ function sortGoTo(selectedIndex) {
 }
 
 function displayPath(id) {
-    var sUrl = getWebContext()+"/KmeliaJSONServlet?Action=GetPath&ComponentId="+getComponentId()+"&Id="+id+"&IEFix="+new Date().getTime();
-    $.getJSON(sUrl, function(data){
+	var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+id+"/path?lang="+getTranslation();
+    $.getJSON(url, function(data){
     	//remove topic breadcrumb
         removeBreadCrumbElements();
-    	$(data.reverse()).each(function(i, topic) {
-			if (topic.id != 0) {
-            	addBreadCrumbElement("javascript:topicGoTo("+topic.id+")", topic.name);
+    	$(data).each(function(i, topic) {
+			if (topic.attr["id"] != 0) {
+            	addBreadCrumbElement("javascript:topicGoTo("+topic.attr["id"]+")", topic.data);
             }
 		});
 	});
@@ -451,8 +450,9 @@ function hideOperations() {
 }
 
 var currentNodeId;
-var currentTopicDescription;
 var currentTopicName;
+var currentTopicDescription;
+var currentTopicStatus;
 var currentTopicTranslations;
 
 function getCurrentNodeId() {
@@ -464,13 +464,22 @@ function setCurrentNodeId(id) {
 	currentNodeId = id;
 }
 
+function getCurrentTopicStatus() {
+	return currentTopicStatus;
+}
+
+function setCurrentTopicStatus(status) {
+	currentTopicStatus = status;
+}
+
 function setCurrentTopicName(name) {
 	currentTopicName = name;
-	$("#addOrUpdateNode #topicName").val(name);
+	$("#addOrUpdateNode #folderName").val(name);
 }
+
 function setCurrentTopicDescription(desc) {
 	currentTopicDescription = desc;
-	$("#addOrUpdateNode #topicDescription").val(desc);
+	$("#addOrUpdateNode #folderDescription").val(desc);
 }
 function setCurrentTopicTranslations(trans) {
 	currentTopicTranslations = trans;
@@ -501,30 +510,43 @@ function showTranslation(lang) {
 	while (!found && i<translations.length) {
 		if (translations[i].language == lang) {
 			found = true;
-			$("#addOrUpdateNode #topicName").val(translations[i].name);
-			$("#addOrUpdateNode #topicDescription").val(translations[i].description);
+			$("#addOrUpdateNode #folderName").val(translations[i].name);
+			$("#addOrUpdateNode #folderDescription").val(translations[i].description);
 			$('select[name="I18NLanguage"] option:selected').val(translations[i].language+"_"+translations[i].id);
 		}
 		i++;
 	}
 	if (!found) {
-		$("#addOrUpdateNode #topicName").val("");
-		$("#addOrUpdateNode #topicDescription").val("");
+		$("#addOrUpdateNode #folderName").val("");
+		$("#addOrUpdateNode #folderDescription").val("");
 	}
 }
 
+function getDateFormat() {
+	if (getLanguage() == "fr") {
+		return "dd/mm/yy";
+	} else if (getLanguage() == "de") {
+		return "dd.mm.yy";
+	}
+	return "mm/dd/yy";
+}
 
 function displayTopicInformation(id) {
 	if (id != "0" && id != "1" && id != "tovalidate") {
 		$("#footer").css({'visibility':'visible'});
-		var url = getWebContext()+"/KmeliaJSONServlet?Id="+id+"&Action=GetTopic&ComponentId="+getComponentId()+"&IEFix="+new Date().getTime();
+		var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+id;
 		$.getJSON(url, function(topic){
-					$("#footer").html(labels["topic.info"]+topic[0].creatorName+' - '+topic[0].date+' - <a id="topicPermalink" href="#"><img src="'+icons["permalink"]+'"/></a>');
+					var name = topic.data;
+					var desc = topic.attr["description"];
+					var date = $.datepicker.formatDate(getDateFormat(), new Date(topic.attr["creationDate"]));;
+					var creator = topic.attr["creator"].fullName;
+					$("#footer").html(labels["topic.info"]+creator+' - '+date+' - <a id="topicPermalink" href="#"><img src="'+icons["permalink"]+'"/></a>');
 					$("#footer #topicPermalink").attr("href", getWebContext()+"/Topic/"+id+"?ComponentId="+getComponentId());
-					setCurrentTopicName(topic[0].name);
-					setCurrentTopicDescription(topic[0].description);
+					setCurrentTopicName(name);
+					setCurrentTopicDescription(desc);
+					setCurrentTopicStatus(topic.attr["status"]);
 					if (params["i18n"]) {
-						setCurrentTopicTranslations(topic[0].translations);
+						setCurrentTopicTranslations(topic.translations);
 					}
 					activateUserZoom();
 				});
@@ -533,13 +555,27 @@ function displayTopicInformation(id) {
 	}
 }
 
-function deleteNode(nodeId, nodeLabel) {
+function writeInConsole(text) {
+    if (typeof console !== 'undefined') {
+        console.log(text);    
+    } else {
+        alert(text);    
+    }
+}
+
+function deleteFolder(nodeId, nodeLabel) {
 	if(window.confirm(labels["ConfirmDeleteTopic"]+ " '" + nodeLabel + "' ?")) {
 		var componentId = getComponentId();
 		var url = getWebContext()+'/KmeliaAJAXServlet';
 		$.get(url, { Id:nodeId,ComponentId:componentId,Action:'Delete'},
 				function(data){
 					if ((data - 0) == data && data.length > 0) {
+						// fires event
+						try {
+							nodeDeleted(nodeId);
+						} catch (e) {
+							writeInConsole(e);
+						}
 						// go to parent node
 						displayTopicContent(data);
 					} else {
@@ -550,7 +586,7 @@ function deleteNode(nodeId, nodeLabel) {
 }
 
 function deleteCurrentNode() {
-	deleteNode(getCurrentNodeId(), currentTopicName);
+	deleteFolder(getCurrentNodeId(), currentTopicName);
 }
 
 function sortSubTopics() {
@@ -573,21 +609,21 @@ function topicAdd(topicId, isLinked) {
 		location.href = url;
 	} else {
 		document.topicForm.action = "AddTopic";
-		$("#addOrUpdateNode #topicName").val("");
-		$("#addOrUpdateNode #topicDescription").val("");
+		$("#addOrUpdateNode #folderName").val("");
+		$("#addOrUpdateNode #folderDescription").val("");
 		$("#addOrUpdateNode #parentId").val(topicId);
 		translations = null;
 		//remove delete operation
 		$("#deleteTranslation").remove();
 		
 		// display path of parent
-		var sUrl = getWebContext()+"/KmeliaJSONServlet?Action=GetPath&ComponentId="+getComponentId()+"&Id="+topicId+"&IEFix="+new Date().getTime();
-	    $.getJSON(sUrl, function(data){
+		var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+topicId+"/path?lang="+getTranslation()+"&IEFix="+new Date().getTime();
+	    $.getJSON(url, function(data){
 	    	//remove topic breadcrumb
 	    	$("#addOrUpdateNode #path").html("");
-	    	$(data.reverse()).each(function(i, topic) {
-	    		var item = " > " + topic.name;
-				if (topic.id == 0) {
+	    	$(data).each(function(i, topic) {
+	    		var item = " > " + topic.data;
+				if (topic.attr["id"] == 0) {
 					item = getComponentLabel();
 	            }
 				$("#addOrUpdateNode #path").html($("#addOrUpdateNode #path").html() + item);
@@ -616,8 +652,8 @@ function updateCurrentNode() {
 	if (params["i18n"]) {
 		storeTranslations(currentTopicTranslations);
 	} else {
-		$("#addOrUpdateNode #topicName").val(currentTopicName);
-		$("#addOrUpdateNode #topicDescription").val(currentTopicDescription);
+		$("#addOrUpdateNode #folderName").val(currentTopicName);
+		$("#addOrUpdateNode #folderDescription").val(currentTopicDescription);
 	}
 	topicUpdate(getCurrentNodeId());
 }
@@ -632,13 +668,13 @@ function topicUpdate(id) {
 		$("#addOrUpdateNode #topicId").val(id);
 		
 		// display path of parent
-		var sUrl = getWebContext()+"/KmeliaJSONServlet?Action=GetPath&ComponentId="+getComponentId()+"&Id="+id+"&IEFix="+new Date().getTime();
-	    $.getJSON(sUrl, function(data){
+		var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+id+"/path?lang="+getTranslation()+"&IEFix="+new Date().getTime();
+	    $.getJSON(url, function(data){
 	    	//remove topic breadcrumb
 	    	$("#addOrUpdateNode #path").html("");
-	    	$(data.reverse()).each(function(i, topic) {
-	    		var item = " > " + topic.name;
-    			if (topic.id == 0) {
+	    	$(data).each(function(i, topic) {
+	    		var item = " > " + topic.data;
+    			if (topic.attr["id"] == 0) {
 					item = getComponentLabel();
 	            } else {
 	            	if (i == data.length-1) {
@@ -754,14 +790,17 @@ function pasteFromOperations() {
 
 function pasteNode(id) {
 	$.progressMessage();
-
-	//alert("pasteNode : id = "+id);
-	var url = getWebContext()+"/KmeliaJSONServlet?Action=Paste&ComponentId="+getComponentId()+"&Id="+id+"&IEFix="+new Date().getTime();
 	
-	$.getJSON(url, function(nodes){
-		reloadPage(id);
-		$.closeProgressMessage();
-	});
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, {ComponentId:getComponentId(),Action:'Paste',Id:id,IEFix:new Date().getTime()},
+			function(data){
+				$.closeProgressMessage();
+				if (data == "ok") {
+					reloadPage(id);
+				} else {
+					alert(data);
+				}
+			}, 'text');
 }
 
 function reloadPage(id) {
@@ -818,4 +857,62 @@ function showStats() {
   var url = "statistics?componentId=" + getComponentId() + "&topicId=" + getCurrentNodeId();
   //alert("loading url " + url);
   location.href = url;
+}
+
+function changeStatus(nodeId, currentStatus) {
+	closeWindows();
+	var newStatus = "Visible";
+	if (currentStatus == "Visible") {
+		newStatus = "Invisible";
+	}
+
+	if (newStatus == 'Invisible') {
+		question = labels["js.status.visible2invisible"];
+	} else {
+		question = labels["js.status.invisible2visible"];
+	}
+
+	var recursive = "0";
+	if(window.confirm(question)){
+		recursive = "1";
+	}
+
+	$.get(getWebContext()+'/KmeliaAJAXServlet', {ComponentId:getComponentId(),Action:'UpdateTopicStatus',Id:nodeId,Status:newStatus,Recursive:recursive},
+			function(data){
+				if (data == "ok") {
+					updateUIStatus(nodeId, newStatus);
+				} else {
+					alert(data);
+				}
+			}, 'text');
+}
+
+function getWidth() {
+	  var myWidth = 0;
+	  if( typeof( window.innerWidth ) == 'number' ) {
+	    //Non-IE
+	    myWidth = window.innerWidth;
+	  } else if( document.documentElement && document.documentElement.clientWidth ) {
+	    //IE 6+ in 'standards compliant mode'
+	    myWidth = document.documentElement.clientWidth;
+	  } else if( document.body && document.body.clientWidth ) {
+	    //IE 4 compatible
+	    myWidth = document.body.clientWidth;
+	  }
+	  return myWidth;
+}
+
+function getHeight() {
+	  var myHeight = 0;
+	  if( typeof( window.innerHeight ) == 'number' ) {
+	    //Non-IE
+	    myHeight = window.innerHeight;
+	  } else if( document.documentElement && document.documentElement.clientHeight) {
+	    //IE 6+ in 'standards compliant mode'
+	    myHeight = document.documentElement.clientHeight;
+	  } else if( document.body && document.body.clientHeight) {
+	    //IE 4 compatible
+	    myHeight = document.body.clientHeight;
+	  }
+	  return (myHeight -20);
 }
