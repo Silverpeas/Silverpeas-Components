@@ -695,3 +695,46 @@
 .table-result-statistics .principal-element-table {
 	font-weight:bold;
  }
+ 
+/*tree view splitter style*/ 
+#splitter {
+	min-width: 500px;	
+	min-height: 100px;	
+	height: 100%;
+	border: 0;
+}
+
+/*** leftPane ****/
+#splitter #treeDiv1 {
+	overflow:auto;
+	width:250px;
+}
+
+/*** rightPane ****/
+#rightSide {
+	overflow:auto;
+	left:300px;
+}
+
+#footer {
+	text-align: center;
+}
+
+.jstree .Invisible a {
+	color: #BBBBBB;
+}
+
+.vsplitbar {
+	width: 7px;
+	background: #F2F2F2 url(/silverpeas/util/icons/splitter/layout_sprite_vertical.png) 1px center no-repeat;
+}
+
+.basDroiteFrame img, 
+.basMilieuFrame img,
+.basGaucheFrame img {
+	display:none;
+}
+
+#latestPublications p {
+	margin: 0px 0px 10px 0px;
+}

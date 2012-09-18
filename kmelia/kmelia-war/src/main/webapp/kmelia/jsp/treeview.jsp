@@ -89,47 +89,6 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
-
-<style type="text/css" >
-#treeDiv1 {
-	/*width: 20%;*/
-	width: 250px;
-	height : 500px;
-	float: left;
-	padding-right: 5px; /*do not forget to change end minus if this value change !*/
-	overflow: hidden;
-	border: 1px solid #F2F2F2;
-}
-#rightSide {
-	float: left;
-	/*margin-left: 30px;*/
-	/*height: 100%;*/
-	/*width: 675px;*/
-	overflow: hidden;
-	/*border: 1px solid blue;*/
-}
-
-#footer {
-	text-align: center;
-}
-
-.jstree .Invisible a {
-	color: #BBBBBB;
-}
-
-#splitter {
-	height: 800px;
-	width: 100%;
-	border: 0px solid #aaa;
-}
-#splitter #treeDiv1 {
-	overflow: auto;
-}
-.vsplitbar {
-	width: 5px;
-	background: #DEDEDE;
-}
-</style>
 <script type="text/javascript">
 function topicGoTo(id) {
     closeWindows();
@@ -832,7 +791,9 @@ $(document).ready(
 		
 	$("#splitter").splitter({
 		splitVertical: true,
-		sizeLeft: true,
+		minLeft: 50, sizeLeft: 300, minRight: 250, 
+		anchorToWindow: true,
+		resizeToWidth: false,
 		accessKey: 'I'
 	});
 	

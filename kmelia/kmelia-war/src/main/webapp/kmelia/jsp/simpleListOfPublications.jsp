@@ -174,7 +174,7 @@ $(document).ready(function() {
 			operationPane.addLine();
         }
         if (userCanCreatePublications) {
-	        operationPane.addOperationOfCreation("useless", kmeliaScc.getString("PubCreer"), "NewPublication");
+	        operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.addPubli"), kmeliaScc.getString("PubCreer"), "NewPublication");
 	        if (kmeliaScc.isWizardEnabled()) {
 	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
 	        }
@@ -193,8 +193,8 @@ $(document).ready(function() {
                     	
     	if (!isGuest) {
     	  	operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
-    		operationPane.addOperationOfCreation("useless", resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
-      		operationPane.addOperationOfCreation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(description))+"','"+urlTopic+"')");
+    		operationPane.addOperation("useless", resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
+      		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
     	}
     	
     	if (userCanCreatePublications) {

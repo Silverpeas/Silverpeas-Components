@@ -1129,7 +1129,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
     Board board = gef.getBoard();
     writer.write(board.printBefore());
-    writer.write("<table border=\"0\" width=\"98%\" align=\"center\">");
+    writer.write("<table border=\"0\" width=\"98%\" align=\"center\" id=\"latestPublications\">");
     writer.write("<tr>");
     writer.write("<td width=\"40\" align=\"left\"><img src=\"" + resources.getIcon(
         "kmelia.publication") + "\" border=0></td>");
@@ -1185,7 +1185,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           }
           writer.write("<br/>");
           writer.write(EncodeHelper.javaStringToHtmlParagraphe(pub.getDescription(language)));
-          writer.write("<br/><br/></p>");
+          writer.write("</p>");
           writer.write("</td>");
           writer.write("<!-- Publication Body End -->");
           j++;
