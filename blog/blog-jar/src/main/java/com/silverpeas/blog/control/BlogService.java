@@ -23,16 +23,18 @@
  */
 package com.silverpeas.blog.control;
 
+import java.util.Collection;
+import java.util.Date;
+
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.comment.model.Comment;
+import com.silverpeas.pdc.model.PdcClassification;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.util.Collection;
-import java.util.Date;
 
 /**
  * Services provided by the Blog Silverpeas component.
@@ -40,6 +42,8 @@ import java.util.Date;
 public interface BlogService extends SilverpeasComponentService<PostDetail> {
 
   public String createPost(final PostDetail post);
+
+  public String createPost(final PostDetail post, PdcClassification classification);
 
   public void updatePost(final PostDetail post);
 
@@ -72,8 +76,6 @@ public interface BlogService extends SilverpeasComponentService<PostDetail> {
   public Collection<NodeDetail> getAllCategories(String instanceId);
 
   public Collection<Archive> getAllArchives(String instanceId);
-
-  public int getSilverObjectId(final PublicationPK pubPK);
 
   public void indexBlog(String componentId);
 

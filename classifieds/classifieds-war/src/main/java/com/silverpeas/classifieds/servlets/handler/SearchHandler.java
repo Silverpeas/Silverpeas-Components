@@ -18,8 +18,8 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
 
 /**
  * Use Case : for all users, show all adds of given category

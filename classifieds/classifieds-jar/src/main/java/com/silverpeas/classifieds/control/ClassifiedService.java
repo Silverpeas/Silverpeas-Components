@@ -26,7 +26,7 @@ package com.silverpeas.classifieds.control;
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.Subscribe;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 import java.util.Collection;
 
 /**

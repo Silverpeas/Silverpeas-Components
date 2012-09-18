@@ -24,67 +24,104 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
 <% 
-Collection	categories	= (Collection) request.getAttribute("Categories");
-String 		profile 	= (String) request.getAttribute("Profile");
-
+Collection<NodeDetail>	categories	= (Collection<NodeDetail>) request.getAttribute("Categories");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<view:looknfeel/>
+<view:includePlugin name="popup"/>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-var categoryWindow = window;
-
 function addCategory() {
-	url = "NewCategory";
-    windowName = "categoryWindow";
-	larg = "570";
-	haut = "250";
-    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-    if (!categoryWindow.closed && categoryWindow.name== "categoryWindow")
-        categoryWindow.close();
-    categoryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+	// force empty fields
+	$("#categoryManager #CategoryId").val('');
+	$("#categoryManager #Name").val('');
+	$("#categoryManager #Description").val('');
+	
+	document.categoryForm.action = "CreateCategory";
+	
+	var title = "<%=resource.getString("blog.addCategory")%>";
+	showDialog(title);
+}
+
+function showDialog(title) {
+	$("#categoryManager").popup({
+	      title: title,
+	      callback: function() {
+	        if (isCorrectForm()) {
+	        	sendData();
+	        }
+	        return isCorrect;
+	      }
+	    });
 }
 
 function editCategory(id) {
-    url = "EditCategory?CategoryId="+id;
-    windowName = "categoryWindow";
-	larg = "550";
-	haut = "250";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!categoryWindow.closed && categoryWindow.name== "categoryWindow")
-        categoryWindow.close();
-    categoryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+	var name = $("#categ-"+id+" .categ-title").text();
+	var desc = $("#categ-"+id+" .categ-desc").text();
+	
+	$("#categoryManager #CategoryId").val(id);
+	$("#categoryManager #Name").val(name);
+	$("#categoryManager #Description").val(desc);
+	
+	document.categoryForm.action = "UpdateCategory";
+	
+	var title = "<%=resource.getString("blog.updateCategory")%>";
+	showDialog(title);
+}
+
+function isCorrectForm() {
+ 	var errorMsg = "";
+ 	var errorNb = 0;
+ 	var name = stripInitialWhitespace($("#categoryManager #Name").val());
+
+ 	if (name == "") { 
+		errorMsg+="  - '<%=resource.getString("GML.title")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
+       	errorNb++;
+ 	}
+	   				     			     				    
+   	switch(errorNb) {
+       	case 0 :
+           	result = true;
+           	break;
+       	case 1 :
+           	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+           	window.alert(errorMsg);
+           	result = false;
+           	break;
+       	default :
+           	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+           	window.alert(errorMsg);
+           	result = false;
+           	break;
+     } 
+    return result;
+}
+
+function sendData() {
+	document.categoryForm.submit();
 }
 	
-function deleteConfirm(id,nom) 
-{
-	if(window.confirm("<%=resource.getString("blog.confirmDeleteCategory")%> '" + nom + "' ?"))
-	{
+function deleteConfirm(id,nom) {
+	if(window.confirm("<%=resource.getString("blog.confirmDeleteCategory")%> '" + nom + "' ?")) {
 		document.categoryForm.action = "DeleteCategory";
 		document.categoryForm.CategoryId.value = id;
 		document.categoryForm.submit();
 	}
 }
-
 </script>
 </head>
 <body id="blog">
 <div id="<%=instanceId %>">
-
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	
    	operationPane.addOperation(resource.getIcon("blog.addCategory"), resource.getString("blog.addCategory") , "javascript:onClick=addCategory()");
 
 	out.println(window.printBefore());
@@ -99,11 +136,10 @@ function deleteConfirm(id,nom)
 	ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("GML.operation"));
 	columnOp.setSortable(false);
 		
-	// remplissage de l'ArrayPane avec les catégories
-	Iterator it = (Iterator) categories.iterator();
-	while (it.hasNext()) 
-	{
+	// remplissage de l'ArrayPane avec les catï¿½gories
+	for (NodeDetail uneCategory : categories) {
 		ArrayLine ligne = arrayPane.addArrayLine();
+		ligne.setId("categ-"+uneCategory.getId());
 			
 		IconPane icon = gef.getIconPane();
 		Icon categoryIcon = icon.addIcon();
@@ -111,17 +147,16 @@ function deleteConfirm(id,nom)
       	icon.setSpacing("30");
       	ligne.addArrayCellIconPane(icon);
 			
-		NodeDetail uneCategory = (NodeDetail) it.next();
 		int id = uneCategory.getId();
 		String nom = uneCategory.getName();
-		ligne.addArrayCellText(uneCategory.getName());
-		ligne.addArrayCellText(uneCategory.getDescription());
-		// création de la colonne des icônes
+		ArrayCell cell4Name = ligne.addArrayCellText(uneCategory.getName());
+		cell4Name.setStyleSheet("categ-title");
+		ArrayCell cell4Desc = ligne.addArrayCellText(uneCategory.getDescription());
+		cell4Desc.setStyleSheet("categ-desc");
+		
 		IconPane iconPane = gef.getIconPane();
-		// icône "modifier"
 		Icon updateIcon = iconPane.addIcon();
    		updateIcon.setProperties(resource.getIcon("blog.updateCategory"), resource.getString("blog.updateCategory"), "javaScript:editCategory('"+id+"')");
-		// icône "supprimer"
 		Icon deleteIcon = iconPane.addIcon();
 		deleteIcon.setProperties(resource.getIcon("blog.deleteCategory"), resource.getString("blog.deleteCategory"), "javaScript:deleteConfirm('"+id+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(nom))+"')");
 		iconPane.setSpacing("30");
@@ -132,11 +167,25 @@ function deleteConfirm(id,nom)
   	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-<form name="categoryForm" action="" method="post">
-	<input type="hidden" name="CategoryId"/>
-	<input type="hidden" name="Name"/>
-	<input type="hidden" name="Description"/>
-</form>
 </div>
+
+<div id="categoryManager" style="display: none;">
+	<form name="categoryForm" action="CreateCategory" method="post">
+		<table cellpadding="5" width="100%">
+			<tr>
+				<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>
+				<td><input type="text" name="Name" id="Name" size="60" maxlength="150" value=""/>
+					<img src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5" border="0" alt="<%=resource.getString("GML.requiredField") %>"/>
+					<input type="hidden" name="CategoryId" id="CategoryId" value=""/></td>
+			</tr>
+			<tr>
+				<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
+				<td><input type="text" name="Description" id="Description" size="60" maxlength="150" value=""/></td>
+			</tr>
+			<tr><td colspan="2"><img border="0" src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5" alt="<%=resource.getString("GML.requiredField") %>"/> : <%=resource.getString("GML.requiredField")%></td></tr>
+		</table>
+	</form>
+</div>
+
 </body>
 </html>

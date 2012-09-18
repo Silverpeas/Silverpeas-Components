@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -562,7 +563,6 @@
         </tr>
     </table>
     <%String photoColor = "";
-      String altTitle = "";
       PhotoDetail photo;
       String idP;
       Calendar calendar = Calendar.getInstance();
@@ -582,25 +582,22 @@
       <tr>
         <%while (it.hasNext() && nbAffiche < nbParLigne) {
             photo = (PhotoDetail) it.next();
-            altTitle = "";
             if (photo != null) {
               idP = photo.getPhotoPK().getId();
               String nomRep = resource.getSetting("imagesSubDirectory") + idP;
               String name = photo.getImageName();
+              String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
+              if (StringUtil.isDefined(photo.getDescription())) {
+                altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
+              }
               if (name != null) {
                 String type = name.substring(name.lastIndexOf(".") + 1, name.length());
                 name = photo.getId() + extension;
                 vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
                         getImageMimeType(), nomRep);
-                if ("bmp".equalsIgnoreCase(type)) {
+                if (!ImageType.isPreviewable(name)) {
                   vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
                           getLanguage() + extension;
-                }
-
-                altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-                if (photo.getDescription() != null && photo.getDescription().length() > 0) {
-                  altTitle += " : "
-                          + EncodeHelper.javaStringToHtmlString(photo.getDescription());
                 }
               } else {
                 vignette_url = m_context + "/gallery/jsp/icons/notAvailable_"

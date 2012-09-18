@@ -20,11 +20,7 @@
  */
 package com.silverpeas.gallery.control.ejb;
 
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
-
 import java.rmi.RemoteException;
-import java.rmi.ServerException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -39,6 +35,11 @@ import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
 import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.service.CommentService;
@@ -58,12 +59,11 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -73,9 +73,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.ejb.NodeDAO;
@@ -83,6 +80,9 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
+
+import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
+import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
 
 /**
  * @author
@@ -700,10 +700,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           }
         }
       }
-    } catch (ServerException se) {
-      SilverTrace.error("gallery", "GalleryBmEJB.getResultSearch()", "gallery.MSG_INDEX_NOT_CREATE");
-      return photos;
-    } catch (Exception e) {
+    }  catch (Exception e) {
       throw new GalleryRuntimeException(
         "GallerySessionController.getResultSearch()",
         SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e);

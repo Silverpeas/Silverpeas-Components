@@ -35,7 +35,7 @@
 	String 				keyWord			= (String) request.getAttribute("KeyWord");
 %>
 
-<%@page import="com.stratelia.webactiv.util.indexEngine.DateFormatter"%>
+<%@page import="org.silverpeas.search.indexEngine.DateFormatter"%>
 <html>
 <head>
   <view:looknfeel/>

@@ -38,13 +38,13 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmEJB;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
@@ -270,16 +270,16 @@ public class PublicationImport {
     Date jCreationDate = null;
     Date jUpdateDate = null;
 
-    if (beginDate != null && !beginDate.trim().equals("")) {
+    if (StringUtil.isDefined(beginDate)) {
       jBeginDate = DateUtil.stringToDate(beginDate, language);
     }
-    if (endDate != null && !endDate.trim().equals("")) {
+    if (StringUtil.isDefined(endDate)) {
       jEndDate = DateUtil.stringToDate(endDate, language);
     }
-    if (creationDate != null && !creationDate.trim().equals("")) {
+    if (StringUtil.isDefined(creationDate)) {
       jCreationDate = DateUtil.stringToDate(creationDate, language);
     }
-    if (updateDate != null && !updateDate.trim().equals("")) {
+    if (StringUtil.isDefined(updateDate)) {
       jUpdateDate = DateUtil.stringToDate(updateDate, language);
     }
 

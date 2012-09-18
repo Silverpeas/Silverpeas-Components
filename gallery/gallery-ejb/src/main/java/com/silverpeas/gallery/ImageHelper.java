@@ -181,7 +181,13 @@ public class ImageHelper {
       String nameForWatermark = computeWatermarkText(watermarkHD, watermark, type, imageFile, photo,
         pathFile, percentSize, watermarkOther);
       // création de la preview et des vignettes
-      createVignettes(photo, pathFile, image, watermark, nameForWatermark);
+      try {
+        createVignettes(photo, pathFile, image, watermark, nameForWatermark);
+      } catch (Exception e) {
+        SilverTrace.error("gallery", "ImageHelper.createImage",
+            "gallery.ERR_CANT_CREATE_THUMBNAILS",
+            "image = " + photo.getTitle() + " (#" + photo.getId() + ")");
+      }
     }
   }
 

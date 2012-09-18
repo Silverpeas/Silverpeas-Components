@@ -64,7 +64,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
@@ -1044,30 +1044,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           }
         }
       }
-      
-//      Iterator<ClassifyPosition> iter = listOfPositions.iterator();
-//      while (iter.hasNext()) {
-//        List<Value> pathValues = null;
-//        ClassifyPosition position = iter.next();
-//        List<ClassifyValue> values = position.getValues();
-//        for (ClassifyValue value : values) {
-//          pathValues = value.getFullPath();
-//          if (pathValues != null && !pathValues.isEmpty()) {
-//            List<ClassifyValue> valuesForPrincipal = null;
-//            Value term = pathValues.get(0);
-//            String principal = term.getName(getLanguage());
-//            if (result.get(principal) != null) {
-//              valuesForPrincipal = result.get(principal);
-//              valuesForPrincipal.add(value);
-//              result.put(principal, valuesForPrincipal);
-//            } else {
-//              valuesForPrincipal = new ArrayList<ClassifyValue>();
-//              valuesForPrincipal.add(value);
-//              result.put(principal, valuesForPrincipal);
-//            }
-//          }
-//        }
-//      }
     }
     return result;
 

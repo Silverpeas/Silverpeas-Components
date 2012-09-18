@@ -86,7 +86,7 @@
 
     String nextAction = "";
 
-    ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
+    ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", kmeliaScc.getLanguage());
 
     KmeliaPublication kmeliaPublication = null;
     UserDetail ownerDetail = null;
