@@ -48,6 +48,7 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.node.model.NodePK;
 /**
  * This class aims to manage Kmelia statistic request.
  */
@@ -74,16 +75,11 @@ public class StatisticRequestHandler {
    */
   private String processStatisticRequestHandler(HttpServletRequest request,
       KmeliaSessionController kmelia) {
-    TopicDetail curTopic = kmelia.getSessionTopic();
-    String curTopicId = "0";
-    // Check if we are on he root node in order to display most interested query
-    if (curTopic != null) {
-      if ("0".equals(curTopic.getNodePK().getId())) {
-        request.setAttribute("mostInterestedSearch", KmeliaSearchServiceFactory
+    String curTopicId = kmelia.getCurrentFolderId();
+    // Check if we are on the root node in order to display most interested query
+    if (NodePK.ROOT_NODE_ID.equals(curTopicId)) {
+      request.setAttribute("mostInterestedSearch", KmeliaSearchServiceFactory
             .getTopicSearchService().getMostInterestedSearch(kmelia.getComponentId()));
-      } else {
-        curTopicId = curTopic.getNodePK().getId();
-      }
     }
     // Retrieve profile name and list
     List<String> groupIds = getPertinentGroups(kmelia);

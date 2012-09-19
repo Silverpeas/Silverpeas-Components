@@ -102,7 +102,6 @@ seeAlsoDeleteSrc	= "icons/linkedDel.gif";
 
 //Vrai si le user connecte est le createur de cette publication ou si il est admin
 boolean isOwner = false;
-TopicDetail currentTopic = null;
 
 String linkedPathString = kmeliaScc.getSessionPath();
 
@@ -202,8 +201,7 @@ function closeWindows() {
             displaySameSubjectPublications(linkedPublications, resources.getString("PubReferenceeParAuteur"), kmeliaScc, id, isOwner, resources, out);
         } else if (action.equals("SameTopicView")) {
             displayLinkViewSelection(3, kmeliaScc, out);
-            currentTopic = kmeliaScc.getSessionTopic();
-            displaySameSubjectPublications(kmeliaScc.getSessionTopic().getKmeliaPublications(), resources.getString("PubDeMemeTheme"), kmeliaScc, id, false, resources, out);
+            displaySameSubjectPublications(kmeliaScc.getSessionPublicationsList(), resources.getString("PubDeMemeTheme"), kmeliaScc, id, false, resources, out);
         } else if (action.equals("SameSubjectView")) {
             displayLinkViewSelection(2, kmeliaScc, out);
             

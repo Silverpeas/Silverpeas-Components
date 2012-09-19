@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.util.ForeignPK;
@@ -50,6 +51,9 @@ public interface KmeliaBmBusinessSkeleton {
   public TopicDetail goTo(NodePK nodePK, String userId,
       boolean isTreeStructureUsed, String userProfile,
       boolean isRightsOnTopicsUsed) throws RemoteException;
+  
+  public List<NodeDetail> getAllowedSubfolders(NodeDetail folder, String userId)
+      throws RemoteException;
 
   /**
    * Add a subtopic to a topic - If a subtopic of same name already exists a NodePK with id=-1 is
@@ -171,6 +175,12 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public PublicationDetail getPublicationDetail(PublicationPK pubPK)
       throws RemoteException;
+  
+  public List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile,
+      String userId, boolean isTreeStructureUsed, boolean isRightsOnTopicsUsed) throws RemoteException;
+  
+  public List<KmeliaPublication> getLatestPublications(String instanceId, int nbPublisOnRoot,
+      boolean isRightsOnTopicsUsed, String userId) throws RemoteException;
 
   /**
    * Return list of all path to this publication - it's a Collection of NodeDetail collection
@@ -343,9 +353,11 @@ public interface KmeliaBmBusinessSkeleton {
   public KmeliaPublication getPublication(PublicationPK pubPK)
       throws RemoteException;
 
-  public TopicDetail getPublicationFather(PublicationPK pubPK,
-      boolean isTreeStructureUsed, String userId, boolean isRightsOnTopicsUsed)
-      throws RemoteException;
+  public TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed,
+      String userId, boolean isRightsOnTopicsUsed) throws RemoteException;
+  
+  public NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed,
+      String userId, boolean isRightsOnTopicsUsed) throws RemoteException;
 
   public Collection<PublicationDetail> getPublicationDetails(List<ForeignPK> links)
       throws RemoteException;
@@ -729,10 +741,10 @@ public interface KmeliaBmBusinessSkeleton {
       String discrimatingParameterName, String userProfile)
       throws RemoteException;
 
-  public List getPublicationXmlFields(String publicationId, String componentId, String spaceId,
+  public List<XMLField> getPublicationXmlFields(String publicationId, String componentId, String spaceId,
       String userId) throws RemoteException;
 
-  public List getPublicationXmlFields(String publicationId, String componentId, String spaceId,
+  public List<XMLField> getPublicationXmlFields(String publicationId, String componentId, String spaceId,
       String userId, String language) throws RemoteException;
 
   public String createTopic(String componentId, String topicId, String spaceId,
@@ -777,5 +789,17 @@ public interface KmeliaBmBusinessSkeleton {
       String nextStatus) throws RemoteException;
   
   public void removeContentOfPublication(PublicationPK pubPK) throws RemoteException;
+  
+  public NodeDetail getRoot(String componentId, String userId) throws RemoteException;
+  
+  public Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId) throws RemoteException;
+  
+  public NodeDetail getExpandedPathToNode(NodePK pk, String userId) throws RemoteException;
+  
+  public boolean isUserCanWrite(String componentId, String userId) throws RemoteException;
+  
+  public boolean isUserCanValidate(String componentId, String userId) throws RemoteException;
+  
+  public String getUserTopicProfile(NodePK pk, String userId) throws RemoteException;
 
 }

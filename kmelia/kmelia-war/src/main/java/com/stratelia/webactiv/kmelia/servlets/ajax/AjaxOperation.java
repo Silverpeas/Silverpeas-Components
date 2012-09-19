@@ -30,6 +30,7 @@ import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.EmptyTrashHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.GetProfileHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.GetTopicWysiwygHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.IsSubscriberHandler;
+import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.PasteHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.RenameTopicHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.SortTopicsHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.SubscribeHandler;
@@ -51,7 +52,8 @@ public enum AjaxOperation {
   unbindToPub(new UnbindToPubliHandler(), false),
   Subscribe(new SubscribeHandler(), true),
   Unsubscribe(new UnsubscribeHandler(), true),
-  IsSubscriber(new IsSubscriberHandler(), true);
+  IsSubscriber(new IsSubscriberHandler(), true),
+  Paste(new PasteHandler(), true);
 
   private AjaxHandler handler;
   private boolean controllerRequired;

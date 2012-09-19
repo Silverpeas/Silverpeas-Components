@@ -24,9 +24,6 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import static com.silverpeas.notification.NotificationTopic.onTopic;
-import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;
-
 import java.rmi.RemoteException;
 
 import javax.inject.Named;
@@ -38,15 +35,18 @@ import org.silverpeas.versioning.notification.VersioningDeletionNotification;
 import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
+
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import static com.silverpeas.notification.NotificationTopic.onTopic;
+import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;
 
 /**
  *
