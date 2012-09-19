@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -362,5 +363,20 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
           "delegatednews.EX_IMPOSSIBLE_DALERTER_LE_CONTRIBUTEUR", "pubId = " +
            pubId + ", pubName = " + pubName, e);
     }
+  }
+  
+  /**
+   * Suppression des actualités déléguées passées en paramètre
+   *
+   */
+  @Override
+  public void removeDelegatedNews(Collection<String> listIdDelegatedNewsToRemove) {
+    Collection<DelegatedNews> listDelegatedNewsToRemove = new ArrayList<DelegatedNews>();
+    for (String idDelegatedNewsToRemove : listIdDelegatedNewsToRemove) {
+      DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(idDelegatedNewsToRemove));
+      listDelegatedNewsToRemove.add(delegatedNews);
+    }
+    
+    dao.delete(listDelegatedNewsToRemove);
   }
 }
