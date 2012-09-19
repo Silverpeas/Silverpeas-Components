@@ -25,6 +25,7 @@
 package com.silverpeas.delegatednews.control;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -153,5 +154,13 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   public void updateDateDelegatedNews(int pubId, Date beginDate, Date endDate) {
     
     service.updateDateDelegatedNews(pubId, beginDate, endDate);
+  }
+  
+  /**
+   * Supprime les actualités déléguées passées en paramètre
+   *
+   */
+  public void removeDelegatedNews(Collection<String> listIdDelegatedNewsToRemove) {
+    service.removeDelegatedNews(listIdDelegatedNewsToRemove);
   }
 }

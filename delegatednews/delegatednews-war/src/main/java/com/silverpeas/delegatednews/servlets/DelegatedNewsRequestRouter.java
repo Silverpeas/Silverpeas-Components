@@ -34,6 +34,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -143,6 +146,15 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter<Delegated
         request.setAttribute("ListNews", list);
         destination = "/delegatednews/jsp/listNews.jsp";
       } 
+      else if ("RemoveDelegatedNews".equals(function)) {
+        String[] selectedDelegatedNews = request.getParameterValues("checkedDelegatedNews");
+        Collection<String> listIdDelegatedNewsToRemove = Arrays.asList(selectedDelegatedNews);
+        SilverTrace.info("delegatednews", "DelegatedNewsRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "listIdDelegatedNewsToRemove = " + listIdDelegatedNewsToRemove);
+        newsSC.removeDelegatedNews(listIdDelegatedNewsToRemove);
+        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews(); 
+        request.setAttribute("ListNews", list);
+        destination = "/delegatednews/jsp/listNews.jsp";
+      }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";

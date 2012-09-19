@@ -34,6 +34,7 @@
 <%@ include file="check.jsp"%>
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
   
 <%
 	List listNews = (List) request.getAttribute("ListNews"); //List<DelegatedNews> 
@@ -170,15 +171,28 @@
     			"<fmt:message key="GML.cancel" />": function() {
     				$(this).dialog("close");
     			}
-    		}
+    		}  
     	});
     });
+    
+    function deleteSelectedDelegatedNews() {
+    	  if (confirm('<fmt:message key="delegatednews.form.delete.confirm"/>')) {
+           document.tabForm.action = "RemoveDelegatedNews";
+           document.tabForm.submit();
+         }
+    }
     </script>
   </head>  
   <body>
+    <fmt:message key="delegatednews.icons.delete" var="deleteIcon" bundle="${icons}" />
+    <fmt:message key="delegatednews.action.delete" var="deleteAction" />
+    <view:operationPane>
+      <view:operation altText="${deleteAction}" icon="${deleteIcon}" action="${'javascript:deleteSelectedDelegatedNews();'}" />
+    </view:operationPane>
+    
     <view:window>
       <view:frame>
-          
+        <form name="tabForm" action="DeleteLinks" method="post">  
   <%
     ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
     arrayPane.setVisibleLineNumber(20);
@@ -194,6 +208,7 @@
     if(isAdmin) {
 		ArrayColumn arrayColumnOp = arrayPane.addArrayColumn(resources.getString("GML.operations"));
 		arrayColumnOp.setSortable(false);
+		arrayPane.addArrayColumn("");
 	}
     
     SimpleDateFormat hourFormat = new SimpleDateFormat(resources.getString("GML.hourFormat"));
@@ -248,12 +263,14 @@
 			iconRefused.setProperties(m_context+"/util/icons/delete.gif", resources.getString("delegatednews.action.refuse"), "javascript:onClick=refuseDelegatedNews('"+pubId+"')");
 			
 			arrayLine.addArrayCellIconPane(iconPane);	
+			
+			arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedDelegatedNews\" value=\""+pubId+"\"/>");
 		}
 	}
 
   out.print(arrayPane.print());
   %>
-     
+        </form>
       </view:frame>
     </view:window>
 

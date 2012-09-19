@@ -24,6 +24,7 @@
 
 package com.silverpeas.delegatednews.service;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -43,4 +44,5 @@ public interface DelegatedNewsService {
   public void deleteDelegatedNews(int pubId);
   public void notifyDelegatedNewsValid(String pubId, String pubName, String senderId, String senderName, String contributorId, String delegatednewsInstanceId);
   public void notifyDelegatedNewsRefused(String pubId, String pubName, String refusalMotive, String senderId, String senderName, String contributorId, String delegatednewsInstanceId);
+  public void removeDelegatedNews(Collection<String> listIdDelegatedNewsToRemove);
 }
