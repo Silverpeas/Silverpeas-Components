@@ -620,6 +620,9 @@
 .commentaires {
 	border-top: 2px dotted #CECECE;
 	margin-top: 15px;
+	overflow:auto;
+	width:100%;
+	clear:left;
 }
 
 .publicationManager .classification .legende {
