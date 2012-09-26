@@ -32,10 +32,10 @@
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 
 <%
-String		rootId				= "0";
-String		description			= "";
-String		namePath			= "";
-String		urlTopic			= "";
+String id = "0";
+
+// création du nom pour les favoris
+String namePath = spaceLabel + " > " + componentLabel;
 
 //R?cup?ration des param?tres
 String 	profile			= (String) request.getAttribute("Profile");
@@ -44,32 +44,16 @@ boolean	isGuest			= (Boolean) request.getAttribute("IsGuest");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
 boolean updateChain		= ((Boolean) request.getAttribute("HaveDescriptor")).booleanValue();
 
-TopicDetail currentTopic 		= (TopicDetail) request.getAttribute("CurrentTopic");
-
-String 		pathString 			= (String) request.getAttribute("PathString");
-
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
-String id = currentTopic.getNodeDetail().getNodePK().getId();
 String language = kmeliaScc.getLanguage();
 
-NodeDetail nodeDetail = currentTopic.getNodeDetail();
-
-List path = (List) kmeliaScc.getNodeBm().getPath(currentTopic.getNodePK());
-
-if (id == null) {
-	id = rootId;
-}
+String urlTopic	= URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, true);;
 
 //For Drag And Drop
 boolean dragAndDropEnable = kmeliaScc.isDragAndDropEnable();
 
-String sRequestURL = request.getRequestURL().toString();
-String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-
 String userId = kmeliaScc.getUserId();
-
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 
 boolean userCanCreatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.writer.isInRole(profile);
 boolean userCanValidatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile);
@@ -87,6 +71,8 @@ boolean userCanSeeStats =
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <view:includePlugin name="userZoom"/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <script type="text/javascript" src="javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
@@ -142,11 +128,16 @@ function topicWysiwyg() {
 function pasteFromOperations() {
 	$.progressMessage();
 	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/KmeliaJSONServlet', {Action:'Paste',ComponentId:'<%=componentId%>',Language:'<%=language%>',IEFix:ieFix},
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, {ComponentId:getComponentId(),Action:'Paste',Id:'0',IEFix:ieFix},
 			function(data){
-				displayPublications("0");
 				$.closeProgressMessage();
-			},"json");
+				if (data == "ok") {
+					displayPublications("0");
+				} else {
+					alert(data);
+				}
+			}, 'text');
 }
 
 $(document).ready(function() {
@@ -158,16 +149,9 @@ $(document).ready(function() {
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
 <div id="<%=componentId %>">
 <%
-        urlTopic = nodeDetail.getLink();
-
         Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setI18N("GoToCurrentTopic", translation);
-
-        // cr?ation du nom pour les favoris
-        namePath = spaceLabel + " > " + componentLabel;
-         if (!pathString.equals(""))
-        	namePath = namePath + " > " + pathString;
 
         //Display operations
         OperationPane operationPane = window.getOperationPane();
@@ -192,7 +176,7 @@ $(document).ready(function() {
 			operationPane.addLine();
         }
         if (userCanCreatePublications) {
-	        operationPane.addOperationOfCreation("useless", kmeliaScc.getString("PubCreer"), "NewPublication");
+	        operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.addPubli"), kmeliaScc.getString("PubCreer"), "NewPublication");
 	        if (kmeliaScc.isWizardEnabled()) {
 	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
 	        }
@@ -211,8 +195,8 @@ $(document).ready(function() {
                     	
     	if (!isGuest) {
     	  	operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
-    		operationPane.addOperationOfCreation("useless", resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
-      		operationPane.addOperationOfCreation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(description))+"','"+urlTopic+"')");
+    		operationPane.addOperation("useless", resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
+      		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
     	}
     	
     	if (userCanCreatePublications) {
@@ -288,7 +272,7 @@ $(document).ready(function() {
 
 <form name="topicDetailForm" method="post">
 	<input type="hidden" name="Id" value="<%=id%>"/>
-	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"/>
+	<input type="hidden" name="Path" value=""/>
 	<input type="hidden" name="ChildId"/>
 	<input type="hidden" name="Status"/><input type="hidden" name="Recursive"/>
 </form>

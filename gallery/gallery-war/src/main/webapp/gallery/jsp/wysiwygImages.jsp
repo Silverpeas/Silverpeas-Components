@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.List"%>
@@ -89,7 +90,7 @@ if (photos != null) {
             name = photo.getId() + "_133x100.jpg";
             vignette_url = m_context + "/GalleryInWysiwyg/dummy?ImageId=" + idP + "&ComponentId=" + photo.
                 getPhotoPK().getInstanceId() + "&Size=133x100";
-            if ("bmp".equalsIgnoreCase(type)) {
+            if (!ImageType.isPreviewable(name)) {
               vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + "fr" + "_133x100.jpg";
             }
           }

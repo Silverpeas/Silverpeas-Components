@@ -53,6 +53,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import org.silverpeas.util.ImageLoader;
 
 public class ImageHelper {
   private final static FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;

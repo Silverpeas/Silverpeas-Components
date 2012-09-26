@@ -141,27 +141,27 @@
 }
 
 #pubList #pubsHeader {
-	background-color:transparent;
-	background-image:url("/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg");
-	background-repeat:repeat-x;
+	border-bottom: 1px solid #E9E9E9;
 	font-weight:bold;
 	float: left;
 	width: 100%;
+	line-height: 27px;
+	padding-bottom: 3px;
 }
 
 #pubList #pubsHeader img {
-	float: left;
+	vertical-align: middle;
+	margin-right: 3px;
+	margin-left: 5px;
 }
 
 #pubList #pubsCounter {
-	float:left;
-	margin-top:8px;
 	position:relative;
 }
 
 #pubList #pubsSort {
 	float: right;
-	margin-top: 6px;
+	margin-top: 3px;
 	position: relative;
 }
 
@@ -453,6 +453,7 @@
 
 #topicDescription {
 	color:#666;
+	margin: 1em; 
 }
 
 /*** A basculer dans la css global pour utilisation générique */
@@ -619,6 +620,9 @@
 .commentaires {
 	border-top: 2px dotted #CECECE;
 	margin-top: 15px;
+	overflow:auto;
+	width:100%;
+	clear:left;
 }
 
 .publicationManager .classification .legende {
@@ -694,3 +698,46 @@
 .table-result-statistics .principal-element-table {
 	font-weight:bold;
  }
+ 
+/*tree view splitter style*/ 
+#splitter {
+	min-width: 500px;	
+	min-height: 100px;	
+	height: 100%;
+	border: 0;
+}
+
+/*** leftPane ****/
+#splitter #treeDiv1 {
+	overflow:auto;
+	width:250px;
+}
+
+/*** rightPane ****/
+#rightSide {
+	overflow:auto;
+	left:300px;
+}
+
+#footer {
+	text-align: center;
+}
+
+.jstree .Invisible a {
+	color: #BBBBBB;
+}
+
+.vsplitbar {
+	width: 7px;
+	background: #F2F2F2 url(/silverpeas/util/icons/splitter/layout_sprite_vertical.png) 1px center no-repeat;
+}
+
+.basDroiteFrame img, 
+.basMilieuFrame img,
+.basGaucheFrame img {
+	display:none;
+}
+
+#latestPublications p {
+	margin: 0px 0px 10px 0px;
+}

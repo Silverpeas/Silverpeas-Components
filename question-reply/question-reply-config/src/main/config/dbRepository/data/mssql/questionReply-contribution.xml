@@ -66,7 +66,7 @@
         
   <upgrade version="004">
     <create_table>
-      <file name="ReplyContentToWysiwygMigration.jar" type="javalib" classname="com.silverpeas.migration.questionreply.ReplyContentToWysiwygMigration" methodname="migrateReplyContentToWysiwyg"/>
+      <file name="ReplyContentToWysiwygMigration.jar" type="javalib" classname="org.silverpeas.migration.questionreply.ReplyContentToWysiwygMigration" methodname="migrateReplyContentToWysiwyg"/>
 	  <file name="mssql\questionReply\up004\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>

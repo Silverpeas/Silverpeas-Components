@@ -86,7 +86,7 @@
 
     String nextAction = "";
 
-    ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
+    ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", kmeliaScc.getLanguage());
 
     KmeliaPublication kmeliaPublication = null;
     UserDetail ownerDetail = null;
@@ -99,16 +99,14 @@
 
     String language = kmeliaScc.getCurrentLanguage();
 
-//Recuperation des parametres
-
     String vignette_url = null;
    
-    String profile = request.getParameter("Profile");
-    String action = request.getParameter("Action");
-    String id = request.getParameter("PubId");
-    String checkPath = request.getParameter("CheckPath");
+    String profile = (String) request.getAttribute("Profile");
+    String action = (String) request.getAttribute("Action");
+    String id = (String) request.getAttribute("PubId");
     String wizard = (String) request.getAttribute("Wizard");
     String currentLang = (String) request.getAttribute("Language");
+    List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
 
     String resultThumbnail = (String)request.getParameter("resultThumbnail");
     boolean errorThumbnail = false;
@@ -146,7 +144,6 @@
 
 //Vrai si le user connecte est le createur de cette publication ou si il est admin
     boolean isOwner = false;
-    TopicDetail currentTopic = null;
 
     boolean suppressionAllowed = false;
 
@@ -160,22 +157,12 @@
     
     boolean isAutomaticDraftOutEnabled = StringUtil.isDefined(resources.getSetting("cronAutomaticDraftOut"));
 
-    String linkedPathString = kmeliaScc.getSessionPath();
-    String pathString = "";
+    String linkedPathString = displayPath(path, true, 3, language) + name;
+    String pathString = displayPath(path, false, 3, language);
 
     Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "GoToCurrentTopic", false);
     Button validateButton = null;
 
-    if ("1".equals(checkPath)) {
-      //Calcul du chemin de la publication
-      currentTopic = kmeliaScc.getPublicationTopic(id);
-      kmeliaScc.setSessionTopic(currentTopic);
-      Collection pathColl = currentTopic.getPath();
-      linkedPathString = displayPath(pathColl, true, 3, language) + name;
-      pathString = displayPath(pathColl, false, 3, language);
-      kmeliaScc.setSessionPath(linkedPathString);
-      kmeliaScc.setSessionPathString(pathString);
-    }
 //Action = View, New, Add, UpdateView, Update, Delete, LinkAuthorView, SameSubjectView ou SameTopicView
     if (action.equals("UpdateView") || action.equals("ValidateView")) {
 
@@ -305,14 +292,6 @@
       beginDate = resources.getInputDate(new Date());
       tempId = "-1";
 
-      if (!kmaxMode) {
-        currentTopic = kmeliaScc.getSessionTopic();
-        Collection pathColl = currentTopic.getPath();
-        linkedPathString = displayPath(pathColl, true, 3, language);
-        kmeliaScc.setSessionPath(linkedPathString);
-        pathString = displayPath(pathColl, false, 3, language);
-        kmeliaScc.setSessionPathString(pathString);
-      }
       nextAction = "AddPublication";
 } 
 
@@ -330,7 +309,7 @@
 		objectId =  pubDetail.getPK().getId();
 	}
 		
-	String backUrl = httpServerBase + URLManager.getApplicationURL() + "/Rkmelia/" + componentId + "/publicationManager.jsp?Action=UpdateView&PubId=" + objectId + "&Profile=" + kmeliaScc.getProfile();
+	String backUrl = httpServerBase + URLManager.getApplicationURL() + "/Rkmelia/" + componentId + "/publicationManager.jsp?Action=UpdateView&PubId=" + objectId;
 		
 	String standardParamaters = "&ComponentId=" + componentId +  
 		                        "&ObjectId=" + objectId +
@@ -453,25 +432,6 @@
         }
 
       <% }%>
-
-      function publicationGoTo(id, action){
-        document.pubForm.Action.value = "ViewPublication";
-        document.pubForm.CheckPath.value = "1";
-        document.pubForm.PubId.value = id;
-        document.pubForm.submit();
-      }
-
-      function sendOperation(operation) {
-        document.pubForm.Action.value = operation;
-        document.pubForm.submit();
-      }
-
-      function sendPublicationData(operation) {
-        if (isCorrectForm()) {
-          document.pubForm.Action.value = operation;
-          document.pubForm.submit();
-        }
-      }
 
       function sendPublicationDataToRouter(func) {
         if (isCorrectForm()) {
@@ -1041,7 +1001,7 @@
 	
     <% if (!kmaxMode) {
         if ("New".equals(action)) { %>
-          	<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getSessionTopic().getNodePK().getId() %>"/>
+          	<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getCurrentFolderId() %>"/>
     <%  } else { %>
     	<% if (!"-1".equals(pubDetail.getCloneId()) && !StringUtil.isDefined(pubDetail.getCloneStatus())) { %>
     		<!-- positions are only editable on original publication -->
