@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -45,15 +46,9 @@ import java.util.List;
  */
 public class QuestionReplyContentManager implements ContentInterface {
 
-  ContentManager contentManager = null;
+  ContentManager contentManager = ContentManagerFactory.getFactory().getContentManager();
 
   public QuestionReplyContentManager() {
-    try {
-      contentManager = new ContentManager();
-    } catch (ContentManagerException e) {
-      SilverTrace.fatal("questionReply", "QuestionReplyContentManager",
-          "root.EX_UNKNOWN_CONTENT_MANAGER", e);
-    }
   }
 
   /** Find all the SilverContent with the given SilverContentId

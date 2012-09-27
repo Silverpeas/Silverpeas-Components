@@ -29,6 +29,7 @@ package com.stratelia.webactiv.forums;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -185,17 +186,15 @@ public class ForumsContentManager implements ContentInterface {
    * @return a list of ForumDetail
    */
   private List getHeaders(List<ForumPK> ids) {
-    ForumDetail forumDetail = null;
     List<ForumDetail> headers = new ArrayList<ForumDetail>();
 
     try {
-      ArrayList forumDetails = (ArrayList) getForumsBM().getForums(ids);
-
-      for (int i = 0; i < forumDetails.size(); i++) {
-        forumDetail = (ForumDetail) forumDetails.get(i);
+      Collection<ForumDetail> forumDetails = getForumsBM().getForums(ids);
+      for (ForumDetail forumDetail : forumDetails) {
         forumDetail.setIconUrl("forumsSmall.gif");
         headers.add(forumDetail);
       }
+
     } catch (RemoteException e) {
       // skip unknown and ill formed id.
     }
@@ -213,8 +212,7 @@ public class ForumsContentManager implements ContentInterface {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("forums", "ForumsContentManager",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
+        SilverTrace.fatal("forums", "ForumsContentManager", "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }
     return contentManager;
@@ -234,8 +232,7 @@ public class ForumsContentManager implements ContentInterface {
         forumsBM = forumsBMHome.create();
       } catch (Exception e) {
         throw new ForumsRuntimeException("ForumsContentManager.getForumsBM()",
-            SilverpeasRuntimeException.ERROR,
-            "forums.EX_IMPOSSIBLE_DE_FABRIQUER_FORUMSBM_HOME", e);
+            SilverpeasRuntimeException.ERROR, "forums.EX_IMPOSSIBLE_DE_FABRIQUER_FORUMSBM_HOME", e);
       }
     }
     return forumsBM;

@@ -72,7 +72,7 @@ out.println(gef.getLookStyleSheet());
 	while(it.hasNext())
 	{
 		Question question = (Question) it.next();
-		String title = Encode.javaStringToHtmlString(question.getTitle());
+		String title = EncodeHelper.javaStringToHtmlString(question.getTitle());
 		String date = resource.getOutputDate(question.getCreationDate());
 		String id = question.getPK().getId();
 		int status = question.getStatus();

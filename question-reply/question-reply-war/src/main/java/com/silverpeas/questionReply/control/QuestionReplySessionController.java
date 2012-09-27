@@ -21,6 +21,7 @@
 package com.silverpeas.questionReply.control;
 
 import static com.google.common.base.Charsets.UTF_8;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,17 +35,26 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.io.IOUtils;
 
 import com.silverpeas.importExport.report.ExportReport;
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.control.notification.NotificationData;
 import com.silverpeas.questionReply.control.notification.QuestionNotifier;
 import com.silverpeas.questionReply.control.notification.ReplyNotifier;
 import com.silverpeas.questionReply.model.Category;
 import com.silverpeas.questionReply.model.Question;
+import com.silverpeas.questionReply.model.QuestionDetail;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
@@ -94,7 +104,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private ContainerContext containerContext;
   private String returnURL = "";
 
-
   /*
    * Recupère la liste des questions selon le profil de l'utilisateur courant
    */
@@ -108,14 +117,16 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         return getPublisherQuestions();
       case admin:
         return getAdminQuestions();
+      default:
+        break;
     }
     return new ArrayList<Question>();
   }
 
   public Collection<Question> getQuestionsByCategory(String categoryId)
-          throws QuestionReplyException {
+      throws QuestionReplyException {
     return QuestionManagerFactory.getQuestionManager().getAllQuestionsByCategory(getComponentId(),
-            categoryId);
+        categoryId);
   }
 
   public Collection<Question> getAllQuestions() throws QuestionReplyException {
@@ -130,7 +141,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     Question question = QuestionManagerFactory.getQuestionManager().getQuestion(questionId);
     setCurrentQuestion(question);
     question.writeRecipients(QuestionManagerFactory.getQuestionManager().getQuestionRecipients(
-            questionId));
+        questionId));
     question.writeReplies(getRepliesForQuestion(questionId));
     return question;
   }
@@ -144,6 +155,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       case writer:
       case admin:
         return getAllRepliesForQuestion(id);
+      default:
+        break;
     }
     return new ArrayList<Reply>();
   }
@@ -237,8 +250,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     newReply.setPrivateReply(privateReply);
   }
 
-  /*
-   * Enregistre une FAQ
+  /**
+   * Persist new FAQ inside database and add positions
+   * @param Positions the JSON position request
+   * @return question identifier
+   * @throws QuestionReplyException
    */
   public long saveNewFAQ() throws QuestionReplyException {
     newQuestion.setStatus(Question.CLOSED); // close
@@ -250,6 +266,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     WAPrimaryKey pk = newReply.getPK();
     pk.setComponentName(getComponentId());
     newReply.setPK(pk);
+
     return QuestionManagerFactory.getQuestionManager().createQuestionReply(newQuestion, newReply);
   }
 
@@ -266,7 +283,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public void updateCurrentQuestion(String title, String content, String categoryId)
-          throws QuestionReplyException {
+      throws QuestionReplyException {
     getCurrentQuestion().setTitle(title);
     getCurrentQuestion().setContent(content);
     getCurrentQuestion().setCategoryId(categoryId);
@@ -274,7 +291,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public void updateCurrentReply(String title, String content)
-          throws QuestionReplyException {
+      throws QuestionReplyException {
     Reply reply = getCurrentReply();
     reply.setTitle(title);
     reply.writeWysiwygContent(content);
@@ -294,7 +311,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       QuestionManagerFactory.getQuestionManager().deleteQuestionAndReplies(questionsIds);
     } catch (QuestionReplyException e) {
       throw new QuestionReplyException("QuestionReplySessionController.deleteQuestions",
-              SilverpeasException.ERROR, "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
+          SilverpeasException.ERROR, "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
     }
   }
 
@@ -320,7 +337,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
     } catch (QuestionReplyException e) {
       throw new QuestionReplyException("QuestionReplySessionController.deleteReplies",
-              SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED", "", e);
+          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED", "", e);
     }
   }
 
@@ -335,13 +352,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
     } catch (QuestionReplyException e) {
       throw new QuestionReplyException("QuestionReplySessionController.deleteReplies",
-              SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED", "", e);
+          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED", "", e);
     }
   }
 
   private boolean isQuestionClosedWithoutAnyReply(int rest) {
     return (((getCurrentQuestion().getReplyNumber()) == 0) || (rest == 0))
-            && (getCurrentQuestion().hasClosedStatus());
+        && (getCurrentQuestion().hasClosedStatus());
   }
 
   /*
@@ -372,7 +389,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private int deletePublicReplies(Collection<Long> replyIds) throws QuestionReplyException {
     QuestionManagerFactory.getQuestionManager().updateRepliesPublicStatus(replyIds,
-            getCurrentQuestion());
+        getCurrentQuestion());
     return getCurrentQuestion().getPublicReplyNumber();
   }
 
@@ -383,7 +400,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private int deletePrivateReplies(Collection<Long> replyIds) throws QuestionReplyException {
     QuestionManagerFactory.getQuestionManager().updateRepliesPrivateStatus(replyIds,
-            getCurrentQuestion());
+        getCurrentQuestion());
     return getCurrentQuestion().getPrivateReplyNumber();
   }
 
@@ -402,7 +419,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private Collection<Question> getWriterQuestions() throws QuestionReplyException {
     return QuestionManagerFactory.getQuestionManager().getReceiveQuestions(getUserId(),
-            getComponentId());
+        getComponentId());
   }
 
   /*
@@ -412,7 +429,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private Collection<Question> getPublisherQuestions() throws QuestionReplyException {
     return QuestionManagerFactory.getQuestionManager().getSendQuestions(getUserId(),
-            getComponentId());
+        getComponentId());
   }
 
   /*
@@ -429,7 +446,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private Collection<Reply> getPublicRepliesForQuestion(long id) throws QuestionReplyException {
     return QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(id,
-            getComponentName());
+        getComponentName());
   }
 
   /*
@@ -437,7 +454,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private Collection<Reply> getPrivateRepliesForQuestion(long id) throws QuestionReplyException {
     return QuestionManagerFactory.getQuestionManager().getQuestionPrivateReplies(id,
-            getComponentName());
+        getComponentName());
   }
 
   /*
@@ -486,6 +503,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
             flag = SilverpeasRole.writer;
           }
           break;
+        default:
+          break;
       }
     }
     return flag.name();
@@ -513,11 +532,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public ContainerPositionInterface getSilverContentIdPosition() throws QuestionReplyException {
     try {
       return containerContext.getSilverContentIdSearchContext(Integer.parseInt(
-              getCurrentQuestionContentId()), getComponentId());
+          getCurrentQuestionContentId()), getComponentId());
     } catch (Exception e) {
       throw new QuestionReplyException(
-              "QuestionReplySessionController.getCurrentQuestionWriters()",
-              SilverpeasException.ERROR, "questionReply.EX_CANT_GET_EXPERTS", "", e);
+          "QuestionReplySessionController.getCurrentQuestionWriters()",
+          SilverpeasException.ERROR, "questionReply.EX_CANT_GET_EXPERTS", "", e);
     }
   }
 
@@ -526,13 +545,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     String webContext = URLManager.getApplicationURL();
     String theURL = webContext + "/RquestionReply/" + getComponentId() + "/EffectiveRelaunch";
     String cancelURL = webContext + "/RquestionReply/" + getComponentId()
-            + "/ConsultQuestionQuery?questionId=" + getCurrentQuestion().getPK().getId();
+        + "/ConsultQuestionQuery?questionId=" + getCurrentQuestion().getPK().getId();
     PairObject hostComponentName = new PairObject(getComponentLabel(), webContext
-            + "/RquestionReply/" + getComponentId() + "/Main");
+        + "/RquestionReply/" + getComponentId() + "/Main");
     PairObject hostPath1 = new PairObject(getCurrentQuestion().getTitle(),
-            "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId="
+        "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId="
             + getCurrentQuestion().getPK().getId());
-    PairObject[] hostPath = {hostPath1};
+    PairObject[] hostPath = { hostPath1 };
 
     gp.resetAll();
 
@@ -565,7 +584,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     if (uids != null) {
       for (String uid : uids) {
         Recipient recipient = new Recipient(((IdPK) getCurrentQuestion().getPK()).getIdAsLong(),
-                uid);
+            uid);
         recipients.add(recipient);
       }
     }
@@ -597,7 +616,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       ContainerPositionInterface position = getSilverContentIdPosition();
       if (position != null && !position.isEmpty()) {
         List<Integer> liste =
-                containerContext.getSilverContentIdByPosition(position, listeInstanceId);
+            containerContext.getSilverContentIdByPosition(position, listeInstanceId);
 
         CardManager cardManager = CardManager.getInstance();
         for (Integer silverContentId : liste) {
@@ -615,8 +634,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
     } catch (Exception e) {
       throw new QuestionReplyException(
-              "QuestionReplySessionController.getCurrentQuestionWriters()",
-              SilverpeasException.ERROR, "questionReply.EX_CANT_GET_EXPERTS", "", e);
+          "QuestionReplySessionController.getCurrentQuestionWriters()",
+          SilverpeasException.ERROR, "questionReply.EX_CANT_GET_EXPERTS", "", e);
     }
 
     return arrayUsers;
@@ -629,13 +648,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @throws QuestionReplyException
    */
   private void notifyTemplateQuestion(Question question, Collection<UserRecipient> users)
-          throws QuestionReplyException {
+      throws QuestionReplyException {
     QuestionNotifier notifier = new QuestionNotifier(getUserDetail(getUserId()), URLManager.
-            getServerURL(null), question, new NotificationData(getString(
-            "questionReply.notification")
-            + getComponentLabel(), getSpaceLabel() + " - " + getComponentLabel(),
-            getComponentLabel(),
-            getComponentId()));
+        getServerURL(null), question, new NotificationData(getString(
+        "questionReply.notification")
+        + getComponentLabel(), getSpaceLabel() + " - " + getComponentLabel(),
+        getComponentLabel(),
+        getComponentId()));
     notifier.sendNotification(users);
   }
 
@@ -659,7 +678,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private void notifyQuestionFromExpert(Question question) throws QuestionReplyException {
     List<String> profils = new ArrayList<String>();
     profils.add(SilverpeasRole.writer.name());
-    String[] usersIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(), profils);
+    String[] usersIds =
+        getOrganizationController().getUsersIdsByRoleNames(getComponentId(), profils);
     List<UserRecipient> users = new ArrayList<UserRecipient>(usersIds.length);
     for (String userId : usersIds) {
       users.add(new UserRecipient(userId));
@@ -674,17 +694,17 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   @SuppressWarnings("unchecked")
   private void notifyReply(Reply reply) throws QuestionReplyException {
     UserDetail user =
-            getOrganizationController().getUserDetail(getCurrentQuestion().getCreatorId());
+        getOrganizationController().getUserDetail(getCurrentQuestion().getCreatorId());
     ReplyNotifier notifier = new ReplyNotifier(getUserDetail(getUserId()), URLManager.getServerURL(
-            null), getCurrentQuestion(), reply, new NotificationData(getString(
-            "questionReply.notification") + getComponentLabel(), getSpaceLabel() + " - "
-            + getComponentLabel(), getComponentLabel(), getComponentId()));
+        null), getCurrentQuestion(), reply, new NotificationData(getString(
+        "questionReply.notification") + getComponentLabel(), getSpaceLabel() + " - "
+        + getComponentLabel(), getComponentLabel(), getComponentId()));
     notifier.sendNotification((List<UserRecipient>) Collections.singletonList(
-            new UserRecipient(user)));
+        new UserRecipient(user)));
   }
 
   public QuestionReplySessionController(MainSessionController mainSessionCtrl,
-          ComponentContext context, String multilangBaseName, String iconBaseName) {
+      ComponentContext context, String multilangBaseName, String iconBaseName) {
     super(mainSessionCtrl, context, multilangBaseName, iconBaseName);
     setUserProfil();
   }
@@ -696,10 +716,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       try {
         ContentManager contentManager = new ContentManager();
         contentId = "" + contentManager.getSilverContentId(
-                currentQuestion.getPK().getId(), currentQuestion.getInstanceId());
+            currentQuestion.getPK().getId(), currentQuestion.getInstanceId());
       } catch (ContentManagerException ignored) {
         SilverTrace.error("questionReply", "QuestionReplySessionController",
-                "questionReply.EX_UNKNOWN_CONTENT_MANAGER", ignored);
+            "questionReply.EX_UNKNOWN_CONTENT_MANAGER", ignored);
         contentId = null;
       }
     }
@@ -735,7 +755,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   public boolean isReplyVisible(Question question, Reply reply) {
     return com.silverpeas.questionReply.control.QuestionReplyExport.isReplyVisible(question, reply,
-            getUserRole(), getUserId());
+        getUserRole(), getUserId());
   }
 
   public Collection<NodeDetail> getAllCategories() throws QuestionReplyException {
@@ -744,12 +764,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       return getNodeBm().getChildrenDetails(nodePK);
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.getAllCategories()",
-              SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORIES_NOT_EXIST", e);
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORIES_NOT_EXIST", e);
     }
   }
 
   public synchronized void createCategory(Category category)
-          throws QuestionReplyException {
+      throws QuestionReplyException {
     try {
       category.setCreationDate(DateUtil.date2SQLDate(new Date()));
       category.setCreatorId(getUserId());
@@ -757,7 +777,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       getNodeBm().createNode(category, new NodeDetail());
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.createCategory()",
-              SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORIES_NOT_CREATE", e);
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORIES_NOT_CREATE", e);
     }
   }
 
@@ -767,17 +787,17 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       return new Category(getNodeBm().getDetail(nodePK));
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.getCategory()",
-              SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
     }
   }
 
   public synchronized void updateCategory(Category category)
-          throws QuestionReplyException {
+      throws QuestionReplyException {
     try {
       getNodeBm().setDetail(category);
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.updateCategory()",
-              SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
     }
   }
 
@@ -792,12 +812,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       getNodeBm().removeNode(nodePk);
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.deleteCategory()",
-              SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
     }
   }
 
   public ExportReport export(ResourcesWrapper resource) throws QuestionReplyException,
-          ParseException {
+      ParseException {
     StringBuilder sb = new StringBuilder("exportFAQ");
     Date date = new Date();
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH'H'mm'm'ss's'");
@@ -817,8 +837,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         FileFolderManager.createFolder(fileExportDir);
       } catch (UtilException ex) {
         throw new QuestionReplyException("QuestionReplySessionController.export()",
-                SilverpeasRuntimeException.ERROR,
-                "root.MSG_FOLDER_NOT_CREATE", ex);
+            SilverpeasRuntimeException.ERROR,
+            "root.MSG_FOLDER_NOT_CREATE", ex);
       }
     }
 
@@ -830,13 +850,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       FileFolderManager.createFolder(forFiles);
     } catch (UtilException ex) {
       throw new QuestionReplyException("QuestionReplySessionController.export()",
-              SilverpeasRuntimeException.ERROR,
-              "root.MSG_FOLDER_NOT_CREATE", ex);
+          SilverpeasRuntimeException.ERROR,
+          "root.MSG_FOLDER_NOT_CREATE", ex);
     }
 
     // intégrer la css du disque dans "files"
     ResourceLocator settings =
-            new ResourceLocator("com.silverpeas.questionReply.settings.questionReplySettings", "");
+        new ResourceLocator("com.silverpeas.questionReply.settings.questionReplySettings", "");
     try {
       String chemin = (settings.getString("mappingDir"));
       if (chemin.startsWith("file:")) {
@@ -845,12 +865,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       Collection<File> files = FileFolderManager.getAllFile(chemin);
       for (File file : files) {
         File newFile =
-                new File(dir + File.separator + nameForFiles + File.separator + file.getName());
+            new File(dir + File.separator + nameForFiles + File.separator + file.getName());
         FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
       }
     } catch (Exception ex) {
       throw new QuestionReplyException("QuestionReplySessionController.export()",
-              SilverpeasRuntimeException.ERROR, "QuestionReply.EX_CANT_COPY_FILE", ex);
+          SilverpeasRuntimeException.ERROR, "QuestionReply.EX_CANT_COPY_FILE", ex);
     }
 
     // création du fichier html
@@ -863,7 +883,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
     } catch (IOException ex) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.export()",
-              SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CAN_WRITE_FILE", ex);
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CAN_WRITE_FILE", ex);
     } finally {
       IOUtils.closeQuietly(fileWriter);
     }
@@ -872,14 +892,14 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     try {
       String zipFileName = fileExportDir.getName() + ".zip";
       long zipFileSize = ZipManager.compressPathToZip(fileExportDir.getPath(), tempDir
-              + zipFileName);
+          + zipFileName);
       exportReport.setZipFileName(zipFileName);
       exportReport.setZipFileSize(zipFileSize);
       exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));
     } catch (Exception ex) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.export()",
-              SilverpeasRuntimeException.ERROR,
-              "QuestionReply.MSG_CAN_CREATE_ZIP", ex);
+          SilverpeasRuntimeException.ERROR,
+          "QuestionReply.MSG_CAN_CREATE_ZIP", ex);
     }
     // Stockage de la date de fin de l'export dans l'objet rapport
     exportReport.setDateFin(new Date());
@@ -887,7 +907,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public String toHTML(File file, ResourcesWrapper resource) throws QuestionReplyException,
-          ParseException {
+      ParseException {
     String fileName = file.getName();
     StringBuilder sb = new StringBuilder();
 
@@ -943,7 +963,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public String addBody(ResourcesWrapper resource, File file) throws QuestionReplyException,
-          ParseException {
+      ParseException {
     StringBuilder sb = new StringBuilder();
     sb.append("<table width=\"100%\">\n");
     Collection<NodeDetail> categories = getAllCategories();
@@ -961,11 +981,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public void exportCategory(QuestionReplyExport exporter, NodeDetail category, String categoryId,
-          StringBuilder sb) throws QuestionReplyException, ParseException {
+      StringBuilder sb) throws QuestionReplyException, ParseException {
     // titre de la catégorie
     sb.append("<tr>\n");
     sb.append("<td class=\"titreCateg\" width=\"91%\">").append(category.getName()).append(
-            "</td>\n");
+        "</td>\n");
     sb.append("</tr>\n");
     // contenu de la catégorie
     sb.append("<tr>\n");
@@ -981,20 +1001,60 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public boolean isVersionControlled() {
     String strVersionControlled = this.getComponentParameterValue("versionControl");
     return ((strVersionControlled != null)
-            && !("").equals(strVersionControlled) && !("no").equals(
-            strVersionControlled.toLowerCase()));
+        && !("").equals(strVersionControlled) && !("no").equals(
+          strVersionControlled.toLowerCase()));
   }
 
   private NodeBm getNodeBm() throws QuestionReplyException {
     NodeBm nodeBm;
     try {
       NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
-              JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.getNodeBm()",
-              SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_NODEBM_NOT_EXIST", e);
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_NODEBM_NOT_EXIST", e);
     }
     return nodeBm;
   }
+
+  /**
+   * Classify the question reply FAQ on the PdC only if the positions parameter is filled
+   * @param questionId the question identifier
+   * @param positions the json string positions
+   */
+  public void classifyQuestionReply(long questionId, String positions) {
+    // First get the questionSilverpeasContent
+    QuestionDetail questionDetail = null;
+    try {
+      questionDetail = new QuestionDetail(getQuestion(questionId));
+    } catch (QuestionReplyException e1) {
+      SilverTrace.error("questionReply", "QuestionReplySessionController.classifyQuestionReply",
+          "Retrieve question error", e1);
+    }
+
+    if (StringUtil.isDefined(positions) && questionDetail != null) {
+      PdcClassificationEntity qiClassification = null;
+      try {
+        qiClassification = PdcClassificationEntity.fromJSON(positions);
+      } catch (JAXBException e) {
+        SilverTrace.error("questionReply", "QuestionReplySessionController.classifyQuestionReply",
+            "PdcClassificationEntity error", "Problem to read JSON", e);
+      }
+      if (qiClassification != null && !qiClassification.isUndefined()) {
+        List<PdcPosition> pdcPositions = qiClassification.getPdcPositions();
+        String questionIdStr = Long.toString(questionId);
+        PdcClassification classification =
+            aPdcClassificationOfContent(questionIdStr, questionDetail.getComponentInstanceId())
+                .withPositions(pdcPositions);
+        if (!classification.isEmpty()) {
+          PdcClassificationService service =
+              PdcServiceFactory.getFactory().getPdcClassificationService();
+          classification.ofContent(questionIdStr);
+          service.classifyContent(questionDetail, classification);
+        }
+      }
+    }
+  }
+
 }
