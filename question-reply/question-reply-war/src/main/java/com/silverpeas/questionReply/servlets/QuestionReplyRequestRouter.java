@@ -47,7 +47,8 @@ import static com.stratelia.webactiv.SilverpeasRole.*;
 /**
  * Router class for SuestionReply component
  */
-public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionReplySessionController> {
+public class QuestionReplyRequestRouter extends
+    ComponentRequestRouter<QuestionReplySessionController> {
 
   private static final long serialVersionUID = 442480445762334578L;
 
@@ -63,7 +64,6 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -71,10 +71,10 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
    */
   @Override
   public QuestionReplySessionController createComponentSessionController(
-          MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new QuestionReplySessionController(mainSessionCtrl, componentContext,
-            "com.silverpeas.questionReply.multilang.questionReplyBundle",
-            "com.silverpeas.questionReply.settings.questionReplyIcons");
+        "com.silverpeas.questionReply.multilang.questionReplyBundle",
+        "com.silverpeas.questionReply.settings.questionReplyIcons");
   }
 
   /**
@@ -112,7 +112,6 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param scc The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -121,7 +120,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
    */
   @Override
   public String getDestination(String function, QuestionReplySessionController scc,
-          HttpServletRequest request) {
+      HttpServletRequest request) {
     SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", function);
     String destination;
@@ -149,8 +148,9 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
           if (!StringUtil.isDefined(categoryId)) {
             categoryId = "null";
           }
-          destination = "/questionReply/jsp/listQuestionsDHTML.jsp?categoryId=" + categoryId + "&questionId=" + question.
-              getPK().getId();
+          destination =
+              "/questionReply/jsp/listQuestionsDHTML.jsp?categoryId=" + categoryId +
+                  "&questionId=" + question.getPK().getId();
         } else {
           destination = "/questionReply/jsp/listQuestionsDHTML.jsp";
         }
@@ -175,7 +175,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
           scc.setUserProfil(publisher.name());
           flag = scc.getUserProfil();
           SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
-                  "root.MSG_GEN_PARAM_VALUE", "flag  appel= " + flag);
+              "root.MSG_GEN_PARAM_VALUE", "flag  appel= " + flag);
           destination = getDestination("MainQuestions", scc, request);
         } else {
           destination = "/admin/jsp/errorpage.jsp";
@@ -308,7 +308,8 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
         }
       } else if (function.equals("DeleteR")) {
         String questionId = request.getParameter("QuestionId");
-        if (StringUtil.isDefined(questionId) && StringUtil.isLong(questionId) && canDeleteReply(role)) {
+        if (StringUtil.isDefined(questionId) && StringUtil.isLong(questionId) &&
+            canDeleteReply(role)) {
           Question question = scc.getQuestion(Long.parseLong(questionId));
           scc.setCurrentQuestion(question);
           String id = request.getParameter("replyId");
@@ -362,7 +363,8 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
       } else if (function.equals("EffectiveCreateR")) {
         int publicReply = 1;
         if (StringUtil.isInteger(request.getParameter("publicReply"))) {
-          publicReply = Integer.parseInt(request.getParameter("publicReply")); // 0 = private, 1 = public
+          publicReply = Integer.parseInt(request.getParameter("publicReply")); // 0 = private, 1 =
+                                                                               // public
         }
         scc.setNewReplyContent(request.getParameter("title"), request.getParameter("content"),
             publicReply, publicReply == 1 ? 0 : 1);
@@ -416,7 +418,10 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
             request.getParameter("CategoryId"));
         scc.setNewReplyContent(request.getParameter("titleR"), request.getParameter("contentR"), 1,
             0);
+        // Get classification positions
+        String positions = request.getParameter("Positions");
         long id = scc.saveNewFAQ();
+        scc.classifyQuestionReply(id, positions);
         scc.getQuestion(id);
         request.setAttribute("contentId", scc.getCurrentQuestionContentId());
         destination = getDestination("Main", scc, request);
@@ -432,24 +437,18 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
           destination = "/admin/jsp/errorpage.jsp";
         }
       } else if (function.equals("EffectiveCreateQ")) {
-        if (flag.equals("publisher") || flag.equals("admin") ||
-            flag.equals("writer")) {
+        if (flag.equals("publisher") || flag.equals("admin") || flag.equals("writer")) {
           scc.setNewQuestionContent(request.getParameter("title"), request.getParameter("content"),
               request.getParameter("CategoryId"));
-          String id = Long.toString(scc.saveNewQuestion());
+          long questionId = scc.saveNewQuestion();
+          String id = Long.toString(questionId);
+          String positions = request.getParameter("Positions");
+          scc.classifyQuestionReply(questionId, positions);
           request.setAttribute("QuestionId", id);
           destination = getDestination("Main", scc, request);
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
-      } else if (function.equals("ViewPdcPositions")) {
-        request.setAttribute("question", scc.getCurrentQuestion());
-        request.setAttribute("SilverContentId", scc.getCurrentQuestionContentId());
-        request.setAttribute("ReturnURL", "/RquestionReplyPDC/" +
-            scc.getComponentId() + "/ViewPdcPositions");
-        request.setAttribute("Flag", scc.getUserProfil());
-        request.setAttribute("UserId", scc.getUserId());
-        destination = "/questionReply/jsp/pdcPositions.jsp";
       } else if (function.equals("ViewAttachments")) {
         request.setAttribute("CurrentReply", scc.getCurrentReply());
         request.setAttribute("Language", scc.getLanguage());
@@ -500,8 +499,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
 
-        SilverTrace.info("questionReply",
-            "QuestionReplyRequestRouter.getDestination()",
+        SilverTrace.info("questionReply", "QuestionReplyRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "type = " + type + " id = " + id);
 
         if ("Question".equals(type)) {
@@ -518,7 +516,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
           SilverTrace.info("questionReply",
               "QuestionReplyRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "questionId = " + questionId +
-              " replyId = " + id);
+                  " replyId = " + id);
 
           destination = getDestination("Main", scc, request);
         } else if (type.startsWith("Publication")) {
@@ -530,7 +528,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter<QuestionR
           SilverTrace.info("questionReply",
               "QuestionReplyRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "questionId = " + questionId +
-              " replyId = " + id);
+                  " replyId = " + id);
 
           destination = getDestination("Main", scc, request);
         } else {

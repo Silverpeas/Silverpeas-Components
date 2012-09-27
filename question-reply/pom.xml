@@ -16,4 +16,13 @@
     <module>question-reply-war</module>
     <module>question-reply-config</module>
   </modules>
+  <dependencies>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>pdc</artifactId>
+      <classifier>client</classifier>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

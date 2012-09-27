@@ -30,11 +30,11 @@
 <%@ include file="checkQuestionReply.jsp" %>
 <%
 	Reply reply = (Reply) request.getAttribute("reply");
-	String title = Encode.javaStringToHtmlString(reply.getTitle());
-	String content = Encode.javaStringToHtmlParagraphe(reply.getContent());
+	String title = EncodeHelper.javaStringToHtmlString(reply.getTitle());
+	String content = EncodeHelper.javaStringToHtmlParagraphe(reply.getContent());
 	String date = resource.getOutputDate(reply.getCreationDate());
 	String id = reply.getPK().getId();
-	String creator = Encode.javaStringToHtmlString(reply.readCreatorName());
+	String creator = EncodeHelper.javaStringToHtmlString(reply.readCreatorName());
 %>
 <HTML>
 <HEAD>

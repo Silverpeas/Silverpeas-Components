@@ -29,18 +29,21 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
+
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Collection"%>
 <%@ page import="java.beans.*"%>
+<%@ page import="java.net.URLEncoder"%>
 
 <%@ page import="java.util.*"%>
-<%@ page import="java.net.URLEncoder"%>
+<%@ page import="java.util.Collection"%>
+
+<%@ page import="javax.servlet.*"%>
+<%@ page import="javax.servlet.http.*"%>
+<%@ page import="javax.servlet.jsp.*"%>
+
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
@@ -72,7 +75,7 @@
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="com.silverpeas.questionReply.control.*"%>
 <%@ page import="com.silverpeas.questionReply.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
 
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
@@ -155,7 +158,7 @@ boolean existPublicR(Collection replies)
 	return false;
 }
 %>
-<SCRIPT LANGUAGE="JavaScript">
+<script type="text/javascript">
 
 <!--
 function vueR(replyId){
@@ -236,7 +239,5 @@ function existSelected()
 	return false;
 }
 
-
-
 //-->
-</SCRIPT>
+</script>

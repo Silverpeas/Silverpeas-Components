@@ -97,8 +97,6 @@ $(document).ready(function() {
 
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
- 	out.println(frame.printBefore());
- 	out.println(board.printBefore());
 %>
 
 <form method="post" name="myForm" action="<%=routerUrl%>EffectiveCreateR">
@@ -128,15 +126,12 @@ $(document).ready(function() {
 	</tr>
 </table>
 </form>
-<% out.println(board.printAfter()); %>
 <br/>
 <%
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
-    buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "ConsultQuestionQuery", false));
-    out.println(buttonPane.print());
-
-    out.println(frame.printAfter());
+  ButtonPane buttonPane = gef.getButtonPane();
+  buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:save();", false));
+  buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "ConsultQuestionQuery", false));
+  out.println(buttonPane.print());
 	out.println(window.printAfter());
 %>
 </body>

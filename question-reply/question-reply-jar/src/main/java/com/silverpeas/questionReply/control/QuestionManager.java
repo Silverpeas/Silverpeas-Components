@@ -168,8 +168,12 @@ public interface QuestionManager {
   */
   List<Question> getPublicQuestions(String instanceId) throws QuestionReplyException;
 
-  /*
-  * enregistre une question et une réponse
-  */
+  /**
+   * Create and persist a question reply
+   * @param question the new question
+   * @param reply the answer linked to the given question
+   * @return long identifier of the created question
+   * @throws QuestionReplyException
+   */
   long createQuestionReply(Question question, Reply reply) throws QuestionReplyException;
 }
