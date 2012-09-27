@@ -110,6 +110,7 @@ public class GalleryProcessManagement {
     processList.add(GalleryCreatePhotoDataProcess.getInstance(photo, albumId, delegate));
     processList.add(GalleryCreatePhotoFileProcess.getInstance(photo, file, watermark, watermarkHD,
         watermarkOther));
+    processList.add(GalleryUpdatePhotoDataProcess.getInstance(photo));
     processList.add(GalleryIndexPhotoDataProcess.getInstance(photo));
   }
 

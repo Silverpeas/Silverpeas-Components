@@ -23,15 +23,13 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.form.PagesContext;
-import com.silverpeas.gallery.dao.PhotoDAO;
 import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.process.AbstractGalleryDataProcess;
 import com.silverpeas.gallery.process.GalleryProcessExecutionContext;
-import com.silverpeas.util.StringUtil;
 
 /**
  * Process to create a photo in Database
@@ -71,18 +69,18 @@ public class GalleryCreatePhotoDataProcess extends AbstractGalleryDataProcess {
    * (non-Javadoc)
    * @see
    * com.silverpeas.gallery.process.AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.Session)
+   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
    */
   @Override
-  protected void processData(final GalleryProcessExecutionContext context, final Session session)
-      throws Exception {
+  protected void processData(final GalleryProcessExecutionContext context,
+      final ProcessSession session) throws Exception {
 
     // Photo
     if (delegate.isHeaderData()) {
       delegate.updateHeader(getPhoto());
     }
 
-    createPhoto(albumId);
+    createPhoto(albumId, context);
 
     // Persists form data
     if (delegate.isForm()) {
@@ -94,22 +92,5 @@ public class GalleryCreatePhotoDataProcess extends AbstractGalleryDataProcess {
       pageContext.setObjectId(photoId);
       delegate.updateForm(photoId, pageContext);
     }
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.process.AbstractProcess#onSuccessful(org.silverpeas.process.management.
-   * ProcessExecutionContext, org.silverpeas.process.session.Session)
-   */
-  @Override
-  public void onSuccessful(final GalleryProcessExecutionContext context, final Session session)
-      throws Exception {
-    super.onSuccessful(context, session);
-
-    // Save data that have been computed during other processes
-    if (!StringUtil.isDefined(getPhoto().getTitle())) {
-      getPhoto().setTitle(getPhoto().getImageName());
-    }
-    PhotoDAO.updatePhoto(context.getConnection(), getPhoto());
   }
 }

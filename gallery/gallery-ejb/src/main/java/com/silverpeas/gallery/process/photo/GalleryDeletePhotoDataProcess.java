@@ -25,7 +25,7 @@ package com.silverpeas.gallery.process.photo;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
@@ -67,28 +67,17 @@ public class GalleryDeletePhotoDataProcess extends AbstractGalleryDataProcess {
    * (non-Javadoc)
    * @see
    * com.silverpeas.gallery.process.AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.Session)
+   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
    */
   @Override
-  protected void processData(final GalleryProcessExecutionContext context, final Session session)
-      throws Exception {
+  protected void processData(final GalleryProcessExecutionContext context,
+      final ProcessSession session) throws Exception {
     PhotoDAO.removePhoto(context.getConnection(), Integer.parseInt(getPhoto().getId()));
     PhotoDAO.deletePhotoPath(context.getConnection(), getPhoto().getId(),
         context.getComponentInstanceId());
 
     // Delete form data
     removeXMLContentOfPhoto(getPhoto().getId(), context);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.process.AbstractProcess#onSuccessful(org.silverpeas.process.management.
-   * ProcessExecutionContext, org.silverpeas.process.session.Session)
-   */
-  @Override
-  public void onSuccessful(final GalleryProcessExecutionContext context, final Session session)
-      throws Exception {
-    super.onSuccessful(context, session);
 
     // Supprimer les commentaires
     CommentServiceFactory.getFactory().getCommentService()
@@ -107,7 +96,7 @@ public class GalleryDeletePhotoDataProcess extends AbstractGalleryDataProcess {
   private void removeXMLContentOfPhoto(final String photoId,
       final GalleryProcessExecutionContext context) {
     try {
-      final String xmlFormName = getXMLFormName();
+      final String xmlFormName = getXMLFormName(context);
       if (isDefined(xmlFormName)) {
         final String xmlFormShortName =
             xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
@@ -118,12 +107,6 @@ public class GalleryDeletePhotoDataProcess extends AbstractGalleryDataProcess {
         final RecordSet set = pubTemplate.getRecordSet();
         final DataRecord data = set.getRecord(photoId);
         set.delete(data);
-        /*
-         * TODO - YCH
-         * AttachmentController
-         * .deleteAttachment(AttachmentController.searchAttachmentByCustomerPK(new ForeignPK(
-         * photoId, context.getComponentInstanceId())));
-         */
       }
     } catch (final PublicationTemplateException e) {
       throw new GalleryRuntimeException("GallerySessionController.removeXMLContentOfPhoto()",
@@ -132,5 +115,21 @@ public class GalleryDeletePhotoDataProcess extends AbstractGalleryDataProcess {
       throw new GalleryRuntimeException("GallerySessionController.removeXMLContentOfPhoto()",
           SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
     }
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.process.AbstractProcess#onSuccessful()
+   */
+  @Override
+  public void onSuccessful() throws Exception {
+    super.onSuccessful();
+
+    /*
+     * TODO - YCH - JMS ?
+     * AttachmentController
+     * .deleteAttachment(AttachmentController.searchAttachmentByCustomerPK(new ForeignPK(
+     * photoId, context.getComponentInstanceId())));
+     */
   }
 }

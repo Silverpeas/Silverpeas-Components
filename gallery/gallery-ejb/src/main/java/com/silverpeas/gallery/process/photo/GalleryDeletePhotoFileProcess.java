@@ -24,7 +24,7 @@
 package com.silverpeas.gallery.process.photo;
 
 import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.process.AbstractGalleryFileProcess;
@@ -56,12 +56,12 @@ public class GalleryDeletePhotoFileProcess extends AbstractGalleryFileProcess {
   /*
    * (non-Javadoc)
    * @see org.silverpeas.process.management.AbstractFileProcess#processFiles(org.silverpeas.process.
-   * management.ProcessExecutionContext, org.silverpeas.process.session.Session,
+   * management.ProcessExecutionContext, org.silverpeas.process.session.ProcessSession,
    * org.silverpeas.process.io.file.FileHandler)
    */
   @Override
-  public void processFiles(final GalleryProcessExecutionContext context, final Session session,
-      final FileHandler fileHandler) throws Exception {
+  public void processFiles(final GalleryProcessExecutionContext context,
+      final ProcessSession session, final FileHandler fileHandler) throws Exception {
 
     // Deleting repository with old photos
     fileHandler.getHandledFile(BASE_PATH, context.getComponentInstanceId(),

@@ -25,7 +25,7 @@ package com.silverpeas.gallery.process.photo;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
@@ -88,11 +88,11 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
    * (non-Javadoc)
    * @see
    * com.silverpeas.gallery.process.AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.Session)
+   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
    */
   @Override
-  protected void processData(final GalleryProcessExecutionContext context, final Session session)
-      throws Exception {
+  protected void processData(final GalleryProcessExecutionContext context,
+      final ProcessSession session) throws Exception {
 
     // Initializing variables
     isSameComponentInstanceDestination =
@@ -108,18 +108,18 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
 
     // If the paste action is copy and paste (not cut and paste), then create the new photo
     if (!isCutted) {
-      createPhoto(albumId);
+      createPhoto(albumId, context);
     } else {
-      updatePhoto();
+      updatePhoto(true, context);
       if (isSameComponentInstanceDestination) {
 
         // Move into the same application
-        updatePhotoPath(context.getComponentInstanceId(), albumId);
+        updatePhotoPath(context.getComponentInstanceId(), albumId, context);
 
       } else {
 
         // Updating repository data
-        updatePhotoPath(fromPhotoPk.getInstanceId(), albumId);
+        updatePhotoPath(fromPhotoPk.getInstanceId(), albumId, context);
       }
     }
 
@@ -127,8 +127,37 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
     toForeignPK = new ForeignPK(getPhoto().getId(), context.getComponentInstanceId());
     toPhotoPK = new PhotoPK(getPhoto().getId(), context.getComponentInstanceId());
 
-    // Form
-    pasteXmlForm(context);
+    // Commons
+    processPasteCommons(context);
+
+    SilverTrace.info("gallery", "GalleryPastePhotoDataProcess.onSuccessful()",
+        "root.MSG_GEN_PARAM_VALUE", "photo = " + getPhoto().toString() + " toPK = " +
+            getPhoto().getPhotoPK().toString());
+  }
+
+  /**
+   * Centralized method
+   * @throws Exception
+   */
+  private void processPasteCommons(final GalleryProcessExecutionContext context) throws Exception {
+    if (!isCutted || !isSameComponentInstanceDestination) {
+      // Paste positions on Pdc
+      final int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromPhotoPk);
+      final int toSilverObjectId = getGalleryBm().getSilverObjectId(toPhotoPK);
+
+      PdcServiceFactory
+          .getFactory()
+          .getPdcManager()
+          .copyPositions(fromSilverObjectId, fromPhotoPk.getInstanceId(), toSilverObjectId,
+              context.getComponentInstanceId());
+
+      // move comments
+      CommentServiceFactory.getFactory().getCommentService()
+          .moveAndReindexComments(PhotoDetail.getResourceType(), fromForeignPK, toForeignPK);
+
+      // XML Form
+      pasteXmlForm(context);
+    }
   }
 
   /**
@@ -139,7 +168,7 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
   private void pasteXmlForm(final GalleryProcessExecutionContext context) throws Exception {
     if (!isCutted || !isSameComponentInstanceDestination) {
       try {
-        final String xmlFormName = getXMLFormName();
+        final String xmlFormName = getXMLFormName(context);
         if (isDefined(xmlFormName)) {
 
           // if XMLForm
@@ -170,46 +199,5 @@ public class GalleryPastePhotoDataProcess extends AbstractGalleryDataProcess {
             "gallery.DIFERENT_FORM_COMPONENT", e);
       }
     }
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.process.AbstractProcess#onSuccessful(org.silverpeas.process.management.
-   * ProcessExecutionContext, org.silverpeas.process.session.Session)
-   */
-  @Override
-  public void onSuccessful(final GalleryProcessExecutionContext context, final Session session)
-      throws Exception {
-    super.onSuccessful(context, session);
-
-    // Commons
-    if (!isCutted || !isSameComponentInstanceDestination) {
-      processPasteCommons(context);
-    }
-
-    SilverTrace.info("gallery", "GalleryPastePhotoDataProcess.onSuccessful()",
-        "root.MSG_GEN_PARAM_VALUE", "photo = " + getPhoto().toString() + " toPK = " +
-            getPhoto().getPhotoPK().toString());
-  }
-
-  /**
-   * Centralized method
-   * @throws Exception
-   */
-  private void processPasteCommons(final GalleryProcessExecutionContext context) throws Exception {
-
-    // Paste positions on Pdc
-    final int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromPhotoPk);
-    final int toSilverObjectId = getGalleryBm().getSilverObjectId(toPhotoPK);
-
-    PdcServiceFactory
-        .getFactory()
-        .getPdcManager()
-        .copyPositions(fromSilverObjectId, fromPhotoPk.getInstanceId(), toSilverObjectId,
-            context.getComponentInstanceId());
-
-    // move comments
-    CommentServiceFactory.getFactory().getCommentService()
-        .moveAndReindexComments(PhotoDetail.getResourceType(), fromForeignPK, toForeignPK);
   }
 }

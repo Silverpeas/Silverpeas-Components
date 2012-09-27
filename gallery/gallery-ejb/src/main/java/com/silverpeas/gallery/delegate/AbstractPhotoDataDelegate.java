@@ -185,7 +185,7 @@ public abstract class AbstractPhotoDataDelegate {
       return albumLabel;
     }
 
-    public void setAlbumLabel(String albumLabel) {
+    public void setAlbumLabel(final String albumLabel) {
       this.albumLabel = albumLabel != null && Boolean.valueOf(albumLabel);
     }
 

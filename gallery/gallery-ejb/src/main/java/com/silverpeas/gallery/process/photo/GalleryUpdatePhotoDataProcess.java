@@ -23,7 +23,7 @@
  */
 package com.silverpeas.gallery.process.photo;
 
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
@@ -40,6 +40,17 @@ public class GalleryUpdatePhotoDataProcess extends AbstractGalleryDataProcess {
 
   /** Delegate in charge of updating photo data */
   private final PhotoDataUpdateDelegate delegate;
+  private final boolean updateTechnicalData;
+
+  /**
+   * Gets an instance
+   * @param photo
+   * @param delegate
+   * @return
+   */
+  public static GalleryUpdatePhotoDataProcess getInstance(final PhotoDetail photo) {
+    return new GalleryUpdatePhotoDataProcess(photo, null, false);
+  }
 
   /**
    * Gets an instance
@@ -49,35 +60,38 @@ public class GalleryUpdatePhotoDataProcess extends AbstractGalleryDataProcess {
    */
   public static GalleryUpdatePhotoDataProcess getInstance(final PhotoDetail photo,
       final PhotoDataUpdateDelegate delegate) {
-    return new GalleryUpdatePhotoDataProcess(photo, delegate);
+    return new GalleryUpdatePhotoDataProcess(photo, delegate, true);
   }
 
   /**
    * Default hidden constructor
    * @param photo
    * @param delegate
+   * @param updateTechnicalData TODO
    */
   protected GalleryUpdatePhotoDataProcess(final PhotoDetail photo,
-      final PhotoDataUpdateDelegate delegate) {
+      final PhotoDataUpdateDelegate delegate, final boolean updateTechnicalData) {
     super(photo);
     this.delegate = delegate;
+    this.updateTechnicalData = updateTechnicalData;
   }
 
   /*
    * (non-Javadoc)
    * @see
    * com.silverpeas.gallery.process.AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.Session)
+   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
    */
   @Override
-  protected void processData(final GalleryProcessExecutionContext context, final Session session)
-      throws Exception {
-
-    SilverTrace.info("gallery", "GalleryUpdatePhotoDataProcess.process()",
-        "root.MSG_GEN_ENTER_METHOD", "PhotoPK = " + getPhoto().toString());
+  protected void processData(final GalleryProcessExecutionContext context,
+      final ProcessSession session) throws Exception {
 
     // Sets functional data photo
     if (delegate != null) {
+
+      SilverTrace.info("gallery", "GalleryUpdatePhotoDataProcess.process()",
+          "root.MSG_GEN_ENTER_METHOD", "PhotoPK = " + getPhoto().toString());
+
       if (delegate.isHeaderData()) {
         delegate.updateHeader(getPhoto());
       }
@@ -96,19 +110,8 @@ public class GalleryUpdatePhotoDataProcess extends AbstractGalleryDataProcess {
         delegate.updateForm(photoId, pageContext);
       }
     }
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.process.AbstractProcess#onSuccessful(org.silverpeas.process.management.
-   * ProcessExecutionContext, org.silverpeas.process.session.Session)
-   */
-  @Override
-  public void onSuccessful(final GalleryProcessExecutionContext processExecutionContext,
-      final Session session) throws Exception {
-    super.onSuccessful(processExecutionContext, session);
 
     // Update photo
-    updatePhoto();
+    updatePhoto(updateTechnicalData, context);
   }
 }

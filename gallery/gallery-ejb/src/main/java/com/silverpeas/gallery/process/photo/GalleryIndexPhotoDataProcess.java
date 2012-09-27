@@ -2,7 +2,7 @@ package com.silverpeas.gallery.process.photo;
 
 import java.util.Collection;
 
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 
@@ -41,11 +41,11 @@ public class GalleryIndexPhotoDataProcess extends AbstractGalleryDataProcess {
    * (non-Javadoc)
    * @see
    * com.silverpeas.gallery.process.AbstractGalleryDataProcess#processData(com.silverpeas.gallery
-   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.Session)
+   * .process.GalleryProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
    */
   @Override
-  protected void processData(final GalleryProcessExecutionContext context, final Session session)
-      throws Exception {
+  protected void processData(final GalleryProcessExecutionContext context,
+      final ProcessSession session) throws Exception {
     // Nothing to do
   }
 
@@ -54,8 +54,7 @@ public class GalleryIndexPhotoDataProcess extends AbstractGalleryDataProcess {
    * @see org.silverpeas.process.AbstractProcess#onSuccessful()
    */
   @Override
-  public void onSuccessful(final GalleryProcessExecutionContext context, final Session session)
-      throws Exception {
+  public void onSuccessful() throws Exception {
     SilverTrace.info("gallery", "GalleryIndexPhotoDataProcess.onSuccessful()",
         "root.MSG_GEN_ENTER_METHOD", "getPhoto()Detail = " + getPhoto().toString());
     FullIndexEntry indexEntry = null;

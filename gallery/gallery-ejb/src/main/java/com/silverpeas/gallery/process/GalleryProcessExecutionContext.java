@@ -47,7 +47,7 @@ public class GalleryProcessExecutionContext extends ProcessExecutionContext {
   /**
    * @param connection the connection to set
    */
-  public void setConnection(Connection connection) {
+  public void setConnection(final Connection connection) {
     this.connection = connection;
   }
 

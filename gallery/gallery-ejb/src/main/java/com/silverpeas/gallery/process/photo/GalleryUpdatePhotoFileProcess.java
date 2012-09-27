@@ -25,7 +25,7 @@ package com.silverpeas.gallery.process.photo;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.model.PhotoDetail;
@@ -80,12 +80,12 @@ public class GalleryUpdatePhotoFileProcess extends AbstractGalleryFileProcess {
   /*
    * (non-Javadoc)
    * @see org.silverpeas.process.management.AbstractFileProcess#processFiles(org.silverpeas.process.
-   * management.ProcessExecutionContext, org.silverpeas.process.session.Session,
+   * management.ProcessExecutionContext, org.silverpeas.process.session.ProcessSession,
    * org.silverpeas.process.io.file.FileHandler)
    */
   @Override
-  public void processFiles(final GalleryProcessExecutionContext context, final Session session,
-      final FileHandler fileHandler) throws Exception {
+  public void processFiles(final GalleryProcessExecutionContext context,
+      final ProcessSession session, final FileHandler fileHandler) throws Exception {
     if (fileItem != null) {
       final String name = fileItem.getName();
       if (StringUtil.isDefined(name)) {

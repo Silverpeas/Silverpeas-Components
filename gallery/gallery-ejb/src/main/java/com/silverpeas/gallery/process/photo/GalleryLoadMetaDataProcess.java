@@ -27,7 +27,7 @@ import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcess;
 import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.model.PhotoDetail;
@@ -61,11 +61,11 @@ public class GalleryLoadMetaDataProcess extends AbstractFileProcess<ProcessExecu
   /*
    * (non-Javadoc)
    * @see org.silverpeas.process.management.AbstractFileProcess#processFiles(org.silverpeas.process.
-   * management.ProcessExecutionContext, org.silverpeas.process.session.Session,
+   * management.ProcessExecutionContext, org.silverpeas.process.session.ProcessSession,
    * org.silverpeas.process.io.file.FileHandler)
    */
   @Override
-  public void processFiles(final ProcessExecutionContext context, final Session session,
+  public void processFiles(final ProcessExecutionContext context, final ProcessSession session,
       final FileHandler fileHandler) throws Exception {
     ImageHelper.setMetaData(fileHandler, photo);
   }

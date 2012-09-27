@@ -26,7 +26,7 @@ package com.silverpeas.gallery.process;
 import java.util.Date;
 
 import org.silverpeas.process.management.AbstractDataProcess;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.gallery.GalleryContentManager;
@@ -53,7 +53,6 @@ import com.stratelia.webactiv.util.node.control.NodeBmHome;
 public abstract class AbstractGalleryDataProcess extends
     AbstractDataProcess<GalleryProcessExecutionContext> {
   private final PhotoDetail photo;
-  private GalleryProcessExecutionContext context;
   private GalleryContentManager galleryContentManager;
   private OrganizationController organizationController;
 
@@ -68,12 +67,11 @@ public abstract class AbstractGalleryDataProcess extends
   /*
    * (non-Javadoc)
    * @see org.silverpeas.process.SilverpeasProcess#process(org.silverpeas.process.management.
-   * ProcessExecutionContext, org.silverpeas.process.session.Session)
+   * ProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
    */
   @Override
-  public final void process(final GalleryProcessExecutionContext context, final Session session)
-      throws Exception {
-    this.context = context;
+  public final void process(final GalleryProcessExecutionContext context,
+      final ProcessSession session) throws Exception {
     processData(context, session);
   }
 
@@ -83,7 +81,7 @@ public abstract class AbstractGalleryDataProcess extends
    * @throws Exception
    */
   abstract protected void processData(final GalleryProcessExecutionContext context,
-      final Session session) throws Exception;
+      final ProcessSession session) throws Exception;
 
   /**
    * Access to the GalleryBm
@@ -148,9 +146,10 @@ public abstract class AbstractGalleryDataProcess extends
 
   /**
    * Gets an XML form name if it exists for the photo
+   * @param context
    * @return
    */
-  protected String getXMLFormName() {
+  protected String getXMLFormName(final GalleryProcessExecutionContext context) {
     String formName =
         getOrganizationController().getComponentParameterValue(context.getComponentInstanceId(),
             "XMLFormName");
@@ -171,9 +170,11 @@ public abstract class AbstractGalleryDataProcess extends
   /**
    * Centralizes the photo creation
    * @param albumId
+   * @param context
    * @throws Exception
    */
-  protected void createPhoto(final String albumId) throws Exception {
+  protected void createPhoto(final String albumId, final GalleryProcessExecutionContext context)
+      throws Exception {
 
     // Sets technical data
     getPhoto().setPhotoPK(new PhotoPK("unknown", context.getComponentInstanceId()));
@@ -191,11 +192,16 @@ public abstract class AbstractGalleryDataProcess extends
 
   /**
    * Centralizes the photo update
+   * @param updateTechnicalDataRequired
+   * @param context
    * @throws Exception
    */
-  protected void updatePhoto() throws Exception {
-    getPhoto().setUpdateDate(new Date());
-    getPhoto().setUpdateId(context.getUser().getId());
+  protected void updatePhoto(final boolean updateTechnicalDataRequired,
+      final GalleryProcessExecutionContext context) throws Exception {
+    if (updateTechnicalDataRequired) {
+      getPhoto().setUpdateDate(new Date());
+      getPhoto().setUpdateId(context.getUser().getId());
+    }
     if (!StringUtil.isDefined(getPhoto().getTitle())) {
       getPhoto().setTitle(getPhoto().getImageName());
     }
@@ -206,10 +212,11 @@ public abstract class AbstractGalleryDataProcess extends
    * Centralizes the photo path update
    * @param fromComponentInstanceId
    * @param albumId
+   * @param context
    * @throws Exception
    */
-  protected void updatePhotoPath(final String fromComponentInstanceId, final String albumId)
-      throws Exception {
+  protected void updatePhotoPath(final String fromComponentInstanceId, final String albumId,
+      final GalleryProcessExecutionContext context) throws Exception {
     PhotoDAO.deletePhotoPath(context.getConnection(), getPhoto().getId(), fromComponentInstanceId);
     PhotoDAO.addPhotoPath(context.getConnection(), getPhoto().getId(), albumId,
         context.getComponentInstanceId());
