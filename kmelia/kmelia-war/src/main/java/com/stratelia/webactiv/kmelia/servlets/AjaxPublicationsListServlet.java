@@ -48,6 +48,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.silverpeas.viewer.ViewFactory;
+
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.domain.TopicSearch;
@@ -471,6 +473,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         out.write(pagination.printIndex("doPagination"));
         out.write("</div>");
       }
+      displayFilePreviewJavascript(kmeliaScc.getComponentId(), kmeliaScc.isVersionControlled(), out);
       out.write(board.printAfter());
     } // End if
     else if (showNoPublisMessage
@@ -496,6 +499,22 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("</div>");
     }
     out.write("</form>");
+  }
+  
+  void displayFilePreviewJavascript(String componentId, boolean versioned, Writer out)
+      throws IOException {
+    StringBuilder sb = new StringBuilder(50);
+    sb.append("<script type=\"text/javascript\">");
+    sb.append("function previewFile(target, attachmentId) {");
+    sb.append("$(target).preview(\"previewAttachment\", {");
+    sb.append("componentInstanceId: \"").append(componentId).append("\",");
+    sb.append("attachmentId: attachmentId,");
+    sb.append("versioned: ").append(versioned);
+    sb.append("});");
+    sb.append("return false;");
+    sb.append("}");
+    sb.append("</script>");
+    out.write(sb.toString());
   }
   
   void displayFragmentOfPublication(boolean specificTemplateUsed, KmeliaPublication aPub,
@@ -917,6 +936,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           oneFile = true;
         }
 
+        String id = version.getPk().getId();
         String title = document.getName() + " v" + version.getMajorNumber();
         String info = document.getDescription();
         String icon = versioning.getDocumentVersionIconPath(version.getPhysicalName());
@@ -928,15 +948,19 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getPk().getId());
         String url = FileServerUtils.getApplicationContext()
             + versioning.getDocumentVersionURL(document.getPk().getInstanceId(),
-                logicalName, document.getPk().getId(), version.getPk().getId());
+                logicalName, document.getPk().getId(), id);
 
         if (alias) {
           url = FileServerUtils.getAliasURL(document.getPk().getInstanceId(), logicalName,
-              document.getPk().getId(), version.getPk().getId());
+              document.getPk().getId(), id);
         }
+        
+        boolean previewable =
+          ViewFactory.getPreviewService().isPreviewable(
+              new File(version.getDocumentPath()));
 
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
-            creationDate, permalink, resources, linkAttachment));
+            creationDate, permalink, resources, linkAttachment, previewable, id));
       }
     }
     if (oneFile) {
@@ -976,9 +1000,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         if (alias) {
           url = FileServerUtils.getAliasURL(foreignKey.getInstanceId(), logicalName, id);
         }
+        
+        boolean previewable =
+            ViewFactory.getPreviewService().isPreviewable(
+                new File(attachmentDetail.getAttachmentPath(null)));
 
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
-            creationDate, permalink, resources, linkAttachment));
+            creationDate, permalink, resources, linkAttachment, previewable, id));
       }
       result.append("</table>");
     }
@@ -1005,9 +1033,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
    * @throws IOException
    */
   private String displayFile(String url, String title, String info, String icon,
-      String logicalName,
-      String size, String downloadTime, Date creationDate, String permalink,
-      ResourcesWrapper resources, boolean attachmentLink) throws IOException {
+      String logicalName, String size, String downloadTime, Date creationDate, String permalink,
+      ResourcesWrapper resources, boolean attachmentLink, boolean previewable, String id) throws IOException {
     SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayFile()",
         "root.MSG_GEN_ENTER_METHOD");
     StringBuilder result = new StringBuilder();
@@ -1048,6 +1075,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (!"no".equals(resources.getSetting("showDownloadEstimation"))) {
         result.append(" / ").append(downloadTime).append(" / ").append(
             resources.getOutputDate(creationDate));
+      }
+      if (previewable) {
+        result.append(" <img onclick=\"javascript:previewFile(this, ").append(id)
+            .append(");\" class=\"preview-file\" src=\"")
+            .append(resources.getIcon("kmelia.file.preview"))
+            .append("\" alt=\"").append(resources.getString("GML.preview")).append("\" title=\"")
+            .append(resources.getString("GML.preview")).append("\"/>");
       }
       result.append("</i>");
 
