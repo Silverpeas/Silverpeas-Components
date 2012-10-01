@@ -38,6 +38,8 @@ fieldset#answerFieldset legend {
   width: 98%;
 }
 
-#questionFieldset #nameArea input {
+#questionFieldset #categoryArea select,
+#questionFieldset #questionArea input,
+#questionFieldset #contentArea input {
   width: 46%;
 }
