@@ -56,6 +56,11 @@ enum ImageType {
     ImageType type = findType(FileRepositoryManager.getFileExtension(name));
     return type.isJpeg() || type == TIF|| type == TIFF || type == PNG;
   }
+  
+  public static boolean isPreviewable(String name) {
+    ImageType type = findType(FileRepositoryManager.getFileExtension(name));
+    return type.isJpeg();
+  }
 
   public static boolean isJpeg(String type) {
     return findType(type).isJpeg();
