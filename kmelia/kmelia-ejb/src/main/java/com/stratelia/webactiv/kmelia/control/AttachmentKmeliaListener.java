@@ -30,6 +30,7 @@ import javax.inject.Named;
 
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.notification.AttachmentDeletionNotification;
+import org.silverpeas.attachment.notification.AttachmentRef;
 import org.silverpeas.versioning.notification.VersioningDeletionNotification;
 
 import com.silverpeas.notification.DefaultNotificationSubscriber;
@@ -70,7 +71,7 @@ public class AttachmentKmeliaListener extends DefaultNotificationSubscriber {
     if (ATTACHMENT_TOPIC.getTopicName().equals(onTopic.getName())) {
       if (notification instanceof AttachmentDeletionNotification) {
         AttachmentDeletionNotification deletion = (AttachmentDeletionNotification) notification;
-        SimpleDocument attachment = deletion.getAttachment();
+        AttachmentRef attachment = deletion.getAttachment();
         if (attachment != null) {
           PublicationPK pubPK = new PublicationPK(attachment.getForeignId(), attachment
               .getInstanceId());

@@ -27,12 +27,13 @@ package com.silverpeas.crm.vo;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Vector;
+import java.util.List;
 
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.img;
 
+import org.silverpeas.attachment.model.SimpleDocument;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
@@ -51,13 +52,13 @@ public abstract class ElementVO {
     displayDateFormat = new SimpleDateFormat(resources.getString("GML.dateFormat"));
   }
 
-  protected String getAttachments(Vector<AttachmentDetail> attachments) {
+  protected String getAttachments(List<SimpleDocument> attachments) {
     ElementContainer container = new ElementContainer();
     String context =
         GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-    for (AttachmentDetail attachment : attachments) {
+    for (SimpleDocument attachment : attachments) {
       container.addElement(getImageLink(context + attachment.getAttachmentURL(), "CRMWindow",
-          resources.getIcon("crm.attachedFiles"), attachment.getLogicalName()));
+          resources.getIcon("crm.attachedFiles"), attachment.getFilename()));
       container.addElement("&nbsp;");
     }
     return container.toString();
@@ -65,8 +66,7 @@ public abstract class ElementVO {
 
   protected String getOperationLinks(String type, String name, String id) {
     ElementContainer container = new ElementContainer();
-    container
-        .addElement(getImageLink(
+    container.addElement(getImageLink(
             "javascript:edit" + type + "('" + id + "')", null, resources.getIcon("crm.update"),
             resources.getString("crm.update") + " '" + EncodeHelper.javaStringToHtmlString(name) +
             "'"));

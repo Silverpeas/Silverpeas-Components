@@ -24,13 +24,13 @@
 
 package com.silverpeas.crm.model;
 
-import java.util.Vector;
-
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+
+import java.util.List;
 
 /**
  *
@@ -188,13 +188,15 @@ public class CrmDelivery extends SilverpeasBean implements Comparable<Object> {
     this.crmId = crmId;
   }
 
-  public Vector<AttachmentDetail> getAttachments() {
-    return AttachmentController.searchAttachmentByPKAndContext(
-        new CrmPK("DELIVERY_" + getPK().getId(), getInstanceId()), "Images");
+  public List<SimpleDocument> getAttachments() {
+    return AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(
+        new CrmPK("DELIVERY_" + getPK().getId(), getInstanceId()), null);
   }
 
   public void deleteAttachments() {
-    AttachmentController.deleteAttachment(getAttachments());
+    for(SimpleDocument document : getAttachments()) {
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
+    }
   }
 
   public String toString() {
