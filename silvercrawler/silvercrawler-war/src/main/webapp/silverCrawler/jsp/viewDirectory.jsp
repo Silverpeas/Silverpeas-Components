@@ -44,6 +44,7 @@ String 		maxFiles		= (String) request.getAttribute("MaxFiles");
 String 		language		= (String) request.getAttribute("Language");
 Boolean     isReadWriteActivated = (Boolean) request.getAttribute("isReadWriteActivated");
 Boolean     isUserAllowedToSetRWAccess = (Boolean) request.getAttribute("userAllowedToSetRWAccess");
+Boolean     isUserAllowedToLANAccess = (Boolean) request.getAttribute("userAllowedToLANAccess");
 String 		errorMessage 	= (String) request.getAttribute("errorMessage");
 String 		successMessage 	= (String) request.getAttribute("successMessage");
 
@@ -53,6 +54,7 @@ boolean allowedNav 	= isAllowedNav.booleanValue();
 boolean folderIsWritable = folder.isWritable();
 boolean readWriteActivated = isReadWriteActivated.booleanValue();
 boolean userAllowedToSetRWAccess = isUserAllowedToSetRWAccess.booleanValue();
+boolean userAllowedToLANAccess = isUserAllowedToSetRWAccess.booleanValue();
 
 ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 String sRequestURL = request.getRequestURL().toString();
@@ -594,7 +596,11 @@ Button validateButton 	= gef.getFormButton("OK", "javascript:onClick=sendData();
 </div>
 <% }  %>
 
-<form name="liste_dir">
+<% if (userAllowedToLANAccess && readWriteActivated) {%>
+<div style="padding: 20px"><b><%=resource.getString("silverCrawler.physicalPath")%> : ${Folder.path}</b><br/></div>
+<% } %>
+
+<FORM NAME="liste_dir" >
 <%
 
 // remplissage de l'ArrayPane avec la liste des sous répertoires
@@ -801,6 +807,13 @@ if (nav || (!nav && !isRootPath))
 			   		Icon renameIcon = iconPane.addIcon();
 			   		renameIcon.setProperties(resource.getIcon("silverCrawler.renameFile"), resource.getString("silverCrawler.renameFile"), "javaScript:renameFile('"+EncodeHelper.javaStringToJsString(fileName)+"')");
 			   		iconPane.setSpacing("20px");
+
+			   		if (userAllowedToLANAccess) {
+				   		// icône "DirectAccess"
+				   		Icon directAccessIcon = iconPane.addIcon();
+				   		directAccessIcon.setProperties(resource.getIcon("silverCrawler.directAccess"), resource.getString("silverCrawler.directAccess"), fileDetail.getDirectURL());
+				   		iconPane.setSpacing("20px");
+			   		}
 			   	}
 
 		   		arrayLine.addArrayCellIconPane(iconPane);
