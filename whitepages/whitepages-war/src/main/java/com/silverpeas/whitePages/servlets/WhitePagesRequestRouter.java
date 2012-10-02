@@ -28,9 +28,11 @@
 package com.silverpeas.whitePages.servlets;
 
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.control.WhitePagesSessionController;
 import com.silverpeas.whitePages.filters.LoginFilter;
 import com.silverpeas.whitePages.model.Card;
@@ -495,10 +497,10 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
         destination = "/whitePages/jsp/dynamicSearch.jsp";
       } else if (function.equals("dynamicFieldsChoice")) {
 
-        List<String> xmlFields = scc.getAllXmlFieldsForSearch();
+        List<FieldTemplate> xmlFields = scc.getAllXmlFieldsForSearch();
         request.setAttribute("xmlFields", xmlFields);
 
-        List<String> ldapFields = scc.getLdapAttributesList();
+        List<SearchField> ldapFields = scc.getLdapAttributesList();
         request.setAttribute("ldapFields", ldapFields);
 
         Set<String> alreadySelectedFields = scc.getSearchFieldIds();
@@ -624,22 +626,20 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
 
 
   private Hashtable<String, String> getXmlFieldsQuery(WhitePagesSessionController scc,
-      HttpServletRequest request) throws UtilException {
+      HttpServletRequest request) throws UtilException, WhitePagesException {
     Hashtable<String, String> xmlFields = new Hashtable<String, String>();
 
     // champs personnalisables xml
     SortedSet<SearchField> fields = scc.getSearchFields();
-    if (fields != null && fields.size() > 0) {
-      Iterator<SearchField> iterFields = fields.iterator();
-      while (iterFields.hasNext()) {
-        SearchField field = iterFields.next();
+    if (fields != null && !fields.isEmpty()) {
+      for (SearchField field : fields) {
         String fieldId = field.getFieldId();
         String searchValue = request.getParameter(fieldId);
         if (searchValue != null && searchValue.length() > 0) {
           if (fieldId.startsWith(SearchFieldsType.XML.getLabelType())) {
             request.setAttribute(fieldId, searchValue);
             // champs XML
-            xmlFields.put(fieldId.substring(4, fieldId.length()), searchValue);
+            xmlFields.put(field.getFieldName(), searchValue);
           }
         }
       }
@@ -648,15 +648,13 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
   }
 
   private List<FieldDescription> getOthersFieldsQuery(WhitePagesSessionController scc,
-      HttpServletRequest request) throws UtilException {
+      HttpServletRequest request) throws UtilException, WhitePagesException {
     List<FieldDescription> othersFields = new ArrayList<FieldDescription>();
 
     // champs personnalisables non xml (user silverpeas ou ldap)
     SortedSet<SearchField> fields = scc.getSearchFields();
-    if (fields != null && fields.size() > 0) {
-      Iterator<SearchField> iterFields = fields.iterator();
-      while (iterFields.hasNext()) {
-        SearchField field = iterFields.next();
+    if (fields != null && !fields.isEmpty()) {
+      for (SearchField field : fields) {
         String fieldId = field.getFieldId();
         String searchValue = request.getParameter(fieldId);
         if (searchValue != null && searchValue.length() > 0) {
@@ -664,7 +662,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
             request.setAttribute(fieldId, searchValue);
             // champs XML
             FieldDescription fieldDescription =
-                new FieldDescription(fieldId.substring(4, fieldId.length()), searchValue,
+                new FieldDescription(field.getFieldName(), searchValue,
                     scc.getLanguage());
             othersFields.add(fieldDescription);
           } else if (fieldId.startsWith(SearchFieldsType.USER.getLabelType())) {
