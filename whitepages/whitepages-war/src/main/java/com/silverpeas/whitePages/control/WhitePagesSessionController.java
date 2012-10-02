@@ -24,6 +24,7 @@
 package com.silverpeas.whitePages.control;
 
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
@@ -39,6 +40,7 @@ import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.model.Card;
 import com.silverpeas.whitePages.model.SearchField;
+import com.silverpeas.whitePages.model.SearchFieldsType;
 import com.silverpeas.whitePages.model.WhitePagesCard;
 import com.silverpeas.whitePages.record.UserRecord;
 import com.silverpeas.whitePages.record.UserTemplate;
@@ -65,6 +67,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import java.util.*;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.fileupload.FileItem;
@@ -904,7 +907,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
     // pour recupèrer le domainId auquel rattaché l'annuaire
     String domainId = getComponentParameterValue("domainId");
-    if (domainId != null && domainId.length() > 0) {
+    if (StringUtil.isDefined(domainId)) {
       try {
         domainIdReturn = Integer.parseInt(domainId);
       } catch (NumberFormatException nexp) {
@@ -916,13 +919,18 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
   }
 
-  public List<String> getAllXmlFieldsForSearch() throws WhitePagesException,
+  public List<FieldTemplate> getAllXmlFieldsForSearch() throws WhitePagesException,
           PublicationTemplateException {
-    List<String> xmlFields = new ArrayList<String>();
     PublicationTemplate template = getTemplate(getComponentId());
     RecordTemplate recordTemplate = template.getRecordTemplate();
-    xmlFields = Arrays.asList(recordTemplate.getFieldNames());
-    return xmlFields;
+    try {
+      FieldTemplate[] fields = recordTemplate.getFieldTemplates();
+      return Arrays.asList(fields);
+    } catch (FormException e) {
+      SilverTrace.error("whitePages", "WhitePagesSessionController.getAllXmlFieldsForSearch",
+          "whitePages.CANT_GET_XML_FIELDS", e);
+    }
+    return new ArrayList<FieldTemplate>();
   }
 
   public List<SearchAxis> getUsedAxisList(SearchContext searchContext, String axisType) throws
@@ -937,20 +945,58 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return searchAxis;
   }
 
-  public List<String> getLdapAttributesList() throws Exception {
-    DomainDriver domainDriver = m_DDManager.getDomainDriver(getDomainId());
-    return domainDriver.getUserAttributes();
+  public List<SearchField> getLdapAttributesList() throws Exception {
+    Map<String, String> properties = getDomainProperties();
+    List<SearchField> fields = new ArrayList<SearchField>();
+    for (String property : properties.keySet()) {
+      SearchField field = new SearchField();
+      field.setFieldId(SearchFieldsType.LDAP.getLabelType() + property);
+      field.setLabel(properties.get(property));
+      fields.add(field);
+    }
+    return fields;
+  }
+  
+  private Map<String, String> getDomainProperties() throws Exception {
+    return m_DDManager.getDomainDriver(getDomainId()).getPropertiesLabels(getLanguage());
   }
 
   public void confirmFieldsChoice(String[] fields) throws UtilException {
     ServicesFactory.getWhitePagesService().createSearchFields(fields, getComponentId());
   }
 
-  public SortedSet<SearchField> getSearchFields() throws UtilException {
-    return ServicesFactory.getWhitePagesService().getSearchFields(getComponentId());
+  public SortedSet<SearchField> getSearchFields() throws UtilException, WhitePagesException {
+    SortedSet<SearchField> fields =
+        ServicesFactory.getWhitePagesService().getSearchFields(getComponentId());
+    if (!fields.isEmpty()) {
+      PublicationTemplate template = null;
+      Map<String, String> domainProperties = null;
+      try {
+        RecordTemplate recordTemplate = null;
+        for (SearchField field : fields) {
+          if (field.getFieldId().startsWith(SearchFieldsType.XML.getLabelType())) {
+            if (template == null) {
+              template = getTemplate(getComponentId());
+              recordTemplate = template.getRecordTemplate();
+            }
+            field.setLabel(recordTemplate.getFieldTemplate(field.getFieldName()).getLabel(
+                getLanguage()));
+          } else if (field.getFieldId().startsWith(SearchFieldsType.LDAP.getLabelType())) {
+            if (domainProperties == null) {
+              domainProperties = getDomainProperties();
+            }
+            field.setLabel(domainProperties.get(field.getFieldName()));
+          }
+        }
+      } catch (Exception e) {
+        SilverTrace.error("whitePages", "WhitePagesSessionController.getSearchFields",
+            "whitePages.CANT_GET_XML_FIELDS", e);
+      }
+    }
+    return fields;
   }
 
-  public Set<String> getSearchFieldIds() throws UtilException {
+  public Set<String> getSearchFieldIds() throws UtilException, WhitePagesException {
     Set<String> ids = new HashSet<String>();
     SortedSet<SearchField> searchFields = getSearchFields();
     if (searchFields != null && !searchFields.isEmpty()) {
