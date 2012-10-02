@@ -67,11 +67,11 @@ function isCorrectForm() {
   }              
 	
   if (!isValidTextArea(content)) {
-		errorMsg+="  - '<fmt:message key="GML.description"/>'<fmt:message key="questionReply.containsTooLargeText" /><fmt:message key="questionReply.nbMaxTextArea" /><fmt:message key="questionReply.characters" />\n";
+		errorMsg+="  - '<fmt:message key="GML.description"/>' <fmt:message key="questionReply.containsTooLargeText" /><fmt:message key="questionReply.nbMaxTextArea" /><fmt:message key="questionReply.characters" />\n";
 		errorNb++;
   }
 	if (isWhitespace(titleR)) {
-		errorMsg+="  - '<fmt:message key="questionReply.reponse"/>'<fmt:message key="GML.MustBeFilled"/>\n";
+		errorMsg+="  - '<fmt:message key="questionReply.reponse"/>' <fmt:message key="GML.MustBeFilled"/>\n";
 		errorNb++; 
   }
 
@@ -83,12 +83,12 @@ function isCorrectForm() {
          result = true;
          break;
      case 1 :
-         errorMsg = "<fmt:message key="GML.ThisFormContains" /> 1<fmt:message key="GML.error" /> : \n" + errorMsg;
+         errorMsg = "<fmt:message key="GML.ThisFormContains" /> 1 <fmt:message key="GML.error" /> : \n" + errorMsg;
          window.alert(errorMsg);
          result = false;
          break;
      default :
-         errorMsg = "<fmt:message key="GML.ThisFormContains" /> " + errorNb + "<fmt:message key="GML.errors" /> :\n" + errorMsg;
+         errorMsg = "<fmt:message key="GML.ThisFormContains" /> " + errorNb + " <fmt:message key="GML.errors" /> :\n" + errorMsg;
          window.alert(errorMsg);
          result = false;
          break;
