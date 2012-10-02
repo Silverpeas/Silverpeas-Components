@@ -40,6 +40,12 @@ fieldset#answerFieldset legend {
 
 #questionFieldset #categoryArea select,
 #questionFieldset #questionArea input,
-#questionFieldset #contentArea input {
+#questionFieldset #contentArea input,
+#answerFieldset #answerArea input {
   width: 46%;
+}
+
+#answerFieldset #privateArea input,
+#answerFieldset #publicArea input {
+	width: 5%;
 }
