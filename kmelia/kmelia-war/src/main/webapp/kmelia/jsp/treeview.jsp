@@ -85,6 +85,8 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
 
 <view:includePlugin name="userZoom"/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>

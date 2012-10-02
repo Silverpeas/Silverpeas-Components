@@ -71,6 +71,8 @@ boolean userCanSeeStats =
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <view:includePlugin name="userZoom"/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <script type="text/javascript" src="javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>

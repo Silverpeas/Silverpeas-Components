@@ -76,6 +76,8 @@ String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute)
 <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
 <view:includePlugin name="userZoom"/>
 <view:includePlugin name="datepicker" />
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
