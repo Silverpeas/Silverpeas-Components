@@ -26,9 +26,6 @@ package com.silverpeas.hyperlink;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 
 /**
  *
@@ -39,15 +36,6 @@ public class HyperlinkIndexer implements ComponentIndexerInterface {
   @Override
   public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
       Exception {
-    ComponentInstLight componentInstLight = mainSessionCtrl.getOrganizationController().
-        getComponentInstLight(context.getCurrentComponentId());
-    FullIndexEntry indexEntry = new FullIndexEntry(context.getCurrentComponentId(),
-        "hyperlink", context.getCurrentComponentId());
-    indexEntry.setTitle(componentInstLight.getLabel());
-    indexEntry.addTextContent(componentInstLight.getLabel());
-    indexEntry.setCreationDate(componentInstLight.getCreateDate());
-    indexEntry.setPreView(componentInstLight.getLabel());
-    indexEntry.addTextContent(componentInstLight.getCreatorName());
-    IndexEngineProxy.addIndexEntry(indexEntry);
+    // nothing to index for this application
   }
 }
