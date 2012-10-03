@@ -44,6 +44,8 @@ import java.util.Properties;
 import javax.inject.Inject;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
+
 import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,7 +89,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    */
   @Override
   public List<DelegatedNews> getAllDelegatedNews() {
-    Sort sort = new Sort(Direction.DESC, "pubId");
+    Sort sort = new Sort(new Order(Direction.ASC, "newsOrder"), new Order(Direction.ASC, "beginDate"), new Order(Direction.ASC, "pubId"));
     List<DelegatedNews> list = dao.findAll(sort);
     return list;
   }
@@ -362,5 +364,16 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
           "delegatednews.EX_IMPOSSIBLE_DALERTER_LE_CONTRIBUTEUR", "pubId = " +
            pubId + ", pubName = " + pubName, e);
     }
+  }
+  
+  /**
+   * Met à jour l'ordre de l'actualité déléguée passée en paramètre
+   *
+   */
+  @Override
+  public DelegatedNews updateOrderDelegatedNews(int pubId, int newsOrder) {
+    DelegatedNews delegatedNews = dao.findOne(Integer.valueOf(pubId));
+    delegatedNews.setNewsOrder(newsOrder);
+    return (DelegatedNews) dao.saveAndFlush(delegatedNews);
   }
 }

@@ -24,17 +24,35 @@
 
 package com.silverpeas.delegatednews.control;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+import org.codehaus.jackson.map.AnnotationIntrospector;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import com.silverpeas.delegatednews.DelegatedNewsRuntimeException;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
+import com.silverpeas.delegatednews.web.DelegatedNewsEntity;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.silverpeas.pdc.web.PdcPositionEntity;
+import com.silverpeas.pdc.web.PdcPositionValueEntity;
+import com.silverpeas.profile.web.UserProfileEntity;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.sun.jersey.api.json.JSONConfiguration;
+import com.sun.jersey.api.json.JSONJAXBContext;
+import com.sun.jersey.api.json.JSONMarshaller;
+import com.sun.jersey.json.impl.JSONMarshallerImpl;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 
@@ -153,5 +171,42 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   public void updateDateDelegatedNews(int pubId, Date beginDate, Date endDate) {
     
     service.updateDateDelegatedNews(pubId, beginDate, endDate);
+  }
+  
+  /**
+   * Converts the list of Delegated News into its JSON representation. 
+   * @return a JSON representation of the list of Delegated News (as string)
+   * @throws JAXBException 
+   *
+   */
+  public String getListDelegatedNewsJSON(List<DelegatedNews> listDelegatedNews) throws JAXBException {
+    List<DelegatedNewsEntity> listDelegatedNewsEntity = new ArrayList<DelegatedNewsEntity>();
+    for(DelegatedNews delegatedNews : listDelegatedNews) {
+      DelegatedNewsEntity delegatedNewsEntity = DelegatedNewsEntity.fromDelegatedNews(delegatedNews);
+      listDelegatedNewsEntity.add(delegatedNewsEntity);
+    }
+    return listAsJSON(listDelegatedNewsEntity);
+  } 
+
+  /**
+   * Converts the list of Delegated News Entity into its JSON representation. 
+   * @param listDelegatedNewsEntity
+   * @return a JSON representation of the list of Delegated News Entity (as string)
+   * @throws DelegatedNewsRuntimeException
+   */
+  private String listAsJSON(List<DelegatedNewsEntity> listDelegatedNewsEntity) throws DelegatedNewsRuntimeException {
+    DelegatedNewsEntity[] entities = listDelegatedNewsEntity.toArray(new DelegatedNewsEntity[listDelegatedNewsEntity.size()]);
+    ObjectMapper mapper = new ObjectMapper();
+    AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+    mapper.setAnnotationIntrospector(introspector);
+    StringWriter writer = new StringWriter();
+    try {
+      mapper.writeValue(writer, entities);
+    } catch (IOException ex) {
+      throw new DelegatedNewsRuntimeException("DelegatedNewsSessionController.listAsJSON()",
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_NO_MESSAGE", ex);
+    }
+    return writer.toString();
   }
 }
