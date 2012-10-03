@@ -30,21 +30,24 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 public class FileDetail extends Object implements java.io.Serializable {
   private String name;
   private String path;
+  private String fullPath;
   private long size;
   private boolean isDirectory;
   private boolean isIndexed;
 
-  public FileDetail(String name, String path, long size, boolean isDirectory) {
+  public FileDetail(String name, String path, String fullPath, long size, boolean isDirectory) {
     this.name = name;
     this.path = path;
+    this.fullPath = fullPath;
     this.size = size;
     this.isDirectory = isDirectory;
   }
 
-  public FileDetail(String name, String path, long size, boolean isDirectory,
+  public FileDetail(String name, String path, String fullPath, long size, boolean isDirectory,
       boolean isIndexed) {
     this.name = name;
     this.path = path;
+    this.fullPath = fullPath;
     this.size = size;
     this.isDirectory = isDirectory;
     this.isIndexed = isIndexed;
@@ -73,7 +76,8 @@ public class FileDetail extends Object implements java.io.Serializable {
   }
 
   public String getFileURL(String userId, String componentId) {
-    return FileServerUtils.getUrl(name, path, getMimeType(), userId, componentId);
+    return FileServerUtils.getUrl(name, path, getMimeType(), userId,
+        componentId);
   }
 
   public boolean isIsDirectory() {
@@ -98,6 +102,15 @@ public class FileDetail extends Object implements java.io.Serializable {
 
   public boolean isIsIndexed() {
     return isIndexed;
+  }
+  
+  public String getDirectURL() {
+	  if (fullPath.startsWith("/")) {
+		  return "file://"+fullPath;
+	  }
+	  else {
+		  return "file:///"+fullPath;
+	  }
   }
 
 }
