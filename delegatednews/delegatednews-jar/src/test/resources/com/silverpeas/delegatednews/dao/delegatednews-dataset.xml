@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-  <sc_delegatednews_news pubId="1" instanceId="kmelia1" status="ToValidate" contributorId="1" />
-  <sc_delegatednews_news pubId="2" instanceId="kmelia1" status="Valid" contributorId="1" />
+  <sc_delegatednews_news pubId="1" instanceId="kmelia1" status="ToValidate" contributorId="1" begindate="2012-09-17 00:00:00" newsorder="2"/>
+  <sc_delegatednews_news pubId="2" instanceId="kmelia1" status="Valid" contributorId="1" begindate="2012-09-17 00:00:00" newsorder="1"/>
+  <sc_delegatednews_news pubId="3" instanceId="kmelia1" status="Valid" contributorId="1" begindate="2012-09-17 00:00:00" newsorder="0"/>
 </dataset>

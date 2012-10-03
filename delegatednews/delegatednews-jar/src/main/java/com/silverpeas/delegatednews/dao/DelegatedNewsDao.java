@@ -33,7 +33,13 @@ import org.springframework.data.repository.query.Param;
 public interface DelegatedNewsDao extends JpaRepository<DelegatedNews, Integer> {
   
 
-  @Query("from DelegatedNews dn WHERE dn.status = :status order by dn.validationDate DESC")
+  @Query("from DelegatedNews dn "+
+        "WHERE dn.status = :status "+
+        "and ((CURRENT_DATE >= begindate and enddate != null and CURRENT_DATE <= enddate) "+
+        "or "+
+        "(CURRENT_DATE >= begindate "+
+        "and enddate is null)) "+
+        "order by dn.newsOrder ASC")
   List<DelegatedNews> findByStatus(@Param("status") String status);
 
 }

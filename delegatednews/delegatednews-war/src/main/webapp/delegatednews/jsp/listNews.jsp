@@ -34,11 +34,11 @@
 <%@ include file="check.jsp"%>
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<c:set var="listNewsJSON" value="${requestScope.ListNewsJSON}"/>
   
 <%
-	List listNews = (List) request.getAttribute("ListNews"); //List<DelegatedNews> 
+	List<DelegatedNews> listNews = (List<DelegatedNews>) request.getAttribute("ListNews"); //List<DelegatedNews>
 %>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -173,6 +173,57 @@
     		}
     	});
     });
+    
+    var listDelegatedNewsJSON = ${listNewsJSON};
+    var updatedDelegatedNews = new Array();//tableau de DelegatedNewsEntity réordonnés sérialisés en JSON
+    
+    $(document).ready(function() {
+        $('#newsList tbody').bind('sortupdate', function(event, ui) {
+            var data = $('#newsList tbody').sortable('toArray'); //tableau de valeurs delegatedNews_{pubId} réordonnés
+            var pubId;
+            for (var i=0; i<data.length; i++)
+            {
+              pubId = data[i]; //delegatedNews_{pubId}
+              pubId = pubId.substring(14); //{pubId}
+              
+              var delegatedNewsJSON;
+              var pubIdJSON;
+              for (var j=0; j<listDelegatedNewsJSON.length; j++)
+              {
+                delegatedNewsJSON = listDelegatedNewsJSON[j];
+                pubIdJSON = delegatedNewsJSON.pubId;
+                if(pubId == pubIdJSON) {
+                  updatedDelegatedNews[i] = delegatedNewsJSON;
+                }
+              }
+            }
+            sortDelegatedNews(updatedDelegatedNews);
+          });
+      });
+      
+      function sortDelegatedNews(updatedDelegatedNews)
+      {
+          $.ajax({
+              url:"<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>",
+              type: "PUT",
+              contentType: "application/json",
+              dataType: "json",
+              cache: false,
+              data: $.toJSON(updatedDelegatedNews),
+              success: function (data) {
+              }
+              ,
+              error: function(jqXHR, textStatus, errorThrown) {
+            	  if (onError == null)
+            	   alert(errorThrown);
+            	  else
+            	   onError({
+            		   status: jqXHR.status, 
+            		   message: errorThrown
+            	   });
+              }
+          });
+      }
     </script>
   </head>  
   <body>
@@ -182,6 +233,7 @@
   <%
     ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
     arrayPane.setVisibleLineNumber(20);
+    arrayPane.setSortableLines(true);
     arrayPane.setTitle(resources.getString("delegatednews.listNews"));
     arrayPane.addArrayColumn(resources.getString("delegatednews.news.title"));
     arrayPane.addArrayColumn(resources.getString("delegatednews.updateDate"));
@@ -190,65 +242,66 @@
     arrayPane.addArrayColumn(resources.getString("delegatednews.visibilityBeginDate"));
     arrayPane.addArrayColumn(resources.getString("delegatednews.visibilityEndDate"));
     
-	boolean isAdmin = newsScc.isAdmin();
-    if(isAdmin) {
-		ArrayColumn arrayColumnOp = arrayPane.addArrayColumn(resources.getString("GML.operations"));
-		arrayColumnOp.setSortable(false);
-	}
+    boolean isAdmin = newsScc.isAdmin();
+	    if(isAdmin) {
+			ArrayColumn arrayColumnOp = arrayPane.addArrayColumn(resources.getString("GML.operations"));
+			arrayColumnOp.setSortable(false);
+		}
     
     SimpleDateFormat hourFormat = new SimpleDateFormat(resources.getString("GML.hourFormat"));
     for (int i=0; i<listNews.size(); i++) {
-		DelegatedNews delegatedNews = (DelegatedNews) listNews.get(i);
-		
-		int pubId = delegatedNews.getPubId();
-		String instanceId = delegatedNews.getInstanceId();
-		ArrayLine arrayLine = arrayPane.addArrayLine();
-		arrayLine.addArrayCellLink(delegatedNews.getPublicationDetail().getName(resources.getLanguage()), "javascript:onClick=openPublication('"+pubId+"', '"+instanceId+"')");
-		
-		String updateDate = resources.getOutputDate(delegatedNews.getPublicationDetail().getUpdateDate());
-		ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(updateDate);
-		cellUpdateDate.setCompareOn(delegatedNews.getPublicationDetail().getUpdateDate());
-		
-		arrayLine.addArrayCellText(UserNameGenerator.toString(delegatedNews.getContributorId(), "unknown"));
-		
-		String status = delegatedNews.getStatus();
-		arrayLine.addArrayCellText(resources.getString("delegatednews.status."+status));
-		
-		String beginDate = "";
-		String beginHour = "";
-		if(delegatedNews.getBeginDate() != null) {
-			beginDate = resources.getInputDate(delegatedNews.getBeginDate());
-			beginHour = hourFormat.format(delegatedNews.getBeginDate());
-			ArrayCellText cellBeginDate = arrayLine.addArrayCellText(resources.getOutputDateAndHour(delegatedNews.getBeginDate()));
-			cellBeginDate.setCompareOn(delegatedNews.getBeginDate());
-		} else {
-			arrayLine.addArrayCellText("");
-		}
-		
-		String endDate = "";
-		String endHour = "";
-		if(delegatedNews.getEndDate() != null) {
-			endDate = resources.getInputDate(delegatedNews.getEndDate());
-			endHour = hourFormat.format(delegatedNews.getEndDate());
-			ArrayCellText cellEndDate = arrayLine.addArrayCellText(resources.getOutputDateAndHour(delegatedNews.getEndDate()));
-			cellEndDate.setCompareOn(delegatedNews.getEndDate());
-		} else {
-			arrayLine.addArrayCellText("");
-		}
-
-        if(isAdmin) {
-			IconPane iconPane = gef.getIconPane();
-			Icon iconUpdate = iconPane.addIcon();
-			iconUpdate.setProperties(m_context+"/util/icons/update.gif", resources.getString("GML.modify"), "javascript:onClick=updateDateDelegatedNews('"+pubId+"', '"+beginDate+"', '"+beginHour+"', '"+endDate+"', '"+endHour+"')");
+			DelegatedNews delegatedNews = (DelegatedNews) listNews.get(i);
 			
-			Icon iconValidate = iconPane.addIcon();
-			iconValidate.setProperties(m_context+"/util/icons/ok.gif", resources.getString("delegatednews.action.validate"), "ValidateDelegatedNews?PubId="+pubId);
+			int pubId = delegatedNews.getPubId();
+			String instanceId = delegatedNews.getInstanceId();
+			ArrayLine arrayLine = arrayPane.addArrayLine();
+			arrayLine.setId("delegatedNews_"+pubId);
+			arrayLine.addArrayCellLink(delegatedNews.getPublicationDetail().getName(resources.getLanguage()), "javascript:onClick=openPublication('"+pubId+"', '"+instanceId+"');");
 			
-			Icon iconRefused = iconPane.addIcon();
-			iconRefused.setProperties(m_context+"/util/icons/delete.gif", resources.getString("delegatednews.action.refuse"), "javascript:onClick=refuseDelegatedNews('"+pubId+"')");
+			String updateDate = resources.getOutputDate(delegatedNews.getPublicationDetail().getUpdateDate());
+			ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(updateDate);
+			cellUpdateDate.setCompareOn(delegatedNews.getPublicationDetail().getUpdateDate());
 			
-			arrayLine.addArrayCellIconPane(iconPane);	
-		}
+			arrayLine.addArrayCellText(UserNameGenerator.toString(delegatedNews.getContributorId(), "unknown"));
+			
+			String status = delegatedNews.getStatus();
+			arrayLine.addArrayCellText(resources.getString("delegatednews.status."+status));
+			
+			String beginDate = "";
+			String beginHour = "";
+			if(delegatedNews.getBeginDate() != null) {
+				beginDate = resources.getInputDate(delegatedNews.getBeginDate());
+				beginHour = hourFormat.format(delegatedNews.getBeginDate());
+				ArrayCellText cellBeginDate = arrayLine.addArrayCellText(resources.getOutputDateAndHour(delegatedNews.getBeginDate()));
+				cellBeginDate.setCompareOn(delegatedNews.getBeginDate());
+			} else {
+				arrayLine.addArrayCellText("");
+			}
+			
+			String endDate = "";
+			String endHour = "";
+			if(delegatedNews.getEndDate() != null) {
+				endDate = resources.getInputDate(delegatedNews.getEndDate());
+				endHour = hourFormat.format(delegatedNews.getEndDate());
+				ArrayCellText cellEndDate = arrayLine.addArrayCellText(resources.getOutputDateAndHour(delegatedNews.getEndDate()));
+				cellEndDate.setCompareOn(delegatedNews.getEndDate());
+			} else {
+				arrayLine.addArrayCellText("");
+			}
+	
+	    if(isAdmin) {
+				IconPane iconPane = gef.getIconPane();
+				Icon iconUpdate = iconPane.addIcon();
+				iconUpdate.setProperties(m_context+"/util/icons/update.gif", resources.getString("GML.modify"), "javascript:onClick=updateDateDelegatedNews('"+pubId+"', '"+beginDate+"', '"+beginHour+"', '"+endDate+"', '"+endHour+"');");
+				
+				Icon iconValidate = iconPane.addIcon();
+				iconValidate.setProperties(m_context+"/util/icons/ok.gif", resources.getString("delegatednews.action.validate"), "ValidateDelegatedNews?PubId="+pubId);
+				
+				Icon iconRefused = iconPane.addIcon();
+				iconRefused.setProperties(m_context+"/util/icons/delete.gif", resources.getString("delegatednews.action.refuse"), "javascript:onClick=refuseDelegatedNews('"+pubId+"');");
+				
+				arrayLine.addArrayCellIconPane(iconPane);	
+			}
 	}
 
   out.print(arrayPane.print());
