@@ -206,7 +206,7 @@ out.println(tabbedPane.print());
 <td valign="top">
 	<% 
 	    out.flush();
-	  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+task.getId()+"&ComponentId="+componentId).include(request, response);
+	  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+task.getId()+"&ComponentId="+componentId).include(request, response);
 	%>
 </td>
 </tr></table>

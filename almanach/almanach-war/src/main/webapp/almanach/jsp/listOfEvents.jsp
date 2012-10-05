@@ -301,7 +301,7 @@
             var eventDescSection = $("<div>").addClass("eventDesc").appendTo(eventSection);
             if (event.hasAttachments) {
               eventDescSection.append($("<div>").addClass("eventAttachments")
-              .load("<c:url value='/attachment/jsp/displayAttachments.jsp?Context=Images&ComponentId=${instanceId}' />&Id=" + event.id));
+              .load("<c:url value='/attachment/jsp/displayAttachedFiles.jsp?Context=Images&ComponentId=${instanceId}' />&Id=" + event.id));
             }
             eventDescSection.append($("<div>").html(event.description)).append($("<br>").addClass("clearAll"));
           });

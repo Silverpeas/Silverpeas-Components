@@ -73,7 +73,7 @@ function goFiles (){
 		<td valign="top">
 			<%
 				out.flush();
-				getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+parution+"&ComponentId="+componentId+"&Context=Images").include(request, response);
+				getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+parution+"&ComponentId="+componentId+"&Context=Images").include(request, response);
 			%>
 		</td></tr>
 	</table>

@@ -170,7 +170,7 @@ $(document).ready(function(){
 	<!--  Attachments -->  
 	<%
   		out.flush();
-  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+event.getId()+"&ComponentId="+instanceId+"&Context=Images").include(request, response);
+  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+event.getId()+"&ComponentId="+instanceId+"&Context=Images").include(request, response);
   	%>
   	<!-- Periodicity -->
 	<% if(event.isPeriodic()) { %>
