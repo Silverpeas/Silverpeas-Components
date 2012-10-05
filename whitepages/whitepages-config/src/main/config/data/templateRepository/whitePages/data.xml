@@ -34,6 +34,18 @@
 		<isReadOnly>false</isReadOnly>
 		<isDisabled>false</isDisabled>
 		<isHidden>false</isHidden>
+		<label>
+			<labelName>Service</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Department</labelName>
+			<language>en</language>
+		</label>
+		<label>
+			<labelName>Abteilung</labelName>
+			<language>de</language>
+		</label>
 	</fieldTemplate>
 	<fieldTemplate>
 		<fieldName>poste</fieldName>
@@ -43,6 +55,18 @@
 		<isReadOnly>false</isReadOnly>
 		<isDisabled>false</isDisabled>
 		<isHidden>false</isHidden>
+		<label>
+			<labelName>Poste</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Job</labelName>
+			<language>en</language>
+		</label>
+		<label>
+			<labelName>Stellung</labelName>
+			<language>de</language>
+		</label>
 	</fieldTemplate>
 	<fieldTemplate>
 		<fieldName>competence</fieldName>
@@ -52,5 +76,17 @@
 		<isReadOnly>false</isReadOnly>
 		<isDisabled>false</isDisabled>
 		<isHidden>false</isHidden>
+		<label>
+			<labelName>Compétences</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Skills</labelName>
+			<language>en</language>
+		</label>
+		<label>
+			<labelName>Kompetenzen</labelName>
+			<language>de</language>
+		</label>
 	</fieldTemplate>
 </recordTemplate>

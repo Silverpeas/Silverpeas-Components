@@ -40,6 +40,7 @@ String		rootId				= "0";
 
 String 	profile			= (String) request.getAttribute("Profile");
 String  translation 	= (String) request.getAttribute("Language");
+boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
 
@@ -284,6 +285,7 @@ icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites
 var params = new Object();
 params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
 params["i18n"] = <%=I18NHelper.isI18N%>;
+params["nbPublisDisplayed"] = <%=displayNBPublis%>;
 
 function getComponentPermalink() {
 	return "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId)%>";
@@ -383,7 +385,7 @@ function getSubFolder(folder) {
 	}
 	str += '>';
 	str += '<strong>'+name+' ';
-	if (nbItems != -1) {
+	if (typeof(nbItems) != "undefined") {
 		str += '<span>'+nbItems+'</span>';
 	}
 	str += '</strong>';

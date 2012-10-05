@@ -90,7 +90,7 @@ public final class QuestionHeader extends AbstractI18NBean implements SilverCont
 
   @Override
   public String getId() {
-    return (new Long(id)).toString();
+    return Long.toString(id);
   }
 
   @Override

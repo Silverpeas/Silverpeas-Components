@@ -160,9 +160,8 @@ browseBar.setDomainName(spaceLabel);
 browseBar.setPath(resource.getString("whitePages.usersList"));
 
 if(isAdmin){
+  	operationPane.addOperation(pdcUtilizationSrc, resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+scc.getComponentId()+"','utilizationPdc1')");
 	operationPane.addOperation(resource.getIcon("whitePages.defineSearch"), resource.getString("whitePages.definesearchfields"), "javascript:onClick=defineSearchFields()");
-	operationPane.addLine();
-	operationPane.addOperation(pdcUtilizationSrc, resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+scc.getComponentId()+"','utilizationPdc1')");
 	operationPane.addLine();
 	operationPane.addOperationOfCreation(resource.getIcon("whitePages.newCard"), resource.getString("whitePages.op.createUser"), "javascript:onClick=B_CREATE_ONCLICK();");
 	if(cards != null && cards.size() > 0){
@@ -179,7 +178,7 @@ if(main){
 out.println(window.printBefore());
 out.println(frame.printBefore());
 
-SortedSet searchFields = (SortedSet) request.getAttribute("searchFields");
+SortedSet<SearchField> searchFields = (SortedSet<SearchField>) request.getAttribute("searchFields");
 List primaryPdcFields = (List)request.getAttribute("primaryPdcFields");
 List secondaryPdcFields = (List)request.getAttribute("secondaryPdcFields");
 boolean searchDone = StringUtil.getBooleanValue((String)request.getAttribute("searchDone"));
@@ -235,10 +234,8 @@ if (searchFields != null && !searchFields.isEmpty()) {
 <div id="additionalElements" class="arbre">
   <img title="<fmt:message key="whitePages.suppl"/>" alt="<fmt:message key="whitePages.suppl"/>" src="<%=m_context%>/whitePages/jsp/icons/contactCard.gif"/> 
 <%
-	Iterator i = searchFields.iterator();
-	while (i.hasNext()) {
-		SearchField searchField = (SearchField) i.next();
-		String fieldName = searchField.getFieldId().substring(4,searchField.getFieldId().length());
+	for (SearchField searchField : searchFields) {
+		String fieldName = searchField.getLabel();
 		String fieldId = searchField.getFieldId();
 		String fieldValue = request.getAttribute(fieldId) != null ?  (String)request.getAttribute(fieldId) : "";
 %>
@@ -331,9 +328,9 @@ if(cards != null && cards.size() > 0){
   } 
 }else if(searchDone){
 %>
-<li class="intfdcolor">
+<div class="inlineMessage">
 	<fmt:message key="whitePages.nosearchresults"/>
-</li>
+</div>
 <%
 }
 %>

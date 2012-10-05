@@ -24,11 +24,14 @@
 
 package com.silverpeas.whitePages.model;
 
+import com.silverpeas.util.StringUtil;
+
 public class SearchField {
 
   private String id;
   private String instanceId;
   private String fieldId;
+  private String label;
 
   public String getId() {
     return id;
@@ -69,6 +72,21 @@ public class SearchField {
     } else {
       return false;
     }
+  }
+
+  public void setLabel(String label) {
+    this.label = label;
+  }
+
+  public String getLabel() {
+    if (StringUtil.isDefined(label)) {
+      return label;
+    }
+    return getFieldName();
+  }
+  
+  public String getFieldName() {
+    return getFieldId().substring(4, getFieldId().length());
   }
 
 }
