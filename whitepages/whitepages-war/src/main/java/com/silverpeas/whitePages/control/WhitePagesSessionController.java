@@ -100,8 +100,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private String returnURL = "";
   private ContainerContext containerContext;
   private Card notifiedUserCard;
-  private final static ResourceLocator whitePagesSettings = new ResourceLocator(
-          "com.silverpeas.whitePages.settings.settings", "");
   private PdcBm pdcBm = null;
   private static DomainDriverManager m_DDManager = new DomainDriverManager();
 
@@ -819,9 +817,10 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   }
 
   /*-------------- Methodes de la classe ------------------*/
-  public WhitePagesSessionController(MainSessionController mainSessionCtrl,
-          ComponentContext context, String multilangBaseName, String iconBaseName) {
-    super(mainSessionCtrl, context, multilangBaseName, iconBaseName);
+  public WhitePagesSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
+    super(mainSessionCtrl, context, "com.silverpeas.whitePages.multilang.whitePagesBundle",
+        "com.silverpeas.whitePages.settings.whitePagesIcons",
+        "com.silverpeas.whitePages.settings.settings");
     if (context == null) {
       setComponentRootName(URLManager.CMP_WHITEPAGESPEAS);
     }
@@ -875,7 +874,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     notifMetaData.setComponentId(getComponentId());
     notifMetaData.setContent(message);
     notifMetaData.setDate(new Date());
-    notifMetaData.setSender(whitePagesSettings.getString("whitePages.genericUserId"));
+    notifMetaData.setSender(getSettings().getString("whitePages.genericUserId"));
     notifMetaData.setTitle(getString("whitePages.notificationTitle"));
 
     String link = URLManager.getURL(null, getComponentId())
@@ -986,7 +985,18 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
               domainProperties = getDomainProperties();
             }
             field.setLabel(domainProperties.get(field.getFieldName()));
-          }
+          } else if (field.getFieldId().startsWith(SearchFieldsType.USER.getLabelType())) {
+            if (field.getFieldName().equals("name")) {
+              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage()).getString(
+                  "GML.lastName"));
+            } else if (field.getFieldName().equals("surname")) {
+              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage()).getString(
+                  "GML.surname"));
+            } else if (field.getFieldName().equals("email")) {
+              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage()).getString(
+                  "GML.eMail"));
+            }
+          } 
         }
       } catch (Exception e) {
         SilverTrace.error("whitePages", "WhitePagesSessionController.getSearchFields",
@@ -1090,30 +1100,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           }
         }
       }
-      
-//      Iterator<ClassifyPosition> iter = listOfPositions.iterator();
-//      while (iter.hasNext()) {
-//        List<Value> pathValues = null;
-//        ClassifyPosition position = iter.next();
-//        List<ClassifyValue> values = position.getValues();
-//        for (ClassifyValue value : values) {
-//          pathValues = value.getFullPath();
-//          if (pathValues != null && !pathValues.isEmpty()) {
-//            List<ClassifyValue> valuesForPrincipal = null;
-//            Value term = pathValues.get(0);
-//            String principal = term.getName(getLanguage());
-//            if (result.get(principal) != null) {
-//              valuesForPrincipal = result.get(principal);
-//              valuesForPrincipal.add(value);
-//              result.put(principal, valuesForPrincipal);
-//            } else {
-//              valuesForPrincipal = new ArrayList<ClassifyValue>();
-//              valuesForPrincipal.add(value);
-//              result.put(principal, valuesForPrincipal);
-//            }
-//          }
-//        }
-//      }
     }
     return result;
 

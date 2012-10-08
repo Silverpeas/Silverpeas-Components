@@ -86,9 +86,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     SilverTrace.info("whitePages",
         "WhitePagesRequestRouter.createComponentSessionController()", "", "");
-    return new WhitePagesSessionController(mainSessionCtrl, componentContext,
-        "com.silverpeas.whitePages.multilang.whitePagesBundle",
-        "com.silverpeas.whitePages.settings.whitePagesIcons");
+    return new WhitePagesSessionController(mainSessionCtrl, componentContext);
   }
 
   /*
