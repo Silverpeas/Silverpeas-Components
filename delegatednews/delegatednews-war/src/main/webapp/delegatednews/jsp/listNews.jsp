@@ -34,6 +34,7 @@
 <%@ include file="check.jsp"%>
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
 <c:set var="listNewsJSON" value="${requestScope.ListNewsJSON}"/>
   
 <%
@@ -224,12 +225,16 @@
               }
           });
       }
+      
+      
     </script>
   </head>  
   <body>
+    
+    
     <view:window>
-      <view:frame>
-          
+      <view:frame>   
+      
   <%
     ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
     arrayPane.setVisibleLineNumber(20);
@@ -246,6 +251,7 @@
 	    if(isAdmin) {
 			ArrayColumn arrayColumnOp = arrayPane.addArrayColumn(resources.getString("GML.operations"));
 			arrayColumnOp.setSortable(false);
+			
 		}
     
     SimpleDateFormat hourFormat = new SimpleDateFormat(resources.getString("GML.hourFormat"));
@@ -301,12 +307,14 @@
 				iconRefused.setProperties(m_context+"/util/icons/delete.gif", resources.getString("delegatednews.action.refuse"), "javascript:onClick=refuseDelegatedNews('"+pubId+"');");
 				
 				arrayLine.addArrayCellIconPane(iconPane);	
+				
+				
 			}
 	}
 
   out.print(arrayPane.print());
   %>
-     
+      
       </view:frame>
     </view:window>
 
