@@ -34,6 +34,7 @@
 <%@ include file="check.jsp"%>
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <c:set var="listNewsJSON" value="${requestScope.ListNewsJSON}"/>
   
@@ -176,10 +177,10 @@
     });
     
     var listDelegatedNewsJSON = ${listNewsJSON};
-    var updatedDelegatedNews = new Array();//tableau de DelegatedNewsEntity réordonnés sérialisés en JSON
     
     $(document).ready(function() {
         $('#newsList tbody').bind('sortupdate', function(event, ui) {
+        	  var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity réordonnés sérialisés en JSON
             var data = $('#newsList tbody').sortable('toArray'); //tableau de valeurs delegatedNews_{pubId} réordonnés
             var pubId;
             for (var i=0; i<data.length; i++)
@@ -202,7 +203,7 @@
           });
       });
       
-      function sortDelegatedNews(updatedDelegatedNews)
+      function sortDelegatedNews(updatedDelegatedNewsJSON)
       {
           $.ajax({
               url:"<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>",
@@ -210,8 +211,9 @@
               contentType: "application/json",
               dataType: "json",
               cache: false,
-              data: $.toJSON(updatedDelegatedNews),
+              data: $.toJSON(updatedDelegatedNewsJSON),
               success: function (data) {
+            	  listDelegatedNewsJSON = data;
               }
               ,
               error: function(jqXHR, textStatus, errorThrown) {
@@ -226,15 +228,98 @@
           });
       }
       
+      function deleteSelectedDelegatedNews() {
+    	  var nbNews = listDelegatedNewsJSON.length;
+    	  if (nbNews > 0) {
+    		  var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity sans les éléments supprimés sérialisés en JSON
+ 		      var delegatedNewsJSON;
+ 		      var pubIdJSON;
+ 		      var k = 0;
+          if (nbNews == 1) {
+        	  if (! document.tabForm.checkedDelegatedNews.checked) {
+        		  updatedDelegatedNews[0] = listDelegatedNewsJSON[0];
+            }
+        	}
+          else {
+        	  for (var i=0; i<nbNews; i++)
+            {
+        		  delegatedNewsJSON = listDelegatedNewsJSON[i];
+              pubIdJSON = delegatedNewsJSON.pubId;
+              for (var j=0; j<nbNews; j++) {
+            	 if (pubIdJSON == document.tabForm.checkedDelegatedNews[j].value) {
+            		 if(! document.tabForm.checkedDelegatedNews[j].checked) {
+            			 updatedDelegatedNews[k] = delegatedNewsJSON;
+                   k++;	 
+            		 }
+            		 break;
+            	 }
+              }
+            }
+          }
+          
+          if (nbNews > updatedDelegatedNews.length) { //on a coché au - une news à supprimer
+        	  if (confirm('<fmt:message key="delegatednews.form.delete.confirm"/>')) {
+        		  $.ajax({
+        			  url:"<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>",
+        			  type: "PUT",
+        			  contentType: "application/json",
+        			  dataType: "json",
+        			  cache: false,
+        			  data: $.toJSON(updatedDelegatedNews),
+        			  success: function (data) {
+        				  var delegatedNewsJSON;
+        		      var pubIdJSON;
+        		      var newDelegatedNewsJSON;
+                  var newPubIdJSON;
+                  var trouve = false;
+                  var trToDelete;
+        				  for (var i=0; i<nbNews; i++)
+   		            {
+   		              delegatedNewsJSON = listDelegatedNewsJSON[i];
+   		              pubIdJSON = delegatedNewsJSON.pubId;
+   		              trouve = false;
+   		              for (var j=0; j<data.length; j++) {
+   		            	  newDelegatedNewsJSON = data[j];
+   	                  newPubIdJSON = newDelegatedNewsJSON.pubId;
+   	                  if (pubIdJSON == newPubIdJSON) {
+   	                	  trouve = true;
+   	                	  break;
+   		                }
+   		              }
+   		              if(! trouve) {
+   		            	  trToDelete = "#delegatedNews_" + pubIdJSON;
+   		            	  $(trToDelete).remove();
+   		              }
+   		            }
+        				  listDelegatedNewsJSON = data;
+	              }
+	             ,
+	             error: function(jqXHR, textStatus, errorThrown) {
+	             if (onError == null)
+	              alert(errorThrown);
+	             else
+	              onError({
+	              status: jqXHR.status, 
+	              message: errorThrown
+	              });
+	             }
+	            });
+            }
+          }
+    	  }
+      }
       
     </script>
   </head>  
   <body>
-    
-    
+    <fmt:message key="delegatednews.icons.delete" var="deleteIcon" bundle="${icons}" />
+    <fmt:message key="delegatednews.action.delete" var="deleteAction" />
+    <view:operationPane>
+      <view:operation altText="${deleteAction}" icon="${deleteIcon}" action="javascript:onClick=deleteSelectedDelegatedNews();" />
+    </view:operationPane>
     <view:window>
       <view:frame>   
-      
+      <form name="tabForm" method="post">
   <%
     ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
     arrayPane.setVisibleLineNumber(20);
@@ -251,7 +336,7 @@
 	    if(isAdmin) {
 			ArrayColumn arrayColumnOp = arrayPane.addArrayColumn(resources.getString("GML.operations"));
 			arrayColumnOp.setSortable(false);
-			
+			arrayPane.addArrayColumn("");
 		}
     
     SimpleDateFormat hourFormat = new SimpleDateFormat(resources.getString("GML.hourFormat"));
@@ -308,13 +393,13 @@
 				
 				arrayLine.addArrayCellIconPane(iconPane);	
 				
-				
+				arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedDelegatedNews\" value=\""+pubId+"\"/>");
 			}
 	}
 
   out.print(arrayPane.print());
   %>
-      
+      </form>
       </view:frame>
     </view:window>
 

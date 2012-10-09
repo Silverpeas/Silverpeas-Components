@@ -25,6 +25,7 @@ package com.silverpeas.delegatednews.web;
  
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -74,66 +75,48 @@ public class DelegatedNewsResource extends RESTWebService {
   }
   
   /**
-   * Updates the delegatedNews Order from the JSON representation.
+   * Updates order or delete the delegatedNews from the JSON representation.
    * If the user isn't authentified, a 401 HTTP code is returned. 
    * If the user isn't authorized to save the delegated news, a 403 is returned. 
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param tab of ordered delegated news
-   * @return the ordered list of delegated news 
+   * @param tab of delegated news to update order or to delete
+   * @return the new list of delegated news after update or delete
    */
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public DelegatedNewsEntity[] updateDelegatedNews(final DelegatedNewsEntity[] delegatedNewsToUpdate) {
-    DelegatedNewsEntity[] tabResult = new DelegatedNewsEntity[delegatedNewsToUpdate.length];
+  public DelegatedNewsEntity[] updateDelegatedNews(final DelegatedNewsEntity[] newDelegatedNews) {
+    DelegatedNewsEntity[] tabResult = new DelegatedNewsEntity[newDelegatedNews.length];
+    List<DelegatedNews> initialListDelegatedNews = getDelegatedNewsService().getAllDelegatedNews();
     try {
-      for(int i=0; i<delegatedNewsToUpdate.length;i++) {//the tab of DelegatedNewsEntity is in the new order
-        DelegatedNewsEntity delegatedNewsEntity = delegatedNewsToUpdate[i];
-        DelegatedNews delegatedNews = delegatedNewsEntity.toDelegatedNews();
-        DelegatedNews delegatedNewsUpdated = getDelegatedNewsService().updateOrderDelegatedNews(delegatedNews.getPubId(), i);
-        tabResult[i] = DelegatedNewsEntity.fromDelegatedNews(delegatedNewsUpdated);
-      }
-    } catch (DelegatedNewsRuntimeException ex) {
-      throw new WebApplicationException(ex, Status.NOT_FOUND);
-    } catch (Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
-    }
-    return tabResult;
-  }
-  
-  /**
-   * Deletes the delegatedNews from the JSON representation.
-   * If the user isn't authentified, a 401 HTTP code is returned. 
-   * If the user isn't authorized to save the delegated news, a 403 is returned. 
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param the initial tab of delegated news and the tab of delegated news to delete 
-   * @return the new list of delegated news without the deleted delegated news
-   */
-  @PUT
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  public DelegatedNewsEntity[] deleteDelegatedNews(final DelegatedNewsEntity[] tabDelegatedNews, final String[] tabPubIdToDelete) {
-    DelegatedNewsEntity[] tabResult = null;
-    Collection<DelegatedNewsEntity> listResult = new ArrayList<DelegatedNewsEntity>();
-    boolean deleted = false;
-    try {
-      for(int i=0; i<tabDelegatedNews.length;i++) {
-        deleted = false;
-        DelegatedNewsEntity delegatedNewsEntity = tabDelegatedNews[i];
-        for(int j=0; j<tabPubIdToDelete.length;j++) {
-          String pubIdToDelete = tabPubIdToDelete[j];
-          if(pubIdToDelete.equals(Integer.toString(delegatedNewsEntity.getPubId()))) {
-            DelegatedNews delegatedNews = delegatedNewsEntity.toDelegatedNews();
-            getDelegatedNewsService().deleteDelegatedNews(delegatedNews.getPubId());
-            deleted = true;
-            break;
+      if(initialListDelegatedNews.size() == newDelegatedNews.length) {//Update Order
+        for(int i=0; i<newDelegatedNews.length;i++) {//the tab of DelegatedNewsEntity is in the new order
+          DelegatedNewsEntity delegatedNewsEntity = newDelegatedNews[i];
+          DelegatedNews delegatedNews = delegatedNewsEntity.toDelegatedNews();
+          DelegatedNews delegatedNewsUpdated = getDelegatedNewsService().updateOrderDelegatedNews(delegatedNews.getPubId(), i);
+          tabResult[i] = DelegatedNewsEntity.fromDelegatedNews(delegatedNewsUpdated);
+        }
+      } 
+      else if (initialListDelegatedNews.size() > newDelegatedNews.length){//Delete
+        boolean trouve = false;
+        for(int i=0; i<initialListDelegatedNews.size();i++) {
+          DelegatedNews delegatedNews = initialListDelegatedNews.get(i);
+          int pubId = delegatedNews.getPubId();
+          trouve = false;
+          for(int j=0; j<newDelegatedNews.length;j++) {//the new tab of DelegatedNewsEntity without the delegated news deleted
+            DelegatedNewsEntity delegatedNewsEntity = newDelegatedNews[j];
+            int pubIdEntity = delegatedNewsEntity.getPubId();
+            if(pubId == pubIdEntity) {
+              trouve = true;
+              break;
+            }
+          }
+          if(!trouve) {
+            getDelegatedNewsService().deleteDelegatedNews(pubId); //delete the delegatedNews
           }
         }
-        if(! deleted) {
-          listResult.add(delegatedNewsEntity);
-        }
+        tabResult = newDelegatedNews;
       }
-      tabResult = listResult.toArray(new DelegatedNewsEntity[listResult.size()]);
     } catch (DelegatedNewsRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
