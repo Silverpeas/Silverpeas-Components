@@ -39,7 +39,7 @@
 <c:set var="listNewsJSON" value="${requestScope.ListNewsJSON}"/>
   
 <%
-	List<DelegatedNews> listNews = (List<DelegatedNews>) request.getAttribute("ListNews"); //List<DelegatedNews>
+  List<DelegatedNews> listNews = (List<DelegatedNews>) request.getAttribute("ListNews"); //List<DelegatedNews>
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -56,29 +56,29 @@
     }
     
     function refuseDelegatedNews(pubId) {
-    	document.listDelegatedNews.PubId.value = pubId;
-    	$("#refuseDialog").dialog("open");
+      document.listDelegatedNews.PubId.value = pubId;
+      $("#refuseDialog").dialog("open");
     }
     
     function updateDateDelegatedNews(pubId, BeginDate, BeginHour, EndDate, EndHour) {
-    	document.listDelegatedNews.PubId.value = pubId;
-    	$("#datesDialog #BeginDate").val(BeginDate);
-    	$("#datesDialog #BeginHour").val(BeginHour);
-    	$("#datesDialog #EndDate").val(EndDate);
-    	$("#datesDialog #EndHour").val(EndHour);
-    	$("#datesDialog").dialog("open");
+      document.listDelegatedNews.PubId.value = pubId;
+      $("#datesDialog #BeginDate").val(BeginDate);
+      $("#datesDialog #BeginHour").val(BeginHour);
+      $("#datesDialog #EndDate").val(EndDate);
+      $("#datesDialog #EndHour").val(EndHour);
+      $("#datesDialog").dialog("open");
     }
     
     function areDatesCorrect(beginDate, beginHour, endDate, endHour, language) {
-    	var errorMsg = "";
+      var errorMsg = "";
         var errorNb = 0;
         var beginDateOK = true;
-    	if (!isWhitespace(beginDate)) {
-        	if (!isDateOK(beginDate, language)) {
+      if (!isWhitespace(beginDate)) {
+          if (!isDateOK(beginDate, language)) {
                  errorMsg+="  - '<fmt:message key="delegatednews.visibilityBeginDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
-	             errorNb++;
-    	         beginDateOK = false;
-           	} 
+               errorNb++;
+               beginDateOK = false;
+            } 
          }
          if (!checkHour(beginHour))
          {
@@ -86,23 +86,23 @@
            errorNb++;
          }
          if (!isWhitespace(endDate)) {
-        	 if (!isDateOK(endDate, language)) {
-            	errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
-             	errorNb++;
-           	} else {
-            	if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
-          			if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, language)) {
-                		errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsPostOrEqualDateTo"/> "+beginDate+"\n";
-                		errorNb++;
-              		}
-            	} else {
-              		if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
-            			if (!isFuture(endDate, language)) {
-                  			errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsPostDate"/>\n";
-                  			errorNb++;
-                		}
-              		}
-            	}
+           if (!isDateOK(endDate, language)) {
+              errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
+              errorNb++;
+            } else {
+              if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
+                if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, language)) {
+                    errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsPostOrEqualDateTo"/> "+beginDate+"\n";
+                    errorNb++;
+                  }
+              } else {
+                  if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
+                  if (!isFuture(endDate, language)) {
+                        errorMsg+="  - '<fmt:message key="delegatednews.visibilityEndDate"/>' <fmt:message key="GML.MustContainsPostDate"/>\n";
+                        errorNb++;
+                    }
+                  }
+              }
            }
          }
          if (!checkHour(endHour))
@@ -111,76 +111,76 @@
            errorNb++;
          }
          switch(errorNb) {
-         	case 0 :
-           		result = true;
-       			break;
-         	case 1 :
-           		errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-           		window.alert(errorMsg);
-           		result = false;
-       			break;
-         	default :
-           		errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-           		window.alert(errorMsg);
-           		result = false;
-           		break;
+          case 0 :
+              result = true;
+            break;
+          case 1 :
+              errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+              window.alert(errorMsg);
+              result = false;
+            break;
+          default :
+              errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+              window.alert(errorMsg);
+              result = false;
+              break;
          }
          return result;
     }
     
     $(function() {
         $("#refuseDialog").dialog({
-    		autoOpen: false,
-    		resizable: false,
-    		modal: true,
-    		height: "auto",
-    		width: 500,
-    		buttons: {
-    			"<fmt:message key="GML.ok"/>": function() {
-    				var message = $("#txtMessage").val();
-    				document.listDelegatedNews.action = "RefuseDelegatedNews";
-    			    document.listDelegatedNews.RefuseReasonText.value = message;
-    			    document.listDelegatedNews.submit();
-    			},
-    			"<fmt:message key="GML.cancel" />": function() {
-    				$(this).dialog("close");
-    			}
-    		}
-    	});
+        autoOpen: false,
+        resizable: false,
+        modal: true,
+        height: "auto",
+        width: 500,
+        buttons: {
+          "<fmt:message key="GML.ok"/>": function() {
+            var message = $("#txtMessage").val();
+            document.listDelegatedNews.action = "RefuseDelegatedNews";
+              document.listDelegatedNews.RefuseReasonText.value = message;
+              document.listDelegatedNews.submit();
+          },
+          "<fmt:message key="GML.cancel" />": function() {
+            $(this).dialog("close");
+          }
+        }
+      });
         
         $("#datesDialog").dialog({
-    		autoOpen: false,
-    		resizable: false,
-    		modal: true,
-    		height: "auto",
-    		width: 500,
-    		buttons: {
-    			"<fmt:message key="GML.ok"/>": function() {
-    				var beginDate = $("#datesDialog #BeginDate").val();
-    				var beginHour = $("#datesDialog #BeginHour").val();
-    				var endDate = $("#datesDialog #EndDate").val();
-    				var endHour = $("#datesDialog #EndHour").val();
-    				if (areDatesCorrect(beginDate, beginHour, endDate, endHour, '<%=resources.getLanguage()%>')) {
-	    				document.listDelegatedNews.action = "UpdateDateDelegatedNews";
-	    				document.listDelegatedNews.BeginDate.value = beginDate;
-	    				document.listDelegatedNews.BeginHour.value = beginHour;
-	    				document.listDelegatedNews.EndDate.value = endDate;
-	    				document.listDelegatedNews.EndHour.value = endHour;
-	    				document.listDelegatedNews.submit();
-    				}
-    			},
-    			"<fmt:message key="GML.cancel" />": function() {
-    				$(this).dialog("close");
-    			}
-    		}
-    	});
+        autoOpen: false,
+        resizable: false,
+        modal: true,
+        height: "auto",
+        width: 500,
+        buttons: {
+          "<fmt:message key="GML.ok"/>": function() {
+            var beginDate = $("#datesDialog #BeginDate").val();
+            var beginHour = $("#datesDialog #BeginHour").val();
+            var endDate = $("#datesDialog #EndDate").val();
+            var endHour = $("#datesDialog #EndHour").val();
+            if (areDatesCorrect(beginDate, beginHour, endDate, endHour, '<%=resources.getLanguage()%>')) {
+              document.listDelegatedNews.action = "UpdateDateDelegatedNews";
+              document.listDelegatedNews.BeginDate.value = beginDate;
+              document.listDelegatedNews.BeginHour.value = beginHour;
+              document.listDelegatedNews.EndDate.value = endDate;
+              document.listDelegatedNews.EndHour.value = endHour;
+              document.listDelegatedNews.submit();
+            }
+          },
+          "<fmt:message key="GML.cancel" />": function() {
+            $(this).dialog("close");
+          }
+        }
+      });
     });
     
     var listDelegatedNewsJSON = ${listNewsJSON};
     
     $(document).ready(function() {
         $('#newsList tbody').bind('sortupdate', function(event, ui) {
-        	  var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity réordonnés sérialisés en JSON
+            var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity réordonnés sérialisés en JSON
             var data = $('#newsList tbody').sortable('toArray'); //tableau de valeurs delegatedNews_{pubId} réordonnés
             var pubId;
             for (var i=0; i<data.length; i++)
@@ -213,100 +213,100 @@
               cache: false,
               data: $.toJSON(updatedDelegatedNewsJSON),
               success: function (data) {
-            	  listDelegatedNewsJSON = data;
+                listDelegatedNewsJSON = data;
               }
               ,
               error: function(jqXHR, textStatus, errorThrown) {
-            	  if (onError == null)
-            	   alert(errorThrown);
-            	  else
-            	   onError({
-            		   status: jqXHR.status, 
-            		   message: errorThrown
-            	   });
+                if (onError == null)
+                 alert(errorThrown);
+                else
+                 onError({
+                   status: jqXHR.status, 
+                   message: errorThrown
+                 });
               }
           });
       }
       
       function deleteSelectedDelegatedNews() {
-    	  var nbNews = listDelegatedNewsJSON.length;
-    	  if (nbNews > 0) {
-    		  var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity sans les éléments supprimés sérialisés en JSON
- 		      var delegatedNewsJSON;
- 		      var pubIdJSON;
- 		      var k = 0;
+        var nbNews = listDelegatedNewsJSON.length;
+        if (nbNews > 0) {
+          var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity sans les éléments supprimés sérialisés en JSON
+          var delegatedNewsJSON;
+          var pubIdJSON;
+          var k = 0;
           if (nbNews == 1) {
-        	  if (! document.tabForm.checkedDelegatedNews.checked) {
-        		  updatedDelegatedNews[0] = listDelegatedNewsJSON[0];
+            if (! document.tabForm.checkedDelegatedNews.checked) {
+              updatedDelegatedNews[0] = listDelegatedNewsJSON[0];
             }
-        	}
+          }
           else {
-        	  for (var i=0; i<nbNews; i++)
+            for (var i=0; i<nbNews; i++)
             {
-        		  delegatedNewsJSON = listDelegatedNewsJSON[i];
+              delegatedNewsJSON = listDelegatedNewsJSON[i];
               pubIdJSON = delegatedNewsJSON.pubId;
               for (var j=0; j<nbNews; j++) {
-            	 if (pubIdJSON == document.tabForm.checkedDelegatedNews[j].value) {
-            		 if(! document.tabForm.checkedDelegatedNews[j].checked) {
-            			 updatedDelegatedNews[k] = delegatedNewsJSON;
-                   k++;	 
-            		 }
-            		 break;
-            	 }
+               if (pubIdJSON == document.tabForm.checkedDelegatedNews[j].value) {
+                 if(! document.tabForm.checkedDelegatedNews[j].checked) {
+                   updatedDelegatedNews[k] = delegatedNewsJSON;
+                   k++;  
+                 }
+                 break;
+               }
               }
             }
           }
           
           if (nbNews > updatedDelegatedNews.length) { //on a coché au - une news à supprimer
-        	  if (confirm('<fmt:message key="delegatednews.form.delete.confirm"/>')) {
-        		  $.ajax({
-        			  url:"<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>",
-        			  type: "PUT",
-        			  contentType: "application/json",
-        			  dataType: "json",
-        			  cache: false,
-        			  data: $.toJSON(updatedDelegatedNews),
-        			  success: function (data) {
-        				  var delegatedNewsJSON;
-        		      var pubIdJSON;
-        		      var newDelegatedNewsJSON;
+            if (confirm('<fmt:message key="delegatednews.form.delete.confirm"/>')) {
+              $.ajax({
+                url:"<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>",
+                type: "PUT",
+                contentType: "application/json",
+                dataType: "json",
+                cache: false,
+                data: $.toJSON(updatedDelegatedNews),
+                success: function (data) {
+                  var delegatedNewsJSON;
+                  var pubIdJSON;
+                  var newDelegatedNewsJSON;
                   var newPubIdJSON;
                   var trouve = false;
                   var trToDelete;
-        				  for (var i=0; i<nbNews; i++)
-   		            {
-   		              delegatedNewsJSON = listDelegatedNewsJSON[i];
-   		              pubIdJSON = delegatedNewsJSON.pubId;
-   		              trouve = false;
-   		              for (var j=0; j<data.length; j++) {
-   		            	  newDelegatedNewsJSON = data[j];
-   	                  newPubIdJSON = newDelegatedNewsJSON.pubId;
-   	                  if (pubIdJSON == newPubIdJSON) {
-   	                	  trouve = true;
-   	                	  break;
-   		                }
-   		              }
-   		              if(! trouve) {
-   		            	  trToDelete = "#delegatedNews_" + pubIdJSON;
-   		            	  $(trToDelete).remove();
-   		              }
-   		            }
-        				  listDelegatedNewsJSON = data;
-	              }
-	             ,
-	             error: function(jqXHR, textStatus, errorThrown) {
-	             if (onError == null)
-	              alert(errorThrown);
-	             else
-	              onError({
-	              status: jqXHR.status, 
-	              message: errorThrown
-	              });
-	             }
-	            });
+                  for (var i=0; i<nbNews; i++)
+                  {
+                    delegatedNewsJSON = listDelegatedNewsJSON[i];
+                    pubIdJSON = delegatedNewsJSON.pubId;
+                    trouve = false;
+                    for (var j=0; j<data.length; j++) {
+                      newDelegatedNewsJSON = data[j];
+                      newPubIdJSON = newDelegatedNewsJSON.pubId;
+                      if (pubIdJSON == newPubIdJSON) {
+                        trouve = true;
+                        break;
+                      }
+                    }
+                    if(! trouve) {
+                      trToDelete = "#delegatedNews_" + pubIdJSON;
+                      $(trToDelete).remove();
+                    }
+                  }
+                  listDelegatedNewsJSON = data;
+                }
+               ,
+               error: function(jqXHR, textStatus, errorThrown) {
+               if (onError == null)
+                alert(errorThrown);
+               else
+                onError({
+                status: jqXHR.status, 
+                message: errorThrown
+                });
+               }
+              });
             }
           }
-    	  }
+        }
       }
       
     </script>
@@ -333,69 +333,69 @@
     arrayPane.addArrayColumn(resources.getString("delegatednews.visibilityEndDate"));
     
     boolean isAdmin = newsScc.isAdmin();
-	    if(isAdmin) {
-			ArrayColumn arrayColumnOp = arrayPane.addArrayColumn(resources.getString("GML.operations"));
-			arrayColumnOp.setSortable(false);
-			arrayPane.addArrayColumn("");
-		}
+      if(isAdmin) {
+      ArrayColumn arrayColumnOp = arrayPane.addArrayColumn(resources.getString("GML.operations"));
+      arrayColumnOp.setSortable(false);
+      arrayPane.addArrayColumn("");
+    }
     
     SimpleDateFormat hourFormat = new SimpleDateFormat(resources.getString("GML.hourFormat"));
     for (int i=0; i<listNews.size(); i++) {
-			DelegatedNews delegatedNews = (DelegatedNews) listNews.get(i);
-			
-			int pubId = delegatedNews.getPubId();
-			String instanceId = delegatedNews.getInstanceId();
-			ArrayLine arrayLine = arrayPane.addArrayLine();
-			arrayLine.setId("delegatedNews_"+pubId);
-			arrayLine.addArrayCellLink(delegatedNews.getPublicationDetail().getName(resources.getLanguage()), "javascript:onClick=openPublication('"+pubId+"', '"+instanceId+"');");
-			
-			String updateDate = resources.getOutputDate(delegatedNews.getPublicationDetail().getUpdateDate());
-			ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(updateDate);
-			cellUpdateDate.setCompareOn(delegatedNews.getPublicationDetail().getUpdateDate());
-			
-			arrayLine.addArrayCellText(UserNameGenerator.toString(delegatedNews.getContributorId(), "unknown"));
-			
-			String status = delegatedNews.getStatus();
-			arrayLine.addArrayCellText(resources.getString("delegatednews.status."+status));
-			
-			String beginDate = "";
-			String beginHour = "";
-			if(delegatedNews.getBeginDate() != null) {
-				beginDate = resources.getInputDate(delegatedNews.getBeginDate());
-				beginHour = hourFormat.format(delegatedNews.getBeginDate());
-				ArrayCellText cellBeginDate = arrayLine.addArrayCellText(resources.getOutputDateAndHour(delegatedNews.getBeginDate()));
-				cellBeginDate.setCompareOn(delegatedNews.getBeginDate());
-			} else {
-				arrayLine.addArrayCellText("");
-			}
-			
-			String endDate = "";
-			String endHour = "";
-			if(delegatedNews.getEndDate() != null) {
-				endDate = resources.getInputDate(delegatedNews.getEndDate());
-				endHour = hourFormat.format(delegatedNews.getEndDate());
-				ArrayCellText cellEndDate = arrayLine.addArrayCellText(resources.getOutputDateAndHour(delegatedNews.getEndDate()));
-				cellEndDate.setCompareOn(delegatedNews.getEndDate());
-			} else {
-				arrayLine.addArrayCellText("");
-			}
-	
-	    if(isAdmin) {
-				IconPane iconPane = gef.getIconPane();
-				Icon iconUpdate = iconPane.addIcon();
-				iconUpdate.setProperties(m_context+"/util/icons/update.gif", resources.getString("GML.modify"), "javascript:onClick=updateDateDelegatedNews('"+pubId+"', '"+beginDate+"', '"+beginHour+"', '"+endDate+"', '"+endHour+"');");
-				
-				Icon iconValidate = iconPane.addIcon();
-				iconValidate.setProperties(m_context+"/util/icons/ok.gif", resources.getString("delegatednews.action.validate"), "ValidateDelegatedNews?PubId="+pubId);
-				
-				Icon iconRefused = iconPane.addIcon();
-				iconRefused.setProperties(m_context+"/util/icons/delete.gif", resources.getString("delegatednews.action.refuse"), "javascript:onClick=refuseDelegatedNews('"+pubId+"');");
-				
-				arrayLine.addArrayCellIconPane(iconPane);	
-				
-				arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedDelegatedNews\" value=\""+pubId+"\"/>");
-			}
-	}
+      DelegatedNews delegatedNews = (DelegatedNews) listNews.get(i);
+      
+      int pubId = delegatedNews.getPubId();
+      String instanceId = delegatedNews.getInstanceId();
+      ArrayLine arrayLine = arrayPane.addArrayLine();
+      arrayLine.setId("delegatedNews_"+pubId);
+      arrayLine.addArrayCellLink(delegatedNews.getPublicationDetail().getName(resources.getLanguage()), "javascript:onClick=openPublication('"+pubId+"', '"+instanceId+"');");
+      
+      String updateDate = resources.getOutputDate(delegatedNews.getPublicationDetail().getUpdateDate());
+      ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(updateDate);
+      cellUpdateDate.setCompareOn(delegatedNews.getPublicationDetail().getUpdateDate());
+      
+      arrayLine.addArrayCellText(UserNameGenerator.toString(delegatedNews.getContributorId(), "unknown"));
+      
+      String status = delegatedNews.getStatus();
+      arrayLine.addArrayCellText(resources.getString("delegatednews.status."+status));
+      
+      String beginDate = "";
+      String beginHour = "";
+      if(delegatedNews.getBeginDate() != null) {
+        beginDate = resources.getInputDate(delegatedNews.getBeginDate());
+        beginHour = hourFormat.format(delegatedNews.getBeginDate());
+        ArrayCellText cellBeginDate = arrayLine.addArrayCellText(resources.getOutputDateAndHour(delegatedNews.getBeginDate()));
+        cellBeginDate.setCompareOn(delegatedNews.getBeginDate());
+      } else {
+        arrayLine.addArrayCellText("");
+      }
+      
+      String endDate = "";
+      String endHour = "";
+      if(delegatedNews.getEndDate() != null) {
+        endDate = resources.getInputDate(delegatedNews.getEndDate());
+        endHour = hourFormat.format(delegatedNews.getEndDate());
+        ArrayCellText cellEndDate = arrayLine.addArrayCellText(resources.getOutputDateAndHour(delegatedNews.getEndDate()));
+        cellEndDate.setCompareOn(delegatedNews.getEndDate());
+      } else {
+        arrayLine.addArrayCellText("");
+      }
+  
+      if(isAdmin) {
+        IconPane iconPane = gef.getIconPane();
+        Icon iconUpdate = iconPane.addIcon();
+        iconUpdate.setProperties(m_context+"/util/icons/update.gif", resources.getString("GML.modify"), "javascript:onClick=updateDateDelegatedNews('"+pubId+"', '"+beginDate+"', '"+beginHour+"', '"+endDate+"', '"+endHour+"');");
+        
+        Icon iconValidate = iconPane.addIcon();
+        iconValidate.setProperties(m_context+"/util/icons/ok.gif", resources.getString("delegatednews.action.validate"), "ValidateDelegatedNews?PubId="+pubId);
+        
+        Icon iconRefused = iconPane.addIcon();
+        iconRefused.setProperties(m_context+"/util/icons/delete.gif", resources.getString("delegatednews.action.refuse"), "javascript:onClick=refuseDelegatedNews('"+pubId+"');");
+        
+        arrayLine.addArrayCellIconPane(iconPane); 
+        
+        arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedDelegatedNews\" value=\""+pubId+"\"/>");
+      }
+  }
 
   out.print(arrayPane.print());
   %>
@@ -403,38 +403,38 @@
       </view:frame>
     </view:window>
 
-<!-- Dialog to refuse -->	
+<!-- Dialog to refuse --> 
 <div id="refuseDialog" title="<fmt:message key="delegatednews.action.refuse"/>">
-	<form>
-		<table>
-  			<tr>
-       			<td class="txtlibform"><fmt:message key="GML.notification.message" /> :</td>
-		    	<td><textarea name="txtMessage" id="txtMessage" cols="60" rows="8"></textarea></td>
-     		</tr>
-  		</table>
-	</form>
+  <form>
+    <table>
+        <tr>
+            <td class="txtlibform"><fmt:message key="GML.notification.message" /> :</td>
+          <td><textarea name="txtMessage" id="txtMessage" cols="60" rows="8"></textarea></td>
+        </tr>
+      </table>
+  </form>
 </div>
 
-<!-- Dialog to edit dates -->	
+<!-- Dialog to edit dates --> 
 <div id="datesDialog" title="<fmt:message key="GML.modify"/>">
-	<form>
-		<table cellspacing="0" cellpadding="5">
-			<tr id="beginArea">
-				<td class="txtlibform"><fmt:message key="delegatednews.visibilityBeginDate"/></td>
-				<td><input type="text" class="dateToPick" id="BeginDate" value="" size="12" maxlength="10"/>
-					<span class="txtsublibform">&nbsp;<fmt:message key="delegatednews.hour"/>&nbsp;</span><input type="text" id="BeginHour" value="" size="5" maxlength="5"/> <i>(hh:mm)</i></td>
-			</tr>
-			<tr id="endArea">
-				<td class="txtlibform"><fmt:message key="delegatednews.visibilityEndDate"/></td>
-				<td><input type="text" class="dateToPick" id="EndDate" value="" size="12" maxlength="10"/>
-					<span class="txtsublibform">&nbsp;<fmt:message key="delegatednews.hour"/>&nbsp;</span><input type="text" id="EndHour" value="" size="5" maxlength="5"/> <i>(hh:mm)</i></td>
-			</tr>
-		</table>
-	</form>
+  <form>
+    <table cellspacing="0" cellpadding="5">
+      <tr id="beginArea">
+        <td class="txtlibform"><fmt:message key="delegatednews.visibilityBeginDate"/></td>
+        <td><input type="text" class="dateToPick" id="BeginDate" value="" size="12" maxlength="10"/>
+          <span class="txtsublibform">&nbsp;<fmt:message key="delegatednews.hour"/>&nbsp;</span><input type="text" id="BeginHour" value="" size="5" maxlength="5"/> <i>(hh:mm)</i></td>
+      </tr>
+      <tr id="endArea">
+        <td class="txtlibform"><fmt:message key="delegatednews.visibilityEndDate"/></td>
+        <td><input type="text" class="dateToPick" id="EndDate" value="" size="12" maxlength="10"/>
+          <span class="txtsublibform">&nbsp;<fmt:message key="delegatednews.hour"/>&nbsp;</span><input type="text" id="EndHour" value="" size="5" maxlength="5"/> <i>(hh:mm)</i></td>
+      </tr>
+    </table>
+  </form>
 </div>
 
 <form name="listDelegatedNews" action="" method="post">
-	<input type="hidden" name="PubId"/>
+  <input type="hidden" name="PubId"/>
     <input type="hidden" name="RefuseReasonText"/>
     <input type="hidden" name="BeginDate"/>
     <input type="hidden" name="BeginHour"/>
