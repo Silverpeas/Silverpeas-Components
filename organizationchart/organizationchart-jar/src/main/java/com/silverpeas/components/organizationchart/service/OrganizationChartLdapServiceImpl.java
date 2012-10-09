@@ -611,7 +611,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
   private boolean isFunctionMatchingRole(String function, OrganizationalRole role) {
     return ((role != null)
         && StringUtil.isDefined(role.getLdapKey()) && function.toLowerCase().indexOf(
-        role.getLdapKey()) != -1);
+        role.getLdapKey().toLowerCase()) != -1);
   }
 
   /**

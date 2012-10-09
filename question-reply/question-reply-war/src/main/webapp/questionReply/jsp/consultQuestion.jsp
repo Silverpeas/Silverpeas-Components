@@ -26,7 +26,6 @@
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="java.util.*"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -88,7 +87,7 @@ function deleteConfirm(replyId) {
 	out.println(window.printBefore());    
 
 	boolean updateQ = true;
-	// le demandeur ne peut pas modifier les questions qui ne sont pas � lui ou qui n'ont pas de r�ponses
+	// le demandeur ne peut pas modifier les questions qui ne sont pas a lui ou qui n'ont pas de reponses
 	if (profil.equals("publisher") && !question.getCreatorId().equals(userId))
 		updateQ = false;
 	else if (profil.equals("publisher"))
@@ -129,7 +128,7 @@ function deleteConfirm(replyId) {
 </view:board>
 <view:areaOfOperationOfCreation/>
 <% 
-// affichage des r�ponses
+// affichage des reponses
 	while(it.hasNext()) {
 		Reply reply = (Reply) it.next();
 		String titleR = EncodeHelper.javaStringToHtmlString(reply.getTitle());

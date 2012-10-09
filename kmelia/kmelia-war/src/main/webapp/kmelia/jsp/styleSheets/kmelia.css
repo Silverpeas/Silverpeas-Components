@@ -741,3 +741,8 @@
 #latestPublications p {
 	margin: 0px 0px 10px 0px;
 }
+
+#richContent a {
+	color: blue;
+	text-decoration: underline;
+}
