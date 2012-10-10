@@ -32,6 +32,18 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>ws-test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>publication</artifactId>
       <version>${core.version}</version>

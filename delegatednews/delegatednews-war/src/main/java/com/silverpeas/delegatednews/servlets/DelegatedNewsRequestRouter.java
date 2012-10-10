@@ -80,8 +80,10 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter<Delegated
     String destination = "";
     try {
       if ("Main".equals(function)) {
-        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();
+        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();        
         request.setAttribute("ListNews", list);
+        String listJSON = newsSC.getListDelegatedNewsJSON(list);
+        request.setAttribute("ListNewsJSON", listJSON);
     	  destination = "/delegatednews/jsp/listNews.jsp";
       } 
       else if ("OpenPublication".equals(function)) {
@@ -92,8 +94,10 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter<Delegated
       else if ("ValidateDelegatedNews".equals(function)) {
         String pubId = request.getParameter("PubId");
         newsSC.validateDelegatedNews(Integer.parseInt(pubId));
-        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();
+        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();        
         request.setAttribute("ListNews", list);
+        String listJSON = newsSC.getListDelegatedNewsJSON(list);
+        request.setAttribute("ListNewsJSON", listJSON);
         destination = "/delegatednews/jsp/listNews.jsp";
       } 
       else if (function.equals("EditRefuseReason")) {
@@ -105,8 +109,10 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter<Delegated
         String pubId = request.getParameter("PubId");
         String refuseReasonText = request.getParameter("RefuseReasonText");
         newsSC.refuseDelegatedNews(Integer.parseInt(pubId), refuseReasonText);
-        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();
+        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();        
         request.setAttribute("ListNews", list);
+        String listJSON = newsSC.getListDelegatedNewsJSON(list);
+        request.setAttribute("ListNewsJSON", listJSON);
         destination = "/delegatednews/jsp/listNews.jsp";
       } 
       else if ("EditUpdateDate".equals(function)) {
@@ -139,8 +145,10 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter<Delegated
         }
         
         newsSC.updateDateDelegatedNews(Integer.parseInt(pubId), jBeginDate, jEndDate);
-        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews(); 
+        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();        
         request.setAttribute("ListNews", list);
+        String listJSON = newsSC.getListDelegatedNewsJSON(list);
+        request.setAttribute("ListNewsJSON", listJSON);
         destination = "/delegatednews/jsp/listNews.jsp";
       } 
     } catch (Exception e) {
