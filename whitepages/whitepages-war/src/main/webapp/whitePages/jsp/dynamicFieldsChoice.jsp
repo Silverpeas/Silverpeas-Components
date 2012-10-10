@@ -23,33 +23,33 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.whitePages.model.SearchField"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.SearchAxis"%>
 <%@ page import="com.silverpeas.whitePages.model.SearchFieldsType"%>
+<%@ page import="com.silverpeas.form.FieldTemplate"%>
 
 <%@ include file="checkWhitePages.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
-	prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 	
 <%
   browseBar.setDomainName(spaceLabel);
   browseBar.setPath(resource.getString("whitePages.usersList"));
 %>
-<HTML>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <fmt:message key="whitePages.js.nocheckfields" var="whitePagesNoCheckFields" />
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
-
-<script language="JavaScript">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
+<script type="text/javascript">
 function confirmChoices(){
 	if(testCheckBoxes()){
 		document.validform.submit();
@@ -70,19 +70,13 @@ function testCheckBoxes(){
 	return coche;
 }
 </script>
-
-</HEAD>
-
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5
-	bgcolor="#FFFFFF">
+</head>
+<body>
 <%
   out.println(window.printBefore());
   out.println(frame.printBefore());
 %>
-<br>
-<br>
-<FORM id="validform" name="validform" method="POST"
-	action="<%=routerUrl + "comfirmFieldsChoice"%>">
+<form id="validform" name="validform" method="post" action="<%=routerUrl + "comfirmFieldsChoice"%>">
 <%
 		Set alreadySelectedFields = (Set) request.getAttribute("alreadySelectedFields");
 		String checked = "checked=\"checked\"";
@@ -91,8 +85,7 @@ function testCheckBoxes(){
 
 			ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
 			arrayColumn0.setSortable(false);
-			ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resource
-					.getString("whitePages.fieldnamesilver"));
+			ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resource.getString("whitePages.fieldnamesilver"));
 			arrayColumn1.setSortable(false);
 			// nom silverpeas
 			ArrayLine arrayLine = arrayPane.addArrayLine();
@@ -100,33 +93,34 @@ function testCheckBoxes(){
 			if(alreadySelectedFields.contains("USR_name")){
 			  text.append(checked);
 			}
-			text.append(">");
+			text.append("/>");
 			arrayLine.addArrayCellText(text.toString());
-			arrayLine.addArrayCellText(resource.getString("whitePages.silveruserlastname"));
+			arrayLine.addArrayCellText(resource.getString("GML.lastName"));
 		    // prénom silverpeas
 			arrayLine = arrayPane.addArrayLine();
 			text = new StringBuffer("<input type=\"checkbox\" name=\"checkedFields\" value=\"USR_surname\"");
 			if(alreadySelectedFields.contains("USR_surname")){
 			  text.append(checked);
 			}
-			text.append(">");
+			text.append("/>");
 			arrayLine.addArrayCellText(text.toString());
-			arrayLine.addArrayCellText(resource.getString("whitePages.silveruserfirstname"));
+			arrayLine.addArrayCellText(resource.getString("GML.surname"));
 		    // email silverpeas -> pas indexé?
 			arrayLine = arrayPane.addArrayLine();
 			text = new StringBuffer("<input type=\"checkbox\" name=\"checkedFields\" value=\"USR_email\"");
 			if(alreadySelectedFields.contains("USR_email")){
 			  text.append(checked);
 			}
-			text.append(">");
+			text.append("/>");
 			arrayLine.addArrayCellText(text.toString());
-			arrayLine.addArrayCellText(resource.getString("whitePages.silveruseremail"));
+			arrayLine.addArrayCellText(resource.getString("GML.eMail"));
 			
 			out.println(arrayPane.print());
+			out.print("<br/>");
 
-			List xmlFields = (List) request.getAttribute("xmlFields");
+			List<FieldTemplate> xmlFields = (List<FieldTemplate>) request.getAttribute("xmlFields");
 
-			if (xmlFields != null && xmlFields.size() > 0) {
+			if (xmlFields != null && !xmlFields.isEmpty()) {
 				ArrayPane arrayPaneXmlFields = gef.getArrayPane("XmlFields",
 						routerUrl + "Main", request, session);
 				ArrayColumn arrayColumnXml0 = arrayPaneXmlFields
@@ -137,25 +131,24 @@ function testCheckBoxes(){
 								.getString("whitePages.fieldnamexml"));
 				arrayColumnXml1.setSortable(false);
 
-				Iterator i = xmlFields.iterator();
-				while (i.hasNext()) {
-					String xmlField = (String) i.next();
+				for (FieldTemplate xmlField : xmlFields) {
 					arrayLine = arrayPaneXmlFields.addArrayLine();
-					String fieldId = SearchFieldsType.XML.getLabelType() + xmlField;
+					String fieldId = SearchFieldsType.XML.getLabelType() + xmlField.getFieldName();
 					text = new StringBuffer("<input type=\"checkbox\" name=\"checkedFields\" value=\"" + fieldId + "\"");
 					if(alreadySelectedFields.contains(fieldId)){
 					  text.append(checked);
 					}
-					text.append(">");
+					text.append("/>");
 					arrayLine.addArrayCellText(text.toString());
-					arrayLine.addArrayCellText(xmlField);
+					arrayLine.addArrayCellText(xmlField.getLabel(language));
 				}
 				out.println(arrayPaneXmlFields.print());
+				out.print("<br/>");
 			}
 			
-			List ldapFields = (List) request.getAttribute("ldapFields");
+			List<SearchField> ldapFields = (List<SearchField>) request.getAttribute("ldapFields");
 
-			if (ldapFields != null && ldapFields.size() > 0) {
+			if (ldapFields != null && !ldapFields.isEmpty()) {
 				ArrayPane arrayPaneLdapFields = gef.getArrayPane("LdapFields",
 						routerUrl + "Main", request, session);
 				arrayPaneLdapFields.setVisibleLineNumber(50);
@@ -167,35 +160,32 @@ function testCheckBoxes(){
 								.getString("whitePages.fieldnameldap"));
 				arrayColumnLdap1.setSortable(false);
 
-				Iterator i = ldapFields.iterator();
-				while (i.hasNext()) {
-					String ldapField = (String) i.next();
+				for (SearchField ldapField : ldapFields) {
 					arrayLine = arrayPaneLdapFields.addArrayLine();
-					String fieldId = SearchFieldsType.LDAP.getLabelType() + ldapField;
+					String fieldId = ldapField.getFieldId();
 					text = new StringBuffer("<input type=\"checkbox\" name=\"checkedFields\" value=\"" + fieldId + "\"");
 					if(alreadySelectedFields.contains(fieldId)){
 					  text.append(checked);
 					}
-					text.append(">");
+					text.append("/>");
 					arrayLine.addArrayCellText(text.toString());
-					arrayLine.addArrayCellText(ldapField);
+					arrayLine.addArrayCellText(ldapField.getLabel());
 				}
 				out.println(arrayPaneLdapFields.print());
 			}
 %>
 </form>
-<center><view:buttonPane>
+<br/>
+<view:buttonPane>
+	<fmt:message key="whitePages.button.valid" var="validLabel" />
+	<view:button label="${validLabel}" action="${'javascript:confirmChoices();'}" />
+	
 	<fmt:message key="whitePages.button.cancel" var="cancelLabel" />
 	<view:button label="${cancelLabel}" action="Main" />
-
-	<fmt:message key="whitePages.button.valid" var="validLabel" />
-	<view:button label="${validLabel}"
-		action="${'javascript:confirmChoices();'}" />
-
-</view:buttonPane></center>
+</view:buttonPane>
 <%
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
