@@ -35,10 +35,15 @@ public interface DelegatedNewsDao extends JpaRepository<DelegatedNews, Integer> 
 
   @Query("from DelegatedNews dn "+
         "WHERE dn.status = :status "+
-        "and ((CURRENT_DATE >= begindate and enddate != null and CURRENT_DATE <= enddate) "+
+        "and ("+        
+        "(begindate is null and enddate is null) "+
         "or "+
-        "(CURRENT_DATE >= begindate "+
-        "and enddate is null)) "+
+        "(begindate is null and enddate is not null and CURRENT_TIMESTAMP <= enddate) "+
+        "or "+ 
+        "(begindate is not null and enddate is null and CURRENT_TIMESTAMP >= begindate) "+
+        "or "+
+        "(begindate is not null and enddate is not null and CURRENT_TIMESTAMP >= begindate and CURRENT_TIMESTAMP <= enddate) "+ 
+        ")"+ 
         "order by dn.newsOrder ASC")
   List<DelegatedNews> findByStatus(@Param("status") String status);
 

@@ -182,19 +182,15 @@
         $('#newsList tbody').bind('sortupdate', function(event, ui) {
             var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity réordonnés sérialisés en JSON
             var data = $('#newsList tbody').sortable('toArray'); //tableau de valeurs delegatedNews_{pubId} réordonnés
-            var pubId;
             for (var i=0; i<data.length; i++)
             {
-              pubId = data[i]; //delegatedNews_{pubId}
+              var pubId = data[i]; //delegatedNews_{pubId}
               pubId = pubId.substring(14); //{pubId}
               
-              var delegatedNewsJSON;
-              var pubIdJSON;
               for (var j=0; j<listDelegatedNewsJSON.length; j++)
               {
-                delegatedNewsJSON = listDelegatedNewsJSON[j];
-                pubIdJSON = delegatedNewsJSON.pubId;
-                if(pubId == pubIdJSON) {
+                var delegatedNewsJSON = listDelegatedNewsJSON[j];
+                if(pubId == delegatedNewsJSON.pubId) {
                   updatedDelegatedNews[i] = delegatedNewsJSON;
                 }
               }
@@ -228,85 +224,110 @@
           });
       }
       
-      function deleteSelectedDelegatedNews() {
-        var nbNews = listDelegatedNewsJSON.length;
-        if (nbNews > 0) {
-          var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity sans les éléments supprimés sérialisés en JSON
-          var delegatedNewsJSON;
-          var pubIdJSON;
-          var k = 0;
-          if (nbNews == 1) {
-            if (! document.tabForm.checkedDelegatedNews.checked) {
-              updatedDelegatedNews[0] = listDelegatedNewsJSON[0];
-            }
+      function deleteDelegatedNews(pubId) {
+    	  var listDNToDelete = new Array(pubId);
+        var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity sans l'élément supprimé sérialisés en JSON
+        var k = 0;
+        for (var i=0; i<listDelegatedNewsJSON.length; i++) {
+          var delegatedNewsJSON = listDelegatedNewsJSON[i];
+          var pubIdJSON = delegatedNewsJSON.pubId;
+          if(! isAppartient(pubIdJSON, listDNToDelete)) {
+            updatedDelegatedNews[k] = delegatedNewsJSON;
+            k++;  
           }
-          else {
-            for (var i=0; i<nbNews; i++)
-            {
-              delegatedNewsJSON = listDelegatedNewsJSON[i];
-              pubIdJSON = delegatedNewsJSON.pubId;
-              for (var j=0; j<nbNews; j++) {
-               if (pubIdJSON == document.tabForm.checkedDelegatedNews[j].value) {
-                 if(! document.tabForm.checkedDelegatedNews[j].checked) {
-                   updatedDelegatedNews[k] = delegatedNewsJSON;
-                   k++;  
-                 }
-                 break;
-               }
-              }
+        }
+        if (confirm('<fmt:message key="delegatednews.deleteOne.confirm"/>')) {
+        	  deleteDelegagedNews(updatedDelegatedNews);
+        }
+      }
+      
+      function deleteSelectedDelegatedNews() {
+    	  var nbNews = listDelegatedNewsJSON.length;
+    	  if(nbNews > 0) {
+    		  var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity sans les éléments supprimés sérialisés en JSON
+    		  var listDNToDelete = $("input:checked");
+    		  var k = 0;
+    		  for (var i=0; i<nbNews; i++) {
+    			  var delegatedNewsJSON = listDelegatedNewsJSON[i];
+            var pubIdJSON = delegatedNewsJSON.pubId;
+            if(! isAppartient(pubIdJSON, listDNToDelete)) {
+            	updatedDelegatedNews[k] = delegatedNewsJSON;
+              k++;  
             }
           }
           
           if (nbNews > updatedDelegatedNews.length) { //on a coché au - une news à supprimer
-            if (confirm('<fmt:message key="delegatednews.form.delete.confirm"/>')) {
-              $.ajax({
-                url:"<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>",
-                type: "PUT",
-                contentType: "application/json",
-                dataType: "json",
-                cache: false,
-                data: $.toJSON(updatedDelegatedNews),
-                success: function (data) {
-                  var delegatedNewsJSON;
-                  var pubIdJSON;
-                  var newDelegatedNewsJSON;
-                  var newPubIdJSON;
-                  var trouve = false;
-                  var trToDelete;
-                  for (var i=0; i<nbNews; i++)
-                  {
-                    delegatedNewsJSON = listDelegatedNewsJSON[i];
-                    pubIdJSON = delegatedNewsJSON.pubId;
-                    trouve = false;
-                    for (var j=0; j<data.length; j++) {
-                      newDelegatedNewsJSON = data[j];
-                      newPubIdJSON = newDelegatedNewsJSON.pubId;
-                      if (pubIdJSON == newPubIdJSON) {
-                        trouve = true;
-                        break;
-                      }
-                    }
-                    if(! trouve) {
-                      trToDelete = "#delegatedNews_" + pubIdJSON;
-                      $(trToDelete).remove();
-                    }
-                  }
-                  listDelegatedNewsJSON = data;
-                }
-               ,
-               error: function(jqXHR, textStatus, errorThrown) {
-               if (onError == null)
-                alert(errorThrown);
-               else
-                onError({
-                status: jqXHR.status, 
-                message: errorThrown
-                });
-               }
-              });
+            if (confirm('<fmt:message key="delegatednews.delete.confirm"/>')) {
+            	deleteDelegagedNews(updatedDelegatedNews);
             }
           }
         }
+      }
+      
+      function deleteDelegagedNews(updatedDelegatedNews) {
+    	  $.ajax({
+              url:"<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>",
+              type: "PUT",
+              contentType: "application/json",
+              dataType: "json",
+              cache: false,
+              data: $.toJSON(updatedDelegatedNews),
+              success: function (data) {
+                var listPubIdToDelete = getAllPubIdToDelete(data);
+                for (var i=0; i<listPubIdToDelete.length; i++)
+                {
+                  var trToDelete = "#delegatedNews_" + listPubIdToDelete[i];
+                  $(trToDelete).remove();
+                }
+                listDelegatedNewsJSON = data;
+              }
+             ,
+             error: function(jqXHR, textStatus, errorThrown) {
+             if (onError == null)
+              alert(errorThrown);
+             else
+              onError({
+              status: jqXHR.status, 
+              message: errorThrown
+              });
+             }
+            });
+      }
+      
+      function isAppartient(id, list) {
+    	  for (var i=0; i<list.length; i++) {
+    		  var value = list[i].value;
+    		  if(value == null) {
+    			  value = list[i];
+    		  }
+    		  if(id == value) {
+    			  return true;
+    		  }
+    	  }
+    	  return false;
+      }
+      
+      function getAllPubIdToDelete(listDelegatedNewsAfterDelete) {
+    	  var result = new Array();
+    	  var k=0;
+        for (var i=0; i<listDelegatedNewsJSON.length; i++)
+        {
+        	  var delegatedNewsJSON = listDelegatedNewsJSON[i];
+            var pubIdJSON = delegatedNewsJSON.pubId;
+            var trouve = false;
+            for (var j=0; j<listDelegatedNewsAfterDelete.length; j++) {
+              var newDelegatedNewsJSON = listDelegatedNewsAfterDelete[j];
+              if (pubIdJSON == newDelegatedNewsJSON.pubId) {
+                trouve = true;
+                break;
+              }
+            }
+            if(! trouve) {
+            	result[k] = pubIdJSON;
+              k++;
+            }
+        }
+        return result;
       }
       
     </script>
@@ -318,7 +339,9 @@
       <view:operation altText="${deleteAction}" icon="${deleteIcon}" action="javascript:onClick=deleteSelectedDelegatedNews();" />
     </view:operationPane>
     <view:window>
-      <view:frame>   
+      <view:frame>
+      <div class="inlineMessage"><fmt:message key="delegatednews.homePageMessage"/></div>
+      <br clear="all"/>
       <form name="tabForm" method="post">
   <%
     ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
@@ -389,7 +412,10 @@
         iconValidate.setProperties(m_context+"/util/icons/ok.gif", resources.getString("delegatednews.action.validate"), "ValidateDelegatedNews?PubId="+pubId);
         
         Icon iconRefused = iconPane.addIcon();
-        iconRefused.setProperties(m_context+"/util/icons/delete.gif", resources.getString("delegatednews.action.refuse"), "javascript:onClick=refuseDelegatedNews('"+pubId+"');");
+        iconRefused.setProperties(m_context+"/util/icons/wrong.gif", resources.getString("delegatednews.action.refuse"), "javascript:onClick=refuseDelegatedNews('"+pubId+"');");
+        
+        Icon iconDelete = iconPane.addIcon();
+        iconDelete.setProperties(m_context+"/util/icons/delete.gif", resources.getString("GML.delete"), "javascript:onClick=deleteDelegatedNews('"+pubId+"');");
         
         arrayLine.addArrayCellIconPane(iconPane); 
         

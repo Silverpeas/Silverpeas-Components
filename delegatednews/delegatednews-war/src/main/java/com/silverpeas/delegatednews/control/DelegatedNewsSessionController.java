@@ -58,7 +58,7 @@ import static com.stratelia.webactiv.SilverpeasRole.*;
 
 public class DelegatedNewsSessionController extends AbstractComponentSessionController {
 
-	private DelegatedNewsService service = null;
+  private DelegatedNewsService service = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -74,7 +74,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
 
     service = ServicesFactory.getDelegatedNewsService();
   }
-  
+
   public boolean isUser() {
     String[] profiles = getUserRoles();
     for (String profile : profiles) {
@@ -94,19 +94,19 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
     }
     return false;
   }
-  
+
   /**
    * Est-ce qu'une instanceId fait partie d'un tableau ?
-   *
-   * @return boolean : true si l'instanceId passsée en paramètre appartient au tableau passé en paramètre 2 
+   * @return boolean : true si l'instanceId passsée en paramètre appartient au tableau passé en
+   * paramètre 2
    */
   private boolean isAvailComponentId(String instanceId, String[] allowedComponentIds) {
-    if(instanceId == null) {
+    if (instanceId == null) {
       return false;
     }
-    
+
     for (String element : allowedComponentIds) {
-      if(instanceId.equals(element)) {
+      if (instanceId.equals(element)) {
         return true;
       }
     }
@@ -114,88 +114,92 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * Récupère toutes les actualités déléguées inter Theme Tracker dont l'utilisateur courant a des droits
-   *
+   * Récupère toutes les actualités déléguées inter Theme Tracker dont l'utilisateur courant a des
+   * droits
    * @return List<DelegatedNews> : liste d'actualités déléguées
    */
   public List<DelegatedNews> getAllAvailDelegatedNews() {
     List<DelegatedNews> listResult = new ArrayList<DelegatedNews>();
     String[] allowedComponentIds = this.getUserAvailComponentIds();
-     
+
     List<DelegatedNews> list = service.getAllDelegatedNews();
     for (DelegatedNews delegatedNews : list) {
       String instanceId = delegatedNews.getInstanceId();
-      if(isAvailComponentId(instanceId, allowedComponentIds)) {
+      if (isAvailComponentId(instanceId, allowedComponentIds)) {
         listResult.add(delegatedNews);
       }
     }
     return listResult;
   }
-  
+
   /**
    * Valide l'actualité déléguée passée en paramètre
-   *
    */
   public void validateDelegatedNews(int pubId) {
-    //valide l'actualité
+    // valide l'actualité
     service.validateDelegatedNews(pubId, this.getUserId());
-    
+
     DelegatedNews delegatedNews = service.getDelegatedNews(pubId);
     PublicationDetail pubDetail = delegatedNews.getPublicationDetail();
-    
-    //alerte le dernier contributeur de la décision
-    service.notifyDelegatedNewsValid(pubDetail.getPK().getId(), pubDetail.getName(this.getLanguage()), this.getUserId(), this.getUserDetail().getDisplayedName(), delegatedNews.getContributorId(), this.getComponentId());
-    
+
+    // alerte le dernier contributeur de la décision
+    service.notifyDelegatedNewsValid(pubDetail.getPK().getId(), pubDetail.getName(this
+        .getLanguage()), this.getUserId(), this.getUserDetail().getDisplayedName(), delegatedNews
+        .getContributorId(), this.getComponentId());
+
   }
-  
+
   /**
    * Refuse l'actualité déléguée passée en paramètre
-   *
    */
   public void refuseDelegatedNews(int pubId, String refuseReasonText) {
-    //refuse l'actualité
+    // refuse l'actualité
     service.refuseDelegatedNews(pubId, this.getUserId());
-    
+
     DelegatedNews delegatedNews = service.getDelegatedNews(pubId);
     PublicationDetail pubDetail = delegatedNews.getPublicationDetail();
-    
-    //alerte le dernier contributeur de la décision
-    service.notifyDelegatedNewsRefused(pubDetail.getPK().getId(), pubDetail.getName(this.getLanguage()), refuseReasonText, this.getUserId(), this.getUserDetail().getDisplayedName(), delegatedNews.getContributorId(), this.getComponentId());
-    
+
+    // alerte le dernier contributeur de la décision
+    service.notifyDelegatedNewsRefused(pubDetail.getPK().getId(), pubDetail.getName(this
+        .getLanguage()), refuseReasonText, this.getUserId(), this.getUserDetail()
+        .getDisplayedName(), delegatedNews.getContributorId(), this.getComponentId());
+
   }
-  
+
   /**
    * Met à jour les dates de visibilité de l'actualité déléguée passée en paramètre
-   *
    */
   public void updateDateDelegatedNews(int pubId, Date beginDate, Date endDate) {
-    
+
     service.updateDateDelegatedNews(pubId, beginDate, endDate);
   }
-  
+
   /**
-   * Converts the list of Delegated News into its JSON representation. 
+   * Converts the list of Delegated News into its JSON representation.
    * @return a JSON representation of the list of Delegated News (as string)
-   * @throws JAXBException 
-   *
+   * @throws JAXBException
    */
-  public String getListDelegatedNewsJSON(List<DelegatedNews> listDelegatedNews) throws JAXBException {
+  public String getListDelegatedNewsJSON(List<DelegatedNews> listDelegatedNews)
+      throws JAXBException {
     List<DelegatedNewsEntity> listDelegatedNewsEntity = new ArrayList<DelegatedNewsEntity>();
-    for(DelegatedNews delegatedNews : listDelegatedNews) {
-      DelegatedNewsEntity delegatedNewsEntity = DelegatedNewsEntity.fromDelegatedNews(delegatedNews);
+    for (DelegatedNews delegatedNews : listDelegatedNews) {
+      DelegatedNewsEntity delegatedNewsEntity =
+          DelegatedNewsEntity.fromDelegatedNews(delegatedNews);
       listDelegatedNewsEntity.add(delegatedNewsEntity);
     }
     return listAsJSON(listDelegatedNewsEntity);
-  } 
+  }
 
   /**
-   * Converts the list of Delegated News Entity into its JSON representation. 
+   * Converts the list of Delegated News Entity into its JSON representation.
    * @param listDelegatedNewsEntity
    * @return a JSON representation of the list of Delegated News Entity (as string)
    * @throws DelegatedNewsRuntimeException
    */
-  private String listAsJSON(List<DelegatedNewsEntity> listDelegatedNewsEntity) throws DelegatedNewsRuntimeException {
-    DelegatedNewsEntity[] entities = listDelegatedNewsEntity.toArray(new DelegatedNewsEntity[listDelegatedNewsEntity.size()]);
+  private String listAsJSON(List<DelegatedNewsEntity> listDelegatedNewsEntity)
+      throws DelegatedNewsRuntimeException {
+    DelegatedNewsEntity[] entities =
+        listDelegatedNewsEntity.toArray(new DelegatedNewsEntity[listDelegatedNewsEntity.size()]);
     ObjectMapper mapper = new ObjectMapper();
     AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
     mapper.setAnnotationIntrospector(introspector);
