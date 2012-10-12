@@ -23,6 +23,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
+<%@page import="com.silverpeas.component.kmelia.KmeliaPaste"%>
+<%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
@@ -87,6 +90,11 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <view:includePlugin name="userZoom"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
+
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.noty.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/layouts/top.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/layouts/topCenter.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/themes/default.js"></script>
 
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
@@ -673,6 +681,89 @@ function spreadNbItems(children) {
 	}
 }
 
+function getUserProfile(id) {
+	var componentId = getComponentId();
+	var result = "";
+    $.ajax({
+      url: getWebContext()+'/KmeliaAJAXServlet',
+      data : {Id:id,Action:'GetProfile',ComponentId:componentId},
+      type : 'GET',
+      dataType : 'text',
+      cache : false,
+      async : false,
+      success : function(data, status, jqXHR) {
+        result = data;
+      },
+      error : function(jqXHR, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    });
+    return result;
+}
+
+function publicationMovedInError(id, data) {
+	var pubName = getPublicationName(id);
+	noty({
+		text: "La publication <b>"+pubName+"</b> n'a pas pu être déplacée !"+"<br/>"+data,
+		layout: 'topCenter',
+		timeout: 5000,
+		dismissQueue: true,
+		type: 'error'}
+	);
+}
+
+function getPublicationName(id) {
+	return $("#pubList #"+id).html();
+}
+
+function publicationMovedSuccessfully(id, targetId) {
+	var pubName = getPublicationName(id);
+	noty({
+		text: 'La publication <b>'+pubName+'</b> a été déplacée avec succès...',
+		layout: 'topCenter',
+		timeout: 5000,
+		dismissQueue: true,
+		type: 'success'}
+	);
+	
+	// add one publi to target node and its parents
+	var path = getTreeview().get_path("#"+targetId, true);
+	for (i=0; i<path.length; i++) {
+		var elementId = path[i];
+		if (elementId != "0") {
+			addNbPublis(elementId, 1);
+		}
+	}
+	
+	// remove one publi to current node and its parents
+	var path = getTreeview().get_path("#"+getCurrentNodeId(), true);
+	for (i=0; i<path.length; i++) {
+		var elementId = path[i];
+		if (elementId != "0") {
+			addNbPublis(elementId, -1);
+		}
+	}
+	
+	try {
+		// remove one publi to publications header
+		var previousNb = $("#pubsHeader #pubsCounter span").html();
+		if (previousNb == 1) {
+			$("#pubsHeader #pubsCounter").html("<%=resources.getString("GML.publications")%>");
+			$("#pubsHeader #pubsSort").hide();
+			$("#pubList ul").html("<%=resources.getString("PubAucune")%>")
+		} else {
+			$("#pubsHeader #pubsCounter span").html(eval(previousNb-1));
+		}
+	} catch (e) {
+		
+	}
+	
+	// remove publication from publications list
+	$("#pubList #"+id).closest("li").fadeOut('500', function() {
+		$(this).remove();
+	});
+}
+
 $(document).ready(
 	function () {
 		//build the tree
@@ -787,8 +878,52 @@ $(document).ready(
 			"show_at_node" : false,
 			"items" : customMenu
 		},
+		"dnd" : {
+			"drop_finish" : function () {
+				alert("drop_finish");
+			},
+			"drag_check" : function (data) {
+				var targetId = data.r.attr("id");
+				var targetType = data.r.attr("rel");
+				if (targetId == getCurrentNodeId()) {
+					return false;
+				} else if (targetType == "tovalidate") {
+					return false;
+				} else if (targetType == "root") {
+					if (<%=KmeliaPublicationHelper.isPublicationsOnRootAllowed(componentId)%>) {
+						var profile = getUserProfile(targetId);
+						writeInConsole("drag_check : current user is "+profile+" in root");
+						if (profile != "<%=SilverpeasRole.user.toString()%>") {
+							return { 
+								after : false, 
+								before : false, 
+								inside : true 
+							};
+						}
+					}
+				} else {
+					var profile = getUserProfile(targetId);
+					writeInConsole("drag_check : current user is "+profile+" in folder #"+targetId);
+					if (profile != "<%=SilverpeasRole.user.toString()%>") {
+						return { 
+							after : false, 
+							before : false, 
+							inside : true 
+						};
+					}
+				}
+				return false;
+			},
+			"drag_finish" : function (data) {
+				var pubId = data.o.id;
+				var targetId = data.r.attr("id");
+				
+				// store new parent of publication
+				movePublication(pubId, getCurrentNodeId(), targetId);
+			}
+		},
 		// the `plugins` array allows you to configure the active plugins on this instance
-		"plugins" : ["themes","json_data","ui","types","crrm","contextmenu"]
+		"plugins" : ["themes","json_data","ui","types","crrm","contextmenu","dnd"]
     });	
 		
 	$("#splitter").splitter({

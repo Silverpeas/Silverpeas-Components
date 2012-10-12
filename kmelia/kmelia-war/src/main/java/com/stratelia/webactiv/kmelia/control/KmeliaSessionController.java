@@ -57,6 +57,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.search.SearchEngineFactory;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
@@ -407,11 +408,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isTreeStructure() {
-    String param = getComponentParameterValue("istree");
-    if (!StringUtil.isDefined(param)) {
-      return true;
-    }
-    return "0".equals(param) || "1".equals(param);
+    return KmeliaPublicationHelper.isTreeEnabled(getComponentId());
   }
 
   public boolean isTreeviewUsed() {

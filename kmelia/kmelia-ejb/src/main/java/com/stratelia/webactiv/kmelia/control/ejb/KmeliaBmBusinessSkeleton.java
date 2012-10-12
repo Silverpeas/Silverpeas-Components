@@ -434,6 +434,9 @@ public interface KmeliaBmBusinessSkeleton {
   
   public void draftInPublication(PublicationPK pubPK, String userId) throws RemoteException;
   
+  public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to, String userId)
+      throws RemoteException;
+  
   public void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId)
       throws RemoteException;
   

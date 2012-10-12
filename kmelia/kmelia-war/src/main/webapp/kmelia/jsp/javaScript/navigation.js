@@ -887,6 +887,25 @@ function changeStatus(nodeId, currentStatus) {
 			}, 'text');
 }
 
+function movePublication(id, sourceId, targetId) {
+	var componentId = getComponentId();
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, { Id:id,SourceNodeId:sourceId,TargetNodeId:targetId,ComponentId:componentId,Action:'MovePublication'},
+			function(data){
+				data = "erreur en votre faveur zlekfj kjf kjh kjsdh fkjshdjfkhsdjkhf fjkshd kjfhsd kjfhsdkjhf"
+				if (data == "ok") {
+					// fires event
+					try {
+						publicationMovedSuccessfully(id, targetId);
+					} catch (e) {
+						writeInConsole(e);
+					}
+				} else {
+					publicationMovedInError(id, data);
+				}
+			}, 'text');
+}
+
 function getWidth() {
 	  var myWidth = 0;
 	  if( typeof( window.innerWidth ) == 'number' ) {

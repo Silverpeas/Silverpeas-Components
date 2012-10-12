@@ -63,6 +63,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -1533,13 +1534,34 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
   }
   
+  public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to, String userId)
+      throws RemoteException {
+    PublicationDetail pub = getPublicationDetail(pubPK);
+    
+    // check if user can cut publication from source folder
+    String profile = getUserTopicProfile(from, userId);
+    boolean cutAllowed = KmeliaPublicationHelper.isCanBeCut(from.getComponentName(), userId, profile, pub.getCreator());
+    
+    // check if user can paste publication into target folder
+    String profileInTarget = getUserTopicProfile(to, userId);
+    boolean pasteAllowed = KmeliaPublicationHelper.isCreationAllowed(to, profileInTarget);
+    
+    if (cutAllowed && pasteAllowed) {
+      movePublicationInSameApplication(pub, to, userId);
+    }
+  }
+  
   public void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId)
       throws RemoteException {
-    // update parent
-    getPublicationBm().removeAllFather(pub.getPK());
-    getPublicationBm().addFather(pub.getPK(), to);
-    
-    processPublicationAfterMove(pub, to, userId);
+    if (to.isTrash()) {
+      sendPublicationToBasket(pub.getPK());
+    } else {
+      // update parent
+      getPublicationBm().removeAllFather(pub.getPK());
+      getPublicationBm().addFather(pub.getPK(), to);
+      
+      processPublicationAfterMove(pub, to, userId);
+    }
   }
   
   public void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId)
