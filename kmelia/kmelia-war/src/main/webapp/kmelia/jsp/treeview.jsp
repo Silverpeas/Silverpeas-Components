@@ -142,6 +142,10 @@ function getTranslation() {
 	return "<%=translation%>";
 }
 
+function getToValidateFolderId() {
+	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
+}
+
 var labels = new Object();
 labels["ConfirmDeleteTopic"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("ConfirmDeleteTopic"))%>";
 labels["ConfirmFlushTrashBean"] = "<%=EncodeHelper.javaStringToJsString(kmeliaScc.getString("ConfirmFlushTrashBean"))%>";
@@ -421,14 +425,14 @@ function displayTopicContent(id) {
 	
 	clearSearchQuery();
 
-	if (id == "tovalidate" || id == "1") {
+	if (id == getToValidateFolderId() || id == "1") {
 		$("#DnD").css({'display':'none'}); //hide dropzone
 		$("#footer").css({'visibility':'hidden'}); //hide footer
 		$("#searchZone").css({'display':'none'}); //hide search
 
-		if (id == "tovalidate")	{
+		if (id == getToValidateFolderId())	{
 			hideOperations();
-			displayPublicationsToValidate();
+			displayPublications(id);
 
 			//update breadcrumb
             removeBreadCrumbElements();
@@ -492,7 +496,7 @@ function customMenu(node) {
 	if (params["rightsOnTopic"]) {
 		userRole = node.attr("role");
 	}
-	if (nodeType == "tovalidate") {
+	if (nodeType == getToValidateFolderId()) {
     	return false;
     } else if (nodeType == "bin") {
     	var binItems = {
@@ -831,7 +835,7 @@ $(document).ready(
 			"types" : {
 				// The `root` node 
 				"root" : {
-					"valid_children" : [ "bin", "tovalidate" ],
+					"valid_children" : [ "bin", getToValidateFolderId() ],
 					/*"icon" : {
 						"image" : "/static/v.1.0pre/_demo/root.png"
 					},*/
@@ -857,7 +861,7 @@ $(document).ready(
 					"remove" : false
 				},
 				// The `to validate` node
-				"tovalidate" : {
+				"<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>" : {
 					// can have files and folders inside, but NOT other `drive` nodes
 					"valid_children" : "none",
 					"icon" : {
@@ -890,7 +894,7 @@ $(document).ready(
 				var targetType = data.r.attr("rel");
 				if (targetId == getCurrentNodeId()) {
 					return false;
-				} else if (targetType == "tovalidate") {
+				} else if (targetType == getToValidateFolderId()) {
 					return false;
 				} else if (targetType == "root") {
 					if (<%=KmeliaPublicationHelper.isPublicationsOnRootAllowed(componentId)%>) {

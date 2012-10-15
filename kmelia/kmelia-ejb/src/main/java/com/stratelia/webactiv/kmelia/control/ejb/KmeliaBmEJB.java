@@ -4878,7 +4878,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
   
   public String getUserTopicProfile(NodePK pk, String userId) throws RemoteException {
-    if (!isRightsOnTopicsEnabled(pk.getInstanceId())) {
+    if (!isRightsOnTopicsEnabled(pk.getInstanceId()) || KmeliaHelper.isToValidateFolder(pk.getId())) {
       return KmeliaHelper.getProfile(getUserRoles(pk.getInstanceId(), userId));
     }
 

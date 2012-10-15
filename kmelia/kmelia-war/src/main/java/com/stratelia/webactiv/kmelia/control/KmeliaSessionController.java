@@ -734,6 +734,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public boolean isCurrentTopicAvailable() throws RemoteException {
     if (isRightsOnTopicsEnabled()) {
+      if (KmeliaHelper.isToValidateFolder(getCurrentFolderId())) {
+        return true;
+      }
       NodeDetail node = getNodeHeader(getCurrentFolderId());
       if (node.haveRights()) {
         int rightsDependsOn = node.getRightsDependsOn();
@@ -1660,10 +1663,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public synchronized Collection<KmeliaPublication> getPublications(List<ForeignPK> links)
           throws RemoteException {
     return getKmeliaBm().getPublications(links, getUserId(), true);
-  }
-
-  public synchronized List<KmeliaPublication> getPublicationsToValidate() throws RemoteException {
-    return getKmeliaBm().getPublicationsToValidate(getComponentId());
   }
 
   public synchronized boolean validatePublication(String publicationId) throws RemoteException {
@@ -4708,10 +4707,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
   
   public List<KmeliaPublication> getPublicationsOfCurrentFolder() throws RemoteException {
-    List<KmeliaPublication> publications =
-        getKmeliaBm().getPublicationsOfFolder(new NodePK(currentFolderId, getComponentId()),
+    List<KmeliaPublication> publications = null;
+    if (!KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(currentFolderId)) {
+      publications = getKmeliaBm().getPublicationsOfFolder(new NodePK(currentFolderId, getComponentId()),
             getUserTopicProfile(currentFolderId), getUserId(), isTreeStructure(),
             isRightsOnTopicsEnabled());
+    } else {
+      publications = getKmeliaBm().getPublicationsToValidate(getComponentId());
+    }
     setSessionPublicationsList(publications);
     applyVisibilityFilter();
     return getSessionPublicationsList();

@@ -54,6 +54,8 @@ public class KmeliaHelper implements Serializable {
   public static final String ROLE_PUBLISHER = "publisher";
   public static final String ROLE_WRITER = "writer";
   public static final String ROLE_READER = "user";
+  
+  public static final String SPECIALFOLDER_TOVALIDATE = "tovalidate";
 
   public KmeliaHelper() {
   }
@@ -134,5 +136,9 @@ public class KmeliaHelper implements Serializable {
   
   public static boolean isKmelia(String componentId) {
     return componentId.startsWith("kmelia");
+  }
+  
+  public static boolean isToValidateFolder(String id) {
+    return SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id);
   }
 }

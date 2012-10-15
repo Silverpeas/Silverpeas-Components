@@ -159,7 +159,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       String index = req.getParameter("Index");
       String sort = req.getParameter("Sort");
-      String sToValidate = req.getParameter("ToValidate");
       String sToPortlet = req.getParameter("ToPortlet");
       String pubIdToHighlight = req.getParameter("PubIdToHighLight");
       String query = req.getParameter("Query");
@@ -169,7 +168,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       List<String> selectedIds =
           kmeliaSC.processSelectedPublicationIds(selectedPublicationIds, notSelectedPublicationIds);
 
-      boolean toValidate = "1".equals(sToValidate);
       boolean toPortlet = "1".equals(sToPortlet);
       boolean toSearch = StringUtil.isDefined(query);
 
@@ -212,9 +210,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         sortAllowed = false;
         publications = kmeliaSC.getSessionPublicationsList();
         role = SilverpeasRole.user.toString();
-      } else if (toValidate) {
-        kmeliaSC.orderPubsToValidate(sort);
-        publications = kmeliaSC.getSessionPublicationsList();
       } else if (toSearch) {
         // Insert this new search inside persistence layer in order to compute statistics
         saveTopicSearch(componentId, nodeId, kmeliaSC, query);
@@ -527,7 +522,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     boolean canBeCut = KmeliaPublicationHelper.isCanBeCut(kmeliaScc.getComponentId(), userId,
         kmeliaScc.getUserTopicProfile(), aPub.getCreator());
     boolean alias = isAlias(kmeliaScc, aPub.getDetail());
-    fragmentSettings.draggable = canBeCut && !alias;
+    fragmentSettings.draggable = canBeCut && !alias && !KmeliaHelper.isToValidateFolder(topicId);
 
     if (specificTemplateUsed) {
       displayTemplatedFragmentOfPublication(aPub, fragmentSettings, language, userId, topicId,

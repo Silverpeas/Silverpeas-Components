@@ -129,6 +129,10 @@ function getPubIdToHighlight() {
 function getTranslation() {
 	return "<%=translation%>";
 }
+
+function getToValidateFolderId() {
+	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
+}
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows()">
@@ -312,15 +316,15 @@ function displayTopicContent(id) {
 	clearSearchQuery();
 	setCurrentNodeId(id);
 
-	if (id == "tovalidate" || id == "1") {
+	if (id == getToValidateFolderId() || id == "1") {
 		$("#DnD").css({'display':'none'}); //hide dropzone
 		$("#footer").css({'visibility':'hidden'}); //hide footer
 		$("#searchZone").css({'display':'none'}); //hide search
 		$("#subTopics").empty();
 
-		if (id == "tovalidate")	{
+		if (id == getToValidateFolderId())	{
 			hideOperations();
-			displayPublicationsToValidate();
+			displayPublications(id);
 
 			//update breadcrumb
             removeBreadCrumbElements();
@@ -356,7 +360,7 @@ function displaySubTopics(id) {
 				var folderId = folder.attr["id"];
 				if (folderId == "1") {
 					basket = getSubFolder(folder);
-				} else if (folderId == "tovalidate") {
+				} else if (folderId == getToValidateFolderId()) {
 					tovalidate = getSubFolder(folder);
 				} else if (folderId != "2") {
 					$("#subTopics ul").append(getSubFolder(folder));
@@ -378,7 +382,7 @@ function getSubFolder(folder) {
 	var desc = folder.attr["description"];
 	var str = '<li id="topic_'+id+'">';
 	str += '<a href="#" onclick="topicGoTo(\''+id+'\')" ';
-	if (id == "tovalidate") {
+	if (id == getToValidateFolderId()) {
 		str += 'class="toValidate"';
 	} else if (id == "1") {
 		str += 'class="trash"';
