@@ -892,7 +892,7 @@ function movePublication(id, sourceId, targetId) {
 	var url = getWebContext()+'/KmeliaAJAXServlet';
 	$.get(url, { Id:id,SourceNodeId:sourceId,TargetNodeId:targetId,ComponentId:componentId,Action:'MovePublication'},
 			function(data){
-				data = "erreur en votre faveur zlekfj kjf kjh kjsdh fkjshdjfkhsdjkhf fjkshd kjfhsd kjfhsdkjhf"
+				//data = "erreur en votre faveur zlekfj kjf kjh kjsdh fkjshdjfkhsdjkhf fjkshd kjfhsd kjfhsdkjhf"
 				if (data == "ok") {
 					// fires event
 					try {

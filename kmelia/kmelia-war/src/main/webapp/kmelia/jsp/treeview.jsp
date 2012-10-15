@@ -704,9 +704,10 @@ function getUserProfile(id) {
 function publicationMovedInError(id, data) {
 	var pubName = getPublicationName(id);
 	noty({
-		text: "La publication <b>"+pubName+"</b> n'a pas pu être déplacée !"+"<br/>"+data,
+		text: "<%=resources.getString("kmelia.drag.publication.error1")%>"+pubName+"<%=resources.getString("kmelia.drag.publication.error2")%>"+"<br/><br/>"+data,
 		layout: 'topCenter',
-		timeout: 5000,
+		timeout: false,
+		closeWith: ['button'], // ['click', 'button', 'hover']
 		dismissQueue: true,
 		type: 'error'}
 	);
@@ -719,28 +720,30 @@ function getPublicationName(id) {
 function publicationMovedSuccessfully(id, targetId) {
 	var pubName = getPublicationName(id);
 	noty({
-		text: 'La publication <b>'+pubName+'</b> a été déplacée avec succès...',
+		text: "<%=resources.getString("kmelia.drag.publication.success1")%>"+pubName+"<%=resources.getString("kmelia.drag.publication.success2")%>",
 		layout: 'topCenter',
 		timeout: 5000,
 		dismissQueue: true,
 		type: 'success'}
 	);
 	
-	// add one publi to target node and its parents
-	var path = getTreeview().get_path("#"+targetId, true);
-	for (i=0; i<path.length; i++) {
-		var elementId = path[i];
-		if (elementId != "0") {
-			addNbPublis(elementId, 1);
+	if (params["nbPublisDisplayed"]) {	
+		// add one publi to target node and its parents
+		var path = getTreeview().get_path("#"+targetId, true);
+		for (i=0; i<path.length; i++) {
+			var elementId = path[i];
+			if (elementId != "0") {
+				addNbPublis(elementId, 1);
+			}
 		}
-	}
-	
-	// remove one publi to current node and its parents
-	var path = getTreeview().get_path("#"+getCurrentNodeId(), true);
-	for (i=0; i<path.length; i++) {
-		var elementId = path[i];
-		if (elementId != "0") {
-			addNbPublis(elementId, -1);
+		
+		// remove one publi to current node and its parents
+		var path = getTreeview().get_path("#"+getCurrentNodeId(), true);
+		for (i=0; i<path.length; i++) {
+			var elementId = path[i];
+			if (elementId != "0") {
+				addNbPublis(elementId, -1);
+			}
 		}
 	}
 	
