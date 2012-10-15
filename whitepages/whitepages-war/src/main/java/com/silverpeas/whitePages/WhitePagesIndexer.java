@@ -48,7 +48,7 @@ public class WhitePagesIndexer implements ComponentIndexerInterface {
    */
   public void index(MainSessionController mainSessionCtrl,
       ComponentContext context) throws Exception {
-    sc = new WhitePagesSessionController(mainSessionCtrl, context, null, null);
+    sc = new WhitePagesSessionController(mainSessionCtrl, context);
 
     sc.indexVisibleCards();
   }

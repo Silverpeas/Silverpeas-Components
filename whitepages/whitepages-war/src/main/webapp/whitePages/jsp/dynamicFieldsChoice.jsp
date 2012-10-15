@@ -85,8 +85,7 @@ function testCheckBoxes(){
 
 			ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
 			arrayColumn0.setSortable(false);
-			ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resource
-					.getString("whitePages.fieldnamesilver"));
+			ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resource.getString("whitePages.fieldnamesilver"));
 			arrayColumn1.setSortable(false);
 			// nom silverpeas
 			ArrayLine arrayLine = arrayPane.addArrayLine();
@@ -96,7 +95,7 @@ function testCheckBoxes(){
 			}
 			text.append("/>");
 			arrayLine.addArrayCellText(text.toString());
-			arrayLine.addArrayCellText(resource.getString("whitePages.silveruserlastname"));
+			arrayLine.addArrayCellText(resource.getString("GML.lastName"));
 		    // prénom silverpeas
 			arrayLine = arrayPane.addArrayLine();
 			text = new StringBuffer("<input type=\"checkbox\" name=\"checkedFields\" value=\"USR_surname\"");
@@ -105,7 +104,7 @@ function testCheckBoxes(){
 			}
 			text.append("/>");
 			arrayLine.addArrayCellText(text.toString());
-			arrayLine.addArrayCellText(resource.getString("whitePages.silveruserfirstname"));
+			arrayLine.addArrayCellText(resource.getString("GML.surname"));
 		    // email silverpeas -> pas indexé?
 			arrayLine = arrayPane.addArrayLine();
 			text = new StringBuffer("<input type=\"checkbox\" name=\"checkedFields\" value=\"USR_email\"");
@@ -114,7 +113,7 @@ function testCheckBoxes(){
 			}
 			text.append("/>");
 			arrayLine.addArrayCellText(text.toString());
-			arrayLine.addArrayCellText(resource.getString("whitePages.silveruseremail"));
+			arrayLine.addArrayCellText(resource.getString("GML.eMail"));
 			
 			out.println(arrayPane.print());
 			out.print("<br/>");
