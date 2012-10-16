@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -113,9 +113,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @param context the context of the almanach component.
    */
   public AlmanachSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
-    super(mainSessionCtrl, context, "com.stratelia.webactiv.almanach.multilang.almanach",
-        "com.stratelia.webactiv.almanach.settings.almanachIcons",
-        "com.stratelia.webactiv.almanach.settings.almanachSettings");
+    super(mainSessionCtrl, context, "org.silverpeas.almanach.multilang.almanach",
+        "org.silverpeas.almanach.settings.almanachIcons",
+        "org.silverpeas.almanach.settings.almanachSettings");
     String defaultView = getComponentParameterValue(DEFAULT_VIEW_PARAMETER);
     if (defaultView.isEmpty()) {
       viewMode = MONTHLY; // backward compatibility with previous versions of the Almanach
@@ -230,9 +230,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       throws AlmanachException, RemoteException {
     if (isAgregationUsed()) {
       return getAllEvents(getAgregateAlmanachIds());
-    } else {
-      return getAllEvents();
-    }
+    } 
+    return getAllEvents();
   }
 
   /**
@@ -346,8 +345,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
    */
   public EventPK addEvent(EventDetail eventDetail) throws AlmanachBadParamException,
-      AlmanachException,
-      WysiwygException {
+      AlmanachException, WysiwygException {
     return addEvent(eventDetail, PdcClassificationEntity.undefinedClassification());
   }
 
@@ -360,10 +358,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
    */
   public EventPK addEvent(EventDetail eventDetail, PdcClassificationEntity classification) throws
-      AlmanachBadParamException, AlmanachException,
-      WysiwygException {
+      AlmanachBadParamException, AlmanachException, WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.addEvent()",
         "root.MSG_GEN_ENTER_METHOD");
+
     EventPK eventPK = new EventPK("", "useless", getComponentId());
     try {
       eventDetail.setPK(eventPK);
@@ -385,8 +383,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       }
       // Add the wysiwyg content
       WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
-          getSpaceId(),
-          getComponentId(), eventId);
+          getSpaceId(), getComponentId(), eventId);
     } catch (RemoteException e) {
       throw new AlmanachRuntimeException(
           "AlmanachSessionController.addEvent()",
@@ -406,8 +403,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
    */
   public void updateEvent(EventDetail eventDetail) throws AlmanachBadParamException,
-      AlmanachException,
-      WysiwygException {
+      AlmanachException, WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.updateEvent()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -427,9 +423,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       // Update the Wysiwyg if exists, create one otherwise
       if (isDefined(eventDetail.getWysiwyg())) {
         WysiwygController.updateFileAndAttachment(eventDetail.getDescription(getLanguage()),
-            getSpaceId(),
-            getComponentId(),
-            eventDetail.getId(), getUserId());
+            getSpaceId(), getComponentId(), eventDetail.getId(), getUserId());
       } else {
         WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
             getSpaceId(),
@@ -451,8 +445,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws AlmanachException if an error occurs while indexing the event.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  public void indexEvent(EventDetail event) throws AlmanachException,
-      RemoteException {
+  public void indexEvent(EventDetail event) throws AlmanachException, RemoteException {
     getAlmanachBm().createIndex(event);
   }
 
@@ -465,8 +458,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   protected AlmanachBm getAlmanachBm() throws AlmanachException {
     if (almanachBm == null) {
       try {
-        almanachBm = ((AlmanachBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();
+        almanachBm = ( EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();
       } catch (Exception e) {
         throw new AlmanachException("AlmanachSessionControl.getAlmanachBm()",
             SilverpeasException.ERROR, "almanach.EX_EJB_CREATION_FAIL", e);
@@ -501,7 +493,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
           "almanach.MSG_BUILD_PDF_FAIL", ex);
       return null;
     }
-
     return FileServerUtils.getUrlToTempDir(name);
   }
 
@@ -631,8 +622,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws RemoteException if an error occurs while communicating with the remote almanach
    * service.
    */
-  public int getSilverObjectId(final String eventId)
-      throws AlmanachBadParamException, AlmanachException, RemoteException {
+  public int getSilverObjectId(final String eventId) throws AlmanachBadParamException, 
+      AlmanachException, RemoteException {
     return getAlmanachBm().getSilverObjectId(new EventPK(eventId, getSpaceId(), getComponentId()));
   }
 
@@ -665,8 +656,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   public List<AlmanachDTO> getAggregatedAlmanachs() {
     List<AlmanachDTO> aggregatedAlmanachs = new ArrayList<AlmanachDTO>();
 
-    String agregationMode =
-        getSettings().getString("almanachAgregationMode", ALMANACHS_IN_SUBSPACES);
+    String agregationMode = getSettings().getString("almanachAgregationMode", ALMANACHS_IN_SUBSPACES);
+
     String[] instanceIds;
     boolean inCurrentSpace = false;
     boolean inAllSpaces = false;
@@ -687,8 +678,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         ComponentInstLight almanachInst = organizationController.getComponentInstLight(
             instanceId);
         AlmanachDTO almanach = new AlmanachDTO().setInstanceId(instanceId).
-            setAggregated(isAlmanachAgregated(
-            instanceId)).setColor(getAlmanachColor(i + 1)).setLabel(almanachInst.getLabel());
+            setAggregated(isAlmanachAgregated(instanceId)).setColor(getAlmanachColor(i + 1)).setLabel(almanachInst.getLabel());
         aggregatedAlmanachs.add(almanach);
       }
     }
@@ -759,8 +749,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     PairObject hostComponentName = new PairObject(getComponentLabel(), null);
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("almanach", "AlmanachSessionController.initAlertUser()",
-        "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName
-        + " componentId=" + getComponentId());
+        "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName + " componentId=" + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationEvent(eventId));
     // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
     return AlertUser.getAlertUserURL();
@@ -772,23 +761,19 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     EventPK eventPK = new EventPK(eventId, getSpaceId(), getComponentId());
     String senderName = getUserDetail().getDisplayedName();
     EventDetail eventDetail = getAlmanachBm().getEventDetail(eventPK);
-    SilverTrace.debug("alamanch",
-        "AlamanachSessionController.getAlertNotificationEvent()",
+    SilverTrace.debug("alamanch", "AlamanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "event = " + eventDetail.toString());
 
     // recherche de l’emplacement de l’évènement
     String htmlPath = getAlmanachBm().getHTMLPath(eventPK);
 
     // création des messages ...
-    ResourceLocator message = new ResourceLocator(
-        "com.stratelia.webactiv.almanach.multilang.almanach", "fr");
-    ResourceLocator message_en = new ResourceLocator(
-        "com.stratelia.webactiv.almanach.multilang.almanach", "en");
+    ResourceLocator message = new ResourceLocator("org.silverpeas.almanach.multilang.almanach", "fr");
+    ResourceLocator message_en = new ResourceLocator("org.silverpeas.almanach.multilang.almanach", "en");
 
     // notifications en français
     String subject = getNotificationSubject(message);
-    String body = getNotificationBody(eventDetail, htmlPath, message,
-        senderName);
+    String body = getNotificationBody(eventDetail, htmlPath, message,senderName);
     SilverTrace.debug("almanach",
         "AlamanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "message = " + message.toString()
@@ -799,8 +784,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
     // english notifications
     String subject_en = getNotificationSubject(message_en);
-    String body_en = getNotificationBody(eventDetail, htmlPath, message_en,
-        senderName);
+    String body_en = getNotificationBody(eventDetail, htmlPath, message_en, senderName);
     SilverTrace.debug("almanach",
         "AlmanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "sujet_en = " + subject_en + " corps_en = "
@@ -843,11 +827,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         almanachBm.remove();
       }
     } catch (RemoteException e) {
-      SilverTrace.error("almanachSession", "AlmanachSessionController.close",
-          "", e);
+      SilverTrace.error("almanachSession", "AlmanachSessionController.close", "", e);
     } catch (RemoveException e) {
-      SilverTrace.error("almanachSession", "AlmanachSessionController.close",
-          "", e);
+      SilverTrace.error("almanachSession", "AlmanachSessionController.close", "", e);
     }
   }
 
@@ -863,8 +845,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws WysiwygException
    * @throws ParseException
    */
-  public void updateEventOccurence(final EventDetail event,
-      final String dateDebutIteration, final String dateFinIteration)
+  public void updateEventOccurence(final EventDetail event, final String dateDebutIteration, final String dateFinIteration)
       throws AlmanachBadParamException, AlmanachException, RemoteException, WysiwygException,
       ParseException {
     SilverTrace.info("almanach",
@@ -878,8 +859,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     event.setPeriodicity(null);
     addEvent(event);
 
-    SilverTrace.info("almanach",
-        "AlmanachSessionController.updateEventOccurence()",
+    SilverTrace.info("almanach", "AlmanachSessionController.updateEventOccurence()",
         "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -912,6 +892,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       default:
         throw new UnsupportedOperationException("The calendar view mode " + viewMode
             + " isn't yet supported by the almanach");
+
     }
     return view;
   }
@@ -925,8 +906,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  public AlmanachCalendarView getYearlyAlmanachCalendarView() throws
-      AlmanachException,
+  public AlmanachCalendarView getYearlyAlmanachCalendarView() throws AlmanachException,
       AlmanachNoSuchFindEventException, RemoteException {
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
     AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
@@ -950,9 +930,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  public AlmanachCalendarView getMonthlyAlmanachCalendarView() throws
-      AlmanachException,
+  public AlmanachCalendarView getMonthlyAlmanachCalendarView() throws AlmanachException,
       AlmanachNoSuchFindEventException, RemoteException {
+
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
     AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
     AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, MONTHLY);
@@ -976,9 +956,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  public AlmanachCalendarView getWeekyAlmanachCalendarView() throws
-      AlmanachException,
+  public AlmanachCalendarView getWeekyAlmanachCalendarView() throws AlmanachException,
       AlmanachNoSuchFindEventException, RemoteException {
+
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
     AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
     AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, WEEKLY);
@@ -989,6 +969,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     String firstDayMonth = "";
     String lastDayMonth = " " + getString("GML.mois" + view.getLastDay().getMonth()) + " "
         + String.valueOf(view.getLastDay().getYear());
+
     if (view.getFirstDay().getMonth() != view.getLastDay().getMonth()) {
       firstDayMonth = " " + getString("GML.mois" + view.getFirstDay().getMonth());
       if (view.getFirstDay().getYear() != view.getLastDay().getYear()) {
@@ -997,6 +978,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     }
     String label = view.getFirstDay().getDayOfMonth() + firstDayMonth + " - " + view.getLastDay().
         getDayOfMonth() + lastDayMonth;
+
     view.setEvents(listCurrentWeekEvents(getAggregationAlmanachIds()));
     view.setLabel(label);
     return view;
@@ -1014,12 +996,12 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws RemoteException if the communication with the remote business object fails.
    */
   public AlmanachCalendarView getAlmanachCalendarViewOnTheNextEvents(boolean aggregated) throws
-      AlmanachException,
-      AlmanachNoSuchFindEventException, RemoteException {
+      AlmanachException, AlmanachNoSuchFindEventException, RemoteException {
     AlmanachDTO almanachDTO = getAlmanachDTO(aggregated);
     AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
     AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay,
         NEXT_EVENTS);
+
     view.setLocale(getLanguage());
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
@@ -1093,8 +1075,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws RemoteException if the communication with the remote business object fails.
    */
   private List<DisplayableEventOccurrence> listCurrentYearEvents(String... almanachIds) throws
-      AlmanachException,
-      AlmanachNoSuchFindEventException, RemoteException {
+      AlmanachException, AlmanachNoSuchFindEventException, RemoteException {
     List<EventOccurrence> occurrencesInYear = getAlmanachBm().getEventOccurrencesInYear(currentDay,
         almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInYear);
@@ -1111,11 +1092,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws RemoteException if the communication with the remote business object fails.
    */
   private List<DisplayableEventOccurrence> listCurrentMonthEvents(String... almanachIds) throws
-      AlmanachException,
-      AlmanachNoSuchFindEventException, RemoteException {
-    List<EventOccurrence> occurrencesInMonth = getAlmanachBm().
-        getEventOccurrencesInMonth(currentDay,
-        almanachIds);
+      AlmanachException, AlmanachNoSuchFindEventException, RemoteException {
+    List<EventOccurrence> occurrencesInMonth = getAlmanachBm().getEventOccurrencesInMonth(currentDay, almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInMonth);
   }
 
@@ -1130,8 +1108,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws RemoteException if the communication with the remote business object fails.
    */
   private List<DisplayableEventOccurrence> listCurrentWeekEvents(String... almanachIds) throws
-      AlmanachException,
-      AlmanachNoSuchFindEventException, RemoteException {
+      AlmanachException, AlmanachNoSuchFindEventException, RemoteException {
     List<EventOccurrence> occurrencesInWeek = getAlmanachBm().getEventOccurrencesInWeek(currentDay,
         almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInWeek);
@@ -1147,8 +1124,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws RemoteException if the communication with the remote business object fails.
    */
   private List<DisplayableEventOccurrence> listNextEvents(String... almanachIds) throws
-      AlmanachException,
-      AlmanachNoSuchFindEventException, RemoteException {
+      AlmanachException, AlmanachNoSuchFindEventException, RemoteException {
     List<EventOccurrence> nextOccurrences = getAlmanachBm().getNextEventOccurrences(almanachIds);
     return DisplayableEventOccurrence.decorate(nextOccurrences);
   }

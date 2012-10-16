@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -36,15 +36,17 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.ImageLoader;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.ImageLoader;
+
 
 public class ImageHelper {
 
@@ -134,7 +136,6 @@ public class ImageHelper {
 
           String dir = FileRepositoryManager.getAbsolutePath(instanceId) + subDirectory + photoId
             + File.separator + name;
-
           String mimeType = FileUtil.getMimeType(name);
           long size = image.length();
 

@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -21,7 +21,6 @@
 package com.stratelia.webactiv.almanach.control.ejb;
 
 import com.silverpeas.pdc.model.PdcClassification;
-import com.stratelia.silverpeas.pdc.control.PdcClassifyBmImpl;
 import java.util.Collection;
 import java.rmi.RemoteException;
 
@@ -30,13 +29,13 @@ import net.fortuna.ical4j.model.Calendar;
 import com.stratelia.webactiv.almanach.model.*;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.util.List;
+
 import org.silverpeas.attachment.model.SimpleDocument;
 
 public interface AlmanachBmBusinessSkeleton {
 
   /**
    * Get the events of the month
-   *
    * @author dlesimple
    * @param pk
    * @param date
@@ -45,11 +44,10 @@ public interface AlmanachBmBusinessSkeleton {
    */
   @Deprecated
   public Collection<EventDetail> getMonthEvents(EventPK pk, java.util.Date date,
-      String[] instanceIds) throws RemoteException;
+          String[] instanceIds) throws RemoteException;
 
   /**
    * Get the events of the month
-   *
    * @author dlesimple
    * @param pk
    * @param date
@@ -62,7 +60,6 @@ public interface AlmanachBmBusinessSkeleton {
   /**
    * Gets the event occurrences that occur in the specified year and that are defined in the
    * specified almanachs.
-   *
    * @param year the year in which the events occur.
    * @param almanachIds the identifier of the almanachs in which the events are defined.
    * @return a list of event occurrences.
@@ -71,10 +68,10 @@ public interface AlmanachBmBusinessSkeleton {
   public List<EventOccurrence> getEventOccurrencesInYear(java.util.Calendar year,
       String... almanachIds) throws RemoteException;
 
+
   /**
    * Gets the event occurrences that occur in the specified month and that are defined in the
    * specified almanachs.
-   *
    * @param month the month in which the events occur.
    * @param almanachIds the identifier of the almanachs in which the events are defined.
    * @return a list of event occurrences.
@@ -86,7 +83,6 @@ public interface AlmanachBmBusinessSkeleton {
   /**
    * Gets the event occurrences that occur in the specified week and that are defined in the
    * specified almanachs.
-   *
    * @param week the week in which the events occur.
    * @param almanachIds the identifier of the almanachs in which the events are defined.
    * @return a list of event occurrences.

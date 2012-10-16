@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,7 +46,6 @@ import com.stratelia.webactiv.almanach.AlmanachContentManager;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.fortuna.ical4j.model.DateTime;
@@ -66,7 +65,7 @@ public class EventDetail extends AbstractI18NBean implements
 
   private static final long serialVersionUID = 9077018265272108291L;
   public static ResourceLocator almanachSettings =
-          new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
+          new ResourceLocator("org.silverpeas.almanach.settings.almanachSettings", "");
   private static final String TYPE = "Event";
   private String _name = null;
   private EventPK _pk = null;
@@ -305,7 +304,7 @@ public class EventDetail extends AbstractI18NBean implements
 
   public Collection<SimpleDocument> getAttachments() {
     try {
-      AlmanachBm almanachService = ((AlmanachBmHome) EJBUtilitaire.getEJBObjectRef(
+      AlmanachBm almanachService = (EJBUtilitaire.getEJBObjectRef(
               JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();
       return almanachService.getAttachments(getPK());
     } catch (Exception ex) {

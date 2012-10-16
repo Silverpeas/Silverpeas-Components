@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.Vector;
 
 import com.silverpeas.peasUtil.RssServlet;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
