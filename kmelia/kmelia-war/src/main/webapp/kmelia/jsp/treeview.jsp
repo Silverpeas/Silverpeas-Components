@@ -94,7 +94,7 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.noty.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/layouts/top.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/layouts/topCenter.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/themes/default.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/themes/silverpeas.js"></script>
 
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
@@ -710,6 +710,7 @@ function publicationMovedInError(id, data) {
 	noty({
 		text: "<%=resources.getString("kmelia.drag.publication.error1")%>"+pubName+"<%=resources.getString("kmelia.drag.publication.error2")%>"+"<br/><br/>"+data,
 		layout: 'topCenter',
+		theme: 'silverpeas',
 		timeout: false,
 		closeWith: ['button'], // ['click', 'button', 'hover']
 		dismissQueue: true,
@@ -726,6 +727,7 @@ function publicationMovedSuccessfully(id, targetId) {
 	noty({
 		text: "<%=resources.getString("kmelia.drag.publication.success1")%>"+pubName+"<%=resources.getString("kmelia.drag.publication.success2")%>",
 		layout: 'topCenter',
+		theme: 'silverpeas',
 		timeout: 5000,
 		dismissQueue: true,
 		type: 'success'}
@@ -899,7 +901,7 @@ $(document).ready(
 				} else if (targetType == "root") {
 					if (<%=KmeliaPublicationHelper.isPublicationsOnRootAllowed(componentId)%>) {
 						var profile = getUserProfile(targetId);
-						writeInConsole("drag_check : current user is "+profile+" in root");
+						//writeInConsole("drag_check : current user is "+profile+" in root");
 						if (profile != "<%=SilverpeasRole.user.toString()%>") {
 							return { 
 								after : false, 
@@ -910,7 +912,7 @@ $(document).ready(
 					}
 				} else {
 					var profile = getUserProfile(targetId);
-					writeInConsole("drag_check : current user is "+profile+" in folder #"+targetId);
+					//writeInConsole("drag_check : current user is "+profile+" in folder #"+targetId);
 					if (profile != "<%=SilverpeasRole.user.toString()%>") {
 						return { 
 							after : false, 
