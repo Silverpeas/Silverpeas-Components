@@ -27,7 +27,7 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
-
+<c:set var="listCategoryJSON" value="${requestScope.ListCategoryJSON}"/>
 <% 
 Collection<NodeDetail>	categories	= (Collection<NodeDetail>) request.getAttribute("Categories");
 %>
@@ -117,9 +117,59 @@ function deleteConfirm(id,nom) {
 		document.categoryForm.submit();
 	}
 }
+
+var listNodeJSON = ${listCategoryJSON};
+
+$(document).ready(function() {
+    $('#categoryList tbody').bind('sortupdate', function(event, ui) {
+        var updatedNode = new Array(); //tableau de NodeEntity réordonnés sérialisés en JSON
+        var data = $('#categoryList tbody').sortable('toArray'); //tableau de valeurs categ-{nodeId} réordonnés
+        for (var i=0; i<data.length; i++)
+        {
+          var nodeId = data[i]; //categ-{nodeId}
+          nodeId = nodeId.substring(6); //{nodeId}
+          
+          for (var j=0; j<listNodeJSON.length; j++)
+          {
+            var NodeJSON = listNodeJSON[j];
+            if(nodeId == NodeJSON.attr.id) {
+              updatedNode[i] = NodeJSON;
+            }
+          }
+        }
+        sortNode(updatedNode);
+      });
+});
+  
+function sortNode(updatedNodeJSON)
+{
+    $.ajax({
+        url:"<%=m_context%>/services/nodes/<%=instanceId%>",
+        type: "PUT",
+        contentType: "application/json",
+        dataType: "json",
+        cache: false,
+        data: $.toJSON(updatedNodeJSON),
+        success: function (data) {
+        	listNodeJSON = data;
+        }
+        ,
+        error: function(jqXHR, textStatus, errorThrown) {
+          if (onError == null)
+           alert(errorThrown);
+          else
+           onError({
+             status: jqXHR.status,
+             message: errorThrown
+           });
+        }
+    });
+}  
 </script>
 </head>
 <body id="blog">
+<div class="inlineMessage"><fmt:message key="blog.homePageMessage"/></div>
+<br clear="all"/>
 <div id="<%=instanceId %>">
 <%
    	operationPane.addOperation(resource.getIcon("blog.addCategory"), resource.getString("blog.addCategory") , "javascript:onClick=addCategory()");
@@ -129,6 +179,7 @@ function deleteConfirm(id,nom) {
     
 	ArrayPane arrayPane = gef.getArrayPane("categoryList", "ViewCategory", request, session);
 	arrayPane.setXHTML(true);
+	arrayPane.setSortableLines(true);
 	ArrayColumn columnIcon = arrayPane.addArrayColumn("&nbsp;");
     columnIcon.setSortable(false);
 	arrayPane.addArrayColumn(resource.getString("GML.title"));

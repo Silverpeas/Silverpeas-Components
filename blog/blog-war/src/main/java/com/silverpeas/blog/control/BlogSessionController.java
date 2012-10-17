@@ -23,15 +23,24 @@
  */
 package com.silverpeas.blog.control;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
+import org.codehaus.jackson.map.AnnotationIntrospector;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+import org.silverpeas.node.web.NodeEntity;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 
 import com.silverpeas.blog.model.Archive;
@@ -409,4 +418,44 @@ public class BlogSessionController extends AbstractComponentSessionController {
   public String getServerURL() {
     return serverURL;
   }
+  
+  /**
+  * Converts the list of Delegated News into its JSON representation.
+  * @return a JSON representation of the list of Delegated News (as string)
+  * @throws JAXBException
+  */
+    public String getListNodeJSON(Collection<NodeDetail> listNode)
+        throws JAXBException {
+      List<NodeEntity> listNodeEntity = new ArrayList<NodeEntity>();
+      for (NodeDetail node : listNode) {
+        NodeEntity nodeEntity =
+            NodeEntity.fromNodeDetail(node, node.getNodePK().getId());
+        listNodeEntity.add(nodeEntity);
+      }
+      return listAsJSON(listNodeEntity);
+    }
+
+    /**
+  * Converts the list of Delegated News Entity into its JSON representation.
+  * @param listNodeEntity
+  * @return a JSON representation of the list of Delegated News Entity (as string)
+  * @throws DelegatedNewsRuntimeException
+  */
+    private String listAsJSON(List<NodeEntity> listNodeEntity)
+        throws BlogRuntimeException {
+      NodeEntity[] entities =
+          listNodeEntity.toArray(new NodeEntity[listNodeEntity.size()]);
+      ObjectMapper mapper = new ObjectMapper();
+      AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+      mapper.setAnnotationIntrospector(introspector);
+      StringWriter writer = new StringWriter();
+      try {
+        mapper.writeValue(writer, entities);
+      } catch (IOException ex) {
+        throw new BlogRuntimeException("BlogSessionController.listAsJSON()",
+            SilverpeasRuntimeException.ERROR,
+            "root.EX_NO_MESSAGE", ex);
+      }
+      return writer.toString();
+    }
 }

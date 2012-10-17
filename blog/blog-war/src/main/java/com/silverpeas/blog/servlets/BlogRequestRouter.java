@@ -120,7 +120,10 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("NewPost")) {
-        request.setAttribute("AllCategories", blogSC.getAllCategories());
+        Collection<NodeDetail> listCategory = blogSC.getAllCategories();
+        request.setAttribute("AllCategories", listCategory);
+        String listJSON = blogSC.getListNodeJSON(listCategory);
+        request.setAttribute("ListCategoryJSON", listJSON);
         
         // appel de la page de création
         destination = rootDest + "postManager.jsp";
