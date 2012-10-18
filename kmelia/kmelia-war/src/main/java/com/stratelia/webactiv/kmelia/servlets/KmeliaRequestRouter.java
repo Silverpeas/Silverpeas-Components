@@ -546,7 +546,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         if (!kmaxMode) {
           boolean checkPath = StringUtil.getBooleanValue(request.getParameter("CheckPath"));
-          if (checkPath) {
+          if (checkPath || KmeliaHelper.isToValidateFolder(kmelia.getCurrentFolderId())) {
             processPath(kmelia, id);
           } else {
             processPath(kmelia, null);
@@ -2139,8 +2139,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       if (!StringUtil.isDefined(id)) {
         pk = kmeliaSC.getCurrentFolderPK();
       } else {
-        pk = kmeliaSC.getAllowedPublicationFather(id); // Calcul du chemin de la
-      } // publication
+        pk = kmeliaSC.getAllowedPublicationFather(id); // get publication parent
+        kmeliaSC.setCurrentFolderId(pk.getId(), true);
+      }
 
       Collection<NodeDetail> pathColl = kmeliaSC.getTopicPath(pk.getId());
       String linkedPathString = kmeliaSC.displayPath(pathColl, true, 3);
