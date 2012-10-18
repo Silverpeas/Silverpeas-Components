@@ -910,7 +910,7 @@ $(document).ready(
 							};
 						}
 					}
-				} else {
+				} else if (targetId != "treeDiv1"){
 					var profile = getUserProfile(targetId);
 					//writeInConsole("drag_check : current user is "+profile+" in folder #"+targetId);
 					if (profile != "<%=SilverpeasRole.user.toString()%>") {
