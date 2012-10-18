@@ -630,7 +630,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write(pub.getPK().getId());
       out.write("')\"><b class=\""+fragmentSettings.highlightClass+"\">");
       if (fragmentSettings.draggable) {
-        out.write("<span class=\"jstree-draggable\" id=\""+pub.getPK().getId()+"\">");
+        out.write("<span class=\"jstree-draggable\" id=\"pub-"+pub.getPK().getId()+"\">");
         out.write(name);
         out.write("</span>");
       } else {

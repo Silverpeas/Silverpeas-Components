@@ -719,7 +719,11 @@ function publicationMovedInError(id, data) {
 }
 
 function getPublicationName(id) {
-	return $("#pubList #"+id).html();
+	return $("#pubList #pub-"+id).html();
+}
+
+function extractPublicationId(id) {
+	return id.substring(4, id.length);
 }
 
 function publicationMovedSuccessfully(id, targetId) {
@@ -768,7 +772,7 @@ function publicationMovedSuccessfully(id, targetId) {
 	}
 	
 	// remove publication from publications list
-	$("#pubList #"+id).closest("li").fadeOut('500', function() {
+	$("#pubList #pub-"+id).closest("li").fadeOut('500', function() {
 		$(this).remove();
 	});
 }
@@ -924,7 +928,7 @@ $(document).ready(
 				return false;
 			},
 			"drag_finish" : function (data) {
-				var pubId = data.o.id;
+				var pubId = extractPublicationId(data.o.id);
 				var targetId = data.r.attr("id");
 				
 				// store new parent of publication
