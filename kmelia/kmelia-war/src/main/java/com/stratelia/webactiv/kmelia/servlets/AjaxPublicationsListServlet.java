@@ -48,7 +48,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.silverpeas.viewer.ViewFactory;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
@@ -120,7 +121,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     String attachmentLink = req.getParameter("attachmentLink");
     boolean attachmentToLink = "1".equals(attachmentLink);
 
-    boolean toLink = (isDefined(sToLink) && "1".equals(sToLink));
+    boolean toLink = (StringUtil.isDefined(sToLink) && "1".equals(sToLink));
 
     KmeliaSessionController kmeliaSC = (KmeliaSessionController) session.getAttribute("Silverpeas_"
         + "kmelia" + "_" + componentId);
@@ -158,7 +159,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       String index = req.getParameter("Index");
       String sort = req.getParameter("Sort");
-      String sToValidate = req.getParameter("ToValidate");
       String sToPortlet = req.getParameter("ToPortlet");
       String pubIdToHighlight = req.getParameter("PubIdToHighLight");
       String query = req.getParameter("Query");
@@ -168,14 +168,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       List<String> selectedIds =
           kmeliaSC.processSelectedPublicationIds(selectedPublicationIds, notSelectedPublicationIds);
 
-      boolean toValidate = "1".equals(sToValidate);
       boolean toPortlet = "1".equals(sToPortlet);
       boolean toSearch = StringUtil.isDefined(query);
 
-      if (isDefined(index)) {
+      if (StringUtil.isDefined(index)) {
         kmeliaSC.setIndexOfFirstPubToDisplay(index);
       }
-      if (isDefined(sort)) {
+      if (StringUtil.isDefined(sort)) {
         kmeliaSC.setSortValue(sort);
       }
 
@@ -211,9 +210,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         sortAllowed = false;
         publications = kmeliaSC.getSessionPublicationsList();
         role = SilverpeasRole.user.toString();
-      } else if (toValidate) {
-        kmeliaSC.orderPubsToValidate(sort);
-        publications = kmeliaSC.getSessionPublicationsList();
       } else if (toSearch) {
         // Insert this new search inside persistence layer in order to compute statistics
         saveTopicSearch(componentId, nodeId, kmeliaSC, query);
@@ -311,16 +307,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     ResourceLocator publicationSettings = new ResourceLocator(
         "com.stratelia.webactiv.util.publication.publicationSettings",
         kmeliaScc.getLanguage());
-    
+
     boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage", true);
-    
+
     String language = kmeliaScc.getCurrentLanguage();
     String currentUserId = kmeliaScc.getUserDetail().getId();
     String currentTopicId = kmeliaScc.getCurrentFolderId();
-    
+
     // check if this instance use a custom template
     boolean specificTemplateUsed = kmeliaScc.isCustomPublicationTemplateUsed();
-    
+
     PublicationFragmentSettings fragmentSettings = new PublicationFragmentSettings();
     fragmentSettings.displayLinks = URLManager.displayUniversalLinks();
     fragmentSettings.showImportance = kmeliaScc.isFieldImportanceVisible();
@@ -416,8 +412,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           pubState = resources.getString("kmelia.Shortcut");
         }
 
-        out
-            .write("<li onmouseover=\"showPublicationOperations(this);\" onmouseout=\"hidePublicationOperations(this);\">");
+        out.write("<li");
+        out.write(" onmouseover=\"showPublicationOperations(this);\" onmouseout=\"hidePublicationOperations(this);\">");
         out.write("<div class=\"firstColumn\">");
         if (!kmeliaScc.getUserDetail().isAnonymous()) {
           String checked = "";
@@ -448,7 +444,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           }
         }
         out.write("</div>");
-        
+
         fragmentSettings.pubColor = pubColor;
         fragmentSettings.highlightClass = highlightClass;
         fragmentSettings.pubState = pubState;
@@ -474,6 +470,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         out.write("</div>");
       }
       displayFilePreviewJavascript(kmeliaScc.getComponentId(), kmeliaScc.isVersionControlled(), out);
+      displayFileViewJavascript(kmeliaScc.getComponentId(), kmeliaScc.isVersionControlled(), out);
       out.write(board.printAfter());
     } // End if
     else if (showNoPublisMessage
@@ -500,7 +497,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
     out.write("</form>");
   }
-  
+
   void displayFilePreviewJavascript(String componentId, boolean versioned, Writer out)
       throws IOException {
     StringBuilder sb = new StringBuilder(50);
@@ -516,11 +513,34 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     sb.append("</script>");
     out.write(sb.toString());
   }
-  
+
+  void displayFileViewJavascript(String componentId, boolean versioned, Writer out)
+      throws IOException {
+    StringBuilder sb = new StringBuilder(50);
+    sb.append("<script type=\"text/javascript\">");
+    sb.append("function viewFile(target, attachmentId) {");
+    sb.append("$(target).view(\"viewAttachment\", {");
+    sb.append("componentInstanceId: \"").append(componentId).append("\",");
+    sb.append("attachmentId: attachmentId,");
+    sb.append("versioned: ").append(versioned);
+    sb.append("});");
+    sb.append("return false;");
+    sb.append("}");
+    sb.append("</script>");
+    out.write(sb.toString());
+  }
+
   void displayFragmentOfPublication(boolean specificTemplateUsed, KmeliaPublication aPub,
       PublicationFragmentSettings fragmentSettings, String language, String userId,
       String topicId, KmeliaSessionController kmeliaScc, ResourcesWrapper resources, Writer out)
       throws IOException {
+    
+    // check if publication is draggable
+    boolean canBeCut = KmeliaPublicationHelper.isCanBeCut(kmeliaScc.getComponentId(), userId,
+        kmeliaScc.getUserTopicProfile(), aPub.getCreator());
+    boolean alias = isAlias(kmeliaScc, aPub.getDetail());
+    fragmentSettings.draggable = canBeCut && !alias && !KmeliaHelper.isToValidateFolder(topicId);
+
     if (specificTemplateUsed) {
       displayTemplatedFragmentOfPublication(aPub, fragmentSettings, language, userId, topicId,
           kmeliaScc, resources, out);
@@ -529,7 +549,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           kmeliaScc, resources, out);
     }
   }
-  
+
   void displayTemplatedFragmentOfPublication(KmeliaPublication aPub,
       PublicationFragmentSettings fragmentSettings, String language, String userId, String topicId,
       KmeliaSessionController kmeliaScc, ResourcesWrapper resources, Writer out) throws IOException {
@@ -595,7 +615,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             kmeliaScc.getCustomPublicationTemplateName());
     out.write(fragment);
   }
-  
+
   void displayDefaultFragmentOfPublication(KmeliaPublication aPub, PublicationFragmentSettings fragmentSettings, String language,
       String userId, String topicId, KmeliaSessionController kmeliaScc, ResourcesWrapper resources,
       Writer out) throws IOException {
@@ -609,7 +629,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("\"><a href=\"javascript:onClick=publicationGoTo('");
       out.write(pub.getPK().getId());
       out.write("')\"><b class=\""+fragmentSettings.highlightClass+"\">");
-      out.write(name);
+      if (fragmentSettings.draggable) {
+        out.write("<span class=\"jstree-draggable\" id=\"pub-"+pub.getPK().getId()+"\">");
+        out.write(name);
+        out.write("</span>");
+      } else {
+        out.write(name);
+      }
       out.write("</b></a></font>");
     } else {
       String ref = "";
@@ -714,11 +740,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
 
     out.write("</font>");
-    
+
     out.write(displayFiles(pub, fragmentSettings.linkAttachment, fragmentSettings.seeAlso, userId,
         topicId, kmeliaScc, resources));
   }
-  
+
   String displayDate(PublicationDetail pub, KmeliaSessionController kmeliaScc, ResourcesWrapper resources) {
     if ("5".equals(kmeliaScc.getSortValue()) || "6".equals(kmeliaScc.getSortValue())) {
        return resources.getOutputDate(pub.getCreationDate());
@@ -726,25 +752,29 @@ public class AjaxPublicationsListServlet extends HttpServlet {
        return resources.getOutputDate(pub.getUpdateDate());
     }
   }
-  
+
   String displayFiles(PublicationDetail pub, boolean linkAttachment, boolean seeAlso, String userId, String topicId,
       KmeliaSessionController kmeliaScc, ResourcesWrapper resources) throws IOException {
     StringBuilder sb = new StringBuilder(20);
     boolean displayFiles =
       (KmeliaHelper.isToolbox(kmeliaScc.getComponentId()) || kmeliaScc.attachmentsInPubList()) &&
           !seeAlso || linkAttachment;
-    if (displayFiles) { 
+    if (displayFiles) {
       sb.append("<span class=\"files\">");
       // Can be a shortcut. Must check attachment mode according to publication source.
-      boolean isAlias = !kmeliaScc.getComponentId().equalsIgnoreCase(pub.getPK().getInstanceId());
+      boolean alias = isAlias(kmeliaScc, pub);
       if (kmeliaScc.isVersionControlled(pub.getPK().getInstanceId())) {
-        sb.append(displayVersioning(pub, resources, linkAttachment, isAlias));
+        sb.append(displayVersioning(pub, resources, linkAttachment, alias));
       } else {
-        sb.append(displayAttachments(pub, userId, topicId, resources, linkAttachment, isAlias));
+        sb.append(displayAttachments(pub, userId, topicId, resources, linkAttachment, alias));
       }
       sb.append("</span>");
     }
     return sb.toString();
+  }
+  
+  private boolean isAlias(KmeliaSessionController kmeliaScc, PublicationDetail pub) {
+    return !kmeliaScc.getComponentId().equalsIgnoreCase(pub.getPK().getInstanceId());
   }
 
   void displayThumbnail(PublicationDetail pub, KmeliaSessionController ksc,
@@ -849,7 +879,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("<div id=\"pubsHeader\">");
     out.write("<img src=\"" + publicationSrc + "\" alt=\"\"/>");
     out.write("<span id=\"pubsCounter\">");
-    out.write(pagination.printCounter());
+    out.write("<span>"+pagination.printCounter()+"</span> ");
     if (nbPubs > 1) {
       out.write(resources.getString("GML.publications"));
     } else {
@@ -897,10 +927,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       stars.append("<img src=\"").append(emptyStar).append("\" align=\"absmiddle\" alt=\"\"/>");
     }
     return stars.toString();
-  }
-
-  private boolean isDefined(String param) {
-    return (param != null && param.length() > 0 && !param.equals("null"));
   }
 
   @SuppressWarnings("unchecked")
@@ -954,13 +980,15 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           url = FileServerUtils.getAliasURL(document.getPk().getInstanceId(), logicalName,
               document.getPk().getId(), id);
         }
-        
+
         boolean previewable =
-          ViewFactory.getPreviewService().isPreviewable(
-              new File(version.getDocumentPath()));
+            ViewerFactory.getPreviewService().isPreviewable(new File(version.getDocumentPath()));
+
+        boolean viewable =
+            ViewerFactory.getViewService().isViewable(new File(version.getDocumentPath()));
 
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
-            creationDate, permalink, resources, linkAttachment, previewable, id));
+            creationDate, permalink, resources, linkAttachment, previewable, viewable, id));
       }
     }
     if (oneFile) {
@@ -1000,13 +1028,17 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         if (alias) {
           url = FileServerUtils.getAliasURL(foreignKey.getInstanceId(), logicalName, id);
         }
-        
+
         boolean previewable =
-            ViewFactory.getPreviewService().isPreviewable(
+            ViewerFactory.getPreviewService().isPreviewable(
+                new File(attachmentDetail.getAttachmentPath(null)));
+
+        boolean viewable =
+            ViewerFactory.getViewService().isViewable(
                 new File(attachmentDetail.getAttachmentPath(null)));
 
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
-            creationDate, permalink, resources, linkAttachment, previewable, id));
+            creationDate, permalink, resources, linkAttachment, previewable, viewable, id));
       }
       result.append("</table>");
     }
@@ -1025,16 +1057,18 @@ public class AjaxPublicationsListServlet extends HttpServlet {
    * @param downloadTime
    * @param creationDate
    * @param permalink
-   * @param out
    * @param resources
    * @param attachmentLink determines if the attachments are displayed in the management interface
    * links to attachments. If it's true it formats differently the HTML rendering
+   * @param viewable
+   * @param out
    * @return
    * @throws IOException
    */
   private String displayFile(String url, String title, String info, String icon,
       String logicalName, String size, String downloadTime, Date creationDate, String permalink,
-      ResourcesWrapper resources, boolean attachmentLink, boolean previewable, String id) throws IOException {
+      ResourcesWrapper resources, boolean attachmentLink, boolean previewable, boolean viewable,
+      String id) throws IOException {
     SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayFile()",
         "root.MSG_GEN_ENTER_METHOD");
     StringBuilder result = new StringBuilder();
@@ -1082,6 +1116,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             .append(resources.getIcon("kmelia.file.preview"))
             .append("\" alt=\"").append(resources.getString("GML.preview")).append("\" title=\"")
             .append(resources.getString("GML.preview")).append("\"/>");
+      }
+      if (viewable) {
+        result.append(" <img onclick=\"javascript:viewFile(this, ").append(id)
+            .append(");\" class=\"view-file\" src=\"")
+            .append(resources.getIcon("kmelia.file.view"))
+            .append("\" alt=\"").append(resources.getString("GML.view")).append("\" title=\"")
+            .append(resources.getString("GML.view")).append("\"/>");
       }
       result.append("</i>");
 

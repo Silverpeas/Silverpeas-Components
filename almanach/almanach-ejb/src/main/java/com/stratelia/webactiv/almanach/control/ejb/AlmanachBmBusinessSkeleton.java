@@ -5,10 +5,11 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -27,7 +28,6 @@ import java.rmi.RemoteException;
 import net.fortuna.ical4j.model.Calendar;
 
 import com.stratelia.webactiv.almanach.model.*;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.util.List;
 
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -41,6 +41,7 @@ public interface AlmanachBmBusinessSkeleton {
    * @param date
    * @param String [] of instanceIds
    * @return Collection of Events
+   * @deprecated 
    */
   @Deprecated
   public Collection<EventDetail> getMonthEvents(EventPK pk, java.util.Date date,

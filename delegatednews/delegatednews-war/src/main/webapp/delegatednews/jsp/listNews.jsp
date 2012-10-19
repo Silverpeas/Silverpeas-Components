@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -73,7 +73,7 @@
         var beginDateOK = true;
     	if (!isWhitespace(beginDate)) {
         	if (!isDateOK(beginDate, language)) {
-                 errorMsg+="  - '<fmt:message key="delegatednews.visibilityBeginDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
+               errorMsg+="  - '<fmt:message key="delegatednews.visibilityBeginDate"/>' <fmt:message key="GML.MustContainsCorrectDate"/>\n";
 	             errorNb++;
     	         beginDateOK = false;
            	} 
@@ -297,4 +297,5 @@
 </form>
 
 </body>
+>>>>>>> master
 </html>

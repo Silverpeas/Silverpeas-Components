@@ -40,15 +40,6 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript">
-function doPagination(index)
-{
-	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToValidate:1,IEFix:ieFix},
-							function(data){
-								$('#pubList').html(data);
-							},"html");
-}
-
 function getWebContext() {
 	return "<%=m_context%>";
 }
@@ -57,8 +48,13 @@ function getComponentId() {
 	return "<%=componentId%>";
 }
 
+function getToValidateFolderId() {
+	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
+}
+
 $(document).ready(function() {
-	displayPublicationsToValidate();
+	setCurrentNodeId(getToValidateFolderId());
+	displayPublications(getToValidateFolderId());
 });
 </script>
 </HEAD>

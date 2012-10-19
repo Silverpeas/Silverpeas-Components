@@ -36,6 +36,7 @@ public class PublicationFragmentSettings {
   boolean fileStorageShowExtraInfoPub;
   boolean displayLinks;
   boolean showDelegatedNewsInfo;
+  boolean draggable;
   
   public PublicationFragmentSettings() {
    
