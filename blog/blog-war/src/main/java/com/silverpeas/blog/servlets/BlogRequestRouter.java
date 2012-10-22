@@ -287,7 +287,10 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("EndDate", blogSC.getCurrentEndDateAsString());
         destination = getDestination("PostByArchive", blogSC, request);
       } else if (function.equals("ViewCategory")) {
-        request.setAttribute("Categories", blogSC.getAllCategories());
+        Collection<NodeDetail> listCategorie = blogSC.getAllCategories();
+        request.setAttribute("Categories", listCategorie);
+        String listNodeJSON = blogSC.getListNodeJSON(listCategorie);
+        request.setAttribute("ListCategoryJSON", listNodeJSON);
         destination = rootDest + "viewCategory.jsp";
       } else if (function.equals("CreateCategory")) {
         // récupération des paramètres

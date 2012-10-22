@@ -26,8 +26,10 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ include file="check.jsp" %>
-<c:set var="listCategoryJSON" value="${requestScope.ListCategoryJSON}"/>
+<fmt:setLocale value="${requestScope.resources.language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <% 
 Collection<NodeDetail>	categories	= (Collection<NodeDetail>) request.getAttribute("Categories");
 %>
@@ -118,7 +120,7 @@ function deleteConfirm(id,nom) {
 	}
 }
 
-var listNodeJSON = ${listCategoryJSON};
+var listNodeJSON = ${requestScope.ListCategoryJSON};
 
 $(document).ready(function() {
     $('#categoryList tbody').bind('sortupdate', function(event, ui) {
@@ -138,12 +140,12 @@ $(document).ready(function() {
           }
         }
         sortNode(updatedNode);
-      });
+     });
 });
   
 function sortNode(updatedNodeJSON)
 {
-    $.ajax({
+	$.ajax({
         url:"<%=m_context%>/services/nodes/<%=instanceId%>",
         type: "PUT",
         contentType: "application/json",
@@ -151,7 +153,7 @@ function sortNode(updatedNodeJSON)
         cache: false,
         data: $.toJSON(updatedNodeJSON),
         success: function (data) {
-        	listNodeJSON = data;
+          listNodeJSON = data;
         }
         ,
         error: function(jqXHR, textStatus, errorThrown) {
@@ -164,7 +166,8 @@ function sortNode(updatedNodeJSON)
            });
         }
     });
-}  
+}
+ 
 </script>
 </head>
 <body id="blog">

@@ -571,7 +571,7 @@ public class DefaultBlogService implements BlogService {
   public Collection<NodeDetail> getAllCategories(String instanceId) {
     try {
       NodePK nodePK = new NodePK("0", instanceId);
-      return getNodeBm().getChildrenDetails(nodePK);
+      return getNodeBm().getChildrenDetails(nodePK, "orderNumber asc, nodeName");
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.getAllCategories()",
           SilverpeasRuntimeException.ERROR, "post.MSG_CATEGORIES_NOT_EXIST", e);
