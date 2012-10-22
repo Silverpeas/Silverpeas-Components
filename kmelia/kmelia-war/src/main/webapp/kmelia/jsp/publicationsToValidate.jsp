@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,15 +40,6 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript">
-function doPagination(index)
-{
-	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToValidate:1,IEFix:ieFix},
-							function(data){
-								$('#pubList').html(data);
-							},"html");
-}
-
 function getWebContext() {
 	return "<%=m_context%>";
 }
@@ -57,8 +48,13 @@ function getComponentId() {
 	return "<%=componentId%>";
 }
 
+function getToValidateFolderId() {
+	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
+}
+
 $(document).ready(function() {
-	displayPublicationsToValidate();
+	setCurrentNodeId(getToValidateFolderId());
+	displayPublications(getToValidateFolderId());
 });
 </script>
 </HEAD>

@@ -106,18 +106,6 @@ function validatePublicationClassification(s)
     SP_openWindow(getWebContext()+'/Rkmelia/' + componentId + '/validateClassification?' + s, "Validation", '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
 
-function displayPublicationsToValidate()
-{
-	//display publications to validate
-	var ieFix = new Date().getTime();
-	var componentId = getComponentId();
-	$.get(getWebContext()+'/RAjaxPublicationsListServlet', {ComponentId:componentId,ToValidate:1,IEFix:ieFix},
-			function(data){
-				$('#pubList').html(data);
-				activateUserZoom();
-			},"html");
-}
-
 function closeWindows() {	
 	if(!subscriptionWindow.closed && subscriptionWindow.name=="subscriptionWindow") {
 		subscriptionWindow.close();
@@ -532,7 +520,7 @@ function getDateFormat() {
 }
 
 function displayTopicInformation(id) {
-	if (id != "0" && id != "1" && id != "tovalidate") {
+	if (id != "0" && id != "1" && id != getToValidateFolderId()) {
 		$("#footer").css({'visibility':'visible'});
 		var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+id;
 		$.getJSON(url, function(topic){
@@ -833,17 +821,13 @@ function fileUpload() {
 }
 
 function doPagination(index) {
-	var paramToValidate = "0";
-	if (getCurrentNodeId() == "tovalidate") {
-		paramToValidate = "1";
-	}
 	var topicQuery = getSearchQuery();
 	var ieFix = new Date().getTime();
 	var componentId = getComponentId();
 	var selectedPublicationIds = getSelectedPublicationIds();
 	var notSelectedPublicationIds = getNotSelectedPublicationIds();
 	var url = getWebContext()+'/RAjaxPublicationsListServlet';
-	$.get(url, {Index:index,ComponentId:componentId,ToValidate:paramToValidate,Query:topicQuery,SelectedPubIds:selectedPublicationIds,NotSelectedPubIds:notSelectedPublicationIds,IEFix:ieFix},
+	$.get(url, {Index:index,ComponentId:componentId,Query:topicQuery,SelectedPubIds:selectedPublicationIds,NotSelectedPubIds:notSelectedPublicationIds,IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
 								activateUserZoom();
@@ -883,6 +867,25 @@ function changeStatus(nodeId, currentStatus) {
 					updateUIStatus(nodeId, newStatus);
 				} else {
 					alert(data);
+				}
+			}, 'text');
+}
+
+function movePublication(id, sourceId, targetId) {
+	var componentId = getComponentId();
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, { Id:id,SourceNodeId:sourceId,TargetNodeId:targetId,ComponentId:componentId,Action:'MovePublication'},
+			function(data){
+				//data = "erreur en votre faveur zlekfj kjf kjh kjsdh fkjshdjfkhsdjkhf fjkshd kjfhsd kjfhsdkjhf"
+				if (data == "ok") {
+					// fires event
+					try {
+						publicationMovedSuccessfully(id, targetId);
+					} catch (e) {
+						writeInConsole(e);
+					}
+				} else {
+					publicationMovedInError(id, data);
 				}
 			}, 'text');
 }

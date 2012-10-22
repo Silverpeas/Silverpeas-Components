@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
+<%@page import="com.silverpeas.component.kmelia.KmeliaPaste"%>
+<%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
@@ -88,6 +91,11 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.noty.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/layouts/top.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/layouts/topCenter.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/themes/silverpeas.js"></script>
+
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
@@ -132,6 +140,10 @@ function getPubIdToHighlight() {
 
 function getTranslation() {
 	return "<%=translation%>";
+}
+
+function getToValidateFolderId() {
+	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
 }
 
 var labels = new Object();
@@ -413,14 +425,14 @@ function displayTopicContent(id) {
 	
 	clearSearchQuery();
 
-	if (id == "tovalidate" || id == "1") {
+	if (id == getToValidateFolderId() || id == "1") {
 		$("#DnD").css({'display':'none'}); //hide dropzone
 		$("#footer").css({'visibility':'hidden'}); //hide footer
 		$("#searchZone").css({'display':'none'}); //hide search
 
-		if (id == "tovalidate")	{
+		if (id == getToValidateFolderId())	{
 			hideOperations();
-			displayPublicationsToValidate();
+			displayPublications(id);
 
 			//update breadcrumb
             removeBreadCrumbElements();
@@ -484,7 +496,7 @@ function customMenu(node) {
 	if (params["rightsOnTopic"]) {
 		userRole = node.attr("role");
 	}
-	if (nodeType == "tovalidate") {
+	if (nodeType == getToValidateFolderId()) {
     	return false;
     } else if (nodeType == "bin") {
     	var binItems = {
@@ -673,6 +685,98 @@ function spreadNbItems(children) {
 	}
 }
 
+function getUserProfile(id) {
+	var componentId = getComponentId();
+	var result = "";
+    $.ajax({
+      url: getWebContext()+'/KmeliaAJAXServlet',
+      data : {Id:id,Action:'GetProfile',ComponentId:componentId},
+      type : 'GET',
+      dataType : 'text',
+      cache : false,
+      async : false,
+      success : function(data, status, jqXHR) {
+        result = data;
+      },
+      error : function(jqXHR, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    });
+    return result;
+}
+
+function publicationMovedInError(id, data) {
+	var pubName = getPublicationName(id);
+	noty({
+		text: "<%=resources.getString("kmelia.drag.publication.error1")%>"+pubName+"<%=resources.getString("kmelia.drag.publication.error2")%>"+"<br/><br/>"+data,
+		layout: 'topCenter',
+		theme: 'silverpeas',
+		timeout: false,
+		closeWith: ['button'], // ['click', 'button', 'hover']
+		dismissQueue: true,
+		type: 'error'}
+	);
+}
+
+function getPublicationName(id) {
+	return $("#pubList #pub-"+id).html();
+}
+
+function extractPublicationId(id) {
+	return id.substring(4, id.length);
+}
+
+function publicationMovedSuccessfully(id, targetId) {
+	var pubName = getPublicationName(id);
+	noty({
+		text: "<%=resources.getString("kmelia.drag.publication.success1")%>"+pubName+"<%=resources.getString("kmelia.drag.publication.success2")%>",
+		layout: 'topCenter',
+		theme: 'silverpeas',
+		timeout: 5000,
+		dismissQueue: true,
+		type: 'success'}
+	);
+	
+	if (params["nbPublisDisplayed"]) {	
+		// add one publi to target node and its parents
+		var path = getTreeview().get_path("#"+targetId, true);
+		for (i=0; i<path.length; i++) {
+			var elementId = path[i];
+			if (elementId != "0") {
+				addNbPublis(elementId, 1);
+			}
+		}
+		
+		// remove one publi to current node and its parents
+		var path = getTreeview().get_path("#"+getCurrentNodeId(), true);
+		for (i=0; i<path.length; i++) {
+			var elementId = path[i];
+			if (elementId != "0") {
+				addNbPublis(elementId, -1);
+			}
+		}
+	}
+	
+	try {
+		// remove one publi to publications header
+		var previousNb = $("#pubsHeader #pubsCounter span").html();
+		if (previousNb == 1) {
+			$("#pubsHeader #pubsCounter").html("<%=resources.getString("GML.publications")%>");
+			$("#pubsHeader #pubsSort").hide();
+			$("#pubList ul").html("<%=resources.getString("PubAucune")%>")
+		} else {
+			$("#pubsHeader #pubsCounter span").html(eval(previousNb-1));
+		}
+	} catch (e) {
+		
+	}
+	
+	// remove publication from publications list
+	$("#pubList #pub-"+id).closest("li").fadeOut('500', function() {
+		$(this).remove();
+	});
+}
+
 $(document).ready(
 	function () {
 		//build the tree
@@ -737,7 +841,7 @@ $(document).ready(
 			"types" : {
 				// The `root` node 
 				"root" : {
-					"valid_children" : [ "bin", "tovalidate" ],
+					"valid_children" : [ "bin", getToValidateFolderId() ],
 					/*"icon" : {
 						"image" : "/static/v.1.0pre/_demo/root.png"
 					},*/
@@ -763,7 +867,7 @@ $(document).ready(
 					"remove" : false
 				},
 				// The `to validate` node
-				"tovalidate" : {
+				"<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>" : {
 					// can have files and folders inside, but NOT other `drive` nodes
 					"valid_children" : "none",
 					"icon" : {
@@ -787,8 +891,52 @@ $(document).ready(
 			"show_at_node" : false,
 			"items" : customMenu
 		},
+		"dnd" : {
+			"drop_finish" : function () {
+				alert("drop_finish");
+			},
+			"drag_check" : function (data) {
+				var targetId = data.r.attr("id");
+				var targetType = data.r.attr("rel");
+				if (targetId == getCurrentNodeId()) {
+					return false;
+				} else if (targetType == getToValidateFolderId()) {
+					return false;
+				} else if (targetType == "root") {
+					if (<%=KmeliaPublicationHelper.isPublicationsOnRootAllowed(componentId)%>) {
+						var profile = getUserProfile(targetId);
+						//writeInConsole("drag_check : current user is "+profile+" in root");
+						if (profile != "<%=SilverpeasRole.user.toString()%>") {
+							return { 
+								after : false, 
+								before : false, 
+								inside : true 
+							};
+						}
+					}
+				} else if (targetId != "treeDiv1"){
+					var profile = getUserProfile(targetId);
+					//writeInConsole("drag_check : current user is "+profile+" in folder #"+targetId);
+					if (profile != "<%=SilverpeasRole.user.toString()%>") {
+						return { 
+							after : false, 
+							before : false, 
+							inside : true 
+						};
+					}
+				}
+				return false;
+			},
+			"drag_finish" : function (data) {
+				var pubId = extractPublicationId(data.o.id);
+				var targetId = data.r.attr("id");
+				
+				// store new parent of publication
+				movePublication(pubId, getCurrentNodeId(), targetId);
+			}
+		},
 		// the `plugins` array allows you to configure the active plugins on this instance
-		"plugins" : ["themes","json_data","ui","types","crrm","contextmenu"]
+		"plugins" : ["themes","json_data","ui","types","crrm","contextmenu","dnd"]
     });	
 		
 	$("#splitter").splitter({

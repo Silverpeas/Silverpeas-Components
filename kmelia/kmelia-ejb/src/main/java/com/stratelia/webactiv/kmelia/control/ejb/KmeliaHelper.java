@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -54,6 +54,8 @@ public class KmeliaHelper implements Serializable {
   public static final String ROLE_PUBLISHER = "publisher";
   public static final String ROLE_WRITER = "writer";
   public static final String ROLE_READER = "user";
+  
+  public static final String SPECIALFOLDER_TOVALIDATE = "tovalidate";
 
   public KmeliaHelper() {
   }
@@ -134,5 +136,9 @@ public class KmeliaHelper implements Serializable {
   
   public static boolean isKmelia(String componentId) {
     return componentId.startsWith("kmelia");
+  }
+  
+  public static boolean isToValidateFolder(String id) {
+    return SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id);
   }
 }

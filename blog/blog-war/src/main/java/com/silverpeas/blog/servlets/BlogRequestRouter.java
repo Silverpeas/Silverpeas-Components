@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -120,10 +120,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("NewPost")) {
-        Collection<NodeDetail> listCategory = blogSC.getAllCategories();
-        request.setAttribute("AllCategories", listCategory);
-        String listJSON = blogSC.getListNodeJSON(listCategory);
-        request.setAttribute("ListCategoryJSON", listJSON);
+        request.setAttribute("AllCategories", blogSC.getAllCategories());
         
         // appel de la page de création
         destination = rootDest + "postManager.jsp";
