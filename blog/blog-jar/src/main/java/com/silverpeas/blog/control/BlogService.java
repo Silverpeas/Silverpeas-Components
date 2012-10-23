@@ -46,6 +46,8 @@ public interface BlogService extends SilverpeasComponentService<PostDetail> {
   public void deletePost(String postId, String instanceId);
 
   public Collection<PostDetail> getAllPosts(String instanceId, int nbReturned);
+  
+  public Collection<PostDetail> getAllValidPosts(String instanceId, int nbReturned);
 
   public Collection<PostDetail> getLastPosts(String instanceId);
 

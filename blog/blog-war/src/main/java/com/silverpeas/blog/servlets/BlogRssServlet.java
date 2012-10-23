@@ -45,7 +45,7 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
       throws RemoteException {
     // récupération de la liste des 10 prochains billets du Blog
     BlogService service = BlogServiceFactory.getFactory().getBlogService();
-    return service.getAllPosts(instanceId, nbReturned);
+    return service.getAllValidPosts(instanceId, nbReturned);
   }
 
   /*
