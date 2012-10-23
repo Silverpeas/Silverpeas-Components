@@ -50,19 +50,21 @@ String 		word 		= "";
 Date 	   dateCalendar	= new Date(dateCal);
 boolean 	isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
 
-if ("admin".equals(profile)) { 
-	if (isPdcUsed) {
+if (SilverpeasRole.admin.equals(profile) || SilverpeasRole.publisher.equals(profile)) { 
+	if (SilverpeasRole.admin.equals(profile) && isPdcUsed) {
 		operationPane.addOperation("useless", resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')");
 		operationPane.addLine();
 	}
 	operationPane.addOperationOfCreation(resource.getIcon("blog.addPost"), resource.getString("blog.newPost"), "NewPost");
-	operationPane.addOperation("useless", resource.getString("blog.viewCategory"), "ViewCategory");
+	if (SilverpeasRole.admin.equals(profile)) {
+	 operationPane.addOperation("useless", resource.getString("blog.viewCategory"), "ViewCategory");
 	
-	String url = m_context + blogUrl + "Main";
-	String lien = m_context + URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
-	operationPane.addOperation("useless", resource.getString("blog.viewLinks"), lien);
-	operationPane.addOperation("useless", resource.getString("blog.updateFooter"), "UpdateFooter");
-	operationPane.addLine();
+	 String url = m_context + blogUrl + "Main";
+	 String lien = m_context + URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
+	 operationPane.addOperation("useless", resource.getString("blog.viewLinks"), lien);
+	 operationPane.addOperation("useless", resource.getString("blog.updateFooter"), "UpdateFooter");
+	 operationPane.addLine();
+	}
 	
 	if (!isUserGuest) { 
 	  operationPane.addOperation("useless", resource.getString("blog.addSubscription"), "javascript:onClick=addSubscription()");
@@ -109,9 +111,9 @@ function addSubscription() {
 			</div>
 			<div id="postsList">
 				<%
-				Iterator it = (Iterator) posts.iterator();
+			    Iterator it = (Iterator) posts.iterator();
 					
-				java.util.Calendar cal = GregorianCalendar.getInstance();
+			    java.util.Calendar cal = GregorianCalendar.getInstance();
 				  while (it.hasNext()) 
 				  {
 					PostDetail post = (PostDetail) it.next();
@@ -131,12 +133,12 @@ function addSubscription() {
 				  boolean visible = true;
 				  if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT) 
 					  && !post.getPublication().getCreatorId().equals(userId)) {
-					// le billet en mode brouillon n'est pas visible si ce n'est pas le cr�ateur
-					visible = false;
-					// sauf si le mode "brouillon visible" est actif et que le user est bloggeur
-					if (isDraftVisible && "admin".equals(profile)) {
+					 // le billet en mode brouillon n'est pas visible si ce n'est pas le createur
+					 visible = false;
+					 // sauf si le mode "brouillon visible" est actif et que le user est bloggeur
+					 if (isDraftVisible && (SilverpeasRole.admin.equals(profile) || SilverpeasRole.publisher.equald(profile)) {
 					  visible = true;
-					}
+					 }
 				  }
 
 				  if (visible) {

@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -72,10 +73,12 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
   // recherche du profile de l'utilisateur
   public String getFlag(String[] profiles) {
-    String flag = "user";
+    String flag = SilverpeasRole.user.toString();
     for (int i = 0; i < profiles.length; i++) {
-      if (profiles[i].equals("admin")) {
+      if (profiles[i].equals(SilverpeasRole.admin)) {
         return profiles[i];
+      } else if (profiles[i].equals(SilverpeasRole.publisher)) {
+        flag = profiles[i];
       }
     }
     return flag;

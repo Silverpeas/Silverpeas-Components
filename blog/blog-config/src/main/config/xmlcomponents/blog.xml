@@ -53,13 +53,25 @@
   <profiles>
     <profile name="admin">
       <label>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
+        <message lang="de">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Les gestionnaires peuvent créer des catégories, des liens, mettre à jour le pied de page et paramètrent le Plan de Classement.</message>
+        <message lang="en">Administrators can create categories, links, update footer and set up the Classification Scheme.</message>
+        <message lang="de">Administrator</message>
+      </help>
+    </profile>
+    <profile name="publisher">
+      <label>
         <message lang="fr">Bloggeurs</message>
         <message lang="en">Authors</message>
         <message lang="de">Autor</message>
       </label>
       <help>
-        <message lang="fr">Les bloggeurs peuvent créer des billets, des catégories et paramétrer le Plan de Classement.</message>
-        <message lang="en">Authors can create posts, categories and set up the classification scheme.</message>
+        <message lang="fr">Les bloggeurs peuvent gérer des billets, les positionner dans une catégorie et les classer sur le Plan de Classement .</message>
+        <message lang="en">Authors can manage posts, classify them in a category and classify them on the Classification Scheme.</message>
         <message lang="de">Autor</message>
       </help>
     </profile>
