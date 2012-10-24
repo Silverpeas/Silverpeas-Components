@@ -41,7 +41,6 @@ List		events		= (List) request.getAttribute("Events");
 String 		dateCal		= (String) request.getAttribute("DateCalendar");
 
 Date 	   dateCalendar	= new Date(dateCal);
-
 String categoryId = "";
 if (post.getCategory() != null)
 	categoryId = post.getCategory().getNodePK().getId();
@@ -55,19 +54,17 @@ String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEE
 
 boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
 
-if ("admin".equals(profile)) { 
+if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) { 
 	operationPane.addOperation("useless", resource.getString("blog.updatePost"), "EditPost?PostId="+postId);
 	if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
 	  	operationPane.addOperation("useless", resource.getString("blog.draftOutPost"), "DraftOutPost?PostId="+postId);
 	}
 	operationPane.addOperation("useless", resource.getString("blog.deletePost"), "javascript:onClick=deletePost('"+postId+"')");
 	operationPane.addLine();
-	
-	if (!isUserGuest) { 
-	  operationPane.addOperation("useless", resource.getString("GML.notify"), "javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')");
-	}
 }
-
+if (!isUserGuest) { 
+  operationPane.addOperation("useless", resource.getString("GML.notify"), "javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')");
+}
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 

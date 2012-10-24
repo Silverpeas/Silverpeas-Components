@@ -74,11 +74,12 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
   // recherche du profile de l'utilisateur
   public String getFlag(String[] profiles) {
     String flag = SilverpeasRole.user.toString();
-    for (int i = 0; i < profiles.length; i++) {
-      if (profiles[i].equals(SilverpeasRole.admin)) {
-        return profiles[i];
-      } else if (profiles[i].equals(SilverpeasRole.publisher)) {
-        flag = profiles[i];
+    for (String profile : profiles) {
+      if (SilverpeasRole.admin.isInRole(profile)) {
+        return profile;
+      }
+      if (SilverpeasRole.publisher.isInRole(profile)) {
+        flag = profile;
       }
     }
     return flag;
@@ -100,7 +101,8 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
     String rootDest = "/blog/jsp/";
 
     // paramètres généraux
-    request.setAttribute("Profile", getFlag(blogSC.getUserRoles()));
+    String flag = getFlag(blogSC.getUserRoles());
+    request.setAttribute("Profile", flag);
 
     try {
       if (function.startsWith("Main")) {

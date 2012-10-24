@@ -50,13 +50,13 @@ String 		word 		= "";
 Date 	   dateCalendar	= new Date(dateCal);
 boolean 	isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
 
-if (SilverpeasRole.admin.equals(profile) || SilverpeasRole.publisher.equals(profile)) { 
-	if (SilverpeasRole.admin.equals(profile) && isPdcUsed) {
+if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) { 
+	if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) && isPdcUsed) {
 		operationPane.addOperation("useless", resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')");
 		operationPane.addLine();
 	}
 	operationPane.addOperationOfCreation(resource.getIcon("blog.addPost"), resource.getString("blog.newPost"), "NewPost");
-	if (SilverpeasRole.admin.equals(profile)) {
+	if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {
 	 operationPane.addOperation("useless", resource.getString("blog.viewCategory"), "ViewCategory");
 	
 	 String url = m_context + blogUrl + "Main";
@@ -65,10 +65,10 @@ if (SilverpeasRole.admin.equals(profile) || SilverpeasRole.publisher.equals(prof
 	 operationPane.addOperation("useless", resource.getString("blog.updateFooter"), "UpdateFooter");
 	 operationPane.addLine();
 	}
+}
 	
-	if (!isUserGuest) { 
-	  operationPane.addOperation("useless", resource.getString("blog.addSubscription"), "javascript:onClick=addSubscription()");
-	}
+if (!isUserGuest) { 
+  operationPane.addOperation("useless", resource.getString("blog.addSubscription"), "javascript:onClick=addSubscription()");
 }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
@@ -136,7 +136,7 @@ function addSubscription() {
 					 // le billet en mode brouillon n'est pas visible si ce n'est pas le createur
 					 visible = false;
 					 // sauf si le mode "brouillon visible" est actif et que le user est bloggeur
-					 if (isDraftVisible && (SilverpeasRole.admin.equals(profile) || SilverpeasRole.publisher.equald(profile)) {
+					 if (isDraftVisible && (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile)))) {
 					  visible = true;
 					 }
 				  }
