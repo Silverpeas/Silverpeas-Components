@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -128,6 +128,10 @@ function getPubIdToHighlight() {
 
 function getTranslation() {
 	return "<%=translation%>";
+}
+
+function getToValidateFolderId() {
+	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
 }
 </script>
 </head>
@@ -312,15 +316,15 @@ function displayTopicContent(id) {
 	clearSearchQuery();
 	setCurrentNodeId(id);
 
-	if (id == "tovalidate" || id == "1") {
+	if (id == getToValidateFolderId() || id == "1") {
 		$("#DnD").css({'display':'none'}); //hide dropzone
 		$("#footer").css({'visibility':'hidden'}); //hide footer
 		$("#searchZone").css({'display':'none'}); //hide search
 		$("#subTopics").empty();
 
-		if (id == "tovalidate")	{
+		if (id == getToValidateFolderId())	{
 			hideOperations();
-			displayPublicationsToValidate();
+			displayPublications(id);
 
 			//update breadcrumb
             removeBreadCrumbElements();
@@ -356,7 +360,7 @@ function displaySubTopics(id) {
 				var folderId = folder.attr["id"];
 				if (folderId == "1") {
 					basket = getSubFolder(folder);
-				} else if (folderId == "tovalidate") {
+				} else if (folderId == getToValidateFolderId()) {
 					tovalidate = getSubFolder(folder);
 				} else if (folderId != "2") {
 					$("#subTopics ul").append(getSubFolder(folder));
@@ -378,7 +382,7 @@ function getSubFolder(folder) {
 	var desc = folder.attr["description"];
 	var str = '<li id="topic_'+id+'">';
 	str += '<a href="#" onclick="topicGoTo(\''+id+'\')" ';
-	if (id == "tovalidate") {
+	if (id == getToValidateFolderId()) {
 		str += 'class="toValidate"';
 	} else if (id == "1") {
 		str += 'class="trash"';

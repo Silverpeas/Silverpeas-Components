@@ -1702,17 +1702,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     gallerySC.deletePhoto(photoIds);
   }
 
-  private FileItem getUploadedFile(List<FileItem> items, String parameterName) {
-    Iterator<FileItem> iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = iter.next();
-      if (!item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item;
-      }
-    }
-    return null;
-  }
-
   private boolean isDefined(String param) {
     return (param != null && param.length() > 0 && !"".equals(param));
   }

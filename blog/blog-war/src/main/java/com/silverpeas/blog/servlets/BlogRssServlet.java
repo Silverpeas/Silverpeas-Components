@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.blog.servlets;
 
 import com.silverpeas.blog.control.BlogService;
@@ -36,9 +37,7 @@ import com.silverpeas.peasUtil.RssServlet;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class BlogRssServlet extends RssServlet<PostDetail> {
-
-  private static final long serialVersionUID = -7858489574699990145L;
-
+  
   /*
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)
@@ -48,7 +47,7 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
       throws RemoteException {
     // récupération de la liste des 10 prochains billets du Blog
     BlogService service = BlogServiceFactory.getFactory().getBlogService();
-    return service.getAllPosts(instanceId, nbReturned);
+    return service.getAllValidPosts(instanceId, nbReturned);
   }
 
   /*
@@ -100,5 +99,4 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
   public String getElementCreatorId(PostDetail post) {
     return post.getPublication().getUpdaterId();
   }
-
 }

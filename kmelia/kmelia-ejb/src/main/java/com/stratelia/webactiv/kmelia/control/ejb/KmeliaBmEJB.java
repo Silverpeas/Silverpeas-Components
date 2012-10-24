@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,6 +63,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -1533,13 +1534,34 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
   }
   
+  public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to, String userId)
+      throws RemoteException {
+    PublicationDetail pub = getPublicationDetail(pubPK);
+    
+    // check if user can cut publication from source folder
+    String profile = getUserTopicProfile(from, userId);
+    boolean cutAllowed = KmeliaPublicationHelper.isCanBeCut(from.getComponentName(), userId, profile, pub.getCreator());
+    
+    // check if user can paste publication into target folder
+    String profileInTarget = getUserTopicProfile(to, userId);
+    boolean pasteAllowed = KmeliaPublicationHelper.isCreationAllowed(to, profileInTarget);
+    
+    if (cutAllowed && pasteAllowed) {
+      movePublicationInSameApplication(pub, to, userId);
+    }
+  }
+  
   public void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId)
       throws RemoteException {
-    // update parent
-    getPublicationBm().removeAllFather(pub.getPK());
-    getPublicationBm().addFather(pub.getPK(), to);
-    
-    processPublicationAfterMove(pub, to, userId);
+    if (to.isTrash()) {
+      sendPublicationToBasket(pub.getPK());
+    } else {
+      // update parent
+      getPublicationBm().removeAllFather(pub.getPK());
+      getPublicationBm().addFather(pub.getPK(), to);
+      
+      processPublicationAfterMove(pub, to, userId);
+    }
   }
   
   public void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId)
@@ -4856,7 +4878,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
   
   public String getUserTopicProfile(NodePK pk, String userId) throws RemoteException {
-    if (!isRightsOnTopicsEnabled(pk.getInstanceId())) {
+    if (!isRightsOnTopicsEnabled(pk.getInstanceId()) || KmeliaHelper.isToValidateFolder(pk.getId())) {
       return KmeliaHelper.getProfile(getUserRoles(pk.getInstanceId(), userId));
     }
 

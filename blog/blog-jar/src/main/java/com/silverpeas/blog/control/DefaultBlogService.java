@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -372,6 +372,33 @@ public class DefaultBlogService implements BlogService {
       return posts;
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.getAllPosts()", SilverpeasRuntimeException.ERROR,
+          "post.MSG_POST_NOT_CREATE", e);
+    } finally {
+      closeConnection(con);
+    }
+  }
+  
+  @Override
+  public Collection<PostDetail> getAllValidPosts(String instanceId, int nbReturned) {
+    PublicationPK pubPK = new PublicationPK("useless", instanceId);
+    Connection con = openConnection();
+
+    Collection<PostDetail> posts = new ArrayList<PostDetail>();
+    try {
+      // rechercher les publications classées par date d'évènement
+      Collection<String> lastEvents = PostDAO.getLastEvents(con, instanceId, nbReturned);
+      Collection<PublicationDetail> publications =
+          getPublicationBm().getAllPublications(pubPK);
+      for (String pubId : lastEvents) {
+        for (PublicationDetail publication : publications) {
+          if (publication.getPK().getId().equals(pubId) && PublicationDetail.VALID.equals(publication.getStatus())) {
+            posts.add(getPost(publication));
+          }
+        }
+      }
+      return posts;
+    } catch (Exception e) {
+      throw new BlogRuntimeException("BlogBmEJB.getAllValidPosts()", SilverpeasRuntimeException.ERROR,
           "post.MSG_POST_NOT_CREATE", e);
     } finally {
       closeConnection(con);
