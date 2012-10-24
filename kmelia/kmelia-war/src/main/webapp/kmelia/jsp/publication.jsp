@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,6 +44,7 @@
 <%@page import="com.stratelia.silverpeas.versioning.model.DocumentPK"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
+<%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
 
 <%
   ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
@@ -153,21 +154,8 @@
     action = "UpdateView";
     isOwner = true;
   } else {
-    if (profile.equals("admin") || profile.equals("publisher") || profile.equals("supervisor") || (ownerDetail != null && currentUser.
-        getId().equals(ownerDetail.getId()) && profile.equals("writer"))) {
-      isOwner = true;
-
-      if (!kmeliaScc.isSuppressionOnlyForAdmin() || (profile.equals("admin") && kmeliaScc.
-          isSuppressionOnlyForAdmin())) {
-        // suppressionAllowed = true car si c'est un redacteur, c'est le proprietaire de la publication
-        suppressionAllowed = true;
-      }
-    } else if (!profile.equals("user") && kmeliaScc.isCoWritingEnable()) {
-      // si publication en co-redaction, considerer qu'elle appartient aux co-redacteur au meme titre qu'au proprietaire
-      // mais suppressionAllowed = false pour que le co-redacteur ne puisse pas supprimer la publication
-      isOwner = true;
-      suppressionAllowed = false;
-    }
+    isOwner = KmeliaPublicationHelper.isUserConsideredAsOwner(contextComponentId, currentUser.getId(), profile, ownerDetail);
+    suppressionAllowed = KmeliaPublicationHelper.isRemovable(contextComponentId, currentUser.getId(), profile, ownerDetail);
 
     if (isOwner) {
       kmeliaScc.setSessionOwner(true);
