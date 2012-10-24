@@ -121,6 +121,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("Events", events);
 
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10));
 
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
@@ -233,6 +234,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         Collection<Event> events = getEvents(blogSC, posts);
         request.setAttribute("Events", events);
         request.setAttribute("DateCalendar", beginDate);
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("PostByArchive")) {
@@ -254,6 +256,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         Collection<Event> events = getEvents(blogSC, posts);
         request.setAttribute("Events", events);
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("PostByDay")) {
@@ -272,6 +275,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         Collection<Event> events = getEvents(blogSC, posts);
         request.setAttribute("Events", events);
         request.setAttribute("DateCalendar", beginDate);
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("PreviousMonth")) {
@@ -333,6 +337,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
             "posts =" + posts);
         setCommonParam(blogSC, request);
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.startsWith("searchResult")) {
@@ -361,7 +366,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         }
       } else if (function.startsWith("portlet")) {
         // récupération des derniers billets
-        request.setAttribute("Posts", blogSC.lastPosts());
+        request.setAttribute("Posts", blogSC.lastValidPosts());
         // appel de la page de portlet
         destination = rootDest + "portlet.jsp";
       } else if (function.equals("AddSubscription")) {

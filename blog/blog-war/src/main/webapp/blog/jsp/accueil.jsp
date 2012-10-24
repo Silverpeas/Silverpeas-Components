@@ -45,6 +45,7 @@ boolean   isPdcUsed	= ((Boolean) request.getAttribute("IsUsePdc")).booleanValue(
 String footer = (String) request.getAttribute("Footer");
 
 boolean   isDraftVisible  = ((Boolean) request.getAttribute("IsDraftVisible")).booleanValue();
+int nbPostDisplayed   = ((Integer) request.getAttribute("NbPostDisplayed")).intValue();
 
 String 		word 		= "";
 Date 	   dateCalendar	= new Date(dateCal);
@@ -114,7 +115,7 @@ function addSubscription() {
 			    Iterator it = (Iterator) posts.iterator();
 					
 			    java.util.Calendar cal = GregorianCalendar.getInstance();
-				  while (it.hasNext()) 
+				  while (nbPostDisplayed > 0 && it.hasNext()) 
 				  {
 					PostDetail post = (PostDetail) it.next();
 					String categoryId = "";
@@ -194,6 +195,7 @@ function addSubscription() {
 				</div>
 				 <%
 				  // Fin du ticket
+				  nbPostDisplayed --;
 				  }
 				 }
 				%>  

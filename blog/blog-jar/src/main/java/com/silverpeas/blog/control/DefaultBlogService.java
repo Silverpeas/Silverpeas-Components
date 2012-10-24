@@ -352,14 +352,14 @@ public class DefaultBlogService implements BlogService {
   }
 
   @Override
-  public Collection<PostDetail> getAllPosts(String instanceId, int nbReturned) {
+  public Collection<PostDetail> getAllPosts(String instanceId) {
     PublicationPK pubPK = new PublicationPK("useless", instanceId);
     Connection con = openConnection();
 
     Collection<PostDetail> posts = new ArrayList<PostDetail>();
     try {
       // rechercher les publications classée par date d'évènement
-      Collection<String> lastEvents = PostDAO.getLastEvents(con, instanceId, nbReturned);
+      Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
       Collection<PublicationDetail> publications =
           getPublicationBm().getAllPublications(pubPK);
       for (String pubId : lastEvents) {
@@ -386,12 +386,15 @@ public class DefaultBlogService implements BlogService {
     Collection<PostDetail> posts = new ArrayList<PostDetail>();
     try {
       // rechercher les publications classées par date d'évènement
-      Collection<String> lastEvents = PostDAO.getLastEvents(con, instanceId, nbReturned);
+      Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
       Collection<PublicationDetail> publications =
           getPublicationBm().getAllPublications(pubPK);
       for (String pubId : lastEvents) {
         for (PublicationDetail publication : publications) {
-          if (publication.getPK().getId().equals(pubId) && PublicationDetail.VALID.equals(publication.getStatus())) {
+          if (publication.getPK().getId().equals(pubId) && 
+              PublicationDetail.VALID.equals(publication.getStatus()) &&
+              nbReturned > 0) {
+            nbReturned --;
             posts.add(getPost(publication));
           }
         }
@@ -403,16 +406,6 @@ public class DefaultBlogService implements BlogService {
     } finally {
       closeConnection(con);
     }
-  }
-
-  @Override
-  public Collection<PostDetail> getLastPosts(String instanceId) {
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(new Date());
-    Date beginDate = getMonthFirstDay(calendar);
-    Date endDate = getMonthLastDay(calendar);
-    return getPostsByArchive(DateUtil.date2SQLDate(beginDate), DateUtil.date2SQLDate(endDate),
-        instanceId);
   }
 
   @Override
@@ -476,10 +469,8 @@ public class DefaultBlogService implements BlogService {
       // rechercher les publications classée par date d'évènement
       Collection<String> lastEvents = PostDAO.getEventsByDates(con, instanceId, beginDate, endDate);
 
-      // Collection<PublicationDetail> publications =
-      // getPublicationBm().getDetailBetweenDate(beginDate, endDate, instanceId);
       Collection<PublicationDetail> publications =
-          getPublicationBm().getPublicationsByStatus("Valid", pubPK);
+          getPublicationBm().getAllPublications(pubPK);
       for (String pubId : lastEvents) {
         // pour chaque publication, créer le post correspondant
         SilverTrace.info("blog", "BlogBmEJB.getPostsByArchive()", "root.MSG_GEN_PARAM_VALUE",
