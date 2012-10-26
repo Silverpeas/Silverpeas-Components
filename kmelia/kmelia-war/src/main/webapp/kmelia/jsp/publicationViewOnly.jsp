@@ -82,7 +82,7 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
 
     out.println("</TD></TR></table>");
 	out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
-    if (WysiwygController.haveGotWysiwyg(detail.getPK().getSpace(), detail.getPK().getComponentName(), detail.getPK().getId())) {
+    if (WysiwygController.haveGotWysiwyg(detail.getPK().getComponentName(), detail.getPK().getId())) {
         out.println("<TR><TD>");
         out.flush();
         displayViewWysiwyg(detail.getPK().getId(), detail.getPK().getSpace(), detail.getPK().getComponentName(), request, response);

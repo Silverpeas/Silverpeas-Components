@@ -101,10 +101,10 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    */
   public boolean haveGotWysiwygNotEmpty() {
     boolean returnValue = false;
-    if (WysiwygController.haveGotWysiwyg(this.getSpaceId(), getComponentId(), getComponentId())) {
+    if (WysiwygController.haveGotWysiwyg(getComponentId(), getComponentId())) {
       try {
-        String contenuWysiwyg = WysiwygController.loadFileAndAttachment(getSpaceId(),
-                getComponentId(), getComponentId());
+        String contenuWysiwyg = WysiwygController.loadFileAndAttachment(
+            getComponentId(), getComponentId());
         if ((contenuWysiwyg != null) && (contenuWysiwyg.length() != 0)) {
           returnValue = true;
         }

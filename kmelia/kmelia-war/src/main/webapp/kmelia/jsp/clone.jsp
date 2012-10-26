@@ -311,7 +311,7 @@ function pubDraftOut() {
 		/*********************************************************************************************************************/
 		out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
 		out.println("<TR><TD valign=\"top\">");
-    	if (WysiwygController.haveGotWysiwyg(spaceId, componentId, id)) {
+    	if (WysiwygController.haveGotWysiwyg(componentId, id)) {
         	out.flush();
         	getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+id+"&SpaceId="+spaceId+"&ComponentId="+componentId).include(request, response);
     	} else if (infos != null && model != null) {

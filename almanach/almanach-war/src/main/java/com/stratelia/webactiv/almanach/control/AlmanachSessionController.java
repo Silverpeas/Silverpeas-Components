@@ -299,7 +299,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       AttachmentServiceFactory.getAttachmentService().createIndex(document);
     }
     // Delete the Wysiwyg if exists
-    if (WysiwygController.haveGotWysiwyg(getSpaceId(), getComponentId(), id)) {
+    if (WysiwygController.haveGotWysiwyg(getComponentId(), id)) {
       FileFolderManager.deleteFile(WysiwygController.getWysiwygPath(getComponentId(), id));
     }
 
@@ -383,7 +383,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       }
       // Add the wysiwyg content
       WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
-          getSpaceId(), getComponentId(), eventId);
+          getComponentId(), eventId);
     } catch (RemoteException e) {
       throw new AlmanachRuntimeException(
           "AlmanachSessionController.addEvent()",
@@ -426,7 +426,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
             getSpaceId(), getComponentId(), eventDetail.getId(), getUserId());
       } else {
         WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
-            getSpaceId(),
             getComponentId(),
             eventDetail.getId());
       }

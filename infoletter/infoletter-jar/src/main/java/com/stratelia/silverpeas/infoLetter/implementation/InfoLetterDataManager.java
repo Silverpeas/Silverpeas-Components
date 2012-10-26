@@ -620,7 +620,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       WAPrimaryKey letterPK) {
     try {
       String basicTemplate = "<body></body>";
-      WysiwygController.createFileAndAttachment(basicTemplate, spaceId,
+      WysiwygController.createFileAndAttachment(basicTemplate,
           componentId, InfoLetterPublication.TEMPLATE_ID + letterPK.getId());
     } catch (Exception e) {
       throw new InfoLetterException(

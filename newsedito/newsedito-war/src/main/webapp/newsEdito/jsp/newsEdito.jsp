@@ -333,7 +333,8 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
 		{
 			CompletePublication pubComplete = news.getCompletePublication();
 			displayPublication(out, news, pubComplete, settings) ;
-			if (WysiwygController.haveGotWysiwyg(pubComplete.getPublicationDetail().getPK().getSpace(), pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId())) {
+			if (WysiwygController.haveGotWysiwyg(
+                    pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId())) {
 				out.flush();
 				displayViewWysiwyg(news.getPublicationId(), news.getSpaceId(), news.getComponentId(), request, response);
 			}

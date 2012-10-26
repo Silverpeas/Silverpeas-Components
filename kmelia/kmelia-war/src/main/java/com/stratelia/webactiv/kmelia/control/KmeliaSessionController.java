@@ -1074,7 +1074,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (NodePK.BIN_NODE_ID.equals(nodeId)) {
       // la publication sera supprimée définitivement, il faut donc supprimer les fichiers joints
       try {
-        WysiwygController.deleteWysiwygAttachments(getSpaceId(), getComponentId(), pubId);
+        WysiwygController.deleteWysiwygAttachments(getComponentId(), pubId);
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSessionController.deletePublication",
             SilverpeasRuntimeException.ERROR, "root.EX_DELETE_ATTACHMENT_FAILED", e);

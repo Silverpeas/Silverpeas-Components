@@ -2836,7 +2836,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
 
       // merge du contenu Wysiwyg
-      boolean cloneWysiwyg = WysiwygController.haveGotWysiwyg("useless", tempPK.getInstanceId(),
+      boolean cloneWysiwyg = WysiwygController.haveGotWysiwyg(tempPK.getInstanceId(),
           cloneId);
       if (cloneWysiwyg) {
         WysiwygController.copy("useless", tempPK.getInstanceId(), cloneId,
@@ -3492,7 +3492,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   public String getWysiwyg(PublicationPK pubPK) {
     String wysiwygContent = null;
     try {
-      wysiwygContent = WysiwygController.loadFileAndAttachment(pubPK.getSpaceId(), pubPK.
+      wysiwygContent = WysiwygController.loadFileAndAttachment(pubPK.
           getInstanceId(), pubPK.getId());
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getAttachments()", ERROR,
@@ -3578,7 +3578,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     // remove Wysiwyg content
     try {
-      WysiwygController.deleteWysiwygAttachments("useless", pubPK.getInstanceId(), pubPK.getId());
+      WysiwygController.deleteWysiwygAttachments(pubPK.getInstanceId(), pubPK.getId());
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.removeExternalElementsOfPublications",
           ERROR, "root.EX_DELETE_ATTACHMENT_FAILED", e);

@@ -1490,9 +1490,9 @@ public class ForumsBMEJB implements SessionBean {
 
   private String getWysiwygContent(String componentId, String messageId) {
     String text = "";
-    if (WysiwygController.haveGotWysiwyg(null, componentId, messageId)) {
+    if (WysiwygController.haveGotWysiwyg(componentId, messageId)) {
       try {
-        text = WysiwygController.loadFileAndAttachment(null, componentId, messageId);
+        text = WysiwygController.loadFileAndAttachment(componentId, messageId);
       } catch (WysiwygException e) {
         SilverTrace.error("forums", "ForumsBMEJB.getWysiwygContent()", "componentId = " +
             componentId + "messageId = " + messageId);
@@ -1517,7 +1517,7 @@ public class ForumsBMEJB implements SessionBean {
 
   private void createWysiwyg(MessagePK messagePK, String text) {
     try {
-      WysiwygController.createFileAndAttachment(text, messagePK.getSpaceId(),
+      WysiwygController.createFileAndAttachment(text,
           messagePK.getComponentName(), messagePK.getId());
     } catch (WysiwygException e) {
       SilverTrace.error("forums", "ForumsBMEJB.createWysiwyg()", "spaceId = "
@@ -1532,10 +1532,10 @@ public class ForumsBMEJB implements SessionBean {
     String componentId = messagePK.getComponentName();
     String messageId = messagePK.getId();
     try {
-      if (WysiwygController.haveGotWysiwyg(spaceId, componentId, messageId)) {
+      if (WysiwygController.haveGotWysiwyg(componentId, messageId)) {
         WysiwygController.updateFileAndAttachment(text, spaceId, componentId, messageId, userId);
       } else {
-        WysiwygController.createFileAndAttachment(text, spaceId, componentId,
+        WysiwygController.createFileAndAttachment(text, componentId,
             messageId);
       }
     } catch (WysiwygException e) {

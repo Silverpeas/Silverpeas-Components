@@ -20,40 +20,13 @@
  */
 package com.silverpeas.gallery.servlets;
 
-import java.io.File;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.*;
 import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.ParameterNames;
 import com.silverpeas.gallery.control.GallerySessionController;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
-import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.gallery.model.MetaData;
-import com.silverpeas.gallery.model.Order;
-import com.silverpeas.gallery.model.OrderRow;
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.*;
 import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
@@ -73,13 +46,19 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import org.silverpeas.search.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
+import javax.servlet.http.HttpServletRequest;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.*;
 
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
 
@@ -1626,21 +1605,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   }
 
   private String extractFileNameFromFilePath(FileItem file) {
-    String name = file.getName();
-    boolean runOnUnix = !FileUtil.isWindows();
-    if (runOnUnix) {
-      name = name.replace('\\', File.separatorChar);
-      SilverTrace.info("gallery", "GalleryRequestRouter.createPhoto", "root.MSG_GEN_PARAM_VALUE",
-          "fileName on Unix = " + name);
-    }
-
-    name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
-    return name;
+    return FileUtil.getFilename(file.getName());
   }
 
   private String createPhoto(List<FileItem> parameters, GallerySessionController gallerySC,
-      String encoding)
-      throws ParseException {
+      String encoding) throws ParseException {
     // récupération des paramètres
     String title =
         FileUploadUtil.getParameter(parameters, ParameterNames.ImageTitle, null, encoding);

@@ -36,16 +36,15 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.ImageLoader;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.util.ImageLoader;
 
 
 public class ImageHelper {
@@ -78,13 +77,7 @@ public class ImageHelper {
     if (image != null) {
       String name = image.getName();
       if (name != null) {
-        if (!FileUtil.isWindows()) {
-          name = name.replace('\\', File.separatorChar);
-          SilverTrace.info("gallery", "ImageHelper.processImage",
-            "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + name);
-        }
-
-        name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
+        name = FileUtil.getFilename(name);
         if (ImageType.isImage(name)) {
           File dir = new File(FileRepositoryManager.getAbsolutePath(instanceId)
             + subDirectory + photoId + File.separator + name);

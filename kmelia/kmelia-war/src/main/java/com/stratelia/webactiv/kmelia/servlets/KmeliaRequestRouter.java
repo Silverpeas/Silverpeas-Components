@@ -23,30 +23,7 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.fileupload.FileItem;
-import org.xml.sax.SAXException;
-
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.*;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelper;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelperContext;
@@ -58,11 +35,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.ZipManager;
+import com.silverpeas.util.*;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -84,12 +57,7 @@ import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.servlets.handlers.StatisticRequestHandler;
-import com.stratelia.webactiv.util.ClientBrowserUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.WAAttributeValuePair;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -100,6 +68,18 @@ import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.apache.commons.fileupload.FileItem;
+import org.xml.sax.SAXException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.rmi.RemoteException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
@@ -1166,7 +1146,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         if (completePublication.getModelDetail() != null) {
           destination = getDestination("ToDBModel", kmelia, request);
-        } else if (WysiwygController.haveGotWysiwyg(kmelia.getSpaceId(), kmelia.getComponentId(),
+        } else if (WysiwygController.haveGotWysiwyg(kmelia.getComponentId(),
                 completePublication.getPublicationDetail().getPK().getId())) {
           destination = getDestination("ToWysiwyg", kmelia, request);
         } else {
@@ -1312,18 +1292,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             textDetails.add(new InfoTextDetail(null, Integer.toString(textOrder), null, theText));
           } else if (!item.isFormField()) {
             logicalName = item.getName();
-            if (logicalName != null && logicalName.length() > 0) {
-              // the part actually contained a file
-
-              if (runOnUnix) {
-                logicalName = logicalName.replace('\\', File.separatorChar);
-                SilverTrace.info("kmelia", "KmeliaRequestRouter.UpdateDBModelContent",
-                        "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + logicalName);
-              }
-
-              logicalName =
-                      logicalName.substring(logicalName.lastIndexOf(File.separator) + 1,
-                          logicalName.length());
+            if (StringUtil.isDefined(logicalName)) {
+              logicalName = FileUtil.getFilename(logicalName);
               type = logicalName.substring(logicalName.lastIndexOf(".") + 1, logicalName.length());
               physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
               mimeType = item.getContentType();
@@ -1332,8 +1302,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               dir = new File(FileRepositoryManager.getAbsolutePath(kmelia.getComponentId())
                       + publicationSettings.getString("imagesSubDirectory") + File.separator
                       + physicalName);
-              if ("gif".equalsIgnoreCase(type) || "jpg".equalsIgnoreCase(type)
-                      || "jpeg".equalsIgnoreCase(type) || "png".equalsIgnoreCase(type)) {
+              if (FileUtil.isImage(logicalName)) {
                 item.write(dir);
                 imageOrder++;
                 if (size > 0) {
@@ -2009,26 +1978,19 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           fileSize = fileItem.getSize();
 
           // Directory Temp for the uploaded file
-          tempFolderPath = FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId())
-                  + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                      "RepositoryTypeTemp") + File.separator + tempFolderName;
+          tempFolderPath = FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId()) +
+              GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator +
+              tempFolderName;
           if (!new File(tempFolderPath).exists()) {
-            FileRepositoryManager.createAbsolutePath(
-                    kmeliaScc.getComponentId(), GeneralPropertiesManager
-                        .getGeneralResourceLocator().
-                        getString("RepositoryTypeTemp")
-                        +
-                        File.separator + tempFolderName);
+            FileRepositoryManager.createAbsolutePath(kmeliaScc.getComponentId(),
+                GeneralPropertiesManager.getString("RepositoryTypeTemp") +
+                File.separator + tempFolderName);
           }
 
           // Creation of the file in the temp folder
-          File fileUploaded =
-                  new File(FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId())
-                      + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                          "RepositoryTypeTemp")
-                      + File.separator
-                      + tempFolderName
-                      + File.separator + logicalName);
+          File fileUploaded = new File(FileRepositoryManager.getAbsolutePath(kmeliaScc
+              .getComponentId()) + GeneralPropertiesManager.getString("RepositoryTypeTemp")
+                  + File.separator + tempFolderName + File.separator + logicalName);
           fileItem.write(fileUploaded);
 
           // Is a real file ?

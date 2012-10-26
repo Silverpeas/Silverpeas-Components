@@ -148,7 +148,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
     // get user language
     String language = getUserPreferences(searchResult.getUserId()).getLanguage();
 
-    if (WysiwygController.haveGotWysiwyg(spaceId, componentId, id)) {
+    if (WysiwygController.haveGotWysiwyg(componentId, id)) {
       // WYSIWYG content to add inside template
 
       String content = "";

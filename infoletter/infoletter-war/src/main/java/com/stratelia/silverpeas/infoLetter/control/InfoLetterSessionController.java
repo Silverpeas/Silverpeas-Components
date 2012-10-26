@@ -269,7 +269,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public void deleteInfoLetterPublication(WAPrimaryKey pk) {
     deleteIndex(getInfoLetterPublication(pk));
     try {
-      WysiwygController.deleteWysiwygAttachments(getSpaceId(), getComponentId(), pk.getId());
+      WysiwygController.deleteWysiwygAttachments(getComponentId(), pk.getId());
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
@@ -676,8 +676,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   // copie d'un repertoire wysiwyg vers un autre
   public void copyWYSIWYG(String source, String target) {
     try {
-      if (WysiwygController.loadFileAndAttachment(getSpaceId(), getComponentId(), target) != null) {
-        WysiwygController.deleteWysiwygAttachments(getSpaceId(), getComponentId(), target);
+      if (WysiwygController.loadFileAndAttachment(getComponentId(), target) != null) {
+        WysiwygController.deleteWysiwygAttachments(getComponentId(), target);
       }
       WysiwygController.copy(getSpaceId(), getComponentId(), source, getSpaceId(),
           getComponentId(),
@@ -692,7 +692,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     String template;
     try {
       template =
-          WysiwygController.loadFileAndAttachment("useless", getComponentId(),
+          WysiwygController.loadFileAndAttachment(getComponentId(),
               InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
     } catch (WysiwygException e) {
       throw new InfoLetterException("InfoLetterSessionController.isTemplateExist",

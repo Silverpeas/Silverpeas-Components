@@ -700,7 +700,7 @@
 				        /*********************************************************************************************************************/
 				
 				        out.println("<div id=\"richContent\">");
-				        if (WysiwygController.haveGotWysiwyg(spaceId, componentId, id)) {
+				        if (WysiwygController.haveGotWysiwyg(componentId, id)) {
 				          out.flush();
 				          getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId=" + id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId + "&Language=" + language + "&axisId=" + kmeliaScc.
 				              getAxisIdGlossary() + "&onlyFirst=" + highlightFirst).include(request, response);

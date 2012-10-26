@@ -46,7 +46,6 @@ import org.silverpeas.attachment.mock.SimpleDocumentServiceWrapper;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import static org.mockito.Mockito.*;
 
 /**
