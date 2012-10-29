@@ -169,7 +169,7 @@ public class CrmContact extends SilverpeasBean implements Comparable<Object> {
   }
 
   public List<SimpleDocument> getAttachments() {
-    return AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(
+    return AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
         new CrmPK("CONTACT_" + getPK().getId(), getInstanceId()), null);
   }
 

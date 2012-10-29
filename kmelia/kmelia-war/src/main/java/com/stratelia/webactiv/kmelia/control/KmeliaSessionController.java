@@ -3379,8 +3379,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       nodePK = getNodeBm().createNode(node, father);
 
       // paste wysiwyg attached to node
-      WysiwygController.copy(null, nodeToPastePK.getInstanceId(), "Node_" + nodeToPastePK.getId(),
-          null, getComponentId(), "Node_" + nodePK.getId(), getUserId());
+      WysiwygController.copy(nodeToPastePK.getInstanceId(), "Node_" + nodeToPastePK.getId(),
+          getComponentId(), "Node_" + nodePK.getId(), getUserId());
 
       List<NodePK> nodeIdsToPaste = new ArrayList<NodePK>();
       for (NodeDetail oneNodeToPaste : treeToPaste) {
@@ -3477,7 +3477,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         // Paste positions on Pdc
         pastePdcPositions(fromPubPK, id);
         // paste wysiwyg
-        WysiwygController.copy(null, fromComponentId, fromId, null, getComponentId(), id,
+        WysiwygController.copy(fromComponentId, fromId, getComponentId(), id,
             getUserId());
         // paste files
         Map<String, String> fileIds = pasteFiles(fromPubPK, id);

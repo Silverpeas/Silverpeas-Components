@@ -274,7 +274,7 @@ public class QuestionManagerTest extends AbstractTestDao {
     ContentManager mockContentManager = mock(ContentManager.class);
     manager.getContentManager().contentManager = mockContentManager;
     AttachmentService realService = mock(AttachmentService.class);
-    when(realService.searchAttachmentsByExternalObject(Mockito.any(ForeignPK.class), anyString())).
+    when(realService.listDocumentsByForeignKey(Mockito.any(ForeignPK.class), anyString())).
         thenReturn(new ArrayList<SimpleDocument>());
     getAttachmentService().setRealService(realService);
     Question question = manager.getQuestion(101L);

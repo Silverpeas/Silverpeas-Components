@@ -129,8 +129,8 @@ public class KmeliaPaste implements ComponentPasteInterface {
     }
 
     // paste wysiwyg attached to node
-    WysiwygController.copy(null, nodeToPastePK.getInstanceId(), "Node_" + nodeToPastePK.getId(),
-        null, toComponentId, "Node_" + nodePK.getId(), userId);
+    WysiwygController.copy(nodeToPastePK.getInstanceId(), "Node_" + nodeToPastePK.getId(),
+        toComponentId, "Node_" + nodePK.getId(), userId);
     // paste subtopics
     node = getNodeBm().getHeader(nodePK);
     Collection<NodeDetail> subtopics = getNodeBm().getDetail(nodeToPastePK).getChildrenDetails();

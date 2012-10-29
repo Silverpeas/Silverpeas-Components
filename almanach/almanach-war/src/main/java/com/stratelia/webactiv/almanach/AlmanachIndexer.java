@@ -30,7 +30,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 
@@ -55,7 +54,7 @@ public class AlmanachIndexer implements ComponentIndexerInterface {
     for (EventDetail event : almanachSessionController.getAllEvents()) {
       almanachSessionController.indexEvent(event);
       List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
-          .searchAttachmentsByExternalObject(event.getPK(), null);
+          .listDocumentsByForeignKey(event.getPK(), null);
           for (SimpleDocument document : documents) {
             AttachmentServiceFactory.getAttachmentService().createIndex(document);
           }

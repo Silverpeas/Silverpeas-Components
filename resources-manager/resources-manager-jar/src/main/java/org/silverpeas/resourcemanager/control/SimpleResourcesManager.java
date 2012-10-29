@@ -27,7 +27,6 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -283,7 +282,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   public void deleteReservation(String id, String componentId) {
     deleteIndex(id, "Reservation", componentId);
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
-        .searchAttachmentsByExternalObject(new ForeignPK(id, componentId), null);
+        .listDocumentsByForeignKey(new ForeignPK(id, componentId), null);
     for (SimpleDocument document : documents) {
       AttachmentServiceFactory.getAttachmentService().createIndex(document);
     }

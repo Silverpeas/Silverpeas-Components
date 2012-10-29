@@ -81,7 +81,7 @@ public class ReplyGettingTest extends RESTWebServiceTest<QuestionReplyTestResour
   @Test
   public void getAllRepliesByAnAuthenticatedUser() throws Exception {
     SimpleDocumentService mockDocumentService = mock(SimpleDocumentService.class);
-    when(mockDocumentService.searchAttachmentsByExternalObject(Mockito.any(WAPrimaryKey.class),
+    when(mockDocumentService.listDocumentsByForeignKey(Mockito.any(WAPrimaryKey.class),
         Mockito.any(String.class))).thenReturn(new ArrayList<SimpleDocument>());
     ((SimpleDocumentServiceWrapper) AttachmentServiceFactory.getAttachmentService()).setRealService(
         mockDocumentService);

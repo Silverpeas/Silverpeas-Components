@@ -129,7 +129,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     ReplyEntity entity = ReplyEntity.fromReply(reply, getUserPreferences().getLanguage()).withURI(
         replyURI).withProfile(profile);
     Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentsByExternalObject(reply.getPK(), entity.getLanguage());
+        listDocumentsByForeignKey(reply.getPK(), entity.getLanguage());
     entity.withAttachments(attachments);
     AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(getOrganizationController()));
     author.setAvatar(getHttpServletRequest().getContextPath() + author.getAvatar());

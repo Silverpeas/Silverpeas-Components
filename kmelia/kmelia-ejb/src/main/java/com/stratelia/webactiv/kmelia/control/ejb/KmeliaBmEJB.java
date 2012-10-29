@@ -2839,8 +2839,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       boolean cloneWysiwyg = WysiwygController.haveGotWysiwyg(tempPK.getInstanceId(),
           cloneId);
       if (cloneWysiwyg) {
-        WysiwygController.copy("useless", tempPK.getInstanceId(), cloneId,
-            "useless", pubPK.getInstanceId(), pubPK.getId(), tempPubli.getPublicationDetail().
+        WysiwygController.copy(tempPK.getInstanceId(), cloneId,
+            pubPK.getInstanceId(), pubPK.getId(), tempPubli.getPublicationDetail().
             getUpdaterId());
       }
 
@@ -4697,7 +4697,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
 
       // paste wysiwyg
-      WysiwygController.copy(null, fromComponentId, fromId, null, fromComponentId, cloneId, clone.
+      WysiwygController.copy(fromComponentId, fromId, fromComponentId, cloneId, clone.
           getCreatorId());
 
       // clone attachments

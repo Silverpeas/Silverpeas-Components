@@ -294,7 +294,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     getAlmanachBm().removeEvent(pk);
     // remove attachments from filesystem
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
-        .searchAttachmentsByExternalObject(pk, null);
+        .listDocumentsByForeignKey(pk, null);
     for (SimpleDocument document : documents) {
       AttachmentServiceFactory.getAttachmentService().createIndex(document);
     }

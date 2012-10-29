@@ -679,7 +679,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       if (WysiwygController.loadFileAndAttachment(getComponentId(), target) != null) {
         WysiwygController.deleteWysiwygAttachments(getComponentId(), target);
       }
-      WysiwygController.copy(getSpaceId(), getComponentId(), source, getSpaceId(),
+      WysiwygController.copy(getComponentId(), source,
           getComponentId(),
           target, getUserId());
     } catch (Exception e) {

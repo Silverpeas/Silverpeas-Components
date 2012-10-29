@@ -189,7 +189,7 @@ public class CrmDelivery extends SilverpeasBean implements Comparable<Object> {
   }
 
   public List<SimpleDocument> getAttachments() {
-    return AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(
+    return AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
         new CrmPK("DELIVERY_" + getPK().getId(), getInstanceId()), null);
   }
 

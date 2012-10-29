@@ -139,7 +139,7 @@ public class CrmParticipant extends SilverpeasBean implements Comparable<Object>
   }
 
   public List<SimpleDocument> getAttachments() {
-    return AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(
+    return AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
         new CrmPK("PARTICIPANT_" + getPK().getId(), getInstanceId()), null);
   }
 
