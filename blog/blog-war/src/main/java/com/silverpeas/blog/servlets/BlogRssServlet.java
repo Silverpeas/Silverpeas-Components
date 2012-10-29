@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.blog.servlets;
 
 import com.silverpeas.blog.control.BlogService;
@@ -36,9 +37,7 @@ import com.silverpeas.peasUtil.RssServlet;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class BlogRssServlet extends RssServlet<PostDetail> {
-
-  private static final long serialVersionUID = -7858489574699990145L;
-
+  
   /*
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)
@@ -48,7 +47,7 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
       throws RemoteException {
     // récupération de la liste des 10 prochains billets du Blog
     BlogService service = BlogServiceFactory.getFactory().getBlogService();
-    return service.getAllPosts(instanceId, nbReturned);
+    return service.getAllValidPosts(instanceId, nbReturned);
   }
 
   /*
@@ -100,5 +99,4 @@ public class BlogRssServlet extends RssServlet<PostDetail> {
   public String getElementCreatorId(PostDetail post) {
     return post.getPublication().getUpdaterId();
   }
-
 }

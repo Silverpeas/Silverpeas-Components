@@ -377,6 +377,33 @@ public class DefaultBlogService implements BlogService {
       closeConnection(con);
     }
   }
+  
+  @Override
+  public Collection<PostDetail> getAllValidPosts(String instanceId, int nbReturned) {
+    PublicationPK pubPK = new PublicationPK("useless", instanceId);
+    Connection con = openConnection();
+
+    Collection<PostDetail> posts = new ArrayList<PostDetail>();
+    try {
+      // rechercher les publications classées par date d'évènement
+      Collection<String> lastEvents = PostDAO.getLastEvents(con, instanceId, nbReturned);
+      Collection<PublicationDetail> publications =
+          getPublicationBm().getAllPublications(pubPK);
+      for (String pubId : lastEvents) {
+        for (PublicationDetail publication : publications) {
+          if (publication.getPK().getId().equals(pubId) && PublicationDetail.VALID.equals(publication.getStatus())) {
+            posts.add(getPost(publication));
+          }
+        }
+      }
+      return posts;
+    } catch (Exception e) {
+      throw new BlogRuntimeException("BlogBmEJB.getAllValidPosts()", SilverpeasRuntimeException.ERROR,
+          "post.MSG_POST_NOT_CREATE", e);
+    } finally {
+      closeConnection(con);
+    }
+  }
 
   @Override
   public Collection<PostDetail> getLastPosts(String instanceId) {
