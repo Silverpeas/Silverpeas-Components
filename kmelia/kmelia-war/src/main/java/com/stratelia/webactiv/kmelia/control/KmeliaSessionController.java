@@ -4541,13 +4541,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           getAllVisiblePublicationsByTopic(getSessionTopic().getNodePK().getId());
 
       // Store all descendant topicIds of this topic
-      List<String> nodeIDs = new ArrayList<String>();
+      List<NodePK> nodeIDs = new ArrayList<NodePK>();
 
       // Get current topic too
-      nodeIDs.add(getSessionTopic().getNodePK().getId());
+      nodeIDs.add(getSessionTopic().getNodePK());
       Collection<NodePK> nodePKs = getNodeBm().getDescendantPKs(getSessionTopic().getNodePK());
       for (NodePK nodePK : nodePKs) {
-        nodeIDs.add(nodePK.getId());
+        nodeIDs.add(nodePK);
       }
 
       List<String> pubIds = new ArrayList<String>();
@@ -4562,7 +4562,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
             // Add the alias which have a link to the targets topics
             for (Alias alias : pubAliases) {
-              if (nodeIDs.contains(alias.getId())) {
+              if (nodeIDs.contains(new NodePK(alias.getId(), alias.getInstanceId()))) {
                 if (!pubIds.contains(pubDetail.getId())) {
                   pubIds.add(pubDetail.getId());
                 }
