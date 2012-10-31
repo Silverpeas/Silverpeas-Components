@@ -171,15 +171,16 @@ function sortNode(updatedNodeJSON)
 </script>
 </head>
 <body id="blog">
-<div class="inlineMessage"><fmt:message key="blog.homePageMessage"/></div>
-<br clear="all"/>
 <div id="<%=instanceId %>">
 <%
    	operationPane.addOperation(resource.getIcon("blog.addCategory"), resource.getString("blog.addCategory") , "javascript:onClick=addCategory()");
 
 	out.println(window.printBefore());
     out.println(frame.printBefore());
-    
+%>
+<div class="inlineMessage"><fmt:message key="blog.homePageMessage"/></div>
+<br clear="all"/>
+<%  
 	ArrayPane arrayPane = gef.getArrayPane("categoryList", "ViewCategory", request, session);
 	arrayPane.setXHTML(true);
 	arrayPane.setSortableLines(true);
