@@ -71,7 +71,7 @@ public class DelegatedNewsDaoTest {
 
   @Test
   public void testInsertDelegatedNews() throws Exception {
-    Integer pubId = new Integer("3");
+    Integer pubId = new Integer("4");
     String instanceId = "kmelia1";  
     String contributorId = "1";
     DelegatedNews expectedDetail = new DelegatedNews(pubId.intValue(), instanceId, contributorId, new Date(), new Date(), null);
@@ -92,19 +92,25 @@ public class DelegatedNewsDaoTest {
     pubId = new Integer("2");
     detail = dao.findOne(pubId);
     assertThat(detail, notNullValue());
+    
+    pubId = new Integer("3");
+    detail = dao.findOne(pubId);
+    assertThat(detail, notNullValue());
   }
   
   
   @Test
   public void testFindDelegatedNewsByStatus() throws Exception {
-    String status = "Valid";
+    String status = DelegatedNews.NEWS_VALID;
     List<DelegatedNews> listDetail = dao.findByStatus(status);
     assertThat(listDetail, notNullValue());
-    assertThat(listDetail.size(), is(1));
+    assertThat(listDetail.size(), is(2));
     DelegatedNews detail = listDetail.get(0);
+    assertThat(detail.getPubId(), is(3));
+    detail = listDetail.get(1);
     assertThat(detail.getPubId(), is(2));
     
-    status = "Refused";
+    status = DelegatedNews.NEWS_REFUSED;
     listDetail = dao.findByStatus(status);
     assertThat(listDetail, notNullValue());
     assertThat(listDetail.size(), is(0));

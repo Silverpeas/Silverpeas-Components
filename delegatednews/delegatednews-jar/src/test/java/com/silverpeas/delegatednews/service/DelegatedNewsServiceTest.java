@@ -5,6 +5,7 @@
 package com.silverpeas.delegatednews.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+
 import static org.hamcrest.Matchers.*;
 
 import javax.sql.DataSource;
@@ -89,14 +90,14 @@ public class DelegatedNewsServiceTest {
   public void testGetAllDelegatedNews() throws Exception {
     List<DelegatedNews> listDetail = service.getAllDelegatedNews();
     assertThat(listDetail, notNullValue());
-    assertThat(listDetail.size(), is(2));
+    assertThat(listDetail.size(), is(3));
   }
   
   @Test
   public void testGetAllValidDelegatedNews() throws Exception {
     List<DelegatedNews> listDetail = service.getAllValidDelegatedNews();
     assertThat(listDetail, notNullValue());
-    assertThat(listDetail.size(), is(1));
+    assertThat(listDetail.size(), is(2));
   }
   
   @Test
