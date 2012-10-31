@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -72,10 +73,13 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
   // recherche du profile de l'utilisateur
   public String getFlag(String[] profiles) {
-    String flag = "user";
-    for (int i = 0; i < profiles.length; i++) {
-      if (profiles[i].equals("admin")) {
-        return profiles[i];
+    String flag = SilverpeasRole.user.toString();
+    for (String profile : profiles) {
+      if (SilverpeasRole.admin.isInRole(profile)) {
+        return profile;
+      }
+      if (SilverpeasRole.publisher.isInRole(profile)) {
+        flag = profile;
       }
     }
     return flag;
@@ -97,7 +101,8 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
     String rootDest = "/blog/jsp/";
 
     // paramètres généraux
-    request.setAttribute("Profile", getFlag(blogSC.getUserRoles()));
+    String flag = getFlag(blogSC.getUserRoles());
+    request.setAttribute("Profile", flag);
 
     try {
       if (function.startsWith("Main")) {
@@ -116,6 +121,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("Events", events);
 
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10));
 
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
@@ -228,6 +234,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         Collection<Event> events = getEvents(blogSC, posts);
         request.setAttribute("Events", events);
         request.setAttribute("DateCalendar", beginDate);
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("PostByArchive")) {
@@ -249,6 +256,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         Collection<Event> events = getEvents(blogSC, posts);
         request.setAttribute("Events", events);
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("PostByDay")) {
@@ -267,6 +275,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         Collection<Event> events = getEvents(blogSC, posts);
         request.setAttribute("Events", events);
         request.setAttribute("DateCalendar", beginDate);
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("PreviousMonth")) {
@@ -331,6 +340,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
             "posts =" + posts);
         setCommonParam(blogSC, request);
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.startsWith("searchResult")) {
@@ -359,7 +369,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         }
       } else if (function.startsWith("portlet")) {
         // récupération des derniers billets
-        request.setAttribute("Posts", blogSC.lastPosts());
+        request.setAttribute("Posts", blogSC.lastValidPosts());
         // appel de la page de portlet
         destination = rootDest + "portlet.jsp";
       } else if (function.equals("AddSubscription")) {

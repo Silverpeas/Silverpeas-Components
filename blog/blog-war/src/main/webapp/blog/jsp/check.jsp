@@ -70,10 +70,10 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.silverpeas.myLinks.model.LinkDetail"%>
 <%@ page import="com.stratelia.webactiv.agenda.view.CalendarHtmlView"%>
 <%@ page import="com.stratelia.webactiv.agenda.control.AgendaSessionController"%>
-<%@ page import="com.stratelia.webactiv.calendar.model.SchedulableCount"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.calendar.Calendar"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
