@@ -97,10 +97,19 @@ public class BlogSessionController extends AbstractComponentSessionController {
     setMonthFirstDay(calendar);
     setMonthLastDay(calendar);
 
-    // return getBlogBm().getLastPosts(getComponentId());
-    return getBlogService().getAllPosts(getComponentId(), 10);
+    return getBlogService().getAllPosts(getComponentId());
   }
 
+  public Collection<PostDetail> lastValidPosts() {
+    // mettre à jour les variables currentBeginDate et currentEndDate
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    setMonthFirstDay(calendar);
+    setMonthLastDay(calendar);
+
+    return getBlogService().getAllValidPosts(getComponentId(), 10);
+  }
+  
   private void setMonthFirstDay(Calendar calendar) {
     calendar.set(Calendar.DAY_OF_MONTH, 1);
     currentBeginDate.setTime(calendar.getTime());

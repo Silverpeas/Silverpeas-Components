@@ -39,7 +39,7 @@ public class BlogStatistics implements ComponentStatisticsInterface {
       throws Exception {
     ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
     BlogService service = BlogServiceFactory.getFactory().getBlogService();
-    Collection<PostDetail> posts = service.getAllPosts(componentId, 10000);
+    Collection<PostDetail> posts = service.getAllPosts(componentId);
     for (PostDetail post : posts) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(post.getPublication().getCreatorId());

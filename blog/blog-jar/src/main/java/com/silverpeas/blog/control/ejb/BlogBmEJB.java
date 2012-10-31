@@ -299,14 +299,14 @@ public class BlogBmEJB implements SessionBean {
     }
   }
 
-  public Collection<PostDetail> getAllPosts(String instanceId, int nbReturned) {
+  public Collection<PostDetail> getAllPosts(String instanceId) {
     PublicationPK pubPK = new PublicationPK("useless", instanceId);
     Connection con = initCon();
 
     Collection<PostDetail> posts = new ArrayList<PostDetail>();
     try {
       // rechercher les publications classée par date d'évènement
-      Collection<String> lastEvents = PostDAO.getLastEvents(con, instanceId, nbReturned);
+      Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
       Collection<PublicationDetail> publications =
           getPublicationBm().getAllPublications(pubPK);
       OrganizationController orgaController = new OrganizationController();

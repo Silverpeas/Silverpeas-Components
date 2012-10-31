@@ -51,7 +51,7 @@ public interface BlogBm extends EJBObject {
 
   public PostDetail getPost(PublicationPK pubPK) throws RemoteException;
 
-  public Collection<PostDetail> getAllPosts(String instanceId, int nbReturned)
+  public Collection<PostDetail> getAllPosts(String instanceId)
       throws RemoteException;
 
   public Collection<PostDetail> getLastPosts(String instanceId) throws RemoteException;
