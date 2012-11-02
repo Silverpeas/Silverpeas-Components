@@ -35,25 +35,46 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.webactiv.util.DateUtil;
 
 /**
  * @author Yohann Chastagnier
  */
-public class PhotoDataUpdateDelegate {
+public abstract class AbstractPhotoDataDelegate {
 
-  private String language;
+  private final boolean skipEmptyValues;
+  private final String language;
   private HeaderData headerData = null;
   private RecordSet recordSet = null;
   private Form form = null;
-  private List<FileItem> formParams = null;
+  private final List<FileItem> parameters;
+  private final String albumId;
 
   /**
    * Default constructor
    * @param language
+   * @param albumId
+   * @param parameters
    */
-  public PhotoDataUpdateDelegate(final String language) {
+  public AbstractPhotoDataDelegate(final String language, final String albumId,
+      final List<FileItem> parameters) {
+    this(language, albumId, parameters, true);
+  }
+
+  /**
+   * Default constructor
+   * @param language
+   * @param albumId
+   * @param parameters
+   * @param skipEmptyValues
+   */
+  public AbstractPhotoDataDelegate(final String language, final String albumId,
+      final List<FileItem> parameters, final boolean skipEmptyValues) {
     this.language = language;
+    this.skipEmptyValues = skipEmptyValues;
+    this.albumId = albumId;
+    this.parameters = parameters;
   }
 
   /**
@@ -80,16 +101,15 @@ public class PhotoDataUpdateDelegate {
    * @return
    */
   public boolean isForm() {
-    return recordSet != null && form != null && formParams != null;
+    return recordSet != null && form != null && parameters != null;
   }
 
   /**
    * Set a form
    */
-  public void setForm(RecordSet recordSet, Form form, List<FileItem> formParams) {
+  public void setForm(final RecordSet recordSet, final Form form) {
     this.recordSet = recordSet;
     this.form = form;
-    this.formParams = formParams;
   }
 
   /**
@@ -97,31 +117,34 @@ public class PhotoDataUpdateDelegate {
    * @param photo
    */
   public void updateHeader(final PhotoDetail photo) {
-    if (StringUtil.isDefined(getHeaderData().getTitle())) {
+    if (getHeaderData().getAlbumLabel() != null) {
+      photo.setAlbumLabel(getHeaderData().getAlbumLabel());
+    }
+    if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getTitle())) {
       photo.setTitle(getHeaderData().getTitle());
     }
-    if (StringUtil.isDefined(getHeaderData().getDescription())) {
+    if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getDescription())) {
       photo.setDescription(getHeaderData().getDescription());
     }
-    if (StringUtil.isDefined(getHeaderData().getAuthor())) {
+    if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getAuthor())) {
       photo.setAuthor(getHeaderData().getAuthor());
     }
-    if (StringUtil.isDefined(getHeaderData().getKeyWord())) {
+    if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getKeyWord())) {
       photo.setKeyWord(getHeaderData().getKeyWord());
     }
-    if (getHeaderData().isDownload()) {
+    if (!skipEmptyValues || getHeaderData().isDownload()) {
       photo.setDownload(getHeaderData().isDownload());
     }
-    if (getHeaderData().getBeginDownloadDate() != null) {
+    if (!skipEmptyValues || getHeaderData().getBeginDownloadDate() != null) {
       photo.setBeginDownloadDate(getHeaderData().getBeginDownloadDate());
     }
-    if (getHeaderData().getEndDownloadDate() != null) {
+    if (!skipEmptyValues || getHeaderData().getEndDownloadDate() != null) {
       photo.setEndDownloadDate(getHeaderData().getEndDownloadDate());
     }
-    if (getHeaderData().getBeginDate() != null) {
+    if (!skipEmptyValues || getHeaderData().getBeginDate() != null) {
       photo.setBeginDate(getHeaderData().getBeginDate());
     }
-    if (getHeaderData().getEndDate() != null) {
+    if (!skipEmptyValues || getHeaderData().getEndDate() != null) {
       photo.setEndDate(getHeaderData().getEndDate());
     }
   }
@@ -137,7 +160,7 @@ public class PhotoDataUpdateDelegate {
       data = set.getEmptyRecord();
       data.setId(photoId);
     }
-    form.update(formParams, data, pagesContext);
+    form.update(parameters, data, pagesContext);
     set.save(data);
   }
 
@@ -147,6 +170,7 @@ public class PhotoDataUpdateDelegate {
    */
   public class HeaderData {
 
+    private Boolean albumLabel = null;
     private String title = null;
     private String description = null;
     private String author = null;
@@ -157,11 +181,19 @@ public class PhotoDataUpdateDelegate {
     private Date beginDate = null;
     private Date endDate = null;
 
-    private String getTitle() {
-      return title;
+    public Boolean getAlbumLabel() {
+      return albumLabel;
     }
 
-    public void setTitle(String title) {
+    public void setAlbumLabel(final String albumLabel) {
+      this.albumLabel = albumLabel != null && Boolean.valueOf(albumLabel);
+    }
+
+    private String getTitle() {
+      return (title == null) ? "" : title;
+    }
+
+    public void setTitle(final String title) {
       this.title = title;
     }
 
@@ -169,7 +201,7 @@ public class PhotoDataUpdateDelegate {
       return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
       this.description = description;
     }
 
@@ -177,7 +209,7 @@ public class PhotoDataUpdateDelegate {
       return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(final String author) {
       this.author = author;
     }
 
@@ -185,7 +217,7 @@ public class PhotoDataUpdateDelegate {
       return keyWord;
     }
 
-    public void setKeyWord(String keyWord) {
+    public void setKeyWord(final String keyWord) {
       this.keyWord = keyWord;
     }
 
@@ -193,15 +225,19 @@ public class PhotoDataUpdateDelegate {
       return download;
     }
 
-    public void setDownload(String download) {
+    public void setDownload(final String download) {
       this.download = download != null && Boolean.valueOf(download);
+    }
+
+    public void setDownload(final boolean download) {
+      this.download = download;
     }
 
     private Date getBeginDownloadDate() {
       return beginDownloadDate;
     }
 
-    public void setBeginDownloadDate(String beginDownloadDate) throws ParseException {
+    public void setBeginDownloadDate(final String beginDownloadDate) throws ParseException {
       this.beginDownloadDate = stringToDate(beginDownloadDate);
     }
 
@@ -209,7 +245,7 @@ public class PhotoDataUpdateDelegate {
       return endDownloadDate;
     }
 
-    public void setEndDownloadDate(String endDownloadDate) throws ParseException {
+    public void setEndDownloadDate(final String endDownloadDate) throws ParseException {
       this.endDownloadDate = stringToDate(endDownloadDate);
     }
 
@@ -217,7 +253,7 @@ public class PhotoDataUpdateDelegate {
       return beginDate;
     }
 
-    public void setBeginDate(String beginDate) throws ParseException {
+    public void setBeginDate(final String beginDate) throws ParseException {
       this.beginDate = stringToDate(beginDate);
     }
 
@@ -225,7 +261,7 @@ public class PhotoDataUpdateDelegate {
       return endDate;
     }
 
-    public void setEndDate(String endDate) throws ParseException {
+    public void setEndDate(final String endDate) throws ParseException {
       this.endDate = stringToDate(endDate);
     }
   }
@@ -242,5 +278,34 @@ public class PhotoDataUpdateDelegate {
       date = DateUtil.stringToDate(stringDate, language);
     }
     return date;
+  }
+
+  /**
+   * @return the language
+   */
+  public String getLanguage() {
+    return language;
+  }
+
+  /**
+   * @return the albumId
+   */
+  public String getAlbumId() {
+    return albumId;
+  }
+
+  /**
+   * Gets the photo from parameters
+   * @return
+   */
+  public FileItem getFileItem() {
+    return FileUploadUtil.getFile(parameters, "WAIMGVAR0");
+  }
+
+  /**
+   * @return the skipEmptyValues
+   */
+  public boolean isSkipEmptyValues() {
+    return skipEmptyValues;
   }
 }

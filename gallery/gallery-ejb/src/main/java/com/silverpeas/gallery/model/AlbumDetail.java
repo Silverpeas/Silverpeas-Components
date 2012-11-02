@@ -57,15 +57,15 @@ public class AlbumDetail extends NodeDetail {
   public void setPhotos(Collection<PhotoDetail> photos) {
     this.photos = new ArrayList<PhotoDetail>(photos);
   }
-  
+
   public int getNbPhotos() {
     return nbPhotos;
   }
-  
+
   public void setNbPhotos(int nbPhotos) {
     this.nbPhotos = nbPhotos;
   }
-  
+
   public Collection<AlbumDetail> getChildrenAlbumsDetails() {
     Collection<AlbumDetail> albums = new ArrayList<AlbumDetail>();
     Collection<NodeDetail> nodes = this.getChildrenDetails();
@@ -77,5 +77,5 @@ public class AlbumDetail extends NodeDetail {
     }
    return albums;
   }
-  
+
 }
