@@ -232,7 +232,7 @@
 			<value>no</value>
 			<type>checkbox</type>
 			<size>5</size>
-			<updatable>always</updatable>
+			<updatable>hidden</updatable>
 			<help>
 				<message lang="fr">Les publieurs pourront ouvrir et modifier directement le fichier</message>
 				<message lang="en">Publishers will be able to open and directly modify files</message>
@@ -251,7 +251,7 @@
 			<value></value>
 			<type>text</type>
 			<size>15</size>
-			<updatable>always</updatable>
+			<updatable>hidden</updatable>
 			<help>
 				<message lang="fr">Exemple : 192.168.0.255/24, 192.168.1.255/24 - autorise toutes les adresses IP commencant par 192.168.0. et 192.168.1.</message>
 				<message lang="en">Sample : 192.168.0.255/24, 192.168.1.255/24  - Allow all IP addresses starting with 192.168.0. and 192.168.1.</message>
