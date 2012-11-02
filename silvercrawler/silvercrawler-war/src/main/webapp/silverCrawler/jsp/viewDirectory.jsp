@@ -111,54 +111,6 @@ if (path != null)
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/silverCrawler/javaScript/dragAndDrop.js"></script>
-<style>
-.alert-message .close {
-    color: #000000;
-    float: right;
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: -2px;
-    opacity: 0.2;
-    text-shadow: 0 1px 0 #FFFFFF;
-}
-
-.alert-message.error {
-    background-color: #C43C35;
-    background-image: -moz-linear-gradient(center top , #EE5F5B, #C43C35);
-    background-repeat: repeat-x;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    color: #FFFFFF;
-    font-weight: bold;
-}
-
-.alert-message.success {
-	background-color: #57A957;
-    background-image: -moz-linear-gradient(center top , #62C462, #57A957);
-    background-repeat: repeat-x;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    color: #FFFFFF;
-    font-weight: bold;
-}
-
-.alert-message {
-    background-color: #EEDC94;
-    background-image: -moz-linear-gradient(center top , #FCEEC1, #EEDC94);
-    background-repeat: repeat-x;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    border-radius: 4px 4px 4px 4px;
-    border-style: solid;
-    border-width: 1px;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset;
-    color: #404040;
-    margin-bottom: 18px;
-    padding: 7px 14px;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-    margin-left: 15px;
-    margin-right: 15px;
-}
-</style>
 <script type="text/javascript">
 
 var downloadWindow = window;
@@ -597,7 +549,7 @@ Button validateButton 	= gef.getFormButton("OK", "javascript:onClick=sendData();
 <% }  %>
 
 <% if (userAllowedToLANAccess && readWriteActivated) {%>
-<div style="padding: 20px"><b><%=resource.getString("silverCrawler.physicalPath")%> : ${Folder.path}</b><br/></div>
+<div id="physical-path"><%=resource.getString("silverCrawler.physicalPath")%> : ${Folder.path}</div>
 <% } %>
 
 <FORM NAME="liste_dir" >
