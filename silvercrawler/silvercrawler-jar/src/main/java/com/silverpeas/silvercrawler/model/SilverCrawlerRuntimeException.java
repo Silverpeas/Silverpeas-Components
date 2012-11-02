@@ -26,6 +26,9 @@ package com.silverpeas.silvercrawler.model;
 import com.stratelia.webactiv.util.exception.*;
 
 public class SilverCrawlerRuntimeException extends SilverpeasRuntimeException {
+
+  private static final long serialVersionUID = -6141354570945767515L;
+
   /**
    * --------------------------------------------------------------------------
    * constructors constructors

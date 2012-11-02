@@ -35,6 +35,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import javax.servlet.http.HttpServletRequest;
 
 public class SilverCrawlerRequestRouter extends ComponentRequestRouter<SilverCrawlerSessionController> {
+  
+  private static final long serialVersionUID = 3258391347331914529L;
+
   /**
    * This method has to be implemented in the component request rooter class.
    * returns the session control bean name to be put in the request object ex :

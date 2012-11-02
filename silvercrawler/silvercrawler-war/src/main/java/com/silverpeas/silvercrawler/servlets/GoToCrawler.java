@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class GoToCrawler extends GoTo {
 
+  private static final long serialVersionUID = -295934990255957629L;
+
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     String componentId = objectId;

@@ -44,6 +44,7 @@ String 		maxFiles		= (String) request.getAttribute("MaxFiles");
 String 		language		= (String) request.getAttribute("Language");
 Boolean     isReadWriteActivated = (Boolean) request.getAttribute("isReadWriteActivated");
 Boolean     isUserAllowedToSetRWAccess = (Boolean) request.getAttribute("userAllowedToSetRWAccess");
+Boolean     isUserAllowedToLANAccess = (Boolean) request.getAttribute("userAllowedToLANAccess");
 String 		errorMessage 	= (String) request.getAttribute("errorMessage");
 String 		successMessage 	= (String) request.getAttribute("successMessage");
 
@@ -53,6 +54,7 @@ boolean allowedNav 	= isAllowedNav.booleanValue();
 boolean folderIsWritable = folder.isWritable();
 boolean readWriteActivated = isReadWriteActivated.booleanValue();
 boolean userAllowedToSetRWAccess = isUserAllowedToSetRWAccess.booleanValue();
+boolean userAllowedToLANAccess = isUserAllowedToSetRWAccess.booleanValue();
 
 ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 String sRequestURL = request.getRequestURL().toString();
@@ -109,54 +111,6 @@ if (path != null)
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/silverCrawler/javaScript/dragAndDrop.js"></script>
-<style>
-.alert-message .close {
-    color: #000000;
-    float: right;
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: -2px;
-    opacity: 0.2;
-    text-shadow: 0 1px 0 #FFFFFF;
-}
-
-.alert-message.error {
-    background-color: #C43C35;
-    background-image: -moz-linear-gradient(center top , #EE5F5B, #C43C35);
-    background-repeat: repeat-x;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    color: #FFFFFF;
-    font-weight: bold;
-}
-
-.alert-message.success {
-	background-color: #57A957;
-    background-image: -moz-linear-gradient(center top , #62C462, #57A957);
-    background-repeat: repeat-x;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    color: #FFFFFF;
-    font-weight: bold;
-}
-
-.alert-message {
-    background-color: #EEDC94;
-    background-image: -moz-linear-gradient(center top , #FCEEC1, #EEDC94);
-    background-repeat: repeat-x;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-    border-radius: 4px 4px 4px 4px;
-    border-style: solid;
-    border-width: 1px;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset;
-    color: #404040;
-    margin-bottom: 18px;
-    padding: 7px 14px;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-    margin-left: 15px;
-    margin-right: 15px;
-}
-</style>
 <script type="text/javascript">
 
 var downloadWindow = window;
@@ -594,7 +548,11 @@ Button validateButton 	= gef.getFormButton("OK", "javascript:onClick=sendData();
 </div>
 <% }  %>
 
-<form name="liste_dir">
+<% if (userAllowedToLANAccess && readWriteActivated) {%>
+<div id="physical-path"><%=resource.getString("silverCrawler.physicalPath")%> : ${Folder.path}</div>
+<% } %>
+
+<FORM NAME="liste_dir" >
 <%
 
 // remplissage de l'ArrayPane avec la liste des sous répertoires
@@ -801,6 +759,13 @@ if (nav || (!nav && !isRootPath))
 			   		Icon renameIcon = iconPane.addIcon();
 			   		renameIcon.setProperties(resource.getIcon("silverCrawler.renameFile"), resource.getString("silverCrawler.renameFile"), "javaScript:renameFile('"+EncodeHelper.javaStringToJsString(fileName)+"')");
 			   		iconPane.setSpacing("20px");
+
+			   		if (userAllowedToLANAccess) {
+				   		// icône "DirectAccess"
+				   		Icon directAccessIcon = iconPane.addIcon();
+				   		directAccessIcon.setProperties(resource.getIcon("silverCrawler.directAccess"), resource.getString("silverCrawler.directAccess"), fileDetail.getDirectURL());
+				   		iconPane.setSpacing("20px");
+			   		}
 			   	}
 
 		   		arrayLine.addArrayCellIconPane(iconPane);

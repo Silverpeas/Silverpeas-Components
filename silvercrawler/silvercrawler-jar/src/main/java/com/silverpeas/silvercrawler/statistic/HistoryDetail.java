@@ -34,6 +34,7 @@ import java.util.Date;
  */
 public class HistoryDetail implements Serializable {
 
+  private static final long serialVersionUID = -8830352251652633749L;
   private Date date;
   private String userId;
   private String path;

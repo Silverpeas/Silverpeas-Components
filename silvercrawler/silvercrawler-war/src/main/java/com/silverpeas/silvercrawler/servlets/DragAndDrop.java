@@ -86,9 +86,6 @@ public class DragAndDrop extends HttpServlet {
       SessionInfo session = SessionManager.getInstance().getSessionInfo(sessionId);
       SilverCrawlerSessionController sessionController = session.getAttribute("Silverpeas_SilverCrawler_"+instanceId);
 
-
-      String userId = sessionController.getUserId();
-
       // build report
       UploadReport report = sessionController.getLastUploadReport();
       if (report == null) {
