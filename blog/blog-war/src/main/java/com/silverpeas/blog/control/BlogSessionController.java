@@ -23,6 +23,7 @@
  */
 package com.silverpeas.blog.control;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
@@ -37,6 +38,7 @@ import javax.xml.bind.JAXBException;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
+import org.apache.commons.fileupload.FileItem;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
@@ -60,6 +62,7 @@ import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -71,9 +74,13 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -83,6 +90,12 @@ public class BlogSessionController extends AbstractComponentSessionController {
   private Calendar currentBeginDate = Calendar.getInstance(); // format = yyyy/MM/ddd
   private Calendar currentEndDate = Calendar.getInstance(); // format = yyyy/MM/ddd
   private String serverURL = null;
+  private String nameWallPaperFile = null;
+  private String urlWallPaperFile = null;
+  private String sizeWallPaperFile = null;
+  private String nameStyleSheetFile = null;
+  private String urlStyleSheetFile = null;
+  private String sizeStyleSheetFile = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -97,6 +110,8 @@ public class BlogSessionController extends AbstractComponentSessionController {
     AdminController admin = new AdminController("useless");
     Domain defaultDomain = admin.getDomain(getUserDetail().getDomainId());
     serverURL = defaultDomain.getSilverpeasServerURL();
+    setWallPaper();
+    setStyleSheet();
   }
 
   public Collection<PostDetail> lastPosts() {
@@ -466,5 +481,219 @@ public class BlogSessionController extends AbstractComponentSessionController {
             "root.EX_NO_MESSAGE", ex);
       }
       return writer.toString();
+    }
+    
+    /**
+     * Set the name, URL and size of the wallpaper file.
+     */
+    public void setWallPaper() {
+      String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
+      
+      List<File> files = null;
+      try {
+        files = (List<File>) FileFolderManager.getAllFile(path);
+      } catch (UtilException e) {
+        files = new ArrayList<File>();
+      }
+      
+      for (File file : files) {
+        if("banner.gif".equals(file.getName()) || "banner.jpg".equals(file.getName()) || "banner.png".equals(file.getName())) {
+          this.nameWallPaperFile = file.getName();
+          this.urlWallPaperFile = FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(), FileUtil.getMimeType(file.getName()), "");
+          this.sizeWallPaperFile = FileRepositoryManager.formatFileSize(file.length());
+          break;
+        }
+      }
+    }
+    
+    /**
+     * Get the name of the wallpaper file.
+     * @return name of the wallpaper file 
+     */
+    public String getNameWallPaper() {
+      return this.nameWallPaperFile;
+    }
+    
+    /**
+     * Get the URL of the wallpaper file.
+     * @return URL of the wallpaper file 
+     */
+    public String getURLWallPaper() {
+      return this.urlWallPaperFile;
+    }
+    
+    /**
+     * Get the size of the wallpaper file.
+     * @return size of the wallpaper file 
+     */
+    public String getSizeWallPaper() {
+      return this.sizeWallPaperFile;
+    }
+    
+    /**
+     * Save the banner file.
+     * @throws BlogRuntimeException 
+     */
+    public void saveWallPaperFile(FileItem fileItemWallPaper) throws BlogRuntimeException {
+      //extension
+      String extension = FileRepositoryManager.getFileExtension(fileItemWallPaper.getName());
+      if (extension != null && extension.equalsIgnoreCase("jpeg")) {
+        extension = "jpg";
+      }
+      
+      if(!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".equalsIgnoreCase(extension)) {
+        throw new BlogRuntimeException("BlogSessionController.saveStyleSheetFile()",
+            SilverpeasRuntimeException.ERROR,
+            "blog.EX_EXTENSION_WALLPAPER");
+      }
+
+      //path to create the file
+      String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
+
+      //remove all wallpapers to ensure it is unique
+      removeWallPaperFile();
+
+      try {
+        String nameFile = "banner." + extension.toLowerCase();
+        File fileWallPaper = new File(path + File.separator + nameFile);
+            
+        //create the file
+        fileItemWallPaper.write(fileWallPaper);
+        
+        //save the information
+        this.nameWallPaperFile = nameFile; 
+        this.urlWallPaperFile = FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile), "");
+        this.sizeWallPaperFile = FileRepositoryManager.formatFileSize(fileWallPaper.length());
+        
+      } catch (Exception ex) {
+        throw new BlogRuntimeException("BlogSessionController.saveWallPaperFile()",
+            SilverpeasRuntimeException.ERROR,
+            "blog.EX_CREATE_WALLPAPER", ex);
+      }
+    }
+    
+    /**
+     * Remove the actual wallpaper file.
+     */
+    public void removeWallPaperFile() {
+      String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
+      File banner = new File(path + File.separator + "banner.gif");
+      if (banner != null && banner.exists()) {
+        banner.delete();
+      }
+      
+      banner = new File(path + File.separator + "banner.jpg");
+      if (banner != null && banner.exists()) {
+        banner.delete();
+      }
+      
+      banner = new File(path + File.separator + "banner.png");
+      if (banner != null && banner.exists()) {
+        banner.delete();
+      }
+      
+      this.nameWallPaperFile = null; 
+      this.urlWallPaperFile = null;
+      this.sizeWallPaperFile = null;
+    }
+    
+    /**
+     * Set the name, URL and size of the style sheet file.
+     */
+    public void setStyleSheet() {
+      String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
+      
+      List<File> files = null;
+      try {
+        files = (List<File>) FileFolderManager.getAllFile(path);
+      } catch (UtilException e) {
+        files = new ArrayList<File>();
+      }
+      
+      for (File file : files) {
+        if("styles.css".equals(file.getName())) {
+          this.nameStyleSheetFile = file.getName();
+          this.urlStyleSheetFile = FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(), FileUtil.getMimeType(file.getName()), "");
+          this.sizeStyleSheetFile = FileRepositoryManager.formatFileSize(file.length());
+          break;
+        }
+      }
+    }
+    
+    /**
+     * Get the name of the style sheet file.
+     * @return name of the style sheet file 
+     */
+    public String getNameStyleSheet() {
+      return this.nameStyleSheetFile;
+    }
+    
+    /**
+     * Get the URL of the style sheet file.
+     * @return URL of the style sheet file 
+     */
+    public String getURLStyleSheet() {
+      return this.urlStyleSheetFile;
+    }
+    
+    /**
+     * Get the size of the style sheet file.
+     * @return size of the style sheet file 
+     */
+    public String getSizeStyleSheet() {
+      return this.sizeStyleSheetFile;
+    }
+    
+    /**
+     * Save the stylesheet file.
+     * @throws BlogRuntimeException 
+     */
+    public void saveStyleSheetFile(FileItem fileItemStyleSheet) throws BlogRuntimeException {
+      //extension
+      String extension = FileRepositoryManager.getFileExtension(fileItemStyleSheet.getName());
+      if(!"css".equalsIgnoreCase(extension)) {
+        throw new BlogRuntimeException("BlogSessionController.saveStyleSheetFile()",
+            SilverpeasRuntimeException.ERROR,
+            "blog.EX_EXTENSION_STYLESHEET");
+      }
+
+      //path to create the file
+      String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
+
+      //remove all stylesheet to ensure it is unique
+      removeStyleSheetFile();
+
+      try {
+        String nameFile = "styles.css";
+        File fileStyleSheet = new File(path + File.separator + nameFile);
+        
+        //create the file
+        fileItemStyleSheet.write(fileStyleSheet);
+        
+        //save the information
+        this.nameStyleSheetFile = nameFile; 
+        this.urlStyleSheetFile = FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile), "");
+        this.sizeStyleSheetFile = FileRepositoryManager.formatFileSize(fileStyleSheet.length());
+        
+      } catch (Exception ex) {
+        throw new BlogRuntimeException("BlogSessionController.saveStyleSheetFile()",
+            SilverpeasRuntimeException.ERROR,
+            "blog.EX_CREATE_STYLESHEET", ex);
+      }
+    }
+    
+    /**
+     * Remove the actual style sheet file.
+     */
+    public void removeStyleSheetFile() {
+      String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
+      File styles = new File(path + File.separator + "styles.css");
+      if (styles != null && styles.exists()) {
+        styles.delete();
+      }
+      
+      this.nameStyleSheetFile = null; 
+      this.urlStyleSheetFile = null;
+      this.sizeStyleSheetFile = null;
     }
 }

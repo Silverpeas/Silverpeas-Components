@@ -58,8 +58,8 @@
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires peuvent créer des catégories, des liens, mettre à jour le pied de page et paramètrent le Plan de Classement.</message>
-        <message lang="en">Administrators can create categories, links, update footer and set up the Classification Scheme.</message>
+        <message lang="fr">Les gestionnaires peuvent créer des catégories, des liens, personnaliser l'affichage, mettre à jour le pied de page et paramètrent le Plan de Classement.</message>
+        <message lang="en">Administrators can create categories, links, customize, update footer and set up the Classification Scheme.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>

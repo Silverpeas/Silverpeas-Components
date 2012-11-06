@@ -42,10 +42,33 @@ String		rssURL		= (String) request.getAttribute("RSSUrl");
 List		events		= (List) request.getAttribute("Events");
 String 		dateCal		= (String) request.getAttribute("DateCalendar");
 boolean   isPdcUsed	= ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
-String footer = (String) request.getAttribute("Footer");
-
 boolean   isDraftVisible  = ((Boolean) request.getAttribute("IsDraftVisible")).booleanValue();
 int nbPostDisplayed   = ((Integer) request.getAttribute("NbPostDisplayed")).intValue();
+String wallPaperName = (String) request.getAttribute("WallPaperName");
+String wallPaperURL = (String) request.getAttribute("WallPaperURL");
+String wallPaperSize = (String) request.getAttribute("WallPaperSize");
+String styleSheetName = (String) request.getAttribute("StyleSheetName");
+String styleSheetURL = (String) request.getAttribute("StyleSheetURL");
+String styleSheetSize = (String) request.getAttribute("StyleSheetSize");
+
+if(wallPaperName == null) {
+  wallPaperName = "";
+}
+if(wallPaperURL == null) {
+  wallPaperURL = "";
+}
+if(wallPaperSize == null) {
+  wallPaperSize = "";
+}
+if(styleSheetName == null) {
+  styleSheetName = "";
+}
+if(styleSheetURL == null) {
+  styleSheetURL = "";
+}
+if(styleSheetSize == null) {
+  styleSheetSize = "";
+}
 
 String 		word 		= "";
 Date 	   dateCalendar	= new Date(dateCal);
@@ -63,6 +86,7 @@ if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRo
 	 String url = m_context + blogUrl + "Main";
 	 String lien = m_context + URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
 	 operationPane.addOperation("useless", resource.getString("blog.viewLinks"), lien);
+	 operationPane.addOperation("useless", resource.getString("blog.customize"), "javascript:onClick=customize();");
 	 operationPane.addOperation("useless", resource.getString("blog.updateFooter"), "UpdateFooter");
 	 operationPane.addLine();
 	}
@@ -97,6 +121,64 @@ function addSubscription() {
 	window.alert("<%=resource.getString("blog.addSubscriptionOk")%>");
 	window.document.subscriptionForm.action = "AddSubscription";
 	window.document.subscriptionForm.submit();
+}
+
+function customize() {
+  $("#customizationDialog").dialog("open");
+}
+
+function areFilesCorrect(wallPaper, styleSheet) {
+	var errorMsg = "";
+  var errorNb = 0;
+    
+  switch(errorNb) {
+    case 0 :
+      result = true;
+      break;
+     case 1 :
+      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+     default :
+      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+  }
+  return result;
+}
+
+$(function() {
+  $("#customizationDialog").dialog({
+  autoOpen: false,
+  resizable: false,
+  modal: true,
+  height: "auto",
+  width: 750,
+  buttons: {
+    "<%=resource.getString("GML.ok")%>": function() {
+      var wallPaperNewFile = $("#customizationDialog #WallPaperNewFile").val();
+      var styleSheetNewFile = $("#customizationDialog #StyleSheetNewFile").val();
+      if (areFilesCorrect(wallPaperNewFile, styleSheetNewFile)) {
+        document.customizationFiles.submit();
+      }
+    },
+    "<%=resource.getString("GML.cancel")%>": function() {
+      $(this).dialog("close");
+     }
+  }
+  });
+});
+
+function hideWallPaperFile() {
+  $("#customizationDialog #WallPaperFile").hide();
+	document.customizationFiles.removeWallPaperFile.value = "yes";
+}
+
+function hideStyleSheetFile() {
+	$("#customizationDialog #StyleSheetFile").hide();
+	document.customizationFiles.removeStyleSheetFile.value = "yes";
 }
 </script>
 </head>
@@ -207,11 +289,58 @@ function addSubscription() {
 				getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+instanceId+"&ComponentId="+instanceId).include(request, response);
 			  %>      
 			</div>
+			
+			<!-- Dialog to edit files to customize --> 
+      <div id="customizationDialog" title="<%=resource.getString("blog.customize")%>">
+			  <form name="customizationFiles" action="Customize" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+			    <table>			    
+			      <tr id="WallPaper">
+			        <td class="txtlibform"><%=resource.getString("blog.wallPaper")%></td>
+			        <td>
+			        <%
+			        if(!"".equals(wallPaperURL)) {
+			        %>
+			         <div id="WallPaperFile">
+			           <a href="<%=wallPaperURL%>" target="_blank"><%=wallPaperName%></a> 
+			           <%=wallPaperSize%> 
+			           <a href="javascript:onClick=hideWallPaperFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"></a> 
+			           <BR/>
+			         </div> 
+			        <% 
+			        }
+			        %>
+			         <input type="file" name="wallPaper" id="WallPaperNewFile" size="50"/> <i>(.gif/.jpg/.png)</i>
+			         <input type="hidden" name="removeWallPaperFile" value="no"/>
+			        </td>
+			      </tr>
+			      <tr id="StyleSheet">
+			        <td class="txtlibform"><%=resource.getString("blog.styleSheet")%></td>
+			        <td>
+			        <%
+              if(!"".equals(styleSheetURL)) {
+              %>
+               <div id="StyleSheetFile">
+			           <a href="<%=styleSheetURL%>" target="_blank"><%=styleSheetName%></a> 
+			           <%=styleSheetSize%> 
+			           <a href="javascript:onClick=hideStyleSheetFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"></a> 
+			           <BR/>
+			         </div>
+			        <% 
+              }
+              %>
+			         <input type="file" name="styleSheet" id="StyleSheetNewFile" size="50"/> <i>(.css)</i>
+			         <input type="hidden" name="removeStyleSheetFile" value="no"/>
+			        </td>
+			      </tr>
+			    </table>
+			  </form>
+			</div>
 		</div>
 	</div>
 
 <form name="subscriptionForm" action="AddSubscription" method="post">
 </form>
+
 <%
 out.println(window.printAfter());
 %>  

@@ -28,6 +28,7 @@ import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -39,10 +40,14 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionController> {
 
@@ -122,6 +127,12 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
         request.setAttribute("NbPostDisplayed", Integer.valueOf(10));
+        request.setAttribute("WallPaperName", blogSC.getNameWallPaper());
+        request.setAttribute("WallPaperURL", blogSC.getURLWallPaper());
+        request.setAttribute("WallPaperSize", blogSC.getSizeWallPaper());
+        request.setAttribute("StyleSheetName", blogSC.getNameStyleSheet());
+        request.setAttribute("StyleSheetURL", blogSC.getURLStyleSheet());
+        request.setAttribute("StyleSheetSize", blogSC.getSizeStyleSheet());
 
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
@@ -385,6 +396,25 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         blogSC.draftOutPost(postId);
         request.setAttribute("PostId", postId);
         destination = getDestination("ViewPost", blogSC, request);
+      } else if (function.equals("Customize")) {
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        String removeWallPaperFile = FileUploadUtil.getParameter(items, "removeWallPaperFile");
+        String removeStyleSheetFile = FileUploadUtil.getParameter(items, "removeStyleSheetFile");
+        FileItem fileWallPaper = FileUploadUtil.getFile(items, "wallPaper");
+        FileItem fileStyleSheet = FileUploadUtil.getFile(items, "styleSheet");
+        
+        if (fileWallPaper != null && StringUtil.isDefined(fileWallPaper.getName())) {//Update
+          blogSC.saveWallPaperFile(fileWallPaper);
+        } else if ("yes".equals(removeWallPaperFile)) {//Remove
+          blogSC.removeWallPaperFile();
+        }
+        if (fileStyleSheet != null && StringUtil.isDefined(fileStyleSheet.getName())) {//Update
+          blogSC.saveStyleSheetFile(fileStyleSheet);
+        } else if ("yes".equals(removeStyleSheetFile)) {//Remove
+          blogSC.removeStyleSheetFile();
+        }
+
+        destination = getDestination("Main", blogSC, request);
       } else {
         destination = rootDest + function;
       }
