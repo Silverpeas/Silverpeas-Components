@@ -23,41 +23,6 @@
  */
 package com.stratelia.silverpeas.infoLetter.control;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.event.TransportEvent;
-import javax.mail.event.TransportListener;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -72,16 +37,8 @@ import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.InfoLetterPeasTrappedException;
-import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
-import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
-import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
-import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
-import com.stratelia.silverpeas.infoLetter.model.InternalSubscribers;
-import com.stratelia.silverpeas.notificationManager.GroupRecipient;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.infoLetter.model.*;
+import com.stratelia.silverpeas.notificationManager.*;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -105,9 +62,28 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilTrappedException;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.event.TransportEvent;
+import javax.mail.event.TransportListener;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.xml.bind.JAXBException;
+import java.io.*;
+import java.util.*;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
  * Class declaration
@@ -429,7 +405,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         
         htmlCodeFile.close();
 
-        // mbp1.setText(msgText1.toString());
         mbp1.setDataHandler(new DataHandler(
             new ByteArrayDataSource(replaceFileServerWithLocal(msgText1.toString(), server),
                 "text/html")));
@@ -679,9 +654,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       if (WysiwygController.loadFileAndAttachment(getComponentId(), target) != null) {
         WysiwygController.deleteWysiwygAttachments(getComponentId(), target);
       }
-      WysiwygController.copy(getComponentId(), source,
-          getComponentId(),
-          target, getUserId());
+      WysiwygController.copy(getComponentId(), source, getComponentId(), target, getUserId());
     } catch (Exception e) {
       throw new InfoLetterException("InfoLetterSessionController.copyWYSIWYG",
           SilverpeasRuntimeException.ERROR, e.getMessage(), e);
