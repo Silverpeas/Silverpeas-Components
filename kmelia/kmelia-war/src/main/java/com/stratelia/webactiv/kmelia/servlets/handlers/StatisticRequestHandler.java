@@ -23,15 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.servlets.handlers;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.kmelia.model.StatsFilterVO;
 import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
 import com.silverpeas.kmelia.stats.StatisticService;
@@ -48,6 +39,13 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 /**
  * This class aims to manage Kmelia statistic request.
  */
@@ -204,8 +202,6 @@ public class StatisticRequestHandler {
     profileNames.add(writerProfile.getName());
     sug.setProfileNames(profileNames);
 
-    sug.addProfileId(readerProfile.getId());
-    sug.addProfileId(writerProfile.getId());
     sel.setExtraParams(sug);
     
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
