@@ -39,6 +39,7 @@ import javax.xml.bind.JAXBException;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
@@ -96,6 +97,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
   private String nameStyleSheetFile = null;
   private String urlStyleSheetFile = null;
   private String sizeStyleSheetFile = null;
+  private String contentStyleSheetFile = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -598,7 +600,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
     }
     
     /**
-     * Set the name, URL and size of the style sheet file.
+     * Set the name, URL, size and content of the style sheet file.
      */
     public void setStyleSheet() {
       String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
@@ -615,6 +617,12 @@ public class BlogSessionController extends AbstractComponentSessionController {
           this.nameStyleSheetFile = file.getName();
           this.urlStyleSheetFile = FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(), FileUtil.getMimeType(file.getName()), "");
           this.sizeStyleSheetFile = FileRepositoryManager.formatFileSize(file.length());
+          try {
+            this.contentStyleSheetFile = FileUtils.readFileToString(file, "UTF-8");
+          } catch (IOException e) {
+            SilverTrace.warn("blog", "BlogSessionController.setStyleSheet()", "blog.EX_DISPLAY_STYLESHEET", e);
+            this.contentStyleSheetFile = null;
+          }
           break;
         }
       }
@@ -642,6 +650,14 @@ public class BlogSessionController extends AbstractComponentSessionController {
      */
     public String getSizeStyleSheet() {
       return this.sizeStyleSheetFile;
+    }
+    
+    /**
+     * Get the style sheet file.
+     * @return the style sheet file 
+     */
+    public String getContentStyleSheet() {
+      return this.contentStyleSheetFile;
     }
     
     /**
@@ -674,6 +690,12 @@ public class BlogSessionController extends AbstractComponentSessionController {
         this.nameStyleSheetFile = nameFile; 
         this.urlStyleSheetFile = FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile), "");
         this.sizeStyleSheetFile = FileRepositoryManager.formatFileSize(fileStyleSheet.length());
+        try {
+          this.contentStyleSheetFile = FileUtils.readFileToString(fileStyleSheet, "UTF-8");
+        } catch (IOException e) {
+          SilverTrace.warn("blog", "BlogSessionController.saveStyleSheetFile()", "blog.EX_DISPLAY_STYLESHEET", e);
+          this.contentStyleSheetFile = null;
+        }
         
       } catch (Exception ex) {
         throw new BlogRuntimeException("BlogSessionController.saveStyleSheetFile()",
@@ -695,5 +717,6 @@ public class BlogSessionController extends AbstractComponentSessionController {
       this.nameStyleSheetFile = null; 
       this.urlStyleSheetFile = null;
       this.sizeStyleSheetFile = null;
+      this.contentStyleSheetFile = null;
     }
 }

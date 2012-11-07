@@ -25,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="java.util.GregorianCalendar"%>
+<%@page import="java.io.File"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -50,6 +51,7 @@ String wallPaperSize = (String) request.getAttribute("WallPaperSize");
 String styleSheetName = (String) request.getAttribute("StyleSheetName");
 String styleSheetURL = (String) request.getAttribute("StyleSheetURL");
 String styleSheetSize = (String) request.getAttribute("StyleSheetSize");
+String styleSheetContent = (String) request.getAttribute("StyleSheetContent");
 
 if(wallPaperName == null) {
   wallPaperName = "";
@@ -69,8 +71,10 @@ if(styleSheetURL == null) {
 if(styleSheetSize == null) {
   styleSheetSize = "";
 }
+if(styleSheetContent == null) {
+  styleSheetContent = "";
+}
 
-String 		word 		= "";
 Date 	   dateCalendar	= new Date(dateCal);
 boolean 	isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
 
@@ -106,6 +110,7 @@ if (!isUserGuest) {
 	<link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resource.getString("blog.rssLast")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 function openSPWindow(fonction, windowName) {
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
@@ -126,11 +131,51 @@ function addSubscription() {
 function customize() {
   $("#customizationDialog").dialog("open");
 }
+function getExtension(filename) {
+	var indexPoint = filename.lastIndexOf(".");
+  // on verifie qu il existe une extension au nom du fichier
+  if (indexPoint != -1) {
+	  // le fichier contient une extension. On recupere l extension
+    var ext = filename.substring(indexPoint + 1);
+	  return ext;
+  }
+  return null;
+}
 
 function areFilesCorrect(wallPaper, styleSheet) {
 	var errorMsg = "";
   var errorNb = 0;
     
+  if (!isWhitespace(wallPaper)) {
+	  var extension = getExtension(wallPaper);
+	  
+	  if (extension == null) {
+		  errorMsg += " - '<%=resource.getString("blog.wallPaper")%>' <%=resource.getString("blog.wallPaperExtension")%>\n";
+      errorNb++;
+    } else {
+      extension = extension.toLowerCase();
+		  if ( (extension != "gif") && (extension != "jpeg") && (extension != "jpg") && (extension != "png") ) {
+			  errorMsg += " - '<%=resource.getString("blog.wallPaper")%>' <%=resource.getString("blog.wallPaperExtension")%>\n";
+		    errorNb++;
+		  }
+	  }
+  }
+  
+  if (!isWhitespace(styleSheet)) {
+	  var extension = getExtension(styleSheet);
+	    
+	  if (extension == null) {
+		  errorMsg += " - '<%=resource.getString("blog.styleSheet")%>' <%=resource.getString("blog.styleSheetExtension")%>\n";
+		  errorNb++;
+    } else {
+	    extension = extension.toLowerCase();
+	    if (extension != "css") {
+		    errorMsg += " - '<%=resource.getString("blog.styleSheet")%>' <%=resource.getString("blog.styleSheetExtension")%>\n";
+	      errorNb++;
+	    }
+    }
+  }
+  
   switch(errorNb) {
     case 0 :
       result = true;
@@ -181,6 +226,26 @@ function hideStyleSheetFile() {
 	document.customizationFiles.removeStyleSheetFile.value = "yes";
 }
 </script>
+
+  <%
+  if(!"".equals(wallPaperURL)) {
+  %>
+<style type="text/css">
+  #blog #blogContainer #bandeau  {
+  background:url("/silverpeas/OnlineFileServer/<%=wallPaperName%>?ComponentId=<%=instanceId%>&SourceFile=<%=wallPaperName%>&Directory=")  center no-repeat;
+  }
+</style>
+  <%
+  }
+  
+  if(!"".equals(styleSheetContent)) {
+  %>
+<style type="text/css">
+  <%=styleSheetContent%>
+</style>  
+  <%
+  }
+  %>
 </head>
 <body id="blog">
 	<div id="<%=instanceId %>">
@@ -309,7 +374,7 @@ function hideStyleSheetFile() {
 			        <% 
 			        }
 			        %>
-			         <input type="file" name="wallPaper" id="WallPaperNewFile" size="50"/> <i>(.gif/.jpg/.png)</i>
+			         <input type="file" name="wallPaper" id="WallPaperNewFile" size="40"/> <i>(.gif/.jpg/.png)</i>
 			         <input type="hidden" name="removeWallPaperFile" value="no"/>
 			        </td>
 			      </tr>

@@ -133,6 +133,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("StyleSheetName", blogSC.getNameStyleSheet());
         request.setAttribute("StyleSheetURL", blogSC.getURLStyleSheet());
         request.setAttribute("StyleSheetSize", blogSC.getSizeStyleSheet());
+        request.setAttribute("StyleSheetContent", blogSC.getContentStyleSheet());
 
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
