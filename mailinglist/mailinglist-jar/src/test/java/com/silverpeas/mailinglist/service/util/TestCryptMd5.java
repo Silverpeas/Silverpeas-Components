@@ -55,6 +55,6 @@ public class TestCryptMd5 {
     assertThat(file.isFile(), is(true));
     String hash = CryptMD5.hash(file);
     assertThat(hash, is(notNullValue()));
-    assertThat(hash, is("fc8820e7b46497bb444e0155c5ce631d"));
+    assertThat(hash, is("7d0d6464f2bcfd92cfc16c8a4fd62306"));
   }
 }
