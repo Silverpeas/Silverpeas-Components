@@ -496,9 +496,9 @@ public class BlogSessionController extends AbstractComponentSessionController {
       for (File file : files) {
         if("banner.gif".equals(file.getName()) || "banner.jpg".equals(file.getName()) || "banner.png".equals(file.getName())) {
           this.wallPaper = new WallPaper();
-          this.wallPaper.setNameWallPaperFile(file.getName());
-          this.wallPaper.setUrlWallPaperFile(FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(), FileUtil.getMimeType(file.getName()), ""));
-          this.wallPaper.setSizeWallPaperFile(FileRepositoryManager.formatFileSize(file.length()));
+          this.wallPaper.setName(file.getName());
+          this.wallPaper.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(), FileUtil.getMimeType(file.getName()), ""));
+          this.wallPaper.setSize(FileRepositoryManager.formatFileSize(file.length()));
           break;
         }
       }
@@ -544,9 +544,9 @@ public class BlogSessionController extends AbstractComponentSessionController {
         
         //save the information
         this.wallPaper = new WallPaper();
-        this.wallPaper.setNameWallPaperFile(nameFile);
-        this.wallPaper.setUrlWallPaperFile(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile), ""));
-        this.wallPaper.setSizeWallPaperFile(FileRepositoryManager.formatFileSize(fileWallPaper.length()));
+        this.wallPaper.setName(nameFile);
+        this.wallPaper.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile), ""));
+        this.wallPaper.setSize(FileRepositoryManager.formatFileSize(fileWallPaper.length()));
       } catch (Exception ex) {
         throw new BlogRuntimeException("BlogSessionController.saveWallPaperFile()",
             SilverpeasRuntimeException.ERROR,
@@ -593,14 +593,14 @@ public class BlogSessionController extends AbstractComponentSessionController {
       for (File file : files) {
         if("styles.css".equals(file.getName())) {
           this.styleSheet = new StyleSheet();
-          this.styleSheet.setNameStyleSheetFile(file.getName());
-          this.styleSheet.setUrlStyleSheetFile(FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(), FileUtil.getMimeType(file.getName()), ""));
-          this.styleSheet.setSizeStyleSheetFile(FileRepositoryManager.formatFileSize(file.length()));
+          this.styleSheet.setName(file.getName());
+          this.styleSheet.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(), FileUtil.getMimeType(file.getName()), ""));
+          this.styleSheet.setSize(FileRepositoryManager.formatFileSize(file.length()));
           try {
-            this.styleSheet.setContentStyleSheetFile(FileUtils.readFileToString(file, "UTF-8"));
+            this.styleSheet.setContent(FileUtils.readFileToString(file, "UTF-8"));
           } catch (IOException e) {
             SilverTrace.warn("blog", "BlogSessionController.setStyleSheet()", "blog.EX_DISPLAY_STYLESHEET", e);
-            this.styleSheet.setContentStyleSheetFile(null);
+            this.styleSheet.setContent(null);
           }
           break;
         }
@@ -643,14 +643,14 @@ public class BlogSessionController extends AbstractComponentSessionController {
         
         //save the information
         this.styleSheet = new StyleSheet();
-        this.styleSheet.setNameStyleSheetFile(nameFile); 
-        this.styleSheet.setUrlStyleSheetFile(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile), ""));
-        this.styleSheet.setSizeStyleSheetFile(FileRepositoryManager.formatFileSize(fileStyleSheet.length()));
+        this.styleSheet.setName(nameFile); 
+        this.styleSheet.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile), ""));
+        this.styleSheet.setSize(FileRepositoryManager.formatFileSize(fileStyleSheet.length()));
         try {
-          this.styleSheet.setContentStyleSheetFile(FileUtils.readFileToString(fileStyleSheet, "UTF-8"));
+          this.styleSheet.setContent(FileUtils.readFileToString(fileStyleSheet, "UTF-8"));
         } catch (IOException e) {
           SilverTrace.warn("blog", "BlogSessionController.saveStyleSheetFile()", "blog.EX_DISPLAY_STYLESHEET", e);
-          this.styleSheet.setContentStyleSheetFile(null);
+          this.styleSheet.setContent(null);
         }
         
       } catch (Exception ex) {

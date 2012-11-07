@@ -25,43 +25,43 @@ package com.silverpeas.blog.control;
 
 public class StyleSheet {
 
-  private String nameStyleSheetFile = null;
-  private String urlStyleSheetFile = null;
-  private String sizeStyleSheetFile = null;
-  private String contentStyleSheetFile = null;
+  private String name = null;
+  private String url = null;
+  private String size = null;
+  private String content = null;
 
   public StyleSheet() {
   }
 
-  public String getNameStyleSheetFile() {
-    return nameStyleSheetFile;
+  public String getName() {
+    return name;
   }
 
-  public void setNameStyleSheetFile(String nameStyleSheetFile) {
-    this.nameStyleSheetFile = nameStyleSheetFile;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public String getUrlStyleSheetFile() {
-    return urlStyleSheetFile;
+  public String getUrl() {
+    return url;
   }
 
-  public void setUrlStyleSheetFile(String urlStyleSheetFile) {
-    this.urlStyleSheetFile = urlStyleSheetFile;
+  public void setUrl(String url) {
+    this.url = url;
   }
 
-  public String getSizeStyleSheetFile() {
-    return sizeStyleSheetFile;
+  public String getSize() {
+    return size;
   }
 
-  public void setSizeStyleSheetFile(String sizeStyleSheetFile) {
-    this.sizeStyleSheetFile = sizeStyleSheetFile;
+  public void setSize(String size) {
+    this.size = size;
   }
 
-  public String getContentStyleSheetFile() {
-    return contentStyleSheetFile;
+  public String getContent() {
+    return content;
   }
 
-  public void setContentStyleSheetFile(String contentStyleSheetFile) {
-    this.contentStyleSheetFile = contentStyleSheetFile;
+  public void setContent(String content) {
+    this.content = content;
   }
 }

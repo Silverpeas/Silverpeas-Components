@@ -25,34 +25,34 @@ package com.silverpeas.blog.control;
 
 public class WallPaper {
 
-  private String nameWallPaperFile = null;
-  private String urlWallPaperFile = null;
-  private String sizeWallPaperFile = null;
+  private String name = null;
+  private String url = null;
+  private String size = null;
 
   public WallPaper() {
   }
 
-  public String getNameWallPaperFile() {
-    return nameWallPaperFile;
+  public String getName() {
+    return name;
   }
 
-  public void setNameWallPaperFile(String nameWallPaperFile) {
-    this.nameWallPaperFile = nameWallPaperFile;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public String getUrlWallPaperFile() {
-    return urlWallPaperFile;
+  public String getUrl() {
+    return url;
   }
 
-  public void setUrlWallPaperFile(String urlWallPaperFile) {
-    this.urlWallPaperFile = urlWallPaperFile;
+  public void setUrl(String url) {
+    this.url = url;
   }
 
-  public String getSizeWallPaperFile() {
-    return sizeWallPaperFile;
+  public String getSize() {
+    return size;
   }
 
-  public void setSizeWallPaperFile(String sizeWallPaperFile) {
-    this.sizeWallPaperFile = sizeWallPaperFile;
+  public void setSize(String size) {
+    this.size = size;
   }
 }

@@ -59,16 +59,16 @@ String styleSheetSize = "";
 String styleSheetContent = "";
 
 if(wallPaper != null) {
-  wallPaperName = wallPaper.getNameWallPaperFile();
-  wallPaperURL = wallPaper.getUrlWallPaperFile();
-  wallPaperSize = wallPaper.getSizeWallPaperFile();
+  wallPaperName = wallPaper.getName();
+  wallPaperURL = wallPaper.getUrl();
+  wallPaperSize = wallPaper.getSize();
 }
 
 if(styleSheet != null) {
-  styleSheetName = styleSheet.getNameStyleSheetFile();
-  styleSheetURL = styleSheet.getUrlStyleSheetFile();
-  styleSheetSize = styleSheet.getSizeStyleSheetFile();
-  styleSheetContent = styleSheet.getContentStyleSheetFile();
+  styleSheetName = styleSheet.getName();
+  styleSheetURL = styleSheet.getUrl();
+  styleSheetSize = styleSheet.getSize();
+  styleSheetContent = styleSheet.getContent();
 }
 
 Date     dateCalendar = new Date(dateCal);
