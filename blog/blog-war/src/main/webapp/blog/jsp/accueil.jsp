@@ -26,6 +26,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="java.util.GregorianCalendar"%>
 <%@page import="java.io.File"%>
+<%@page import="com.silverpeas.blog.control.WallPaper"%>
+<%@page import="com.silverpeas.blog.control.StyleSheet"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -45,34 +47,28 @@ String    dateCal   = (String) request.getAttribute("DateCalendar");
 boolean   isPdcUsed = ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
 boolean   isDraftVisible  = ((Boolean) request.getAttribute("IsDraftVisible")).booleanValue();
 int nbPostDisplayed   = ((Integer) request.getAttribute("NbPostDisplayed")).intValue();
-String wallPaperName = (String) request.getAttribute("WallPaperName");
-String wallPaperURL = (String) request.getAttribute("WallPaperURL");
-String wallPaperSize = (String) request.getAttribute("WallPaperSize");
-String styleSheetName = (String) request.getAttribute("StyleSheetName");
-String styleSheetURL = (String) request.getAttribute("StyleSheetURL");
-String styleSheetSize = (String) request.getAttribute("StyleSheetSize");
-String styleSheetContent = (String) request.getAttribute("StyleSheetContent");
+WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
+StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 
-if(wallPaperName == null) {
-  wallPaperName = "";
+String wallPaperName = "";
+String wallPaperURL = "";
+String wallPaperSize = "";
+String styleSheetName = "";
+String styleSheetURL = "";
+String styleSheetSize = "";
+String styleSheetContent = "";
+
+if(wallPaper != null) {
+  wallPaperName = wallPaper.getNameWallPaperFile();
+  wallPaperURL = wallPaper.getUrlWallPaperFile();
+  wallPaperSize = wallPaper.getSizeWallPaperFile();
 }
-if(wallPaperURL == null) {
-  wallPaperURL = "";
-}
-if(wallPaperSize == null) {
-  wallPaperSize = "";
-}
-if(styleSheetName == null) {
-  styleSheetName = "";
-}
-if(styleSheetURL == null) {
-  styleSheetURL = "";
-}
-if(styleSheetSize == null) {
-  styleSheetSize = "";
-}
-if(styleSheetContent == null) {
-  styleSheetContent = "";
+
+if(styleSheet != null) {
+  styleSheetName = styleSheet.getNameStyleSheetFile();
+  styleSheetURL = styleSheet.getUrlStyleSheetFile();
+  styleSheetSize = styleSheet.getSizeStyleSheetFile();
+  styleSheetContent = styleSheet.getContentStyleSheetFile();
 }
 
 Date     dateCalendar = new Date(dateCal);
@@ -393,7 +389,7 @@ function hideStyleSheetFile() {
               <% 
               }
               %>
-               <input type="file" name="styleSheet" id="StyleSheetNewFile" size="50"/> <i>(.css)</i>
+               <input type="file" name="styleSheet" id="StyleSheetNewFile" size="40"/> <i>(.css)</i>
                <input type="hidden" name="removeStyleSheetFile" value="no"/>
               </td>
             </tr>

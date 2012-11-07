@@ -91,13 +91,8 @@ public class BlogSessionController extends AbstractComponentSessionController {
   private Calendar currentBeginDate = Calendar.getInstance(); // format = yyyy/MM/ddd
   private Calendar currentEndDate = Calendar.getInstance(); // format = yyyy/MM/ddd
   private String serverURL = null;
-  private String nameWallPaperFile = null;
-  private String urlWallPaperFile = null;
-  private String sizeWallPaperFile = null;
-  private String nameStyleSheetFile = null;
-  private String urlStyleSheetFile = null;
-  private String sizeStyleSheetFile = null;
-  private String contentStyleSheetFile = null;
+  private WallPaper wallPaper = null;
+  private StyleSheet styleSheet = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -500,36 +495,21 @@ public class BlogSessionController extends AbstractComponentSessionController {
       
       for (File file : files) {
         if("banner.gif".equals(file.getName()) || "banner.jpg".equals(file.getName()) || "banner.png".equals(file.getName())) {
-          this.nameWallPaperFile = file.getName();
-          this.urlWallPaperFile = FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(), FileUtil.getMimeType(file.getName()), "");
-          this.sizeWallPaperFile = FileRepositoryManager.formatFileSize(file.length());
+          this.wallPaper = new WallPaper();
+          this.wallPaper.setNameWallPaperFile(file.getName());
+          this.wallPaper.setUrlWallPaperFile(FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(), FileUtil.getMimeType(file.getName()), ""));
+          this.wallPaper.setSizeWallPaperFile(FileRepositoryManager.formatFileSize(file.length()));
           break;
         }
       }
     }
     
     /**
-     * Get the name of the wallpaper file.
-     * @return name of the wallpaper file 
+     * Get the wallpaper object.
+     * @return the wallpaper object 
      */
-    public String getNameWallPaper() {
-      return this.nameWallPaperFile;
-    }
-    
-    /**
-     * Get the URL of the wallpaper file.
-     * @return URL of the wallpaper file 
-     */
-    public String getURLWallPaper() {
-      return this.urlWallPaperFile;
-    }
-    
-    /**
-     * Get the size of the wallpaper file.
-     * @return size of the wallpaper file 
-     */
-    public String getSizeWallPaper() {
-      return this.sizeWallPaperFile;
+    public WallPaper getWallPaper() {
+      return this.wallPaper;
     }
     
     /**
@@ -563,10 +543,10 @@ public class BlogSessionController extends AbstractComponentSessionController {
         fileItemWallPaper.write(fileWallPaper);
         
         //save the information
-        this.nameWallPaperFile = nameFile; 
-        this.urlWallPaperFile = FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile), "");
-        this.sizeWallPaperFile = FileRepositoryManager.formatFileSize(fileWallPaper.length());
-        
+        this.wallPaper = new WallPaper();
+        this.wallPaper.setNameWallPaperFile(nameFile);
+        this.wallPaper.setUrlWallPaperFile(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile), ""));
+        this.wallPaper.setSizeWallPaperFile(FileRepositoryManager.formatFileSize(fileWallPaper.length()));
       } catch (Exception ex) {
         throw new BlogRuntimeException("BlogSessionController.saveWallPaperFile()",
             SilverpeasRuntimeException.ERROR,
@@ -594,9 +574,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
         banner.delete();
       }
       
-      this.nameWallPaperFile = null; 
-      this.urlWallPaperFile = null;
-      this.sizeWallPaperFile = null;
+      this.wallPaper = null;
     }
     
     /**
@@ -614,14 +592,15 @@ public class BlogSessionController extends AbstractComponentSessionController {
       
       for (File file : files) {
         if("styles.css".equals(file.getName())) {
-          this.nameStyleSheetFile = file.getName();
-          this.urlStyleSheetFile = FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(), FileUtil.getMimeType(file.getName()), "");
-          this.sizeStyleSheetFile = FileRepositoryManager.formatFileSize(file.length());
+          this.styleSheet = new StyleSheet();
+          this.styleSheet.setNameStyleSheetFile(file.getName());
+          this.styleSheet.setUrlStyleSheetFile(FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(), FileUtil.getMimeType(file.getName()), ""));
+          this.styleSheet.setSizeStyleSheetFile(FileRepositoryManager.formatFileSize(file.length()));
           try {
-            this.contentStyleSheetFile = FileUtils.readFileToString(file, "UTF-8");
+            this.styleSheet.setContentStyleSheetFile(FileUtils.readFileToString(file, "UTF-8"));
           } catch (IOException e) {
             SilverTrace.warn("blog", "BlogSessionController.setStyleSheet()", "blog.EX_DISPLAY_STYLESHEET", e);
-            this.contentStyleSheetFile = null;
+            this.styleSheet.setContentStyleSheetFile(null);
           }
           break;
         }
@@ -629,35 +608,11 @@ public class BlogSessionController extends AbstractComponentSessionController {
     }
     
     /**
-     * Get the name of the style sheet file.
-     * @return name of the style sheet file 
+     * Get the style sheet object.
+     * @return style sheet object 
      */
-    public String getNameStyleSheet() {
-      return this.nameStyleSheetFile;
-    }
-    
-    /**
-     * Get the URL of the style sheet file.
-     * @return URL of the style sheet file 
-     */
-    public String getURLStyleSheet() {
-      return this.urlStyleSheetFile;
-    }
-    
-    /**
-     * Get the size of the style sheet file.
-     * @return size of the style sheet file 
-     */
-    public String getSizeStyleSheet() {
-      return this.sizeStyleSheetFile;
-    }
-    
-    /**
-     * Get the style sheet file.
-     * @return the style sheet file 
-     */
-    public String getContentStyleSheet() {
-      return this.contentStyleSheetFile;
+    public StyleSheet getStyleSheet() {
+      return this.styleSheet;
     }
     
     /**
@@ -687,14 +642,15 @@ public class BlogSessionController extends AbstractComponentSessionController {
         fileItemStyleSheet.write(fileStyleSheet);
         
         //save the information
-        this.nameStyleSheetFile = nameFile; 
-        this.urlStyleSheetFile = FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile), "");
-        this.sizeStyleSheetFile = FileRepositoryManager.formatFileSize(fileStyleSheet.length());
+        this.styleSheet = new StyleSheet();
+        this.styleSheet.setNameStyleSheetFile(nameFile); 
+        this.styleSheet.setUrlStyleSheetFile(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile), ""));
+        this.styleSheet.setSizeStyleSheetFile(FileRepositoryManager.formatFileSize(fileStyleSheet.length()));
         try {
-          this.contentStyleSheetFile = FileUtils.readFileToString(fileStyleSheet, "UTF-8");
+          this.styleSheet.setContentStyleSheetFile(FileUtils.readFileToString(fileStyleSheet, "UTF-8"));
         } catch (IOException e) {
           SilverTrace.warn("blog", "BlogSessionController.saveStyleSheetFile()", "blog.EX_DISPLAY_STYLESHEET", e);
-          this.contentStyleSheetFile = null;
+          this.styleSheet.setContentStyleSheetFile(null);
         }
         
       } catch (Exception ex) {
@@ -714,9 +670,6 @@ public class BlogSessionController extends AbstractComponentSessionController {
         styles.delete();
       }
       
-      this.nameStyleSheetFile = null; 
-      this.urlStyleSheetFile = null;
-      this.sizeStyleSheetFile = null;
-      this.contentStyleSheetFile = null;
+      this.styleSheet = null;
     }
 }

@@ -127,14 +127,9 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
         request.setAttribute("NbPostDisplayed", Integer.valueOf(10));
-        request.setAttribute("WallPaperName", blogSC.getNameWallPaper());
-        request.setAttribute("WallPaperURL", blogSC.getURLWallPaper());
-        request.setAttribute("WallPaperSize", blogSC.getSizeWallPaper());
-        request.setAttribute("StyleSheetName", blogSC.getNameStyleSheet());
-        request.setAttribute("StyleSheetURL", blogSC.getURLStyleSheet());
-        request.setAttribute("StyleSheetSize", blogSC.getSizeStyleSheet());
-        request.setAttribute("StyleSheetContent", blogSC.getContentStyleSheet());
-
+        request.setAttribute("WallPaper", blogSC.getWallPaper());
+        request.setAttribute("StyleSheet", blogSC.getStyleSheet());
+        
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("NewPost")) {
