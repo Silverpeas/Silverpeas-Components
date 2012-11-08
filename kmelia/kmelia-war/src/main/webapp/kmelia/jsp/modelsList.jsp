@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,30 +44,26 @@ boolean wysiwygValid = wysiwyg.booleanValue();
 	
 String linkedPathString = kmeliaScc.getSessionPath();
 
-boolean isOwner = false;
-if (kmeliaScc.getSessionOwner())
-	isOwner = true;
+boolean isOwner = kmeliaScc.getSessionOwner();
 
-if (wizardRow == null)
+if (wizardRow == null) {
 	wizardRow = "2";
+}
 
-boolean isEnd = false;
-if ("2".equals(wizardLast))
-	isEnd = true;
+boolean isEnd = "2".equals(wizardLast);
 
-//Icons
-String hLineSrc = m_context + "/util/icons/colorPix/1px.gif";
-
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "DeletePublication?PubId="+pubId, false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "DeletePublication?PubId="+pubId, false);
 Button nextButton;
-if (isEnd)
-	nextButton = (Button) gef.getFormButton(resources.getString("kmelia.End"), "WizardNext?Position=Content&WizardRow="+wizardRow, false);
-else
-	nextButton = (Button) gef.getFormButton(resources.getString("GML.next"), "WizardNext?Position=Content&WizardRow="+wizardRow, false);
-
+if (isEnd) {
+	nextButton = gef.getFormButton(resources.getString("kmelia.End"), "WizardNext?Position=Content&WizardRow="+wizardRow, false);
+} else {
+	nextButton = gef.getFormButton(resources.getString("GML.next"), "WizardNext?Position=Content&WizardRow="+wizardRow, false);
+}
 %>
-<HTML>
-<HEAD>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
 <% out.println(gef.getLookStyleSheet()); %>
 <script language="javaScript">
 function sendToWysiwyg() {
@@ -96,13 +92,12 @@ function closeWindows() {
         window.publicationWindow.close();
 }
 </script>
-</HEAD>
-<BODY onUnload="closeWindows()" id="<%=componentId%>">
+</head>
+<body onunload="closeWindows()" id="<%=componentId%>">
 <%
     Window window = gef.getWindow();
     Frame frame = gef.getFrame();
     Board board = gef.getBoard();
-    Board boardHelp = gef.getBoard();
 
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(spaceLabel);
@@ -125,16 +120,14 @@ function closeWindows() {
     out.println(frame.printBefore());
     
 	//  cadre d'aide
-	if ("progress".equals(wizard) || "finish".equals(wizard))
-	{
+	if ("progress".equals(wizard) || "finish".equals(wizard)) {
 		// cadre d'aide
-	    out.println(boardHelp.printBefore());
-		out.println("<table border=\"0\"><tr>");
-		out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resources.getIcon("kmelia.info")+"\"></td>");
-		out.println("<td>"+kmeliaScc.getString("kmelia.HelpContent")+"</td>");
-		out.println("</tr></table>");
-	    out.println(boardHelp.printAfter());
-	    out.println("<BR>");
+%>
+		<div class="inlineMessage">
+			<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+			<%=resources.getString("kmelia.HelpContent") %>
+		</div>
+<%
 	}
 	out.println(board.printBefore());
 %>
@@ -187,7 +180,7 @@ function closeWindows() {
 	    out.println("</tr>");
 	}
 %>
-</TABLE>
+</table>
 
 <%
 	out.println(board.printAfter());
@@ -207,12 +200,12 @@ function closeWindows() {
 	<input type="hidden" name="PubId" value="<%=pubId%>"/>
 	<input type="hidden" name="Action"/>
 </form>
-<form name="toWysiwyg" action="ToWysiwyg" method="post"/>
+<form name="toWysiwyg" action="ToWysiwyg" method="post">
 </form>
 <form name="xmlForm" action="GoToXMLForm" method="post">
 	<input type="hidden" name="Name"/>
 	<input type="hidden" name="PubId" value="<%=pubId%>"/>
 </form>
 <% out.println(window.printAfter()); %>
-</BODY>
-</HTML>
+</body>
+</html>

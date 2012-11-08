@@ -192,21 +192,10 @@ void displayUserOperations(String id, KmeliaSessionController kmeliaScc, Graphic
       TabbedPane tabbedPane = gef.getTabbedPane();
       tabbedPane.addTab(resources.getString("GML.publication"), routerUrl+"ViewPublication?PubId="+id, action.equals("View") || action.equals("ViewPublication"), enabled);
       if (invisibleTabs.indexOf(kmeliaScc.TAB_SEE_ALSO) == -1 && !kmaxMode) {
-    	  List seeAlsoList = kmeliaScc.getSessionPublication().getCompleteDetail().getLinkList();
-    	  List authorizedSeeAlsoList = new ArrayList();
-                ForeignPK curFPK = null;
-                String curComponentId = null;
-                for (int cpt=0; cpt < seeAlsoList.size(); cpt++) {
-                  curFPK = (ForeignPK) seeAlsoList.get(cpt);
-                  curComponentId = curFPK.getComponentName();
-                  if (curComponentId != null && kmeliaScc.getOrganizationController().isComponentAvailable(curComponentId, kmeliaScc.getUserId())) {
-                    authorizedSeeAlsoList.add(curFPK);
-                  }
-                }
-
-              String nbSeeAlso = Integer.toString(authorizedSeeAlsoList.size());
-			tabbedPane.addTab(kmeliaScc.getString("PubReferenceeParAuteur")+" ("+nbSeeAlso+")", routerUrl+"SeeAlso?PubId="+id, action.equals("LinkAuthorView") || action.equals("SameSubjectView") || action.equals("SameTopicView"), enabled);
-			i++;
+		List authorizedAndValidSeeAlsoList = kmeliaScc.getLinkedVisiblePublications();
+        String nbSeeAlso = Integer.toString(authorizedAndValidSeeAlsoList.size());
+		tabbedPane.addTab(kmeliaScc.getString("PubReferenceeParAuteur")+" ("+nbSeeAlso+")", routerUrl+"SeeAlso?PubId="+id, action.equals("LinkAuthorView") || action.equals("SameSubjectView") || action.equals("SameTopicView"), enabled);
+		i++;
       }
 
       if (i > 0)
@@ -222,46 +211,39 @@ void displayWizardOperations(String wizardRow, String id, KmeliaSessionControlle
       boolean enabledHeader = false;
       boolean enabledContent = false;
       boolean enabledAttachment = false;
-      boolean enabledPdc = false;
+      boolean enabledClassification = false;
       int numRow = Integer.parseInt(wizardRow);
-      if (numRow >= 1)
-      {
+      if (numRow >= 1) {
       	enabledHeader = false;
-      	if (id != null)
+      	if (id != null) {
           enabledHeader = true;
+        }
       }
-      if (numRow >= 2)
+      if (numRow >= 2) {
       	enabledContent = true;
-      if (numRow >= 3)
+      }
+      if (numRow >= 3) {
       	enabledAttachment = true;
-      if (numRow >= 4)
-      	enabledPdc = true;
+      }
+      if (numRow >= 4) {
+      	enabledClassification = true;
+      }
 
       List invisibleTabs = kmeliaScc.getInvisibleTabs();
 
-      int row = 2;
-      int i = 0;
-      TabbedPane tabbedPane = gef.getTabbedPane(2);
+      TabbedPane tabbedPane = gef.getTabbedPane();
 
       if (invisibleTabs.indexOf(kmeliaScc.TAB_HEADER) == -1) {
-          i++;
-          tabbedPane.addTab(kmeliaScc.getString("Header"), routerUrl+"WizardHeader?PubId="+id, action.equals("Wizard") || action.equals("UpdateWizard"), enabledHeader, row);
+          tabbedPane.addTab(kmeliaScc.getString("Header"), routerUrl+"WizardHeader?PubId="+id, action.equals("Wizard") || action.equals("UpdateWizard"), enabledHeader);
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_CONTENT) == -1) {
-          i++;
-          tabbedPane.addTab(resources.getString("Model"), "ToPubliContent?PubId="+id, action.equals("ModelUpdateView") || action.equals("NewModel") || action.equals("ModelChoice"), enabledContent, row);
+          tabbedPane.addTab(resources.getString("Model"), "ToPubliContent?PubId="+id, action.equals("ModelUpdateView") || action.equals("NewModel") || action.equals("ModelChoice"), enabledContent);
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_ATTACHMENTS) == -1) {
-          i++;
-          tabbedPane.addTab(resources.getString("GML.attachments"), "ViewAttachments?PubId="+id, action.equals("ViewAttachments"), enabledAttachment, row);
+          tabbedPane.addTab(resources.getString("GML.attachments"), "ViewAttachments?PubId="+id, action.equals("ViewAttachments"), enabledAttachment);
       }
-	  if (kmeliaScc.isPDCClassifyingMandatory() && invisibleTabs.indexOf(kmeliaScc.TAB_PDC) == -1) {
-          i++;
-          tabbedPane.addTab(resources.getString("GML.PDC"), "ViewPdcPositions", action.equals("ViewPdcPositions"), enabledPdc, row);
-      }
-      if (kmaxMode)
-      {
-      	tabbedPane.addTab(resources.getString("PubPositions"), "KmaxViewCombination?PubId="+id, action.equals("KmaxViewCombination"), enabledPdc, row);
+      if (kmaxMode) {
+      	tabbedPane.addTab(resources.getString("PubPositions"), "KmaxViewCombination?PubId="+id, action.equals("KmaxViewCombination"), enabledClassification);
       }
       out.println(tabbedPane.print());
 

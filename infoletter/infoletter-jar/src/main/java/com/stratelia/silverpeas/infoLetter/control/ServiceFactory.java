@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,10 +29,8 @@
 
 package com.stratelia.silverpeas.infoLetter.control;
 
-// Bibliotheques
-
-import com.stratelia.silverpeas.infoLetter.implementation.*;
-import com.stratelia.silverpeas.infoLetter.model.*;
+import com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager;
+import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 
 /**
  * Cette classe est reponsable de la fabrication des services.
@@ -41,7 +39,6 @@ import com.stratelia.silverpeas.infoLetter.model.*;
  */
 public class ServiceFactory {
 
-  // Membres
 
   /**
    * Constructeur sans parametres
@@ -51,14 +48,9 @@ public class ServiceFactory {
   public ServiceFactory() {
   }
 
-  // Methodes
 
   public static InfoLetterDataInterface getInfoLetterData() {
     return new InfoLetterDataManager();
   }
 
 }
-
-/*************************
- *** Fin du fichier ***
- ************************/

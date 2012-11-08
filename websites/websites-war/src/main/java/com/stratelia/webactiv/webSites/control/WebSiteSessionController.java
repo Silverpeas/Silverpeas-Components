@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,6 +35,8 @@ package com.stratelia.webactiv.webSites.control;
  * It contains all of the methods to be accessible to the client
  * @author Cécile BONIN
  */
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
 import java.io.File;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
@@ -45,7 +47,13 @@ import java.util.List;
 
 import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
+import javax.xml.bind.JAXBException;
 
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -229,8 +237,8 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   private synchronized void setWebSiteEJB() throws WebSitesException {
     if (webSiteEjb == null) {
       try {
-        webSiteEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.WEBSITESBM_EJBHOME, 
-                WebSiteBmHome.class);
+        webSiteEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.WEBSITESBM_EJBHOME,
+            WebSiteBmHome.class);
         webSiteEjb = webSiteEjbHome.create();
       } catch (Exception e) {
         throw new WebSitesException("WebSiteSessionController.setWebSiteEJB()",
@@ -335,7 +343,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     webSiteEjb.changeTopicsOrder(way, nodePK, getSessionTopic().getNodePK());
   }
 
-  /*                                  ** gestion, des publi ** */
+  /* ** gestion, des publi ** */
 
   public synchronized PublicationDetail getPublicationDetail(String pubId)
       throws WebSitesException {
@@ -434,7 +442,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     webSiteEjb.changePubsOrder(pubId, getSessionTopic().getNodePK(), direction);
   }
 
-  /*                                  ** Gestion des sites ** */
+  /* ** Gestion des sites ** */
 
   /**
    * setSiteName
@@ -602,8 +610,9 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       description.setCreatorId(getUserId());
       description.setCreationDate(new Date());
-
-      return webSiteEjb.createWebSite(description);
+      String pubPK = webSiteEjb.createWebSite(description);
+      classifyWebSites(description);
+      return pubPK;
     } catch (NoSuchObjectException nsoe) {
       initEJB();
       return createWebSite(description);
@@ -611,6 +620,35 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       throw new WebSitesException("WebSiteSessionController.createWebSite(description)",
           SilverpeasException.ERROR, "webSites.EX_CREATE_WEBSITE_FAILED",
           "siteDetail =" + description.toString(), re);
+    }
+  }
+
+  /**
+   * @param siteDetail
+   */
+  private void classifyWebSites(SiteDetail siteDetail) {
+    String positions = siteDetail.getPositions();
+    if (StringUtil.isDefined(positions)) {
+      PdcClassificationEntity pdcClassif = null;
+      try {
+        pdcClassif = PdcClassificationEntity.fromJSON(positions);
+      } catch (JAXBException e) {
+        SilverTrace.error("quickInfo", "QuickInfoSessionController.classifyQuickInfo",
+            "PdcClassificationEntity error", "Problem to read JSON", e);
+      }
+      if (pdcClassif != null && !pdcClassif.isUndefined()) {
+        List<PdcPosition> pdcPositions = pdcClassif.getPdcPositions();
+        String siteId = siteDetail.getId();
+        PdcClassification classification =
+            aPdcClassificationOfContent(siteId, getComponentId())
+                .withPositions(pdcPositions);
+        if (!classification.isEmpty()) {
+          PdcClassificationService service =
+              PdcServiceFactory.getFactory().getPdcClassificationService();
+          classification.ofContent(siteId);
+          service.classifyContent(siteDetail, classification);
+        }
+      }
     }
   }
 
@@ -895,10 +933,8 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     }
   }
 
-  
   /**
    * verif
-   * 
    * @param action
    * @param currentPath
    * @param name

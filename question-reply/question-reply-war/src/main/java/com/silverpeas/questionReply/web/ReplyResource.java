@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  * <p/>
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection withWriter Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of
  * the text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  * <p/>
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
@@ -20,28 +20,22 @@
  */
 package com.silverpeas.questionReply.web;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
+import com.silverpeas.annotation.Authorized;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.control.QuestionManagerFactory;
 import com.silverpeas.questionReply.model.Reply;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 
 /**
  *
@@ -52,15 +46,16 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
  * an access to a reply referenced by its URL.
  */
 @Service
-@Scope("request")
+@RequestScoped
 @Path("questionreply/{componentId}/replies")
+@Authorized
 public class ReplyResource extends QuestionRelyBaseWebService {
 
   @PathParam("componentId")
   protected String componentId;
 
   @Override
-  protected String getComponentId() {
+  public String getComponentId() {
     return this.componentId;
   }
 
@@ -77,7 +72,6 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   @Path("question/{questionId}")
   @Produces(MediaType.APPLICATION_JSON)
   public ReplyEntity[] getAllRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
-    checkUserPriviledges();
     try {
       long questionId = Long.parseLong(onQuestionId);
       List<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(questionId,
@@ -92,7 +86,6 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("public/question/{questionId}")
   public ReplyEntity[] getPublicRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
-    checkUserPriviledges();
     try {
       List<Reply> replies = QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(
               Long.parseLong(onQuestionId), componentId);
@@ -135,8 +128,8 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     Collection<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(reply.
             getPK(), "Images");
     entity.withAttachments(attachments);
-    AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(controller));
-    author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
+    AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(getOrganizationController()));
+    author.setAvatar(getHttpServletRequest().getContextPath() + author.getAvatar());
     return entity;
   }
 

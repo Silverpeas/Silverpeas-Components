@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,11 +36,11 @@
 <%
 	String language = almanach.getLanguage();
 
-	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");
-	Date dateDebutIteration = (Date) request.getAttribute("DateDebutIteration");
-	Date dateFinIteration = (Date) request.getAttribute("DateFinIteration");
+	EventDetail event = (EventDetail) request.getAttribute("Event");
+	Date startDate = (Date) request.getAttribute("EventStartDate");
+	Date endDate = (Date) request.getAttribute("EventEndDate");
 
-	String dateDebutIterationString = DateUtil.date2SQLDate(dateDebutIteration);
+	String startDateString = DateUtil.date2SQLDate(startDate);
 
 	Periodicity periodicity = event.getPeriodicity();
 
@@ -81,19 +81,15 @@
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
+<view:includePlugin name="wysiwyg"/>
 <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <script type="text/javascript">
 <!--
-var oEditor;
-
-function FCKeditor_OnComplete( editorInstance )
-{
-	oEditor = FCKeditorAPI.GetInstance(editorInstance.Name);
+function getCKEditor() {
+	return CKEDITOR.instances.Description;
 }
-
 function reallyUpdate() {
 	$('.WeekDayWeek').attr("disabled", false); 
 	$('.MonthDayWeek').attr("disabled", false); 
@@ -283,13 +279,12 @@ function sendEventData() {
 	    		}
 
 	    		var oldDesc = '<%=EncodeHelper.javaStringToJsString(description)%>';
-				var desc = oEditor.GetXHTML(true);
-	    		if (oldDesc != desc)
-	    		{
+				var desc = getCKEditor().getData();
+	    		if (oldDesc != desc) {
 	    			isChanged = 1;
 	    		}
 
-				var oldStartDate = '<%=resources.getOutputDate(dateDebutIteration)%>';
+				var oldStartDate = '<%=resources.getOutputDate(startDate)%>';
 	    		var startDate = document.eventForm.StartDate.value;
 	    		if (oldStartDate != startDate)
 	    		{
@@ -303,7 +298,7 @@ function sendEventData() {
 	    			isChanged = 1;
 	    		}
 
-				var oldEndDate = '<%=resources.getOutputDate(dateFinIteration)%>';
+				var oldEndDate = '<%=resources.getOutputDate(endDate)%>';
 	    		var endDate = document.eventForm.EndDate.value;
 	    		if (oldEndDate != endDate)
 	    		{
@@ -454,6 +449,8 @@ $(document).ready(function(){
         width: 650});
 	
 	changeUnity();
+	
+	<view:wysiwyg replace="Description" language="${language}" width="600" height="300" toolbar="almanach"/>
 });
 //-->
 </script>
@@ -475,9 +472,9 @@ $(document).ready(function(){
     operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("supprimerEvenement"), "javascript:onClick=eventDeleteConfirm('" + EncodeHelper.javaStringToJsString(title) + "','" + id +"')");
     out.println(window.printBefore());
 
-	tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
-	tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+dateDebutIterationString, true);
-	tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
+	tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+startDateString, false);
+	tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+startDateString, true);
+	tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+startDateString, false);
 
 	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
@@ -504,7 +501,7 @@ $(document).ready(function(){
 			<div class="field" id="eventStartDateArea">
 				<label for="eventStartDate" class="txtlibform"><fmt:message key='GML.dateBegin'/></label>
 				<div class="champs">
-					<input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(dateDebutIteration)%>" onchange="javascript:updateDates();"/>
+					<input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(startDate)%>" onchange="javascript:updateDates();"/>
 					<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 					<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
 					<input class="inputHour" type="text" name="StartHour" size="5" maxlength="5" value="<%=startHour%>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img  alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
@@ -514,7 +511,7 @@ $(document).ready(function(){
 			<div class="field" id="eventEndDateArea">
 				<label for="eventEndDate" class="txtlibform"><fmt:message key='GML.dateEnd'/></label>
 				<div class="champs">
-					<input id="eventEndDate" type="text" class="dateToPick" name="EndDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(dateFinIteration)%>"/>
+					<input id="eventEndDate" type="text" class="dateToPick" name="EndDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<%=resources.getOutputDate(endDate)%>"/>
 					<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 					<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
 					<input class="inputHour" type="text" name="EndHour" size="5" maxlength="5" value="<%=endHour%>"/> <span class="txtnote">(hh:mm)</span>
@@ -630,8 +627,8 @@ $(document).ready(function(){
 
   	<input type="hidden" name="Action"/>
   	<input type="hidden" name="Id" value="<%=event.getPK().getId()%>"/>
-  	<input type="hidden" name="DateDebutIteration" value="<%=dateDebutIterationString%>"/>
-  	<input type="hidden" name="DateFinIteration" value="<%=DateUtil.date2SQLDate(dateFinIteration)%>"/>
+  	<input type="hidden" name="EventStartDate" value="<%=startDateString%>"/>
+  	<input type="hidden" name="EventEndDate" value="<%=DateUtil.date2SQLDate(endDate)%>"/>
  </form>
    <center><br/>
    <%

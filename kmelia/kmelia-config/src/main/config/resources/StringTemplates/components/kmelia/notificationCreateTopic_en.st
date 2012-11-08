@@ -1,4 +1,4 @@
-<div style="font-family:Arial;font-size:11px">A new theme has been added in the following place :  
+<div style="font-family:Arial;font-size:11px">A new folder has been added in the following place :  
 
 <b> $path$  > $topicName$ </b>
 

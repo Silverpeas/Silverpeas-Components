@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -47,6 +47,7 @@
 <c:set var="componentLabel" value="${browseContext[1]}"/>
 <c:set var="instanceId" value="${browseContext[3]}"/>
 <c:set var="resourceName" value="${requestScope.resourceName}"/>
+<c:set var="resourceType" value="${requestScope.resourceType}"/>
 <c:set var="resourceId" value="${requestScope.resourceId}"/>
 <c:set var="userId" value="${requestScope.UserId}"/>
 <c:set var="path" value="${requestScope.Path}"/>
@@ -66,9 +67,8 @@
       </view:tabs>
 
       <view:frame>
-
-        <view:comments userId="${userId}" componentId="${instanceId}" resourceId="${resourceId}" indexed="${indexation}"/>
-
+        <view:comments  userId="${userId}" componentId="${instanceId}"
+                        resourceType="${resourceType}" resourceId="${resourceId}" indexed="${indexation}" />  
       </view:frame>
     </view:window>
   </body>

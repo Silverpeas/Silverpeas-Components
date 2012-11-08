@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,6 +30,8 @@
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.resourcemanager.model.ResourceStatus" %>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <% 
 //Recuperation des details de l'ulisateur
@@ -55,47 +57,44 @@ if (!isOwner) {
   profileForAttachments = "user";
 }
 %>
-<html>
-	<head>
-	<%
-		out.println(gef.getLookStyleSheet());
-	%>
-	<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-	<script type='text/javascript'>
-	function deleteReservation(){
-		if(confirm("<%=resource.getString("resourcesManager.suppressionConfirmation")%>")){
-			location.href="DeleteReservation?id="+<%=reservationId%>;	
-		}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<view:looknfeel />
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript">
+function deleteReservation(){
+	if(confirm("<%=resource.getString("resourcesManager.suppressionConfirmation")%>")){
+		location.href="DeleteReservation?id="+<%=reservationId%>;	
 	}
-	
-	function getResource(resourceId, objectView){
-		location.href="ViewResource?resourceId="+resourceId+"&provenance=reservation&reservationId="+<%=maReservation.getId()%> + "&objectView=" + objectView;
-	}
+}
 
-	function valideResource(resourceId, objectView) {
-		if(confirm("<%=resource.getString("resourcesManager.confirmValideResource")%>")){
-        location.href="ValidateResource?ResourceId=" + resourceId + "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
-        }
-    }
+function getResource(resourceId, objectView){
+	location.href="ViewResource?resourceId="+resourceId+"&provenance=reservation&reservationId="+<%=maReservation.getId()%> + "&objectView=" + objectView;
+}
 
-    function refuseResource(resourceId, resourceName, objectView) {
-        window.location.href = "ForRefuseResource?ResourceId=" + resourceId + "&ResourceName=" + resourceName+ "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
+function valideResource(resourceId, objectView) {
+	if(confirm("<%=resource.getString("resourcesManager.confirmValideResource")%>")){
+       location.href="ValidateResource?ResourceId=" + resourceId + "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
     }
+}
 
-    function AddAttachment()
-    {
-      SP_openWindow("/silverpeas/attachment/jsp/addAttFiles.jsp", "test", "600", "240","scrollbars=no, resizable, alwaysRaised");
-    }
-    
-	</script>
-	</head>
+function refuseResource(resourceId, resourceName, objectView) {
+    window.location.href = "ForRefuseResource?ResourceId=" + resourceId + "&ResourceName=" + resourceName+ "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
+}
+
+function AddAttachment() {
+	SP_openWindow("/silverpeas/attachment/jsp/addAttFiles.jsp", "test", "600", "240","scrollbars=no, resizable, alwaysRaised");
+}
+</script>
+</head>
 	<body id="resourcesManager">
-
 	<%
 	if (isOwner)
 	{
 		operationPane.addOperation(resource.getIcon("resourcesManager.updateBig"), resource.getString("resourcesManager.modifierReservation"),"EditReservation?id="+reservationId);
-		operationPane.addOperation("#", resource.getString("resourcesManager.addFile"), "javaScript:AddAttachment()");
+		operationPane.addOperationOfCreation("#", resource.getString("resourcesManager.addFile"), "javaScript:AddAttachment()");
 		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("resourcesManager.basketDelete"), resource.getString("resourcesManager.supprimerReservation"),"javascript:deleteReservation();");
 	}	
@@ -104,25 +103,25 @@ if (!isOwner) {
 		browseBar.setPath(resource.getString("resourcesManager.recapitulatifReservation"));
 				
 		out.println(window.printBefore());
-		out.println(frame.printBefore());
   %>
+<view:frame>
+<view:areaOfOperationOfCreation/>
 <table width="100%">
 	<tr>
 		<td valign="top">
-		<% out.println(board.printBefore());%>
-			<TABLE CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
+		<view:board>
+			<table cellpadding="3" cellspacing="0" border="0" width="100%">
 				<tr>
-					<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.evenement"));%> :</td>
+					<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.evenement"));%> :</td>
 					<td width="100%"><%=event%></td>
 				</tr>
-				
 				<tr>
-				<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateBegin"));%> :</td> 
+				<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateBegin"));%> :</td> 
 				<td> <%=dateBegin%></td>
 				</tr>
 				
 				<tr>
-				<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateEnd"));%> :</TD>
+				<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateEnd"));%> :</td>
 				<td><%=dateEnd%></td>
 				</tr>
 				<tr>
@@ -138,20 +137,19 @@ if (!isOwner) {
 					<td><%=resource.getOutputDateAndHour(maReservation.getUpdateDate())%></td>
 				</tr>
 				<tr>
-				<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> :</td> 
-				<td><%=reason%></TD>
+				<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> :</td> 
+				<td><%=reason%></td>
 				</tr>
 				
 				<tr>
-				<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.lieuReservation"));%> :</td>
-				<td><%=place%></TD>
+				<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.lieuReservation"));%> :</td>
+				<td><%=place%></td>
 				</tr>
-			</TABLE>
-		<%out.println(board.printAfter());%>
+			</table>
+		</view:board>
 		<br/>
-		<% out.println(board.printBefore());%>
-      <TABLE CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
-        
+		<view:board>
+      <table cellpadding="3" cellspacing="0" border="0" width="100%">
         <tr>
           <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%> :</td>
           <td width="100%"><%
@@ -171,18 +169,18 @@ if (!isOwner) {
              <% } 
             if (maResource.isValidationRequired() &&  managers != null && !managers.isEmpty() && managers.contains(currentUser)) { %>
               <a href="javascript:valideResource(<%=resourceId%>, '<%=objectView%>')">
-              <img src="<%=m_context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.valideResource")%>" title="<%=resource.getString("resourcesManager.valideResource")%>">
+              <img src="<%=m_context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.valideResource")%>" title="<%=resource.getString("resourcesManager.valideResource")%>"/>
               </a>&nbsp;
               <a href="javascript:refuseResource(<%=resourceId%>, '<%=resourceName%>', '<%=objectView%>')">
-              <img src="<%=m_context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.refuseResource")%>" title="<%=resource.getString("resourcesManager.refuseResource")%>">
+              <img src="<%=m_context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.refuseResource")%>" title="<%=resource.getString("resourcesManager.refuseResource")%>"/>
               </a>&nbsp;
             <% }  %>
             <br/>
         <% } %>
           </td>
         </tr>
-      </TABLE>
-      <%out.println(board.printAfter());%>
+      </table>
+      </view:board>
       <div class="inlineMessage">
             <%=resource.getString("resourcesManager.explain") %>
 	  </div>
@@ -193,16 +191,15 @@ if (!isOwner) {
     // traitement des fichiers joints
     getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+reservationId+"&ComponentId="+componentId+"&Alias=&Context=Images&AttachmentPosition=right&ShowIcon=true&ShowTitle=&ShowFileSize=true&ShowDownloadEstimation=&ShowInfo=&UpdateOfficeMode=&Language="+resourcesManagerSC.getLanguage()+"&Profile="+profileForAttachments+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewReservation?reservationId="+reservationId+"&IndexIt=").include(request, response);
     %>
-    <br/>      
-		
-       		
+    <br/>
 		</td>
 	</tr>
 </table>
-
-<%		out.println("<BR/><center>"+buttonPane.print()+"</center><BR/>");		
-		out.println(frame.printAfter());
-		out.println(window.printAfter());
+<br/>
+<%=buttonPane.print() %>
+</view:frame>
+<%
+	out.println(window.printAfter());
 %>
 </body>
 </html>

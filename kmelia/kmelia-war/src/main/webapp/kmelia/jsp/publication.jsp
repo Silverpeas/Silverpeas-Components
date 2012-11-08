@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,6 +44,7 @@
 <%@page import="com.stratelia.silverpeas.versioning.model.DocumentPK"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
+<%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
 
 <%
   ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
@@ -89,13 +90,13 @@
   PublicationDetail pubDetail = kmeliaPublication.getDetail();
   UserDetail ownerDetail = kmeliaPublication.getCreator();
   String pubName = pubDetail.getName(language);
+  String resourceType = pubDetail.getContributionType();
   String id = pubDetail.getPK().getId();
 
   String contextComponentId = componentId;
   //surcharge le componentId du composant courant (cas de l'alias)
   componentId = pubDetail.getPK().getInstanceId();
 
-  TopicDetail currentTopic = null;
   String linkedPathString = kmeliaScc.getSessionPath();
 
   boolean debut = rang.intValue() == 0;
@@ -153,21 +154,8 @@
     action = "UpdateView";
     isOwner = true;
   } else {
-    if (profile.equals("admin") || profile.equals("publisher") || profile.equals("supervisor") || (ownerDetail != null && currentUser.
-        getId().equals(ownerDetail.getId()) && profile.equals("writer"))) {
-      isOwner = true;
-
-      if (!kmeliaScc.isSuppressionOnlyForAdmin() || (profile.equals("admin") && kmeliaScc.
-          isSuppressionOnlyForAdmin())) {
-        // suppressionAllowed = true car si c'est un redacteur, c'est le proprietaire de la publication
-        suppressionAllowed = true;
-      }
-    } else if (!profile.equals("user") && kmeliaScc.isCoWritingEnable()) {
-      // si publication en co-redaction, considerer qu'elle appartient aux co-redacteur au meme titre qu'au proprietaire
-      // mais suppressionAllowed = false pour que le co-redacteur ne puisse pas supprimer la publication
-      isOwner = true;
-      suppressionAllowed = false;
-    }
+    isOwner = KmeliaPublicationHelper.isUserConsideredAsOwner(contextComponentId, currentUser.getId(), profile, ownerDetail);
+    suppressionAllowed = KmeliaPublicationHelper.isRemovable(contextComponentId, currentUser.getId(), profile, ownerDetail);
 
     if (isOwner) {
       kmeliaScc.setSessionOwner(true);
@@ -190,27 +178,9 @@
     }
   }
 
-  String creationDate = resources.getOutputDate(pubDetail.getCreationDate());
-
   String author = pubDetail.getAuthor();
 
-  String creatorId = pubDetail.getCreatorId();
-  String creatorName = resources.getString("kmelia.UnknownUser");
-  if (creatorId != null && creatorId.length() > 0) {
-    UserDetail creator = kmeliaScc.getUserDetail(creatorId);
-    if (creator != null) {
-      creatorName = creator.getDisplayedName();
-    }
-  }
-
   String updaterId = pubDetail.getUpdaterId();
-  String updaterName = resources.getString("kmelia.UnknownUser");
-  if (updaterId != null && updaterId.length() > 0) {
-    UserDetail updater = kmeliaScc.getUserDetail(updaterId);
-    if (updater != null) {
-      updaterName = updater.getDisplayedName();
-    }
-  }
 
   boolean highlightFirst = resources.getSetting("highlightFirstOccurence", false);
   
@@ -220,17 +190,14 @@
   boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <%
-      out.println(gef.getLookStyleSheet());
-    %>
+    <view:looknfeel/>
     <title></title>
     <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/pubHighlight.css"/>
     <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/kmelia-print.css" media="print"/>
-    <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+    <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
     <script type="text/javascript">
@@ -398,25 +365,22 @@
           location.href= "<%=routerUrl%>ViewPublication";
         }
 
-        function addFavorite()
-        {
-          var name = encodeURI($("#breadCrumb").text());
-          var description = encodeURI("<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>");
-          var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI,
-              pubDetail.getPK().getId())%>";
-                  urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
+        function addFavorite() {
+          var name = encodeURIComponent($("#breadCrumb").text());
+          var description = encodeURIComponent("<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>");
+          var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId())%>";
+          urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
   
-                  if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow") {
-                    favoriteWindow.close();
-                  }
+		  if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow") {
+            favoriteWindow.close();
+          }
   
-                  favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
-                }
+          favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
+        }
 
-                function suggestDelegatedNews() {
-                  location.href= "<%=routerUrl%>SuggestDelegatedNews";
-                }
-
+        function suggestDelegatedNews() {
+          location.href= "<%=routerUrl%>SuggestDelegatedNews";
+        }
     </script>
   </head>
   <body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()" id="<%=componentId%>">
@@ -512,17 +476,15 @@
         out.println(frame.printBefore());
 
         if ("finish".equals(wizard)) {
-          out.println(boardHelp.printBefore());
-          out.println("<table border=\"0\"><tr>");
-          out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\"" + resources.getIcon(
-              "kmelia.info") + "\"></td>");
-          out.println("<td>" + kmeliaScc.getString("kmelia.HelpPubli") + "</td>");
-          out.println("</tr></table>");
-          out.println(boardHelp.printAfter());
-          out.println("<br/>");
+%>
+	<div class="inlineMessage">
+		<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+		<%=resources.getString("kmelia.HelpPubli") %>
+	</div><br clear="all"/>
+<%
         }
         if (screenMessage != null && screenMessage.length() > 0) {
-          out.println("<center>" + screenMessage + "</center>");
+          out.println(screenMessage + "<br clear=\"all\"/>");
         }
 
         InfoDetail infos = pubComplete.getInfoDetail();
@@ -590,9 +552,8 @@
 			              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
 			                  "/versioningPeas/jsp/displayDocuments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
-			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo + "&UpdateOfficeMode=" + kmeliaScc.
-			                  getUpdateOfficeMode() + "&Profile=" + attProfile + "&NodeId=" + kmeliaScc.
-			                  getSessionTopic().getNodePK().getId() + "&TopicRightsEnabled=" + kmeliaScc.
+			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
+			                  "&Profile=" + attProfile + "&NodeId=" + kmeliaScc.getCurrentFolderId() + "&TopicRightsEnabled=" + kmeliaScc.
 			                  isRightsOnTopicsEnabled() + "&VersionningFileRightsMode=" + kmeliaScc.
 			                  getVersionningFileRightsMode() + "&CallbackUrl=" + URLManager.getURL(
 			                  "useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
@@ -603,8 +564,8 @@
 				              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
 			                  "/attachment/jsp/displayAttachments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
-			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo + "&UpdateOfficeMode=" + kmeliaScc.
-			                  getUpdateOfficeMode() + "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
+			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo + 
+			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
 			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
 			                  include(request, response);
 			            }
@@ -623,46 +584,45 @@
 			        %>
 			         <div id="infoPublication" class="bgDegradeGris">
 			         			
-			         			<% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) {%>
+			         			<% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) { %>
 									<p id="authorInfo"><%=resources.getString("GML.author")%> : <b><%=pubDetail.getAuthor()%></b></p>
 								<% }%>
 			         	
 			         			<% if (updaterId != null) {%>
 								  	<div id="lastModificationInfo" class="paragraphe">
 								  		<%=resources.getString("PubDateUpdate")%>  <br />
-								  		<b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%> <%= updaterName%>
+                                        <b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
 								  		<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 							  		</div>
-							  	 <% }	%>
+							  	 <% }%>
 								
 								 <div id="creationInfo" class="paragraphe">
 								 	<%=resources.getString("PubDateCreation")%> <br/>
-								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <%= creatorName%>
+								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getCreator().getId()%>"/>
 								 	<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 							 	</div>
 							  	 
 							  	  <%
 						          // Displaying all validator's name and final validation date 
-						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) {
-						            String validators = "";
-						            List validationSteps = pubComplete.getValidationSteps();
+						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) { %>
+						            <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/> 
+						            	<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <%=resources.getString("GML.by")%>
+						            <% List<ValidationStep> validationSteps = pubComplete.getValidationSteps();
 						            if (validationSteps != null && !validationSteps.isEmpty()) {
 						              Collections.reverse(validationSteps); //display steps from in order of validation
 						              for (int v = 0; v < validationSteps.size(); v++) {
-						                if (v != 0) {
-						                  validators += ", ";
-						                }
-						                ValidationStep vStep = (ValidationStep) validationSteps.get(v);
-						                if (vStep != null) {
-						                  validators += kmeliaScc.getUserDetail(vStep.getUserId()).getDisplayedName();
-						                }
+						                if (v != 0) { %>
+						                  , 
+						                <% }
+						                ValidationStep vStep = validationSteps.get(v);
+						                if (vStep != null) { %>
+						                	<view:username userId="<%=vStep.getUserId()%>"/>
+						                <% }
 						              }
-						            } else {
-						              validators = kmeliaScc.getUserDetail(pubDetail.getValidatorId()).getDisplayedName();
-						            }
-						        %>					        
-       								 <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <br/> 
-       								 	<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <%=resources.getString("GML.by")%>  <%= validators%> 						 	
+						            } else { %>
+						            	<view:username userId="<%=pubDetail.getValidatorId()%>"/>
+						            <% }
+						        %>
    								 	</p>
 							    <%
 							      }
@@ -703,15 +663,11 @@
         /*********************************************************************************************************************/
         /** Colonne Pricipale																									**/
         /*********************************************************************************************************************/
-    	 out.println("<div  class=\"principalContent\">");
-    	 
+    	 out.println("<div class=\"principalContent\">");
     	 
 				        /*********************************************************************************************************************/
 				        /** Affichage du header de la publication																			**/
 				        /*********************************************************************************************************************/
-		       
-		
-		
 				        out.print("<h2 class=\"publiName\">");
 				        
 				     		   out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
@@ -740,7 +696,7 @@
 				        if (StringUtil.isDefined(description)) {
 				        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
 				        }
-				
+			
 				        /*********************************************************************************************************************/
 				        /** Affichage du contenu de la publication																			**/
 				        /*********************************************************************************************************************/
@@ -760,7 +716,7 @@
 				                false, componentId, kmeliaScc.getUserId());
 				            xmlContext.setObjectId(id);
 				            if (kmeliaMode) {
-				              xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
+				              xmlContext.setNodeId(kmeliaScc.getCurrentFolderId());
 				            }
 				            xmlContext.setBorderPrinted(false);
 				            xmlContext.setContentLanguage(language);
@@ -778,7 +734,8 @@
                         if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {
 			      %>
       
-      <view:comments userId="<%= user_id%>" componentId="<%= componentId %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>
+      <view:comments	userId="<%= user_id%>" componentId="<%= componentId %>"
+      					resourceType="<%= resourceType %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>
       
       <% }
 
@@ -796,14 +753,14 @@
               String checked = "";
               String disabled = "";
               if (!exportFormats.contains(format)) {
-                disabled = "disabled='disabled'";
+                disabled = "disabled=\"disabled\"";
               }
               if (!selectedFormat && disabled.isEmpty()) {
-                checked = "checked='checked'";
+                checked = "checked=\"checked\"";
                 selectedFormat = true;
               }
             %>
-            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %> ><%=resources.getString("kmelia.export.format." + format)%></input>
+            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %>/><%=resources.getString("kmelia.export.format." + format)%>
             <% } %>
             <input type="hidden" name="PubId" value="<%=id%>"/>
             <input type="hidden" name="ComponentId" value="<%=componentId%>"/>

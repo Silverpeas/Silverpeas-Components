@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,20 +23,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp"%>
 
 <%
   // récupération des paramètres :
   String searchKeyWord = (String) request.getAttribute("SearchKeyWord");
-  List photos = (List) request.getAttribute("Photos");
+  List<PhotoDetail> photos = (List) request.getAttribute("Photos");
   String profile = (String) request.getAttribute("Profile");
   int firstPhotoIndex = ((Integer) request.getAttribute("FirstPhotoIndex")).intValue();
   int nbPhotosPerPage = ((Integer) request.getAttribute("NbPhotosPerPage")).intValue();
   String taille = (String) request.getAttribute("Taille");
   Boolean isViewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
   Boolean isViewList = (Boolean) request.getAttribute("IsViewList");
-  Collection selectedIds = (Collection) request.getAttribute("SelectedIds");
+  Collection<String> selectedIds = (Collection) request.getAttribute("SelectedIds");
   boolean isViewNotVisible = ((Boolean) request.getAttribute("ViewVisible")).booleanValue();
   boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
     
@@ -51,7 +52,7 @@
     
   // initialisation de la pagination
   Pagination pagination = gef.getPagination(photos.size(), nbPhotosPerPage, firstPhotoIndex);
-  List affPhotos = photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
+  List<PhotoDetail> affPhotos = photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
     
   // création du chemin :
   String chemin = " ";
@@ -311,7 +312,7 @@
               name = photo.getId() + extension;
               vignette_url = FileServerUtils.getUrl(spaceId,
                   componentId, name, photo.getImageMimeType(), nomRep);
-              if ("bmp".equalsIgnoreCase(type)) {
+              if (!ImageType.isPreviewable(name)) {
                 vignette_url = m_context
                     + "/gallery/jsp/icons/notAvailable_"
                     + resource.getLanguage()
@@ -457,15 +458,13 @@
 			</tr>
 			<%
     }
-      Collection metaDataKeys = photo.getMetaDataProperties();
+      
       if (viewMetadata) {
-        if (metaDataKeys != null) {
-          Iterator itMeta = (Iterator) metaDataKeys.iterator();
-          while (itMeta.hasNext()) {
-            // traitement de la metaData
-            String property = (String) itMeta.next();
-              
-            MetaData metaData = photo.getMetaData(property);
+        final Collection<String> metaDataKeys = photo.getMetaDataProperties();
+        if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
+          MetaData metaData;
+          for (final String property : metaDataKeys) {
+            metaData = photo.getMetaData(property);
             String mdLabel = metaData.getLabel();
             String mdValue = metaData.getValue();
             if (metaData.isDate()) {
@@ -478,10 +477,10 @@
 				<td><%=mdValue%></td>
 			</tr>
 			<%
-				}
-											}
-										}
-										if (photo.getKeyWord() != null) {
+          }
+        }
+      }
+			if (photo.getKeyWord() != null) {
 			%>
 			<tr>
 				<td class="txtlibform" nowrap><%=resource

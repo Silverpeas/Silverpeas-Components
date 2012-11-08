@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,9 +23,13 @@
  */
 package com.stratelia.silverpeas.infoLetter.model;
 
+import java.util.Date;
 import java.util.Iterator;
 
+import com.silverpeas.SilverpeasContent;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
@@ -33,10 +37,15 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * @since February 2002
  */
 public class InfoLetterPublicationPdC extends InfoLetterPublication implements
-    SilverContentInterface {
-
+    SilverContentInterface, SilverpeasContent {
+  private static final long serialVersionUID = -2174573301215680444L;
   /** icone d'une publication */
   private String iconUrl = "infoLetterSmall.gif";
+  private static final String TYPE = "publication";
+  
+  private static final InfoLetterContentManager contentMgr = new InfoLetterContentManager();
+  private String silverObjectId;
+  private String positions;
 
   /**
    * Constructeur sans parametres
@@ -75,7 +84,23 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
     super(pk, title, description, parutionDate, publicationState, letterId);
   }
 
-  // methods to be implemented by SilverContentInterface
+  /**
+   * @return the positions
+   */
+  public String getPositions() {
+    return positions;
+  }
+
+  /**
+   * @param positions the positions to set
+   */
+  public void setPositions(String positions) {
+    this.positions = positions;
+  }
+
+  /**
+   * methods to be implemented by SilverContentInterface
+   */
 
   public String getName() {
     return getTitle();
@@ -113,10 +138,43 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
     return getName();
   }
 
-  public Iterator getLanguages() {
+  public Iterator<String> getLanguages() {
     return null;
   }
+
+  /**
+   * Method which implements SilverpeasContent
+   */
+
+  @Override
+  public String getComponentInstanceId() {
+    return getInstanceId();
+  }
+
+  @Override
+  public String getSilverpeasContentId() {
+    if (this.silverObjectId == null) {
+      int objectId = contentMgr.getSilverObjectId(getId(), getComponentInstanceId());
+      if (objectId >= 0) {
+        this.silverObjectId = String.valueOf(objectId);
+      }
+    }
+    return this.silverObjectId;    
+  }
+
+  @Override
+  public UserDetail getCreator() {
+    return UserDetail.getById(this.getCreatorId());
+  }
+
+  @Override
+  public Date getCreationDate() {
+    // no need date to classify this content
+    return null;
+  }
+
+  @Override
+  public String getContributionType() {
+    return TYPE;
+  }
 }
-/*************************
- *** Fin du fichier ***
- ************************/

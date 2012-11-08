@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,7 +30,6 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
-import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 
@@ -94,13 +93,13 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
     OutputStream output = descriptor.getOutputStream();
     UserDetail user = descriptor.getParameter(EXPORT_FOR_USER);
     String language = descriptor.getParameter(EXPORT_LANGUAGE);
-    TopicDetail topic = descriptor.getParameter(EXPORT_TOPIC);
+    String folderId = descriptor.getParameter(EXPORT_TOPIC);
     DocumentFormat targetFormat = DocumentFormat.inFormat(descriptor.getFormat());
     String documentPath = getTemporaryExportFilePathFor(publication);
     File odtDocument = null, exportFile = null;
     try {
       ODTDocumentBuilder builder = anODTDocumentBuilder().forUser(user).inLanguage(language).
-              inTopic(topic);
+              inTopic(folderId);
       odtDocument = builder.buildFrom(publication, anODTAt(documentPath));
       if (targetFormat != odt) {
         ODTConverter converter = DocumentFormatConverterFactory.getFactory().getODTConverter();

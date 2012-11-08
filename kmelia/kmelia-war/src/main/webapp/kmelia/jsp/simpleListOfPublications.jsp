@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,16 +25,17 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="checkKmelia.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ include file="checkKmelia.jsp" %>
+
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 
 <%
-String		rootId				= "0";
-String		description			= "";
-String		namePath			= "";
-String		urlTopic			= "";
+String id = "0";
+
+// création du nom pour les favoris
+String namePath = spaceLabel + " > " + componentLabel;
 
 //R?cup?ration des param?tres
 String 	profile			= (String) request.getAttribute("Profile");
@@ -43,45 +44,35 @@ boolean	isGuest			= (Boolean) request.getAttribute("IsGuest");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
 boolean updateChain		= ((Boolean) request.getAttribute("HaveDescriptor")).booleanValue();
 
-TopicDetail currentTopic 		= (TopicDetail) request.getAttribute("CurrentTopic");
-
-String 		pathString 			= (String) request.getAttribute("PathString");
-
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
-String id = currentTopic.getNodeDetail().getNodePK().getId();
 String language = kmeliaScc.getLanguage();
 
-NodeDetail nodeDetail = currentTopic.getNodeDetail();
-
-List path = (List) kmeliaScc.getNodeBm().getPath(currentTopic.getNodePK());
-
-if (id == null) {
-	id = rootId;
-}
+String urlTopic	= URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId, true);;
 
 //For Drag And Drop
 boolean dragAndDropEnable = kmeliaScc.isDragAndDropEnable();
 
-String sRequestURL = request.getRequestURL().toString();
-String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-
 String userId = kmeliaScc.getUserId();
-
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 
 boolean userCanCreatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.writer.isInRole(profile);
 boolean userCanValidatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile);
 
+boolean userCanSeeStats =
+  SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.supervisor.isInRole(profile) ||
+  SilverpeasRole.admin.isInRole(profile) && !KmeliaHelper.isToolbox(kmeliaScc.getComponentId());
+
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
+<view:includePlugin name="userZoom"/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <script type="text/javascript" src="javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
@@ -137,11 +128,16 @@ function topicWysiwyg() {
 function pasteFromOperations() {
 	$.progressMessage();
 	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/KmeliaJSONServlet', {Action:'Paste',ComponentId:'<%=componentId%>',Language:'<%=language%>',IEFix:ieFix},
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, {ComponentId:getComponentId(),Action:'Paste',Id:'0',IEFix:ieFix},
 			function(data){
-				displayPublications("0");
 				$.closeProgressMessage();
-			},"json");
+				if (data == "ok") {
+					displayPublications("0");
+				} else {
+					alert(data);
+				}
+			}, 'text');
 }
 
 $(document).ready(function() {
@@ -153,16 +149,9 @@ $(document).ready(function() {
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
 <div id="<%=componentId %>">
 <%
-        urlTopic = nodeDetail.getLink();
-
         Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setI18N("GoToCurrentTopic", translation);
-
-        // cr?ation du nom pour les favoris
-        namePath = spaceLabel + " > " + componentLabel;
-         if (!pathString.equals(""))
-        	namePath = namePath + " > " + pathString;
 
         //Display operations
         OperationPane operationPane = window.getOperationPane();
@@ -187,15 +176,15 @@ $(document).ready(function() {
 			operationPane.addLine();
         }
         if (userCanCreatePublications) {
-	        operationPane.addOperation("useless", kmeliaScc.getString("PubCreer"), "NewPublication");
+	        operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.addPubli"), kmeliaScc.getString("PubCreer"), "NewPublication");
 	        if (kmeliaScc.isWizardEnabled()) {
-	      		operationPane.addOperation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
+	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
 	        }
 	        if (kmeliaScc.isImportFileAllowed()) {
-	      		operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
+	      		operationPane.addOperationOfCreation("useless", kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
 	        }
 	        if (kmeliaScc.isImportFilesAllowed()) {
-	        	operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
+	        	operationPane.addOperationOfCreation("useless", kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
 	        }
 	        if (updateChain) {
 	        	operationPane.addOperation(resources.getIcon("kmelia.updateByChain"), kmeliaScc.getString("kmelia.updateByChain"), "javascript:onClick=updateChain()");
@@ -207,7 +196,7 @@ $(document).ready(function() {
     	if (!isGuest) {
     	  	operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
     		operationPane.addOperation("useless", resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
-      		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(description))+"','"+urlTopic+"')");
+      		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
     	}
     	
     	if (userCanCreatePublications) {
@@ -217,25 +206,26 @@ $(document).ready(function() {
           		operationPane.addOperation("useless", resources.getString("ToValidate"), "ViewPublicationsToValidate");
           	}
   		}
-
-    //Instanciation du cadre avec le view generator
-	Frame frame = gef.getFrame();
-
+      if (userCanSeeStats) {
+        operationPane.addLine();
+        operationPane.addOperation("useless", resources.getString("kmelia.operation.statistics"), "javascript:showStats();");
+      }
+      
     out.println(window.printBefore());
-    out.println(frame.printBefore());
 %>
+<view:frame>
 					<% if (displaySearch.booleanValue()) {
-					  	Board board = gef.getBoard();
-						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false);
-						out.println("<div id=\"searchZone\">");
-						out.println(board.printBefore());
-						out.println("<table id=\"searchLine\">");
-						out.println("<tr><td><div id=\"searchLabel\">"+resources.getString("kmelia.SearchInTopics")+"</div>&nbsp;<input type=\"text\" id=\"topicQuery\" size=\"50\" onkeydown=\"checkSubmitToSearch(event)\"/></td><td>"+searchButton.print()+"</td></tr>");
-						out.println("</table>");
-						out.println(board.printAfter());
-						out.println("</div>");
-					} %>
+						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
+						<div id="searchZone">
+						<view:board>
+						<table id="searchLine">
+						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+						</table>
+						</view:board>
+						</div>
+					<% } %>					
 					<div id="topicDescription"></div>
+					<view:areaOfOperationOfCreation/>
 				<%
 					  if (dragAndDropEnable && userCanCreatePublications) {
 						%>
@@ -269,23 +259,20 @@ $(document).ready(function() {
 						</div>
 				<% }  %>
 					<div id="pubList">
-					<%
-						 Board board = gef.getBoard();
-						 out.println("<br/>");
-						 out.println(board.printBefore());
-						 out.println("<br/><center>"+resources.getString("kmelia.inProgressPublications")+"<br/><br/><img src=\""+resources.getIcon("kmelia.progress")+"\"/></center><br/>");
-						 out.println(board.printAfter());
-					 %>
+					<br/>
+					<view:board>
+					<br/><center><%=resources.getString("kmelia.inProgressPublications") %><br/><br/><img src="<%=resources.getIcon("kmelia.progress") %>"/></center><br/>
+					</view:board>
 					</div>
-					<div id="footer" class="txtBaseline">
+					<div id="footer" class="txtBaseline"></div>
+	</view:frame>
 	<%
-		out.println(frame.printAfter());
 		out.println(window.printAfter());
 	%>
 
 <form name="topicDetailForm" method="post">
 	<input type="hidden" name="Id" value="<%=id%>"/>
-	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"/>
+	<input type="hidden" name="Path" value=""/>
 	<input type="hidden" name="ChildId"/>
 	<input type="hidden" name="Status"/><input type="hidden" name="Recursive"/>
 </form>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,7 +33,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import java.io.Serializable;
 
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
@@ -54,6 +54,8 @@ public class KmeliaHelper implements Serializable {
   public static final String ROLE_PUBLISHER = "publisher";
   public static final String ROLE_WRITER = "writer";
   public static final String ROLE_READER = "user";
+  
+  public static final String SPECIALFOLDER_TOVALIDATE = "tovalidate";
 
   public KmeliaHelper() {
   }
@@ -130,5 +132,13 @@ public class KmeliaHelper implements Serializable {
 
   public static boolean isKmax(String componentId) {
     return componentId.startsWith("kmax");
+  }
+  
+  public static boolean isKmelia(String componentId) {
+    return componentId.startsWith("kmelia");
+  }
+  
+  public static boolean isToValidateFolder(String id) {
+    return SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id);
   }
 }

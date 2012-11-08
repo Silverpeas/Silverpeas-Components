@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -206,7 +206,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     int i = 0;
 
     while (results != null && results.hasMore()) {
-      SearchResult entry = (SearchResult) results.next();
+      SearchResult entry = results.next();
       if (StringUtil.isDefined(entry.getName())) {
         Attributes attrs = entry.getAttributes();
         if (isUserActive(config.getLdapAttActif(), attrs)) {
@@ -611,7 +611,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
   private boolean isFunctionMatchingRole(String function, OrganizationalRole role) {
     return ((role != null)
         && StringUtil.isDefined(role.getLdapKey()) && function.toLowerCase().indexOf(
-        role.getLdapKey()) != -1);
+        role.getLdapKey().toLowerCase()) != -1);
   }
 
   /**
@@ -646,11 +646,12 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
    */
   private boolean isUserActive(String activeAttribute, Attributes attrs) {
     // if no ldap attribute specified in configuration, let's consider user is always valid
-    if (activeAttribute == null)
+    if (activeAttribute == null) {
       return true;
+    }
 
     String actif = getFirstAttributeValue(attrs.get(activeAttribute));
-    return !StringUtil.getBooleanValue(actif);
+    return StringUtil.getBooleanValue(actif);
   }
 
 }

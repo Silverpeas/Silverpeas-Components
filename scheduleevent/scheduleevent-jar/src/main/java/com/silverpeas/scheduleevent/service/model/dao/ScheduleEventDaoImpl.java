@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,6 +32,9 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.scheduleevent.constant.ScheduleEventConstant;
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
@@ -45,6 +48,7 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
   }
 
   public void deleteScheduleEvent(ScheduleEvent scheduleEvent) {
+
     // purge all the response
     Set<Response> responses = scheduleEvent.getResponses();
 
@@ -56,15 +60,22 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
       getSession().flush();
     }
     getSession().delete(scheduleEvent);
+
+    // delete related schedule event comments
+    CommentServiceFactory
+        .getFactory()
+        .getCommentService()
+        .deleteAllCommentsOnPublication(ScheduleEvent.getResourceType(),
+            new CommentPK(scheduleEvent.getId().toString(), ScheduleEventConstant.TOOL_ID));
   }
 
   public ScheduleEvent getScheduleEventComplete(String scheduleEventId) {
-	    Criteria criteria = getSession().createCriteria(ScheduleEvent.class);
-	    criteria.add(Restrictions.eq("id", scheduleEventId));
-	    return (ScheduleEvent) criteria.uniqueResult();
-//	  return (ScheduleEvent) getSession().load(ScheduleEvent.class, scheduleEventId);
+    Criteria criteria = getSession().createCriteria(ScheduleEvent.class);
+    criteria.add(Restrictions.eq("id", scheduleEventId));
+    return (ScheduleEvent) criteria.uniqueResult();
   }
 
+  @SuppressWarnings("unchecked")
   public Set<ScheduleEvent> listScheduleEventsByCreatorId(String userId) {
     Criteria criteria = getSession().createCriteria(ScheduleEvent.class);
     criteria.add(Restrictions.eq("author", Integer.parseInt(userId)));
@@ -73,12 +84,13 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
     return returnSet;
   }
 
+  @SuppressWarnings("unchecked")
   public Set<ScheduleEvent> listScheduleEventsByContributorId(String userId) {
     Criteria criteria = getSession().createCriteria(Contributor.class);
     criteria.add(Restrictions.eq("userId", Integer.parseInt(userId)));
     Set<Contributor> returnSet = new HashSet<Contributor>();
     returnSet.addAll(criteria.list());
-    
+
     Set<ScheduleEvent> scheduleEvents = new HashSet<ScheduleEvent>();
     if (returnSet != null && returnSet.size() > 0) {
       Iterator<Contributor> iterRes = returnSet.iterator();
@@ -112,7 +124,7 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
     criteria.add(Restrictions.eq("id", contributorId));
     return (Contributor) criteria.uniqueResult();
   }
-  
+
   public void deleteContributor(Contributor contributor) {
     getSession().delete(contributor);
   }

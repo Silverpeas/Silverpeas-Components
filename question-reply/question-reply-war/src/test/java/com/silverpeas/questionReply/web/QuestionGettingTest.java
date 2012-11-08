@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,31 +25,33 @@ package com.silverpeas.questionReply.web;
 
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.silverpeas.questionReply.control.QuestionManager;
 import com.silverpeas.questionReply.model.Question;
-import com.silverpeas.rest.RESTWebServiceTest;
-import com.silverpeas.rest.mock.UserDetailWithProfiles;
+import static com.silverpeas.questionReply.web.QuestionReplyTestResources.COMPONENT_INSTANCE_ID;
+import static com.silverpeas.questionReply.web.QuestionReplyTestResources.QUESTION_RESOURCE_PATH;
+import com.silverpeas.web.RESTWebServiceTest;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-import static com.silverpeas.rest.RESTWebService.*;
-import static com.silverpeas.questionReply.web.QuestionReplyTestResources.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests on the comment getting by the CommentResource web service.
  */
 public class QuestionGettingTest extends RESTWebServiceTest<QuestionReplyTestResources> {
+  private UserDetail creator;
 
   public QuestionGettingTest() {
     super("com.silverpeas.questionReply.web", "spring-questionreply-webservice.xml");
@@ -72,21 +74,12 @@ public class QuestionGettingTest extends RESTWebServiceTest<QuestionReplyTestRes
   public void getAQuestionByAnAuthenticatedUser() throws Exception {
     WebResource resource = resource();
 
-    UserDetail creator = new UserDetail();
-    creator.setFirstName("Lisa");
-    creator.setLastName("Simpson");
-    creator.setId("1");
-    authenticate(creator);
-
-    UserDetailWithProfiles user = new UserDetailWithProfiles();
-    user.setFirstName("Bart");
-    user.setLastName("Simpson");
-    user.setId("10");
+    UserDetailWithProfiles user = getTestResources().aUserNamed("Bart", "Simpson");
     user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
     QuestionManager mockedQuestionManager = mock(QuestionManager.class);
-    Question question = getNewSimpleQuestion(3);
+    Question question = getNewSimpleQuestion(creator.getId(), 3);
     when(mockedQuestionManager.getQuestion(3L)).thenReturn(question);
     getTestResources().getMockableQuestionManager().setQuestionManager(mockedQuestionManager);
     QuestionEntity entity = resource.path(QUESTION_RESOURCE_PATH + "/3").header(HTTP_SESSIONKEY, sessionKey).
@@ -102,21 +95,11 @@ public class QuestionGettingTest extends RESTWebServiceTest<QuestionReplyTestRes
   public void getAnInvisibleQuestionByAnAuthenticatedUser() throws Exception {
     WebResource resource = resource();
 
-    UserDetail creator = new UserDetail();
-    creator.setFirstName("Lisa");
-    creator.setLastName("Simpson");
-    creator.setId("1");
-    authenticate(creator);
-
-    UserDetailWithProfiles user = new UserDetailWithProfiles();
-    user.setFirstName("Bart");
-    user.setLastName("Simpson");
-    user.setId("10");
+    UserDetailWithProfiles user = getTestResources().aUserNamed("Bart", "Simpson");
     user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.user);
     String sessionKey = authenticate(user);
-    getMockedPersonalizationService().setPersonalizationService(mock(PersonalizationService.class));
     QuestionManager mockedQuestionManager = mock(QuestionManager.class);
-    Question question = getNewSimpleQuestion(3);
+    Question question = getNewSimpleQuestion(creator.getId(), 3);
     question.waitForAnswer();
     when(mockedQuestionManager.getQuestion(3L)).thenReturn(question);
     getTestResources().getMockableQuestionManager().setQuestionManager(mockedQuestionManager);
@@ -131,8 +114,8 @@ public class QuestionGettingTest extends RESTWebServiceTest<QuestionReplyTestRes
     }
   }
 
-  private Question getNewSimpleQuestion(int id) {
-    Question question = new Question("1", COMPONENT_INSTANCE_ID);
+  private Question getNewSimpleQuestion(String creatorId, int id) {
+    Question question = new Question(creatorId, COMPONENT_INSTANCE_ID);
     question.setPK(new IdPK(id));
     question.getPK().setId(COMPONENT_INSTANCE_ID);
     question.setTitle("Test");
@@ -142,12 +125,16 @@ public class QuestionGettingTest extends RESTWebServiceTest<QuestionReplyTestRes
   }
 
   @Before
-  public void preparePersonalization() {
-     PersonalizationService myPersonalizationService = mock(PersonalizationService.class);
+  public void preparePersonalizationAndQuestionCreator() {
+     PersonalizationService myPersonalizationService = getTestResources().getPersonalizationServiceMock();
      UserPreferences prefs = mock(UserPreferences.class);
      when(prefs.getLanguage()).thenReturn("en");
      when(myPersonalizationService.getUserSettings(anyString())).thenReturn(prefs);
-     getMockedPersonalizationService().setPersonalizationService(myPersonalizationService);
+     
+     creator = new UserDetail();
+     creator.setFirstName("Lisa");
+     creator.setLastName("Simpson");
+     authenticate(creator);
   }
 
   @Override

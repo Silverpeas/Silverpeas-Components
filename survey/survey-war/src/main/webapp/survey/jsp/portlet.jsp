@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -66,7 +66,7 @@ lockSrc = iconsPath + "/util/icons/lock.gif";
 unlockSrc = iconsPath + "/util/icons/unlock.gif";
 surveyDeleteSrc = iconsPath + "/util/icons/delete.gif";
 surveyUpdateSrc = iconsPath + "/util/icons/update.gif";
-addSurveySrc = iconsPath + "/util/icons/survey_to_add.gif";
+addSurveySrc = iconsPath + "/util/icons/create-action/add-survey.png";
 
 //Mise a jour de l'espace
 if (action == null) {

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -45,7 +45,7 @@
 <c:set var="spaceId" value="${browseContext[2]}"/>
 
 <c:set var="event" value="${requestScope.Event}"/>
-<c:set var="iterationStartDate" value="${requestScope.DateDebutIteration}"/>
+<c:set var="startDate" value="${requestScope.EventStartDate}"/>
 <c:set var="pdcUsed" value="${requestScope.PdcUsed}"/>
 <c:set var="id" value="${event.id}"/>
 <c:set var="title" value="${event.title}"/>
@@ -66,14 +66,14 @@
     <view:window>
       <view:tabs>
         <fmt:message key="evenement" var="tabLabel"/>
-        <view:tab label="${tabLabel}" action="viewEventContent.jsp?Id=${id}&Date=${iterationStartDate}" selected="false"/>
+        <view:tab label="${tabLabel}" action="viewEventContent.jsp?Id=${id}&Date=${startDate}" selected="false"/>
         <fmt:message key="entete" var="tabLabel"/>
-        <view:tab label="${tabLabel}" action="editEvent.jsp?Id=${id}&Date=${iterationStartDate}" selected="false"/>
+        <view:tab label="${tabLabel}" action="editEvent.jsp?Id=${id}&Date=${startDate}" selected="false"/>
         <fmt:message key="GML.attachments" var="tabLabel"/>
-        <view:tab label="${tabLabel}" action="editAttFiles.jsp?Id=${id}&Date=${iterationStartDate}" selected="true"/>
+        <view:tab label="${tabLabel}" action="editAttFiles.jsp?Id=${id}&Date=${startDate}" selected="true"/>
       </view:tabs>
       <view:frame>
-        <c:import  url="/attachment/jsp/editAttFiles.jsp?Id=${id}&Date=${iterationStartDate}&SpaceId=${spaceId}&ComponentId=${instanceId}&Context=Images&Url=${url}"/>
+        <c:import  url="/attachment/jsp/editAttFiles.jsp?Id=${id}&Date=${startDate}&SpaceId=${spaceId}&ComponentId=${instanceId}&Context=Images&Url=${url}"/>
       </view:frame>
     </view:window>
   </body>

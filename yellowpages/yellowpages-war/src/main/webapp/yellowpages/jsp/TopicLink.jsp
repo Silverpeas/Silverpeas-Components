@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -84,8 +84,6 @@ private String afficheArbo(ArrayPane arrayPane, String idNode, YellowpagesSessio
 <!--
 function reallyClose()
 {
-  //window.opener.document.forms[0].elements[0].value = "Search";
-  //window.opener.document.forms[0].submit();
   window.opener.document.topicDetailForm.Action.value = "Search";
   window.opener.document.topicDetailForm.submit();
   window.close();
@@ -95,9 +93,9 @@ function reallyClose()
 
 <% 
 TopicDetail CurrentTopic = yellowpagesScc.getCurrentTopic();
-String action = (String) request.getParameter("Action");
-String listeTopics = (String) request.getParameter("ListeTopics");
-String contactId = (String) request.getParameter("ContactId");
+String action = request.getParameter("Action");
+String listeTopics = request.getParameter("ListeTopics");
+String contactId = request.getParameter("ContactId");
 
 if ((action != null) && (action.equals("SendTopic")))
 {
@@ -173,14 +171,14 @@ function B_VALIDER_ONCLICK() {
     Frame frame = gef.getFrame();
     Board board = gef.getBoard();
 
-    //Début code
+    //Debut code
     out.println(window.printBefore());
     out.println(frame.printBefore());
     out.println(board.printBefore());
 
     ArrayPane arrayPane = gef.getArrayPane("siteList", "", request, session);
     arrayPane.setVisibleLineNumber(1000);
-    //Définition des colonnes du tableau
+    //Definition des colonnes du tableau
     ArrayColumn arrayColumnTopic = arrayPane.addArrayColumn(yellowpagesScc.getString("NomThemes"));
     arrayColumnTopic.setSortable(false);
     ArrayColumn arrayColumnContact = arrayPane.addArrayColumn(yellowpagesScc.getString("Contactlier"));
@@ -191,8 +189,8 @@ function B_VALIDER_ONCLICK() {
     out.println(resultat);
 
     ButtonPane buttonPane = gef.getButtonPane();
-    Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=self.close();", false);
-    Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
+    Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=self.close();", false);
+    Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
         
     out.println(board.printAfter());
     buttonPane.addButton(validateButton);

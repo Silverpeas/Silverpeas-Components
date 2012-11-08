@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,9 +28,11 @@
 package com.silverpeas.whitePages.servlets;
 
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.control.WhitePagesSessionController;
 import com.silverpeas.whitePages.filters.LoginFilter;
 import com.silverpeas.whitePages.model.Card;
@@ -47,7 +49,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -84,9 +86,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     SilverTrace.info("whitePages",
         "WhitePagesRequestRouter.createComponentSessionController()", "", "");
-    return new WhitePagesSessionController(mainSessionCtrl, componentContext,
-        "com.silverpeas.whitePages.multilang.whitePagesBundle",
-        "com.silverpeas.whitePages.settings.whitePagesIcons");
+    return new WhitePagesSessionController(mainSessionCtrl, componentContext);
   }
 
   /*
@@ -156,15 +156,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
            */
           if (!scc.existCard(scc.getUserId())) {
             destination = getDestination("createIdentity", scc, request);
-
-          }
-
-          /*
-           * 2nd case : user card is not classified
-           */
-          else if (!scc.isCardClassifiedOnPdc()) {
-            request.setAttribute("FirstVisite", "1");
-            destination = getDestination("ViewPdcPositions", scc, request);
           }
 
           /*
@@ -179,22 +170,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
           destination = "/admin/jsp/errorpage.jsp";
         }
       }
-
-      /*
-       * Card list.
-       */
-      /*else if (function.equals("search")) {
-        request.setAttribute("IsEmailHidden", scc.isEmailHidden());
-
-        if (flag.equals("admin")) {
-          request.setAttribute("listCards", scc.getCards());
-          destination = "/whitePages/jsp/listCards.jsp";
-        } else if (flag.equals("user")) {
-          request.setAttribute("listCards", scc.getVisibleCards());
-          destination = "/whitePages/jsp/listCardsUser.jsp";
-        } else
-          destination = "/admin/jsp/errorpage.jsp";
-      }*/
 
       /*
        * New card (administrator only) : redirects to user panel.
@@ -295,15 +270,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
        */
       else if (function.equals("effectiveCreate")) {
         /*
-         * Stores card, identity and data record.
-         */
-        scc.insertCard();
-
-        /*
          * Updates record object with new values.
          */
-        scc.setCardRecord(request);
-        scc.saveCard();
+        scc.createCard(request);
 
         /*
          * If user has been forced to create his own card and done it, removes forced redirection.
@@ -354,8 +323,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
 
           destination = "/whitePages/jsp/consultCard.jsp";
         }
-        /*} else
-          destination = "/admin/jsp/errorpage.jsp";*/
       } else if (function.equals("updateCard")) {
         String userCardIdString = request.getParameter("userCardId");
 
@@ -448,30 +415,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
         }
       }
 
-
-
-      else if (function.equals("searchResult") || function.equals("Consult")) // pdc
-      // search
-      // result
-      {
+      else if (function.equals("searchResult") || function.equals("Consult")) {
+        request.setAttribute("userCardId", request.getParameter("Id"));
         destination = getDestination("consultCard", scc, request);
-      } else if (function.equals("ViewPdcPositions")) {
-        String userCardId = (String) request.getParameter("userCardId");
-
-        request.setAttribute("UserCardId", userCardId);
-        request.setAttribute("ReturnURL", "/RwhitePages/"
-            + scc.getComponentId() + "/ViewPdcPositions?userCardId="
-            + userCardId);
-
-        request.setAttribute("SilverContentId", String.valueOf(scc.getSilverObjectId(userCardId)));
-        // paramètre pour ouvrir directement la création d'une position du pdc
-        String firstVisite = "0";
-        if (StringUtil.isDefined((String) request.getAttribute("FirstVisite"))) {
-          firstVisite = (String) request.getAttribute("FirstVisite");
-        }
-        request.setAttribute("FirstVisite", firstVisite);
-
-        destination = "/whitePages/jsp/pdcPositions.jsp";
       }
 
       /*
@@ -549,10 +495,10 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
         destination = "/whitePages/jsp/dynamicSearch.jsp";
       } else if (function.equals("dynamicFieldsChoice")) {
 
-        List<String> xmlFields = scc.getAllXmlFieldsForSearch();
+        List<FieldTemplate> xmlFields = scc.getAllXmlFieldsForSearch();
         request.setAttribute("xmlFields", xmlFields);
 
-        List<String> ldapFields = scc.getLdapAttributesList();
+        List<SearchField> ldapFields = scc.getLdapAttributesList();
         request.setAttribute("ldapFields", ldapFields);
 
         Set<String> alreadySelectedFields = scc.getSearchFieldIds();
@@ -678,22 +624,20 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
 
 
   private Hashtable<String, String> getXmlFieldsQuery(WhitePagesSessionController scc,
-      HttpServletRequest request) throws UtilException {
+      HttpServletRequest request) throws UtilException, WhitePagesException {
     Hashtable<String, String> xmlFields = new Hashtable<String, String>();
 
     // champs personnalisables xml
     SortedSet<SearchField> fields = scc.getSearchFields();
-    if (fields != null && fields.size() > 0) {
-      Iterator<SearchField> iterFields = fields.iterator();
-      while (iterFields.hasNext()) {
-        SearchField field = iterFields.next();
+    if (fields != null && !fields.isEmpty()) {
+      for (SearchField field : fields) {
         String fieldId = field.getFieldId();
         String searchValue = request.getParameter(fieldId);
         if (searchValue != null && searchValue.length() > 0) {
           if (fieldId.startsWith(SearchFieldsType.XML.getLabelType())) {
             request.setAttribute(fieldId, searchValue);
             // champs XML
-            xmlFields.put(fieldId.substring(4, fieldId.length()), searchValue);
+            xmlFields.put(field.getFieldName(), searchValue);
           }
         }
       }
@@ -702,15 +646,13 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
   }
 
   private List<FieldDescription> getOthersFieldsQuery(WhitePagesSessionController scc,
-      HttpServletRequest request) throws UtilException {
+      HttpServletRequest request) throws UtilException, WhitePagesException {
     List<FieldDescription> othersFields = new ArrayList<FieldDescription>();
 
     // champs personnalisables non xml (user silverpeas ou ldap)
     SortedSet<SearchField> fields = scc.getSearchFields();
-    if (fields != null && fields.size() > 0) {
-      Iterator<SearchField> iterFields = fields.iterator();
-      while (iterFields.hasNext()) {
-        SearchField field = iterFields.next();
+    if (fields != null && !fields.isEmpty()) {
+      for (SearchField field : fields) {
         String fieldId = field.getFieldId();
         String searchValue = request.getParameter(fieldId);
         if (searchValue != null && searchValue.length() > 0) {
@@ -718,7 +660,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
             request.setAttribute(fieldId, searchValue);
             // champs XML
             FieldDescription fieldDescription =
-                new FieldDescription(fieldId.substring(4, fieldId.length()), searchValue,
+                new FieldDescription(field.getFieldName(), searchValue,
                     scc.getLanguage());
             othersFields.add(fieldDescription);
           } else if (fieldId.startsWith(SearchFieldsType.USER.getLabelType())) {

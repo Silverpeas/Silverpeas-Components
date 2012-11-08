@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,20 +22,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#classifieds {
-	text-align: center;
-}
-
 #classifieds #search {
 	width: 50%;
 	margin: auto;
+	text-align:center;
 }
 
 #classifieds #categories {
 	padding-top: 20px;
 }
 
-#classifieds #categories #categoryleft {
+#classifieds #categories .categoryleft {
 	width: 47%;
 	float: left;
     clear: left;
@@ -50,7 +47,7 @@
 	border: 1px solid #CCCCCC;
 }
 
-#classifieds #categories #categoryright {
+#classifieds #categories .categoryright {
 	width: 47%;
 	float: right;
     clear: right;
@@ -79,26 +76,70 @@
 }
 
 #classifieds #categories .categoryContent {
-	height: 70px;
+	min-height: 70px;
+	/*pour ie7 et ie8*/
+	height: 70px !ie;
 	position: relative;
 }
 
-#classifieds #categories #ViewAllClassifiedsByCategory {
+#classifieds #categories .ViewAllClassifiedsByCategory {
 	float: left;
 	padding: 5px;
+	border-right:1px solid #CCC;
+	border-top:1px solid #DDD;
+	background-image: url(../../../util/icons/gradientSVG.jsp?from=ffffff&to=DDD&vertical=0&horizontal=100);
+		-moz-background-size: 100%;
+	border-radius:0 9px 0 0;
+		moz-border-radius:0 9px 0 0;
+		webkit-border-radius:0 9px 0 0;
 }
-
-#classifieds #categories #newClassified {
+#classifieds #categories .ViewAllClassifiedsByCategory a{
+	background:transparent url(../../../util/icons/component/classifiedsSmall.gif) top left no-repeat;
+	line-height:16px;
+	padding-left:21px;
+	display:block;
+}
+#classifieds #categories .newClassified {
 	float: right;
-	padding: 5px;
+	padding: 5px;	
+	border-left:1px solid #CCC;
+	border-top:1px solid #DDD;
+	background-image: url(../../../util/icons/gradientSVG.jsp?from=ffffff&to=DDD&vertical=0&horizontal=100);
+		-moz-background-size: 100%;
+	border-radius:9px 0 0 0;
+		moz-border-radius:9px 0 0 0;
+		webkit-border-radius:9px 0 0 0;
+}
+#classifieds #categories .newClassified a{
+	background:transparent url(../../../util/icons/newsFeed_publication.gif) top left no-repeat;
+	line-height:16px;
+	padding-left:21px;
+	display:block;
+}
+#classifieds #categories .categoryContent ul,
+.list_result_classifieds {
+	min-height: 70px;
+	list-style-type:none;
+	margin: 5px 2px;
+	padding:2px;
 }
 
-#classifieds #categories .categoryContent ul {
-	height: 70px;
-	/*list-style-type: disc;*/
-	margin-left: 10px;
-	list-style-type: inherit;
-	margin-top: 5px;
+#classifieds #categories .categoryContent ul li {
+	margin: 0 0 2px 4px;
+	padding:0;
+}
+#classifieds #categories .categoryContent ul li a, 
+.list_result_classifieds li{
+	padding:2px 0 0 12px;
+	background:transparent url("../../../util/icons/percent_off.gif") 0px 7px no-repeat;
+}
+
+.list_result_classifieds li {
+	margin-bottom:4px;}
+
+.title_result_classifieds {
+	display:block;
+	font-weight:bold;
 }
 
 #classifieds #categories .categoryContent .emptyCategory {
@@ -115,8 +156,8 @@
 }
 
 .categoryContent .date {
-	color: #BFBFBF;
-	font-size: 10px;
+	color: #AAA;
+	font-size:100%
 }
 
 #classified-view-header * {
@@ -163,4 +204,8 @@ hr.clear {
 
 div.tableBoard {
 	padding:10px;
+}
+
+.emptyCategory {
+	color:#444;
 }

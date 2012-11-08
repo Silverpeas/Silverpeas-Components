@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -133,4 +133,91 @@ body {
 
 #surveyOperationId {
 	float:right;
+}
+
+fieldset#dates legend {
+	background:transparent url(../../../util/icons/calendar_1.png) 11px 0px no-repeat;
+}
+
+fieldset#info legend {
+	background:transparent url(../../../util/icons/component/pollingStationSmall.gif) 11px 0px no-repeat;
+}
+
+.survey fieldset#info legend {
+	background:transparent url(../../../util/icons/component/surveySmall.gif) 11px 0px no-repeat;
+}
+
+fieldset#answers legend {
+	background:transparent url(../../../util/icons/question.gif) 11px 0px no-repeat;
+}
+
+#info .field, 
+#dates .field,
+#answers .field {
+	clear: both;
+    display: block;
+    float: none;
+    width: 98%;
+}
+
+#answers .fieldImage {
+	border-bottom: 1px solid #CCCCCC;
+	margin-bottom: 8px;
+	padding-right: 0;
+}
+
+#info #typeArea select,
+#info #nbAnswersArea input,
+#info #nbQuestionsArea input {
+	width: 46%;
+}
+
+#answers .thumbnailInputs select,
+#answers .thumbnailInputs input {
+	width: auto;
+}
+
+#answers .answerimage {
+    clear: both;
+}
+
+.thumbnailPreviewAndActions {
+	background-color:#EEEEEE;
+	border:1px solid #DDDDDD;
+	float:left;
+	margin-left:0;
+	padding:3px;
+	margin-bottom: 3px;
+	width: 98%;
+}
+
+.thumbnailPreview {
+	float: left;
+}
+
+.thumbnailPreview .thumbnail {
+	height: 50px;
+	border:1px solid #DDDDDD;
+}
+
+.thumbnailActions {
+	float: left;
+	margin-left: 4px;	
+}
+
+.thumbnailActions a {
+	margin-bottom: 5px;
+	display: block;
+}
+
+.thumbnailActions img {
+	vertical-align: middle;
+}
+
+.thumbnailInputs img, #thumbnailInputs input, #thumbnailInputs select {
+	vertical-align: middle;
+}
+
+#creation-page .classification .legende {
+	display: none;
 }

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@page import="java.net.URLEncoder"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -68,13 +70,13 @@ if (path != null)
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 
 var downloadWindow = window;
 
 function viewDownloadHistory(name)
 {
-	url = "ViewDownloadHistoryFromResult?Name="+name;
+	url = "ViewDownloadHistoryFromResult?Name="+encodeURIComponent(name);
     windowName = "downloadWindow";
 	larg = "650";
 	haut = "350";
@@ -102,7 +104,7 @@ function checkSubmitToSearch(ev)
 </script>
 
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 
 <%
 browseBar.setDomainName(spaceLabel);
@@ -147,7 +149,7 @@ out.println("<br>");
 <table align="center" border="0" cellspacing="0" cellpadding="0" width="98%">
 	<tr valign="middle" class="intfdcolor">
 		<td align="center" class="ArrayNavigation">
-			<% out.println(docs.size());%><%=resource.getString("silverCrawler.nbResult")%><%=word%>
+			<% out.println(docs.size());%> <%=resource.getString("silverCrawler.nbResult")%> <%=word%>
         </td>
     </tr>
     <tr class=intfdcolor4><td>&nbsp;</td></tr>
@@ -191,17 +193,11 @@ out.println("<br>");
 	        	
 	        	ArrayCellText cell = arrayLine.addArrayCellText("<img src=\""+resource.getIcon("silverCrawler.folder")+"\" />");
 				cell.setCompareOn(FileRepositoryManager.getFileExtension(fileDetail.getName()));
-				
-	            /* IconPane icon = gef.getIconPane();
-	    		Icon folderIcon = icon.addIcon();
-	    		folderIcon.setProperties(resource.getIcon("silverCrawler.folder"), "");
-	       		icon.setSpacing("30px");
-	       		ArrayCellText cell = arrayLine.addArrayCellIconPane(icon); */
-	        		
+					        		
 	            fileName = fileDetail.getName();
 	            filePath = fileDetail.getPath();
 	    	
-	    	    arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(fileDetail.getName()), "SubDirectoryFromResult?DirectoryPath="+fileDetail.getPath());
+	    	    arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), "SubDirectoryFromResult?DirectoryPath="+URLEncoder.encode(fileDetail.getPath(), "UTF-8"));
 	    	    
 	    	    arrayLine.addArrayCellText("");
 	    	    
@@ -228,7 +224,7 @@ out.println("<br>");
 			    fileName = fileDetail.getName();
 			    filePath = fileDetail.getPath();
 			    
-			    ArrayCellLink cellLink = arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(userId, componentId));
+			    ArrayCellLink cellLink = arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(fileDetail.getName()), fileDetail.getFileURL(userId, componentId));
 			    cellLink.setTarget("_blank");
 			    
 			    ArrayCellText cellSize = arrayLine.addArrayCellText(fileDetail.getFileSize());

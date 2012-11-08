@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,13 +39,13 @@
 
 	String user = request.getParameter("flag");
 	
-	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");
-	Date dateDebutIteration = (Date) request.getAttribute("DateDebutIteration");
-	Date dateFinIteration = (Date) request.getAttribute("DateFinIteration");
+	EventDetail event = (EventDetail) request.getAttribute("Event");
+	Date startDate = (Date) request.getAttribute("EventStartDate");
+	Date endDate = (Date) request.getAttribute("EventEndDate");
 	String from = (String) request.getAttribute("From");
 	UserDetail contributor = (UserDetail) request.getAttribute("Contributor");
 
-	String dateDebutIterationString = DateUtil.date2SQLDate(dateDebutIteration);
+	String startDateString = DateUtil.date2SQLDate(startDate);
 
 	Periodicity periodicity = event.getPeriodicity();
 	String id = event.getPK().getId();
@@ -78,7 +78,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
-<% out.println(graphicFactory.getLookStyleSheet());%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
@@ -157,9 +157,9 @@ $(document).ready(function(){
     if (!"user".equals(user))
     {
     	TabbedPane tabbedPane = graphicFactory.getTabbedPane();
-		tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+dateDebutIterationString, true);
-		tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
-		tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
+		tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+startDateString, true);
+		tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+startDateString, false);
+		tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+startDateString, false);
 		out.println(tabbedPane.print());
     }
     
@@ -301,7 +301,7 @@ $(document).ready(function(){
 		
 		   <div id="eventInfoPublication" class="bgDegradeGris">
 		   	<div class="paragraphe">
-		   		<b><%=resources.getString("almanach.createdBy")%></b> <%=contributor.getDisplayedName() %>
+		   		<b><%=resources.getString("almanach.createdBy")%></b> <view:username userId="<%=contributor.getId()%>" />
 		   		<div class="profilPhoto"><img src="<%=m_context %><%=contributor.getAvatar() %>" alt="" class="defaultAvatar"/></div>
 	   		</div>
 		   		
@@ -338,7 +338,7 @@ $(document).ready(function(){
 			<div class="bloc">
 				<span class="eventBeginDate">
 					<%=resources.getString("GML.fromDate")%> 
-					<%=resources.getOutputDate(dateDebutIteration)%>
+					<%=resources.getOutputDate(startDate)%>
 					<%if (event.getStartHour() != null && event.getStartHour().length() != 0) {%>
 						<%=almanach.getString("ToHour")%> 
 						<%=EncodeHelper.javaStringToHtmlString(event.getStartHour())%>
@@ -348,7 +348,7 @@ $(document).ready(function(){
 					<span class="eventEndDate">  
 					<%
 						out.println(resources.getString("GML.toDate"));
-						out.println(resources.getOutputDate(dateFinIteration));
+						out.println(resources.getOutputDate(endDate));
 						if (event.getEndHour() != null && event.getEndHour().length() != 0) {
 							out.println(almanach.getString("ToHour"));
 							out.println(EncodeHelper.javaStringToHtmlString(event.getEndHour()));
@@ -399,8 +399,8 @@ $(document).ready(function(){
 		<input type="hidden" name="Action"/>
    		<input type="hidden" name="Id" value="<%=id%>"/>
    		<% if (periodicity != null) { %>
-   			<input type="hidden" name="DateDebutIteration" value="<%=dateDebutIterationString%>"/>
-   			<input type="hidden" name="DateFinIteration" value="<%=DateUtil.date2SQLDate(dateFinIteration)%>"/>
+   			<input type="hidden" name="EventStartDate" value="<%=startDateString%>"/>
+   			<input type="hidden" name="EventEndDate" value="<%=DateUtil.date2SQLDate(endDate)%>"/>
    		<% } %>
 	</form>
 <div id="modalDialogOnDelete" style="display: none">

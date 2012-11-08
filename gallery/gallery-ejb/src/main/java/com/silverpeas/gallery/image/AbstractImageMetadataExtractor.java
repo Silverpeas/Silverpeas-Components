@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -20,11 +20,6 @@
  */
 package com.silverpeas.gallery.image;
 
-import com.silverpeas.util.ConfigurationClassLoader;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.util.ResourceLocator;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,24 +27,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.webactiv.util.ResourceLocator;
+
 public abstract class AbstractImageMetadataExtractor implements ImageMetadataExtractor {
 
   static final Properties defaultSettings = new Properties();
-  static final ConfigurationClassLoader loader = new ConfigurationClassLoader(
-          ImageMetadataExtractor.class.getClassLoader());
 
   static {
     try {
-      defaultSettings.load(loader.getResourceAsStream(
-              "com/silverpeas/gallery/settings/metadataSettings.properties"));
+      FileUtil.loadProperties(defaultSettings,
+          "org/silverpeas/gallery/settings/metadataSettings.properties");
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
-  Properties settings = new Properties(defaultSettings);
-  Map<String, ResourceLocator> metaDataBundles;
-  List<ExifProperty> imageProperties;
-  List<IptcProperty> imageIptcProperties;
+  protected Properties settings = new Properties(defaultSettings);
+  protected Map<String, ResourceLocator> metaDataBundles;
+  protected List<ExifProperty> imageProperties;
+  protected List<IptcProperty> imageIptcProperties;
 
   @Override
   public final List<ExifProperty> defineImageProperties(Iterable<String> propertyNames) {
@@ -95,15 +94,15 @@ public abstract class AbstractImageMetadataExtractor implements ImageMetadataExt
 
   final void init(String instanceId) {
     try {
-      this.settings.load(loader.getResourceAsStream("com/silverpeas/gallery/settings/metadataSettings_"
-              + instanceId + ".properties"));
+      FileUtil.loadProperties(settings, "org/silverpeas/gallery/settings/metadataSettings_"
+          + instanceId + ".properties");
     } catch (Exception e) {
       this.settings = defaultSettings;
     }
     this.metaDataBundles = new HashMap<String, ResourceLocator>(I18NHelper.allLanguages.size());
     for (String lang : I18NHelper.allLanguages.keySet()) {
       metaDataBundles.put(lang, new ResourceLocator(
-              "com.silverpeas.gallery.multilang.metadataBundle", lang));
+          "org.silverpeas.gallery.multilang.metadataBundle", lang));
     }
     String display = settings.getProperty("display");
     Iterable<String> propertyNames = COMMA_SPLITTER.split(display);

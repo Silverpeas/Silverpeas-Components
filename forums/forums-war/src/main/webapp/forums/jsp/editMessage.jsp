@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -31,13 +30,15 @@
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
+
+<%@ include file="checkForums.jsp"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<%@ include file="checkForums.jsp"%>
 <%!
 public void listFolders(JspWriter out, String userId, boolean admin, int rootId, int parentId,
         String indent, ResourceLocator resource, ForumsSessionController fsc)
@@ -125,73 +126,52 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
 
     String folderName = EncodeHelper.javaStringToHtmlString(
         fsc.getForumName(folderId > 0 ? folderId : forumId));
-
-    String configFile = null;
-    if (!move)
-    {
-        ResourceLocator settings = fsc.getSettings();
-        configFile = settings.getString("configFile", URLManager.getApplicationURL()
-            + "/wysiwyg/jsp/javaScript/myconfig.js");
-    }
 %>
 <html>
 <head>
     <title></title>
     <view:looknfeel />
+    <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-    <script type="text/javascript" src="<%=context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
-    <script type="text/javascript"><%
-
-    if (move) {
+    <script type="text/javascript">
+<%
+  if (move) {
 %>
-        function validateMessage()
-        {
-            document.forms["forumsForm"].submit();
-        }<%
-
-    } else {
+function validateMessage()
+{
+    document.forms["forumsForm"].submit();
+}
+<%
+  } else {
 %>
-        var oFCKeditor = null;
+function init() {
+	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
+    document.forms["forumsForm"].elements["messageTitle"].focus();
+}
 
-        function init()
-        {
-            oFCKeditor = new FCKeditor("messageText");
-            oFCKeditor.Width = "500";
-            oFCKeditor.Height = "300";
-            oFCKeditor.BasePath = "<%=URLManager.getApplicationURL()%>/wysiwyg/jsp/FCKeditor/";
-            oFCKeditor.DisplayErrors = true;
-            oFCKeditor.Config["AutoDetectLanguage"] = false;
-            oFCKeditor.Config["DefaultLanguage"] = "<%=fsc.getLanguage()%>";
-            oFCKeditor.Config["CustomConfigurationsPath"] = "<%=configFile%>";
-            oFCKeditor.ToolbarSet = "quickinfo";
-            oFCKeditor.Config["ToolbarStartExpanded"] = true;
-            oFCKeditor.ReplaceTextarea();
-            document.forms["forumsForm"].elements["messageTitle"].focus();
-        }
-
-        function validateMessage()
-        {
-            if (document.forms["forumsForm"].elements["messageTitle"].value == "")
-            {
-                alert('<%=resource.getString("emptyMessageTitle")%>');
-            }
-            else if (!isTextFilled())
-            {
-                alert('<%=resource.getString("emptyMessageText")%>');
-            }
-            else
-            {
-                document.forms["forumsForm"].submit();
-            }
-        }<%
-
+function validateMessage()
+{
+    if (document.forms["forumsForm"].elements["messageTitle"].value == "")
+    {
+        alert('<%=resource.getString("emptyMessageTitle")%>');
     }
+    else if (!isTextFilled())
+    {
+        alert('<%=resource.getString("emptyMessageText")%>');
+    }
+    else
+    {
+        document.forms["forumsForm"].submit();
+    }
+}
+<%
+  }
 %>
     </script>
 </head>
 
-<body marginheight="5" marginwidth="5" bgcolor="#FFFFFF" leftmargin="5" topmargin="5" <%addBodyOnload(out, fsc, (move ? "" : "init();"));%>>
+<body <%addBodyOnload(out, fsc, (move ? "" : "init();"));%>>
 <%
     Window window = graphicFactory.getWindow();
 
@@ -208,8 +188,8 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     	(reqForum > 0 ? "viewForum" : "main"), (move ? 12 : 8), (reqForum > 0 ? reqForum : -1));
 %>
     <center>
-        <table class="intfdcolor4" border="0" cellpadding="0" cellspacing="0" width="98%">
         <form name="forumsForm" action="<%=formAction%>" method="post">
+        <table class="intfdcolor4" border="0" cellpadding="0" cellspacing="0" width="98%">
             <tr align="center">
                 <td valign="top" align="center"><%
 
@@ -264,11 +244,11 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
                     <table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%">
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("messageTitle")%> :</span></td>
-                            <td valign="top"><input type="text" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
+                            <td valign="top"><input type="text" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/></td>
                         </tr>
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("messageText")%> : </span></td>
-                            <td valign="top"><font size=1><textarea name="messageText" id="messageText"></textarea></font></td>
+                            <td valign="top"><font size=1><textarea name="messageText" id="messageText"></textarea></font>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/></td>
                         </tr>
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("forumKeywords")%> : </span></td>
@@ -278,16 +258,16 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
                             <td valign="top"><span class="txtlibform"><%=resource.getString("subscribeMessage")%> :</span></td>
                             <td valign="top"><input type="checkbox" name="subscribeMessage"></td>
                         </tr>
-                    </table><%
-
+                        <tr><td></td><td>(<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5" />&nbsp;=&nbsp;<fmt:message key="reqchamps" />)</td></tr>
+                    </table>
+<%
     }
 %>
                 </td>
             </tr>
-        </form>
         </table>
+        </form>
     </center><br/>
-    <center>
       <center>
         <fmt:message key="valider" var="validate"/>
         <fmt:message key="annuler" var="cancel"/>

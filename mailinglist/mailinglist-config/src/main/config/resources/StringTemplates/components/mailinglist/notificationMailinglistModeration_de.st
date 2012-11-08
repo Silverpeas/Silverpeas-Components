@@ -1,0 +1,1 @@
+<html><head/><body><p><b>Meldung [$title$] - zu moderieren : </b></p><p>$summary$ ...</p></body></html>

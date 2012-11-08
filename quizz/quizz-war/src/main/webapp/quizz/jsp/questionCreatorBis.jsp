@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,16 +28,19 @@
 <jsp:useBean id="questionsVector" scope="session" class="java.util.Vector" />
 
 <%@ include file="checkQuizz.jsp" %>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle basename="com.stratelia.webactiv.quizz.multilang.quizz"/>
 <%
 String nextAction = "";
 
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 int nbZone = 4; // nombre de zones � contr�ler
-List galleries = quizzScc.getGalleries();
-if (galleries != null)
-{
+List<ComponentInstLight> galleries = quizzScc.getGalleries();
+if (galleries != null) {
 	nbZone = nbZone + 2;
 }
 
@@ -52,7 +55,7 @@ Button cancelButton = null;
 Button finishButton = null;
 ButtonPane buttonPane = null;
 
-List items = FileUploadUtil.parseRequest(request);
+List<FileItem> items = FileUploadUtil.parseRequest(request);
 String action = FileUploadUtil.getOldParameter(items, "Action", "");
 String question = FileUploadUtil.getOldParameter(items, "question", "");
 String clue =  FileUploadUtil.getOldParameter(items, "clue", "");
@@ -69,16 +72,21 @@ List answers = QuestionHelper.extractAnswer(items, form, quizzScc.getComponentId
 file = form.isFile();
 attachmentSuffix = form.getAttachmentSuffix();
 %>
-<HTML>
-<HEAD>
-	<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title></title>
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<view:looknfeel />
+<style type="text/css">
+.thumbnailPreviewAndActions {
+  display: none;
+}
+</style>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript1.2">
+<script language="javascript">
 
 function sendData() {
     if (isCorrectForm()) {
@@ -219,136 +227,116 @@ function isCorrectForm()
 }
 function isCorrectForm2()
 {
-     var errorMsg = "";
-     var errorNb = 0;
-     var nb = Number(document.quizzForm.nbAnswers.value);
-     var nbPointsMax = Number(document.quizzForm.nbPointsMax.value);
-     var nbPointsMin = Number(document.quizzForm.nbPointsMin.value);
-
-
-     for (var i = 0; i < nb; i++)
-     {
-         var answer=document.quizzForm.elements[<%=nbZone%>*i+7].value;
-         var nbPoints=document.quizzForm.elements[<%=nbZone%>*i+8].value;
-         var comment=document.quizzForm.elements[<%=nbZone%>*i+9].value;
-
-         if (isWhitespace(nbPoints))
-         {
-                 errorMsg +="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("GML.MustBeFilled")%>\n";
-                 errorNb++;
-         }
-         else
-         {
-            if (isSignedInteger(nbPoints)==false)
-            {
-                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("GML.MustContainsFloat")%>\n";
-                errorNb++;
-            }
-	    else
-	    {
-		if((document.quizzForm.nbPointsMax.value!='')&&(parseInt(nbPoints, 10) > parseInt(nbPointsMax, 10)))
-		{
-	                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("MustContainsInfNumber")%> '<%=resources.getString("QuizzCreationNbPointsMax")%>'\n";
-			errorNb++;
-		}
-		else
-		{
-			if((document.quizzForm.nbPointsMin.value!='')&&(parseInt(nbPoints, 10) < parseInt(nbPointsMin, 10)))
-			{
-				errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("MustContainsSupNumber")%> '<%=resources.getString("QuizzCreationNbPointsMin")%>'\n";
-				errorNb++;
-			}
-		}
-
-	    }
-
-         }
-         if (isWhitespace(answer)) {
-               errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationAnswerNb")%> "+String(i+1)+"' <%=resources.getString("GML.MustBeFilled")%>\n";
-               errorNb++;
-         }
-         if ((!isWhitespace(comment)) && (!isValidTextArea(document.quizzForm.elements[<%=nbZone%>*i+9])))
-          {
-               errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationAnswerComment")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Caracters")%>\n";
-               errorNb++;
-          }
-   }
-   switch(errorNb) {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resources.getString("GML.ThisFormContain")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resources.getString("GML.ThisFormContain")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+  var errorMsg = "";
+  var errorNb = 0;
+  var nb = Number(document.quizzForm.nbAnswers.value);
+  var nbPointsMax = Number(document.quizzForm.nbPointsMax.value);
+  var nbPointsMin = Number(document.quizzForm.nbPointsMin.value);
+  
+  
+  for (var i = 0; i < nb; i++)
+  {
+    var answer = $("#answer"+i).val(); // document.quizzForm.elements[<%=nbZone%>*i+7].value
+    var nbPoints = $("#nbPoints"+i).val(); //document.quizzForm.elements[<%=nbZone%>*i+8].value;
+    var comment = $("#comment"+i).val(); //document.quizzForm.elements[<%=nbZone%>*i+9].value;
+    
+    if (isWhitespace(nbPoints))
+    {
+           errorMsg +="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("GML.MustBeFilled")%>\n";
+           errorNb++;
+    }
+    else
+    {
+      if (isSignedInteger(nbPoints)==false)
+      {
+          errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("GML.MustContainsFloat")%>\n";
+          errorNb++;
+      }
+      else
+      {
+    		if((document.quizzForm.nbPointsMax.value!='')&&(parseInt(nbPoints, 10) > parseInt(nbPointsMax, 10)))
+    		{
+    	                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("MustContainsInfNumber")%> '<%=resources.getString("QuizzCreationNbPointsMax")%>'\n";
+    			errorNb++;
+    		}
+    		else
+    		{
+    			if((document.quizzForm.nbPointsMin.value!='')&&(parseInt(nbPoints, 10) < parseInt(nbPointsMin, 10)))
+    			{
+    				errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("MustContainsSupNumber")%> '<%=resources.getString("QuizzCreationNbPointsMin")%>'\n";
+    				errorNb++;
+    			}
+    		}
+      }
+    }
+    if (isWhitespace(answer)) {
+      errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationAnswerNb")%> "+String(i+1)+"' <%=resources.getString("GML.MustBeFilled")%>\n";
+      errorNb++;
+    }
+    if ((!isWhitespace(comment)) && (!isValidTextArea($("#comment"+i)))){
+      errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationAnswerComment")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Caracters")%>\n";
+      errorNb++;
+    }
+  }
+  
+  switch(errorNb) {
+    case 0 :
+        result = true;
+        break;
+    case 1 :
+        errorMsg = "<%=resources.getString("GML.ThisFormContain")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+    default :
+        errorMsg = "<%=resources.getString("GML.ThisFormContain")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+  }
+  return result;
 }
 function goToEnd() {
     document.quizzForm.Action.value = "End";
     document.quizzForm.submit();
 }
 
+
 var galleryWindow = window;
 var currentAnswer;
 
 function choixGallery(liste, idAnswer)
 {
-	currentAnswer = idAnswer;
-	index = liste.selectedIndex;
-	var componentId = liste.options[index].value;
-	if (index != 0)
-	{
-		url = "<%=m_context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=quizzScc.getLanguage()%>";
-		windowName = "galleryWindow";
-		larg = "820";
-		haut = "600";
-		windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-		if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
-			galleryWindow.close();
-		galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-	}
+  currentAnswer = idAnswer;
+  index = liste.selectedIndex;
+  var componentId = liste.options[index].value;
+  if (index != 0)
+  {
+    url = "<%=m_context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=quizzScc.getLanguage()%>";
+    windowName = "galleryWindow";
+    larg = "820";
+    haut = "600";
+    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+    if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
+      galleryWindow.close();
+    galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+  }
 }
 
-function deleteImage(idImage)
-{
-	document.getElementById('imageGallery'+idImage).innerHTML = "";
-	document.getElementById('valueImageGallery'+idImage).value = "";
+function deleteImage(idImage) {
+  $("#thumbnailPreviewAndActions"+idImage).css("display", "none");
+  $("#valueImageGallery"+idImage).attr("value", "");
 }
 
-function choixImageInGallery(url)
-{
-	var newLink = document.createElement("a");
-	newLink.setAttribute("href", url);
-	newLink.setAttribute("target", "_blank");
-
-	var newLabel = document.createTextNode("<%=resources.getString("quizz.imageGallery")%>");
-	newLink.appendChild(newLabel);
-
-	var removeLink =  document.createElement("a");
-	removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
-	var removeIcon = document.createElement("img");
-	removeIcon.setAttribute("src", "icons/questionDelete.gif");
-	removeIcon.setAttribute("border", "0");
-	removeIcon.setAttribute("align", "absmiddle");
-	removeIcon.setAttribute("alt", "<%=resources.getString("GML.delete")%>");
-	removeIcon.setAttribute("title", "<%=resources.getString("GML.delete")%>");
-
-	removeLink.appendChild(removeIcon);
-
-	document.getElementById('imageGallery'+currentAnswer).appendChild(newLink);
-	document.getElementById('imageGallery'+currentAnswer).appendChild(removeLink);
-
-	document.getElementById('valueImageGallery'+currentAnswer).value = url;
+function choixImageInGallery(url) {
+  $("#thumbnailPreviewAndActions"+currentAnswer).css("display", "block");
+  $("#thumbnailActions"+currentAnswer).css("display", "block");
+  $("#thumbnail"+currentAnswer).attr("src", url);
+  $("#valueImageGallery"+currentAnswer).attr("value", url);
 }
+
 </script>
-</HEAD>
+</head>
 <%
 if (action.equals("SendNewQuestion")) {
       Vector questionsV = (Vector) session.getAttribute("questionsVector");
@@ -369,19 +357,19 @@ if (action.equals("SendNewQuestion")) {
       session.setAttribute("questionsVector", questionsV);
 } //End if action = ViewResult
 else if (action.equals("End")) {
-      out.println("<BODY>");
+      out.println("<body>");
       QuestionContainerDetail quizzDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
       //Vector 2 Collection
       Vector questionsV = (Vector) session.getAttribute("questionsVector");
-      ArrayList q = new ArrayList();
+      List<Question> q = new ArrayList<Question>();
       for (int j = 0; j < questionsV.size(); j++) {
             q.add((Question) questionsV.get(j));
       }
       quizzDetail.setQuestions(q);
-      out.println("</BODY></HTML>");
+      out.println("</body></html>");
 }
 if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
-      out.println("<BODY>");
+      out.println("<body>");
       Vector questionsV = (Vector) session.getAttribute("questionsVector");
       int questionNb = questionsV.size() + 1;
       cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
@@ -414,127 +402,227 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 
       out.println(window.printBefore());
 
-      out.println(frame.printBefore());
 
       Board board = gef.getBoard();
 %>
       <!--DEBUT CORPS -->
-      <form name="quizzForm" Action="questionCreatorBis.jsp" method="POST" ENCTYPE="multipart/form-data">
-                <% if (action.equals("SendQuestionForm"))
-                {
-                    out.println("<center>");
-                    out.println(board.printBefore());
-                    out.println("<table border=\"0\" cellspacing=\"3\" cellpadding=\"0\" width=\"100%\">");
-                    out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("quizz.style")+" :</td><td>"+resources.getString("quizz."+style)+"</td></tr>");
-                    out.println("<tr><td class=\"textePetitBold\">"+resources.getString("QuizzCreationNbAnswers")+" :</td><td>"+nbAnswers+"</td></tr>");
-                    if (!nbPointsMin.equals(""))
-                      out.println("<tr><td class=\"textePetitBold\">"+resources.getString("QuizzCreationNbPointsMin") + " :</td><td>"+nbPointsMin+"&nbsp;"+resources.getString("QuizzNbPoints")+"</td></tr>");
-                    if (!nbPointsMax.equals(""))
-                      out.println("<tr><td class=\"textePetitBold\">"+resources.getString("QuizzCreationNbPointsMax") + " :</td><td>"+nbPointsMax+"&nbsp;"+resources.getString("QuizzNbPoints")+"</td></tr>");
-                    if (!clue.equals(""))
-                      out.println("<tr><td class=\"textePetitBold\" valign=top>"+resources.getString("QuizzClue") + " :</td><td>"+Encode.javaStringToHtmlParagraphe(clue)+"</td></tr>");
-                    if (!penalty.equals(""))
-                      out.println("<tr><td class=\"textePetitBold\">"+resources.getString("QuizzPenalty") + " :</td><td>"+penalty+"&nbsp;"+resources.getString("QuizzNbPoints"));
-                    out.println("<input type=\"hidden\" name=\"question\" value=\"" + Encode.javaStringToHtmlString(question) + "\">");
-                    out.println("<input type=\"hidden\" name=\"questionStyle\" value=\""+style+"\">");
-                    out.println("<input type=\"hidden\" name=\"nbAnswers\" value=\""+nbAnswers+"\">");
-                    out.println("<input type=\"hidden\" name=\"nbPointsMin\" value=\""+nbPointsMin+"\">");
-                    out.println("<input type=\"hidden\" name=\"nbPointsMax\" value=\""+nbPointsMax+"\">");
-                    out.println("<input type=\"hidden\" name=\"clue\" value=\""+Encode.javaStringToHtmlString(clue)+"\">");
-                    out.println("<input type=\"hidden\" name=\"penalty\" value=\""+penalty+"\">");
-                    out.println("</td></tr>");
-                    nb = new Integer(nbAnswers).intValue();
-                    String inputName = "";
-                    int j=0;
-                    for (int i = 0; i < nb; i++) {
-                        j = i + 1;
-                        inputName = "answer"+i;
-                        out.println("<tr><td colspan=3><br></td></tr>");
-                        out.println("<tr align=\"center\"><td class=\"intfdcolor\" colspan=\"3\" align=\"center\"  height=\"1\" valign=top><img src=\"" + ligne + "\" width=\"100%\" height=\"1\"><br></td></tr>");
-						out.println("<tr><td colspan=3><br></td></tr>");
-						out.println("<tr valign=top><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationAnswerNb")+"&nbsp;"+j+" :</td><td valign=baseline><textarea name=\""+inputName+"\" cols=\"49\" wrap=\"VIRTUAL\" rows=\"3\"></textarea>&nbsp;<img border=\"0\" src=\"" + mandatoryField + "\" width=\"5\" height=\"5\"></td><td class=\"txtlibform\" valign=top><input type=\"text\" name=\"nbPoints"+i+"\" value=\"\" size=\"5\" maxlength=\"3\">&nbsp;"+resources.getString("QuizzNbPoints")+"&nbsp;<img border=\"0\" src=\"" + mandatoryField + "\" width=\"5\" height=\"5\"></td></tr>");
-                        out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationAnswerComment")+"&nbsp;"+j+" :</td><td valign=top><textarea name=\"comment"+i+"\" cols=\"49\" wrap=\"VIRTUAL\" rows=\"3\"></textarea></td><td valign=top></td></tr>");
-
-                        String visibility = "visibility: visible;";
-                        if (style.equals("list"))
-                        {
-                        	visibility = "visibility: hidden;";
-                        }
-                        out.println("<tr style=\""+visibility+"\"><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationAnswerImage")+"&nbsp;"+j+" :</td><td><input type=\"file\" size=\"50\" name=\"image"+i+"\"></td><td></td></tr>");
-                        //zone pour le lien vers l'image
-                        out.println("<tr style=\""+visibility+"\"><td></td><td><span id=\"imageGallery"+i+"\"></span>");
+      <form name="quizzForm" action="questionCreatorBis.jsp" method="post" enctype="multipart/form-data">
+<%         if (action.equals("SendQuestionForm")) { %>
 
 
-	                    //List galleries = quizzScc.getGalleries();
-	                    if (galleries != null)
-	                    {
-	                    	out.println("<input type=\"hidden\" id=\"valueImageGallery"+i+"\" name=\"valueImageGallery"+i+"\" >");
-	    					out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this, '"+i+"');this.selectedIndex=0;\"> ");
-	    					out.println(" <option selected>"+resources.getString("quizz.galleries")+"</option> ");
-	   						for(int k=0; k < galleries.size(); k++ )
-	   						{
-	   							ComponentInstLight gallery = (ComponentInstLight) galleries.get(k);
-	   							out.println(" <option value=\""+gallery.getId()+"\">"+gallery.getLabel()+"</option> ");
-	   						}
-	    					out.println("</select>");
-	    					out.println("</td>");
-	    				}
-	                    out.println("</tr>");
-	                    out.println("<tr><td colspan=\"3\" align=\"left\">(<img border=\"0\" src=\""+mandatoryField+"\" width=\"5\" height=\"5\">&nbsp;=&nbsp;"+resources.getString("GML.requiredField") + ")</td></tr>");
-                    }
 
-              } else {
-                out.println("<center>");
-                out.println(board.printBefore());
-                out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"98%\">");
-				out.println("<tr><td class=\"txtlibform\" valign=top>" + resources.getString("QuizzCreationQuestion") + questionNb + " :</td><td><textarea name=\"question\" cols=\"49\" wrap=\"VIRTUAL\" rows=\"3\">"+Encode.javaStringToHtmlString(question)+"</textarea>&nbsp;<img border=\"0\" src=\"" + mandatoryField + "\" width=\"5\" height=\"5\"></td></tr>");
-				out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("quizz.style")+" :</td><td>");
-                out.println(" <select id=\"questionStyle\" name=\"questionStyle\" > ");
-    			out.println(" <option selected value=\"null\">"+resources.getString("quizz.style")+"</option> ");
-				out.println(" <option value=\"radio\">"+resources.getString("quizz.radio")+"</option> ");
-				out.println(" <option value=\"checkbox\">"+resources.getString("quizz.checkbox")+"</option> ");
-				out.println(" <option value=\"list\">"+resources.getString("quizz.list")+"</option> ");
-    			out.println("</select>");
-                out.println("</td></tr>");
+<fieldset id="questionFieldset" class="skinFieldset">
+  <legend><fmt:message key="quizz.header.fieldset.question" /></legend>
+  <div class="fields">
+    <div class="field" id="questionArea"> 
+      <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
+      <div class="champs"><textarea name="question" cols="49" rows="3" readonly="readonly"><%=EncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+    </div>
+    <div class="field" id="questionStyleArea">
+      <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
+      <div class="champs"><%=resources.getString("quizz."+style) %>
+      </div>
+    </div>
+    <div class="field" id="nbAnswersArea">
+      <label for="nbAnswers" class="txtlibform"><fmt:message key="QuizzCreationNbAnswers" /></label>
+      <div class="champs">
+        <input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+      </div>
+    </div>
 
-				out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationNbAnswers")+" :</td><td><input type=\"text\" name=\"nbAnswers\" value=\""+nbAnswers+"\" size=\"5\" maxlength=\"3\">&nbsp;&nbsp;&nbsp;<img border=\"0\" src=\"" + mandatoryField + "\" width=\"5\" height=\"5\"></td></tr>");
-                out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationNbPointsMin") + " :</td><td><input type=\"text\" name=\"nbPointsMin\" value=\""+nbPointsMin+"\" size=\"5\" maxlength=\"3\">&nbsp;"+resources.getString("QuizzNbPoints")+"</td></tr>");
-                out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationNbPointsMax") + " :</td><td><input type=\"text\" name=\"nbPointsMax\" value=\""+nbPointsMax+"\" size=\"5\" maxlength=\"3\">&nbsp;"+resources.getString("QuizzNbPoints")+"</td></tr>");
-                out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzClue") + " :</td><td><textarea name=\"clue\" cols=\"49\" wrap=\"VIRTUAL\" rows=\"3\">"+Encode.javaStringToHtmlString(clue)+"</textarea></td></tr>");
-                out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzPenalty") + " :</td><td><input type=\"text\" name=\"penalty\" value=\""+penalty+"\" size=\"5\" maxlength=\"3\">&nbsp;"+resources.getString("QuizzNbPoints")+"</td></tr>");
-                String inputName = "answer"+0;
-                out.println("<tr><td><input type=\"hidden\" name=\""+inputName+"\"</td></tr>");
+    <div class="field" id="nbPointsMinArea">
+      <label for="nbPointsMin" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMin" /></label>
+      <div class="champs">
+        <input type="text" name="nbPointsMin" value="<%=nbPointsMin%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+      </div>
+    </div>
 
+    <div class="field" id="nbPointsMaxArea">
+      <label for="nbPointsMax" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMax" /></label>
+      <div class="champs">
+        <input type="text" name="nbPointsMax" value="<%=nbPointsMax%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+      </div>
+    </div>
+
+    <div class="field" id="clueArea">
+      <label for="clue" class="txtlibform"><fmt:message key="QuizzClue" /></label>
+      <div class="champs">
+        <textarea name="clue" cols="49" rows="3" readonly="readonly"><%=EncodeHelper.javaStringToHtmlString(clue)%></textarea>
+      </div>
+    </div>
+
+    <div class="field" id="penaltyArea">
+      <label for="penalty" class="txtlibform"><fmt:message key="QuizzPenalty" /></label>
+      <div class="champs">
+        <input type="text" name="penalty" value="<%=penalty%>" size="5" maxlength="3" readonly="readonly"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+      </div>
+    </div>
+
+  </div>  
+</fieldset>
+
+
+
+
+
+
+<fieldset id="answersFieldset" class="skinFieldset">
+  <legend><fmt:message key="quizz.header.fieldset.answers" /></legend>
+  <div class="fields">
+
+<%
+            nb = Integer.parseInt(nbAnswers);
+            String inputName = "";
+            int j=0;
+            for (int i = 0; i < nb; i++) {
+                j = i + 1;
+                inputName = "answer"+i;
+%>
+
+    <div class="field">
+      <label for="<%=inputName%>" class="txtlibform"><fmt:message key="QuizzCreationAnswerNb" />&nbsp;<%=(i+1)%></label>
+      <div class="champs">
+        <textarea name="<%=inputName%>" id="<%=inputName%>" cols="49" rows="3"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+        <div class="points">
+          <input type="text" name="nbPoints<%=i%>" id="nbPoints<%=i%>" value="" size="5" maxlength="3" />&nbsp;<fmt:message key="QuizzNbPoints"/>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+        </div>
+      </div>
+    </div>
+  
+    <div class="field">
+      <label for="comment<%=i%>" class="txtlibform"><fmt:message key="QuizzCreationAnswerComment" />&nbsp;<%=(i+1)%></label>
+      <div class="champs">
+        <textarea name="comment<%=i%>" id="comment<%=i%>" cols="49" rows="3"></textarea>
+      </div>
+    </div>
+<%  
+  if (!style.equals("list")) {
+%>    
+    <div class="field fieldImage">
+      <label for="image<%= i %>" class="txtlibform"><fmt:message key="QuizzCreationAnswerImage" />&nbsp;<%=(i+1)%></label>
+      <div class="champs">
+      <div class="thumbnailPreviewAndActions" id="thumbnailPreviewAndActions<%= i %>">
+        <div class="thumbnailPreview">
+        <img alt="" class="thumbnail" id="thumbnail<%= i %>" src="null" />
+        </div>
+        <div class="thumbnailActions" id="thumbnailActions<%= i %>">
+        <a href="javascript:deleteImage(<%=i%>)"><img title="<fmt:message key="quizz.answer.image.delete"/>" alt="<fmt:message key="quizz.answer.image.delete"/>" src="/silverpeas/util/icons/cross.png" /> <fmt:message key="quizz.answer.image.delete"/></a>
+        </div>
+        </div>
+    
+        <div class="thumbnailInputs">
+        <img title="<%=resources.getString("survey.answer.image.select")%>" alt="<%=resources.getString("survey.answer.image.select")%>" src="/silverpeas/util/icons/images.png" /> <input type="file" id="thumbnailFile" size="40" name="image<%=i%>" />
+        <span class="txtsublibform"> ou </span><input type="hidden" name="valueImageGallery<%= i %>" id="valueImageGallery<%= i %>"/>
+         <select class="galleries" name="galleries" onchange="choixGallery(this, '<%= i %>');this.selectedIndex=0;"> 
+           <option selected><%= resources.getString("survey.galleries") %></option>
+<%
+          for (int k = 0; k < galleries.size(); k++) {
+            ComponentInstLight gallery = galleries.get(k); %>
+             <option value="<%= gallery.getId() %>"><%= gallery.getLabel() %></option> 
+<%        } %>
+          </select>
+        </div>
+      </div>
+    </div>
+<%
+            }
+          }
+%>
+    </div>
+  </fieldset>
+
+<%  
+              } else { %>
+
+
+<fieldset id="questionFieldset" class="skinFieldset">
+  <legend><fmt:message key="quizz.header.fieldset.question" /></legend>
+  <div class="fields">
+    <div class="field" id="questionArea"> 
+      <label for="question" class="txtlibform"><fmt:message key="QuizzCreationQuestion" />&nbsp;<%=questionNb%></label>
+      <div class="champs"><textarea name="question" cols="49" rows="3"><%=EncodeHelper.javaStringToHtmlString(question)%></textarea>&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/></div>
+    </div>
+    <div class="field" id="questionStyleArea">
+      <label for="questionStyle" class="txtlibform"><fmt:message key="quizz.style" /></label>
+      <div class="champs">
+        <select id="questionStyle" name="questionStyle" > 
+          <option selected value="null"><fmt:message key="quizz.style" /></option> 
+          <option value="radio"><fmt:message key="quizz.radio" /></option> 
+          <option value="checkbox"><fmt:message key="quizz.checkbox" /></option> 
+          <option value="list"><fmt:message key="quizz.list" /></option> 
+        </select>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+      </div>
+    </div>
+    <div class="field" id="nbAnswersArea">
+      <label for="nbAnswers" class="txtlibform"><fmt:message key="QuizzCreationNbAnswers" /></label>
+      <div class="champs">
+        <input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="5" maxlength="3"/>&nbsp;&nbsp;&nbsp;<img border="0" src="<%=mandatoryField %>" width="5" height="5"/>
+      </div>
+    </div>
+
+    <div class="field" id="nbPointsMinArea">
+      <label for="nbPointsMin" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMin" /></label>
+      <div class="champs">
+        <input type="text" name="nbPointsMin" value="<%=nbPointsMin%>" size="5" maxlength="3" />&nbsp;<%=resources.getString("QuizzNbPoints")%>
+      </div>
+    </div>
+
+    <div class="field" id="nbPointsMaxArea">
+      <label for="nbPointsMax" class="txtlibform"><fmt:message key="QuizzCreationNbPointsMax" /></label>
+      <div class="champs">
+        <input type="text" name="nbPointsMax" value="<%=nbPointsMax%>" size="5" maxlength="3"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+      </div>
+    </div>
+
+    <div class="field" id="clueArea">
+      <label for="clue" class="txtlibform"><fmt:message key="QuizzClue" /></label>
+      <div class="champs">
+        <textarea name="clue" cols="49" rows="3"><%=EncodeHelper.javaStringToHtmlString(clue)%></textarea>
+      </div>
+    </div>
+
+    <div class="field" id="penaltyArea">
+      <label for="penalty" class="txtlibform"><fmt:message key="QuizzPenalty" /></label>
+      <div class="champs">
+        <input type="text" name="penalty" value="<%=penalty%>" size="5" maxlength="3"/>&nbsp;<%=resources.getString("QuizzNbPoints")%>
+      </div>
+    </div>
+
+  </div>  
+</fieldset>
+
+<%
            }
         %>
 
-        <tr><td><input type="hidden" name="Action" value="<%=nextAction%>"></td></tr>
-        <% out.println(board.printAfter()); %>
-      <!-- </table></td></tr> -->
-      </table>
+<div class="legend">
+  <img border="0" src="<%=mandatoryField%>" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
+</div>
+
+    <input type="hidden" name="Action" value="<%=nextAction%>"/>
       </form>
-      <br>
       <!-- FIN CORPS -->
 <%
       out.println(buttonPane.print());
-      out.println(frame.printAfter());
       out.println(window.printAfter());
-      out.println("</BODY></HTML>");
+%>
+</body></html>
+<%
  } //End if action = ViewQuestion
 if (action.equals("SendNewQuestion")) {
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <script language="Javascript">
     function goToQuestionsUpdate() {
         document.questionForm.submit();
     }
 </script>
-</HEAD>
-<BODY onLoad="goToQuestionsUpdate()">
-<Form name="questionForm" Action="questionsUpdate.jsp" Method="POST">
-<input type="hidden" name="Action" value="UpdateQuestions">
-</Form>
-</BODY>
-</HTML>
+</head>
+<body onload="goToQuestionsUpdate()">
+<form name="questionForm" action="questionsUpdate.jsp" method="post">
+<input type="hidden" name="Action" value="UpdateQuestions" />
+</form>
+</body>
+</html>
 <% } %>

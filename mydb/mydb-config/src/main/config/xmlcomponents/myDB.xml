@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +34,10 @@
     <message lang="de">My DB</message>
   </label>
   <description>
-    <message lang="fr">Permet de consulter, modifier ou supprimer le contenu de données en base et de créer de nouvelles tables.</message>
+    <message lang="fr">Silverpeas permet grâce à « MyDB » de définir et gérer une base de données 
+		relationnelle. Le gestionnaire crée sa structure. Les contributeurs saisissent les
+		données, les lecteurs les consultent.
+	</message>
     <message lang="en">An easy way to create tables, consult, modify or delete data stored in a database.</message>
     <message lang="de">Ein einfacher Weg Tabellen zu erstellen, einsehen, ändern oder Löschen von Daten die in einer Datenbank gespeichert sind.</message>
   </description>

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -66,12 +66,10 @@
     String description = "";
     String keywords = "";
     String content = "";
-    String creatorName = "";
     String creationDate = "";
     String beginDate = "";
     String endDate = "";
     String updateDate = "";
-    String updaterName = "";
     String version = "";
     String importance = "";
     String pubName = "";
@@ -88,11 +86,11 @@
 
     String nextAction = "";
 
-    ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", kmeliaScc.getLanguage());
-    ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
+    ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", kmeliaScc.getLanguage());
 
     KmeliaPublication kmeliaPublication = null;
     UserDetail ownerDetail = null;
+    UserDetail updater = null;
 
     CompletePublication pubComplete = null;
     PublicationDetail pubDetail = null;
@@ -101,16 +99,14 @@
 
     String language = kmeliaScc.getCurrentLanguage();
 
-//Recuperation des parametres
-
     String vignette_url = null;
    
-    String profile = request.getParameter("Profile");
-    String action = request.getParameter("Action");
-    String id = request.getParameter("PubId");
-    String checkPath = request.getParameter("CheckPath");
+    String profile = (String) request.getAttribute("Profile");
+    String action = (String) request.getAttribute("Action");
+    String id = (String) request.getAttribute("PubId");
     String wizard = (String) request.getAttribute("Wizard");
     String currentLang = (String) request.getAttribute("Language");
+    List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
 
     String resultThumbnail = (String)request.getParameter("resultThumbnail");
     boolean errorThumbnail = false;
@@ -148,7 +144,6 @@
 
 //Vrai si le user connecte est le createur de cette publication ou si il est admin
     boolean isOwner = false;
-    TopicDetail currentTopic = null;
 
     boolean suppressionAllowed = false;
 
@@ -162,22 +157,12 @@
     
     boolean isAutomaticDraftOutEnabled = StringUtil.isDefined(resources.getSetting("cronAutomaticDraftOut"));
 
-    String linkedPathString = kmeliaScc.getSessionPath();
-    String pathString = "";
+    String linkedPathString = displayPath(path, true, 3, language) + name;
+    String pathString = displayPath(path, false, 3, language);
 
-    Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "GoToCurrentTopic", false);
+    Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "GoToCurrentTopic", false);
     Button validateButton = null;
 
-    if ("1".equals(checkPath)) {
-      //Calcul du chemin de la publication
-      currentTopic = kmeliaScc.getPublicationTopic(id);
-      kmeliaScc.setSessionTopic(currentTopic);
-      Collection pathColl = currentTopic.getPath();
-      linkedPathString = displayPath(pathColl, true, 3, language) + name;
-      pathString = displayPath(pathColl, false, 3, language);
-      kmeliaScc.setSessionPath(linkedPathString);
-      kmeliaScc.setSessionPathString(pathString);
-    }
 //Action = View, New, Add, UpdateView, Update, Delete, LinkAuthorView, SameSubjectView ou SameTopicView
     if (action.equals("UpdateView") || action.equals("ValidateView")) {
 
@@ -251,18 +236,9 @@
       }
       if (pubDetail.getUpdateDate() != null) {
         updateDate = resources.getOutputDate(pubDetail.getUpdateDate());
-
-        UserDetail updater = kmeliaScc.getUserDetail(pubDetail.getUpdaterId());
-        if (updater != null) {
-          updaterName = updater.getDisplayedName();
-        }
+        updater = kmeliaScc.getUserDetail(pubDetail.getUpdaterId());
       } else {
         updateDate = "";
-      }
-      if (ownerDetail != null) {
-        creatorName = ownerDetail.getDisplayedName();
-      } else {
-        creatorName = kmeliaScc.getString("UnknownAuthor");
       }
       version = pubDetail.getVersion();
       importance = Integer.toString(pubDetail.getImportance());
@@ -314,21 +290,12 @@
     } else if (action.equals("New")) {
       creationDate = resources.getOutputDate(new Date());
       beginDate = resources.getInputDate(new Date());
-      creatorName = kmeliaScc.getUserDetail().getDisplayedName();
       tempId = "-1";
 
-      if (!kmaxMode) {
-        currentTopic = kmeliaScc.getSessionTopic();
-        Collection pathColl = currentTopic.getPath();
-        linkedPathString = displayPath(pathColl, true, 3, language);
-        kmeliaScc.setSessionPath(linkedPathString);
-        pathString = displayPath(pathColl, false, 3, language);
-        kmeliaScc.setSessionPathString(pathString);
-      }
       nextAction = "AddPublication";
 } 
 
-    validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');", false);
+    validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');", false);
 
     String sRequestURL = request.getRequestURL().toString();
     String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
@@ -342,7 +309,7 @@
 		objectId =  pubDetail.getPK().getId();
 	}
 		
-	String backUrl = httpServerBase + URLManager.getApplicationURL() + "/Rkmelia/" + componentId + "/publicationManager.jsp?Action=UpdateView&PubId=" + objectId + "&Profile=" + kmeliaScc.getProfile();
+	String backUrl = httpServerBase + URLManager.getApplicationURL() + "/Rkmelia/" + componentId + "/publicationManager.jsp?Action=UpdateView&PubId=" + objectId;
 		
 	String standardParamaters = "&ComponentId=" + componentId +  
 		                        "&ObjectId=" + objectId +
@@ -466,28 +433,9 @@
 
       <% }%>
 
-      function publicationGoTo(id, action){
-        document.pubForm.Action.value = "ViewPublication";
-        document.pubForm.CheckPath.value = "1";
-        document.pubForm.PubId.value = id;
-        document.pubForm.submit();
-      }
-
-      function sendOperation(operation) {
-        document.pubForm.Action.value = operation;
-        document.pubForm.submit();
-      }
-
-      function sendPublicationData(operation) {
-        if (isCorrectForm()) {
-          document.pubForm.Action.value = operation;
-          document.pubForm.submit();
-        }
-      }
-
       function sendPublicationDataToRouter(func) {
         if (isCorrectForm()) {
-          <% if("New".equals(action)) { %>
+          <% if(!kmaxMode && "New".equals(action)) { %>
                 <view:pdcPositions setIn="document.pubForm.Positions.value"/>
           <% } %>
           document.pubForm.action = func;
@@ -594,7 +542,7 @@
                  
              }
              
-             <% if("New".equals(action)) { %>
+             <% if(!kmaxMode && "New".equals(action)) { %>
              	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
              <% } %>
              
@@ -736,7 +684,6 @@
 
         Frame frame = gef.getFrame();
         Board board = gef.getBoard();
-        Board boardHelp = gef.getBoard();
 
         // added by LBE : importance field can be hidden (depends on settings file)
         boolean showImportance = !"no".equalsIgnoreCase(resources.getSetting("showImportance"));
@@ -798,14 +745,13 @@
         out.println(frame.printBefore());
         if ("finish".equals(wizard)) {
           // cadre d'aide
-          out.println(boardHelp.printBefore());
-          out.println("<table border=\"0\"><tr>");
-          out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\"" + resources.getIcon("kmelia.info") + "\"></td>");
-          out.println("<td>" + resources.getString("kmelia.HelpView") + "</td>");
-          out.println("</tr></table>");
-          out.println(boardHelp.printAfter());
-          out.println("<br/>");
-        }
+%>
+			<div class="inlineMessage">
+				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+				<%=resources.getString("kmelia.HelpView") %>
+			</div>
+			<br clear="all"/>
+<%        }
   %>
   <div id="header">
   <form name="pubForm" action="publicationManager.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
@@ -947,16 +893,16 @@
 			    <% if (kmeliaPublication != null) { %>
 				<div class="field" id="creationArea">
 					<label class="txtlibform"><%=resources.getString("kmelia.header.contributors") %></label>
-					<% if (StringUtil.isDefined(updateDate) && StringUtil.isDefined(updaterName)) {%>
+					<% if (StringUtil.isDefined(updateDate) && updater != null) {%>
 					<div class="champs">
-						<%=resources.getString("PubDateUpdate")%> <br /><b><%=updateDate%></b> <%=resources.getString("kmelia.By")%> <%=kmeliaPublication.getLastModifier().getDisplayedName()%>
+						<%=resources.getString("PubDateUpdate")%> <br /><b><%=updateDate%></b> <%=resources.getString("kmelia.By")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
 						<div class="profilPhoto"><img src="<%=m_context+kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 					</div>
 					<% } %>
 				</div>
 				<div class="field" id="updateArea">
 					<div class="champs">
-						<%=resources.getString("PubDateCreation")%> <br /><b><%=creationDate%></b> <%=resources.getString("kmelia.By")%> <%=kmeliaPublication.getCreator().getDisplayedName()%>
+						<%=resources.getString("PubDateCreation")%> <br /><b><%=creationDate%></b> <%=resources.getString("kmelia.By")%> <view:username userId="<%=kmeliaPublication.getCreator().getId()%>"/>
 						<div class="profilPhoto"><img src="<%=m_context+kmeliaPublication.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 					</div>
 				</div>
@@ -1055,9 +1001,14 @@
 	
     <% if (!kmaxMode) {
         if ("New".equals(action)) { %>
-          	<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getSessionTopic().getNodePK().getId() %>"/>
+          	<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getCurrentFolderId() %>"/>
     <%  } else { %>
+    	<% if (!"-1".equals(pubDetail.getCloneId()) && !StringUtil.isDefined(pubDetail.getCloneStatus())) { %>
+    		<!-- positions are only editable on original publication -->
+    		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= pubDetail.getCloneId() %>" editable="false" />
+    	<% } else { %>
     		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
+    	<% } %>
     <%  }
       } %>
 	

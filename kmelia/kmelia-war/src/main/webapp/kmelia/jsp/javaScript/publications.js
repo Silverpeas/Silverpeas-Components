@@ -3,7 +3,7 @@ function exportPublications() {
 	var notSelectedIds = getNotSelectedPublicationIds();
 	var uri = "ExportPublications?SelectedIds="+selectedIds+"&NotSelectedIds="+notSelectedIds;
 	SP_openWindow(uri, "Export", '600', '300','scrollbars=yes, resizable, alwaysRaised');
-	$("input:checked[name=C1]").removeAttr('checked');
+	$("input:checked[name=C1]").removeAttr('checked').hide();
 }
 
 function showPublicationOperations(item) {
@@ -14,8 +14,21 @@ function showPublicationOperations(item) {
 
 function hidePublicationOperations(item) {
 	//$(item).find(".unit-operation").hide();
-	$(item).find(".selection input").hide();
+	var input = $(item).find(".selection input");
+	if ($(input).is(':checked')) {
+		// do not hide checkbox
+	} else {
+		input.hide();	
+	}
 	$(item).toggleClass("over-publication", false);
+}
+
+function showPublicationCheckedBoxes() {
+	try {
+		$("input:checked[name=C1]").show();
+	} catch (e) {
+		
+	}
 }
 
 function getSelectedPublicationIds() {

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,19 +27,22 @@
 
 <%@ include file="checkQuickInfo.jsp" %>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+
 <%
 	Iterator infosI = (Iterator) request.getAttribute("infos");
 %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>QuickInfo - Portlet</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<script language="javascript" src="../../util/javaScript/formUtil.js"></script>
-
-<% out.println(gef.getLookStyleSheet()); %>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<script type="text/javascript" src="../../util/javaScript/formUtil.js"></script>
+<view:looknfeel/>
 
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" class="txtlist">
+<body bgcolor="#ffffff" class="txtlist quickinfo">
 <form name="quickInfoForm" method="post">
   <%
 	ArrayPane arrayPane = gef.getArrayPane(quickinfo.getComponentId() + "QuickinfoList", pageContext);
@@ -52,11 +55,11 @@
 		PublicationDetail pub = (PublicationDetail) infosI.next();
 		ArrayLine line = arrayPane.addArrayLine();
 
-		st = "<B>"+pub.getName()+"</B>";
+		st = "<b>"+pub.getName()+"</b>";
 		if (pub.getWysiwyg() != null && !"".equals(pub.getWysiwyg()))
     	description = pub.getWysiwyg();
 		else if (pub.getDescription() != null && !pub.getDescription().equals(""))
-			description = Encode.javaStringToHtmlParagraphe(pub.getDescription());
+			description = EncodeHelper.javaStringToHtmlParagraphe(pub.getDescription());
 		st = st + "<br/>"+description;
 		cellText = line.addArrayCellText(st);
 		cellText.setValignement("top");

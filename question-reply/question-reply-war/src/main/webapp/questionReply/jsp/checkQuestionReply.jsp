@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,18 +29,27 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
+
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Collection"%>
 <%@ page import="java.beans.*"%>
+<%@ page import="java.net.URLEncoder"%>
 
 <%@ page import="java.util.*"%>
-<%@ page import="java.net.URLEncoder"%>
+<%@ page import="java.util.Collection"%>
+
+<%@ page import="javax.servlet.*"%>
+<%@ page import="javax.servlet.http.*"%>
+<%@ page import="javax.servlet.jsp.*"%>
+
+<%@ page import="com.silverpeas.importExport.report.ExportReport"%>
+<%@ page import="com.silverpeas.questionReply.control.*"%>
+<%@ page import="com.silverpeas.questionReply.model.*"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
+
+
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
@@ -66,17 +75,13 @@
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-<%@ page import="com.silverpeas.questionReply.control.*"%>
-<%@ page import="com.silverpeas.questionReply.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
 
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.silverpeas.importExport.report.ExportReport"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
@@ -155,76 +160,21 @@ boolean existPublicR(Collection replies)
 	return false;
 }
 %>
-<SCRIPT LANGUAGE="JavaScript">
+<script type="text/javascript">
 
 <!--
-function vueR(replyId){
-	SP_openWindow('<%=routerUrl%>ConsultReplyQuery?replyId='+replyId, 'consult_reponse', '500', '230', 'menubar=no,scrollbars=no,statusbar=no');
-}
-function addR(){
-	SP_openWindow('<%=routerUrl%>CreateRQuery', 'consult_reponse', '500', '360', 'menubar=no,scrollbars=no,statusbar=no')
-}
-function updQ(){
-	SP_openWindow('<%=routerUrl%>UpdateQQuery', 'consult_reponse', '500', '300', 'menubar=no,scrollbars=no,statusbar=no')
-}
-function updR(){
-	SP_openWindow('<%=routerUrl%>UpdateRQuery', 'consult_reponse', '500', '300', 'menubar=no,scrollbars=no,statusbar=no')
-}
-function DeletesR(nb)
-{
-	if (existSelected())
-	{
-		if (window.confirm("<%=resource.getString("MessageSuppressionsR")%>")) { 
-			document.forms[0].action = "<%=routerUrl%>DeleteReplies";
-			document.forms[0].submit();
-		}
-	}
-}
 function DeleteQ(id)
 {
-    if (window.confirm("<%=resource.getString("MessageSuppressionQ")%>")) { 
-	self.location = "<%=routerUrl%>DeleteQuestions?checkedQuestion="+id;
-    }
-}
-function DeleteR(id)
-{
-    if (window.confirm("<%=resource.getString("MessageSuppressionR")%>")) { 
-	self.location = "<%=routerUrl%>DeleteReply?replyId="+id;
-    }
-}
-function DeleteRadmin(id)
-{
-    if (window.confirm("<%=resource.getString("MessageSuppressionR")%>")) { 
-	self.location = "<%=routerUrl%>DeleteReplies?checkedReply="+id;
-    }
-}
-function DeletesQ()
-{
-	if (existSelected())
-	{
-		if (window.confirm("<%=resource.getString("MessageSuppressionsQ")%>")) { 
-		document.forms[0].action = "<%=routerUrl%>DeleteQuestions";
-		document.forms[0].submit();
-		}
-	}
-}
-function ClosesQ()
-{
-	if (existSelected())
-	{
-		if (window.confirm("<%=resource.getString("MessageClosesQ")%>")) { 
-		document.forms[0].action = "<%=routerUrl%>CloseQuestions";
-		document.forms[0].submit();
-		}
-	}
+  if (window.confirm("<%=resource.getString("MessageSuppressionQ")%>")) { 
+    self.location = "<%=routerUrl%>DeleteQuestions?checkedQuestion="+id;
+  }
 }
 function CloseQ(id)
 {
-    if (window.confirm("<%=resource.getString("MessageCloseQ")%>")) { 
-	self.location = "<%=routerUrl%>CloseQuestion?questionId="+id;
-    }
+  if (window.confirm("<%=resource.getString("MessageCloseQ")%>")) { 
+    self.location = "<%=routerUrl%>CloseQuestion?questionId="+id;
+  }
 }
-
 
 function existSelected()
 {
@@ -236,7 +186,5 @@ function existSelected()
 	return false;
 }
 
-
-
 //-->
-</SCRIPT>
+</script>

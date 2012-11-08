@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,16 +24,24 @@
 package com.silverpeas.whitePages.control;
 
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.pdc.model.PdcClassification;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.model.Card;
 import com.silverpeas.whitePages.model.SearchField;
+import com.silverpeas.whitePages.model.SearchFieldsType;
 import com.silverpeas.whitePages.model.WhitePagesCard;
 import com.silverpeas.whitePages.record.UserRecord;
 import com.silverpeas.whitePages.record.UserTemplate;
@@ -48,46 +56,22 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.SearchAxis;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
-import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionInfo;
-import com.stratelia.silverpeas.peasCore.SessionManager;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.pdc.model.*;
+import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.CompoSpace;
-import com.stratelia.webactiv.beans.admin.DomainDriver;
-import com.stratelia.webactiv.beans.admin.DomainDriverManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
-import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
+import javax.xml.bind.JAXBException;
+import org.apache.commons.fileupload.FileItem;
 
 public class WhitePagesSessionController extends AbstractComponentSessionController {
 
@@ -116,8 +100,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private String returnURL = "";
   private ContainerContext containerContext;
   private Card notifiedUserCard;
-  private final static ResourceLocator whitePagesSettings = new ResourceLocator(
-          "com.silverpeas.whitePages.settings.settings", "");
   private PdcBm pdcBm = null;
   private static DomainDriverManager m_DDManager = new DomainDriverManager();
 
@@ -349,10 +331,30 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   /*
    * Rempli le DataRecord de la fiche courante en cours de création à partir de la request
    */
-  public void setCardRecord(HttpServletRequest request)
-          throws WhitePagesException {
+  public void createCard(HttpServletRequest request)
+          throws WhitePagesException, JAXBException {
+    
+    List<FileItem> items = FileUploadUtil.parseRequest(request);
+    
+    // get PDC classification
+    String positions = FileUploadUtil.getParameter(items, "Positions");
+    PdcClassification withClassification = null;
+    PdcClassificationEntity classification = PdcClassificationEntity.undefinedClassification();
+    if (StringUtil.isDefined(positions)) {
+      classification = PdcClassificationEntity.fromJSON(positions);
+      
+      List<PdcPosition> pdcPositions = classification.getPdcPositions();
+      withClassification = aPdcClassificationOfContent(getCurrentCard().getPK().getId(),
+              getComponentId()).withPositions(pdcPositions);
+    }
+    
+    /*
+     * Stores card, identity and data record.
+     */
+    insertCard(withClassification);
+    
+    // update form
     try {
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
       PagesContext pageContext = new PagesContext("", getLanguage());
       pageContext.setComponentId(getComponentId());
       pageContext.setObjectId(getCurrentCard().getPK().getId());
@@ -369,6 +371,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
               "WhitePagesSessionController.setCardRecord",
               SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
+    
+    // save form
+    saveCard();
   }
 
   /*
@@ -403,10 +408,10 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * de l'id de la fiche courante Enregistre les données du modèle de la fiche :
    * currentCard.readCardRecord().setId(userCardId), saveCard()
    */
-  public void insertCard() throws WhitePagesException {
+  private void insertCard(PdcClassification classification) throws WhitePagesException {
     try {
-      String userCardId = new Long(getCardManager().create(
-              getCurrentCreateCard(), getSpaceId(), getUserId())).toString();
+      String userCardId = Long.toString(getCardManager().create(
+              getCurrentCreateCard(), getUserId(), classification));
       getCurrentCreateCard().readCardRecord().setId(userCardId);
       getCardTemplate().getRecordSet().save(
               getCurrentCreateCard().readCardRecord());
@@ -556,14 +561,13 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     try {
       if (userCardIds != null) {
         for (String userCardId : userCardIds) {
-          DataRecord data = getCardTemplate().getRecordSet().getRecord(
-                  userCardId);
+          DataRecord data = getCardTemplate().getRecordSet().getRecord(userCardId);
           getCardTemplate().getRecordSet().delete(data);
           SilverTrace.spy("whitePages", "WhitePagesSessionController.delete",
                   getSpaceId(), getComponentId(), userCardId, getUserDetail().getId(),
                   SilverTrace.SPY_ACTION_DELETE);
         }
-        getCardManager().delete(userCardIds, getSpaceId());
+        getCardManager().delete(userCardIds);
       }
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException("WhitePagesSessionController.delete",
@@ -694,7 +698,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public UserDetail getUserDetailSelected() {
     UserDetail user = null;
     String selUser = getSelection().getFirstSelectedElement();
-    if ((selUser != null) && (selUser.length() > 0)) {
+    if (StringUtil.isDefined(selUser)) {
       user = getOrganizationController().getUserDetail(selUser);
     }
     return user;
@@ -813,9 +817,10 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   }
 
   /*-------------- Methodes de la classe ------------------*/
-  public WhitePagesSessionController(MainSessionController mainSessionCtrl,
-          ComponentContext context, String multilangBaseName, String iconBaseName) {
-    super(mainSessionCtrl, context, multilangBaseName, iconBaseName);
+  public WhitePagesSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
+    super(mainSessionCtrl, context, "com.silverpeas.whitePages.multilang.whitePagesBundle",
+        "com.silverpeas.whitePages.settings.whitePagesIcons",
+        "com.silverpeas.whitePages.settings.settings");
     if (context == null) {
       setComponentRootName(URLManager.CMP_WHITEPAGESPEAS);
     }
@@ -869,7 +874,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     notifMetaData.setComponentId(getComponentId());
     notifMetaData.setContent(message);
     notifMetaData.setDate(new Date());
-    notifMetaData.setSender(whitePagesSettings.getString("whitePages.genericUserId"));
+    notifMetaData.setSender(getSettings().getString("whitePages.genericUserId"));
     notifMetaData.setTitle(getString("whitePages.notificationTitle"));
 
     String link = URLManager.getURL(null, getComponentId())
@@ -901,7 +906,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
     // pour recupèrer le domainId auquel rattaché l'annuaire
     String domainId = getComponentParameterValue("domainId");
-    if (domainId != null && domainId.length() > 0) {
+    if (StringUtil.isDefined(domainId)) {
       try {
         domainIdReturn = Integer.parseInt(domainId);
       } catch (NumberFormatException nexp) {
@@ -913,13 +918,18 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
   }
 
-  public List<String> getAllXmlFieldsForSearch() throws WhitePagesException,
+  public List<FieldTemplate> getAllXmlFieldsForSearch() throws WhitePagesException,
           PublicationTemplateException {
-    List<String> xmlFields = new ArrayList<String>();
     PublicationTemplate template = getTemplate(getComponentId());
     RecordTemplate recordTemplate = template.getRecordTemplate();
-    xmlFields = Arrays.asList(recordTemplate.getFieldNames());
-    return xmlFields;
+    try {
+      FieldTemplate[] fields = recordTemplate.getFieldTemplates();
+      return Arrays.asList(fields);
+    } catch (FormException e) {
+      SilverTrace.error("whitePages", "WhitePagesSessionController.getAllXmlFieldsForSearch",
+          "whitePages.CANT_GET_XML_FIELDS", e);
+    }
+    return new ArrayList<FieldTemplate>();
   }
 
   public List<SearchAxis> getUsedAxisList(SearchContext searchContext, String axisType) throws
@@ -934,20 +944,69 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return searchAxis;
   }
 
-  public List<String> getLdapAttributesList() throws Exception {
-    DomainDriver domainDriver = m_DDManager.getDomainDriver(getDomainId());
-    return domainDriver.getUserAttributes();
+  public List<SearchField> getLdapAttributesList() throws Exception {
+    Map<String, String> properties = getDomainProperties();
+    List<SearchField> fields = new ArrayList<SearchField>();
+    for (String property : properties.keySet()) {
+      SearchField field = new SearchField();
+      field.setFieldId(SearchFieldsType.LDAP.getLabelType() + property);
+      field.setLabel(properties.get(property));
+      fields.add(field);
+    }
+    return fields;
+  }
+  
+  private Map<String, String> getDomainProperties() throws Exception {
+    return m_DDManager.getDomainDriver(getDomainId()).getPropertiesLabels(getLanguage());
   }
 
   public void confirmFieldsChoice(String[] fields) throws UtilException {
     ServicesFactory.getWhitePagesService().createSearchFields(fields, getComponentId());
   }
 
-  public SortedSet<SearchField> getSearchFields() throws UtilException {
-    return ServicesFactory.getWhitePagesService().getSearchFields(getComponentId());
+  public SortedSet<SearchField> getSearchFields() throws UtilException, WhitePagesException {
+    SortedSet<SearchField> fields =
+        ServicesFactory.getWhitePagesService().getSearchFields(getComponentId());
+    if (!fields.isEmpty()) {
+      PublicationTemplate template = null;
+      Map<String, String> domainProperties = null;
+      try {
+        RecordTemplate recordTemplate = null;
+        for (SearchField field : fields) {
+          if (field.getFieldId().startsWith(SearchFieldsType.XML.getLabelType())) {
+            if (template == null) {
+              template = getTemplate(getComponentId());
+              recordTemplate = template.getRecordTemplate();
+            }
+            field.setLabel(recordTemplate.getFieldTemplate(field.getFieldName()).getLabel(
+                getLanguage()));
+          } else if (field.getFieldId().startsWith(SearchFieldsType.LDAP.getLabelType())) {
+            if (domainProperties == null) {
+              domainProperties = getDomainProperties();
+            }
+            field.setLabel(domainProperties.get(field.getFieldName()));
+          } else if (field.getFieldId().startsWith(SearchFieldsType.USER.getLabelType())) {
+            if (field.getFieldName().equals("name")) {
+              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage()).getString(
+                  "GML.lastName"));
+            } else if (field.getFieldName().equals("surname")) {
+              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage()).getString(
+                  "GML.surname"));
+            } else if (field.getFieldName().equals("email")) {
+              field.setLabel(GeneralPropertiesManager.getGeneralMultilang(getLanguage()).getString(
+                  "GML.eMail"));
+            }
+          } 
+        }
+      } catch (Exception e) {
+        SilverTrace.error("whitePages", "WhitePagesSessionController.getSearchFields",
+            "whitePages.CANT_GET_XML_FIELDS", e);
+      }
+    }
+    return fields;
   }
 
-  public Set<String> getSearchFieldIds() throws UtilException {
+  public Set<String> getSearchFieldIds() throws UtilException, WhitePagesException {
     Set<String> ids = new HashSet<String>();
     SortedSet<SearchField> searchFields = getSearchFields();
     if (searchFields != null && !searchFields.isEmpty()) {
@@ -1019,33 +1078,24 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return pdcBm;
   }
 
-  public HashMap<String, List<ClassifyValue>> getPdcPositions(int cardId) throws PdcException {
+  public HashMap<String, Set<ClassifyValue>> getPdcPositions(int cardId) throws PdcException {
 
-    HashMap<String, List<ClassifyValue>> result = new HashMap<String, List<ClassifyValue>>();
+    HashMap<String, Set<ClassifyValue>> result = new HashMap<String, Set<ClassifyValue>>();
+    List<ClassifyPosition> listOfPositions = getPdcBm().getPositions(cardId, getComponentId());
 
-    List<ClassifyPosition> list = getPdcBm().getPositions(cardId, getComponentId());
-
-    if (list != null && list.size() > 0) {
-
-      Iterator<ClassifyPosition> iter = list.iterator();
-      while (iter.hasNext()) {
-        List<Value> pathValues = null;
-        ClassifyPosition position = iter.next();
-        List<ClassifyValue> values = position.getValues();
-        for (ClassifyValue value : values) {
-          pathValues = value.getFullPath();
-          if (pathValues != null && !pathValues.isEmpty()) {
-            List<ClassifyValue> valuesForPrincipal = null;
-            Value term = pathValues.get(0);
-            String principal = term.getName(getLanguage());
-            if (result.get(principal) != null) {
-              valuesForPrincipal = result.get(principal);
-              valuesForPrincipal.add(value);
-              result.put(principal, valuesForPrincipal);
+    if (listOfPositions != null && listOfPositions.size() > 0) {
+      for (ClassifyPosition position : listOfPositions) {
+        for (ClassifyValue value : position.getValues()) {
+          List<Value> path = value.getFullPath();
+          if (path != null && !path.isEmpty()) {
+            Value axis = path.get(0);
+            String category = axis.getName(getLanguage());
+            if (result.containsKey(category)) {
+              result.get(category).add(value);
             } else {
-              valuesForPrincipal = new ArrayList<ClassifyValue>();
-              valuesForPrincipal.add(value);
-              result.put(principal, valuesForPrincipal);
+              Set<ClassifyValue> values = new HashSet<ClassifyValue>();
+              values.add(value);
+              result.put(category, values);
             }
           }
         }

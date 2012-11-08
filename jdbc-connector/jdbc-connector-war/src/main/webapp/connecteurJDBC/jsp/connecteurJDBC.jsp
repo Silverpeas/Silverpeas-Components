@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -140,7 +140,7 @@ out.println(gef.getLookStyleSheet());
 		document.sqlReqForm.submit();
 	}
 </Script>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<BODY>
 
 <%
 	browseBar.setExtraInformation(connecteurJDBC.getString("titreExecution")) ;
@@ -166,6 +166,7 @@ out.println(gef.getLookStyleSheet());
 	  ArrayPane arrayPane = gef.getArrayPane("ResultSet","",request,session);
 	  arrayPane.setSortable(true);
 	  arrayPane.setExportData(true);
+	  arrayPane.setVisibleLineNumber(15);
 	
 	if (lastValidSqlReq!=null)
 	{	

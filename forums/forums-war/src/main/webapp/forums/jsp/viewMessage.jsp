@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,11 +40,11 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-<%@page import="java.util.Map"%>
-<%@page import="java.util.HashMap"%>
-<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumHelper"%>
-<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
-<%@page import="java.util.Hashtable"%>
+<%@ page import="java.util.Map"%>
+<%@ page import="java.util.HashMap"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumHelper"%>
+<%@ page import="com.stratelia.webactiv.forums.control.helpers.ForumListHelper"%>
+<%@ page import="java.util.Hashtable"%>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -225,10 +225,10 @@
 <head>
     <title><c:out value="${pageScope.title}" /></title>
     <view:looknfeel />
+    <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/viewMessage.js"></script>
-    <script type="text/javascript" src="<%=context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
     <script type="text/javascript">
         function init()
         {
@@ -263,22 +263,8 @@
             }
         }
 
-        function initFCKeditor()
-        {
-            if (oFCKeditor == null)
-            {
-                oFCKeditor = new FCKeditor("messageText");
-                oFCKeditor.Width = "500";
-                oFCKeditor.Height = "300";
-                oFCKeditor.BasePath = "<%=URLManager.getApplicationURL()%>/wysiwyg/jsp/FCKeditor/";
-                oFCKeditor.DisplayErrors = true;
-                oFCKeditor.Config["AutoDetectLanguage"] = false;
-                oFCKeditor.Config["DefaultLanguage"] = "<%=fsc.getLanguage()%>";
-                oFCKeditor.Config["CustomConfigurationsPath"] = "<%=configFile%>";
-                oFCKeditor.ToolbarSet = "quickinfo";
-                oFCKeditor.Config["ToolbarStartExpanded"] = true;
-                oFCKeditor.ReplaceTextarea();
-            }
+        function initCKeditor() {
+           	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
         }
 
         function callResizeFrame()
@@ -352,7 +338,8 @@
     </script>
 </head>
 
-<body id="forum" <%addBodyOnload(out, fsc);%>><%
+<body id="forum" <%addBodyOnload(out, fsc);%>>
+<%
 
         Window window = graphicFactory.getWindow();
         Frame frame=graphicFactory.getFrame();
@@ -524,44 +511,30 @@
                                     <div class="messageContent">
                                       <span class="txtnote"><%=text%></span>
                                     </div>
-                                  <%
-                                      if (!isReader) {
-                                  %>
+                                  
                                   <div class="messageFooter">
                                         <input name="checkbox" type="checkbox" <%if (isSubscriber) {%>checked<%}%>
                                                 onclick="javascript:window.location.href='viewMessage.jsp?action=<%=(isSubscriber ? 13 : 14)%>&params=<%=currentId%>&forumId=<%=forumId%>'">
                                                 <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span>                                             
-                                             <%
-                                              if (forumActive) {%>
+                                             <% if (forumActive) { %>
                                               <div class="messageActions">
-                                              <%
-                                                if (isAdmin || isUser) {
-				    %>
-                                                  <a href="javascript:replyMessage(<%=currentId%>)"><img
-				           src="<%=context%>/util/icons/reply.gif" align="middle" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"></a>&nbsp;
-				    <%  }
-                                                if (userId.equals(author) || isAdmin || isModerator) {
+                                              <% if ((isAdmin || isUser) && STATUS_VALIDATE.equals(status)) { %>
+                                                  <a href="javascript:replyMessage(<%=currentId%>)"><img src="<%=context%>/util/icons/reply.gif" align="middle" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"/></a>&nbsp;
+				    						  <%  }
+                                                if (userId.equals(authorId) || isAdmin || isModerator) {
                                                   if (isModerator && STATUS_FOR_VALIDATION.equals(status)) {
                                             %>
                                                     <a href="javascript:valideMessage(<%=currentId%>)"><img 
                                                         src="<%=context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"></a>&nbsp;
                                                     <a href="javascript:refuseMessage(<%=currentId%>)"><img
                                                       src="<%=context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("refuseMessage")%>" title="<%=resource.getString("refuseMessage")%>"></a>&nbsp;
-                                            <%
-                                                  }
-                                            %>
-                                               <a href="javascript:editMessage(<%=currentId%>)"><img
-                                                 src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"></a>&nbsp;
-                                               <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img
-                                                 src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"></a>&nbsp;<%
-                                                }%>
+                                            <% } %>
+                                               <a href="javascript:editMessage(<%=currentId%>)"><img src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"/></a>&nbsp;
+                                               <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"/></a>&nbsp;
+                                            <% } %>
                                               </div>
-                                           <%   }
-                                          %>  
+                                           <% } %>  
                                         </div>
-                                    <% 
-                                      }
-                                    %> 
                               </div>
                               <br clear="all"/>
                     </div><%

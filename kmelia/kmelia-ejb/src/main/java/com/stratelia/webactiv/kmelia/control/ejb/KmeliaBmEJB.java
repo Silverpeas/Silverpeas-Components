@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,7 +32,6 @@ import static com.stratelia.webactiv.util.JNDINames.COORDINATESBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.PDCBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.SEARCHBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
 import static com.stratelia.webactiv.util.JNDINames.STATISTICBM_EJBHOME;
 import static com.stratelia.webactiv.util.JNDINames.VERSIONING_EJBHOME;
@@ -51,20 +50,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.activation.FileTypeMap;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
-import com.silverpeas.subscribe.Subscription;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -73,6 +72,16 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.dao.ModelDAO;
+import com.silverpeas.kmelia.notification.KmeliaAttachmentSubscriptionPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaDefermentPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaDocumentSubscriptionPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaModificationPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaPendingValidationPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaSubscriptionPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaTopicUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaValidationPublicationUserNotification;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.pdc.ejb.PdcBmHome;
@@ -83,6 +92,7 @@ import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.NodeSubscription;
@@ -90,16 +100,10 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
-import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -112,11 +116,9 @@ import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
@@ -128,8 +130,6 @@ import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.TopicComparator;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -145,7 +145,7 @@ import com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
-import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -198,13 +198,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     SilverTrace.info("kmelia", "KmeliaBmEJB.ejbPassivate()", "root.MSG_GEN_ENTER_METHOD");
   }
 
-  private NotificationSender getNotificationSender(String componentId) {
-    // must return a new instance each time
-    // This is to resolve Serializable problems
-    NotificationSender notifSender = new NotificationSender(componentId);
-    return notifSender;
-  }
-
   private OrganizationController getOrganizationController() {
     // must return a new instance each time
     // This is to resolve Serializable problems
@@ -214,15 +207,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   @Override
   public void setSessionContext(SessionContext sc) {
-  }
-
-  private String getComponentLabel(String componentId, String language) {
-    ComponentInstLight component = getOrganizationController().getComponentInstLight(componentId);
-    String componentLabel = "";
-    if (component != null) {
-      componentLabel = component.getLabel(language);
-    }
-    return componentLabel;
   }
 
   private int getNbPublicationsOnRoot(String componentId) {
@@ -237,10 +221,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         return 0;
       }
       // lecture du properties
-      ResourceLocator settings = new ResourceLocator(
-              "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "fr");
+      ResourceLocator settings = getSettings();
       return Integer.parseInt(settings.getString("HomeNbPublications"));
     }
+  }
+  
+  private ResourceLocator getSettings() {
+    return new ResourceLocator("org.silverpeas.kmelia.settings.kmeliaSettings", "fr");
   }
 
   private boolean isDraftModeUsed(String componentId) {
@@ -334,19 +321,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return currentCoordinatesBm;
   }
 
-  public SearchEngineBm getSearchEngineBm() {
-    SearchEngineBm searchEngineBm = null;
-    try {
-      SearchEngineBmHome searchEngineBmHome = EJBUtilitaire.getEJBObjectRef(SEARCHBM_EJBHOME,
-              SearchEngineBmHome.class);
-      searchEngineBm = searchEngineBmHome.create();
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.getSearchEngineBm()", ERROR,
-              "kmax.EX_IMPOSSIBLE_DE_FABRIQUER_SEARCHENGINEBM_HOME", e);
-    }
-    return searchEngineBm;
-  }
-
   /**
    * Return a the detail of a topic
    * @param pk the id of the topic
@@ -363,8 +337,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
     NodeDetail nodeDetail = null;
     NodeBm nodeBm = getNodeBm();
-    PublicationBm pubBm = getPublicationBm();
-    PublicationPK pubPK = new PublicationPK("unknown", pk);
 
     // get the basic information (Header) of this topic
     SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()",
@@ -377,112 +349,131 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                 ObjectType.NODE, pk.getInstanceId(), userId)) {
           nodeDetail.setUserRole("noRights");
         }
-        List<NodeDetail> children = (List<NodeDetail>) nodeDetail.getChildrenDetails();
-        List<NodeDetail> availableChildren = new ArrayList<NodeDetail>();
-        for (NodeDetail child : children) {
-          String childId = child.getNodePK().getId();
-          if (child.getNodePK().isTrash() || childId.equals("2") || !child.haveRights()) {
-            availableChildren.add(child);
-          } else {
-            int rightsDependsOn = child.getRightsDependsOn();
-            boolean nodeAvailable = orga.isObjectAvailable(rightsDependsOn, ObjectType.NODE, pk.
-                    getInstanceId(), userId);
-            if (nodeAvailable) {
-              availableChildren.add(child);
-            } else { // check if at least one descendant is available
-              Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(child).iterator();
-              NodeDetail descendant = null;
-              boolean childAllowed = false;
-              while (!childAllowed && descendants.hasNext()) {
-                descendant = descendants.next();
-                if (descendant.getRightsDependsOn() == rightsDependsOn) {
-                  // same rights of father (which is not available) so it is not available too
-                } else {
-                  // different rights of father check if it is available
-                  if (orga.isObjectAvailable(descendant.getRightsDependsOn(), ObjectType.NODE, pk.
-                          getInstanceId(), userId)) {
-                    childAllowed = true;
-                    if (!availableChildren.contains(child)) {
-                      availableChildren.add(child);
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+        List<NodeDetail> availableChildren = getAllowedSubfolders(nodeDetail, userId);
         nodeDetail.setChildrenDetails(availableChildren);
       }
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()",
-              ERROR,
-              "kmelia.EX_IMPOSSIBLE_DACCEDER_AU_THEME", e);
+      throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()", ERROR,
+          "kmelia.EX_IMPOSSIBLE_DACCEDER_AU_THEME", e);
     }
-    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()",
-            "root.MSG_GEN_PARAM_VALUE", "nodeBm.getDetail(pk) END");
+    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE",
+        "nodeBm.getDetail(pk) END");
 
+    // get publications
+    List<KmeliaPublication> pubDetails =
+        getPublicationsOfFolder(pk, userProfile, userId, isTreeStructureUsed, isRightsOnTopicsUsed);
+    
+    // get the path to this topic
+    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE", "GetPath BEGIN");
+    if (pk.isRoot()) {
+      newPath.add(nodeDetail);
+    } else {
+      newPath = getPathFromAToZ(nodeDetail);
+    }
+    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE", "GetPath END");
+    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_EXIT_METHOD");
+
+    // set the currentTopic and return it
+    return new TopicDetail(newPath, nodeDetail, pubDetails);
+  }
+  
+  public List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile,
+      String userId, boolean isTreeStructureUsed, boolean isRightsOnTopicsUsed) {
     Collection<PublicationDetail> pubDetails = null;
+    PublicationBm pubBm = getPublicationBm();
     // get the publications associated to this topic
     if (pk.isTrash()) {
       // Topic = Basket
       pubDetails = getPublicationsInBasket(pk, userProfile, userId);
     } else if (pk.isRoot()) {
-      SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE",
-              "pubBm.getUnavailablePublicationsByPublisherId(pubPK, currentUser.getId()) BEGIN");
       try {
         int nbPublisOnRoot = getNbPublicationsOnRoot(pk.getInstanceId());
         if (nbPublisOnRoot == 0 || !isTreeStructureUsed
                 || KmeliaHelper.isToolbox(pk.getInstanceId())) {
           pubDetails = pubBm.getDetailsByFatherPK(pk, "P.pubUpdateDate desc", false);
         } else {
-          pubDetails = pubBm.getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK,
-                  PublicationDetail.VALID, nbPublisOnRoot, NodePK.BIN_NODE_ID);
-          if (isRightsOnTopicsUsed) {// The list of publications must be filtered
-            List<PublicationDetail> filteredList = new ArrayList<PublicationDetail>();
-            KmeliaSecurity security = new KmeliaSecurity();
-            for (PublicationDetail pubDetail : pubDetails) {
-              if (security.isObjectAvailable(pk.getInstanceId(), userId, pubDetail.getPK().getId(),
-                      "Publication")) {
-                filteredList.add(pubDetail);
-              }
-            }
-            pubDetails.clear();
-            pubDetails.addAll(filteredList);
-          }
+          return getLatestPublications(pk.getInstanceId(), nbPublisOnRoot, isRightsOnTopicsUsed, userId);
         }
       } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()", ERROR,
+        throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationsOfFolder()", ERROR,
                 "kmelia.EX_IMPOSSIBLE_DAVOIR_LES_DERNIERES_PUBLICATIONS", e);
       }
-      SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE",
-              "pubBm.getUnavailablePublicationsByPublisherId(pubPK, currentUser.getId()) END");
     } else {
-      SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsOfFolder()", "root.MSG_GEN_PARAM_VALUE",
               "pubBm.getDetailsByFatherPK(pk) BEGIN");
       try {
         // get the publication details linked to this topic
-        pubDetails = pubBm.getDetailsByFatherPK(pk, null, false);
+        pubDetails = pubBm.getDetailsByFatherPK(pk, "P.pubUpdateDate DESC, P.pubId DESC", false);
       } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()", ERROR,
+        throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationsOfFolder()", ERROR,
                 "kmelia.EX_IMPOSSIBLE_DAVOIR_LA_LISTE_DES_PUBLICATIONS", e);
       }
-      SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsOfFolder()", "root.MSG_GEN_PARAM_VALUE",
               "pubBm.getDetailsByFatherPK(pk) END");
     }
-    // get the path to this topic
-    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE", "GetPath BEGIN");
-
-    if (pk.isRoot()) {
-      newPath.add(nodeDetail);
-    } else {
-      newPath = getPathFromAToZ(nodeDetail);
+    return pubDetails2userPubs(pubDetails);
+  }
+  
+  public List<KmeliaPublication> getLatestPublications(String instanceId, int nbPublisOnRoot,
+      boolean isRightsOnTopicsUsed, String userId) throws RemoteException {
+    PublicationPK pubPK = new PublicationPK("unknown", instanceId);
+    Collection<PublicationDetail> pubDetails =
+        getPublicationBm().getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK,
+            PublicationDetail.VALID, nbPublisOnRoot, NodePK.BIN_NODE_ID);
+    if (isRightsOnTopicsUsed) {// The list of publications must be filtered
+      List<PublicationDetail> filteredList = new ArrayList<PublicationDetail>();
+      KmeliaSecurity security = new KmeliaSecurity();
+      for (PublicationDetail pubDetail : pubDetails) {
+        if (security
+            .isObjectAvailable(instanceId, userId, pubDetail.getPK().getId(), "Publication")) {
+          filteredList.add(pubDetail);
+        }
+      }
+      pubDetails.clear();
+      pubDetails.addAll(filteredList);
     }
-
-    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE", "GetPath END");
-    SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_EXIT_METHOD");
-
-    // set the currentTopic and return it
-    return new TopicDetail(newPath, nodeDetail, pubDetails2userPubs(pubDetails));
+    return pubDetails2userPubs(pubDetails);
+  }
+  
+  public List<NodeDetail> getAllowedSubfolders(NodeDetail folder, String userId)
+      throws RemoteException {
+    OrganizationController orga = getOrganizationController();
+    NodePK pk = folder.getNodePK();
+    List<NodeDetail> children = (List<NodeDetail>) folder.getChildrenDetails();
+    List<NodeDetail> availableChildren = new ArrayList<NodeDetail>();
+    for (NodeDetail child : children) {
+      String childId = child.getNodePK().getId();
+      if (child.getNodePK().isTrash() || childId.equals("2") || !child.haveRights()) {
+        availableChildren.add(child);
+      } else {
+        int rightsDependsOn = child.getRightsDependsOn();
+        boolean nodeAvailable = orga.isObjectAvailable(rightsDependsOn, ObjectType.NODE, pk.
+                getInstanceId(), userId);
+        if (nodeAvailable) {
+          availableChildren.add(child);
+        } else { // check if at least one descendant is available
+          Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(child).iterator();
+          NodeDetail descendant = null;
+          boolean childAllowed = false;
+          while (!childAllowed && descendants.hasNext()) {
+            descendant = descendants.next();
+            if (descendant.getRightsDependsOn() == rightsDependsOn) {
+              // same rights of father (which is not available) so it is not available too
+            } else {
+              // different rights of father check if it is available
+              if (orga.isObjectAvailable(descendant.getRightsDependsOn(), ObjectType.NODE, pk.
+                      getInstanceId(), userId)) {
+                childAllowed = true;
+                if (!availableChildren.contains(child)) {
+                  availableChildren.add(child);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return availableChildren;
   }
 
   private Collection<NodeDetail> getPathFromAToZ(NodeDetail nd) {
@@ -571,23 +562,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return pathString.toString();
   }
 
-  private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
-    Connection con = null;
-    try {
-      con = getConnection();
-      notifMetaData.setConnection(con);
-      if (!isDefined(notifMetaData.getSender())) {
-        notifMetaData.setSender(senderId);
-      }
-      getNotificationSender(notifMetaData.getComponentId()).notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
-      SilverTrace.warn("kmelia", "KmeliaBmEJB.notifyUsers()",
-              "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
-    } finally {
-      freeConnection(con);
-    }
-  }
-
   /**
    * Alert all users, only publishers or nobody of the topic creation or update
    * @param pk the NodePK of the new sub topic
@@ -595,96 +569,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.0
    */
-  private void topicCreationAlert(NodePK pk, NodePK fatherPK, String alertType) {
+  private void topicCreationAlert(final NodePK nodePK, final NodePK fatherPK, final String alertType) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.topicCreationAlert()",
-            "root.MSG_GEN_ENTER_METHOD");
-    NodeDetail nodeDetail = null;
-    NodeDetail fatherDetail = null;
-    try {
-      nodeDetail = getNodeBm().getHeader(pk);
-      if (fatherPK != null) {
-        fatherDetail = getNodeBm().getHeader(fatherPK);
-      }
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.topicCreationAlert()",
-              ERROR,
-              "kmelia.EX_IMPOSSIBLE_DALERTER_POUR_MANIPULATION_THEME", e);
-    }
-    Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-    ResourceLocator message =
-            new ResourceLocator(
-            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle",
-            DisplayI18NHelper.getDefaultLanguage());
-    String subject = message.getString("kmelia.NewTopic");
-    NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
-            "notificationCreateTopic");
-    for (String lang : DisplayI18NHelper.getLanguages()) {
-      SilverpeasTemplate template = getNewTemplate();
-      templates.put(lang, template);
-      template.setAttribute("path", getHTMLNodePath(nodeDetail.getFatherPK(), lang));
-      template.setAttribute("topic", nodeDetail);
-      template.setAttribute("topicName", nodeDetail.getName(lang));
-      template.setAttribute("topicDescription", nodeDetail.getDescription(lang));
-      template.setAttribute("senderName", "");
-      template.setAttribute("silverpeasURL", getNodeUrl(nodeDetail));
-      ResourceLocator localizedMessage = new ResourceLocator(
-              "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", lang);
-      notifMetaData.addLanguage(lang, localizedMessage.getString("kmelia.NewTopic", subject), "");
-    }
-    notifMetaData.setSender(nodeDetail.getCreatorId());
-    boolean haveRights = nodeDetail.haveRights();
-    int rightsDependOn = nodeDetail.getRightsDependsOn();
-    if (fatherDetail != null) {
-      // Case of creation only
-      haveRights = fatherDetail.haveRights();
-      rightsDependOn = fatherDetail.getRightsDependsOn();
-    }
+        "root.MSG_GEN_ENTER_METHOD");
 
-    if (!haveRights) {
-      if ("All".equals(alertType)) {
-        UserDetail[] users = getOrganizationController().getAllUsers(pk.getInstanceId());
-        for (UserDetail userDetail : users) {
-          notifMetaData.addUserRecipient(new UserRecipient(userDetail));
-        }
-      } else if ("Publisher".equals(alertType)) {
-        // Get the list of all publishers and admin
-        List<String> profileNames = new ArrayList<String>();
-        profileNames.add("admin");
-        profileNames.add("publisher");
-        profileNames.add("writer");
-        String[] users = getOrganizationController().getUsersIdsByRoleNames(pk.getInstanceId(),
-                profileNames);
-        for (String user : users) {
-          notifMetaData.addUserRecipient(new UserRecipient(user));
-        }
-      }
-    } else {
-      List<String> profileNames = new ArrayList<String>();
-      profileNames.add("admin");
-      profileNames.add("publisher");
-      profileNames.add("writer");
+    UserNotificationHelper.buildAndSend(new KmeliaTopicUserNotification(nodePK, fatherPK, alertType));
 
-      if (alertType.equals("All")) {
-        profileNames.add("user");
-        String[] users = getOrganizationController().getUsersIdsByRoleNames(pk.getInstanceId(),
-                String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
-        for (String user : users) {
-          notifMetaData.addUserRecipient(new UserRecipient(user));
-        }
-      } else if (alertType.equals("Publisher")) {
-        String[] users = getOrganizationController().getUsersIdsByRoleNames(pk.getInstanceId(),
-                String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
-        for (String user : users) {
-          notifMetaData.addUserRecipient(new UserRecipient(user));
-        }
-      }
-    }
-    notifMetaData.setLink(getNodeUrl(nodeDetail));
-    notifMetaData.setComponentId(pk.getInstanceId());
-    notifyUsers(notifMetaData, nodeDetail.getCreatorId());
     SilverTrace.info("kmelia", "KmeliaBmEJB.topicCreationAlert()", "root.MSG_GEN_PARAM_VALUE",
-            "AlertType alert = " + alertType);
+        "AlertType alert = " + alertType);
     SilverTrace.info("kmelia", "KmeliaBmEJB.topicCreationAlert()", "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -1081,7 +973,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           allowedNodes.put(allowedNode.getNodePK(), allowedNode);
         }
         
-        countPublisInNode(allowedNodes, root);
+        countPublisInNodes(allowedNodes, root);
       }
       return allowedTree;
     } catch (RemoteException e) {
@@ -1111,19 +1003,61 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
               "kmelia.EX_IMPOSSIBLE_DAVOIR_LE_CONTENU_DE_LA_CORBEILLE", e);
     }
   }
-
-  public int countPublisInNode(Map<NodePK, NodeDetail> allowedNodes, NodeTree currentNode) {
-    int result = currentNode.getNbPublications();
-    for (NodeTree child : currentNode.getChildren()) {
-      if (allowedNodes.containsKey(child.getKey())) {
-        result = result + countPublisInNode(allowedNodes, child);
+  
+  private void countPublisInNodes(Map<NodePK, NodeDetail> allowedNodes, NodeTree tree) {
+    for (NodeDetail node : allowedNodes.values()) {
+      NodeTree nodeTree = findNode(node, tree);
+      if (nodeTree != null) {
+        int nbPublis = countNbPublis(nodeTree);
+        SilverTrace.debug("kmelia", "KmeliaBmEJB.countPublisInNodes", "root.MSG_GEN_PARAM_VALUE",
+            nbPublis + " pubs in node " + node.getNodePK().getId());
+        node.setNbObjects(nbPublis);
       }
     }
-    NodeDetail node = allowedNodes.get(currentNode.getKey());
-    if (node != null) {
-      node.setNbObjects(result);
+  }
+  
+  private NodeTree findNode(NodeDetail node, NodeTree tree) {
+    SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_ENTER_METHOD",
+        "looking for node " + node.getNodePK().getId());
+    String path = node.getFullPath();
+    if (path.length() > 1) {
+      path = path.substring(1, path.length()-1); // remove starting and ending slash
+      SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_PARAM_VALUE", " path = " + path);
+      ArrayList<String> pathItems = new ArrayList<String>(Arrays.asList(path.split("/")));
+      pathItems.remove(0); // remove root
+      NodeTree current = tree;
+      for (String pathItem : pathItems) {
+        if (current != null) {
+          current = findNodeTree(pathItem, current.getChildren());
+        }
+      }
+      SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
+          "node " + current.getKey().getId()+" found");
+      return current;
     }
-    return result;
+    SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
+        "node " + node.getNodePK().getId()+" not found");
+    return null;
+  }
+  
+  private NodeTree findNodeTree(String nodeId, List<NodeTree> children) {
+    for (NodeTree node : children) {
+      if (node.getKey().getId().equals(nodeId)) {
+        return node;
+      }
+    }
+    return null;
+  }
+  
+  private int countNbPublis(NodeTree tree) {
+    SilverTrace.debug("kmelia", "KmeliaBmEJB.countNbPublis", "root.MSG_GEN_ENTER_METHOD",
+        "id = " + tree.getKey().getId());
+    int nb = tree.getNbPublications();
+    // add nb of each descendant
+    for (NodeTree node : tree.getChildren()) {
+      nb += countNbPublis(node);
+    }
+    return nb;
   }
 
   /**
@@ -1600,13 +1534,34 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
   }
   
+  public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to, String userId)
+      throws RemoteException {
+    PublicationDetail pub = getPublicationDetail(pubPK);
+    
+    // check if user can cut publication from source folder
+    String profile = getUserTopicProfile(from, userId);
+    boolean cutAllowed = KmeliaPublicationHelper.isCanBeCut(from.getComponentName(), userId, profile, pub.getCreator());
+    
+    // check if user can paste publication into target folder
+    String profileInTarget = getUserTopicProfile(to, userId);
+    boolean pasteAllowed = KmeliaPublicationHelper.isCreationAllowed(to, profileInTarget);
+    
+    if (cutAllowed && pasteAllowed) {
+      movePublicationInSameApplication(pub, to, userId);
+    }
+  }
+  
   public void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId)
       throws RemoteException {
-    // update parent
-    getPublicationBm().removeAllFather(pub.getPK());
-    getPublicationBm().addFather(pub.getPK(), to);
-    
-    processPublicationAfterMove(pub, to, userId);
+    if (to.isTrash()) {
+      sendPublicationToBasket(pub.getPK());
+    } else {
+      // update parent
+      getPublicationBm().removeAllFather(pub.getPK());
+      getPublicationBm().addFather(pub.getPK(), to);
+      
+      processPublicationAfterMove(pub, to, userId);
+    }
   }
   
   public void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId)
@@ -2026,83 +1981,25 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   private void sendSubscriptionsNotification(NodePK fatherPK,
-          PublicationDetail pubDetail, boolean update) {
+      PublicationDetail pubDetail, boolean update) {
+    
     // send email alerts
     try {
-      Collection<NodeDetail> path = null;
-      if (!"kmax".equals(pubDetail.getInstanceId())) {
-        try {
-          path = getNodeBm().getPath(fatherPK);
-        } catch (RemoteException re) {
-          throw new KmeliaRuntimeException("KmeliaBmEJB.sendSubscriptionsNotification()", ERROR,
-                  "kmelia.EX_IMPOSSIBLE_DE_PLACER_LA_PUBLICATION_DANS_LE_THEME", re);
-        }
+
+      // Computing the action
+      final NotifAction action;
+      if (update) {
+        action = NotifAction.UPDATE;
+      } else {
+        action = NotifAction.CREATE;
       }
 
-      // build a Collection of nodePK which are the ascendants of fatherPK
-      Set<String> subscriberIds = new HashSet<String>();
-      if (path != null) {
-        for (NodeDetail descendant : path) {
-          subscriberIds.addAll(getSubscribeBm().getSubscribers(descendant.getNodePK()));
-        }
-      }
-      OrganizationController orgaController = getOrganizationController();
-      if (subscriberIds != null && !subscriberIds.isEmpty()) {
-        // get only subscribers who have sufficient rights to read pubDetail
-        NodeDetail node = getNodeHeader(fatherPK);
-        List<String> newSubscribers = new ArrayList<String>(subscriberIds.size());
-        for (String userId : subscriberIds) {
-          if (orgaController.isComponentAvailable(fatherPK.getInstanceId(), userId)) {
-            if (!node.haveRights() || orgaController.isObjectAvailable(node.getRightsDependsOn(),
-                    ObjectType.NODE, fatherPK.getInstanceId(), userId)) {
-              newSubscribers.add(userId);
-            }
-          }
-        }
+      // Building and sending the notification
+      UserNotificationHelper.buildAndSend(new KmeliaSubscriptionPublicationUserNotification(fatherPK, pubDetail, action));
 
-        if (!newSubscribers.isEmpty()) {
-          Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-          ResourceLocator message = new ResourceLocator(
-                  "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", DisplayI18NHelper.
-                  getDefaultLanguage());
-          String subject = message.getString("Subscription");
-          String fileName = "notificationSubscriptionCreate";
-          if (update) {
-            fileName = "notificationSubscriptionUpdate";
-          }
-          NotificationMetaData notifMetaData = new NotificationMetaData(
-                  NotificationParameters.NORMAL, subject, templates, fileName);
-          for (String lang : DisplayI18NHelper.getLanguages()) {
-            SilverpeasTemplate template = getNewTemplate();
-            templates.put(lang, template);
-            template.setAttribute("path", getHTMLNodePath(fatherPK, lang));
-            template.setAttribute("publication", pubDetail);
-            template.setAttribute("publicationName", pubDetail.getName(lang));
-            template.setAttribute("publicationDesc", pubDetail.getDescription(lang));
-            template.setAttribute("publicationKeywords", pubDetail.getKeywords(lang));
-            template.setAttribute("senderName", "");
-            template.setAttribute("silverpeasURL", getPublicationUrl(pubDetail));
-            ResourceLocator localizedMessage = new ResourceLocator(
-                    "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", lang);
-            notifMetaData.addLanguage(lang, localizedMessage.getString("Subscription", subject), "");
-          }
-          for (String subscriberId : newSubscribers) {
-            notifMetaData.addUserRecipient(new UserRecipient(subscriberId));
-          }
-          notifMetaData.setLink(getPublicationUrl(pubDetail));
-          notifMetaData.setComponentId(fatherPK.getInstanceId());
-          String senderId = "";
-          if (update) {
-            senderId = pubDetail.getUpdaterId();
-          } else {
-            senderId = pubDetail.getCreatorId();
-          }
-          notifyUsers(notifMetaData, senderId);
-        }
-      }
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "KmeliaBmEJB.sendSubscriptionsNotification()",
-              "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = "
+          "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = "
               + fatherPK.getId() + ", pubId = " + pubDetail.getPK().getId(), e);
     }
   }
@@ -2339,7 +2236,19 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           boolean isTreeStructureUsed, String userId, boolean isRightsOnTopicsUsed) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFather()",
             "root.MSG_GEN_ENTER_METHOD");
-    TopicDetail fatherDetail = null;
+    // fetch one of the publication fathers
+    NodePK fatherPK = getPublicationFatherPK(pubPK, isTreeStructureUsed, userId, isRightsOnTopicsUsed);
+    String profile = KmeliaHelper.getProfile(getOrganizationController().getUserProfiles(userId,
+            pubPK.getInstanceId()));
+    TopicDetail fatherDetail = goTo(fatherPK, userId, isTreeStructureUsed, profile, isRightsOnTopicsUsed);
+    SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFather()", "root.MSG_GEN_EXIT_METHOD");
+    return fatherDetail;
+  }
+  
+  public NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed,
+      String userId, boolean isRightsOnTopicsUsed) {
+    SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFatherId()",
+        "root.MSG_GEN_ENTER_METHOD");
     // fetch one of the publication fathers
     Collection<NodePK> fathers = getPublicationFathers(pubPK);
     NodePK fatherPK = new NodePK("0", pubPK); // By default --> Root
@@ -2355,7 +2264,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           fatherPK = it.next();
           NodeDetail father = getNodeHeader(fatherPK);
           if (!father.haveRights() || getOrganizationController().isObjectAvailable(
-                  father.getRightsDependsOn(), ObjectType.NODE, fatherPK.getInstanceId(), userId)) {
+              father.getRightsDependsOn(), ObjectType.NODE, fatherPK.getInstanceId(), userId)) {
             allowedFather = father;
           }
         }
@@ -2364,11 +2273,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         }
       }
     }
-    String profile = KmeliaHelper.getProfile(getOrganizationController().getUserProfiles(userId,
-            pubPK.getInstanceId()));
-    fatherDetail = goTo(fatherPK, userId, isTreeStructureUsed, profile, isRightsOnTopicsUsed);
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFather()", "root.MSG_GEN_EXIT_METHOD");
-    return fatherDetail;
+    return fatherPK;
   }
 
   @Override
@@ -2516,11 +2421,22 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   public List<KmeliaPublication> getPublicationsToValidate(String componentId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
             "root.MSG_GEN_ENTER_METHOD");
-    Collection<PublicationDetail> publications = null;
+    Collection<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     PublicationPK pubPK = new PublicationPK("useless", componentId);
     try {
-      publications =
+      Collection<PublicationDetail> temp =
               getPublicationBm().getPublicationsByStatus(PublicationDetail.TO_VALIDATE, pubPK);
+      // retrieve original publications according to clones
+      for (PublicationDetail publi : temp) {
+        boolean isClone = PublicationDetail.TO_VALIDATE.equals(publi.getStatus()) && !"-1".equals(publi.getCloneId());
+        if (isClone) {
+          // publication is a clone, get original one
+          publications.add(getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK())));
+        } else {
+          // publication is not a clone, return it
+          publications.add(publi);
+        }
+      }
     } catch (Exception e) {
       throw new KmeliaRuntimeException(
               "KmeliaBmEJB.getPublicationsToValidate()", ERROR,
@@ -2531,146 +2447,42 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return pubDetails2userPubs(publications);
   }
 
-  private void sendValidationNotification(NodePK fatherPK,
-          PublicationDetail pubDetail, String refusalMotive, String userIdWhoRefuse) {
-    String userId = pubDetail.getUpdaterId();
-    if (!isDefined(userId)) {
-      userId = pubDetail.getCreatorId();
-    }
+  private void sendValidationNotification(final NodePK fatherPK, final PublicationDetail pubDetail,
+      final String refusalMotive, final String userIdWhoRefuse) {
 
     try {
-      if (userId != null) {
-        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        ResourceLocator message = new ResourceLocator(
-                "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle",
-                DisplayI18NHelper.getDefaultLanguage());
-        String fileName = "notificationRefused";
-        String subject = message.getString("PublicationRefused");
-        if (!isDefined(refusalMotive)) {
-          fileName = "notificationValidation";
-          subject = message.getString("PublicationValidated");
-        }
-        NotificationMetaData notifMetaData =
-                new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, fileName);
-        for (String lang : DisplayI18NHelper.getLanguages()) {
-          SilverpeasTemplate template = getNewTemplate();
-          templates.put(lang, template);
-          template.setAttribute("path", getHTMLNodePath(fatherPK, lang));
-          template.setAttribute("publication", pubDetail);
-          template.setAttribute("publicationName", pubDetail.getName(lang));
-          template.setAttribute("publicationDesc", pubDetail.getDescription(lang));
-          template.setAttribute("publicationKeywords", pubDetail.getKeywords(lang));
-          template.setAttribute("senderName", "");
-          template.setAttribute("silverpeasURL", getPublicationUrl(pubDetail));
-          template.setAttribute("refusalMotive", refusalMotive);
-          ResourceLocator localizedMessage = new ResourceLocator(
-                  "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", lang);
-          subject = localizedMessage.getString("PublicationRefused");
-          if (!isDefined(refusalMotive)) {
-            subject = message.getString("PublicationValidated");
-          }
-          notifMetaData.addLanguage(lang, subject, "");
-        }
-        notifMetaData.addUserRecipient(new UserRecipient(userId));
-        notifMetaData.setLink(getPublicationUrl(pubDetail));
-        notifMetaData.setComponentId(pubDetail.getPK().getInstanceId());
-        notifyUsers(notifMetaData, userIdWhoRefuse);
-      }
+
+      UserNotificationHelper.buildAndSend(new KmeliaValidationPublicationUserNotification(fatherPK, pubDetail, refusalMotive,
+          userIdWhoRefuse));
+
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "KmeliaBmEJB.sendValidationNotification()",
-              "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = "
+          "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = "
               + fatherPK.getId() + ", pubPK = " + pubDetail.getPK(), e);
     }
   }
 
-  /**
-   * @param nodePK
-   * @return a String like Space1 > SubSpace > Component2 > Topic1 > Topic2
-   */
-  private String getHTMLNodePath(NodePK nodePK, String language) {
-    // get the path of the topic where the publication is classified
-    String htmlPath = "";
-    if (nodePK != null) {
-      try {
-        List<NodeDetail> path = (List<NodeDetail>) getNodeBm().getPath(nodePK);
-        if (path.size() > 0) {
-          // remove root topic "Accueil"
-          path.remove(path.size() - 1);
-        }
-        htmlPath = getSpacesPath(nodePK.getInstanceId(), language)
-                + getComponentLabel(nodePK.getInstanceId(), language);
-        if (!path.isEmpty()) {
-          htmlPath += " > " + displayPath(path, 10, language);
-        }
-      } catch (RemoteException re) {
-        throw new KmeliaRuntimeException("KmeliaBmEJB.getHTMLNodePath()", ERROR,
-                "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_EMPLACEMENTS_DE_LA_PUBLICATION",
-                re);
-      }
-    }
-    return htmlPath;
-  }
-
-  private String getSpacesPath(String componentId, String language) {
-    String spacesPath = "";
-    List<SpaceInst> spaces = getOrganizationController().getSpacePathToComponent(
-            componentId);
-    Iterator<SpaceInst> iSpaces = spaces.iterator();
-    SpaceInst spaceInst = null;
-    while (iSpaces.hasNext()) {
-      spaceInst = iSpaces.next();
-      spacesPath += spaceInst.getName(language);
-      spacesPath += " > ";
-    }
-    return spacesPath;
-  }
-
-  private void sendAlertToSupervisors(NodePK fatherPK, PublicationDetail pubDetail) {
+  private void sendAlertToSupervisors(final NodePK fatherPK, final PublicationDetail pubDetail) {
     if (pubDetail.isValid()) {
       try {
 
-        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        ResourceLocator message = new ResourceLocator(
-                "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle",
-                DisplayI18NHelper.getDefaultLanguage());
+        UserNotificationHelper.buildAndSend(new KmeliaSupervisorPublicationUserNotification(fatherPK, pubDetail));
 
-        String subject = message.getString("kmelia.SupervisorNotifSubject");
-
-        NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-                subject, templates, "notificationSupervisor");
-        for (String lang : DisplayI18NHelper.getLanguages()) {
-          SilverpeasTemplate template = getNewTemplate();
-          templates.put(lang, template);
-          template.setAttribute("path", getHTMLNodePath(fatherPK, lang));
-          template.setAttribute("publication", pubDetail);
-          template.setAttribute("publicationName", pubDetail.getName(lang));
-          template.setAttribute("publicationDesc", pubDetail.getDescription(lang));
-          template.setAttribute("publicationKeywords", pubDetail.getKeywords(lang));
-          template.setAttribute("senderName", "");
-          template.setAttribute("silverpeasURL", getPublicationUrl(pubDetail));
-          ResourceLocator localizedMessage = new ResourceLocator(
-                  "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", lang);
-          notifMetaData.addLanguage(lang, localizedMessage.getString(
-                  "kmelia.SupervisorNotifSubject", subject), "");
-        }
-        notifMetaData.setSender(pubDetail.getUpdaterId());
-        List<String> roles = new ArrayList<String>();
-        roles.add("supervisor");
-        String[] supervisors = getOrganizationController().getUsersIdsByRoleNames(pubDetail.getPK().
-                getInstanceId(), roles);
-        SilverTrace.debug("kmelia", "KmeliaBmEJB.alertSupervisors()",
-                "root.MSG_GEN_PARAM_VALUE", supervisors.length + " users in role supervisor !");
-        for (String supervisorId : supervisors) {
-          notifMetaData.addUserRecipient(new UserRecipient(supervisorId));
-        }
-        notifMetaData.setLink(getPublicationUrl(pubDetail));
-        notifMetaData.setComponentId(pubDetail.getPK().getInstanceId());
-        notifyUsers(notifMetaData, pubDetail.getUpdaterId());
       } catch (Exception e) {
         SilverTrace.warn("kmelia", "KmeliaBmEJB.alertSupervisors()",
-                "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = "
+            "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = "
                 + fatherPK.getId() + ", pubPK = " + pubDetail.getPK(), e);
       }
+    }
+  }
+  
+  private int getValidationType(String instanceId) {
+    String sParam =
+        getOrganizationController().getComponentParameterValue(instanceId, "targetValidation");
+    if (isDefined(sParam)) {
+      return Integer.parseInt(sParam);
+    } else {
+      return KmeliaHelper.VALIDATION_CLASSIC;
     }
   }
 
@@ -2681,13 +2493,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId()
             + ", validationType = " + validationType);
     if (validationType == -1) {
-      String sParam = getOrganizationController().getComponentParameterValue(
-              pubPK.getInstanceId(), "targetValidation");
-      if (isDefined(sParam)) {
-        validationType = Integer.parseInt(sParam);
-      } else {
-        validationType = KmeliaHelper.VALIDATION_CLASSIC;
-      }
+      validationType = getValidationType(pubPK.getInstanceId());
     }
     SilverTrace.debug("kmelia", "KmeliaBmEJB.getAllValidators",
             "root.MSG_GEN_PARAM_VALUE", "validationType = " + validationType);
@@ -2744,8 +2550,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return allValidators;
   }
 
-  private boolean isValidationComplete(PublicationPK pubPK, int validationType)
-          throws RemoteException {
+  private boolean isValidationComplete(PublicationPK pubPK, List<String> allValidators,
+      int validationType) throws RemoteException {
     List<ValidationStep> steps = getPublicationBm().getValidationSteps(pubPK);
 
     // get users who have already validate
@@ -2753,9 +2559,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     for (ValidationStep step : steps) {
       stepUserIds.add(step.getUserId());
     }
-
-    // get all users who have to validate
-    List<String> allValidators = getAllValidators(pubPK, validationType);
 
     // check if all users have validate
     boolean validationOK = true;
@@ -2774,36 +2577,39 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
     boolean validationComplete = false;
     try {
-      if (force) { /* remove all todos attached to that publication */
-        removeAllTodosForPublication(pubPK);
-
+      if (force) {
         validationComplete = true;
       } else {
-        ValidationStep validation = null;
         switch (validationType) {
           case KmeliaHelper.VALIDATION_CLASSIC:
           case KmeliaHelper.VALIDATION_TARGET_1:
-            /* remove all todos attached to that publication */
-            removeAllTodosForPublication(pubPK);
             validationComplete = true;
             break;
-
           case KmeliaHelper.VALIDATION_COLLEGIATE:
           case KmeliaHelper.VALIDATION_TARGET_N:
-            // remove todo to this user. Job is done !
-            removeTodoForPublication(pubPK, userId);
-            // save his decision
-            validation = new ValidationStep(pubPK, userId, PublicationDetail.VALID);
-            getPublicationBm().addValidationStep(validation);
-            // check if all validators have give their decision
-            validationComplete = isValidationComplete(pubPK, validationType);
-            if (validationComplete) {
-              removeAllTodosForPublication(pubPK);
+            // get all users who have to validate
+            List<String> allValidators = getAllValidators(pubPK, validationType);
+            if (allValidators.size() == 1) {
+              // special case : only once user is concerned by validation
+              validationComplete = true;
+            } else if (allValidators.size() > 1) {
+              // remove todo for this user. His job is done !
+              removeTodoForPublication(pubPK, userId);
+              // save his decision
+              ValidationStep validation =
+                  new ValidationStep(pubPK, userId, PublicationDetail.VALID);
+              getPublicationBm().addValidationStep(validation);
+              // check if all validators have give their decision
+              validationComplete = isValidationComplete(pubPK, allValidators, validationType);
             }
         }
       }
 
       if (validationComplete) {
+        
+        /* remove all todos attached to that publication */
+        removeAllTodosForPublication(pubPK);
+        
         CompletePublication currentPub = getPublicationBm().getCompletePublication(pubPK);
         PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
 
@@ -3105,48 +2911,16 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private void sendDefermentNotification(PublicationDetail pubDetail,
-          String defermentMotive, String senderId) {
-    String userId = pubDetail.getUpdaterId();
-    if (!isDefined(userId)) {
-      userId = pubDetail.getCreatorId();
-    }
+  private void sendDefermentNotification(final PublicationDetail pubDetail, final String defermentMotive,
+      final String senderId) {
 
     try {
-      if (userId != null) {
-        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        ResourceLocator message = new ResourceLocator(
-                "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle",
-                DisplayI18NHelper.getDefaultLanguage());
-        String subject = message.getString("kmelia.PublicationSuspended");
 
-        NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-                subject, templates, "notification");
-        for (String lang : DisplayI18NHelper.getLanguages()) {
-          SilverpeasTemplate template = getNewTemplate();
-          templates.put(lang, template);
-          template.setAttribute("path", "");
-          template.setAttribute("publication", pubDetail);
-          template.setAttribute("publicationName", pubDetail.getName(lang));
-          template.setAttribute("publicationDesc", pubDetail.getDescription(lang));
-          template.setAttribute("publicationKeywords", pubDetail.getKeywords(lang));
-          template.setAttribute("senderName", "");
-          template.setAttribute("silverpeasURL", getPublicationUrl(pubDetail));
-          template.setAttribute("refusalMotive", defermentMotive);
-          ResourceLocator localizedMessage = new ResourceLocator(
-                  "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", lang);
-          notifMetaData.addLanguage(lang, localizedMessage.getString("kmelia.PublicationSuspended",
-                  subject), "");
-        }
+      UserNotificationHelper.buildAndSend(new KmeliaDefermentPublicationUserNotification(pubDetail, defermentMotive));
 
-        notifMetaData.setSender(userId);
-        notifMetaData.setLink(getPublicationUrl(pubDetail));
-        notifMetaData.setComponentId(pubDetail.getPK().getInstanceId());
-        notifyUsers(notifMetaData, senderId);
-      }
     } catch (Exception e) {
       SilverTrace.warn("kmelia", "KmeliaBmEJB.sendDefermentNotification()",
-              "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "pubPK = "
+          "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "pubPK = "
               + pubDetail.getPK(), e);
     }
   }
@@ -3304,38 +3078,19 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   @Override
   public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
-          NodePK topicPK, String senderName) {
+      NodePK topicPK, String senderName) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData()",
-            "root.MSG_GEN_ENTER_METHOD");
-    PublicationDetail pubDetail = getPublicationDetail(pubPK);
+        "root.MSG_GEN_ENTER_METHOD");
 
-    Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-    ResourceLocator message = new ResourceLocator(
-            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle",
-            DisplayI18NHelper.getDefaultLanguage());
-    String subject = message.getString("Alert");
+    final PublicationDetail pubDetail = getPublicationDetail(pubPK);
 
-    NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
-            "notification");
-    for (String lang : DisplayI18NHelper.getLanguages()) {
-      SilverpeasTemplate template = getNewTemplate();
-      templates.put(lang, template);
-      template.setAttribute("path", getHTMLNodePath(topicPK, lang));
-      template.setAttribute("publication", pubDetail);
-      template.setAttribute("publicationName", pubDetail.getName(lang));
-      template.setAttribute("publicationDesc", pubDetail.getDescription(lang));
-      template.setAttribute("publicationKeywords", pubDetail.getKeywords(lang));
-      template.setAttribute("senderName", senderName);
-      template.setAttribute("silverpeasURL", getPublicationUrl(pubDetail));
-      ResourceLocator localizedMessage = new ResourceLocator(
-              "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", lang);
-      notifMetaData.addLanguage(lang, localizedMessage.getString("Alert", subject), "");
-    }
-    notifMetaData.setLink(getPublicationUrl(pubDetail));
-    notifMetaData.setComponentId(pubPK.getInstanceId());
+    final NotificationMetaData notifMetaData =
+        UserNotificationHelper.build(new KmeliaSubscriptionPublicationUserNotification(topicPK, pubDetail, NotifAction.REPORT,
+            senderName));
+
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData()",
-            "root.MSG_GEN_EXIT_METHOD");
+        "root.MSG_GEN_EXIT_METHOD");
+
     return notifMetaData;
   }
 
@@ -3351,38 +3106,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           AttachmentPK attachmentPk, NodePK topicPK, String senderName) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(attachment)",
             "root.MSG_GEN_ENTER_METHOD");
-    PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    NotificationMetaData notifMetaData = getAlertNotificationMetaData(pubPK, topicPK, senderName);
+    
+    final PublicationDetail pubDetail = getPublicationDetail(pubPK);
+    final AttachmentDetail attachmentDetail = AttachmentController.searchAttachmentByPK(attachmentPk);
 
-    ResourceLocator message = new ResourceLocator(
-            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", DisplayI18NHelper.
-            getDefaultLanguage());
-    String subject = message.getString("AlertAttachment");
-    notifMetaData.setTitle(subject);
-    notifMetaData.setFileName("notificationAttachment");
-
-    AttachmentDetail attachmentDetail = AttachmentController.searchAttachmentByPK(attachmentPk);
-    Map<String, SilverpeasTemplate> templates = notifMetaData.getTemplates();
-    SilverpeasTemplate template;
-    for (String lang : DisplayI18NHelper.getLanguages()) {
-      template = templates.get(lang);
-      template.setAttribute("attachmentFileName", attachmentDetail.getLogicalName(lang));
-      if (isDefined(attachmentDetail.getTitle(lang))) {
-        template.setAttribute("attachmentTitle", attachmentDetail.getTitle(lang));
-      }
-      if (isDefined(attachmentDetail.getInfo(lang))) {
-        template.setAttribute("attachmentDesc", attachmentDetail.getInfo(lang));
-      }
-      template.setAttribute("attachmentCreationDate", DateUtil.getOutputDate(attachmentDetail.
-              getCreationDate(), lang));
-      template.setAttribute("attachmentSize", attachmentDetail.getAttachmentFileSize(lang));
-      UserDetail authorDetail = getOrganizationController().getUserDetail(
-              attachmentDetail.getAuthor());
-      template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " " + authorDetail.
-              getLastName());
-      template.setAttribute("silverpeasURL", getAttachmentUrl(pubDetail, attachmentDetail));
-    }
-    notifMetaData.setLink(getAttachmentUrl(pubDetail, attachmentDetail));
+    final NotificationMetaData notifMetaData =
+        UserNotificationHelper.build(new KmeliaAttachmentSubscriptionPublicationUserNotification(topicPK, pubDetail,
+            attachmentDetail, senderName));
+    
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(attachment)",
             "root.MSG_GEN_EXIT_METHOD");
     return notifMetaData;
@@ -3401,44 +3132,16 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           DocumentPK documentPk, NodePK topicPK, String senderName) throws RemoteException {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(document)",
             "root.MSG_GEN_ENTER_METHOD");
-    PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    NotificationMetaData notifMetaData = getAlertNotificationMetaData(pubPK, topicPK, senderName);
+    
+    final PublicationDetail pubDetail = getPublicationDetail(pubPK);
+    final VersioningUtil versioningUtil = new VersioningUtil();
+    final Document document = versioningUtil.getDocument(documentPk);
+    final DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(documentPk);
 
-    ResourceLocator message = new ResourceLocator(
-            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle",
-            DisplayI18NHelper.getDefaultLanguage());
-    String subject = message.getString("AlertDocument");
-    notifMetaData.setTitle(subject);
-    notifMetaData.setFileName("notificationAttachment");
+    final NotificationMetaData notifMetaData =
+        UserNotificationHelper.build(new KmeliaDocumentSubscriptionPublicationUserNotification(topicPK, pubDetail,
+            document, documentVersion, senderName));
 
-    VersioningUtil versioningUtil = new VersioningUtil();
-    Document document = versioningUtil.getDocument(documentPk);
-    DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(documentPk);
-
-    Map<String, SilverpeasTemplate> templates = notifMetaData.getTemplates();
-    SilverpeasTemplate template;
-    for (String lang : DisplayI18NHelper.getLanguages()) {
-      template = templates.get(lang);
-      template.setAttribute("attachmentFileName", documentVersion.getLogicalName());
-      if (isDefined(document.getName())) {
-        template.setAttribute("attachmentTitle", document.getName());
-      }
-      if (isDefined(document.getDescription())) {
-        template.setAttribute("attachmentDesc", document.getDescription());
-      }
-      template.setAttribute("attachmentCreationDate", DateUtil.getOutputDate(documentVersion.
-              getCreationDate(), lang));
-      template.setAttribute("attachmentSize", documentVersion.getDisplaySize());
-      UserDetail authorDetail =
-              getOrganizationController().getUserDetail(Integer.toString(
-              documentVersion.getAuthorId()));
-      template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " " + authorDetail.
-              getLastName());
-      template.setAttribute("attachmentMajorNumber", documentVersion.getMajorNumber());
-      template.setAttribute("attachmentMinorNumber", documentVersion.getMinorNumber());
-      template.setAttribute("silverpeasURL", getDocumentUrl(pubDetail, document));
-    }
-    notifMetaData.setLink(getDocumentUrl(pubDetail, document));
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(document)",
             "root.MSG_GEN_EXIT_METHOD");
     return notifMetaData;
@@ -3555,7 +3258,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
     if (pubDetail.isValidationRequired()
             || PublicationDetail.TO_VALIDATE.equalsIgnoreCase(pubDetail.getCloneStatus())) {
-      List<String> validators = getAllValidators(pubDetail.getPK(), -1);
+      int validationType = getValidationType(pubDetail.getPK().getInstanceId());
+      if (validationType == KmeliaHelper.VALIDATION_TARGET_N ||
+          validationType == KmeliaHelper.VALIDATION_COLLEGIATE) {
+        // removing potential older validation decision
+        getPublicationBm().removeValidationSteps(pubDetail.getPK());
+      }
+      List<String> validators = getAllValidators(pubDetail.getPK(), validationType);
       String[] users = validators.toArray(new String[validators.size()]);
       // For each publisher create a todo
       addTodo(pubDetail, users);
@@ -3614,94 +3323,17 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     todoBBA.removeAttendeeToEntryFromExternal(pubPK.getInstanceId(), pubPK.getId(), userId);
   }
 
-  private void sendValidationAlert(PublicationDetail pubDetail, String[] users) {
-    String userId = pubDetail.getUpdaterId();
-    if (!isDefined(userId)) {
-      userId = pubDetail.getCreatorId();
-    }
-
-    if (userId != null) {
-      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-      ResourceLocator message = new ResourceLocator(
-              "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle",
-              DisplayI18NHelper.getDefaultLanguage());
-      String subject = message.getString("ToValidateForNotif");
-
-      NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-              subject, templates, "notificationToValidate");
-      for (String lang : DisplayI18NHelper.getLanguages()) {
-        SilverpeasTemplate template = getNewTemplate();
-        templates.put(lang, template);
-        template.setAttribute("path", "");
-        template.setAttribute("publication", pubDetail);
-        template.setAttribute("publicationName", pubDetail.getName(lang));
-        template.setAttribute("publicationDesc", pubDetail.getDescription(lang));
-        template.setAttribute("publicationKeywords", pubDetail.getKeywords(lang));
-        template.setAttribute("senderName", userId);
-        template.setAttribute("silverpeasURL", getPublicationUrl(pubDetail));
-        ResourceLocator localizedMessage = new ResourceLocator(
-                "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", lang);
-        notifMetaData.addLanguage(lang, localizedMessage.getString("ToValidateForNotif", subject),
-                "");
-      }
-      notifMetaData.setSender(userId);
-      for (String user : users) {
-        notifMetaData.addUserRecipient(new UserRecipient(user));
-      }
-      notifMetaData.setLink(getPublicationUrl(pubDetail));
-      notifMetaData.setComponentId(pubDetail.getPK().getInstanceId());
-      notifyUsers(notifMetaData, pubDetail.getUpdaterId());
-    }
+  private void sendValidationAlert(final PublicationDetail pubDetail, final String[] users) {
+    UserNotificationHelper.buildAndSend(new KmeliaPendingValidationPublicationUserNotification(pubDetail, users));
   }
 
-  private void sendModificationAlert(int modificationScope,
-          PublicationDetail pubDetail) {
-    String userId = pubDetail.getUpdaterId();
-    if (!isDefined(userId)) {
-      userId = pubDetail.getCreatorId();
-    }
-    if (isDefined(userId)) {
-      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-      ResourceLocator message =
-              new ResourceLocator(
-              "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle",
-              DisplayI18NHelper.getDefaultLanguage());
-      String subject = message.getString("kmelia.PublicationModified");
-      String fileName = "notificationUpdateContent";
-      if (modificationScope == KmeliaHelper.PUBLICATION_HEADER) {
-        fileName = "notificationUpdateHeader";
-      }
-
-      NotificationMetaData notifMetaData =
-              new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
-              fileName);
-      for (String lang : DisplayI18NHelper.getLanguages()) {
-        SilverpeasTemplate template = getNewTemplate();
-        templates.put(lang, template);
-        template.setAttribute("path", "");
-        template.setAttribute("publication", pubDetail);
-        template.setAttribute("publicationName", pubDetail.getName(lang));
-        template.setAttribute("publicationDesc", pubDetail.getDescription(lang));
-        template.setAttribute("publicationKeywords", pubDetail.getKeywords(lang));
-        template.setAttribute("senderName", userId);
-        template.setAttribute("silverpeasURL", getPublicationUrl(pubDetail));
-        ResourceLocator localizedMessage = new ResourceLocator(
-                "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", lang);
-        notifMetaData.addLanguage(lang, localizedMessage.getString("kmelia.PublicationModified",
-                subject), "");
-      }
-      notifMetaData.setSender(userId);
-      notifMetaData.addUserRecipient(new UserRecipient(userId));
-      notifMetaData.setLink(getPublicationUrl(pubDetail));
-      notifMetaData.setComponentId(pubDetail.getPK().getInstanceId());
-      notifyUsers(notifMetaData, userId);
-    }
+  private void sendModificationAlert(final int modificationScope, final PublicationDetail pubDetail) {
+    UserNotificationHelper.buildAndSend(new KmeliaModificationPublicationUserNotification(pubDetail, modificationScope));
   }
 
   @Override
   public void sendModificationAlert(int modificationScope, PublicationPK pubPK) {
-    PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    sendModificationAlert(modificationScope, pubDetail);
+    sendModificationAlert(modificationScope, getPublicationDetail(pubPK));
   }
 
   @Override
@@ -3779,23 +3411,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return new KmeliaContentManager();
   }
 
-  private String getPublicationUrl(PublicationDetail pubDetail) {
-    return KmeliaHelper.getPublicationUrl(pubDetail);
-  }
-
-  private String getNodeUrl(NodeDetail nodeDetail) {
-    return KmeliaHelper.getNodeUrl(nodeDetail);
-  }
-
-  private String getAttachmentUrl(PublicationDetail pubDetail, AttachmentDetail attDetail) {
-    return KmeliaHelper.getAttachmentUrl(pubDetail,
-            attDetail);
-  }
-
-  private String getDocumentUrl(PublicationDetail pubDetail, Document document) {
-    return KmeliaHelper.getDocumentUrl(pubDetail, document);
-  }
-
   @Override
   public Collection<AttachmentDetail> getAttachments(PublicationPK pubPK) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAttachments()", "root.MSG_GEN_ENTER_METHOD",
@@ -3854,7 +3469,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
       try {
         // index comments
-        getCommentService().indexAllCommentsOnPublication(pubDetail.getPK());
+        getCommentService().indexAllCommentsOnPublication(pubDetail.getContributionType(),
+            pubDetail.getPK());
       } catch (Exception e) {
         SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
                 "Indexing comments failed", "pubPK = " + pubDetail.getPK().toString(), e);
@@ -3877,7 +3493,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     try {
       // index comments
-      getCommentService().unindexAllCommentsOnPublication(pubPK);
+      getCommentService().unindexAllCommentsOnPublication(PublicationDetail.getResourceType(),
+          pubPK);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
               "Indexing comments failed", "pubPK = " + pubPK.toString(), e);
@@ -3898,7 +3515,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     // remove comments
     try {
-      getCommentService().deleteAllCommentsOnPublication(pubPK);
+      getCommentService()
+          .deleteAllCommentsOnPublication(PublicationDetail.getResourceType(), pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.removeExternalElementsOfPublications()",
               ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_COMMENTAIRES", e);
@@ -4524,7 +4142,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   @Override
-  public void deleteCoordinates(CoordinatePK coordinatePK, ArrayList coordinates) {
+  public void deleteCoordinates(CoordinatePK coordinatePK, ArrayList<?> coordinates) {
     try {
       getCoordinatesBm().deleteCoordinates(coordinatePK, coordinates);
     } catch (Exception e) {
@@ -4547,7 +4165,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // remove coordinate
       List<String> coordinateIds = new ArrayList<String>();
       coordinateIds.add(combinationId);
-      getCoordinatesBm().deleteCoordinates(coordinatePK, (ArrayList) coordinateIds);
+      getCoordinatesBm().deleteCoordinates(coordinatePK, (ArrayList<?>) coordinateIds);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEjb.deletePublicationFromCombination()", ERROR,
               "kmax.EX_IMPOSSIBLE_DE_SUPPRIMER_LA_COMBINAISON_DE_LA_PUBLICATION", e);
@@ -4915,18 +4533,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return publicationImport.getPublicationId(xmlFormName, fieldName, fieldValue);
   }
 
-  protected SilverpeasTemplate getNewTemplate() {
-    ResourceLocator rs =
-            new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString(
-            "templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString(
-            "customersTemplatePath"));
-
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
-  }
-
   @Override
   public void doAutomaticDraftOut() {
     // get all clones with draftoutdate <= current date
@@ -5104,5 +4710,309 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       commentService = CommentServiceFactory.getFactory().getCommentService();
     }
     return commentService;
+  }
+  
+  private ResourceLocator getMultilang() {
+    return new ResourceLocator("org.silverpeas.kmelia.multilang.kmeliaBundle", "fr");
+  }
+  
+  public NodeDetail getRoot(String componentId, String userId) throws RemoteException {
+    return getRoot(componentId, userId, null);
+  }
+  
+  private NodeDetail getRoot(String componentId, String userId, List<NodeDetail> treeview)
+      throws RemoteException {
+    NodePK rootPK = new NodePK(NodePK.ROOT_NODE_ID, componentId);
+    NodeDetail root = getNodeBm().getDetail(rootPK);
+    setRole(root, userId);
+    root.setChildrenDetails(getRootChildren(root, userId, treeview));
+    return root;
+  }
+  
+  private List<NodeDetail> getRootChildren(NodeDetail root, String userId, List<NodeDetail> treeview) {
+    String instanceId = root.getNodePK().getInstanceId();
+    List<NodeDetail> children = new ArrayList<NodeDetail>();
+    try {
+      setAllowedSubfolders(root, userId);
+      List<NodeDetail> nodes = (List<NodeDetail>) root.getChildrenDetails();
+
+      // set nb objects in nodes
+      setNbItemsOfSubfolders(root, treeview, userId);
+
+      NodeDetail trash = null;
+      for (NodeDetail node : nodes) {
+        if (node.getNodePK().isTrash()) {
+          trash = node;
+        } else if (node.getNodePK().isUnclassed()) {
+          // do not return it cause it is useless
+        } else {
+          children.add(node);
+        }
+      }
+
+      // adding special folder "to validate"
+      if (isUserCanValidate(instanceId, userId)) {
+        NodeDetail temp = new NodeDetail();
+        temp.getNodePK().setId("tovalidate");
+        temp.setName(getMultilang().getString("ToValidateShort"));
+        if (isNbItemsDisplayed(instanceId)) {
+          int nbPublisToValidate = getPublicationsToValidate(instanceId).size();
+          temp.setNbObjects(nbPublisToValidate);
+        }
+        children.add(temp);
+      }
+
+      // adding special folder "trash"
+      if (isUserCanWrite(instanceId, userId)) {
+        children.add(trash);
+      }
+
+      root.setChildrenDetails(children);
+    } catch (RemoteException e) {
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    }
+    return children;
+  }
+  
+  public Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId)
+      throws RemoteException {
+    NodeDetail node = getNodeBm().getDetail(nodePK);
+    if (node.getNodePK().isRoot()) {
+      node.setChildrenDetails(getRootChildren(node, userId, null));
+    } else {
+      setAllowedSubfolders(node, userId);
+    }
+
+    // set nb objects in nodes
+    setNbItemsOfSubfolders(node, null, userId);
+
+    return node.getChildrenDetails();
+  }
+  
+  private void setNbItemsOfSubfolders(NodeDetail node, List<NodeDetail> treeview, String userId)
+      throws RemoteException {
+    String instanceId = node.getNodePK().getInstanceId();
+    if (isNbItemsDisplayed(instanceId)) {
+      if (treeview == null) {
+        treeview = getTreeview(node.getNodePK(), userId);
+      }
+      // set nb objects in each nodes
+      setNbItemsOfFolders(instanceId, node.getChildrenDetails(), treeview);
+    }
+  }
+  
+  private List<NodeDetail> getTreeview(NodePK pk, String userId) throws RemoteException {
+    String instanceId = pk.getInstanceId();
+    if (isUserComponentAdmin(instanceId, userId)) {
+      return getTreeview(pk, "admin", isCoWritingEnable(instanceId),
+              isDraftVisibleWithCoWriting(), userId, isNbItemsDisplayed(instanceId), false);
+    } else {
+      return getTreeview(pk, getUserTopicProfile(pk, userId), isCoWritingEnable(instanceId),
+              isDraftVisibleWithCoWriting(), userId, isNbItemsDisplayed(instanceId),
+              isRightsOnTopicsEnabled(instanceId));
+    }
+  }
+  
+  private void setNbItemsOfFolders(String componentId, Collection<NodeDetail> nodes,
+      List<NodeDetail> treeview) throws RemoteException {
+    if (isNbItemsDisplayed(componentId)) {
+      for (NodeDetail child : nodes) {
+        int index = treeview.indexOf(child);
+        if (index != -1) {
+          child.setNbObjects(treeview.get(index).getNbObjects());
+        }
+      }
+    }
+  }
+  
+  private void setAllowedSubfolders(NodeDetail node, String userId) throws RemoteException {
+    String instanceId = node.getNodePK().getInstanceId();
+    if (isRightsOnTopicsEnabled(instanceId)) {
+      if (isUserComponentAdmin(instanceId, userId)) {
+        // user is admin of application, all folders must be shown
+        setRole(node.getChildrenDetails(), userId);
+      } else {
+        Collection<NodeDetail> allowedChildren = getAllowedSubfolders(node, userId);
+        setRole(allowedChildren, userId);
+        node.setChildrenDetails(allowedChildren);
+      }
+    } else {
+      // no rights are used
+      // keep children as they are 
+    }
+  }
+  
+  private boolean isUserComponentAdmin(String componentId, String userId) {
+    return "admin".equalsIgnoreCase(KmeliaHelper.getProfile(getUserRoles(componentId, userId)));
+  }
+  
+  private void setRole(NodeDetail node, String userId) throws RemoteException {
+    if (isRightsOnTopicsEnabled(node.getNodePK().getInstanceId())) {
+      node.setUserRole(getUserTopicProfile(node.getNodePK(), userId));
+    }
+  }
+  
+  private void setRole(Collection<NodeDetail> nodes, String userId) throws RemoteException {
+    for (NodeDetail node : nodes) {
+      setRole(node, userId);
+    }
+  }
+  
+  private boolean isRightsOnTopicsEnabled(String componentId) {
+    return StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
+        componentId, InstanceParameters.rightsOnFolders));
+  }
+
+  private boolean isNbItemsDisplayed(String componentId) {
+    return StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
+        componentId, InstanceParameters.displayNbItemsOnFolders));
+  }
+
+  private boolean isCoWritingEnable(String componentId) {
+    return StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
+        componentId, InstanceParameters.coWriting));
+  }
+  
+  private boolean isDraftVisibleWithCoWriting() {
+    return getSettings().getBoolean("draftVisibleWithCoWriting", false);
+  }
+  
+  public String getUserTopicProfile(NodePK pk, String userId) throws RemoteException {
+    if (!isRightsOnTopicsEnabled(pk.getInstanceId()) || KmeliaHelper.isToValidateFolder(pk.getId())) {
+      return KmeliaHelper.getProfile(getUserRoles(pk.getInstanceId(), userId));
+    }
+
+    NodeDetail node = getNodeHeader(pk.getId(), pk.getInstanceId());
+
+    // check if we have to take care of topic's rights
+    if (node != null && node.haveRights()) {
+      int rightsDependsOn = node.getRightsDependsOn();
+      return KmeliaHelper.getProfile(getOrganizationController().getUserProfiles(userId,
+          pk.getInstanceId(), rightsDependsOn, ObjectType.NODE));
+    } else {
+      return KmeliaHelper.getProfile(getUserRoles(pk.getInstanceId(), userId));
+    }
+  }
+  
+  private String[] getUserRoles(String componentId, String userId) {
+    return getOrganizationController().getUserProfiles(userId, componentId);
+  }
+  
+  private NodePK getRootPK(String componentId) {
+    return new NodePK(NodePK.ROOT_NODE_ID, componentId);
+  }
+  
+  public boolean isUserCanValidate(String componentId, String userId) throws RemoteException {
+    if (KmeliaHelper.isToolbox(componentId)) {
+      return false;
+    }
+
+    String profile = KmeliaHelper.getProfile(getUserRoles(componentId, userId));
+    boolean isPublisherOrAdmin =
+            SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile);
+
+    if (!isPublisherOrAdmin && isRightsOnTopicsEnabled(componentId)) {
+      // check if current user is publisher or admin on at least one descendant
+      Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(getRootPK(componentId)).iterator();
+      while (!isPublisherOrAdmin && descendants.hasNext()) {
+        NodeDetail descendant = descendants.next();
+        AdminController admin = null;
+        if (descendant.haveLocalRights()) {
+          // check if user is admin or publisher on this topic
+          if (admin == null) {
+            admin = new AdminController(userId);
+          }
+          String[] profiles =
+                  admin.getProfilesByObjectAndUserId(descendant.getId(),
+                      ObjectType.NODE.getCode(), componentId, userId);
+          if (profiles != null && profiles.length > 0) {
+            List<String> lProfiles = Arrays.asList(profiles);
+            isPublisherOrAdmin =
+                    lProfiles.contains(SilverpeasRole.admin.name())
+                        || lProfiles.contains(SilverpeasRole.publisher.name());
+          }
+        }
+      }
+    }
+    return isPublisherOrAdmin;
+  }
+  
+  public boolean isUserCanWrite(String componentId, String userId) throws RemoteException {
+    String profile = KmeliaHelper.getProfile(getUserRoles(componentId, userId));
+    boolean userCanWrite =
+            SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile)
+                || SilverpeasRole.writer.isInRole(profile);
+
+    if (!userCanWrite && isRightsOnTopicsEnabled(componentId)) {
+      // check if current user is publisher or admin on at least one descendant
+      Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(getRootPK(componentId)).iterator();
+      while (!userCanWrite && descendants.hasNext()) {
+        NodeDetail descendant = descendants.next();
+        AdminController admin = null;
+        if (descendant.haveLocalRights()) {
+          // check if user is admin, publisher or writer on this topic
+          if (admin == null) {
+            admin = new AdminController(userId);
+          }
+          String[] profiles =
+              admin.getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE.getCode(),
+                  componentId, userId);
+          if (profiles != null && profiles.length > 0) {
+            List<String> lProfiles = Arrays.asList(profiles);
+            userCanWrite =
+                    lProfiles.contains(SilverpeasRole.admin.name())
+                        || lProfiles.contains(SilverpeasRole.publisher.name())
+                        || lProfiles.contains(SilverpeasRole.writer.name());
+          }
+        }
+      }
+    }
+    return userCanWrite;
+  }
+  
+  public NodeDetail getExpandedPathToNode(NodePK pk, String userId) throws RemoteException {
+    String instanceId = pk.getInstanceId();
+    List<NodeDetail> nodes = new ArrayList<NodeDetail>(getNodeBm().getPath(pk));
+    Collections.reverse(nodes);
+    NodeDetail root = nodes.remove(0);
+    
+    List<NodeDetail> treeview = null;
+    if (isNbItemsDisplayed(instanceId)) {
+      treeview = getTreeview(getRootPK(instanceId), userId);
+    }
+    
+    root = getRoot(instanceId, userId, treeview);
+
+    // set nb objects in nodes
+    if (treeview != null) {
+      // set nb objects on root
+      root.setNbObjects(treeview.get(0).getNbObjects());
+      // set nb objects in each allowed nodes
+      setNbItemsOfFolders(instanceId, nodes, treeview);
+    }
+
+    NodeDetail currentNode = root;
+    for (NodeDetail node : nodes) {
+      currentNode = find(currentNode.getChildrenDetails(), node);
+      // get children of each node on path to target node
+      Collection<NodeDetail> children = getNodeBm().getChildrenDetails(node.getNodePK());
+      node.setChildrenDetails(children);
+      setAllowedSubfolders(node, userId);
+      if (treeview != null) {
+        setNbItemsOfSubfolders(node, treeview, userId);
+      }
+      currentNode.setChildrenDetails(node.getChildrenDetails());
+    }
+    return root;
+
+  }
+  
+  private NodeDetail find(Collection<NodeDetail> nodes, NodeDetail toFind) {
+    for (NodeDetail node : nodes) {
+      if (node.getNodePK().getId().equals(toFind.getNodePK().getId())) {
+        return node;
+      }
+    }
+    return null;
   }
 }

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,13 +25,14 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="init.jsp" %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-	<link rel="stylesheet" type="text/css" href="<%=applicationURL%>/myDB/jsp/styleSheet/tableSelection.css">
+<view:looknfeel/>
+	<link rel="stylesheet" type="text/css" href="<%=applicationURL%>/myDB/jsp/styleSheet/tableSelection.css"></link>
 	<script type="text/javascript" src="<%=applicationURL%>/myDB/jsp/javaScript/tableSelection.js"></script>
 	<script type="text/javascript" src="<%=applicationURL%>/myDB/jsp/javaScript/util.js"></script>
 	<script type="text/javascript">
@@ -50,8 +51,7 @@
 		}
 	</script>
 </head>
-
-<body onload="init('tableName')" marginwidth="5" marginheight="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<body onload="init('tableName')">
 <%
 	browseBar.setExtraInformation(resource.getString("PageTitleTableSelection"));
 
@@ -62,8 +62,7 @@
 			.append("&mode=").append(TableManager.MODE_CREATION)
 			.append("&originPage=").append(MyDBConstants.PAGE_TABLE_SELECTION)
 			.toString();
-		operationPane.addOperation(
-			resource.getIcon("myDB.addTable"), resource.getString("OperationCreateTable"), tableAction);
+		operationPane.addOperationOfCreation(resource.getIcon("myDB.addTable"), resource.getString("OperationCreateTable"), tableAction);
 	}
 
 	out.println(window.printBefore());
@@ -74,6 +73,7 @@
 	String[] tableNames = myDBSC.getTableNames();
 	int tableCount = (tableNames != null ? tableNames.length : 0);
 %>
+	<view:areaOfOperationOfCreation/>
 	<%@ include file="tabs.jsp" %>
 <%
 	out.println(frame.printBefore());
@@ -139,21 +139,21 @@
 	else
 	{
 %>
-	<br>
+	<br/>
 	<center>
 		<span class="MessageNotRead"><%=resource.getString("NoTablesAvailable")%></span>
 <%
 		if (tableNames == null)
 		{
 %>
-		<br>
-		<br>
+		<br/>
+		<br/>
 		<span class="MessageNotRead"><i><%=resource.getString("CheckConnectionSetting")%></i></span>
 <%
 		}
 %>
 	</center>
-	<br>
+	<br/>
 <%
 	}
 	out.println(frame.printAfter());

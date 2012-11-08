@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -57,548 +57,546 @@ import java.util.List;
 
 public class YellowpagesRequestRouter extends ComponentRequestRouter<YellowpagesSessionController> {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
-    public YellowpagesSessionController createComponentSessionController(
-            MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-        return new YellowpagesSessionController(mainSessionCtrl, componentContext);
-    }
+  public YellowpagesSessionController createComponentSessionController(
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+    return new YellowpagesSessionController(mainSessionCtrl, componentContext);
+  }
 
-    /**
-     * This method has to be implemented in the component request rooter class. returns the session
-     * control bean name to be put in the request object ex : for almanach, returns "almanach"
-     */
-    public String getSessionControlBeanName() {
-        return "yellowpagesScc";
-    }
+  /**
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
+   */
+  public String getSessionControlBeanName() {
+    return "yellowpagesScc";
+  }
 
-    /**
-     * This method has to be implemented by the component request rooter it has to compute a
-     * destination page
-     *
-     * @param function The entering request function (ex : "Main.jsp")
-     * @param scc      The component Session Control, build and initialised.
-     * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
-     */
-    public String getDestination(String function, YellowpagesSessionController scc, HttpServletRequest request) {
-        SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()", "root.MSG_GEN_ENTER_METHOD");
-        SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "function = " + function);
+  /**
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   *
+   * @param function    The entering request function (ex : "Main.jsp")
+   * @param scc The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
+   */
+  public String getDestination(String function, YellowpagesSessionController scc, HttpServletRequest request) {
+    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "function = " + function);
 
-        String destination = "";
-        String rootDestination = "/yellowpages/jsp/";
+    String destination = "";
+    String rootDestination = "/yellowpages/jsp/";
 
-        try {
+    try {
 
-            // the flag is the best user's profile
-            String flag = scc.getProfile();
-            request.setAttribute("Profile", flag);
-            if (function.startsWith("Main")) {
-                scc.setPortletMode(false);
-                scc.resetCurrentTypeSearchCriteria();
-                destination = getDestination("GoTo", scc, request);
-            } else if (function.equals("GoTo")) {
-                String id = request.getParameter("Id");
-                String action = request.getParameter("Action");
+      // the flag is the best user's profile
+      String flag = scc.getProfile();
+      request.setAttribute("Profile", flag);
+      if (function.startsWith("Main")) {
+        scc.setPortletMode(false);
+        scc.resetCurrentTypeSearchCriteria();
+        destination = getDestination("GoTo", scc, request);
+      } else if (function.equals("GoTo")) {
+        String id = request.getParameter("Id");
+        String action = request.getParameter("Action");
 
-                TopicDetail currentTopic = null;
-                Collection<ContactFatherDetail> contacts = null;
-                Collection<Company> companies = null;
-
-                if (id == null || (id != null && !id.startsWith("group_"))) {
-                    String rootId = "0";
-                    if (id == null) {
-                        currentTopic = scc.getCurrentTopic();
-                        if (currentTopic != null) {
-                            id = currentTopic.getNodePK().getId();
-                            if (id.equals("1")) {
-                                id = rootId;
-                                currentTopic = scc.getTopic(id);
-                                scc.setCurrentTopic(currentTopic);
-                            }
-                        } else {
-                            id = rootId;
-                            currentTopic = scc.getTopic(id);
-                            scc.setCurrentTopic(currentTopic);
-                        }
-
-                        contacts = scc.getAllContactDetails(currentTopic.getNodePK());
-                        companies = scc.getAllCompanies(currentTopic.getNodePK().getId());
-                        scc.resetCurrentTypeSearchCriteria();
-                    } else {// id != null
-                        currentTopic = scc.getTopic(id);
-                        scc.setCurrentTopic(currentTopic);
-
-                        if (id.equals("0") && action == null) {// racine : affiche les
-                            // contacts courants
-                            contacts = scc.getCurrentContacts();
-                            companies = scc.getCurrentCompanies();
-                            request.setAttribute("TypeSearch", scc.getCurrentTypeSearch());
-                            request.setAttribute("SearchCriteria", scc.getCurrentSearchCriteria());
-                        } else {// réinitialise la liste
-                            contacts = scc.getAllContactDetails(currentTopic.getNodePK());
-                            companies = scc.getAllCompanies(currentTopic.getNodePK().getId());
-                            scc.resetCurrentTypeSearchCriteria();
-                        }
-                    }
-                    request.setAttribute("CurrentTopic", currentTopic);
-
-                } else {
-                    id = id.substring(id.indexOf("_") + 1, id.length()); // remove
-                    // "group_"
-                    GroupDetail group = scc.getGroup(id);
-
-                    request.setAttribute("Group", group);
-
-                    contacts = scc.getAllUsersOfGroup(id);
-                    // TODO gestion des groupes pour les companies ? Pour l'instant on renvoie toute la liste
-                    companies = scc.getAllCompanies();
-                    scc.resetCurrentTypeSearchCriteria();
-                }
-
-                request.setAttribute("Contacts", contacts);
-                request.setAttribute("Companies", companies);
-                request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
-
-                scc.setCurrentContacts(contacts);
-                scc.setCurrentCompanies(companies);
-
-                destination = "/yellowpages/jsp/annuaire.jsp?Action=GoTo&Profile="
-                        + flag;
-            } else if (function.startsWith("portlet")) {
-                scc.setPortletMode(true);
-                destination = getDestination("GoTo", scc, request);
-            } else if (function.startsWith("annuaire")) {
-                destination = "/yellowpages/jsp/annuaire.jsp?Profile=" + flag;
-            } else if (function.startsWith("topicManager")) {
-                scc.clearGroupPath();
-                destination = "/yellowpages/jsp/topicManager.jsp?Profile=" + flag;
-            } else if (function.equals("GoToGroup")) {
-                String id = request.getParameter("Id");
-                id = id.substring(id.indexOf("_") + 1, id.length()); // remove "group_"
-
-                GroupDetail group = scc.getGroup(id);
-
-                request.setAttribute("Group", group);
-                request.setAttribute("GroupPath", scc.getGroupPath());
-                destination = "/yellowpages/jsp/groupManager.jsp";
-            } else if (function.equals("RemoveGroup")) {
-                String id = request.getParameter("Id");
-                id = id.substring(id.indexOf("_") + 1, id.length()); // remove "group_"
-
-                scc.removeGroup(id);
-
-                destination = getDestination("topicManager", scc, request);
-            } else if (function.equals("ViewUserFull")) {
-                String id = request.getParameter("Id");
-
-                UserFull user = scc.getOrganizationController().getUserFull(id);
-
-                request.setAttribute("UserFull", user);
-                destination = "/yellowpages/jsp/userFull.jsp";
-            } else if (function.startsWith("searchResult")) {
-                scc.setPortletMode(false);
-
-                String id = request.getParameter("Id");
-                String type = request.getParameter("Type");
-
-                if (type.equals("Contact")) { // un contact peut-être dans plusieurs
-                    // noeuds de l'annuaire
-                    TopicDetail currentTopic = scc.getTopic("0");
-                    scc.setCurrentTopic(currentTopic);
-
-                    ContactDetail contactDetail = scc.getContactDetail(id);
-
-                    List<ContactDetail> listContact = new ArrayList<ContactDetail>();
-                    listContact.add(contactDetail);
-
-                    request.setAttribute("Contacts", scc.getListContactFather(listContact, true));
-                    // TODO getAllCompanies : rajouter parametres pour la recherche
-                    request.setAttribute("Companies", scc.getAllCompanies());
-                    request.setAttribute("CurrentTopic", currentTopic);
-                    request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
-
-                    destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile="
-                            + flag;
-                } else if (type.equals("Node")) {
-                    destination = getDestination("GoTo", scc, request);
-                }
-            } else if (function.equals("Search")) {
-                TopicDetail currentTopic = scc.getTopic("0");
+        TopicDetail currentTopic = null;
+        Collection<ContactFatherDetail> contacts = null;
+        Collection<Company> companies = null;
+        if (id == null || (id != null && !id.startsWith("group_"))) {
+          String rootId = "0";
+          if (id == null) {
+            currentTopic = scc.getCurrentTopic();
+            if (currentTopic != null) {
+              id = currentTopic.getNodePK().getId();
+              if (id.equals("1")) {
+                id = rootId;
+                currentTopic = scc.getTopic(id);
                 scc.setCurrentTopic(currentTopic);
-
-                String typeSearch = request.getParameter("Action"); // All || LastName
-                // || FirstName ||
-                // LastNameFirstName
-                String searchCriteria = request.getParameter("SearchCriteria");
-
-                scc.setCurrentTypeSearch(typeSearch);
-                scc.setCurrentSearchCriteria(searchCriteria);
-
-                List<ContactFatherDetail> searchResults = scc.search(typeSearch, searchCriteria);
-
-                scc.setCurrentContacts(searchResults);
-                // TODO set current companies en fonction du searchResults
-                Collection<Company> companies = scc.getAllCompanies();
-                scc.setCurrentCompanies(companies);
-
-                request.setAttribute("Contacts", searchResults);
-                request.setAttribute("Companies", companies);
-                request.setAttribute("CurrentTopic", currentTopic);
-                request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
-                request.setAttribute("TypeSearch", typeSearch);
-                request.setAttribute("SearchCriteria", searchCriteria);
-
-                destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile="
-                        + flag;
-            } else if (function.equals("PrintList")) {
-                TopicDetail currentTopic = scc.getCurrentTopic();
-
-                request.setAttribute("Contacts", scc.getCurrentContacts());
-                request.setAttribute("Companies", scc.getCurrentCompanies());
-
-                request.setAttribute("CurrentTopic", currentTopic);
-
-                destination = "/yellowpages/jsp/printContactList.jsp";
-            } else if (function.startsWith("contactManager")) {
-
-                String action = (String) request.getParameter("Action");
-                String contactId = (String) request.getParameter("ContactId");
-                String topicId = (String) request.getParameter("TopicId");
-
-                if ("ViewContactInTopic".equals(action)) {
-                    request.setAttribute("TopicId", topicId);
-                    String modelId = scc.getTopic(topicId).getNodeDetail().getModelId();
-
-                    if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
-                        String xmlFormName = modelId;
-                        String xmlFormShortName = xmlFormName.substring(xmlFormName
-                                .indexOf("/") + 1, xmlFormName.indexOf("."));
-                        // création du PublicationTemplate
-                        getPublicationTemplateManager().addDynamicPublicationTemplate(scc
-                                .getComponentId()
-                                + ":" + xmlFormShortName, xmlFormName);
-                        PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
-                                .getPublicationTemplate(scc.getComponentId() + ":" + xmlFormShortName, xmlFormName);
-
-                        // création du formulaire et du DataRecord
-                        Form formView = pubTemplate.getViewForm();
-                        RecordSet recordSet = pubTemplate.getRecordSet();
-                        DataRecord data = recordSet.getRecord(contactId);
-                        if (data == null) {
-                            data = recordSet.getEmptyRecord();
-                            data.setId(contactId);// id contact
-                        }
-
-                        // appel de la jsp avec les paramètres
-                        request.setAttribute("Form", formView);
-                        request.setAttribute("Data", data);
-
-                        PagesContext context = new PagesContext("modelForm", "0", scc
-                                .getLanguage(), false, scc.getComponentId(), scc.getUserId());
-                        context.setBorderPrinted(false);
-                        context.setObjectId(contactId);
-                        request.setAttribute("PagesContext", context);
-                    }
-                }
-
-                request.setAttribute("ContactId", contactId);
-                request.setAttribute("Profile", flag);
-                request.setAttribute("Action", action);
-
-                destination = "/yellowpages/jsp/contactManager.jsp";
-            } else if (function.startsWith("http")) {
-                destination = function;
-            } else if (function.startsWith("selectUser")) {
-                // initialisation du userPanel avec les participants
-                destination = scc.initUserPanel();
-            } else if (function.startsWith("saveUser")) {
-                // retour du userPanel
-                scc.setContactUserSelected();
-                request.setAttribute("Action", "SaveUser");
-                destination = "/yellowpages/jsp/contactManager.jsp";
-            } else if (function.equals("ToChooseGroup")) {
-                destination = scc.initGroupPanel();
-            } else if (function.equals("AddGroup")) {
-                // retour du userPanel
-                scc.setGroupSelected();
-                destination = getDestination("topicManager", scc, request);
-            } else if (function.equals("ModelUsed")) {
-                try {
-                    List<PublicationTemplate> templates =
-                            getPublicationTemplateManager().getPublicationTemplates();
-                    request.setAttribute("XMLForms", templates);
-                } catch (Exception e) {
-                    SilverTrace.info("yellowPages",
-                            "YellowPagesRequestRouter.getDestination(ModelUsed)",
-                            "root.MSG_GEN_PARAM_VALUE", "", e);
-                }
-
-                Collection<String> modelUsed = scc.getModelUsed();
-                request.setAttribute("ModelUsed", modelUsed);
-
-                destination = rootDestination + "modelUsedList.jsp";
-            } else if (function.equals("DeleteContact")) {
-                // Delete contact
-                String contactId = (String) request.getParameter("ContactId");
-                scc.deleteContact(contactId);
-                // Back to topic
-                destination = getDestination("topicManager", scc, request);
-
-            } else if (function.equals("DeleteContactCompany")) {
-                // Delete company
-                String contactId = (String) request.getParameter("ContactCompanyId");
-                scc.deleteCompany(Integer.valueOf(contactId));
-                // Back to topic
-                destination = getDestination("topicManager", scc, request);
-
-            } else if (function.equals("SelectModel")) {
-                Object o = request.getParameterValues("modelChoice");
-                if (o != null) {
-                    String[] models = (String[]) o;
-                    scc.addModelUsed(models);
-                }
-                destination = getDestination("topicManager", scc, request);
-            } else if (function.startsWith("modelManager")) {
-                // récupération des données saisies dans le formulaire
-                List<FileItem> items = FileUploadUtil.parseRequest(request);
-
-                String action = FileUploadUtil.getParameter(items, "Action", "");
-                String contactId = FileUploadUtil.getParameter(items, "ContactId", "");
-                String modelId = FileUploadUtil.getParameter(items, "ModelId", ""); // Id Node de
-                // rubrique ou
-                // Id de
-                // contact
-
-                if ("ModelChoice".equals(action)) {
-                    List<PublicationTemplate> listTemplates = new ArrayList<PublicationTemplate>();
-                    ArrayList<String> usedTemplates = new ArrayList<String>(scc.getModelUsed());
-                    try {
-                        List<PublicationTemplate> allTemplates = getPublicationTemplateManager()
-                                .getPublicationTemplates();
-                        PublicationTemplate xmlForm;
-                        Iterator<PublicationTemplate> iterator = allTemplates.iterator();
-                        while (iterator.hasNext()) {
-                            xmlForm = (PublicationTemplate) iterator.next();
-                            if (usedTemplates.contains(xmlForm.getFileName())) {
-                                listTemplates.add(xmlForm);
-                            }
-                        }
-                        request.setAttribute("XMLForms", listTemplates);
-                    } catch (Exception e) {
-                        SilverTrace.info("yellowpages",
-                                "YellowpagesRequestRouter.getDestination(modelManager)",
-                                "root.MSG_GEN_PARAM_VALUE", "", e);
-                    }
-
-                    if ((modelId == null || "".equals(modelId)) && contactId != null) {
-                        NodeDetail topic = scc.getSubTopicDetail(contactId);
-                        modelId = topic.getModelId();
-                    }
-
-                    if (modelId != null && "0".equals(modelId)) {
-                        modelId = null;
-                    }
-
-                    if (modelId != null && !"".equals(modelId)) {
-                        String xmlFormName = modelId;
-                        String xmlFormShortName = xmlFormName.substring(xmlFormName
-                                .indexOf("/") + 1, xmlFormName.indexOf("."));
-                        // création du PublicationTemplate
-                        getPublicationTemplateManager().addDynamicPublicationTemplate(scc
-                                .getComponentId()
-                                + ":" + xmlFormShortName, xmlFormName);
-                        PublicationTemplateImpl pubTemplate =
-                                (PublicationTemplateImpl) getPublicationTemplateManager()
-                                        .getPublicationTemplate(scc.getComponentId() + ":"
-                                                + xmlFormShortName, xmlFormName);
-
-                        // création du formulaire et du DataRecord
-                        Form formUpdate = pubTemplate.getUpdateForm();
-                        RecordSet recordSet = pubTemplate.getRecordSet();
-                        DataRecord data = recordSet.getEmptyRecord();
-                        data.setId(contactId); // id Rubrique = id NodeDetail
-
-                        // appel de la jsp avec les paramètres
-                        request.setAttribute("Form", formUpdate);
-                        request.setAttribute("Data", data);
-
-                        PagesContext context = new PagesContext("modelForm", "0", scc
-                                .getLanguage(), false, scc.getComponentId(), scc.getUserId());
-                        context.setBorderPrinted(false);
-                        context.setObjectId(contactId);
-                        request.setAttribute("PagesContext", context);
-                    }
-                } else if ("NewModel".equals(action)) {
-
-                    if (!StringUtil.isDefined(modelId) && contactId != null) {
-                        modelId = scc.getCurrentTopic().getNodeDetail().getModelId();
-                    }
-
-                    if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
-                        String xmlFormName = modelId;
-                        String xmlFormShortName = xmlFormName.substring(xmlFormName
-                                .indexOf("/") + 1, xmlFormName.indexOf("."));
-                        // création du PublicationTemplate
-                        getPublicationTemplateManager().addDynamicPublicationTemplate(scc
-                                .getComponentId()
-                                + ":" + xmlFormShortName, xmlFormName);
-                        PublicationTemplateImpl pubTemplate =
-                                (PublicationTemplateImpl) getPublicationTemplateManager()
-                                        .getPublicationTemplate(scc.getComponentId() + ":"
-                                                + xmlFormShortName, xmlFormName);
-
-                        // création du formulaire et du DataRecord
-                        Form formUpdate = pubTemplate.getUpdateForm();
-                        RecordSet recordSet = pubTemplate.getRecordSet();
-                        DataRecord data = recordSet.getRecord(contactId);
-                        if (data == null) {
-                            data = recordSet.getEmptyRecord();
-                            data.setId(contactId);// id contact
-                        }
-
-                        // appel de la jsp avec les paramètres
-                        request.setAttribute("Form", formUpdate);
-                        request.setAttribute("Data", data);
-
-                        PagesContext context = new PagesContext("modelForm", "0", scc
-                                .getLanguage(), false, scc.getComponentId(), scc.getUserId());
-                        context.setBorderPrinted(false);
-                        context.setObjectId(contactId);
-                        request.setAttribute("PagesContext", context);
-                    }
-                } else if ("Add".equals(action)) { // met à jour le choix de formulaire
-                    // XML
-                    if (StringUtil.isDefined(modelId)) {
-                        String xmlFormName = modelId;
-                        String xmlFormShortName = xmlFormName.substring(xmlFormName
-                                .indexOf("/") + 1, xmlFormName.indexOf("."));
-
-                        // récupération des données du formulaire (via le DataRecord)
-                        PublicationTemplate pubTemplate = getPublicationTemplateManager()
-                                .getPublicationTemplate(scc.getComponentId() + ":"
-                                        + xmlFormShortName);
-                        Form formUpdate = pubTemplate.getUpdateForm();
-                        RecordSet recordSet = pubTemplate.getRecordSet();
-                        DataRecord data = recordSet.getRecord(contactId);
-                        if (data == null) {
-                            data = recordSet.getEmptyRecord();
-                            data.setId(contactId);// id contact
-                        }
-
-                        // sauvegarde des données du formulaire
-                        PagesContext context = new PagesContext("modelForm", "0", scc
-                                .getLanguage(), false, scc.getComponentId(), scc.getUserId());
-                        context.setObjectId(contactId);
-                        formUpdate.update(items, data, context);
-                        recordSet.save(data);
-
-                        // sauvegarde du contact et du model
-                        scc.createInfoModel(contactId, modelId);
-
-                    }
-                }
-
-                request.setAttribute("ContactId", contactId);
-                request.setAttribute("ModelId", modelId);
-                request.setAttribute("Action", action);
-                destination = "/yellowpages/jsp/modelManager.jsp";
-            } else if (function.equals("DeleteBasketContent")) {
-                scc.deleteBasketContent();
-                // Back to topic
-                destination = getDestination("topicManager", scc, request);
-            } else if ("ExportCSV".equals(function)) {
-                String csvFilename = scc.exportAsCSV();
-                request.setAttribute("CSVFilename", csvFilename);
-                if (StringUtil.isDefined(csvFilename)) {
-                    File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
-                    request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
-                    request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
-                    file = null;
-                }
-                return "/yellowpages/jsp/downloadCSV.jsp";
-            } else if ("ToImportCSV".equals(function)) {
-                destination = rootDestination + "importCSV.jsp";
-            } else if ("ImportCSV".equals(function)) {
-                List<FileItem> parameters = FileUploadUtil.parseRequest(request);
-                FileItem fileItem = FileUploadUtil.getFile(parameters);
-                String modelId = scc.getCurrentTopic().getNodeDetail().getModelId();
-                request.setAttribute("Result", scc.importCSV(fileItem, modelId));
-                destination = rootDestination + "importCSV.jsp";
-
-            } else if ("companyView".equals(function)) {
-                String companyId = request.getParameter("ContactCompanyId");
-                Company company = scc.getCompany(Integer.valueOf(companyId));
-                request.setAttribute("company", company);
-                request.setAttribute("contactList", scc.getContactDetailListForCompanyId(company.getCompanyId()));
-                request.setAttribute("viewMode", true);
-                destination = rootDestination + "companyForm.jsp";
-
-            } else if ("companyAdd".equals(function)) {
-                request.setAttribute("viewMode", false);
-                destination = rootDestination + "companyForm.jsp";
-
-            } else if ("companyEdit".equals(function)) {
-                String companyId = request.getParameter("ContactCompanyId");
-                Company company = scc.getCompany(Integer.valueOf(companyId));
-                request.setAttribute("company", company);
-                request.setAttribute("viewMode", false);
-                destination = rootDestination + "companyForm.jsp";
-
-            } else if ("companySave".equals(function)) {
-                // Récupère la liste des paramètres de la form
-                String companyId = request.getParameter("id");
-                String name = request.getParameter("Name");
-                String email = request.getParameter("Email");
-                String phone = request.getParameter("Phone");
-                String fax = request.getParameter("Fax");
-
-                // Récupération du topicId
-                TopicDetail currentTopic = scc.getCurrentTopic();
-                int topicId = Integer.valueOf(currentTopic.getNodePK().getId());
-
-                // Enregistrement de la nouvelle company
-                if (StringUtil.isBlank(companyId)) {
-                    scc.createCompany(name, email, phone, fax, topicId);
-                } else {
-                    scc.saveCompany(Integer.valueOf(companyId), name, email, phone, fax);
-                }
-
-                // Reinitialise la liste des contacts du topic pour afficher les modifs
-                Collection<ContactFatherDetail> contacts = scc.getAllContactDetails(currentTopic.getNodePK());
-                request.setAttribute("CurrentTopic", currentTopic);
-
-                request.setAttribute("Contacts", contacts);
-
-                Collection<Company> companies = scc.getAllCompanies(currentTopic.getNodePK().getId());
-                request.setAttribute("Companies", companies);
-
-                scc.setCurrentContacts(contacts);
-                scc.setCurrentCompanies(companies);
-                destination = rootDestination + "topicManager.jsp?Profile=" + flag;
-
+              }
             } else {
-                destination = "/yellowpages/jsp/" + function;
+              id = rootId;
+              currentTopic = scc.getTopic(id);
+              scc.setCurrentTopic(currentTopic);
             }
-        } catch (Exception exce_all) {
-            request.setAttribute("javax.servlet.jsp.jspException", exce_all);
-            return "/admin/jsp/errorpageMain.jsp";
-        }
-        SilverTrace.info("yellowpages",
-                "YellowpagesRequestRooter.getDestination()",
-                "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
-        return destination;
-    }
 
-    /**
-     * Gets an instance of PublicationTemplateManager.
-     *
-     * @return an instance of PublicationTemplateManager.
-     */
-    private PublicationTemplateManager getPublicationTemplateManager() {
-        return PublicationTemplateManager.getInstance();
+            contacts = scc.getAllContactDetails(currentTopic.getNodePK());
+            companies = scc.getAllCompanies(currentTopic.getNodePK().getId());
+            scc.resetCurrentTypeSearchCriteria();
+          } else {// id != null
+            currentTopic = scc.getTopic(id);
+            scc.setCurrentTopic(currentTopic);
+
+            if (id.equals("0") && action == null) {// racine : affiche les
+              // contacts courants
+              contacts = scc.getCurrentContacts();
+              companies = scc.getCurrentCompanies();
+              request.setAttribute("TypeSearch", scc.getCurrentTypeSearch());
+              request.setAttribute("SearchCriteria", scc
+                  .getCurrentSearchCriteria());
+            } else {// réinitialise la liste
+              contacts = scc.getAllContactDetails(currentTopic.getNodePK());
+              companies = scc.getAllCompanies(currentTopic.getNodePK().getId());
+              scc.resetCurrentTypeSearchCriteria();
+            }
+          }
+          request.setAttribute("CurrentTopic", currentTopic);
+
+        } else {
+          id = id.substring(id.indexOf("_") + 1, id.length()); // remove
+          // "group_"
+          GroupDetail group = scc.getGroup(id);
+
+          request.setAttribute("Group", group);
+
+          contacts = scc.getAllUsersOfGroup(id);
+          // TODO gestion des groupes pour les companies ? Pour l'instant on renvoie toute la liste
+          companies = scc.getAllCompanies();
+          scc.resetCurrentTypeSearchCriteria();
+        }
+
+        request.setAttribute("Contacts", contacts);
+        request.setAttribute("Companies", companies);
+        request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
+
+        scc.setCurrentContacts(contacts);
+        scc.setCurrentCompanies(companies);
+
+        destination = "/yellowpages/jsp/annuaire.jsp?Action=GoTo&Profile="
+            + flag;
+      } else if (function.startsWith("portlet")) {
+        scc.setPortletMode(true);
+        destination = getDestination("GoTo", scc, request);
+      } else if (function.startsWith("annuaire")) {
+        destination = "/yellowpages/jsp/annuaire.jsp?Profile=" + flag;
+      } else if (function.startsWith("topicManager")) {
+        scc.clearGroupPath();
+        destination = "/yellowpages/jsp/topicManager.jsp?Profile=" + flag;
+      } else if (function.equals("GoToGroup")) {
+        String id = request.getParameter("Id");
+        id = id.substring(id.indexOf("_") + 1, id.length()); // remove "group_"
+
+        GroupDetail group = scc.getGroup(id);
+
+        request.setAttribute("Group", group);
+        request.setAttribute("GroupPath", scc.getGroupPath());
+        destination = "/yellowpages/jsp/groupManager.jsp";
+      } else if (function.equals("RemoveGroup")) {
+        String id = request.getParameter("Id");
+        id = id.substring(id.indexOf("_") + 1, id.length()); // remove "group_"
+
+        scc.removeGroup(id);
+
+        destination = getDestination("topicManager", scc, request);
+      } else if (function.equals("ViewUserFull")) {
+        String id = request.getParameter("Id");
+
+        UserFull user = scc.getOrganizationController().getUserFull(id);
+
+        request.setAttribute("UserFull", user);
+        destination = "/yellowpages/jsp/userFull.jsp";
+      } else if (function.startsWith("searchResult")) {
+        scc.setPortletMode(false);
+
+        String id = request.getParameter("Id");
+        String type = request.getParameter("Type");
+
+        if (type.equals("Contact")) { // un contact peut-être dans plusieurs
+          // noeuds de l'annuaire
+          TopicDetail currentTopic = scc.getTopic("0");
+          scc.setCurrentTopic(currentTopic);
+
+          ContactDetail contactDetail = scc.getContactDetail(id);
+
+          List<ContactDetail> listContact = new ArrayList<ContactDetail>();
+          listContact.add(contactDetail);
+
+          request.setAttribute("Contacts", scc.getListContactFather(
+              listContact, true));
+          // TODO getAllCompanies : rajouter parametres pour la recherche
+          request.setAttribute("Companies", scc.getAllCompanies());
+          request.setAttribute("CurrentTopic", currentTopic);
+          request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
+
+          destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile="
+              + flag;
+        } else if (type.equals("Node")) {
+          destination = getDestination("GoTo", scc, request);
+        }
+      } else if (function.equals("Search")) {
+        TopicDetail currentTopic = scc.getTopic("0");
+        scc.setCurrentTopic(currentTopic);
+
+        String typeSearch = request.getParameter("Action"); // All || LastName
+        // || FirstName ||
+        // LastNameFirstName
+        String searchCriteria = request.getParameter("SearchCriteria");
+
+        scc.setCurrentTypeSearch(typeSearch);
+        scc.setCurrentSearchCriteria(searchCriteria);
+
+        List<ContactFatherDetail> searchResults = scc.search(typeSearch, searchCriteria);
+
+        scc.setCurrentContacts(searchResults);
+        // TODO set current companies en fonction du searchResults
+        Collection<Company> companies = scc.getAllCompanies();
+        scc.setCurrentCompanies(companies);
+
+        request.setAttribute("Contacts", searchResults);
+        request.setAttribute("Companies", companies);
+        request.setAttribute("CurrentTopic", currentTopic);
+        request.setAttribute("PortletMode", new Boolean(scc.isPortletMode()));
+        request.setAttribute("TypeSearch", typeSearch);
+        request.setAttribute("SearchCriteria", searchCriteria);
+
+        destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile="
+            + flag;
+      } else if (function.equals("PrintList")) {
+        Collection<ContactFatherDetail> contacts = scc.getCurrentContacts();
+        TopicDetail currentTopic = scc.getCurrentTopic();
+
+        request.setAttribute("Contacts", contacts);
+        request.setAttribute("Companies", scc.getCurrentCompanies());
+        request.setAttribute("CurrentTopic", currentTopic);
+
+        destination = "/yellowpages/jsp/printContactList.jsp";
+      } else if (function.startsWith("contactManager")) {
+
+        String action = (String) request.getParameter("Action");
+        String contactId = (String) request.getParameter("ContactId");
+        String topicId = (String) request.getParameter("TopicId");
+
+        if ("ViewContactInTopic".equals(action)) {
+          request.setAttribute("TopicId", topicId);
+          String modelId = scc.getTopic(topicId).getNodeDetail().getModelId();
+
+          if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
+            String xmlFormName = modelId;
+            String xmlFormShortName = xmlFormName.substring(xmlFormName
+                .indexOf("/") + 1, xmlFormName.indexOf("."));
+            // création du PublicationTemplate
+            getPublicationTemplateManager().addDynamicPublicationTemplate(scc
+                .getComponentId()
+                + ":" + xmlFormShortName, xmlFormName);
+            PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
+                    .getPublicationTemplate(scc.getComponentId() + ":" + xmlFormShortName, xmlFormName);
+
+            // création du formulaire et du DataRecord
+            Form formView = pubTemplate.getViewForm();
+            RecordSet recordSet = pubTemplate.getRecordSet();
+            DataRecord data = recordSet.getRecord(contactId);
+            if (data == null) {
+              data = recordSet.getEmptyRecord();
+              data.setId(contactId);// id contact
+            }
+
+            // appel de la jsp avec les paramètres
+            request.setAttribute("Form", formView);
+            request.setAttribute("Data", data);
+
+            PagesContext context = new PagesContext("modelForm", "0", scc
+                .getLanguage(), false, scc.getComponentId(), scc.getUserId());
+            context.setBorderPrinted(false);
+            context.setObjectId(contactId);
+            request.setAttribute("PagesContext", context);
+          }
+        }
+
+        request.setAttribute("ContactId", contactId);
+        request.setAttribute("Profile", flag);
+        request.setAttribute("Action", action);
+
+        destination = "/yellowpages/jsp/contactManager.jsp";
+      } else if (function.startsWith("http")) {
+        destination = function;
+      } else if (function.startsWith("selectUser")) {
+        // initialisation du userPanel avec les participants
+        destination = scc.initUserPanel();
+      } else if (function.startsWith("saveUser")) {
+        // retour du userPanel
+        scc.setContactUserSelected();
+        request.setAttribute("Action", "SaveUser");
+        destination = "/yellowpages/jsp/contactManager.jsp";
+      } else if (function.equals("ToChooseGroup")) {
+        destination = scc.initGroupPanel();
+      } else if (function.equals("AddGroup")) {
+        // retour du userPanel
+        scc.setGroupSelected();
+        destination = getDestination("topicManager", scc, request);
+      } else if (function.equals("ModelUsed")) {
+        try {
+          List<PublicationTemplate> templates =
+              getPublicationTemplateManager().getPublicationTemplates();
+          request.setAttribute("XMLForms", templates);
+        } catch (Exception e) {
+          SilverTrace.info("yellowPages",
+              "YellowPagesRequestRouter.getDestination(ModelUsed)",
+              "root.MSG_GEN_PARAM_VALUE", "", e);
+        }
+
+        Collection<String> modelUsed = scc.getModelUsed();
+        request.setAttribute("ModelUsed", modelUsed);
+
+        destination = rootDestination + "modelUsedList.jsp";
+      } else if (function.equals("DeleteContact")) {
+        // Delete contact
+        String contactId = (String) request.getParameter("ContactId");
+        scc.deleteContact(contactId);
+
+        // Back to topic
+        destination = getDestination("topicManager", scc, request);
+      } else if (function.equals("DeleteContactCompany")) {
+          // Delete company
+          String contactId = (String) request.getParameter("ContactCompanyId");
+          scc.deleteCompany(Integer.valueOf(contactId));
+          // Back to topic
+          destination = getDestination("topicManager", scc, request);
+      } else if (function.equals("SelectModel")) {
+        Object o = request.getParameterValues("modelChoice");
+        if (o != null) {
+          String[] models = (String[]) o;
+          scc.addModelUsed(models);
+        }
+        destination = getDestination("topicManager", scc, request);
+      } else if (function.startsWith("modelManager")) {
+        // récupération des données saisies dans le formulaire
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
+
+        String action = FileUploadUtil.getParameter(items, "Action", "");
+        String contactId = FileUploadUtil.getParameter(items, "ContactId", "");
+        String modelId = FileUploadUtil.getParameter(items, "ModelId", ""); // Id Node de
+        // rubrique ou
+        // Id de
+        // contact
+
+        if ("ModelChoice".equals(action)) {
+          List<PublicationTemplate> listTemplates = new ArrayList<PublicationTemplate>();
+          ArrayList<String> usedTemplates = new ArrayList<String>(scc.getModelUsed());
+          try {
+            List<PublicationTemplate> allTemplates = getPublicationTemplateManager()
+                .getPublicationTemplates();
+            PublicationTemplate xmlForm;
+            Iterator<PublicationTemplate> iterator = allTemplates.iterator();
+            while (iterator.hasNext()) {
+              xmlForm = (PublicationTemplate) iterator.next();
+              if (usedTemplates.contains(xmlForm.getFileName())) {
+                listTemplates.add(xmlForm);
+              }
+            }
+            request.setAttribute("XMLForms", listTemplates);
+          } catch (Exception e) {
+            SilverTrace.info("yellowpages",
+                "YellowpagesRequestRouter.getDestination(modelManager)",
+                "root.MSG_GEN_PARAM_VALUE", "", e);
+          }
+
+          if ((modelId == null || "".equals(modelId)) && contactId != null) {
+            NodeDetail topic = scc.getSubTopicDetail(contactId);
+            modelId = topic.getModelId();
+          }
+
+          if (modelId != null && "0".equals(modelId)) {
+            modelId = null;
+          }
+
+          if (modelId != null && !"".equals(modelId)) {
+            String xmlFormName = modelId;
+            String xmlFormShortName = xmlFormName.substring(xmlFormName
+                .indexOf("/") + 1, xmlFormName.indexOf("."));
+            // création du PublicationTemplate
+            getPublicationTemplateManager().addDynamicPublicationTemplate(scc
+                .getComponentId()
+                + ":" + xmlFormShortName, xmlFormName);
+            PublicationTemplateImpl pubTemplate =
+                (PublicationTemplateImpl) getPublicationTemplateManager()
+                    .getPublicationTemplate(scc.getComponentId() + ":"
+                        + xmlFormShortName, xmlFormName);
+
+            // création du formulaire et du DataRecord
+            Form formUpdate = pubTemplate.getUpdateForm();
+            RecordSet recordSet = pubTemplate.getRecordSet();
+            DataRecord data = recordSet.getEmptyRecord();
+            data.setId(contactId); // id Rubrique = id NodeDetail
+
+            // appel de la jsp avec les paramètres
+            request.setAttribute("Form", formUpdate);
+            request.setAttribute("Data", data);
+
+            PagesContext context = new PagesContext("modelForm", "0", scc
+                .getLanguage(), false, scc.getComponentId(), scc.getUserId());
+            context.setBorderPrinted(false);
+            context.setObjectId(contactId);
+            request.setAttribute("PagesContext", context);
+          }
+        } else if ("NewModel".equals(action)) {
+
+          if (!StringUtil.isDefined(modelId) && contactId != null) {
+            modelId = scc.getCurrentTopic().getNodeDetail().getModelId();
+          }
+
+          if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
+            String xmlFormName = modelId;
+            String xmlFormShortName = xmlFormName.substring(xmlFormName
+                .indexOf("/") + 1, xmlFormName.indexOf("."));
+            // création du PublicationTemplate
+            getPublicationTemplateManager().addDynamicPublicationTemplate(scc
+                .getComponentId()
+                + ":" + xmlFormShortName, xmlFormName);
+            PublicationTemplateImpl pubTemplate =
+                (PublicationTemplateImpl) getPublicationTemplateManager()
+                    .getPublicationTemplate(scc.getComponentId() + ":"
+                        + xmlFormShortName, xmlFormName);
+
+            // création du formulaire et du DataRecord
+            Form formUpdate = pubTemplate.getUpdateForm();
+            RecordSet recordSet = pubTemplate.getRecordSet();
+            DataRecord data = recordSet.getRecord(contactId);
+            if (data == null) {
+              data = recordSet.getEmptyRecord();
+              data.setId(contactId);// id contact
+            }
+
+            // appel de la jsp avec les paramètres
+            request.setAttribute("Form", formUpdate);
+            request.setAttribute("Data", data);
+
+            PagesContext context = new PagesContext("modelForm", "0", scc
+                .getLanguage(), false, scc.getComponentId(), scc.getUserId());
+            context.setBorderPrinted(false);
+            context.setObjectId(contactId);
+            request.setAttribute("PagesContext", context);
+          }
+        } else if ("Add".equals(action)) { // met à jour le choix de formulaire
+          // XML
+          if (StringUtil.isDefined(modelId)) {
+            String xmlFormName = modelId;
+            String xmlFormShortName = xmlFormName.substring(xmlFormName
+                .indexOf("/") + 1, xmlFormName.indexOf("."));
+
+            // récupération des données du formulaire (via le DataRecord)
+            PublicationTemplate pubTemplate = getPublicationTemplateManager()
+                .getPublicationTemplate(scc.getComponentId() + ":"
+                    + xmlFormShortName);
+            Form formUpdate = pubTemplate.getUpdateForm();
+            RecordSet recordSet = pubTemplate.getRecordSet();
+            DataRecord data = recordSet.getRecord(contactId);
+            if (data == null) {
+              data = recordSet.getEmptyRecord();
+              data.setId(contactId);// id contact
+            }
+
+            // sauvegarde des données du formulaire
+            PagesContext context = new PagesContext("modelForm", "0", scc
+                .getLanguage(), false, scc.getComponentId(), scc.getUserId());
+            context.setObjectId(contactId);
+            formUpdate.update(items, data, context);
+            recordSet.save(data);
+
+            // sauvegarde du contact et du model
+            scc.createInfoModel(contactId, modelId);
+
+          }
+        }
+
+        request.setAttribute("ContactId", contactId);
+        request.setAttribute("ModelId", modelId);
+        request.setAttribute("Action", action);
+        destination = "/yellowpages/jsp/modelManager.jsp";
+      } else if (function.equals("DeleteBasketContent")) {
+        scc.deleteBasketContent();
+        // Back to topic
+        destination = getDestination("topicManager", scc, request);
+      } else if ("ExportCSV".equals(function)) {
+        String csvFilename = scc.exportAsCSV();
+        request.setAttribute("CSVFilename", csvFilename);
+        if (StringUtil.isDefined(csvFilename)) {
+          File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
+          request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
+          request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
+          file = null;
+        }
+        return "/yellowpages/jsp/downloadCSV.jsp";
+      } else if ("ToImportCSV".equals(function)) {
+        destination = rootDestination + "importCSV.jsp";
+      } else if ("ImportCSV".equals(function)) {
+        List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+        FileItem fileItem = FileUploadUtil.getFile(parameters);
+        String modelId = scc.getCurrentTopic().getNodeDetail().getModelId();
+        request.setAttribute("Result", scc.importCSV(fileItem, modelId));
+        destination = rootDestination + "importCSV.jsp";
+      } else if ("companyView".equals(function)) {
+          String companyId = request.getParameter("ContactCompanyId");
+          Company company = scc.getCompany(Integer.valueOf(companyId));
+          request.setAttribute("company", company);
+          request.setAttribute("contactList", scc.getContactDetailListForCompanyId(company.getCompanyId()));
+          request.setAttribute("viewMode", true);
+          destination = rootDestination + "companyForm.jsp";
+
+      } else if ("companyAdd".equals(function)) {
+          request.setAttribute("viewMode", false);
+          destination = rootDestination + "companyForm.jsp";
+
+      } else if ("companyEdit".equals(function)) {
+          String companyId = request.getParameter("ContactCompanyId");
+          Company company = scc.getCompany(Integer.valueOf(companyId));
+          request.setAttribute("company", company);
+          request.setAttribute("viewMode", false);
+          destination = rootDestination + "companyForm.jsp";
+
+      } else if ("companySave".equals(function)) {
+          // Récupère la liste des paramètres de la form
+          String companyId = request.getParameter("id");
+          String name = request.getParameter("Name");
+          String email = request.getParameter("Email");
+          String phone = request.getParameter("Phone");
+          String fax = request.getParameter("Fax");
+
+          // Récupération du topicId
+          TopicDetail currentTopic = scc.getCurrentTopic();
+          int topicId = Integer.valueOf(currentTopic.getNodePK().getId());
+
+          // Enregistrement de la nouvelle company
+          if (StringUtil.isBlank(companyId)) {
+              scc.createCompany(name, email, phone, fax, topicId);
+          } else {
+              scc.saveCompany(Integer.valueOf(companyId), name, email, phone, fax);
+          }
+
+          // Reinitialise la liste des contacts du topic pour afficher les modifs
+          Collection<ContactFatherDetail> contacts = scc.getAllContactDetails(currentTopic.getNodePK());
+          request.setAttribute("CurrentTopic", currentTopic);
+
+          request.setAttribute("Contacts", contacts);
+
+          Collection<Company> companies = scc.getAllCompanies(currentTopic.getNodePK().getId());
+          request.setAttribute("Companies", companies);
+
+          scc.setCurrentContacts(contacts);
+          scc.setCurrentCompanies(companies);
+          destination = rootDestination + "topicManager.jsp?Profile=" + flag;
+      } else {
+        destination = "/yellowpages/jsp/" + function;
+      }
+    } catch (Exception exce_all) {
+      request.setAttribute("javax.servlet.jsp.jspException", exce_all);
+      return "/admin/jsp/errorpageMain.jsp";
     }
+    SilverTrace.info("yellowpages",
+        "YellowpagesRequestRooter.getDestination()",
+        "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
+    return destination;
+  }
+
+  /**
+   * Gets an instance of PublicationTemplateManager.
+   *
+   * @return an instance of PublicationTemplateManager.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
+  }
 
 }

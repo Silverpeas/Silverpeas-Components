@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,21 +31,32 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
-<%@ page import="com.stratelia.webactiv.survey.control.SurveySessionController "%>
-
 <%@ page import="java.util.*"%>
-<%@ page import="java.util.Collection"%>
-<%@ page import="java.util.Iterator"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="java.lang.Math"%>
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="java.text.ParseException"%>
 <%@ page import="javax.naming.Context,javax.naming.InitialContext,javax.rmi.PortableRemoteObject"%>
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
+
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="com.silverpeas.util.ForeignPK"%>
+<%@ page import="com.silverpeas.util.StringUtil"%>
+
+<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="com.stratelia.webactiv.survey.control.SurveySessionController "%>
+<%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
+
+<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+
+<%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
+<%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
+
+<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="com.stratelia.webactiv.util.DateUtil"%>
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
@@ -67,49 +78,41 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
+
+<%@ page import="com.stratelia.webactiv.util.questionContainer.model.Comment"%>
 <%@ page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader "%>
 <%@ page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail "%>
 <%@ page import="com.stratelia.webactiv.util.questionResult.model.QuestionResult "%>
 
-<%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@ page import="com.stratelia.webactiv.util.FileServerUtils"%>
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
+
 <%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil"%>
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
-<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
-<%@ page import="com.stratelia.webactiv.util.questionContainer.model.Comment"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@ page import="com.silverpeas.util.ForeignPK"%>
-<%@ page import="com.silverpeas.util.EncodeHelper"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%
-    SurveySessionController surveyScc = (SurveySessionController) request.getAttribute("survey");
-    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-    ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+  SurveySessionController surveyScc = (SurveySessionController) request.getAttribute("survey");
+  GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+  ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
 
-    if (surveyScc == null) {
-        // No session controller in the request -> security exception
-        String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
-        getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
-        return;
-    }
+  if (surveyScc == null) {
+      // No session controller in the request -> security exception
+      String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+      getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
+      return;
+  }
 
-    ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(surveyScc.getLanguage());
+  ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(surveyScc.getLanguage());
 
-    String[] browseContext = (String[]) request.getAttribute("browseContext");
-	String spaceLabel 		= browseContext[0];
-	String componentLabel 	= browseContext[1];
-	String spaceId 			= browseContext[2];
-	String componentId 		= browseContext[3];
+  String[] browseContext = (String[]) request.getAttribute("browseContext");
+  String spaceLabel 		= browseContext[0];
+  String componentLabel 	= browseContext[1];
+  String spaceId 			= browseContext[2];
+  String componentId 		= browseContext[3];
 
-    boolean pollingStationMode = (componentId != null && componentId.startsWith("pollingStation"));
+  boolean pollingStationMode = (componentId != null && componentId.startsWith("pollingStation"));
 %>

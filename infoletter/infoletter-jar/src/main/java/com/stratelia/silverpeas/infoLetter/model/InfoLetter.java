@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,35 +23,26 @@
  */
 package com.stratelia.silverpeas.infoLetter.model;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import java.util.Vector;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
-public class InfoLetter extends SilverpeasBean implements Comparable {
+public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter> {
 
-  // Membres
+  private static final long serialVersionUID = -4798869204934629386L;
 
-  /** id de l'instance */
+  /** InfoLetter instance identifier */
   private String instanceId;
 
-  /** nom de la liste */
+  /** InfoLetter name */
   private String name;
 
-  /** description de la liste */
+  /** Info Letter description */
   private String description;
 
-  /** periodicite de la liste */
+  /** InfoLetter frequency */
   private String periode;
 
-  /** abonnes internes */
-  private Vector internalSuscribers;
-
-  /** abonnes externes */
-  private Vector externalSuscribers;
-
-  /** publications */
-  private Vector publications;
 
   // Constructeurs
 
@@ -66,9 +57,6 @@ public class InfoLetter extends SilverpeasBean implements Comparable {
     name = "";
     description = "";
     periode = "";
-    internalSuscribers = new Vector();
-    externalSuscribers = new Vector();
-    publications = new Vector();
   }
 
   /**
@@ -83,18 +71,14 @@ public class InfoLetter extends SilverpeasBean implements Comparable {
    * @author frageade
    * @since February 2002
    */
-  public InfoLetter(WAPrimaryKey pk, String instanceId, String name,
-      String description, String periode, Vector internalSuscribers,
-      Vector externalSuscribers, Vector publications) {
+  public InfoLetter(WAPrimaryKey pk, String instanceId, String name, String description,
+      String periode) {
     super();
     setPK(pk);
     this.instanceId = instanceId;
     this.name = name;
     this.description = description;
     this.periode = periode;
-    this.internalSuscribers = internalSuscribers;
-    this.externalSuscribers = externalSuscribers;
-    this.publications = publications;
   }
 
   // Assesseurs
@@ -131,41 +115,17 @@ public class InfoLetter extends SilverpeasBean implements Comparable {
     this.periode = periode;
   }
 
-  public Vector readInternalSuscribers() {
-    return internalSuscribers;
-  }
-
-  public void writeInternalSuscribers(Vector internalSuscribers) {
-    this.internalSuscribers = internalSuscribers;
-  }
-
-  public Vector readExternalSuscribers() {
-    return externalSuscribers;
-  }
-
-  public void writeExternalSuscribers(Vector externalSuscribers) {
-    this.externalSuscribers = externalSuscribers;
-  }
-
-  public Vector readPublications() {
-    return publications;
-  }
-
-  public void writePublications(Vector publications) {
-    this.publications = publications;
-  }
-
   // Methodes
 
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
-  public int compareTo(Object obj) {
-    if (!(obj instanceof InfoLetter))
+  public int compareTo(InfoLetter obj) {
+    if (!(obj instanceof InfoLetter)) {
       return 0;
-    return (String.valueOf(getPK().getId())).compareTo(String
-        .valueOf(((InfoLetter) obj).getPK().getId()));
+    }
+    return (String.valueOf(getPK().getId())).compareTo(String.valueOf(obj.getPK().getId()));
   }
 
   public String _getTableName() {
@@ -173,7 +133,3 @@ public class InfoLetter extends SilverpeasBean implements Comparable {
   }
 
 }
-
-/*************************
- *** Fin du fichier ***
- ************************/

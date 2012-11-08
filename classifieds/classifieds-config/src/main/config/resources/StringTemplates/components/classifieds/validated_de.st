@@ -1,0 +1,1 @@
+Ihre Kleinanzeige <b>$classified.title$</b> wurde validiert.

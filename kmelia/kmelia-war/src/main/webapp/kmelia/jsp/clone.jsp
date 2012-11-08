@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,7 +51,6 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 %>
 
 <%
-  	ResourceLocator uploadSettings 		= new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
   	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
 
 	//Recuperation des parametres
@@ -121,36 +120,18 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
         }
 	}
 
-    String creationDate = resources.getOutputDate(pubDetail.getCreationDate());
-
   	String author 	= pubDetail.getAuthor();
 
   	String creatorId = pubDetail.getCreatorId();
-	String creatorName	= resources.getString("kmelia.UnknownUser");
-	if (creatorId != null && creatorId.length() > 0) {
-		UserDetail creator = kmeliaScc.getUserDetail(creatorId);
-		if (creator != null) {
-			creatorName = creator.getDisplayedName();
-		}
-	}
-
 	String updaterId = pubDetail.getUpdaterId();
-	String updaterName = resources.getString("kmelia.UnknownUser");
-	if (updaterId != null && updaterId.length() > 0) {
-		UserDetail updater = kmeliaScc.getUserDetail(updaterId);
-		if (updater != null) {
-			updaterName = updater.getDisplayedName();
-		}
-	}
 %>
-<HTML>
-<HEAD>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<view:looknfeel/>
+<view:includePlugin name="wysiwyg"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
@@ -243,8 +224,8 @@ function pubDraftOut() {
 	}
 }
 </script>
-</HEAD>
-<BODY class="yui-skin-sam" onUnload="closeWindows()" onLoad="openSingleAttachment()">
+</head>
+<body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()">
 <%
         Window window = gef.getWindow();
         Frame frame = gef.getFrame();
@@ -258,7 +239,7 @@ function pubDraftOut() {
         OperationPane operationPane = window.getOperationPane();
         if (!"supervisor".equals(profile)) {
           if (attachmentsEnabled) {
-          	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
+          	operationPane.addOperationOfCreation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
           }
           if (kmeliaScc.isDraftEnabled()) {
             if (pubDetail.isDraft()) {
@@ -322,7 +303,9 @@ function pubDraftOut() {
 		out.println("<br><b>"+EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper.convertHTMLEntities(pubDetail.getDescription()))+"<b><BR><BR>");
 
 		out.println("</TD></TR></table>");
-
+%>		
+	<view:areaOfOperationOfCreation/>	
+<%
 		/*********************************************************************************************************************/
 		/** Affichage du contenu de la publication																			**/
 		/*********************************************************************************************************************/
@@ -341,7 +324,7 @@ function pubDraftOut() {
               PagesContext xmlContext = new PagesContext("myForm", "0", resources.getLanguage(),
                   false, componentId, kmeliaScc.getUserId());
               xmlContext.setObjectId(id);
-              xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
+              xmlContext.setNodeId(kmeliaScc.getCurrentFolderId());
               xmlContext.setBorderPrinted(false);
               xmlContext.setContentLanguage(currentLang);
                 
@@ -370,9 +353,9 @@ function pubDraftOut() {
 			try {
 				out.flush();
 				if (kmeliaScc.isVersionControlled()) {
-					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+visiblePubId+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()).include(request, response);
+					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+visiblePubId+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo).include(request, response);
 				} else {
-					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+profile).include(request, response);
+					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&Profile="+profile).include(request, response);
 				}
 			} catch (Exception e) {
 				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
@@ -382,37 +365,41 @@ function pubDraftOut() {
 	    out.println("</TR>");
 		out.println("</TABLE>");
 
-    	out.println("<CENTER>");
+    	out.println("<center>");
     	out.print("<span class=\"txtBaseline\">");
     	if (kmeliaScc.isAuthorUsed() && pubDetail.getAuthor() != null && !pubDetail.getAuthor().equals("")) {
 			out.print("<br/>");
 			out.print(resources.getString("GML.author")+" : "+pubDetail.getAuthor());
 		}
     	out.print("<br/>");
-		out.print(creatorName+" - "+resources.getOutputDate(pubDetail.getCreationDate()));
-		if (updaterId != null) {
-			out.print(" | ");
-			out.print(resources.getString("kmelia.LastModification")+" : "+updaterName+" - "+resources.getOutputDate(pubDetail.getUpdateDate()));
-		}
-		out.println("</CENTER>");
+    	%>
+    		<view:username userId="<%=creatorId%>" /> - <%=resources.getOutputDate(pubDetail.getCreationDate()) %>
+    	<%
+		if (updaterId != null) { %>
+			 | <%=resources.getString("kmelia.LastModification") %> : <view:username userId="<%=updaterId%>" /> - <%=resources.getOutputDate(pubDetail.getUpdateDate()) %>
+		<% }
+		out.println("</center>");
 
 		out.flush();
 
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>
-<FORM NAME="pubForm" ACTION="<%=routerUrl%>clone.jsp" METHOD="POST">
-	<input type="hidden" name="Action">
-	<input type="hidden" name="PubId">
-	<input type="hidden" name="Profile" value="<%=profile%>">
-</FORM>
-<FORM NAME="refusalForm" action="<%=routerUrl%>Unvalidate">
-  	<input type="hidden" name="PubId" value="<%=id%>">
-  	<input type="hidden" name="Motive" value="">
-</FORM>
-<FORM NAME="defermentForm" ACTION="<%=routerUrl%>SuspendPublication" METHOD="POST">
-  	<input type="hidden" name="PubId" value="<%=id%>">
-  	<input type="hidden" name="Motive" value="">
-</FORM>
-</BODY>
-</HTML>
+<form name="pubForm" action="<%=routerUrl%>clone.jsp" method="post">
+	<input type="hidden" name="Action"/>
+	<input type="hidden" name="PubId"/>
+	<input type="hidden" name="Profile" value="<%=profile%>"/>
+</form>
+<form name="refusalForm" action="<%=routerUrl%>Unvalidate">
+  	<input type="hidden" name="PubId" value="<%=id%>"/>
+  	<input type="hidden" name="Motive" value=""/>
+</form>
+<form name="defermentForm" action="<%=routerUrl%>SuspendPublication" method="post">
+  	<input type="hidden" name="PubId" value="<%=id%>"/>
+  	<input type="hidden" name="Motive" value=""/>
+</form>
+<form name="toRouterForm" method="post">
+	<input type="hidden" name="PubId"/>
+</form>
+</body>
+</html>

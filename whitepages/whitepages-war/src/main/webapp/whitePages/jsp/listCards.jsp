@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,23 +29,21 @@
 <%@ page import="com.silverpeas.whitePages.model.*"%>
 <%@ page import="com.silverpeas.whitePages.record.*"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkWhitePages.jsp" %>
-
-
 
 <%!
     String displayIcon(String source, String messageAlt)
     {
 		String Html_display = "";
 		
-		Html_display = "<img src="+source+" alt="+messageAlt+" title="+messageAlt+">&nbsp;";
+		Html_display = "<img src="+source+" alt="+messageAlt+" title="+messageAlt+"/>&nbsp;";
 
 		return Html_display;
 	}
 %>
 	
 <%
-			
 	Collection listCard = (Collection) request.getAttribute("listCards");		
 			
 	browseBar.setDomainName(spaceLabel);
@@ -53,7 +51,7 @@
 	
    	operationPane.addOperation(pdcUtilizationSrc, resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+scc.getComponentId()+"','utilizationPdc1')");
     operationPane.addLine();
-	operationPane.addOperation(resource.getIcon("whitePages.newCard"), resource.getString("whitePages.op.createUser"), "javascript:onClick=B_CREATE_ONCLICK();");
+	operationPane.addOperationOfCreation(resource.getIcon("whitePages.newCard"), resource.getString("whitePages.op.createUser"), "javascript:onClick=B_CREATE_ONCLICK();");
 	operationPane.addLine();
 	operationPane.addOperation(resource.getIcon("whitePages.delCard"), resource.getString("whitePages.op.deleteUser"), "javascript:onClick=B_DELETE_ONCLICK('"+listCard.size()+"');");
 	operationPane.addLine();
@@ -62,19 +60,16 @@
 	operationPane.addOperation(resource.getIcon("whitePages.showCard"), resource.getString("whitePages.op.showCard"), "javascript:onClick=B_SHOW_ONCLICK('"+listCard.size()+"');");
 	operationPane.addLine();
 	operationPane.addOperation(resource.getIcon("whitePages.searchCard"), resource.getString("whitePages.op.searchCard"), "javascript:onClick=B_SEARCH_ONCLICK();");
-
-
-%>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function B_CREATE_ONCLICK() {
 	location.href = "<%=routerUrl%>createQuery";
 }
@@ -143,16 +138,15 @@ function B_SEARCH_ONCLICK() {
 }
 
 </script>
-
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
-<FORM NAME="liste_card" >
+</head>
+<body>
+<form name="liste_card" >
 <%
-
 out.println(window.printBefore());
-out.println(frame.printBefore());
 %>
-<br><br>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<br/>
 <%
 				ArrayPane arrayPane = gef.getArrayPane("Annuaire", routerUrl+"Main", request, session);
 				if (arrayPane.getColumnToSort() == 0)
@@ -204,17 +198,13 @@ out.println(frame.printBefore());
 					}
 				}
 				
-				
 		out.println(arrayPane.print());
-		
 %>
 
-
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-
-</FORM>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>

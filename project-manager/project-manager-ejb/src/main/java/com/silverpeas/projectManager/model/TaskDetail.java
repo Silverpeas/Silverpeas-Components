@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,6 +46,7 @@ public class TaskDetail implements Serializable {
   public final static int COMPLETE = 3;
   public final static int IN_ALERT = 4;
   public final static int NOT_STARTED = 5;
+  private static final String TYPE = "Task";
   private int id;
   private int mereId = -1;
   private int chrono;
@@ -646,5 +647,17 @@ public class TaskDetail implements Serializable {
    */
   public void setPreviousTaskName(String string) {
     previousTaskName = string;
+  }
+
+  public String getContributionType() {
+    return TYPE;
+  }
+  
+  /**
+   * The type of this resource
+   * @return the same value returned by getContributionType()
+   */
+  public static String getResourceType() {
+    return TYPE;
   }
 }

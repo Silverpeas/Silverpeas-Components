@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,15 +38,21 @@
 <%@ page import="java.io.File"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
 <%@ include file="checkSurvey.jsp"%>
-<%@ include file="surveyUtils.jsp.inc"%>
+<%@ include file="surveyUtils.jsp"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<c:set var="ctxPath" value="${pageContext.request.contextPath}" />
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<c:set var="profile" value="${requestScope['Profile']}"/>
 <%!String displayAlreadyVotes(QuestionContainerDetail survey, SurveySessionController surveyScc,
       GraphicElementFactory gef, ResourcesWrapper resources) throws SurveyException, ParseException {
 
@@ -121,7 +127,12 @@
   String alertSrc = m_context + "/util/icons/alert.gif";
   String exportSrc = m_context + "/util/icons/export.gif";
   String copySrc = m_context + "util/icons/copy.gif";
+%>
+<c:url value="/util/icons/alert.gif" var="alertSrc"></c:url>
+<c:url value="/util/icons/export.gif" var="exportSrc"></c:url>
+<c:url value="/util/icons/copy.gif" var="copySrc"></c:url>
 
+<%
   QuestionContainerDetail survey = null;
   boolean isClosed = false;
   boolean inWait = false;
@@ -263,12 +274,13 @@
     surveyId = surveyScc.createSurvey(surveyDetail).getId();
     surveyScc.removeSessionSurveyUnderConstruction();
   } else if (action.equals("PreviewSurvey")) {
-    out.println("<html>");
-    out.println("<head>");
-    out.println(gef.getLookStyleSheet());
-    out.println("</head>");
-    out.println("<body>");
-
+%>
+<html>
+<head>
+<view:looknfeel />
+</head>
+<body>
+<%
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(surveyScc.getSpaceLabel());
@@ -282,11 +294,13 @@
     out.println(window.print());
   }
   if (action.equals("ViewSurvey")) {
-    out.println("<html>");
-    out.println("<head>");
-    out.println(gef.getLookStyleSheet());
-    out.println("</head>");
-    out.println("<body>");
+    %>
+<html>
+<head>
+<view:looknfeel />
+</head>
+<body>
+    <%
 
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
@@ -305,6 +319,9 @@
         "javaScript:onClick=goToNotify('" + url + "')");
 
     window.addBody(surveyPart);
+    %>
+    <view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
+    <%
     out.println(window.print());
   } //End if action = ViewSurvey
 
@@ -313,10 +330,7 @@
 <html>
 <head>
 <title></title>
-
-<%
-  out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 </head>
@@ -341,178 +355,182 @@
 <html>
 <head>
 <title></title>
+<view:looknfeel />
 
-<%
-  out.println(gef.getLookStyleSheet());
-%>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-        function sendVote(roundId) {
-          if (isCorrectForm()) {
+function sendVote(roundId) {
+  if (isCorrectForm()) {
 
-        	 try
-        	 {
-				 document.survey.anonymousComment.disabled = false;
-        		 if (document.survey.anonymousComment.checked)
-        			 x = 1;
-        		 else
-        			 x = 0;
-        		 document.survey.Comment.value = document.survey.Comment.value;
-        		 document.survey.anonymousComment.value = x;
-        	 } catch (e)
-        	 {
-        		 //la zone commentaire n'est pas affich?e pour la page courante
-        	 }
+	 try
+	 {
+ document.survey.anonymousComment.disabled = false;
+		 if (document.survey.anonymousComment.checked)
+			 x = 1;
+		 else
+			 x = 0;
+		 document.survey.Comment.value = document.survey.Comment.value;
+		 document.survey.anonymousComment.value = x;
+	 } catch (e)
+	 {
+		 //la zone commentaire n'est pas affich?e pour la page courante
+	 }
 
-        	 if (roundId == "end") {
-                  document.survey.Action.value="SendVote";
-                  document.survey.submit();
-        	 } else {
-                 document.survey.RoundId.value = roundId;
-                  document.survey.Action.value="RecordQuestionsResponses";
-                  document.survey.submit();
-            }
+	 if (roundId == "end") {
+          document.survey.Action.value="SendVote";
+          document.survey.submit();
+	 } else {
+         document.survey.RoundId.value = roundId;
+          document.survey.Action.value="RecordQuestionsResponses";
+          document.survey.submit();
+    }
+  }
+}
+
+function checkRadioAndCheckboxes()
+{
+	var ok = false;
+	var first = true;
+	var name = "";
+	var indice = 1;
+    for (var i=0; i<document.survey.length; i++)
+    {
+    	// on passe sur toutes les zones du formulaire
+    	name = document.survey.elements[i].name;
+    	startName = name.substr(0,7);
+    	//alert(document.survey.elements[i].type+", "+name+", ok = "+ok+", indice = "+indice);
+    	if (startName == "answer_")
+    	{
+    		// on ne contr?le que les zones r?ponses
+    		endName = name.substr(7);
+    		if (first)
+    		{
+    			indice = endName;
+    			first = false;
+    		}
+    		if (endName != indice)
+    		{
+    			// on a d?j? contr?l? une question qui n'a pas de r?ponse, pas la peine de continuer
+    			if (!ok)
+    				return false;
+
+    			ok = false;
+    		}
+       	if (document.survey.elements[i].type == "radio" || document.survey.elements[i].type == "checkbox")
+       	{
+       		// contr?le des boutons radio et des cases ? cocher (pas de contr?le pour les questions ouvertes)
+         	if (document.survey.elements[i].checked)
+         	{
+         		// une case est coch?e, valider la question
+         		ok = true;
+         	}
+         	indice = endName;
+       	}
+       	else
+       	{
+       		ok = true;
+       	}
+    	} // fin : if (startName == "answer_")
+    }
+    return ok;
+}
+
+function isCorrectForm() {
+     var errorMsg = "";
+     var errorNb = 0;
+
+     ok = 1;
+     for (var i=0; i<document.survey.length; i++) {
+          if (document.survey.elements[i].type == "textarea") {
+              if (!isValidTextArea(document.survey.elements[i])) {
+                    ok = 0;
+                    document.survey.elements[i].select();
+                    errorMsg+=" <%=resources.getString("GML.theField")%> <%=resources.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Characters")%>";
+                    errorNb++;
+              }
           }
-        }
+     }
+     // contr?le que toutes les questions aient au moins une r?ponse valid?e
+   if (!checkRadioAndCheckboxes())
+   {
+    	 errorMsg+="<%=resources.getString("survey.NoResponse")%>";
+       errorNb++;
+   }
+     switch(errorNb) {
+        case 0 :
+            result = true;
+            break;
+        case 1 :
+            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+            window.alert(errorMsg);
+            result = false;
+            break;
+        default :
+            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+            window.alert(errorMsg);
+            result = false;
+            break;
+     }
+     return result;
+}
 
-        function checkRadioAndCheckboxes()
-        {
-        	var ok = false;
-        	var first = true;
-        	var name = "";
-        	var indice = 1;
-            for (var i=0; i<document.survey.length; i++)
-            {
-            	// on passe sur toutes les zones du formulaire
-            	name = document.survey.elements[i].name;
-            	startName = name.substr(0,7);
-            	//alert(document.survey.elements[i].type+", "+name+", ok = "+ok+", indice = "+indice);
-            	if (startName == "answer_")
-            	{
-            		// on ne contr?le que les zones r?ponses
-            		endName = name.substr(7);
-            		if (first)
-            		{
-            			indice = endName;
-            			first = false;
-            		}
-            		if (endName != indice)
-            		{
-            			// on a d?j? contr?l? une question qui n'a pas de r?ponse, pas la peine de continuer
-            			if (!ok)
-            				return false;
+function checkButton(input) {
+    if (!input.checked)
+        input.click();
+}
 
-            			ok = false;
-            		}
-		           	if (document.survey.elements[i].type == "radio" || document.survey.elements[i].type == "checkbox")
-		           	{
-		           		// contr?le des boutons radio et des cases ? cocher (pas de contr?le pour les questions ouvertes)
-			           	if (document.survey.elements[i].checked)
-			           	{
-			           		// une case est coch?e, valider la question
-			           		ok = true;
-			           	}
-			           	indice = endName;
-		           	}
-		           	else
-		           	{
-		           		ok = true;
-		           	}
-            	} // fin : if (startName == "answer_")
-            }
-            return ok;
-        }
+var notifyWindow = window;
 
-        function isCorrectForm() {
-             var errorMsg = "";
-             var errorNb = 0;
+function goToNotify(url)
+{
+	windowName = "notifyWindow";
+	larg = "740";
+	haut = "600";
+    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    if (!notifyWindow.closed && notifyWindow.name == "notifyWindow")
+        notifyWindow.close();
+    notifyWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+}
 
-             ok = 1;
-             for (var i=0; i<document.survey.length; i++) {
-                  if (document.survey.elements[i].type == "textarea") {
-                      if (!isValidTextArea(document.survey.elements[i])) {
-                            ok = 0;
-                            document.survey.elements[i].select();
-                            errorMsg+=" <%=resources.getString("GML.theField")%> <%=resources.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Characters")%>";
-                            errorNb++;
-                      }
-                  }
-             }
-             // contr?le que toutes les questions aient au moins une r?ponse valid?e
-	         if (!checkRadioAndCheckboxes())
-	         {
-	          	 errorMsg+="<%=resources.getString("survey.NoResponse")%>";
-	             errorNb++;
-	         }
-             switch(errorNb) {
-                case 0 :
-                    result = true;
-                    break;
-                case 1 :
-                    errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-                    window.alert(errorMsg);
-                    result = false;
-                    break;
-                default :
-                    errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-                    window.alert(errorMsg);
-                    result = false;
-                    break;
-             }
-             return result;
-        }
+function clipboardCopy() {
+    top.IdleFrame.location.href = '../..<%=surveyScc.getComponentUrl()%>copy?Id=<%=survey.getHeader().getId()%>';
+}
 
-        function checkButton(input) {
-            if (!input.checked)
-                input.click();
-        }
-
-        var notifyWindow = window;
-
-        function goToNotify(url)
-        {
-        	windowName = "notifyWindow";
-        	larg = "740";
-        	haut = "600";
-            windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-            if (!notifyWindow.closed && notifyWindow.name == "notifyWindow")
-                notifyWindow.close();
-            notifyWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-        }
-
-        function clipboardCopy() {
-            top.IdleFrame.location.href = '../..<%=surveyScc.getComponentUrl()%>copy?Id=<%=survey.getHeader().getId()%>';
-        }
-
-        </script>
+</script>
 </head>
 
 <body>
+<view:window>
 <%
-  Window window = gef.getWindow();
+    Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(surveyScc.getSpaceLabel());
     browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp?Action=View");
     browseBar.setExtraInformation(survey.getHeader().getTitle());
-
+  
     participated = false;
     String surveyPart =
         displayQuestions(survey, Integer.parseInt(roundId), gef, m_context, surveyScc,
             resources, settings, profile, pollingStationMode, participated);
-
+  
     // notification
     OperationPane operationPane = window.getOperationPane();
     String url = "ToAlertUser?SurveyId=" + surveyId;
     operationPane.addOperation(alertSrc, resources.getString("GML.notify"),
         "javaScript:onClick=goToNotify('" + url + "')");
-
+  
     // copier
     operationPane.addOperation(copySrc, resources.getString("GML.copy"),
         "javaScript:onClick=clipboardCopy()");
-
-    window.addBody(surveyPart);
-    out.println(window.print());
+  
+    out.println(surveyPart);
+    //window.addBody(surveyPart);
+    //out.println(window.print());
+%>
+<view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
+</view:window>
+<%
   } else if (action.equals("ViewResult")) {
     String iconsPath =
         GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
@@ -521,9 +539,7 @@
 <html>
 <head>
 <title></title>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel />
 <script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
@@ -609,50 +625,49 @@
 <body id="survey-result-<%=choice%>">
 <%
   survey = surveyScc.getSurvey(surveyId);
+%>
+<view:browseBar extraInformations="<%=survey.getHeader().getTitle()%>" componentId="<%=surveyScc.getComponentId()%>">
+</view:browseBar>
+<view:operationPane>
+  <fmt:message key="GML.notify" var="notifyUserMsg" />
+  <c:set var="notifyUserAction">javaScript:onClick=goToNotify('ToAlertUser?SurveyId=<%=surveyId%>');</c:set>
+  <view:operation altText="${notifyUserMsg}" icon="${alertSrc}" action="${notifyUserAction}" />
 
-    Window window = gef.getWindow();
-    Frame frame = gef.getFrame();
+  <c:if test="${fn:contains(profile,'admin')}">
+    <fmt:message key="GML.export" var="exportMsg" />
+    <c:set var="exportAction">javaScript:onClick=Export('ExportCSV?SurveyId=<%=surveyId%>');</c:set>
+    <view:operation altText="${exportMsg}" icon="${exportSrc}" action="${exportAction}" />
+  </c:if>
+  <fmt:message key="GML.copy" var="copyMsg" />
+  <view:operation altText="${copyMsg}" icon="${copySrc}" action="javaScript:onClick=clipboardCopy();" />
+</view:operationPane>
+<view:window>
+<view:frame>
+<%
+Frame frame = gef.getFrame();
+String alreadyVotes = displayAlreadyVotes(survey, surveyScc, gef, resources);
+String surveyPart =
+    displaySurveyResult(choice, survey, gef, m_context, surveyScc, resources, isClosed,
+        settings, frame, participated);
+out.println(displayTabs(surveyScc, survey.getHeader().getPK().getId(), gef, action,
+    profile, resources, pollingStationMode, participated).print() +
+    frame.printBefore() + "<center>" + alreadyVotes + "</center><BR>" + surveyPart);
 
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(surveyScc.getSpaceLabel());
-    browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp?Action=View");
-    browseBar.setExtraInformation(survey.getHeader().getTitle());
+%>
+<view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
+</view:frame>
+</view:window>
+<%
 
-    //notification
-    OperationPane operationPane = window.getOperationPane();
-    String url = "ToAlertUser?SurveyId=" + surveyId;
-    operationPane.addOperation(alertSrc, resources.getString("GML.notify"),
-        "javaScript:onClick=goToNotify('" + url + "')");
-
-    if (profile.equals("admin")) {
-      // export csv
-      url = "ExportCSV?SurveyId=" + surveyId;
-      operationPane.addOperation(exportSrc, resources.getString("GML.export"),
-          "javaScript:onClick=Export('" + url + "')");
-    }
-
-    // copier
-    operationPane.addOperation(copySrc, resources.getString("GML.copy"),
-        "javaScript:onClick=clipboardCopy()");
-
-    String alreadyVotes = displayAlreadyVotes(survey, surveyScc, gef, resources);
-    String surveyPart =
-        displaySurveyResult(choice, survey, gef, m_context, surveyScc, resources, isClosed,
-            settings, frame, participated);
-    window.addBody(displayTabs(surveyScc, survey.getHeader().getPK().getId(), gef, action,
-        profile, resources, pollingStationMode, participated).print() +
-        frame.printBefore() + "<center>" + alreadyVotes + "</center><BR>" + surveyPart);
-
-    out.println(window.print());
   } else if (action.equals("SubmitAndUpdateSurvey")) {
 %>
 <html>
 <head>
 <script language="Javascript">
-            function Replace() {
-              location.replace("surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=<%=surveyId%>");
-            }
-        </script>
+function Replace() {
+  location.replace("surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=<%=surveyId%>");
+}
+</script>
 </head>
 <body onload="Replace()">
 <%

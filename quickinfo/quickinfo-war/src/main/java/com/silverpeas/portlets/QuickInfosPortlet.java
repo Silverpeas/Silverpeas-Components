@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,44 +39,41 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoTransversalSC;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public class QuickInfosPortlet extends GenericPortlet implements FormNames {
 
-  public void doView(RenderRequest request, RenderResponse response)
-      throws PortletException, IOException {
+  public void doView(RenderRequest request, RenderResponse response) throws PortletException,
+      IOException {
     PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
-        PortletSession.APPLICATION_SCOPE);
+    MainSessionController m_MainSessionCtrl =
+        (MainSessionController) session.getAttribute(
+            MainSessionController.MAIN_SESSION_CONTROLLER_ATT, PortletSession.APPLICATION_SCOPE);
 
     QuickInfoTransversalSC quickinfoTransversal = new QuickInfoTransversalSC();
     quickinfoTransversal.init(m_MainSessionCtrl);
-    List quickinfos = new ArrayList();
+    List<PublicationDetail> quickinfos = new ArrayList<PublicationDetail>();
     try {
-      quickinfos = (List) quickinfoTransversal.getAllQuickInfos();
+      quickinfos = new ArrayList<PublicationDetail>(quickinfoTransversal.getAllQuickInfos());
     } catch (Exception e) {
       SilverTrace.error("portlet", "QuickInfosPortlet", "portlet.ERROR", e);
     }
-
     request.setAttribute("QuickInfos", quickinfos.iterator());
-
     include(request, response, "portlet.jsp");
   }
 
-  public void doEdit(RenderRequest request, RenderResponse response)
-      throws PortletException {
+  public void doEdit(RenderRequest request, RenderResponse response) throws PortletException {
     include(request, response, "edit.jsp");
   }
 
   /** Include "help" JSP. */
-  public void doHelp(RenderRequest request, RenderResponse response)
-      throws PortletException {
+  public void doHelp(RenderRequest request, RenderResponse response) throws PortletException {
     include(request, response, "help.jsp");
   }
 
   /** Include a page. */
-  private void include(RenderRequest request, RenderResponse response,
-      String pageName) throws PortletException {
+  private void include(RenderRequest request, RenderResponse response, String pageName)
+      throws PortletException {
     response.setContentType(request.getResponseContentType());
     if (!StringUtil.isDefined(pageName)) {
       // assert

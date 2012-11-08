@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -141,27 +141,27 @@
 }
 
 #pubList #pubsHeader {
-	background-color:transparent;
-	background-image:url("/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg");
-	background-repeat:repeat-x;
+	border-bottom: 1px solid #E9E9E9;
 	font-weight:bold;
 	float: left;
 	width: 100%;
+	line-height: 27px;
+	padding-bottom: 3px;
 }
 
 #pubList #pubsHeader img {
-	float: left;
+	vertical-align: middle;
+	margin-right: 3px;
+	margin-left: 5px;
 }
 
 #pubList #pubsCounter {
-	float:left;
-	margin-top:8px;
 	position:relative;
 }
 
 #pubList #pubsSort {
 	float: right;
-	margin-top: 6px;
+	margin-top: 3px;
 	position: relative;
 }
 
@@ -211,7 +211,7 @@
 
 #pubList .publication {
 	white-space: normal;
-	float: left;
+	display: inline;
 }
 
 #pubList .publication .bullet {
@@ -238,10 +238,13 @@
 #pubList .publication .line2, 
 #pubList .publication .line3,
 #pubList .publication .files {
-	margin-left: 15px;
-	width: 95%;
+	padding-left: 32px;
 	white-space: normal;
-	/*float: left;*/
+}
+
+#pubList .publication .files {
+	padding-left: 45px;
+	display:block;
 }
 
 #pubList .publication .line3 {
@@ -450,6 +453,7 @@
 
 #topicDescription {
 	color:#666;
+	margin: 1em; 
 }
 
 /*** A basculer dans la css global pour utilisation générique */
@@ -616,8 +620,129 @@
 .commentaires {
 	border-top: 2px dotted #CECECE;
 	margin-top: 15px;
+	overflow:auto;
+	width:100%;
+	clear:left;
 }
 
 .publicationManager .classification .legende {
 	display: none;
+}
+
+#addOrUpdateNode #deleteTranslation img {
+	vertical-align: text-bottom;
+	border: 0px;
+	margin-left: 3px;
+}
+
+.topic-statistics .container-filter label {
+	display:inline-block;
+	width:150px;
+}
+.topic-statistics .button-filter {
+	margin:20px 0 0 50px;
+}
+.topic-statistics #datePersonnalisedControl {
+	margin:7px 0 0 153px;
+}
+.topic-statistics  .datecontrole , 
+.topic-statistics  .filterLibGroup {
+	margin-bottom:7px;
+}
+
+.topic-statistics  .filterLibGroup a, 
+.topic-statistics  .filterLibGroup a:hover{    
+	background-color:transparent;
+    border: 0px solid #CECECE;
+    padding:0;
+ }
+ .topic-statistics  img {
+	vertical-align:text-bottom;
+ } 
+ 
+ .topic-statistics .inlineMessage {
+	font-size:16px;
+	text-align:left;
+	width:98%;
+	padding:0.5% 1%;
+	margin:10px 0;
+ }
+.table-result-statistics {
+	width:100%;
+	
+}
+.table-result-statistics .even td,
+.table-result-statistics .odd td{
+	background-color:#f9f9f9;
+	border-bottom:1px solid #d4d4d4;
+	padding:10px;
+ }
+.table-result-statistics .odd td{
+	background-color:#eeeeee;
+ }
+.table-result-statistics thead td{
+	background-color:#e4e4e4;
+	border-bottom:1px solid #cccccc;
+	font-weight:bold;
+	padding:10px;
+ }
+.table-result-statistics thead th{
+	font-weight:bold;
+	text-align:left;
+	padding:10px 0;
+	font-size:120%;
+ }
+.table-result-statistics .index-table {
+	width:25px;
+ }
+.table-result-statistics .principal-element-table {
+	font-weight:bold;
+ }
+ 
+/*tree view splitter style*/ 
+#splitter {
+	min-width: 500px;	
+	min-height: 100px;	
+	height: 100%;
+	border: 0;
+}
+
+/*** leftPane ****/
+#splitter #treeDiv1 {
+	overflow:auto;
+	width:250px;
+}
+
+/*** rightPane ****/
+#rightSide {
+	overflow:auto;
+	left:300px;
+}
+
+#footer {
+	text-align: center;
+}
+
+.jstree .Invisible a {
+	color: #BBBBBB;
+}
+
+.vsplitbar {
+	width: 7px;
+	background: #F2F2F2 url(/silverpeas/util/icons/splitter/layout_sprite_vertical.png) 1px center no-repeat;
+}
+
+.basDroiteFrame img, 
+.basMilieuFrame img,
+.basGaucheFrame img {
+	display:none;
+}
+
+#latestPublications p {
+	margin: 0px 0px 10px 0px;
+}
+
+#richContent a {
+	color: blue;
+	text-decoration: underline;
 }

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,8 @@
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
+
+<%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="check.jsp" %>
 <% 
@@ -77,9 +79,7 @@
 	%>
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <body>
 <%
@@ -145,14 +145,14 @@ buttonPane.addButton(cancelButton);
      <TD id="managers"> 
       <%        
         if (managers != null  && !managers.isEmpty()) {
-          for(UserDetail manager : managers){
-            out.print(manager.getDisplayedName());
-            out.println("<br/>");
-          }
+          for(UserDetail manager : managers){ %>
+          	<view:username userId="<%=manager.getId()%>"/>
+            <br/>
+          <% }
         } %>
       </TD>
       </tr>
-		<input type="HIDDEN" name="resourceId" value="<%=resourceId%>"/>
+		<input type="hidden" name="resourceId" value="<%=resourceId%>"/>
 	</TABLE>
 	<%out.println(board.printAfter()); %>
 	

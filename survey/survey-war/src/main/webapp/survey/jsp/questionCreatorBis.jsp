@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,7 +30,6 @@
 <%@ page import="java.io.File"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="org.apache.commons.fileupload.FileItem" %>
 <%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
 <%@ include file="checkSurvey.jsp" %>
 
@@ -92,10 +91,10 @@
   int nb = 0;
   int attachmentSuffix = 0;
   ArrayList imageList = new ArrayList();
-  ArrayList answers = new ArrayList();
+  List<Answer> answers = new ArrayList<Answer>();
   Answer answer = null;
-  List items = FileUploadUtil.parseRequest(request);
-  Iterator itemIter = items.iterator();
+  List<FileItem> items = FileUploadUtil.parseRequest(request);
+  Iterator<FileItem> itemIter = items.iterator();
   while (itemIter.hasNext()) {
     FileItem item = (FileItem) itemIter.next();
     if (item.isFormField()) {
@@ -608,7 +607,7 @@ Suggestion= <c:out value="${suggestion}" />
   if (action.equals("SendNewQuestion")) {
     Question questionObject = new Question(null, null, question, "", "", null, style, 0);
     questionObject.setAnswers(answers);
-    List questionsV = surveyScc.getSessionQuestions();
+    List<Question> questionsV = surveyScc.getSessionQuestions();
     questionsV.add(questionObject);
     surveyScc.setSessionQuestions(questionsV);
   } //End if action = ViewResult
@@ -616,13 +615,13 @@ Suggestion= <c:out value="${suggestion}" />
     out.println("<body>");
     QuestionContainerDetail surveyDetail = surveyScc.getSessionSurveyUnderConstruction();
     //Vector 2 Collection
-    List questionsV = surveyScc.getSessionQuestions();
+    List<Question> questionsV = surveyScc.getSessionQuestions();
     surveyDetail.setQuestions(questionsV);
     out.println("</body></html>");
   }
   if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm")) || "UpdateQuestion".equals(action)) {
     out.println("<body>");
-    List questionsV = surveyScc.getSessionQuestions();
+    List<Question> questionsV = surveyScc.getSessionQuestions();
     int questionNb = questionsV.size() + 1;
     cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=history.back();", false);
     buttonPane = gef.getButtonPane();

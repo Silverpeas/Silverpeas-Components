@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -227,5 +227,28 @@
   margin-right: 10px;
 }
 
+#creation-page .classification .legende {
+	display: none;
+}
 
+.forum fieldset#infoFieldset legend {
+  background:transparent url(../../../util/icons/component/forumsSmall.gif) 11px 0px no-repeat;
+}
 
+.forum fieldset#moderatorsFieldset legend {
+  background:transparent url(../../../util/icons/groupe.gif) 11px 0px no-repeat;
+}
+
+#infoFieldset .field, 
+#moderatorsFieldset .field {
+  clear: both;
+  display: block;
+  float: none;
+  width: 98%;
+}
+
+#infoFieldset #nameArea input,
+#infoFieldset #categoryArea select,
+#infoFieldset #keywordsArea input  {
+  width: 46%;
+}

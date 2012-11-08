@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -87,7 +87,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public void setPlace(String place) {
-    this.place = place;
+    this.place = (place == null?"":place);
   }
 
   public EventDetail() {
@@ -129,7 +129,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public void setNameDescription(String name) {
-    _name = name;
+    _name = (name != null ? name:"");
   }
 
   public String getDelegatorId() {
@@ -167,7 +167,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public Date getEndDate() {
-    Date date = null;
+    Date date;
     if (_endDate != null) {
       date = new Date(_endDate.getTime());
     } else {
@@ -197,7 +197,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public void setTitle(String title) {
-    _title = title;
+    _title = (title == null ? "":title);
   }
 
   @Override
@@ -231,7 +231,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public void setIconUrl(String iconUrl) {
-    this._iconUrl = iconUrl;
+    this._iconUrl = (iconUrl == null ? "":iconUrl);
   }
 
   @Override
@@ -269,7 +269,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public void setEventUrl(String eventUrl) {
-    this.eventUrl = eventUrl;
+    this.eventUrl = (eventUrl == null ? "":eventUrl);
   }
 
   public String getPermalink() {

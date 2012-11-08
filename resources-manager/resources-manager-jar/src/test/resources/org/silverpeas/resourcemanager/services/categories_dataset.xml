@@ -9,6 +9,6 @@
                          responsibleid="5"  createrid="5" updaterid="5" description="Salles de réunion" />
                          
                            
-  <uniqueId maxId="5" tablename="SC_Resources_Category" />
+  <uniqueId maxId="5" tablename="sc_resources_category" />
 
 </dataset>

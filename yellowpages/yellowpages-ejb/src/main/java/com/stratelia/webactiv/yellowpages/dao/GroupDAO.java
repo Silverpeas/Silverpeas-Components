@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,9 +23,6 @@
  */
 package com.stratelia.webactiv.yellowpages.dao;
 
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,74 +30,77 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.UtilException;
+
 public class GroupDAO {
-    public static Collection<String> getGroupIds(Connection con, String fatherId,
-                                                 String instanceId) throws SQLException {
-        ArrayList<String> groupIds = new ArrayList<String>();
+  public static Collection<String> getGroupIds(Connection con, String fatherId,
+      String instanceId) throws SQLException {
+    ArrayList<String> groupIds = new ArrayList<String>();
 
-        String query = "select groupId from SC_Contact_GroupFather where fatherId = ? and instanceId = ? ";
-        PreparedStatement prepStmt = null;
-        ResultSet rs = null;
-        String groupId = null;
-        try {
-            prepStmt = con.prepareStatement(query);
-            prepStmt.setInt(1, Integer.parseInt(fatherId));
-            prepStmt.setString(2, instanceId);
-            rs = prepStmt.executeQuery();
-            while (rs.next()) {
-                groupId = rs.getString(1);
-                groupIds.add(groupId);
-            }
-        } finally {
-            // fermeture
-            DBUtil.close(rs, prepStmt);
-        }
-        return groupIds;
+    String query = "select groupId from SC_Contact_GroupFather where fatherId = ? and instanceId = ? ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    String groupId = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setInt(1, Integer.parseInt(fatherId));
+      prepStmt.setString(2, instanceId);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        groupId = rs.getString(1);
+        groupIds.add(groupId);
+      }
+    } finally {
+      // fermeture
+      DBUtil.close(rs, prepStmt);
     }
+    return groupIds;
+  }
 
-    public static void addGroup(Connection con, String groupId, String fatherId,
-                                String instanceId) throws SQLException, UtilException {
-        PreparedStatement prepStmt = null;
-        try {
-            String query = "insert into SC_Contact_GroupFather values (?,?,?)";
-            prepStmt = con.prepareStatement(query);
-            prepStmt.setInt(1, Integer.parseInt(groupId));
-            prepStmt.setInt(2, Integer.parseInt(fatherId));
-            prepStmt.setString(3, instanceId);
-            prepStmt.executeUpdate();
-        } finally {
-            // fermeture
-            DBUtil.close(prepStmt);
-        }
+  public static void addGroup(Connection con, String groupId, String fatherId,
+      String instanceId) throws SQLException, UtilException {
+    PreparedStatement prepStmt = null;
+    try {
+      String query = "insert into SC_Contact_GroupFather values (?,?,?)";
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setInt(1, Integer.parseInt(groupId));
+      prepStmt.setInt(2, Integer.parseInt(fatherId));
+      prepStmt.setString(3, instanceId);
+      prepStmt.executeUpdate();
+    } finally {
+      // fermeture
+      DBUtil.close(prepStmt);
     }
+  }
 
-    public static void removeGroup(Connection con, String groupId)
-            throws SQLException {
-        PreparedStatement prepStmt = null;
-        try {
-            String query = "delete from SC_Contact_GroupFather where groupId = ? ";
-            prepStmt = con.prepareStatement(query);
-            prepStmt.setInt(1, Integer.parseInt(groupId));
-            prepStmt.executeUpdate();
-        } finally {
-            // fermeture
-            DBUtil.close(prepStmt);
-        }
+  public static void removeGroup(Connection con, String groupId)
+      throws SQLException {
+    PreparedStatement prepStmt = null;
+    try {
+      String query = "delete from SC_Contact_GroupFather where groupId = ? ";
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setInt(1, Integer.parseInt(groupId));
+      prepStmt.executeUpdate();
+    } finally {
+      // fermeture
+      DBUtil.close(prepStmt);
     }
+  }
 
-    public static void removeGroup(Connection con, String groupId,
-                                   String fatherId, String instanceId) throws SQLException {
-        PreparedStatement prepStmt = null;
-        try {
-            String query = "delete from SC_Contact_GroupFather where groupId = ? and fatherId = ? and instanceId = ? ";
-            prepStmt = con.prepareStatement(query);
-            prepStmt.setInt(1, Integer.parseInt(groupId));
-            prepStmt.setInt(2, Integer.parseInt(fatherId));
-            prepStmt.setString(3, instanceId);
-            prepStmt.executeUpdate();
-        } finally {
-            // fermeture
-            DBUtil.close(prepStmt);
-        }
+  public static void removeGroup(Connection con, String groupId,
+      String fatherId, String instanceId) throws SQLException {
+    PreparedStatement prepStmt = null;
+    try {
+      String query = "delete from SC_Contact_GroupFather where groupId = ? and fatherId = ? and instanceId = ? ";
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setInt(1, Integer.parseInt(groupId));
+      prepStmt.setInt(2, Integer.parseInt(fatherId));
+      prepStmt.setString(3, instanceId);
+      prepStmt.executeUpdate();
+    } finally {
+      // fermeture
+      DBUtil.close(prepStmt);
     }
+  }
 }

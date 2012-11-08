@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -140,10 +140,22 @@ function bindCategoryEvent() {
 $(document).ready(function() {
   bindCategoryEvent();
   bindQuestionsEvent();
-  $('.questions').hide();
-  $("ul li:first-child .questions").show();
-  $("ul li:first-child").addClass('select');
-  $("ul li:first-child .categoryTitle").trigger($.Event("click"));
+  $('.questions').hide(); 
+  <c:choose>
+    <c:when test="${param.categoryId != null}">
+      $("#qc<c:out value="${param.categoryId}"/>").show();
+      $("#c<c:out value="${param.categoryId}"/>").parent().addClass('select');
+      $("#c<c:out value="${param.categoryId}"/>").trigger($.Event("click"));
+    </c:when>
+    <c:otherwise>
+      $("ul li:first-child .questions").show();
+      $("ul li:first-child").addClass('select');
+      $("ul li:first-child .categoryTitle").trigger($.Event("click"));
+    </c:otherwise>
+  </c:choose>
+  <c:if test="${param.questionId != null}">
+    setTimeout("$('#q<c:out value="${param.questionId}"/>').trigger($.Event('click'))", 250);
+  </c:if>
 
   $('.category').hover(function() {
       $(this).addClass('hover');
@@ -473,16 +485,16 @@ function subscribe() {
             "javascript:onClick=openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" + componentId + "','utilizationPdc1')");
     operationPane.addLine();
     // creation des categories
-    operationPane.addOperation(resource.getIcon("questionReply.createCategory"), resource.getString(
+    operationPane.addOperationOfCreation(resource.getIcon("questionReply.createCategory"), resource.getString(
             "questionReply.createCategory"), "NewCategory");
     operationPane.addLine();
   }
   if (!profil.equals("user")) {
-    operationPane.addOperation(resource.getIcon("questionReply.addQ"), resource.getString(
+    operationPane.addOperationOfCreation(resource.getIcon("questionReply.addQ"), resource.getString(
             "questionReply.addQ"), "CreateQQuery");
   }
   if (profil.equals("admin") || profil.equals("writer")) {
-    operationPane.addOperation(resource.getIcon("questionReply.addQR"), resource.getString(
+    operationPane.addOperationOfCreation(resource.getIcon("questionReply.addQR"), resource.getString(
             "questionReply.addQR"), "CreateQueryQR");
     operationPane.addLine();
     operationPane.addOperation(resource.getIcon("questionReply.delQ"), resource.getString(
@@ -498,13 +510,14 @@ function subscribe() {
     operationPane.addOperation(resource.getIcon("GML.unsubscribe"), resource.getString(
           "GML.unsubscribe"), "javascript:unsubscribe();");
   }else {
-    operationPane.addOperation(resource.getIcon("GML.subscribe"), resource.getString(
+    operationPane.addOperation(resource.getIcon("questionReply.subscribe"), resource.getString(
           "GML.subscribe"), "javascript:subscribe();");
   }
             
   out.println(window.printBefore());
-  out.println(frame.printBefore());
 %>
+<view:frame>
+<view:areaOfOperationOfCreation/>
 <form method="post" action="">
   <ul>
     <fmt:message key="questionReply.updateCategory" bundle="${icons}" var="updateCategoryIcon"/>
@@ -544,8 +557,8 @@ function subscribe() {
   <input type="hidden" name="replyId" />
   <input type="hidden" name="QuestionId" />
 </form>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>

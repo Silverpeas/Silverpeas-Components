@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,9 +39,6 @@ import com.stratelia.webactiv.util.contact.model.ContactPK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -51,6 +48,9 @@ import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
@@ -90,7 +90,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Set the current User ActorDetail
-   * @param ad a the ActorDetail corresponding to the current User
+   * @param user the UserDetail corresponding to the current User
    * @since 1.0
    */
   public void setActor(UserDetail user) {
@@ -457,7 +457,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -486,7 +485,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -510,7 +508,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -531,15 +528,12 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * Add a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
    * @param subTopic the NodeDetail of the new sub topic
-   * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
-   * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -569,15 +563,12 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
    * @param topic the NodeDetail of the updated sub topic
-   * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
-   * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -666,7 +657,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @param topicId the id of the topic to delete
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -734,7 +724,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -904,7 +893,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -952,7 +940,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -992,7 +979,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1036,15 +1022,13 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.yellowpages.model.TopicDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
-   * @exception javax.RemoveException
    * @since 1.0
    */
   public void deleteContact(String ContactId) {
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteGenericContactMatchingContact()",
+    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteContact()",
         "root.MSG_GEN_ENTER_METHOD");
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteGenericContactMatchingContact()",
+    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteContact()",
         "root.MSG_GEN_PARAM_VALUE", "ContactId = " + ContactId);
     // if the contact is in the basket or in the DZ
     // this contact is deleted from the database
@@ -1061,7 +1045,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         contactBm.removeContact(contactPK);
       } catch (Exception re) {
         throw new YellowpagesRuntimeException(
-            "YellowpagesBmEJB.deleteGenericContactMatchingContact()",
+            "YellowpagesBmEJB.deleteContact()",
             SilverpeasRuntimeException.ERROR,
             "yellowpages.EX_DELETE_CONTACT_FAILED", re);
       }
@@ -1071,7 +1055,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       // but only send to the basket
       sendContactToBasket(ContactId);
     }
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteGenericContactMatchingContact()",
+    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteContact()",
         "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -1081,14 +1065,13 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.yellowpages.model.TopicDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
   private void sendContactToBasket(String ContactId) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.sendContactToBasket()",
         "root.MSG_GEN_ENTER_METHOD");
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteGenericContactMatchingContact()",
+    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteContact()",
         "root.MSG_GEN_PARAM_VALUE", "ContactId = " + ContactId);
     ContactPK contactPK = new ContactPK(ContactId, this.space, this.componentId);
     try {
@@ -1135,7 +1118,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @param fatherId the id of the topic
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1178,7 +1160,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @param fatherId the id of the topic
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1210,7 +1191,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @param modelId the id of the selected model
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1241,7 +1221,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.CompleteContact
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1302,7 +1281,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.CompleteContact
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    */
   public UserCompleteContact getCompleteContactInNode(String ContactId,
@@ -1398,7 +1376,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -59,17 +59,25 @@ public interface ForumsBM extends EJBObject {
 
   public Collection<ForumDetail> getForums(Collection<ForumPK> forumPKs) throws RemoteException;
 
+  /**
+   * 
+   * @param forumPK forum primary key
+   * @return a ForumDetail from the forum primary key identifier
+   * @throws RemoteException
+   */
+  public ForumDetail getForumDetail(ForumPK forumPK) throws RemoteException;
+
   public Collection<Forum> getForumsList(Collection<ForumPK> forumPKs) throws RemoteException;
 
   public Collection<Message> getThreadsList(Collection<MessagePK> messagePKs)
       throws RemoteException;
 
-  public ArrayList<Forum> getForums(ForumPK forumPK) throws RemoteException;
+  public List<Forum> getForums(ForumPK forumPK) throws RemoteException;
 
-  public ArrayList<Forum> getForumsByCategory(ForumPK forumPK, String categoryId)
+  public List<Forum> getForumsByCategory(ForumPK forumPK, String categoryId)
       throws RemoteException;
 
-  public ArrayList<String> getForumSonsIds(ForumPK forumPK) throws RemoteException;
+  public List<String> getForumSonsIds(ForumPK forumPK) throws RemoteException;
 
   public int createForum(ForumPK forumPK, String forumName,
       String forumDescription, String forumCreator, int forumParent,

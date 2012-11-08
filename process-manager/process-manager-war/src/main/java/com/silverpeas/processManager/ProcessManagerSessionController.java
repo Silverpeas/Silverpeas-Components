@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -357,6 +357,19 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           "processManager.GET_PROCESS_FROM_TODO_FAILED", "externalTodoId : " + externalTodoId, e);
     }
   }
+  
+  public boolean isUserAllowedOnActiveStates() {
+    String[] states = currentProcessInstance.getActiveStates();
+    if (states == null) {
+      return false;
+    }
+    for (String state : states) {
+      if (getActiveUsers(state).contains(getUserId())) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   /**
    * Get the active states.
@@ -496,8 +509,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   private List<String> getActiveUsers(String stateName) {
     List<String> activeUsers = new ArrayList<String>();
     State state = getState(stateName);
-    activeUsers.addAll(getUsers(state.getWorkingUsers()));
-    activeUsers.addAll(getUsers(state.getInterestedUsers()));
+    if (state != null) {
+      activeUsers.addAll(getUsers(state.getWorkingUsers()));
+      activeUsers.addAll(getUsers(state.getInterestedUsers()));
+    }
     return activeUsers;
   }
 

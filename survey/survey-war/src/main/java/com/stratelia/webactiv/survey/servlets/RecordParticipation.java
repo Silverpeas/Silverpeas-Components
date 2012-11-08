@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,18 +61,15 @@ public class RecordParticipation extends HttpServlet {
 
     // Get the context
     String sRequestURL = request.getRequestURL().toString();
-    String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length()
-        - request.getRequestURI().length());
+    String urlAbsolute =
+        sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
 
-    SilverTrace.info("Survey", "RecordParticipation.doPost",
-        "Survey.MSG_GEN_PARAM_VALUE", m_sAbsolute
-        + URLManager.getApplicationURL()
-        + URLManager.getURL(null, null, componentId)
-        + "surveyDetail.jsp&action=ViewResult&SurveyId=" + surveyId);
-    response.sendRedirect(response.encodeRedirectURL(m_sAbsolute
-        + URLManager.getApplicationURL()
-        + URLManager.getURL(null, null, componentId)
-        + "surveyDetail.jsp?Action=ViewResult&SurveyId=" + surveyId));
+    SilverTrace.info("Survey", "RecordParticipation.doPost", "Survey.MSG_GEN_PARAM_VALUE",
+        urlAbsolute + URLManager.getApplicationURL() + URLManager.getURL(null, null, componentId)
+            + "surveyDetail.jsp&action=ViewResult&SurveyId=" + surveyId);
+    response.sendRedirect(response.encodeRedirectURL(urlAbsolute + URLManager.getApplicationURL()
+        + URLManager.getURL(null, null, componentId) +
+        "surveyDetail.jsp?Action=ViewResult&SurveyId=" + surveyId));
   }
 
   /**

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -55,12 +55,23 @@ public class Response {
     this.userId = userId;
   }
 
+  @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + (int) (userId ^ (userId >>> 32));
-    result = prime * result + ((optionId == null) ? 0 : optionId.hashCode());
-    return result;
+    int hash = 7;
+    hash = 37 * hash + this.userId;
+    hash = 37 * hash + (this.optionId != null ? this.optionId.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    return equals((Response) obj);
   }
 
   public boolean equals(Response obj) {

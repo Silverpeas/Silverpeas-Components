@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,11 +29,11 @@
 <%@ include file="check.jsp" %>
 
 <% 
-// r�cup�ration des param�tres
+// recuperation des parametres
 PostDetail	post		= (PostDetail) request.getAttribute("Post");
-Collection	categories	= (Collection) request.getAttribute("Categories");
-Collection	archives	= (Collection) request.getAttribute("Archives");
-Collection	links		= (Collection) request.getAttribute("Links");
+Collection<NodeDetail>	categories	= (Collection) request.getAttribute("Categories");
+Collection<Archive>		archives	= (Collection) request.getAttribute("Archives");
+Collection<LinkDetail>	links		= (Collection) request.getAttribute("Links");
 String 		profile		= (String) request.getAttribute("Profile");
 String		blogUrl		= (String) request.getAttribute("Url");
 String		rssURL		= (String) request.getAttribute("RSSUrl");
@@ -41,10 +41,10 @@ List		events		= (List) request.getAttribute("Events");
 String 		dateCal		= (String) request.getAttribute("DateCalendar");
 
 Date 	   dateCalendar	= new Date(dateCal);
-
 String categoryId = "";
 if (post.getCategory() != null)
 	categoryId = post.getCategory().getNodePK().getId();
+String postResourceType = post.getContributionType();
 String postId = post.getPublication().getPK().getId();
 String link	= post.getPermalink();
 
@@ -54,6 +54,17 @@ String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEE
 
 boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
 
+if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) { 
+	operationPane.addOperation("useless", resource.getString("blog.updatePost"), "EditPost?PostId="+postId);
+	if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
+	  	operationPane.addOperation("useless", resource.getString("blog.draftOutPost"), "DraftOutPost?PostId="+postId);
+	}
+	operationPane.addOperation("useless", resource.getString("blog.deletePost"), "javascript:onClick=deletePost('"+postId+"')");
+	operationPane.addLine();
+}
+if (!isUserGuest) { 
+  operationPane.addOperation("useless", resource.getString("GML.notify"), "javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')");
+}
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
@@ -61,9 +72,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
@@ -88,15 +97,17 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 			document.postForm.submit();
 	    }
 	}
-	
 </script>
 </head>
 
 <body id="blog">
 <div id="<%=instanceId %>">
-		<div id="blogContainer">
-		    <div id="bandeau"><a href="<%="Main"%>"><%=componentLabel%></a></div>
-		    <div id="backHomeBlog"><a href="<%="Main"%>"><%=resource.getString("blog.accueil")%></a></div>
+<%
+out.println(window.printBefore());
+%>
+	<div id="blogContainer">
+	<div id="bandeau"><h2><a class="txttitrecol" href="<%="Main"%>"><%=componentLabel%></a></h2></div>
+		     
 		<%
 			String blocClass = "viewPost";
 			String status = "";
@@ -105,6 +116,11 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
            		status = resource.getString("GML.saveDraft");
           	}
          %>
+		 
+		  <div id="navBlog">
+			<%@ include file="colonneDroite.jsp.inc" %>
+		  </div>
+		 
 		  <div id="<%=blocClass%>">
 		   	<div class="titreTicket"><%=post.getPublication().getName()%> <span class="status">(<%=status%>)</span>
 			   	<%if (link != null && !link.equals("")) 
@@ -132,47 +148,30 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 		       <span class="creatorTicket"> 
 	  	       &nbsp;|&nbsp;
 		         <% // date de cr�ation et de modification %>
-		         <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
-		         <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) 
-		         {
-		           UserDetail updater = m_MainSessionCtrl.getOrganizationController().getUserDetail(post.getPublication().getUpdaterId());
-		           String updaterName = "Unknown";
-		           if (updater != null)
-		             updaterName = updater.getDisplayedName();
-		           %>
-		           - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%> <%=resource.getString("GML.by")%> <%=updaterName %>
+		         <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <view:username userId="<%=post.getPublication().getCreatorId()%>" />
+		         <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) { %>
+		           - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%> <%=resource.getString("GML.by")%> <view:username userId="<%=post.getPublication().getUpdaterId()%>" />
 		         <% } %>
 		       </span>
 		    </div>
-		    <div class="separateur"></div>
-		    <view:comments userId="<%=userId %>" componentId="<%=instanceId %>" resourceId="<%=postId %>" indexed="true"/>
+		    <div class="separateur"><hr /></div>
+		    <view:comments 	userId="<%=userId %>" componentId="<%=instanceId %>"
+		    				resourceType="<%=postResourceType %>" resourceId="<%=postId %>" indexed="true"/>
 			</div>
-				 
-			<div id="navBlog">
-				<% String myOperations = ""; 
-			  // ajouter les op�rations dans cette chaine et la passer � afficher dans la colonneDroite.jsp.inc
-			   if ("admin".equals(profile)) {
-            myOperations += "<a href=\"EditPost?PostId="+postId+"\">"+resource.getString("blog.updatePost")+"</a><br/>";
-            if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
-              myOperations += "<a href=\"DraftOutPost?PostId="+postId+"\">"+resource.getString("blog.draftOutPost")+"</a><br/>";
-            }
-            myOperations += "<a href=\"javascript:onClick=deletePost('"+postId+"')\">"+resource.getString("blog.deletePost")+"</a><br/>";
-            myOperations += "<a href=\"javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')\" id=\"toNotify\">"+resource.getString("GML.notify")+"</a><br/>";
-          } 
-			   else if (!isUserGuest) { 
-            myOperations += "<a href=\"javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')\">"+resource.getString("GML.notify")+"</a><br/>";
-          }
-				%>
-				<%@ include file="colonneDroite.jsp.inc" %>
-		  </div>
-		
-		 
-  </div>
+	<div id="footer">
+      <%
+        out.flush();
+        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+instanceId+"&ComponentId="+instanceId).include(request, response);
+      %>      
+    </div>	 
+	</div>
 </div>
 
 <form name="postForm" action="DeletePost" method="post">
 	<input type="hidden" name="PostId"/>
 </form>
-
+<%
+out.println(window.printAfter());
+%> 
 </body>
 </html>

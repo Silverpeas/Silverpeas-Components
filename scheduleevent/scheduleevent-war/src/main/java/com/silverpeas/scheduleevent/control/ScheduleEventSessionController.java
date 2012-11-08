@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,13 +27,12 @@ package com.silverpeas.scheduleevent.control;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
+import com.silverpeas.scheduleevent.notification.ScheduleEventUserNotification;
 import com.silverpeas.scheduleevent.service.ScheduleEventService;
 import com.silverpeas.scheduleevent.service.ServicesFactory;
 import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
@@ -44,14 +43,6 @@ import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEventComparator;
 import com.silverpeas.scheduleevent.view.OptionDateVO;
 import com.silverpeas.scheduleevent.view.ScheduleEventVO;
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -61,9 +52,7 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 public class ScheduleEventSessionController extends AbstractComponentSessionController {
   private Selection sel = null;
@@ -290,81 +279,18 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
   }
 
-  public void sendSubscriptionsNotification(String type) {
-    // send email alerts
+  public void sendSubscriptionsNotification(final String type) {
+    // Send email alerts
     try {
-      Set<Contributor> contributors = currentScheduleEvent.getContributors();
-      List<String> userIds = new ArrayList<String>(contributors.size());
-      for (Contributor contributor : contributors) {
-        userIds.add(Integer.toString(contributor.getUserId()));
-      }
 
-      if (!userIds.isEmpty()) {
-        ResourceLocator message =
-            new ResourceLocator(
-                "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle",
-                DisplayI18NHelper.getDefaultLanguage());
-        String subject = message.getString("scheduleEvent.notifSubject");
+      UserNotificationHelper
+          .buildAndSend(new ScheduleEventUserNotification(currentScheduleEvent, getUserDetail(), type));
 
-        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        String fileName = "";
-        if ("create".equals(type)) {
-          fileName = "new";
-        }
-        NotificationMetaData notifMetaData = new NotificationMetaData(
-                  NotificationParameters.NORMAL, subject, templates, fileName);
-
-        // String url = "/ScheduleEvent/" + currentScheduleEvent.getId();
-        String url = "/Rscheduleevent/jsp/Detail?scheduleEventId=" + currentScheduleEvent.getId();
-        for (String lang : DisplayI18NHelper.getLanguages()) {
-          SilverpeasTemplate template = getNewTemplate();
-          templates.put(lang, template);
-          template.setAttribute("eventName", currentScheduleEvent.getTitle());
-          template.setAttribute("eventDescription", currentScheduleEvent.getDescription());
-          template.setAttribute("eventCreationDate",
-              DateUtil.getOutputDate(currentScheduleEvent.getCreationDate(), lang));
-          template.setAttribute("event", currentScheduleEvent);
-          template.setAttribute("senderName", getUserDetail().getDisplayedName());
-          template.setAttribute("silverpeasURL", url);
-
-          ResourceLocator localizedMessage = new ResourceLocator(
-                "com.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle", lang);
-          notifMetaData.addLanguage(lang,
-              localizedMessage.getString("scheduleEvent.notifSubject", subject), "");
-        }
-        for (String userId : userIds) {
-          notifMetaData.addUserRecipient(new UserRecipient(userId));
-        }
-        notifMetaData.setLink(url);
-        notifyUsers(notifMetaData);
-      }
     } catch (Exception e) {
       SilverTrace.warn("scheduleEvent",
           "ScheduleEventSessionController.sendSubscriptionsNotification()",
-              "scheduleEvent.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "", e);
+          "scheduleEvent.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "", e);
     }
-  }
-
-  private void notifyUsers(NotificationMetaData notifMetaData) {
-    try {
-      notifMetaData.setComponentId(getComponentId());
-      notifMetaData.setSender(getUserId());
-      NotificationSender notifSender = new NotificationSender(notifMetaData.getComponentId());
-      notifSender.notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
-      SilverTrace.warn("scheduleEvent", "ScheduleEventSessionController.notifyUsers()",
-              "scheduleEvent.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
-    }
-  }
-
-  protected SilverpeasTemplate getNewTemplate() {
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings()
-        .getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings()
-        .getString("customersTemplatePath"));
-
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 
   private ScheduleEventService getScheduleEventService() {

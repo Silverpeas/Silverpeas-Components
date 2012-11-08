@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,21 +32,20 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 		id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId).include(request, response);
     } catch (Exception e) {
 		throw new com.stratelia.silverpeas.infoLetter.InfoLetterException("viewLetter_JSP.displayViewWysiwyg",
-		com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR, e.getMessage());			
+		com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR, e.getMessage(), e);			
     }
 }
 %>
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 	function call_wysiwyg (){
 		document.toWysiwyg.submit();
 	}
@@ -66,33 +65,25 @@ out.println(gef.getLookStyleSheet());
 	}
 </script>
 </head>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body>
 <%
 String parutionTitle = (String) request.getAttribute("parutionTitle");
 String parution = (String) request.getAttribute("parution");
 
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Accueil");
-	browseBar.setPath("<a href=\"Accueil\"></a> " + Encode.javaStringToHtmlString(parutionTitle));	
+	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));	
 
 	operationPane.addOperation(resource.getIcon("infoLetter.sendLetterToManager"), resource.getString("infoLetter.sendLetterToManager"), "javascript:sendLetterToManager();");	
 
 	out.println(window.printBefore());
  
 	//Instanciation du cadre avec le view generator
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);  
-    tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
-    tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"#",true);
-    tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"javascript:goFiles();",false);
-	boolean isPdcUsed = ( "yes".equals( (String) request.getAttribute("isPdcUsed") ) );
-	if (isPdcUsed)
-	{
-		tabbedPane.addTab(resource.getString("PdcClassification"),
-						"pdcPositions.jsp?Action=ViewPdcPositions&PubId=" + (String) request.getAttribute("ObjectId") + ""
-						,false);
-	}
-    out.println(tabbedPane.print());
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);  
+  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
+  tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"#",true);
+  tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"javascript:goFiles();",false);
+
+  out.println(tabbedPane.print());
     
 	out.println(frame.printBefore());	
 	
@@ -103,28 +94,27 @@ out.flush();
 displayViewWysiwyg(parution, spaceId, componentId, request, response);		
 %>
 <form name="headerParution" action="ParutionHeaders" method="post">			
-	<input type="hidden" name="parution" value="<%= parution %>">
-  <input type="hidden" name="ReturnUrl" value="Preview">
+	<input type="hidden" name="parution" value="<%= parution %>"/>
+  <input type="hidden" name="ReturnUrl" value="Preview"/>
 </form>
 <form name="attachedFiles" action="FilesEdit" method="post">			
-	<input type="hidden" name="parution" value="<%= parution %>">
+	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
-<form name="toWysiwyg" Action="../../wysiwyg/jsp/htmlEditor.jsp" method="Post">
-    <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>">
-    <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>">
-    <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>">
-    <input type="hidden" name="ComponentName" value="<%= (String) request.getAttribute("ComponentName") %>">
-    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"> 
-    <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>">
-    <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>">
-    <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>">
+<form name="toWysiwyg" action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
+    <input type="hidden" name="SpaceId" value="<%= (String) request.getAttribute("SpaceId") %>"/>
+    <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>"/>
+    <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>"/>
+    <input type="hidden" name="ComponentName" value="<%= (String) request.getAttribute("ComponentName") %>"/>
+    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"/> 
+    <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>"/>
+    <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>"/>
+    <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>"/>
 </form>
-<% // Ici se termine le code de la page %>
 
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>

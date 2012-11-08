@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 	<!--
 
-		Copyright (C) 2000 - 2011 Silverpeas This program is free software:
+		Copyright (C) 2000 - 2012 Silverpeas This program is free software:
 		you can redistribute it and/or modify it under the terms of the GNU
 		Affero General Public License as published by the Free Software
 		Foundation, either version 3 of the License, or (at your option) any
@@ -10,7 +10,7 @@
 		connection with Free/Libre Open Source Software ("FLOSS") applications
 		as described in Silverpeas's FLOSS exception. You should have recieved
 		a copy of the text describing the FLOSS exception, and it is also
-		available here: "http://repository.silverpeas.com/legal/licensing"
+		available here: "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
 		This program is distributed in the hope that it will be useful, but
 		WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,7 +20,7 @@
 		this program. If not, see <http://www.gnu.org/licenses/>.
 	-->
 <ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>GalleryJar</display-name>
@@ -61,7 +61,79 @@
       <method>
         <ejb-name>GalleryBm</ejb-name>
         <method-intf>Remote</method-intf>
+        <method-name>getSilverObjectId</method-name>
+      </method>
+      <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>createAlbum</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>updateAlbum</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
         <method-name>deleteAlbum</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>createPhoto</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>updatePhoto</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>deletePhoto</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>paste</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>importFromRepository</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>GalleryBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>executeProcessList</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>

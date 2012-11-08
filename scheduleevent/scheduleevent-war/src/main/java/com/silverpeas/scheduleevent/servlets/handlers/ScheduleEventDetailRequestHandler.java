@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,6 +26,7 @@ package com.silverpeas.scheduleevent.servlets.handlers;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.scheduleevent.constant.ScheduleEventConstant;
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.scheduleevent.view.ScheduleEventDetailVO;
@@ -36,7 +37,7 @@ public class ScheduleEventDetailRequestHandler implements ScheduleEventRequestHa
   public ScheduleEventDetailRequestHandler(String jspDestination) {
     this.jspDestination = jspDestination;
   }
-  
+
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception {
@@ -48,6 +49,15 @@ public class ScheduleEventDetailRequestHandler implements ScheduleEventRequestHa
         request.setAttribute(SCHEDULE_EVENT_DETAIL, new ScheduleEventDetailVO(scheduleeventSC,
             event));
         scheduleeventSC.setCurrentScheduleEvent(event);
+        // Enable comments or not
+        boolean isCommentsEnabled =
+            scheduleeventSC.getSettings().getBoolean(ScheduleEventConstant.PROP_ENABLE_COMMENT,
+                true);
+        request.setAttribute("enableComment", isCommentsEnabled);
+        if (isCommentsEnabled) {
+          request.setAttribute("userId", scheduleeventSC.getUserDetail().getId());
+          request.setAttribute("toolId", ScheduleEventConstant.TOOL_ID);
+        }
         return jspDestination;
       }
     }

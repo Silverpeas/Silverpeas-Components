@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -132,10 +132,9 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
           }
           if (value != null) {
             // ajout de cette metadata à la photo
-            MetaData metaData = new MetaData();
+            MetaData metaData = new MetaData(value.replaceAll("\\s", " ").trim());
             metaData.setLabel(property.getLabel(lang));
             metaData.setProperty(property.getProperty() + "");
-            metaData.setValue(value.replaceAll("\\s", " ").trim());
             SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
                 "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + property.getLabel()
                     + " value = " + value);
@@ -247,17 +246,15 @@ public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtract
               break;
           }
           if (value != null) {
-            MetaData metaData = new MetaData();
+            MetaData metaData = new MetaData(value);
             metaData.setLabel(iptcProperty.getLabel(lang));
             metaData.setProperty(iptcProperty.getProperty() + "");
-            metaData.setValue(value);
             if (iptcProperty.isDate()) {
               metaData.setDate(true);
               metaData.setDateValue(getDateValue(value));
             }
             result.add(metaData);
-            SilverTrace.debug("gallery",
-                "GallerySessionController.addMetaData()",
+            SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
                 "root.MSG_GEN_ENTER_METHOD", "METADATA IPTC label = " + iptcProperty.getLabel()
                     + " value = " + value);
           }

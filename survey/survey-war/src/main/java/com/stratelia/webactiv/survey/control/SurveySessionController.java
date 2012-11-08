@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,10 +23,13 @@
  */
 package com.stratelia.webactiv.survey.control;
 
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -42,9 +45,15 @@ import java.util.Vector;
 import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.fileupload.FileItem;
 
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.silverpeas.pdc.model.PdcClassification;
+import com.silverpeas.pdc.model.PdcPosition;
+import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -68,6 +77,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.survey.SurveyException;
 import com.stratelia.webactiv.survey.servlets.SurveyRequestRouter;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -107,6 +117,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   private boolean participationMultipleAllowedForUser = false;
   private boolean hasAlreadyParticipated = false;
   public static final String COOKIE_NAME = "surpoll";
+  private List<PdcPosition> newSurveyPositions = null;
 
   /**
    * Creates new sessionClientController
@@ -131,7 +142,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       try {
         QuestionContainerBmHome questionContainerBmHome =
             (QuestionContainerBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBmHome.class);
+                JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBmHome.class);
         this.questionContainerBm = questionContainerBmHome.create();
       } catch (Exception e) {
         throw new EJBException(e.getMessage(), e);
@@ -148,8 +159,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
       try {
         QuestionResultBmHome questionResultBmHome =
             (QuestionResultBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.QUESTIONRESULTBM_EJBHOME,
-            QuestionResultBmHome.class);
+                JNDINames.QUESTIONRESULTBM_EJBHOME,
+                QuestionResultBmHome.class);
         this.questionResultBm = questionResultBmHome.create();
       } catch (Exception e) {
         throw new EJBException(e.getMessage(), e);
@@ -339,12 +350,38 @@ public class SurveySessionController extends AbstractComponentSessionController 
       throws SurveyException {
     SilverTrace.info("Survey", "SurveySessionController.createSurvey", "Survey.MSG_ENTRY_METHOD",
         "title = " + surveyDetail.getHeader().getTitle());
+    QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
-      return questionContainerBm.createQuestionContainer(qcPK, surveyDetail, getUserId());
+      qcPK = questionContainerBm.createQuestionContainer(qcPK, surveyDetail, getUserId());
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.createSurvey", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_CREATE", "title = " + surveyDetail.getHeader().getTitle(), e);
+    }
+
+    // Classify content if needed
+    classifyContent(surveyDetail, qcPK);
+
+    return qcPK;
+  }
+
+  /**
+   * this method clasify content only when new survey is created Check if a position has been
+   * defined in header form then persist it
+   * @param surveyDetail the current QuestionContainerDetail
+   * @param qcPK the QuestionContainerPK with content identifier
+   */
+  private void classifyContent(QuestionContainerDetail surveyDetail, QuestionContainerPK qcPK) {
+    List<PdcPosition> positions = this.getNewSurveyPositions();
+    if (positions != null && !positions.isEmpty()) {
+      PdcClassification classification =
+          aPdcClassificationOfContent(qcPK.getId(), qcPK.getInstanceId()).withPositions(
+              this.getNewSurveyPositions());
+      if (!classification.isEmpty()) {
+        PdcClassificationService service =
+            PdcServiceFactory.getFactory().getPdcClassificationService();
+        classification.ofContent(qcPK.getId());
+        service.classifyContent(surveyDetail, classification);
+      }
     }
   }
 
@@ -352,13 +389,17 @@ public class SurveySessionController extends AbstractComponentSessionController 
       throws SurveyException {
     SilverTrace.info("Survey", "SurveySessionController.createSurvey",
         "Survey.MSG_ENTRY_METHOD", "title = " + surveyDetail.getHeader().getTitle());
+    QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
     try {
-      QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
-      return questionContainerBm.createQuestionContainer(qcPK, surveyDetail, getUserId());
+      qcPK = questionContainerBm.createQuestionContainer(qcPK, surveyDetail, getUserId());
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.createSurvey", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_CREATE", "title = " + surveyDetail.getHeader().getTitle(), e);
     }
+    // Classify content if needed
+    classifyContent(surveyDetail, qcPK);
+
+    return qcPK;
   }
 
   public void updateSurveyHeader(QuestionContainerHeader surveyHeader, String surveyId)
@@ -372,7 +413,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.updateSurveyHeader",
           SurveyException.WARNING, "Survey.EX_PROBLEM_TO_UPDATE_SURVEY", "id = " + surveyId
-          + ", title = " + surveyHeader.getTitle(), e);
+              + ", title = " + surveyHeader.getTitle(), e);
     }
   }
 
@@ -467,7 +508,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       Question question = it.next();
       Collection<QuestionResult> questionResult =
           getQuestionResultBm().getUserQuestionResultsToQuestion(userId,
-          new ForeignPK(question.getPK()));
+              new ForeignPK(question.getPK()));
       result.addAll(questionResult);
     }
     // Only retrieve response identifiers
@@ -503,7 +544,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       questionContainerBm.openQuestionContainer(qcPK);
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.openSurvey", SurveyException.WARNING,
-      "Survey.EX_PROBLEM_TO_OPEN_SURVEY", "id = " + surveyId, e);
+          "Survey.EX_PROBLEM_TO_OPEN_SURVEY", "id = " + surveyId, e);
     }
   }
 
@@ -580,7 +621,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       silverObjectId = questionContainerBm.getSilverObjectId(qcPK);
     } catch (Exception e) {
       SilverTrace.error("survey", "SurveySessionClientController.getSilverObjectId()",
-      "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
+          "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
     }
     return silverObjectId;
   }
@@ -595,6 +636,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   public void removeSessionSurveyUnderConstruction() {
     setSessionSurveyUnderConstruction(null);
+    setNewSurveyPositions(null);
   }
 
   public QuestionContainerDetail getSessionSurvey() {
@@ -657,6 +699,17 @@ public class SurveySessionController extends AbstractComponentSessionController 
     setSessionSurveyName(null);
   }
 
+  private void setNewSurveyPositions(List<PdcPosition> positions) {
+    this.newSurveyPositions = positions;
+  }
+
+  /**
+   * @return the newSurveyPositions
+   */
+  private List<PdcPosition> getNewSurveyPositions() {
+    return newSurveyPositions;
+  }
+
   public void close() {
     try {
       if (questionContainerBm != null) {
@@ -676,31 +729,20 @@ public class SurveySessionController extends AbstractComponentSessionController 
     sel.resetAll();
     sel.setHostSpaceName(getSpaceLabel()); // set nom de l'espace pour browsebar
     sel.setHostComponentId(getComponentId()); // set id du composant pour appel selectionPeas (extra
-    // param permettant de filtrer les users ayant acces
-    // au composant)
+    // param permettant de filtrer les users ayant acces au composant)
     PairObject hostComponentName = new PairObject(getComponentLabel(), null); // set nom du
-    // composant pour
-    // browsebar
-    // (PairObject(nom_composant,
-    // lien_vers_composant))
-    // NB : seul le 1er
-    // element est
-    // actuellement
-    // utilisé
-    // (alertUserPeas est
-    // toujours présenté
-    // en popup => pas de
-    // lien sur nom du
-    // composant)
+    // composant pour browsebar
+    // (PairObject(nom_composant, lien_vers_composant))
+    // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours présenté en
+    // popup => pas de lien sur nom du composant)
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("Survey", "SurveySessionController.initAlertUser()",
         "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName + " componentId="
-        + getComponentId());
+            + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationMetaData(surveyId)); // set NotificationMetaData
-    // contenant les
-    // informations à notifier
-    // fin initialisation de AlertUser
-    // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
+    // contenant les informations à notifier
+    // fin initialisation de AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et
+    // retournée
 
     return AlertUser.getAlertUserURL();
   }
@@ -821,7 +863,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
             QuestionContainerSelection.QuestionContainerDetailFlavor)) {
           QuestionContainerDetail survey =
               (QuestionContainerDetail) clipObject.getTransferData(
-              QuestionContainerSelection.QuestionContainerDetailFlavor);
+                  QuestionContainerSelection.QuestionContainerDetailFlavor);
           pasteSurvey(survey);
         }
       }
@@ -858,13 +900,14 @@ public class SurveySessionController extends AbstractComponentSessionController 
           String type =
               physicalName.substring(physicalName.indexOf('.') + 1, physicalName.length());
           String newPhysicalName =
-              new Long(new Date().getTime()).toString() + attachmentSuffix + "." + type;
+              Long.toString(new Date().getTime()) + attachmentSuffix + "." + type;
           attachmentSuffix = attachmentSuffix + 1;
 
           if (survey.getHeader().getInstanceId().equals(getComponentId())) {
             // in the same component
             String absolutePath = FileRepositoryManager.getAbsolutePath(componentId);
-            String dir = absolutePath + getSettings().getString("imagesSubDirectory") + File.separator;
+            String dir =
+                absolutePath + getSettings().getString("imagesSubDirectory") + File.separator;
             FileRepositoryManager.copyFile(dir + physicalName, dir + newPhysicalName);
           } else {
             // in other component
@@ -1000,7 +1043,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
     String surveyImageDirectory =
         FileServerUtils.getUrl(this.getSpaceId(), this.getComponentId(), "REPLACE_FILE_NAME",
-        "REPLACE_FILE_NAME", "image/gif", getSettings().getString("imagesSubDirectory"));
+            "REPLACE_FILE_NAME", "image/gif", getSettings().getString("imagesSubDirectory"));
 
     request.setAttribute("ImageDirectory", surveyImageDirectory);
     // Parameter variable declaration
@@ -1066,8 +1109,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
             attachmentSuffix = attachmentSuffix + 1;
             dir =
                 new File(FileRepositoryManager.getAbsolutePath(this.getComponentId())
-                + getSettings().getString("imagesSubDirectory") + File.separator
-                + physicalName);
+                    + getSettings().getString("imagesSubDirectory") + File.separator
+                    + physicalName);
             FileUploadUtil.saveToFile(dir, item);
             size = item.getSize();
             if (size > 0) {
@@ -1145,4 +1188,75 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
     return view;
   }
+
+  /**
+   * Refactoring : get code from view JSP and add it inside controller
+   * @param request the HttpServletRequest which contains all the request parameter
+   */
+  public void sendNewSurveyAction(HttpServletRequest request) {
+    String action = request.getParameter("Action");
+    if ("SendNewSurvey".equals(action)) {
+      String title = request.getParameter("title");
+      String description = request.getParameter("description");
+      String beginDate = request.getParameter("beginDate");
+      String endDate = request.getParameter("endDate");
+      String nbQuestions = request.getParameter("nbQuestions");
+      String anonymousString = request.getParameter("anonymous");
+
+      // Anonymous mode -> force all the survey to be anonymous
+      if (this.isAnonymousModeEnabled()) {
+        anonymousString = "true";
+      }
+      boolean anonymous =
+          StringUtil.isDefined(anonymousString) && "true".equalsIgnoreCase(anonymousString);
+      if (StringUtil.isDefined(beginDate)) {
+        try {
+          beginDate = DateUtil.date2SQLDate(beginDate, this.getLanguage());
+        } catch (ParseException e) {
+          SilverTrace.error("Survey", "SurveySessionControler.sendNewSurveyAction",
+              "Create new survey problem", "impossible to parse begin date", e);
+          beginDate = null;
+        }
+      }
+      if (StringUtil.isDefined(endDate)) {
+        try {
+          endDate = DateUtil.date2SQLDate(endDate, this.getLanguage());
+        } catch (ParseException e) {
+          endDate = null;
+        }
+      }
+      QuestionContainerHeader surveyHeader =
+          new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate,
+              false, 0, Integer.parseInt(nbQuestions), anonymous);
+      QuestionContainerDetail surveyDetail = new QuestionContainerDetail();
+      surveyDetail.setHeader(surveyHeader);
+      // create the positions of the new survey onto the PdC
+      String positions = request.getParameter("Positions");
+      setNewSurveyPositionsFromJSON(positions);
+      this.setSessionSurveyUnderConstruction(surveyDetail);
+    }
+  }
+
+  /**
+   * Set new survey positions (axis classification) from JSON string
+   * @param positions: the JSON string positions
+   */
+  public void setNewSurveyPositionsFromJSON(String positions) {
+    if (StringUtil.isDefined(positions)) {
+      PdcClassificationEntity surveyClassification = null;
+      try {
+        surveyClassification = PdcClassificationEntity.fromJSON(positions);
+      } catch (JAXBException e) {
+        SilverTrace.error("Survey", "SurveySessionController.sendNewSurveyAction",
+            "PdcClassificationEntity error", "Problem to read JSON", e);
+      }
+      if (surveyClassification != null && !surveyClassification.isUndefined()) {
+        List<PdcPosition> pdcPositions = surveyClassification.getPdcPositions();
+        this.setNewSurveyPositions(pdcPositions);
+      }
+    } else {
+      this.setNewSurveyPositions(null);
+    }
+  }
+
 }

@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -60,7 +60,7 @@
       PagesContext context = new PagesContext("myForm", "2", resources.getLanguage(), false, componentId, kmeliaScc.getUserId());
       context.setObjectId(pubId);
       if (kmeliaMode) {
-        context.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
+        context.setNodeId(kmeliaScc.getCurrentFolderId());
       }
       context.setBorderPrinted(false);
       context.setContentLanguage(currentLang);
@@ -161,17 +161,17 @@
           }
 
           out.println(frame.printBefore());
-          out.println(board.printBefore());
+          
           if (("finish".equals(wizard)) || ("progress".equals(wizard))) {
             //  cadre d'aide
-            out.println(boardHelp.printBefore());
-            out.println("<table border=\"0\"><tr>");
-            out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\"" + resources.getIcon("kmelia.info") + "\"></td>");
-            out.println("<td>" + kmeliaScc.getString("kmelia.HelpContentXml") + "</td>");
-            out.println("</tr></table>");
-            out.println(boardHelp.printAfter());
-            out.println("<BR>");
-          }
+%>
+            <div class="inlineMessage">
+				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+				<%=resources.getString("kmelia.HelpContentXml") %>
+			</div>
+<%
+		}
+          out.println(board.printBefore());
     %>
     <form name="myForm" method="post" action="UpdateXMLForm" enctype="multipart/form-data" accept-charset="UTF-8">
       <%

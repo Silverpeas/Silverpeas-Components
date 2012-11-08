@@ -3,7 +3,6 @@ var favoriteWindow = window;
 var importFileWindow = window;
 var importFilesWindow = window;
 var exportComponentWindow = window;
-var topicWindow = window;
 
 function addFavorite(name,description,url)
 {
@@ -76,11 +75,10 @@ function openPredefinedPdCClassification(nodeId) {
   if (nodeId != 0) {
         uri += "&nodeId=" + nodeId;
   }
-  SP_openWindow(uri, "Classification", '600', '400','scrollbars=yes, resizable, alwaysRaised');
+  SP_openWindow(uri, "Classification", '650', '600','scrollbars=yes, resizable, alwaysRaised');
 }
 
-function displayTopicDescription(id)
-{
+function displayTopicDescription(id) {
 	//display rich description of topic
 	var ieFix = new Date().getTime();
 	var componentId = getComponentId();
@@ -98,6 +96,7 @@ function refreshPublications()
 	$.get(getWebContext()+'/RAjaxPublicationsListServlet', {Id:nodeId,ComponentId:componentId,IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
+				activateUserZoom();
 			},"html");
 }
 
@@ -107,29 +106,13 @@ function validatePublicationClassification(s)
     SP_openWindow(getWebContext()+'/Rkmelia/' + componentId + '/validateClassification?' + s, "Validation", '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
 
-function displayPublicationsToValidate()
-{
-	//display publications to validate
-	var ieFix = new Date().getTime();
-	var componentId = getComponentId();
-	$.get(getWebContext()+'/RAjaxPublicationsListServlet', {ComponentId:componentId,ToValidate:1,IEFix:ieFix},
-			function(data){
-				$('#pubList').html(data);
-			},"html");
-}
-
-function closeWindows() {
-	
+function closeWindows() {	
 	if(!subscriptionWindow.closed && subscriptionWindow.name=="subscriptionWindow") {
 		subscriptionWindow.close();
 	}
 
 	if (!favoriteWindow.closed && favoriteWindow.name=="favoriteWindow") {
 		favoriteWindow.close();
-	}
-	
-	if (!topicWindow.closed && topicWindow.name=="topicWindow") {
-		topicWindow.close();
 	}
 }
 
@@ -149,19 +132,20 @@ function sortGoTo(selectedIndex) {
 		$.get(getWebContext()+'/RAjaxPublicationsListServlet', {Index:0,Sort:sort,ComponentId:componentId,Query:topicQuery,IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
+								activateUserZoom();
 							},"html");
 		return;
 	}
 }
 
 function displayPath(id) {
-    var sUrl = getWebContext()+"/KmeliaJSONServlet?Action=GetPath&ComponentId="+getComponentId()+"&Id="+id+"&IEFix="+new Date().getTime();
-    $.getJSON(sUrl, function(data){
+	var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+id+"/path?lang="+getTranslation();
+    $.getJSON(url, function(data){
     	//remove topic breadcrumb
         removeBreadCrumbElements();
-    	$(data.reverse()).each(function(i, topic) {
-			if (topic.id != 0) {
-            	addBreadCrumbElement("javascript:topicGoTo("+topic.id+")", topic.name);
+    	$(data).each(function(i, topic) {
+			if (topic.attr["id"] != 0) {
+            	addBreadCrumbElement("javascript:topicGoTo("+topic.attr["id"]+")", topic.data);
             }
 		});
 	});
@@ -176,7 +160,18 @@ function displayPublications(id) {
 	$.get(url, {Id:id,ComponentId:componentId,PubIdToHighlight:pubIdToHighlight,IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
+				activateUserZoom();
 			},"html");
+}
+
+function activateUserZoom() {
+	$('.userToZoom').each(function() {
+	    var $this = $(this);
+	    if ($this.data('userZoom') == null)
+	      $this.userZoom({
+	        id: $this.attr('rel')
+	      });
+	  });
 }
 
 function displayOperations(id) {
@@ -202,11 +197,13 @@ function initOperations(id, op) {
 	$("#menutoggle").css({'display':'block'});
 	
 	oMenu.clearContent();
+	$('#menubar-creation-actions').empty();
 	
 	var menuItem;
 	var groupIndex = 0;
 	var groupEmpty = true;
 	var menuEmpty = true;
+	var menuBarEmpty = true;
 	
 	if (op.emptyTrash) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.emptyTrash"], {url: "javascript:onClick=emptyTrash()"});
@@ -261,9 +258,13 @@ function initOperations(id, op) {
 	}
 	
 	if (op.addTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.addTopic"], {url: "javascript:onclick=addNodeToCurrentNode()"});
+		var label = labels["operation.addTopic"];
+		var url = "javascript:onclick=addNodeToCurrentNode()";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
+		addCreationItem(url, icons["operation.addTopic"], label);
+		menuBarEmpty = false;
 	}
 	if (op.updateTopic) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.updateTopic"], {url: "javascript:onclick=updateCurrentNode()"});
@@ -305,6 +306,11 @@ function initOperations(id, op) {
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
+	if (op.shareTopic) {
+		menuItem = new YAHOO.widget.MenuItem(labels["operation.shareTopic"], {url: "javascript:onclick=shareCurrentTopic()"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
 	
 	if (!groupEmpty) {
 		groupIndex++;
@@ -313,24 +319,40 @@ function initOperations(id, op) {
 	}
 	
 	if (op.addPubli) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.addPubli"], {url: "NewPublication"});
+		var label = labels["operation.addPubli"];
+		var url = "NewPublication";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
+		addCreationItem(url, icons["operation.addPubli"], label);
+		menuBarEmpty = false;
 	}
 	if (op.wizard) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.wizard"], {url: "WizardStart"});
+		var label = labels["operation.wizard"];
+		var url = "WizardStart";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
+		addCreationItem(url, icons["operation.wizard"], label);
+		menuBarEmpty = false;
 	}
 	if (op.importFile) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.importFile"], {url: "javascript:onclick=importFile()"});
+		var label = labels["operation.importFile"];
+		var url = "javascript:onclick=importFile()";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
+		addCreationItem(url, icons["operation.importFile"], label);
+		menuBarEmpty = false;
 	}
 	if (op.importFiles) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.importFiles"], {url: "javascript:onclick=importFiles()"});
+		var label = labels["operation.importFiles"];
+		var url = "javascript:onclick=importFiles()";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
+		addCreationItem(url, icons["operation.importFiles"], label);
+		menuBarEmpty = false;
 	}
 	if (op.sortPublications) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.sortPublis"], {url: "ToOrderPublications"});
@@ -357,30 +379,69 @@ function initOperations(id, op) {
 	if (op.exportSelection) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.exportSelection"], {url: "javascript:onclick=exportPublications()"});
 		oMenu.addItem(menuItem, groupIndex);
-		menuEmpty = false;
+		groupEmpty = false;
 	}
 	
 	if (op.subscriptions) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.subscribe"], {url: "javascript:onclick=addSubscription()"});
+		var label = labels["operation.subscribe"];
+		var url = "javascript:onclick=addSubscription()";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
-		menuEmpty = false;
+		groupEmpty = false;
+		//addCreationItem(url, icons["operation.subscribe"], label);
 	}
 	if (op.favorites) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.favorites"], {url: "javascript:onclick=addCurrentNodeAsFavorite()"});
+		var label = labels["operation.favorites"];
+		var url = "javascript:onclick=addCurrentNodeAsFavorite()";
+		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
-		menuEmpty = false;
+		groupEmpty = false;
+		//addCreationItem(url, icons["operation.favorites"], label);
 	}
-			
+  
+  if (!groupEmpty) {
+    groupIndex++;
+    groupEmpty = true;
+    menuEmpty = false;
+  }
+  
+  if (op.statistics) {
+    menuItem = new YAHOO.widget.MenuItem(labels["operation.statistics"], {url: "javascript:onclick=showStats()"});
+    oMenu.addItem(menuItem, groupIndex);
+    menuEmpty = false;
+  }
+
 	oMenu.render();
 	
 	if (menuEmpty) {
 		$("#menutoggle").css({'display':'none'});
 	}
+	if (menuBarEmpty) {
+		$('#menubar-creation-actions').css({'display':'none'});
+	}
+}
+
+function addCreationItem(url, icon, label) {
+	if ($('#menubar-creation-actions').length > 0) {
+		var creationItem = "<a href=\""+url+"\" class=\"menubar-creation-actions-item\"><span><img src=\""+icon+"\" alt=\"\"/>" + label + "</span></a>";
+		$('#menubar-creation-actions').css({'display':'block'});
+		$('#menubar-creation-actions').append(creationItem);
+	}
+}
+
+function hideOperations() {
+	$("#menutoggle").css({'display':'none'}); //hide operations
+	if ($('#menubar-creation-actions').length > 0) {
+		$('#menubar-creation-actions').empty();
+		$('#menubar-creation-actions').css({'display':'none'});
+	}
 }
 
 var currentNodeId;
-var currentTopicDescription;
 var currentTopicName;
+var currentTopicDescription;
+var currentTopicStatus;
+var currentTopicTranslations;
 
 function getCurrentNodeId() {
 	return currentNodeId;
@@ -391,35 +452,118 @@ function setCurrentNodeId(id) {
 	currentNodeId = id;
 }
 
+function getCurrentTopicStatus() {
+	return currentTopicStatus;
+}
+
+function setCurrentTopicStatus(status) {
+	currentTopicStatus = status;
+}
+
 function setCurrentTopicName(name) {
 	currentTopicName = name;
+	$("#addOrUpdateNode #folderName").val(name);
 }
+
 function setCurrentTopicDescription(desc) {
 	currentTopicDescription = desc;
+	$("#addOrUpdateNode #folderDescription").val(desc);
+}
+function setCurrentTopicTranslations(trans) {
+	currentTopicTranslations = trans;
+}
+
+var translations;
+function storeTranslations(trans) {
+	translations = trans;
+	var select = $('select[name="I18NLanguage"]');
+	select.attr("onchange", "showTranslation(this.value.substring(0,2))");
+	if (translations != null && translations.length > 1) {
+		//display delete operation
+		if ($("#deleteTranslation").length == 0){
+			var img = '<img src="' + getWebContext() + '/util/icons/delete.gif" title="'+labels["js.i18n.remove"]+'" alt="'+labels["js.i18n.remove"]+'"/>';
+			$("&nbsp;<a id=\"deleteTranslation\" href=\"javascript:document.getElementById('<%=I18NHelper.HTMLHiddenRemovedTranslationMode%>').value='true';document.topicForm.submit();\">"+img+"</a>").insertAfter(select);
+		}
+	} else {
+		//remove delete operation
+		$("#deleteTranslation").remove();
+	}
+	showTranslation($('select[name="I18NLanguage"] option:selected').val().substring(0,2));
+	return false;
+}
+
+function showTranslation(lang) {
+	var found;
+	var i=0;
+	while (!found && i<translations.length) {
+		if (translations[i].language == lang) {
+			found = true;
+			$("#addOrUpdateNode #folderName").val(translations[i].name);
+			$("#addOrUpdateNode #folderDescription").val(translations[i].description);
+			$('select[name="I18NLanguage"] option:selected').val(translations[i].language+"_"+translations[i].id);
+		}
+		i++;
+	}
+	if (!found) {
+		$("#addOrUpdateNode #folderName").val("");
+		$("#addOrUpdateNode #folderDescription").val("");
+	}
+}
+
+function getDateFormat() {
+	if (getLanguage() == "fr") {
+		return "dd/mm/yy";
+	} else if (getLanguage() == "de") {
+		return "dd.mm.yy";
+	}
+	return "mm/dd/yy";
 }
 
 function displayTopicInformation(id) {
-	if (id != "0" && id != "1" && id != "tovalidate") {
+	if (id != "0" && id != "1" && id != getToValidateFolderId()) {
 		$("#footer").css({'visibility':'visible'});
-		var url = getWebContext()+"/KmeliaJSONServlet?Id="+id+"&Action=GetTopic&ComponentId="+getComponentId()+"&IEFix="+new Date().getTime();
+		var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+id;
 		$.getJSON(url, function(topic){
-					$("#footer").html(labels["topic.info"]+topic[0].creatorName+' - '+topic[0].date+' - <a id="topicPermalink" href="#"><img src="'+icons["permalink"]+'"/></a>');
+					var name = topic.data;
+					var desc = topic.attr["description"];
+					var date = $.datepicker.formatDate(getDateFormat(), new Date(topic.attr["creationDate"]));;
+					var creator = topic.attr["creator"].fullName;
+					$("#footer").html(labels["topic.info"]+creator+' - '+date+' - <a id="topicPermalink" href="#"><img src="'+icons["permalink"]+'"/></a>');
 					$("#footer #topicPermalink").attr("href", getWebContext()+"/Topic/"+id+"?ComponentId="+getComponentId());
-					setCurrentTopicName(topic[0].name);
-					setCurrentTopicDescription(topic[0].description);
+					setCurrentTopicName(name);
+					setCurrentTopicDescription(desc);
+					setCurrentTopicStatus(topic.attr["status"]);
+					if (params["i18n"]) {
+						setCurrentTopicTranslations(topic.translations);
+					}
+					activateUserZoom();
 				});
 	} else {
 		$("#footer").css({'visibility':'hidden'});
 	}
 }
 
-function deleteNode(nodeId, nodeLabel) {
+function writeInConsole(text) {
+    if (typeof console !== 'undefined') {
+        console.log(text);    
+    } else {
+        alert(text);    
+    }
+}
+
+function deleteFolder(nodeId, nodeLabel) {
 	if(window.confirm(labels["ConfirmDeleteTopic"]+ " '" + nodeLabel + "' ?")) {
 		var componentId = getComponentId();
 		var url = getWebContext()+'/KmeliaAJAXServlet';
 		$.get(url, { Id:nodeId,ComponentId:componentId,Action:'Delete'},
 				function(data){
 					if ((data - 0) == data && data.length > 0) {
+						// fires event
+						try {
+							nodeDeleted(nodeId);
+						} catch (e) {
+							writeInConsole(e);
+						}
 						// go to parent node
 						displayTopicContent(data);
 					} else {
@@ -430,7 +574,7 @@ function deleteNode(nodeId, nodeLabel) {
 }
 
 function deleteCurrentNode() {
-	deleteNode(getCurrentNodeId(), currentTopicName);
+	deleteFolder(getCurrentNodeId(), currentTopicName);
 }
 
 function sortSubTopics() {
@@ -443,12 +587,8 @@ function addNodeToCurrentNode() {
 }
 
 function topicAdd(topicId, isLinked) {
-	//alert("topicAdd : topicId = "+topicId);
 	var translation = getTranslation();
 	var rightsOnTopic = params["rightsOnTopic"];
-	if (!topicWindow.closed && topicWindow.name== "topicAddWindow") {
-		topicWindow.close();
-	}
     var url = "ToAddTopic?Id="+topicId+"&Translation="+translation;
     if (isLinked) {
     	url += "&IsLink=true";
@@ -456,27 +596,127 @@ function topicAdd(topicId, isLinked) {
 	if (rightsOnTopic) {
 		location.href = url;
 	} else {
-		topicWindow = SP_openWindow(url, "topicWindow", "570", "350", "directories=0,menubar=0,toolbar=0, alwaysRaised");
+		document.topicForm.action = "AddTopic";
+		$("#addOrUpdateNode #folderName").val("");
+		$("#addOrUpdateNode #folderDescription").val("");
+		$("#addOrUpdateNode #parentId").val(topicId);
+		translations = null;
+		//remove delete operation
+		$("#deleteTranslation").remove();
+		
+		// display path of parent
+		var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+topicId+"/path?lang="+getTranslation()+"&IEFix="+new Date().getTime();
+	    $.getJSON(url, function(data){
+	    	//remove topic breadcrumb
+	    	$("#addOrUpdateNode #path").html("");
+	    	$(data).each(function(i, topic) {
+	    		var item = " > " + topic.data;
+				if (topic.attr["id"] == 0) {
+					item = getComponentLabel();
+	            }
+				$("#addOrUpdateNode #path").html($("#addOrUpdateNode #path").html() + item);
+			});
+		});
+	    
+	    // open modal dialog
+		$("#addOrUpdateNode").dialog({
+			modal: true,
+			resizable: false,
+			title: labels["operation.addTopic"],
+			width: 600,
+			buttons: {
+				"OK": function() {
+					submitTopic();
+				},
+				"Annuler": function() {
+					$( this ).dialog( "close" );
+				}
+			}
+		});
 	}
 }
 
 function updateCurrentNode() {
+	if (params["i18n"]) {
+		storeTranslations(currentTopicTranslations);
+	} else {
+		$("#addOrUpdateNode #folderName").val(currentTopicName);
+		$("#addOrUpdateNode #folderDescription").val(currentTopicDescription);
+	}
 	topicUpdate(getCurrentNodeId());
 }
 
 function topicUpdate(id) {
-	document.topicDetailForm.ChildId.value = id;
-    if (!topicWindow.closed && topicWindow.name== "topicUpdateWindow") {
-    	topicWindow.close();
-    }
-
     var translation = getTranslation();
 	var rightsOnTopic = params["rightsOnTopic"];
 	if (rightsOnTopic) {
 		location.href = "ToUpdateTopic?Id="+id+"&Translation="+translation;
 	} else {
-		topicWindow = SP_openWindow("ToUpdateTopic?Id="+id+"&Translation="+translation, "topicWindow", "550", "350", "directories=0,menubar=0,toolbar=0,alwaysRaised");
+		document.topicForm.action = "UpdateTopic";
+		$("#addOrUpdateNode #topicId").val(id);
+		
+		// display path of parent
+		var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+id+"/path?lang="+getTranslation()+"&IEFix="+new Date().getTime();
+	    $.getJSON(url, function(data){
+	    	//remove topic breadcrumb
+	    	$("#addOrUpdateNode #path").html("");
+	    	$(data).each(function(i, topic) {
+	    		var item = " > " + topic.data;
+    			if (topic.attr["id"] == 0) {
+					item = getComponentLabel();
+	            } else {
+	            	if (i == data.length-1) {
+	            		item = "";
+	            	}
+	            }
+				$("#addOrUpdateNode #path").html($("#addOrUpdateNode #path").html() + item);
+			});
+		});
+	    
+	    // open modal dialog
+		$("#addOrUpdateNode").dialog({
+			modal: true,
+			resizable: false,
+			title: labels["operation.updateTopic"],
+			width: 600,
+			buttons: {
+				"OK": function() {
+					submitTopic();
+				},
+				"Annuler": function() {
+					$( this ).dialog( "close" );
+				}
+			}
+		});
 	}
+}
+
+function submitTopic() {
+	var errorMsg = "";
+    var errorNb = 0;
+    var title = stripInitialWhitespace(document.topicForm.Name.value);
+    if (isWhitespace(title)) {
+      errorMsg+="  - '"+labels["js.topicTitle"]+"' "+labels["js.mustBeFilled"]+"\n";
+      errorNb++;
+    }
+    switch(errorNb) {
+      case 0 :
+        result = true;
+        break;
+      case 1 :
+        errorMsg = labels["js.contains"]+" 1 "+labels["js.error"]+" : \n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+      default :
+        errorMsg = labels["js.contains"]+" " + errorNb + " "+labels["js.errors"]+" :\n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+    }
+    if (result) {
+    	document.topicForm.submit();
+    }
 }
 
 function emptyTrash() {
@@ -513,11 +753,16 @@ function addCurrentNodeAsFavorite() {
 		url = $("#topicPermalink").attr("href");
 		description = currentTopicDescription;
 	}
-	addFavorite(encodeURI(path), encodeURI(description), url);
+	addFavorite(encodeURIComponent(path), encodeURIComponent(description), url);
 }
 
 function updateCurrentTopicWysiwyg() {
 	updateTopicWysiwyg(getCurrentNodeId());
+}
+
+function shareCurrentTopic() {
+	var url = getWebContext()+"/RfileSharing/jsp/NewTicket?objectId="+getCurrentNodeId()+"&componentId="+getComponentId()+"&type=Node";
+	SP_openWindow(url, "Share", '650', '400','scrollbars=yes, resizable, alwaysRaised');
 }
 
 function updateTopicWysiwyg(id) {
@@ -533,14 +778,17 @@ function pasteFromOperations() {
 
 function pasteNode(id) {
 	$.progressMessage();
-
-	//alert("pasteNode : id = "+id);
-	var url = getWebContext()+"/KmeliaJSONServlet?Action=Paste&ComponentId="+getComponentId()+"&Id="+id+"&IEFix="+new Date().getTime();
 	
-	$.getJSON(url, function(nodes){
-		reloadPage(id);
-		$.closeProgressMessage();
-	});
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, {ComponentId:getComponentId(),Action:'Paste',Id:id,IEFix:new Date().getTime()},
+			function(data){
+				$.closeProgressMessage();
+				if (data == "ok") {
+					reloadPage(id);
+				} else {
+					alert(data);
+				}
+			}, 'text');
 }
 
 function reloadPage(id) {
@@ -573,18 +821,102 @@ function fileUpload() {
 }
 
 function doPagination(index) {
-	var paramToValidate = "0";
-	if (getCurrentNodeId() == "tovalidate") {
-		paramToValidate = "1";
-	}
 	var topicQuery = getSearchQuery();
 	var ieFix = new Date().getTime();
 	var componentId = getComponentId();
 	var selectedPublicationIds = getSelectedPublicationIds();
 	var notSelectedPublicationIds = getNotSelectedPublicationIds();
 	var url = getWebContext()+'/RAjaxPublicationsListServlet';
-	$.get(url, {Index:index,ComponentId:componentId,ToValidate:paramToValidate,Query:topicQuery,SelectedPubIds:selectedPublicationIds,NotSelectedPubIds:notSelectedPublicationIds,IEFix:ieFix},
+	$.get(url, {Index:index,ComponentId:componentId,Query:topicQuery,SelectedPubIds:selectedPublicationIds,NotSelectedPubIds:notSelectedPublicationIds,IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
+								activateUserZoom();
+								showPublicationCheckedBoxes();
 							},"html");
+}
+
+function showStats() {
+  //alert("Current componentId = " + getComponentId() + " and topicId=" + getCurrentNodeId());
+  //TODO call how to update HTML from this page with new Ajax call
+  //var url = getWebContext() + "/Rkmelia/statistic?componentId=" + getComponentId() + "&topicId=" + getCurrentNodeId();
+  var url = "statistics?componentId=" + getComponentId() + "&topicId=" + getCurrentNodeId();
+  //alert("loading url " + url);
+  location.href = url;
+}
+
+function changeStatus(nodeId, currentStatus) {
+	closeWindows();
+	var newStatus = "Visible";
+	if (currentStatus == "Visible") {
+		newStatus = "Invisible";
+	}
+
+	if (newStatus == 'Invisible') {
+		question = labels["js.status.visible2invisible"];
+	} else {
+		question = labels["js.status.invisible2visible"];
+	}
+
+	var recursive = "0";
+	if(window.confirm(question)){
+		recursive = "1";
+	}
+
+	$.get(getWebContext()+'/KmeliaAJAXServlet', {ComponentId:getComponentId(),Action:'UpdateTopicStatus',Id:nodeId,Status:newStatus,Recursive:recursive},
+			function(data){
+				if (data == "ok") {
+					updateUIStatus(nodeId, newStatus);
+				} else {
+					alert(data);
+				}
+			}, 'text');
+}
+
+function movePublication(id, sourceId, targetId) {
+	var componentId = getComponentId();
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, { Id:id,SourceNodeId:sourceId,TargetNodeId:targetId,ComponentId:componentId,Action:'MovePublication'},
+			function(data){
+				//data = "erreur en votre faveur zlekfj kjf kjh kjsdh fkjshdjfkhsdjkhf fjkshd kjfhsd kjfhsdkjhf"
+				if (data == "ok") {
+					// fires event
+					try {
+						publicationMovedSuccessfully(id, targetId);
+					} catch (e) {
+						writeInConsole(e);
+					}
+				} else {
+					publicationMovedInError(id, data);
+				}
+			}, 'text');
+}
+
+function getWidth() {
+	  var myWidth = 0;
+	  if( typeof( window.innerWidth ) == 'number' ) {
+	    //Non-IE
+	    myWidth = window.innerWidth;
+	  } else if( document.documentElement && document.documentElement.clientWidth ) {
+	    //IE 6+ in 'standards compliant mode'
+	    myWidth = document.documentElement.clientWidth;
+	  } else if( document.body && document.body.clientWidth ) {
+	    //IE 4 compatible
+	    myWidth = document.body.clientWidth;
+	  }
+	  return myWidth;
+}
+
+function getHeight() {
+	  var myHeight = 0;
+	  if( typeof( window.innerHeight ) == 'number' ) {
+	    //Non-IE
+	    myHeight = window.innerHeight;
+	  } else if( document.documentElement && document.documentElement.clientHeight) {
+	    //IE 6+ in 'standards compliant mode'
+	    myHeight = document.documentElement.clientHeight;
+	  } else if( document.body && document.body.clientHeight) {
+	    //IE 4 compatible
+	    myHeight = document.body.clientHeight;
+	  }
+	  return (myHeight -20);
 }

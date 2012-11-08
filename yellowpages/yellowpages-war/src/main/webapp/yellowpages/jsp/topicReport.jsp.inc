@@ -1,3 +1,4 @@
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%!
 String displayPath(YellowpagesSessionController Scc, Collection path, boolean linked, int beforeAfter) {
       String linkedPathString = new String();
@@ -11,16 +12,16 @@ String displayPath(YellowpagesSessionController Scc, Collection path, boolean li
       while (iterator.hasNext()) {
             NodeDetail nodeInPath = (NodeDetail) iterator.next();
             if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)){
-				nodeName = Encode.javaStringToHtmlString(nodeInPath.getName());
+				nodeName = EncodeHelper.javaStringToHtmlString(nodeInPath.getName());
 				bundleName = Scc.getString(nodeName);
 				// Vérifie que le nom n'est pas Corbeille
 				if (bundleName != null){
 					nodeName = bundleName;
 				}
 			if (nodeInPath.getNodePK().getId().equals("0"))
-				nodeName = Encode.javaStringToHtmlString(Scc.getComponentLabel());
+				nodeName = EncodeHelper.javaStringToHtmlString(Scc.getComponentLabel());
 				linkedPathString += "<a href=\"javascript:onClick=topicGoTo('"+nodeInPath.getNodePK().getId()+"')\">"+nodeName+"</a>";
-                pathString += Encode.javaStringToHtmlString(nodeInPath.getName());
+                pathString += EncodeHelper.javaStringToHtmlString(nodeInPath.getName());
                 if (iterator.hasNext()) {
                       linkedPathString += " > ";
                       pathString += " > ";

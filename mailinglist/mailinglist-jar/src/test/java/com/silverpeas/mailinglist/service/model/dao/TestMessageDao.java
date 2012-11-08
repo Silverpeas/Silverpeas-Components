@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -60,7 +60,7 @@ import static org.junit.Assert.*;
 @TransactionConfiguration(defaultRollback = true, transactionManager = "txManager")
 public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTests {
 
-  private static final int ATT_SIZE = 87186;
+  private static final int ATT_SIZE = 86199;
   private static final OrderBy orderByDate = new OrderBy("sentDate", false);
   private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. " +
       "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
@@ -438,7 +438,7 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
     assertEquals(0, savedMessage.getVersion());
     assertNotNull(savedMessage.getAttachments());
     assertEquals(2, savedMessage.getAttachments().size());
-    assertEquals(174372, savedMessage.getAttachmentsSize());
+    assertEquals(172398, savedMessage.getAttachmentsSize());
     messageDao.deleteMessage(savedMessage);
     savedMessage = messageDao.findMessageById(id);
     assertNull(savedMessage);
@@ -846,7 +846,7 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
     assertEquals(sentDate.get(Calendar.MONTH), savedMessage.getMonth());
     assertEquals(id1, savedMessage.getId());
     assertEquals(0, savedMessage.getVersion());
-    assertEquals(87186, savedMessage.getAttachmentsSize());
+    assertEquals(86199, savedMessage.getAttachmentsSize());
     assertNotNull(savedMessage.getAttachments());
     assertEquals(1, savedMessage.getAttachments().size());
     assertEquals("text/plain", savedMessage.getContentType());
@@ -854,7 +854,7 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
     assertNotNull(attached);
     assertEquals(0, attached.getVersion());
     assertNotNull(attached.getId());
-    assertEquals(87186, attached.getSize());
+    assertEquals(86199, attached.getSize());
     assertEquals("lemonde.html", attached.getFileName());
     assertEquals(attachmentPath + "toto" + File.separator + "lemonde.html",
         attached.getPath());

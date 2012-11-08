@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -98,10 +98,23 @@ public class KmeliaSecurity implements ComponentSecurity {
       cache.put(objectId + objectType + componentId, available);
     }
   }
-
+  
   private Boolean readFromCache(String objectId, String objectType, String componentId) {
     if (cacheEnabled) {
       return cache.get(objectId + objectType + componentId);
+    }
+    return null;
+  }
+  
+  private void writeInCache(String componentId, boolean available) {
+    if (cacheEnabled) {
+      cache.put(componentId, available);
+    }
+  }
+  
+  private Boolean readFromCache(String componentId) {
+    if (cacheEnabled) {
+      return cache.get(componentId);
     }
     return null;
   }
@@ -115,7 +128,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   public boolean isAccessAuthorized(String componentId, String userId, String objectId,
       String objectType) {
     // first, check if user is able to access to component
-    if (!controller.isComponentAvailable(componentId, userId)) {
+    if (!isComponentAvailable(componentId, userId)) {
       return false;
     }
 
@@ -208,6 +221,17 @@ public class KmeliaSecurity implements ComponentSecurity {
     return StringUtil.getBooleanValue(param);
   }
 
+  private boolean isComponentAvailable(String componentId, String userId) {
+    Boolean fromCache = readFromCache(componentId);
+    if (fromCache != null) {
+      // Availabily already processed
+      return fromCache;
+    }
+    
+    boolean available = controller.isComponentAvailable(componentId, userId);
+    writeInCache(componentId, available);
+    return available;
+  }
 
   protected boolean isPublicationAvailable(PublicationPK pk, String userId) {
     Boolean fromCache = readFromCache(pk.getId(), PUBLICATION_TYPE, pk.getInstanceId());
@@ -228,7 +252,17 @@ public class KmeliaSecurity implements ComponentSecurity {
       }
       for (NodePK fatherPK : fatherPKs) {
         if (!fatherPK.isTrash()) {
-          objectAvailable = isNodeAvailable(fatherPK, userId);
+          try {
+            objectAvailable = isNodeAvailable(fatherPK, userId);
+          } catch (Exception e) {
+            // don't throw exception, log only error
+            SilverTrace.error("kmelia", "KmeliaSecurity.isNodeAvailable",
+                "root.MSG_GEN_PARAM_VALUE",
+                "Node (" + fatherPK.getId() + ", " + fatherPK.getInstanceId() +
+                    ") no more exist but still referenced by a publication (" + pk.getId() + ", " +
+                    pk.getInstanceId() + ")");
+            objectAvailable = false;
+          }
         }
         if (objectAvailable) {
           break;

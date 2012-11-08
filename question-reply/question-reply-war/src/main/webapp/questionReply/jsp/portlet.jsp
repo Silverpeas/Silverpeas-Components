@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,8 +29,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
-<%@ page import="java.util.*"%>
+
 <%@ include file="checkQuestionReply.jsp" %>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
@@ -52,37 +51,48 @@
   <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script type="text/javascript">
 <!-- 
-$(document).ready(function() {  
-  var etat = new Array();
 
-  $('.question').live('click', function(objectEvent) {
+var etat = new Array();
+function bindQuestionsEvent() {
+  $('.questionTitle').on('click', function(event) {
       question = this.id;
       id = question.substring(1);
       answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
       typeLien = question.substring(0,1);
-      if (typeLien!="l" && !$(objectEvent.target).hasClass('actionQuestion')) {
+    if (typeLien!="l" && !$(event.target).hasClass('actionQuestion')) {
         $('#' + this.id + ' .answers').hide();
         if(etat[id] != "open"){
           $('#a'+id).show();
           etat[id] = "open";
           var found = $('#a'+id + '>ul>li');
           if (found.length == 0) {  
-            $.getJSON(answersUrl,function(data) {
+				
+				$.ajax({
+					url: answersUrl,
+					type: "GET",
+					contentType: "application/json",
+					dataType: "json",
+					cache: false,
+					success: function(data) {
               $('#a'+id + ' > ul').html('');
               $.each(data, function(key, answer) {
                 $('#a'+ id + ' > ul').append(displayAnswer(answer));
               });
+					}
             });
+
           }
         } else {
           $('#a'+id).hide();
           etat[id] = "close";
 		} 
+  		    return false;
       }
-    }, function() {}
-  );
+  });
+}
     
-  $('.categoryTitle').click(function() {
+function bindCategoryEvent() {
+   $('.categoryTitle').on('click', function() {
       category = this.id;
       id = category.substring(1);
       questionUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/questions/category/"/>' + id;
@@ -96,7 +106,14 @@ $(document).ready(function() {
         });
         var found = $('#qc'+id + '>li');
         if (found.length == 0) {  
-          $.getJSON(questionUrl,function(data) {
+		
+			   $.ajax({
+					url: questionUrl,
+					type: "GET",
+					contentType: "application/json",
+					dataType: "json",
+					cache: false,
+					success: function(data) {
             $('#qc'+id).html('');
             $.each(data, function(key, question) {
               answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
@@ -105,14 +122,23 @@ $(document).ready(function() {
               answersDiv.hide();            
               $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
             });
+						$('.questionTitle').off('click');
+						bindQuestionsEvent();
+					}
           });
+		
+		
+        
         }
         $('#qc'+id).show();        	   
         $(this).parent().addClass('select');			
       }
-    }, function() {}
-  );  
+    });
+}
     
+$(document).ready(function() {
+  bindCategoryEvent();
+  bindQuestionsEvent();
   $('.questions').hide();
   $("ul li:first-child .questions").show();
   $("ul li:first-child").addClass('select');
@@ -135,8 +161,8 @@ $(document).ready(function() {
   <fmt:message key="questionReply.close" bundle="${icons}" var="closeIcon"/>
   <fmt:message key="questionReply.miniconeReponse" bundle="${icons}" var="addReplyIcon"/>
   function displayQuestion(questionToBeDisplayed) {
-    questionDiv = $('<div>').attr('id', 'q' + questionToBeDisplayed.id).addClass('question');
-    questionTitleDiv = $('<div>').addClass('questionTitle');
+    questionDiv = $('<div>').addClass('question');
+    questionTitleDiv = $('<div>').attr('id', 'q' + questionToBeDisplayed.id).addClass('questionTitle');
     questionTitle = $('<h4>');
     questionTitleLink = $('<a>').addClass('question').attr('id', 'l' + questionToBeDisplayed.id).attr('href', '#'+questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.open"/>').text(questionToBeDisplayed.title);
     questionTitle.append(questionTitleLink);
@@ -147,15 +173,15 @@ $(document).ready(function() {
     questionTitleDiv.append(questionHyperlink);
     switch(questionToBeDisplayed.status) {
       case 0 :
-        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.encours" />').attr('title',  '<fmt:message key="questionReply.encours" />').attr('src', '<c:url value="${newIcon}" />');
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.encours" />').attr('title',  '<fmt:message key="questionReply.encours" />').attr('src', '<c:url value="${newIcon}" />').attr('border', '0' );
         questionTitleDiv.append(questionStatusImg);
         break;
       case 1 :
-        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.waiting" />').attr('title',  '<fmt:message key="questionReply.waiting" />').attr('src', '<c:url value="${waitingIcon}" />');
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.waiting" />').attr('title',  '<fmt:message key="questionReply.waiting" />').attr('src', '<c:url value="${waitingIcon}" />').attr('border', '0' );
         questionTitleDiv.append(questionStatusImg);
         break;
       case 2 :
-        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.close" />').attr('title',  '<fmt:message key="questionReply.close" />').attr('src', '<c:url value="${closeIcon}" />');
+        questionStatusImg = $('<img>').addClass('status').attr('alt',  '<fmt:message key="questionReply.close" />').attr('title',  '<fmt:message key="questionReply.close" />').attr('src', '<c:url value="${closeIcon}" />').attr('border', '0' );
         questionTitleDiv.append(questionStatusImg);
         break;
     }
@@ -174,9 +200,9 @@ $(document).ready(function() {
     answerBlock = $('<li>').addClass('answer');
     answerTitle = $('<h5>').addClass('answerTitle').text(answer.title);
     if(answer.publicReply) {
-      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rpublique" />').attr('title','<fmt:message key="questionReply.Rpublique" />').attr('src', '<c:url value="${publicAnswerIcon}" />'));
+      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rpublique" />').attr('title','<fmt:message key="questionReply.Rpublique" />').attr('src', '<c:url value="${publicAnswerIcon}" />').attr('border', '0' ));
     } else {
-      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rprivee" />').attr('title','<fmt:message key="questionReply.Rprivee" />').attr('src', '<c:url value="${privateAnswerIcon}" />'));
+      answerTitle.append($('<img>').addClass('status').attr('alt','<fmt:message key="questionReply.Rprivee" />').attr('title','<fmt:message key="questionReply.Rprivee" />').attr('src', '<c:url value="${privateAnswerIcon}" />').attr('border', '0' ));
     }
     actionDiv = $('<div>').addClass('action');    
     answerTitle.append(actionDiv);
@@ -197,18 +223,9 @@ $(document).ready(function() {
   }
 -->
 </script>
-<script type="text/javascript">
-
-function openSPWindow(fonction, windowName)
-{
-	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
-}
-</script>
 </head>
-<body>
+<body id="portlet-faq">
   <view:window browseBarVisible="false">
-    <view:frame>
-<form method="post" action="">
   <ul>
     <c:forEach items="${requestScope.Categories}" var="category">
       <li class="category">
@@ -228,10 +245,7 @@ function openSPWindow(fonction, windowName)
         </div>
         <ul class="questions" id="qcnull" ></ul>
     </li>
-</ul>
-</form>
-  
-    </view:frame>
+  </ul>
   </view:window>
 </body>
 </html>

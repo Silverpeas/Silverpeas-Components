@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,6 +39,7 @@ import javax.ejb.EJBException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class ForumsStatistics implements ComponentStatisticsInterface {
 
@@ -47,9 +48,8 @@ public class ForumsStatistics implements ComponentStatisticsInterface {
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList<Forum> forums = getForums(spaceId, componentId);
-    ArrayList<UserIdCountVolumeCouple> couples =
-        new ArrayList<UserIdCountVolumeCouple>(forums.size());
+    List<Forum> forums = getForums(spaceId, componentId);
+    List<UserIdCountVolumeCouple> couples = new ArrayList<UserIdCountVolumeCouple>(forums.size());
     for (Forum forum : forums) {
       UserIdCountVolumeCouple couple = new UserIdCountVolumeCouple();
       couple.setUserId(Integer.toString(forum.getId()));
@@ -72,7 +72,7 @@ public class ForumsStatistics implements ComponentStatisticsInterface {
     return forumsBM;
   }
 
-  public ArrayList<Forum> getForums(String spaceId, String componentId)
+  private List<Forum> getForums(String spaceId, String componentId)
       throws RemoteException {
     return getForumsBM().getForums(new ForumPK(componentId, spaceId));
   }

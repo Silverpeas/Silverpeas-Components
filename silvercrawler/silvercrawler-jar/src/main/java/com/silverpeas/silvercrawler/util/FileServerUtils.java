@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,6 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.silvercrawler.util;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 
@@ -35,7 +38,7 @@ public class FileServerUtils extends com.stratelia.webactiv.util.FileServerUtils
     url.append(URLManager.getApplicationURL());
     url.append("/SilverCrawlerFileServer/");
     url.append(replaceSpecialChars(logicalName));
-    url.append("?SourceFile=").append(physicalName);
+    url.append("?SourceFile=").append(encode(physicalName));
     url.append("&TypeUpload=link&MimeType=").append(mimeType);
     url.append("&UserId=").append(userId);
     url.append("&ComponentId=").append(componentId);
@@ -48,12 +51,20 @@ public class FileServerUtils extends com.stratelia.webactiv.util.FileServerUtils
     url.append(URLManager.getApplicationURL());
     url.append("/SilverCrawlerFileServer/");
     url.append(replaceSpecialChars(logicalName));
-    url.append("?SourceFile=").append(physicalName);
+    url.append("?SourceFile=").append(encode(physicalName));
     url.append("&TypeUpload=zip&MimeType=").append(mimeType);
     url.append("&UserId=").append(userId);
     url.append("&ComponentId=").append(componentId);
     url.append("&Path=").append(path);
     return url.toString();
+  }
+  
+  private static String encode(String path) {
+    try {
+      return URLEncoder.encode(path, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      return path;
+    }
   }
 
 }

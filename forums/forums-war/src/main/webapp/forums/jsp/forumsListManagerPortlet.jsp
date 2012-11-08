@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,7 +33,7 @@
 %><%@ page import="com.stratelia.webactiv.forums.models.Forum"
 %><%@ page import="com.stratelia.webactiv.forums.url.ActionUrl"
 %><%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"
-%><%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"
+%><%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"
 %><%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"
 %><%@ page import="com.stratelia.webactiv.util.ResourceLocator"
 %>
@@ -150,7 +150,7 @@ public void displayForumLine(String spaceId, String componentId, Forum forum,
 		out.print(Encode.javaStringToHtmlString(nbMessages));
 		out.println("</span></td>");
 		
-		//cinquième colonne
+		//cinquiï¿½me colonne
 		// dernier sujet du forum
 		out.print("<td nowrap=\"nowrap\" align=\"center\" class=\"fondClair\"><span class=\"txtnote\">");
 		if (lastMessageDate != null)

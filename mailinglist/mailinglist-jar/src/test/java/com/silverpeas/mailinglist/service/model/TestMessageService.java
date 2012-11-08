@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 import static org.junit.Assert.*;
 
@@ -50,12 +51,12 @@ import static org.junit.Assert.*;
 public class TestMessageService extends AbstractSilverpeasDatasourceSpringContextTests {
 
   private static final OrderBy orderByDate = new OrderBy("sentDate", false);
-  private static final String textEmailContent = "Bonjour famille Simpson, " +
-       "j'espère que vous allez bien. Ici tout se passe bien et Krusty est très " +
-       "sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je " +
-       "dois remplacer l'homme canon dans la prochaine émission.\nBart";
-  private static final String attachmentPath = "c:\\tmp\\uploads\\componentId\\mailId@silverpeas.com\\";
-  
+  private static final String textEmailContent = "Bonjour famille Simpson, "
+    + "j'espère que vous allez bien. Ici tout se passe bien et Krusty est très "
+    + "sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je "
+    + "dois remplacer l'homme canon dans la prochaine émission.\nBart";
+  private static final String attachmentPath =
+    "c:\\tmp\\uploads\\componentId\\mailId@silverpeas.com\\";
   @Inject
   private MessageService messageService;
 
@@ -229,33 +230,33 @@ public class TestMessageService extends AbstractSilverpeasDatasourceSpringContex
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     List<Message> messages = messageService.listDisplayableMessages(mailingList, -1, -1,
-        0, orderByDate);
+      0, orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     assertEquals("1", messages.get(0).getId());
     assertEquals("2", messages.get(1).getId());
     messages = messageService.listDisplayableMessages(mailingList, -1, 2008, 0,
-        orderByDate);
+      orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     assertEquals("1", messages.get(0).getId());
     assertEquals("2", messages.get(1).getId());
     messages = messageService.listDisplayableMessages(mailingList,
-        Calendar.FEBRUARY, 2008, 0, orderByDate);
+      Calendar.FEBRUARY, 2008, 0, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     assertEquals("2", messages.get(0).getId());
     messages = messageService.listDisplayableMessages(mailingList,
-        Calendar.MARCH, 2008, 0, orderByDate);
+      Calendar.MARCH, 2008, 0, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     assertEquals("1", messages.get(0).getId());
     messages = messageService.listDisplayableMessages(mailingList, -1, 2007, 0,
-        orderByDate);
+      orderByDate);
     assertNotNull(messages);
     assertEquals(0, messages.size());
     messages = messageService.listDisplayableMessages(mailingList, 2,
-        orderByDate);
+      orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     assertEquals("1", messages.get(0).getId());
@@ -267,7 +268,7 @@ public class TestMessageService extends AbstractSilverpeasDatasourceSpringContex
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     List<Message> messages = messageService.listUnmoderatedeMessages(mailingList, 0,
-        orderByDate);
+      orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     assertEquals("3", messages.get(0).getId());
@@ -419,20 +420,20 @@ public class TestMessageService extends AbstractSilverpeasDatasourceSpringContex
   @Override
   protected IDataSet getDataSet() throws Exception {
     if (isOracle()) {
-      return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class.getResourceAsStream(
-          "test-message-service-oracle-dataset.xml")));
+      return new ReplacementDataSet(new FlatXmlDataSetBuilder().build(TestMessageService.class
+        .getResourceAsStream("test-message-service-oracle-dataset.xml")));
     }
-    return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class.getResourceAsStream(
-        "test-message-service-dataset.xml")));
+    return new ReplacementDataSet(new FlatXmlDataSetBuilder().build(TestMessageService.class
+      .getResourceAsStream("test-message-service-dataset.xml")));
   }
 
   protected IDataSet getComplexDataSet() throws DataSetException, IOException {
     if (isOracle()) {
-      return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class.getResourceAsStream(
-          "test-message-service-complex-oracle-dataset.xml")));
+      return new ReplacementDataSet(new FlatXmlDataSetBuilder().build(TestMessageService.class
+        .getResourceAsStream("test-message-service-complex-oracle-dataset.xml")));
     }
-    return new ReplacementDataSet(new FlatXmlDataSet(TestMessageService.class.getResourceAsStream(
-        "test-message-service-complex-dataset.xml")));
+    return new ReplacementDataSet(new FlatXmlDataSetBuilder().build(TestMessageService.class
+      .getResourceAsStream("test-message-service-complex-dataset.xml")));
   }
 
   @After

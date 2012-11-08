@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,6 +29,7 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
+
 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
@@ -57,12 +58,14 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.infoLetter.model.*"%>
-<%@page import="com.silverpeas.util.StringUtil"%><HTML>
-
+<%@ page import="com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="java.util.Vector"%>
+
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="com.silverpeas.util.StringUtil"%>
+
+<%@ page import="java.util.List"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%
@@ -83,5 +86,16 @@ BrowseBar browseBar = window.getBrowseBar();
 OperationPane operationPane = window.getOperationPane();
 Frame frame = gef.getFrame();
 Board board = gef.getBoard();
-	
+
+
+InfoLetterSessionController ils = (InfoLetterSessionController) request.getAttribute("infoLetter");
+
+if (ils == null) {
+  // No forums session controller in the request -> security exception
+  String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+  getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request,response);
+  return;
+}
+
+
 %>

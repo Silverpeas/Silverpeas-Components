@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,7 +32,12 @@
     <message lang="de">Bildergalerie</message>
   </label>
   <description>
-    <message lang="fr">Les images sont classées dans des albums. La création des albums est facilitée par la fonction de glisser/déposer.</message>
+    <message lang="fr">Les images peuvent être définies avec précision grâce à un formulaire personnalisable.
+		Organisées en albums, elles peuvent être ajoutées par glisser/
+		déposer. Le moteur de recherche exploite les données EXIF, IPTC et les
+		données personnalisées. Retaillées automatiquement, de nombreux traitements
+		par lot sont possibles.
+	</message>
     <message lang="en">Images are stored into albums. Creating albums and uploading images is easy with the drag and drop.</message>
     <message lang="de">Die Bilder werden in Alben abgelegt. Erstellen von Alben und das Hochladen von Bildern geht einfach durch der Drag and Drop.</message>
   </description>
@@ -47,12 +52,12 @@
   <instanceClassName>com.silverpeas.gallery.GalleryInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <label>     
+      <label>
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Administrators</message>
         <message lang="de">Administrator</message>
       </label>
-      <help>     
+      <help>
         <message lang="fr">Les gestionnaires créent les albums et paramètrent le Plan de Classement</message>
         <message lang="en">Administrators create albums and set up the Classification Scheme</message>
         <message lang="de">Administrator</message>
@@ -118,9 +123,9 @@
       <order>1</order>
       <mandatory>true</mandatory>
       <value>5</value>
-      <type>text</type>      
-      <size>5</size>      
-      <updatable>always</updatable>      
+      <type>text</type>
+      <size>5</size>
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Temps d'attente entre deux images (en secondes)</message>
         <message lang="en">Time wait between two images (in seconds)</message>
@@ -152,11 +157,11 @@
         <message lang="en">Classification Scheme</message>
         <message lang="de">klassierungsplan</message>
       </label>
-      <order>4</order>      
+      <order>4</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
-      <updatable>always</updatable>     
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Les images créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
         <message lang="en">Images would be classified on PDC</message>
@@ -174,7 +179,7 @@
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
-      <updatable>always</updatable>      
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Permet d'afficher les Méta données (EXIF, IPTC, Windows) de chaque photo</message>
         <message lang="en">Display image meta data (EXIF, IPTC, Windows)</message>
@@ -210,7 +215,7 @@
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
-      <updatable>always</updatable>     
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Permet d'insérer le nom du photographe sous forme de watermark sur les images</message>
         <message lang="en">Insert photographer's name into image as watermark</message>
@@ -223,7 +228,7 @@
         <message lang="fr">Nb de jours avant fin de visibilité</message>
         <message lang="en">Number of days before the images are no longer visible.</message>
         <message lang="de">Anzahl der Tage, bevor die Bilder nicht mehr sichtbar sind.</message>
-      </label>      
+      </label>
       <order>8</order>
       <mandatory>true</mandatory>
       <value>3</value>
@@ -271,6 +276,11 @@
         <message lang="en">Images will be available from Wysiwyg editor and Vote and Survey applications</message>
         <message lang="de">Bilder werden von WYSIWYG-Editor, Abstimmung und Umfrage Komponent verfügbar sein</message>
       </help>
+      <warning>
+        <message lang="fr">En cochant cette case, les images gérées par cette application seront librement utilisables (sans tenir compte des droits) par les autres applications.</message>
+        <message lang="en">By checking this box, images managed by this application will be available for use (regardless of rights) by other applications.</message>
+        <message lang="de">By checking this box, images managed by this application will be available for use (regardless of rights) by other applications.</message>
+      </warning>
     </parameter>
     <parameter>
       <name>comments</name>

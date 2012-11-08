@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -37,7 +37,6 @@ import javax.ejb.EJBException;
 
 /**
  * Class declaration
- *
  * @author
  */
 public class QuickinfoStatistics implements ComponentStatisticsInterface {
@@ -46,9 +45,10 @@ public class QuickinfoStatistics implements ComponentStatisticsInterface {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws
-          Exception {   
+      Exception {
     Collection<PublicationDetail> infos = getQuickInfos(spaceId, componentId);
-     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(infos.size());
+    List<UserIdCountVolumeCouple> myArrayList =
+        new ArrayList<UserIdCountVolumeCouple>(infos.size());
     for (PublicationDetail detail : infos) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(detail.getCreatorId());
@@ -62,17 +62,18 @@ public class QuickinfoStatistics implements ComponentStatisticsInterface {
     if (publicationBm == null) {
       try {
         publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-                PublicationBmHome.class).create();
+            PublicationBmHome.class).create();
       } catch (Exception e) {
         SilverTrace.error("quickinfo", "QuickinfoStatistics.getPublicationBm()",
-                "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
+            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
         throw new EJBException(e);
       }
     }
     return publicationBm;
   }
 
-  public Collection<PublicationDetail> getQuickInfos(String spaceId, String componentId) throws RemoteException {
+  public Collection<PublicationDetail> getQuickInfos(String spaceId, String componentId)
+      throws RemoteException {
     return getPublicationBm().getOrphanPublications(new PublicationPK("", spaceId, componentId));
   }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,21 +30,22 @@
   <name>kmelia</name>
   <label>
     <message lang="fr">Gestion documentaire I</message>
-    <message lang="en">Theme Tracker</message>
+    <message lang="en">Document management</message>
     <message lang="de">Dokumentenverwaltung</message>
   </label>
   <description>
-    <message lang="fr">Permet de fédérer et structurer la documentation par répertoires thématiques
-      arborescents. De nombreuses fonctions associées peuvent être activées : forumlaire d'entête
-      XML et méta-données associées, gestion de fichiers joints de formats Office, PDF, html,
-      gestion de
-      version des fichiers joints, gestion d'un workflow multi-étapes de validation / approbation,
-      indexation manuelle sur le Plan de Classement Silverpeas, contrôle de lecture,
-      gestion de commentaires, abonnement à un dossier ou un fichier, alerte de publication.
+    <message lang="fr">Les publications offrent la possibilité de regrouper en
+		une seule et même page des méta-données, des fichiers joints (avec suivi des
+		modifications) ainsi qu’un contenu libre (Wysiwyg) ou structuré (formulaire).
+		Elles sont organisées dans une arborescence de dossiers. Les utilisateurs peuvent
+		commenter les publications, s’abonner aux dossiers, notifier...
+		Les différents rôles et de nombreux paramètres permettent de s’adapter à tous
+		vos besoins. Application phare de Silverpeas, elle est digne d’un « pure player »
+		de la GED. Elle est interfacée avec le moteur de workflow de la plate-forme.
     </message>
-    <message lang="en">This application organizes documentation in hierarchical themes. You have many options : XML
+    <message lang="en">This application organizes documentation in hierarchical folders. You have many options : XML
       form for metadata, attachments versioned or not, workflows with many steps for validation / acceptation,
-      classification on the classification scheme, readers list, comments, subscription to a theme ,
+      classification on the classification scheme, readers list, comments, subscription to a folder ,
       a publication or a file.
     </message>
 	<message lang="de">Diese Komponente organisiert Dokumentation in hierarchischen Themen.
@@ -72,8 +73,8 @@
         <message lang="de">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires créent des thèmes, sélectionnent les formulaires de métadonnées et paramètrent le Plan de Classement.</message>
-        <message lang="en">Administrators create topics, select metadata templates and set up the Classification Scheme.</message>
+        <message lang="fr">Les gestionnaires créent des dossiers, sélectionnent les formulaires de métadonnées et paramètrent le Plan de Classement.</message>
+        <message lang="en">Administrators create folders, select metadata templates and set up the Classification Scheme.</message>
         <message lang="de">Administrator</message>
       </help>
     </profile>
@@ -93,23 +94,23 @@
       <label>
         <message lang="fr">Rédacteurs</message>
         <message lang="en">Writers</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Redaktor</message>
       </label>
       <help>
         <message lang="fr">Les rédacteurs créent des publications.</message>
         <message lang="en">Writers create publications.</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Redaktor</message>
       </help>
     </profile>
     <profile name="user">
-      <label>      
+      <label>
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
-      <help>      
-        <message lang="fr">Les lecteurs accèdent aux publications, s'abonnent aux différents thèmes et peuvent laisser des commentaires sur les publications.</message>
-        <message lang="en">Readers have access to publications, subscribe to various topics and can leave comments on publications.</message>
+      <help>
+        <message lang="fr">Les lecteurs accèdent aux publications, s'abonnent aux différents dossiers et peuvent laisser des commentaires sur les publications.</message>
+        <message lang="en">Readers have access to publications, subscribe to various folders and can leave comments on publications.</message>
         <message lang="de">Leser</message>
       </help>
     </profile>
@@ -123,7 +124,7 @@
         <message lang="de">Anzahl der letzten Veröffentlichungen</message>
       </label>
       <order>1</order>
-      <mandatory>true</mandatory>      
+      <mandatory>true</mandatory>
       <value>15</value>
       <type>text</type>
       <size>5</size>
@@ -134,13 +135,13 @@
           Si la valeur saisie est égale à 0, la publication à la racine est alors possible mais
           les dernières publications ne sont pas affichées sur la page d'accueil.
         </message>
-        <message lang="en">Defines the number of publications displayed on the home page of the application. If not set to 0 
+        <message lang="en">Defines the number of publications displayed on the home page of the application. If not set to 0
         you can't create publications in the root directory. When set to 0 you can create
-        publications on the root directory but the last publications are no longer displayed on the home page. 
+        publications on the root directory but the last publications are no longer displayed on the home page.
         </message>
-        <message lang="de">Definiert die Anzahl der Veröffentlichungen auf der Homepage des component. Falls nicht auf 0 gesetzt, 
+        <message lang="de">Definiert die Anzahl der Veröffentlichungen auf der Homepage des component. Falls nicht auf 0 gesetzt,
         können Sie keine Veröffentlichungen im Root-Verzeichnis machen. Wenn auf 0 gesetzt, können Sie Veröffentlichungen
-        in das Root-Verzeichnis machen, aber die letzten Publikationen werden nicht mehr angezeigt angezeigt. 
+        in das Root-Verzeichnis machen, aber die letzten Publikationen werden nicht mehr angezeigt angezeigt.
         </message>
       </help>
     </parameter>
@@ -150,7 +151,7 @@
         <message lang="fr">Nb Publi / Page</message>
         <message lang="en">Number of publications per page.</message>
         <message lang="de">Anzahl der Veröffentlichungen pro Seite</message>
-      </label>      
+      </label>
       <order>2</order>
       <mandatory>false</mandatory>
       <value></value>
@@ -176,7 +177,7 @@
       <options>
         <option>
           <name>
-            <message lang="fr">Oui avec explorateur de thèmes</message>
+            <message lang="fr">Oui avec explorateur de dossiers</message>
             <message lang="en">Yes with explorer</message>
             <message lang="de">Ja mit Explorer</message>
           </name>
@@ -184,7 +185,7 @@
         </option>
         <option>
           <name>
-            <message lang="fr">Oui sans explorateur de thèmes</message>
+            <message lang="fr">Oui sans explorateur de dossiers</message>
             <message lang="en">Yes without explorer</message>
             <message lang="de">Ja ohne Explorer</message>
           </name>
@@ -202,8 +203,8 @@
       <type>select</type>
       <updatable>creation</updatable>
       <help>
-        <message lang="fr">Active l'organisation arborescente de thèmes.</message>
-        <message lang="en">Activates the tree organization of themes.</message>
+        <message lang="fr">Active l'organisation arborescente de dossiers.</message>
+        <message lang="en">Activates the tree organization of folders.</message>
         <message lang="de">Aktiviert die Baum Organisation von Themen.</message>
       </help>
     </parameter>
@@ -278,7 +279,7 @@
         <message lang="en">Indicates publications you might want to see after looking at the current publication.</message>
         <message lang="de">Um anderen Veröffentlichungen, im Zusammenhang mit der aktuellen Veröffentlichung anzugeben.</message>
       </help>
-    </parameter>    
+    </parameter>
     <parameter>
       <name>tabAccessPaths</name>
       <label>
@@ -406,16 +407,16 @@
         <message lang="en">Access rights on the files with versions : Writers and readers,
           Writers only, Readers only or rights inherited from the application.
         </message>
-        <message lang="de">Zugriffsrechte auf die Dateien mit den Versionen: Autoren und Leser, 
+        <message lang="de">Zugriffsrechte auf die Dateien mit den Versionen: Autoren und Leser,
           nur Autoren, nur Leser oder Rechte von der Komponente geerbt.
         </message>
-      </help>      
+      </help>
     </parameter>
     <parameter>
       <name>draft</name>
       <label>
         <message lang="fr">Mode brouillon</message>
-        <message lang="en">Draf</message>
+        <message lang="en">Draft mode</message>
         <message lang="de">Entwurf</message>
       </label>
       <order>13</order>
@@ -444,16 +445,16 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au thème, visibilité des thèmes).</message>
-        <message lang="en">Activate functionalities for managing web content (wysiwyg for themes, and themes visibility).</message>
+        <message lang="fr">Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au dossier, visibilité des dossiers).</message>
+        <message lang="en">Activate functionalities for managing web content (wysiwyg for folder and folder visibility).</message>
         <message lang="de">Funktionalitäten für die Verwaltung von Web-Inhalten Aktivieren (WYSIWYG für Themen und Themen Sichtbarkeit).</message>
       </help>
     </parameter>
     <parameter>
       <name>delegatedTopicManagement</name>
       <label>
-        <message lang="fr">Gestion déléguée des thèmes</message>
-        <message lang="en">Theme management delegation</message>
+        <message lang="fr">Gestion déléguée des dossiers</message>
+        <message lang="en">Folder management delegation</message>
         <message lang="de">Theme-Verwaltung Delegierung</message>
       </label>
       <order>16</order>
@@ -462,9 +463,9 @@
       <type>checkbox</type>
       <updatable>never</updatable>
       <help>
-        <message lang="fr">La gestion des thèmes est déléguée aux publieurs et rédacteurs.</message>
-        <message lang="en">Publishers and writers can manage the themes.</message>
-        <message lang="de">Veröffentlicher und Schreiber können die Themen verwalten.</message>
+        <message lang="fr">La gestion des dossiers est déléguée aux publieurs et rédacteurs.</message>
+        <message lang="en">Publishers and writers can manage the folders.</message>
+        <message lang="de">Veröffentlicher und Herausgeber können die Themen verwalten.</message>
       </help>
     </parameter>
     <parameter>
@@ -600,7 +601,7 @@
         </option>
       </options>
       <type>select</type>
-      <updatable>always</updatable>      
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Classique : un valideur doit valider la publication, Ciblée (un seul
           valideur) : Le rédacteur choisit le valideur devant valider la publication. Ceci permet
@@ -609,16 +610,16 @@
           publication.
         </message>
         <message lang="en">Classical : once validator must validate publication, Targeted (only one
-          validator) : Writer choose one validator. This avoid spam behaviour., Targeted (various 
+          validator) : Writer choose one validator. This avoid spam behaviour., Targeted (various
           validators) : Writer choose many validators, Collegiate : All validators must validate
           publication
         </message>
         <message lang="de">Klassisch: Ein Validator muss die Veröffentlichung Prüfen.
-          Gezielte (nur eine Prüfung): Schreiber wählt einen Validator aus. Dieses Verhalten Vermeidet Spam. 
-          Gezielte (verschiedene Prüfungen): Schreiber wählt mehrere Validator aus.
+          Gezielte (nur eine Prüfung): Der Redaktor wählt einen Validator aus. Dieses Verhalten Vermeidet Spam.
+          Gezielte (verschiedene Prüfungen): Der Redaktor wählt mehrere Validator aus.
           Kollegial: Alle Validatoren müssen die Veröffentlichung validieren
         </message>
-      </help>      
+      </help>
     </parameter>
     <parameter>
       <name>exportComponent</name>
@@ -670,7 +671,7 @@
         <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles de l'application.</message>
         <message lang="en">This function allow the user to export all the visible publications of the application.</message>
         <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
-      </help>     
+      </help>
     </parameter>
     <parameter>
       <name>massiveDragAndDrop</name>
@@ -685,8 +686,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cette fonction permet de créer des thèmes et des publications par glisser/déposer dans une zone de l'écran.</message>
-        <message lang="en">This function allow to the manager to create topics and publications using drag and drop.</message>
+        <message lang="fr">Cette fonction permet de créer des dossiers et des publications par glisser/déposer dans une zone de l'écran.</message>
+        <message lang="en">This function allow to the manager to create folders and publications using drag and drop.</message>
         <message lang="de">Diese Funktion ermöglicht es dem Manager Themen und Publikationen mit Hilfe von Drag and Drop zu erstellen.</message>
       </help>
     </parameter>
@@ -708,7 +709,7 @@
         </message>
         <message lang="en">This function makes it possible to a writer to modify any publications.
         </message>
-        <message lang="de">Diese Funktion macht es einem Schreiber möglich, jede Veröffentlichung zu ändern.</message>
+        <message lang="de">Diese Funktion macht es einem Redaktor möglich, jede Veröffentlichung zu ändern.</message>
       </help>
     </parameter>
     <parameter>
@@ -760,16 +761,16 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Affiche le nombre de publications par thème</message>
-        <message lang="en">Display the number of publications per theme</message>
+        <message lang="fr">Affiche le nombre de publications par dossier</message>
+        <message lang="en">Display the number of publications per folder</message>
         <message lang="de">Anzahl der Veröffentlichungen per Thema zeigen</message>
       </help>
     </parameter>
     <parameter>
       <name>rightsOnTopics</name>
       <label>
-        <message lang="fr">Droits sur les thèmes</message>
-        <message lang="en">Rigths on themes</message>
+        <message lang="fr">Droits sur les dossiers</message>
+        <message lang="en">Rights on folders</message>
         <message lang="de">Rechte auf die Themen</message>
       </label>
       <order>28</order>
@@ -778,8 +779,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet de définir des droits d'accès au niveau des thèmes.</message>
-        <message lang="en">Allow to define rights on themes.</message>
+        <message lang="fr">Permet de définir des droits d'accès au niveau des dossiers.</message>
+        <message lang="en">Allow to define rights on folders.</message>
         <message lang="de">Erlaubt es, Zugangsrechte auf die Themen zu bestimmen.</message>
       </help>
     </parameter>
@@ -857,8 +858,8 @@
       <type>checkbox</type>
       <updatable>never</updatable>
       <help>
-        <message lang="fr">Possibilité d'effectuer des modifications enchainées sur certains thèmes (possédant un descripteur).</message>
-        <message lang="en">Provides the possibility of making successive modifications on certains topics (having a descriptor).</message>
+        <message lang="fr">Possibilité d'effectuer des modifications enchainées sur certains dossiers (possédant un descripteur).</message>
+        <message lang="en">Provides the possibility of making successive modifications on certains folders (having a descriptor).</message>
         <message lang="de">Bietet die Möglichkeit, aufeinanderfolgende Änderungen an einigen Themen (mit einem Deskriptor)auszuführen.</message>
       </help>
     </parameter>
@@ -937,8 +938,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème.</message>
-        <message lang="en">This feature allows to make a rich description of a theme.</message>
+        <message lang="fr">Ce paramètre permet de saisir une description Wysiwyg sur un dossier qui sera affichée dans le dossier.</message>
+        <message lang="en">This feature allows to make a rich description of a folder.</message>
         <message lang="de">Diese Funktion ermöglicht es, einen reichen Beschreibung eines Themas zu machen.</message>
       </help>
     </parameter>
@@ -955,11 +956,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail.</message>
-        <message lang="en">This feature allows to activate file sharing with persons who have no access to the portal.</message>
-        <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.
-</message>
+        <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs de la plate-forme.</message>
+        <message lang="en">This feature allows to activate file sharing with persons who have no access to the platform.</message>
+        <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen Zugang zu dem Portal haben, aktivieren.</message>
       </help>
+      <warning>
+        <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les fichiers avec des utilisateurs non référencés dans la plate-forme.</message>
+        <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
+        <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share files with users not identified in the platform.</message>
+      </warning>
       <personalSpaceValue>yes</personalSpaceValue>
     </parameter>
     <parameter>
@@ -1005,6 +1010,17 @@
         </message>
         <message lang="de">Diese Funktion ermöglicht es diese Komponente als eine Bank von Dateien zu bestimmen. Das hizufügen einer Datei im Körper einer Veröffentlichung wird mit der Hilfe vom Wysiwyg-Editor erfolgen.</message>
       </help>
+      <warning>
+        <message lang="fr">
+          En cochant cette case, les fichiers joints aux publications de cette application seront librement utilisables (sans tenir compte des droits) par les autres applications.
+        </message>
+        <message lang="en">
+          By checking this box, attached files to publications of this application will be available for use (regardless of rights) by other applications.
+        </message>
+        <message lang="de">
+		  By checking this box, attached files to publications of this application will be available for use (regardless of rights) by other applications.
+        </message>
+      </warning>
     </parameter>
     <parameter>
       <name>axisIdGlossary</name>
@@ -1022,11 +1038,11 @@
       <help>
         <message lang="fr">
           Ce paramètre permet de définir l'identifiant de l'axe du PDC qui sera
-          utilisé comme lexique dans le theme tracker courant.
+          utilisé comme lexique dans l'application courante.
         </message>
         <message lang="en">
           This feature allows to indicate the identifier of classification scheme axis's used as
-          glossary for the current Theme tracker.
+          glossary for the current application.
         </message>
         <message lang="de">Diese Funktion ermöglicht es die Identifikazion der KP-Achsen festzulegen, die als Glossar dür diese Kompnonte benützt werden.</message>
       </help>
@@ -1034,8 +1050,8 @@
     <parameter>
       <name>searchOnTopics</name>
       <label>
-        <message lang="fr">Recherche sur thèmes</message>
-        <message lang="en">Search on themes</message>
+        <message lang="fr">Recherche sur dossiers</message>
+        <message lang="en">Search on folders</message>
         <message lang="de">Suche auf Themen</message>
       </label>
       <order>41</order>
@@ -1044,8 +1060,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet d'afficher une zone de recherche pour chaque thème.</message>
-        <message lang="en">This feature allows to display a search box in each theme.</message>
+        <message lang="fr">Ce paramètre permet d'afficher une zone de recherche pour chaque dossier.</message>
+        <message lang="en">This feature allows to display a search box in each folder.</message>
         <message lang="de">Diese Funktion erlaubt es, ein Suchfeld in jedem Thema anzuzeigen.</message>
       </help>
     </parameter>
@@ -1151,9 +1167,7 @@
       <order>47</order>
       <mandatory>true</mandatory>
       <value>2</value>
-      <type>select</type>
-      <updatable>always</updatable>
-	  <options>
+      <options>
         <option>
           <name>
             <message lang="fr">Nom du créateur croissant</message>
@@ -1186,7 +1200,7 @@
           </name>
           <value>3</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Titre croissant</message>
             <message lang="en">Ascending title</message>
@@ -1194,7 +1208,7 @@
           </name>
           <value>4</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Date de création croissante</message>
             <message lang="en">Ascending creation date</message>
@@ -1202,7 +1216,7 @@
           </name>
           <value>5</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Date de création décroissante</message>
             <message lang="en">Descending creation date</message>
@@ -1210,7 +1224,7 @@
           </name>
           <value>6</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Description croissante</message>
             <message lang="en">Ascending description</message>
@@ -1218,20 +1232,38 @@
           </name>
           <value>7</value>
         </option>
-		<option>
-          <name>
-            <message lang="fr">Défini par le gestionnaire</message>
-            <message lang="en">Defined by the administrator</message>
-            <message lang="de">Defined by the administrator</message>
-          </name>
-          <value>8</value>
-        </option>
       </options>
+      <type>select</type>
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Permet de définir l'ordre d'affichage des publications par défaut.</message>
         <message lang="en">Sets the display order of publications.</message>
         <message lang="de">Sets the display order of publications.</message>
       </help>
+    </parameter>
+    <parameter>
+      <name>useFolderSharing</name>
+      <label>
+        <message lang="fr">Dossiers partageables</message>
+        <message lang="en">Folders sharing</message>
+        <message lang="de">Folders sharing</message>
+      </label>
+      <order>48</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Ce paramètre permet d'activer le partage de dossiers à des tiers non utilisateurs de la plate-forme.</message>
+        <message lang="en">This feature allows to activate folders sharing with persons who have no access to the platform.</message>
+        <message lang="de">This feature allows to activate folders sharing with persons who have no access to the platform.</message>
+      </help>
+      <warning>
+        <message lang="fr">Attention! En cochant cette case, vous allez permettre aux gestionnaires de l'application de partager librement les dossiers avec des utilisateurs non référencés dans la plate-forme.</message>
+        <message lang="en">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
+        <message lang="de">Caution! By checking this box, you will enable managers to the application to freely share folders with users not identified in the platform.</message>
+      </warning>
+      <personalSpaceValue>no</personalSpaceValue>
     </parameter>
   </parameters>
 </WAComponent>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,8 +26,6 @@ package com.silverpeas.webpages.control;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.subscribe.SubscriptionService;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.DataRecord;
@@ -38,10 +36,12 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.subscribe.SubscriptionService;
+import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.webpages.WebPagesNotifier;
 import com.silverpeas.webpages.model.WebPagesException;
+import com.silverpeas.webpages.notification.WebPagesUserNotifier;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -50,13 +50,11 @@ import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class WebPagesSessionController extends AbstractComponentSessionController {
-
-  WebPagesNotifier notifier = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -273,7 +271,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     }
 
     // send subscriptions
-    getNotifier().sendSubscriptionsNotification(getNodePK(), getUserId());
+    WebPagesUserNotifier.notify(getNodePK(), getUserId());
 
     // index updated data
     indexForm(set);
@@ -309,12 +307,5 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       throw new WebPagesException("WebPagesSessionController.indexForm()",
               SilverpeasException.ERROR, "webPages.EX_CANT_INDEX_DATA", e);
     }
-  }
-
-  private WebPagesNotifier getNotifier() {
-    if (notifier == null) {
-      notifier = new WebPagesNotifier();
-    }
-    return notifier;
   }
 }

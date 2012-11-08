@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,9 @@
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="java.util.List" %>
+
+<%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="check.jsp" %>
 <% 
 	String 			idcategory 	= (String) request.getAttribute("categoryId");
@@ -76,9 +79,7 @@
 	%>
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
@@ -203,8 +204,9 @@ buttonPane.addButton(cancelButton);
 		    StringBuilder managerNames = new StringBuilder("");
 			  if (managers != null && ! managers.isEmpty()) {
 			    for(UserDetail manager : managers) {
-			      managerIds += manager.getId()+ ",";
-			      managerNames.append(manager.getDisplayedName()).append("<br/>");
+			      managerIds += manager.getId()+ ","; %>
+			      <view:username userId="<%=manager.getId()%>"/><br/>
+			      <%
 			    }
 			  } %>
 			  <%=managerNames %>
@@ -217,7 +219,7 @@ buttonPane.addButton(cancelButton);
 	</tr>
 		<!-- <input type="HIDDEN" name="idcategory" value=<%=idcategory%> > -->
 		<%if (details != null){ %>
-			<input type="HIDDEN" name="SPRM_resourceId" value="<%=resourceId%>"/>
+			<input type="hidden" name="SPRM_resourceId" value="<%=resourceId%>"/>
 		<%}%>
 			
 </TABLE>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,6 +26,7 @@ package com.stratelia.webactiv.almanach.control.ejb;
 import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.Date;
 import static com.silverpeas.util.StringUtil.isDefined;
+import com.stratelia.webactiv.almanach.control.ExceptionDatesGenerator;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
@@ -202,28 +203,13 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
    * @return an ExDate instance with all of the exception dates.
    */
   private ExDate generateExceptionDates(final EventDetail event) {
-    Collection<PeriodicityException> periodicityExceptions =
-            getPeriodicityExceptions(event.getPeriodicity());
-    DateList exceptionDates = new DateList();
-    java.util.Calendar exceptionsStartDate = java.util.Calendar.getInstance();
-    java.util.Calendar exceptionsEndDate = java.util.Calendar.getInstance();
-    for (PeriodicityException periodicityException : periodicityExceptions) {
-      Datable<?> datable = toDatable(periodicityException.getBeginDateException(), event.
-              getStartHour());
-      exceptionsStartDate.setTime(datable.asDate());
-      if (!isDefined(event.getEndHour()) && isDefined(event.getStartHour())) {
-        datable = toDatable(periodicityException.getEndDateException(), event.getStartHour());
-      } else {
-        datable = toDatable(periodicityException.getEndDateException(), event.getEndHour());
-      }
-      exceptionsEndDate.setTime(datable.asDate());
-      while (exceptionsStartDate.before(exceptionsEndDate)
-              || exceptionsStartDate.equals(exceptionsEndDate)) {
-        exceptionDates.add(new DateTime(exceptionsStartDate.getTime()));
-        exceptionsStartDate.add(java.util.Calendar.DATE, 1);
-      }
+    ExceptionDatesGenerator generator = new ExceptionDatesGenerator();
+    Set<java.util.Date> exceptionDates = generator.generateExceptionDates(event);
+    DateList exDateList = new DateList();
+    for (java.util.Date anExceptionDate : exceptionDates) {
+      exDateList.add(new DateTime(anExceptionDate));
     }
-    return new ExDate(exceptionDates);
+    return new ExDate(exDateList);
   }
 
   /**

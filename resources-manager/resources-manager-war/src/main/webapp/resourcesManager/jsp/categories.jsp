@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +27,8 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="java.util.List" %>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <% 
 	// Recuperation de la liste des categories
@@ -37,20 +39,18 @@
 	ArrayCellText arrayCellText2;
 	ArrayLine arrayLine;
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-	<%
-		out.println(gef.getLookStyleSheet());
-	%>
-	
-	<script language="JavaScript">
+	<view:looknfeel />
+	<script type="text/javascript">
 	function deleteCategory(categoryId, name) {
 		  if (confirm("<%=resource.getString("resourcesManager.deleteCategorie")%>" + " " + name + " ?")) {
 			location.href="DeleteCategory?id="+categoryId;
 		  }
 	}
 	</script>
-	
 	</head>
 	<body>
 	<%
@@ -58,7 +58,8 @@
 		browseBar.setComponentName(componentLabel,"Main");
 		browseBar.setPath(resource.getString("resourcesManager.gerercategorie"));
 	
-		operationPane.addOperation(resource.getIcon("resourcesManager.creationOfCategory"), resource.getString("resourcesManager.creercategorie"),"NewCategory");
+		operationPane.addOperationOfCreation(resource.getIcon("resourcesManager.creationOfCategory"), resource.getString("resourcesManager.creercategorie"),"NewCategory");
+		
 		//Definition du tableau et des colonnes
 		ArrayPane arrayPane = gef.getArrayPane("categoryList", "ViewCategories", request, session);
 		ArrayColumn colreservable = arrayPane.addArrayColumn(resource.getString("resourcesManager.reservable"));
@@ -98,9 +99,14 @@
 		}
 		
 		out.println(window.printBefore());
-		out.println(frame.printBefore());
+%>		
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<%
 		out.println(arrayPane.print());
-		out.println(frame.printAfter());
+%>
+</view:frame>
+<%
 		out.println(window.printAfter());
 %>
 </body>

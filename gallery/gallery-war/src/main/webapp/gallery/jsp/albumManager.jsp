@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,122 +24,94 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="check.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<view:includePlugin name="popup"/>
 
-<% 
-	// récupération des paramètres :
-	AlbumDetail currentAlbum 	= (AlbumDetail) request.getAttribute("CurrentAlbum");
-	List 	path 			= (List) request.getAttribute("Path");
-	
-	// déclaration des variables :
-	String albumId 		= "";
-	String nom 			= "";
-	String description 	= "";
-	String action 		= "CreateAlbum";
-	
-	// récupération des valeurs si l'album existe
-	if (currentAlbum != null)
-	{
-		albumId = new Integer(currentAlbum.getId()).toString();
-		nom = currentAlbum.getName();
-		description = currentAlbum.getDescription();
-		action = "UpdateAlbum";
-	}
-	
-	// déclaration des boutons
-	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-    Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javaScript:window.close()", false);
-%>
+<fmt:setLocale value="${requestScope.resources.language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<html>
-		<head>
-		<%
-			out.println(gef.getLookStyleSheet());
-		%>
-		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-		<script language="javascript">
-			// fonctions de contrôle des zones du formulaire avant validation
-			function sendData() 
-			{
-				if (isCorrectForm()) 
-				{
-	        		//document.albumForm.submit();
-	        		window.opener.document.albumForm.action = "<%=action%>";
-	        		window.opener.document.albumForm.Id.value = document.albumForm.Id.value;
-	        		window.opener.document.albumForm.Name.value = document.albumForm.Name.value;
-	        		window.opener.document.albumForm.Description.value = document.albumForm.Description.value;
-	        		window.opener.document.albumForm.submit();
-	        		window.close();
-	    		}
-			}
+<fmt:message var="mandatoryIconPath" key="gallery.obligatoire" bundle="${icons}"/>
+<c:url var="mandatoryIcon"      value="${mandatoryIconPath}" />
+<c:url var="formCheckingScript" value="/util/javaScript/checkForm.js"/>
+
+<script type="text/javascript" src="${formCheckingScript}"></script>
+<script type="text/javascript">
+  function openGalleryEditor(gallery)
+  {
+    var title = "<fmt:message key='gallery.ajoutAlbum'/>";
+    if (gallery) {
+      title = "<fmt:message key='gallery.updateAlbum'/> " + gallery.name;
+      document.galleryForm.action = "UpdateAlbum";
+      document.galleryForm.Id.value = gallery.id;
+      document.galleryForm.Name.value = gallery.name;
+      document.galleryForm.Description.value = gallery.description;
+    } else {
+      document.galleryForm.action = "CreateAlbum";
+      document.galleryForm.Id.value = "";
+      document.galleryForm.Name.value = "";
+      document.galleryForm.Description.value = "";
+    }
+    $("#galleryEditor").popup({
+      title: title,
+      callback: function() {
+        var isCorrect = validateGalleryForm();
+        if (isCorrect) 
+        {
+          document.galleryForm.submit();
+          
+        }
+        return isCorrect;
+      }
+    });
+  }
 		
-			function isCorrectForm() 
-			{
-		     	var errorMsg = "";
-		     	var errorNb = 0;
-		     	var name = stripInitialWhitespace(document.albumForm.Name.value);
-		     	var descr = document.albumForm.Description.value;
-		     	if (name == "") 
-		     	{
-		           	errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-		           	errorNb++;
-		     	} 
-		     	switch(errorNb) 
-		     	{
-		        	case 0 :
-		            	result = true;
-		            	break;
-		        	case 1 :
-		            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-		            	window.alert(errorMsg);
-		            	result = false;
-		            	break;
-		        	default :
-		            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-		            	window.alert(errorMsg);
-		            	result = false;
-		            	break;
-		     	} 
-		     	return result;
-			}		
-		</script>
-	
-		</head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="javascript:document.albumForm.Name.focus();">
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	
-	Board board	= gef.getBoard();
-	
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
-%>
-<form name="albumForm" method="post" action="<%=action%>">
-<table CELLPADDING="5" WIDTH="100%">
-	<tr>
-		<td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
-		<TD><input type="text" name="Name" value="<%=nom%>" size="60" maxlength="150">
-			<IMG src="<%=resource.getIcon("gallery.obligatoire")%>" width="5" height="5" border="0">
-			<input type="hidden" name="Id" value="<%=albumId%>"></td>
-	</tr>
-	<tr>
-		<td class="txtlibform"> <%=resource.getString("GML.description")%> :</td>
-		<TD><input type="text" name="Description" value="<%=description%>" size="60" maxlength="150"></TD>
-	</tr>
-	<tr><td colspan="2">( <img border="0" src=<%=resource.getIcon("gallery.obligatoire")%> width="5" height="5"> : Obligatoire )</td></tr>
-</table>
-</form>
-<% 
-	out.println(board.printAfter());
-	ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(validateButton);
-    buttonPane.addButton(cancelButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
+  function validateGalleryForm() 
+  {
+    var errorMsg = "";
+    var errorNb = 0;
+    var name = stripInitialWhitespace(document.galleryForm.Name.value);
+    if (name == "") 
+    {
+      errorMsg+="  - '<fmt:message key="GML.name"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+      errorNb++;
+    } 
+    switch(errorNb) 
+    {
+      case 0 :
+        result = true;
+        break;
+      case 1 :
+        errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/>: \n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+      default :
+        errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.error"/>:\n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+      } 
+      return result;
+    }	
+</script>
 
-</body>
-</html>
+<div id="galleryEditor" style="display: none">
+  <form name="galleryForm" method="post" action="">
+    <table cellpadding="5" width="100%">
+      <tr>
+        <td class="txtlibform"><fmt:message key="GML.name"/>&nbsp;:</td>
+        <td><input type="text" name="Name" value="" size="60" maxlength="150">
+          <img src="${mandatoryIcon}" width="5" height="5" border="0"/>
+          <input type="hidden" name="Id" value=""/></td>
+      </tr>
+      <tr>
+        <td class="txtlibform"><fmt:message key="GML.description"/>&nbsp;:</td>
+        <td><input type="text" name="Description" value="" size="60" maxlength="150"></td>
+      </tr>
+      <tr><td colspan="2">(<img border="0" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;: <fmt:message key="GML.requiredField"/>)</td></tr>
+    </table>
+  </form>
+</div>

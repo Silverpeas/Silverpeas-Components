@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,8 +27,8 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
-public class InfoLetterPublication extends SilverpeasBean implements Comparable {
-
+public class InfoLetterPublication extends SilverpeasBean implements Comparable<InfoLetter> {
+  private static final long serialVersionUID = 2579802983989822400L;
   public final static int PUBLICATION_EN_REDACTION = 1;
   public final static int PUBLICATION_VALIDEE = 2;
 
@@ -153,9 +153,10 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable 
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
-  public int compareTo(Object obj) {
-    if (!(obj instanceof InfoLetter))
+  public int compareTo(InfoLetter obj) {
+    if (!(obj instanceof InfoLetter)) {
       return 0;
+    }
     return (String.valueOf(getPK().getId())).compareTo(String
         .valueOf(((InfoLetter) obj).getPK().getId()));
   }
@@ -168,6 +169,3 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable 
     return (publicationState == PUBLICATION_VALIDEE);
   }
 }
-/*************************
- *** Fin du fichier ***
- ************************/

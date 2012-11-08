@@ -15,7 +15,7 @@
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.net.URLEncoder"%>
 
-<%@ page import="com.stratelia.webactiv.searchEngine.model.* "%>
+<%@ page import="org.silverpeas.search.searchEngine.model.* "%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
 <%@ page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication"%>
@@ -229,7 +229,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
 out.println("</table>");
 }
 
-void displaySearchResults(MatchingIndexEntry[] pubs, String publicationLabel, KmeliaSessionController kmeliaScc, String currentPubId, ResourcesWrapper resources, JspWriter out) throws IOException, java.text.ParseException {
+void displaySearchResults(List<MatchingIndexEntry> pubs, String publicationLabel, KmeliaSessionController kmeliaScc, String currentPubId, ResourcesWrapper resources, JspWriter out) throws IOException, java.text.ParseException {
 
     NumberFormat				percent		= NumberFormat.getPercentInstance();
 	UserDetail					user		= null;
@@ -239,15 +239,14 @@ void displaySearchResults(MatchingIndexEntry[] pubs, String publicationLabel, Km
             out.println("<tr>");
                 out.println("<td width=\"80\"><img src=\""+publicationSrc+"\" border=0></td>");
                 out.println("<td align=\"left\"><b>"+publicationLabel+"</b></td>");
-          if (pubs!=null && pubs.length>0) {
+          if (pubs!=null && !pubs.isEmpty()) {
                 out.println("<td align=\"right\" valign=\"middle\">");
                 out.println("&nbsp;");
                 out.println("</td>");
             out.println("</tr>");
             out.println("<tr><td colspan=\"2\" >&nbsp;</td></tr>");
             out.println("<!-- Publications Header End -->");
-            for (int i=0; i<pubs.length ; i++) {
-                  MatchingIndexEntry pub = pubs[i];
+            for (MatchingIndexEntry pub : pubs) {
                   out.println("<!-- Publication Body -->");
                   if (!pub.getObjectId().equals(currentPubId)) {
                       if (pub.getObjectType().equals("Publication")) {

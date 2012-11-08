@@ -35,7 +35,6 @@
     <c:if test="${rssUrl ne null and not empty rssUrl}">
       <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel}'/> : <fmt:message key='almanach.rssNext'/>" href="<c:url value='${rssUrl}'/>"/>
     </c:if>
-    <link rel='stylesheet' type='text/css' href="<c:url value='/util/styleSheets/jquery/fullcalendar.css'/>" />
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
     <style type="text/css">
       <c:out value=".${instanceId} { border-color: ${calendarView.almanach.color}; color: ${calendarView.almanach.color}; }"/>
@@ -46,7 +45,7 @@
       </c:forEach>
     </style>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
-    <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
+    <view:includePlugin name="calendar"/>
     <script type="text/javascript">
       <!--
 
@@ -188,51 +187,26 @@
 
           // page is now ready, initialize the calendar...
 
-          $('#calendar').fullCalendar({
-            header: false,
-            // put your options and callbacks here
-            monthNames: ['<fmt:message key="GML.mois0"/>', '<fmt:message key="GML.mois1"/>', '<fmt:message key="GML.mois2"/>', '<fmt:message key="GML.mois3"/>',
-              '<fmt:message key="GML.mois4"/>', '<fmt:message key="GML.mois5"/>', '<fmt:message key="GML.mois6"/>', '<fmt:message key="GML.mois7"/>',
-              '<fmt:message key="GML.mois8"/>', '<fmt:message key="GML.mois9"/>', '<fmt:message key="GML.mois10"/>', '<fmt:message key="GML.mois11"/>'],
-            dayNames: ['<fmt:message key="GML.jour1"/>', '<fmt:message key="GML.jour2"/>', '<fmt:message key="GML.jour3"/>', '<fmt:message key="GML.jour4"/>',
-              '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'],
-            dayNamesShort: ['<fmt:message key="GML.shortJour1"/>', '<fmt:message key="GML.shortJour2"/>', '<fmt:message key="GML.shortJour3"/>',
-              '<fmt:message key="GML.shortJour4"/>', '<fmt:message key="GML.shortJour5"/>', '<fmt:message key="GML.shortJour6"/>', '<fmt:message key="GML.shortJour7"/>'],
-            buttonText: {
-              prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
-              next:     '&nbsp;&#9658;&nbsp;',  // right triangle
-              prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
-              nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
-              today:    "${today}",
-              month:    '<fmt:message key="GML.month"/>',
-              week:     '<fmt:message key="GML.week"/>',
-              day:      '<fmt:message key="GML.day"/>'
-            },
-            minHour: 8,
-            allDayText: '',
-            allDayDefault: false,
-            ignoreTimezone: false,
-            timeFormat: 'HH:mm{ - HH:mm}',
-            axisFormat: 'HH:mm',
-            columnFormat: { agendaWeek: 'ddd d' },
-            firstDay: <c:out value='${calendarView.firstDayOfWeek - 1}' />,
-            defaultView: "<c:out value='${calendarView.viewType}'/>",
-            dayClick: function(date, allDay, jsEvent, view) {
-              var dayDate = $.fullCalendar.formatDate(date, "yyyy-MM-dd'T'HH:mm");
-              clickDay(dayDate);
-            },
-            eventClick: function(calEvent, jsEvent, view) {
-              var eventDate = $.fullCalendar.formatDate(calEvent.start, "yyyy/MM/dd");
-              clickEvent(calEvent.id, eventDate, calEvent.instanceId);
-            },
-            events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>
-      <c:if test='${not calendarView.weekendVisible}'>
-            , weekends: false
-      </c:if>
+          var currentDay = new Date();
+          currentDay.setFullYear(${currentDay.year});
+          currentDay.setMonth(${currentDay.month});
+          currentDay.setDate(${currentDay.dayOfMonth});
+
+        // page is now ready, initialize the calendar...
+        <c:if test='${not calendarView.viewType.nextEventsView}'>
+          $("#calendar").calendar({
+            view: "${fn:toLowerCase(calendarView.viewType.name)}",
+            weekends: ${calendarView.weekendVisible},
+            firstDayOfWeek: ${calendarView.firstDayOfWeek},
+            currentDate: currentDay,
+            events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>,
+            onday: clickDay,
+            onevent: function(event) {
+              var eventDate = $.fullCalendar.formatDate(event.start, "yyyy/MM/dd");
+              clickEvent(event.id, eventDate, event.instanceId);
+            }
           });
-
-          $('#calendar').fullCalendar('gotoDate', <c:out value="${currentDay.year}"/>, <c:out value="${currentDay.month}"/>, <c:out value="${currentDay.dayOfMonth}"/>)
-
+        </c:if>
         });
         
         -->
@@ -253,7 +227,7 @@
         <fmt:message key="creerEvenement" var="opLabel" />
         <fmt:message key="almanach.icons.addEvent" var="opIcon" bundle="${icons}"/>
         <c:url var="opIcon" value="${opIcon}"/>
-        <view:operation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=addEvent('')"/>
+        <view:operationOfCreation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=addEvent('')"/>
         <view:operationSeparator/>
       </c:if>
 
@@ -295,6 +269,8 @@
     </view:operationPane>
 
     <view:window>
+    
+    <view:areaOfOperationOfCreation/>
 
       <view:tabs>
         <fmt:message key="almanach.rssNext" var="opLabel" />

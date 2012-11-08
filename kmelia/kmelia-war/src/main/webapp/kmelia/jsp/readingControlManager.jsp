@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,7 +29,6 @@
 <%@ include file="tabManager.jsp.inc" %>
 
 <%
-//R�cup�ration des param�tres
 PublicationDetail 	publication 		= (PublicationDetail) request.getAttribute("Publication");
 String 				linkedPathString 	= (String) request.getAttribute("LinkedPathString");
 String 				wizard 				= (String) request.getAttribute("Wizard");
@@ -38,37 +37,33 @@ String				currentLang 		= (String) request.getAttribute("Language");
 String pubName = publication.getName(currentLang);
 String pubId = publication.getPK().getId();
 
-boolean isOwner = false;
-if (kmeliaScc.getSessionOwner())
-      isOwner = true;
+boolean isOwner = kmeliaScc.getSessionOwner();
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-<head><title><%=resources.getString("ReadingControlTitle")%></title>
+<head>
+<title><%=resources.getString("ReadingControlTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="JavaScript">
-function topicGoTo(id) 
-{
+<script type="text/javascript">
+function topicGoTo(id) {
 	closeWindows();
 	location.href="GoToTopic?Id="+id;
 }
 
-function closeWindows() 
-{
+function closeWindows() {
     if (window.publicationWindow != null)
         window.publicationWindow.close();
 }
 </script>
 </head>
-<body onUnload="closeWindows()">
+<body onunload="closeWindows()">
 <% 
 	Window window = gef.getWindow();
 	Frame frame = gef.getFrame();
-	Board boardHelp = gef.getBoard();
-	  
 	
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setDomainName(spaceLabel);
@@ -80,22 +75,21 @@ function closeWindows()
 	
 	out.println(window.printBefore());
 	  
-	if (isOwner)
+	if (isOwner) {
 		displayAllOperations(pubId, kmeliaScc, gef, "ViewReadingControl", resources, out, kmaxMode);
-	else
+	} else {
 	    displayUserOperations(pubId, kmeliaScc, gef, "ViewReadingControl", resources, out, kmaxMode);
+	}
 	  
 	out.println(frame.printBefore());
-	if ("finish".equals(wizard))
-	{
-		//  cadre d'aide
-		out.println(boardHelp.printBefore());
-		out.println("<table border=\"0\"><tr>");
-		out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resources.getIcon("kmelia.info")+"\"></td>");
-		out.println("<td>"+resources.getString("kmelia.HelpReadingControl")+"</td>");
-		out.println("</tr></table>");
-		out.println(boardHelp.printAfter());
-		out.println("<BR>");
+	if ("finish".equals(wizard)) {
+	%>
+		<div class="inlineMessage">
+			<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+			<%=resources.getString("kmelia.HelpReadingControl") %>
+		</div>
+		<br clear="all"/>
+	<%
 	}
 	
 	String url = kmeliaScc.getComponentUrl()+"ReadingControl";
@@ -107,5 +101,5 @@ function closeWindows()
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -70,7 +70,7 @@ public class QuestionReplyExport {
     sb.append("<tr>\n");
     sb.append("<td colspan=\"2\">\n");
     sb.append("<span class=\"txtBaseline\">");
-    sb.append("Question de").append(question.readCreatorName()).append(" - ").append(
+    sb.append(question.readCreatorName()).append(" - ").append(
         resource.getOutputDate(question.getCreationDate()));
     sb.append("</span>\n");
     sb.append("</td>\n");
@@ -141,7 +141,7 @@ public class QuestionReplyExport {
     sb.append("<table>\n");
     sb.append("<tr>\n");
     sb.append("<td width=\"90%\">");
-    sb.append(EncodeHelper.javaStringToHtmlParagraphe(reply.getContent()));
+    sb.append(reply.readCurrentWysiwygContent());
     sb.append("</td>\n");
     // récupération des fichiers joints : copie de ces fichiers dans le dossier "files"
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
@@ -183,8 +183,8 @@ public class QuestionReplyExport {
     sb.append("</table>\n");
     sb.append("<br>\n");
     sb.append("<span class=\"txtBaseline\">");
-    sb.append("Réponse de ").append(reply.readCreatorName()).append(" - ").append(
-        resource.getOutputDate(reply.getCreationDate()));
+    sb.append(resource.getString("questionReply.replyOf")).append(" ").append(reply.readCreatorName());
+    sb.append(" - ").append(resource.getOutputDate(reply.getCreationDate()));
     sb.append("</span>\n");
     sb.append("</td>\n");
     sb.append("</tr>\n");

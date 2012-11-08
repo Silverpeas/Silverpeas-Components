@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -62,6 +62,8 @@ public class DelegatedNews implements java.io.Serializable {
 	private Date beginDate;
 	@Column(name = "endDate", columnDefinition = "TIMESTAMP")
 	private Date endDate;
+	@Column(name = "newsOrder")
+  private int newsOrder = 0;
 	
 	public static final String NEWS_TO_VALIDATE = "ToValidate";
 	public static final String NEWS_VALID = "Valid";
@@ -153,6 +155,14 @@ public class DelegatedNews implements java.io.Serializable {
 		this.endDate = endDate;
 	}
 	
+	public int getNewsOrder() {
+    return newsOrder;
+  }
+
+  public void setNewsOrder(int newsOrder) {
+    this.newsOrder = newsOrder;
+  }
+	
 	public PublicationDetail getPublicationDetail() {
 	  try {
       PublicationBmHome publicationBmEjbHome =
@@ -200,6 +210,9 @@ public class DelegatedNews implements java.io.Serializable {
 	    if ((this.endDate == null) ? (other.endDate != null) : !this.endDate.equals(other.endDate)) {
 	    	return false;
 	    }
+	    if ((this.newsOrder == -1) ? (other.newsOrder != -1) : this.newsOrder != other.newsOrder) {
+        return false;
+      }
 	    return true;
 	  }
 
@@ -208,17 +221,21 @@ public class DelegatedNews implements java.io.Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((beginDate == null) ? 0 : beginDate.hashCode());
-		result = prime * result
-				+ ((contributorId == null) ? 0 : contributorId.hashCode());
-		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
-		result = prime * result
-				+ ((instanceId == null) ? 0 : instanceId.hashCode());
 		result = prime * result + pubId;
+		result = prime * result
+        + ((instanceId == null) ? 0 : instanceId.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		result = prime * result
-				+ ((validatorId == null) ? 0 : validatorId.hashCode());
+        + ((contributorId == null) ? 0 : contributorId.hashCode());
+		result = prime * result
+        + ((validatorId == null) ? 0 : validatorId.hashCode());
+		result = prime * result
+        + ((validationDate == null) ? 0 : validationDate.hashCode());
+		result = prime * result
+				+ ((beginDate == null) ? 0 : beginDate.hashCode());
+		result = prime * result 
+		    + ((endDate == null) ? 0 : endDate.hashCode());
+		result = prime * result + newsOrder;
 		return result;
 	}
 
@@ -228,7 +245,7 @@ public class DelegatedNews implements java.io.Serializable {
 		  return "DelegatedNews {" + "pubId=" + pubId + ", instanceId=" + instanceId + ", status="
 	        + status + ", contributorId=" + contributorId + ", validatorId="
 	        + validatorId + ", validationDate=" + validationDate + ", beginDate=" + beginDate +
-	        ", endDate=" + endDate + '}';
+	        ", endDate=" + endDate + ", newsOrder=" + newsOrder +'}';
   }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,6 +31,7 @@ import com.silverpeas.silverstatistics.UserIdCountVolumeCouple;
 import com.stratelia.silverpeas.infoLetter.control.ServiceFactory;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
+import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -39,7 +40,6 @@ import java.util.List;
 
 /**
  * Class declaration
- *
  * @author
  */
 public class InfoLetterStatistics implements ComponentStatisticsInterface {
@@ -47,13 +47,13 @@ public class InfoLetterStatistics implements ComponentStatisticsInterface {
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    List publications = getInfoLetters(componentId);
+    List<InfoLetterPublication> publications = getInfoLetters(componentId);
     if (publications == null) {
       return null;
     }
 
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(
-        publications.size());
+    List<UserIdCountVolumeCouple> myArrayList =
+        new ArrayList<UserIdCountVolumeCouple>(publications.size());
 
     for (int i = 0; i < publications.size(); i++) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
@@ -65,13 +65,14 @@ public class InfoLetterStatistics implements ComponentStatisticsInterface {
     return myArrayList;
   }
 
-  public List getInfoLetters(String componentId) throws RemoteException {
-    List publications = new ArrayList();
+  public List<InfoLetterPublication> getInfoLetters(String componentId) throws RemoteException {
+    List<InfoLetterPublication> publications = new ArrayList<InfoLetterPublication>();
     InfoLetterDataInterface dataInterface = ServiceFactory.getInfoLetterData();
-    List<InfoLetter> listLettres = (List<InfoLetter>) dataInterface.getInfoLetters(componentId);
+    List<InfoLetter> listLettres = dataInterface.getInfoLetters(componentId);
     if (listLettres != null) {
       for (InfoLetter defaultLetter : listLettres) {
-        List listParutions = dataInterface.getInfoLetterPublications(defaultLetter.getPK());
+        List<InfoLetterPublication> listParutions =
+            dataInterface.getInfoLetterPublications(defaultLetter.getPK());
         publications.addAll(listParutions);
       }
     }

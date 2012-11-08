@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -55,16 +55,10 @@ function goToCategory(id) {
 </script>
 </head>
 
-<body id="blog">
+<body id="blog" class="blog portlet">
 <div id="<%=instanceId %>">
-<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="blog">
-  	<tr>
-  		<td colspan="3">&nbsp;</td>
-	</tr>
-  	<tr>
-    	<td valign="top" class="colonneGauche">
-	    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
-		      	<%
+
+  	      	<%
 		      	Iterator it = (Iterator) posts.iterator();
 		      	if (!it.hasNext())
 		      	{
@@ -79,49 +73,38 @@ function goToCategory(id) {
 		  			String postId = post.getPublication().getPK().getId();
 					%>
 					<!--Debut d'un ticket-->
-				    <tr>
-				       	<td>
+				    <div class="post">
 				       		<a href="javascript:onClick=goToPost('<%=postId%>')" class="titreTicket"><%=post.getPublication().getName()%></a>
-				       	</td>
-				    </tr>
-				    <tr>
-				    	<td class="infoTicket"><%=post.getCreatorName()%> - <%=resource.getOutputDate(post.getDateEvent())%></td>
-				    </tr>
-				    <tr>
-				    	<td>&nbsp;</td>
-				    </tr>
-				    <!-- <tr>
-					    <td>
-				        <%
-				        	out.flush();
-			        		getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+postId+"&ComponentId="+instanceId).include(request, response);
-			        	%>
-			        	</td>
-					</tr>
-					<tr>
-				    	<td>&nbsp;</td>
-				    </tr>-->
-				    <tr>
-				    	<td>
-							<% if (!categoryId.equals(""))
-							{  %>
-								<a href="javascript:onClick=goToCategory('<%=categoryId%>')" class="versTopic">&gt;&gt; <%=post.getCategory().getName()%> </a>
-							<% } %>
-							&nbsp;
-						</td>
-				    </tr>
+							<!-- 
+								<%
+									out.flush();
+									getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+postId+"&ComponentId="+instanceId).include(request, response);
+								%>
+							-->
+								
+							<div class="footerTicket">
+								
+														
+								<span class="creatorTicket"> <%=post.getCreatorName()%> - <%=resource.getOutputDate(post.getDateEvent())%></span>
+								
+								<% if (!categoryId.equals(""))
+								{  %>
+									<span class="categoryTicket">
+										<span class="sep">&nbsp;|&nbsp;</span>
+										<a href="javascript:onClick=goToCategory('<%=categoryId%>')" class="versTopic">&gt;&gt; <%=post.getCategory().getName()%> </a>
+									</span>
+									
+								<% } %>
+								
+							</div>	
 				    <!--Fin du ticket-->
-				    <tr>
-				    	<td class="separateur">&nbsp;</td>
-				   	</tr>
+					</div>
+				    	<div class="separateur"><hr /></div>
+				   
 				    <%
 		  		}
 		  	 %>
-			</table>
-		</td>
-		<td>&nbsp;&nbsp;</td>
-	</tr>
-</table>
+			
 
 <form name="postForm" action="ViewPost" method="post" target="MyMain">
 	<input type="hidden" name="PostId"/>

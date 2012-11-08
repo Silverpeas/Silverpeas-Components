@@ -270,7 +270,7 @@
             .append($("<span>").addClass("year").html(startDate.getFullYear())))
             .append($("<h2>").addClass("eventName")
             .append($("<a>").addClass(event.className.join(' ')).attr({
-              "href": "javascript:viewEvent(" + event.id + "," + formatDate(startDate) + "," + event.instanceId + ");",
+              "href": "javascript:viewEvent(" + event.id + ", '" + formatDate(startDate) + "' , '" + event.instanceId + "');",
               "title": "<fmt:message key='almanach.openEvent'/>"}).html(event.title))).appendTo(monthSection);
             
             if (event.location.length > 0 || startTime.length > 0 || endTime.length > 0 || 
@@ -362,7 +362,7 @@
             <fmt:message key="creerEvenement" var="opLabel" />
             <fmt:message key="almanach.icons.addEvent" var="opIcon" bundle="${icons}"/>
             <c:url var="opIcon" value="${opIcon}"/>
-            <view:operation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=addEvent('')"/>
+            <view:operationOfCreation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=addEvent('')"/>
             <view:operationSeparator/>
           </c:if>
 
@@ -412,6 +412,8 @@
     </view:operationPane>
 
     <view:window>
+    
+    <view:areaOfOperationOfCreation/>
 
       <c:if test="${calendarView.viewType.nextEventsView}">
         <view:tabs>

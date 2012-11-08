@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -68,31 +68,26 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-        GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+  GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-        QuickInfoSessionController quickinfo = (QuickInfoSessionController) request.getAttribute("quickinfo");
-        
-        ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
+  QuickInfoSessionController quickinfo = (QuickInfoSessionController) request.getAttribute("quickinfo");
+  
+  ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
 
-        String language = resources.getLanguage();
-        ResourceLocator settings = (ResourceLocator) request.getAttribute("settings");
-        String[] browseContext = (String[]) request.getAttribute("browseContext");
-        String spaceLabel = browseContext[0];
-        String componentLabel = browseContext[1];
-        String spaceId = browseContext[2];
-        String componentId = browseContext[3];
-        String quickinfoUrl = browseContext[4];
+  String language = resources.getLanguage();
+  String[] browseContext = (String[]) request.getAttribute("browseContext");
+  String spaceLabel = browseContext[0];
+  String componentLabel = browseContext[1];
+  String spaceId = browseContext[2];
+  String componentId = browseContext[3];
+  String quickinfoUrl = browseContext[4];
 
-        if (quickinfo == null)
-        {
-            // No quickinfo session controller in the request -> security exception
-            String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
-            getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
-            return;
-        }        
+  if (quickinfo == null) {
+      // No quickinfo session controller in the request -> security exception
+      String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+      getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
+      return;
+  }
 
-        String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-	    ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(quickinfo.getLanguage());
-        String m_context = iconsPath;
-        
+  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>

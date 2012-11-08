@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,9 +26,15 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarElement"%>
+
+<c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <%
 String		rootId				= "0";
@@ -86,9 +92,9 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/browseBarComplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
@@ -105,6 +111,10 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
+<script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
+
+<view:includePlugin name="userZoom"/>
+
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
@@ -237,6 +247,10 @@ function getComponentId() {
 	return "<%=componentId%>";
 }
 
+function getComponentLabel() {
+	return "<%=componentLabel%>";
+}
+
 function getLanguage() {
 	return "<%=language%>"; 
 }
@@ -282,12 +296,30 @@ labels["operation.favorites"] = "<%=resources.getString("FavoritesAdd1")%> <%=re
 labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
 labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPredefinePositions")%>";
 labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.exportSelection")%>";
+labels["operation.shareTopic"] = "<%=resources.getString("kmelia.operation.shareTopic")%>";
+labels["operation.statistics"] = "<fmt:message key="kmelia.operation.statistics"/>";
+
+labels["js.topicTitle"] = "<fmt:message key="TopicTitle"/>";
+labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
+labels["js.contains"] = "<fmt:message key="GML.ThisFormContains"/>";
+labels["js.error"] = "<fmt:message key="GML.error"/>";
+labels["js.errors"] = "<fmt:message key="GML.errors"/>";
+
+labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
 
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
+icons["operation.addTopic"] = "<%=resources.getIcon("kmelia.operation.addTopic")%>";
+icons["operation.addPubli"] = "<%=resources.getIcon("kmelia.operation.addPubli")%>";
+icons["operation.wizard"] = "<%=resources.getIcon("kmelia.operation.wizard")%>";
+icons["operation.importFile"] = "<%=resources.getIcon("kmelia.operation.importFile")%>";
+icons["operation.importFiles"] = "<%=resources.getIcon("kmelia.operation.importFiles")%>";
+icons["operation.subscribe"] = "<%=resources.getIcon("kmelia.operation.subscribe")%>";
+icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites")%>";
 
 var params = new Object();
 params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
+params["i18n"] = <%=I18NHelper.isI18N%>;
 
 function getWidth() {
 	  var myWidth = 0;
@@ -323,36 +355,33 @@ function getHeight() {
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
 <div id="<%=componentId %>" class="<%=profile%>">
 <%
-        Window window = gef.getWindow();
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setI18N("GoToCurrentTopic", translation);
+    Window window = gef.getWindow();
+    BrowseBar browseBar = window.getBrowseBar();
+    browseBar.setI18N("GoToCurrentTopic", translation);
 
-        //Display operations - following lines are mandatory to init menu correctly
-        OperationPane operationPane = window.getOperationPane();
-      	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+resources.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
-
-    //Instanciation du cadre avec le view generator
-	Frame frame = gef.getFrame();
+    //Display operations - following lines are mandatory to init menu correctly
+    OperationPane operationPane = window.getOperationPane();
+   	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+resources.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
 
     out.println(window.printBefore());
-    out.println(frame.printBefore());
 %>
+	<view:frame>
 			<div id="pg">
 			<div class="yui-g">
 				<div id="treeDiv1"></div>
 				<div id="rightSide">
 					<% if (displaySearch.booleanValue()) {
-					  	Board board = gef.getBoard();
-						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false);
-						out.println("<div id=\"searchZone\">");
-						out.println(board.printBefore());
-						out.println("<table id=\"searchLine\">");
-						out.println("<tr><td><div id=\"searchLabel\">"+resources.getString("kmelia.SearchInTopics")+"</div>&nbsp;<input type=\"text\" id=\"topicQuery\" size=\"50\" onkeydown=\"checkSubmitToSearch(event)\"/></td><td>"+searchButton.print()+"</td></tr>");
-						out.println("</table>");
-						out.println(board.printAfter());
-						out.println("</div>");
-					} %>
+						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
+						<div id="searchZone">
+							<view:board>
+								<table id="searchLine">
+									<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+								</table>
+							</view:board>
+						</div>
+					<% } %>
 					<div id="topicDescription"></div>
+					<view:areaOfOperationOfCreation/>
 				<%
 					  if (dragAndDropEnable)
 					  {
@@ -390,25 +419,21 @@ function getHeight() {
 						</div>
 				<% }  %>
 					<div id="pubList">
-					<%
-						 Board board = gef.getBoard();
-						 out.println("<br/>");
-						 out.println(board.printBefore());
-						 out.println("<br/><center>"+resources.getString("kmelia.inProgressPublications")+"<br/><br/><img src=\""+resources.getIcon("kmelia.progress")+"\"/></center><br/>");
-						 out.println(board.printAfter());
-					 %>
+					<br/>
+					<view:board>
+					<br/><center><%=resources.getString("kmelia.inProgressPublications") %><br/><br/><img src="<%=resources.getIcon("kmelia.progress") %>"/></center><br/>
+					</view:board>
 					</div>
 					<div id="footer" class="txtBaseline"></div>
 				</div>
 			</div>
 			</div>
-
+		</view:frame>
 	<%
-		out.println(frame.printAfter());
 		out.println(window.printAfter());
 	%>
 
-<form name="topicDetailForm" method="POST">
+<form name="topicDetailForm" method="post">
 	<input type="hidden" name="Id" value="<%=id%>"/>
 	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"/>
 	<input type="hidden" name="ChildId"/>
@@ -416,12 +441,12 @@ function getHeight() {
 	<input type="hidden" name="Recursive"/>
 </form>
 
-<form name="pubForm" action="ViewPublication" method="POST">
+<form name="pubForm" action="ViewPublication" method="post">
 	<input type="hidden" name="PubId"/>
 	<input type="hidden" name="CheckPath"/>
 </form>
 
-<form name="fupload" action="fileUpload.jsp" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
+<form name="fupload" action="fileUpload.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 	<input type="hidden" name="Action" value="initial"/>
 </form>
 
@@ -686,7 +711,7 @@ function loadNodeData(node, fnLoadComplete)  {
       if (nodeId != 0) {
         atUri += "&nodeId=" + nodeId;
       }
-      SP_openWindow(atUri, "Classification", '600', '400','scrollbars=yes, resizable, alwaysRaised');
+      SP_openWindow(atUri, "Classification", '650', '600','scrollbars=yes, resizable, alwaysRaised');
     }
 	
 	/*
@@ -705,10 +730,6 @@ function loadNodeData(node, fnLoadComplete)  {
 	*/
 	function editNodeLabel() {
 		topicUpdate(oCurrentTextNode.labelElId);
-	}
-
-	function updateCurrentNode() {
-		topicUpdate(getCurrentNodeId());
 	}
 
 	function deleteNode(nodeId, nodeLabel) {
@@ -879,6 +900,14 @@ function loadNodeData(node, fnLoadComplete)  {
 						function(data){
 							try
 							{
+								// translations
+								if (params["i18n"]) {
+									storeTranslations(data[0].translations);
+								} else {
+									$("#addOrUpdateNode #topicName").val(data[0].name);
+									$("#addOrUpdateNode #topicDescription").val(data[0].description);
+								}
+								
 								var profile = data[0].role;
 								if (profile == "admin")
 								{
@@ -1124,7 +1153,7 @@ function loadNodeData(node, fnLoadComplete)  {
 			$("#searchZone").css({'display':'none'}); //hide search
 
 			if (id == "tovalidate")	{
-				$("#menutoggle").css({'display':'none'}); //hide operations
+				hideOperations();
 				displayPublicationsToValidate();
 
 				//update breadcrumb
@@ -1139,11 +1168,7 @@ function loadNodeData(node, fnLoadComplete)  {
 			displayPublications(id);
 			displayPath(id);
 			displayOperations(id);
-			if (id != "0" || <%=kmeliaScc.getNbPublicationsOnRoot() == 0%>) {
-				$("#searchZone").css({'display':'block'});
-			} else if (<%=kmeliaScc.getNbPublicationsOnRoot() != 0%>) {
-				$("#searchZone").css({'display':'none'}); //hide search
-			}
+			$("#searchZone").css({'display':'block'});
 		}
 
 		//display topic information
@@ -1226,6 +1251,44 @@ function showRightClickHelp() {
 	<p>
 		<%=resources.getStringWithParam("kmelia.help.rightclick.content", componentLabel) %>
 	</p>
+</div>
+<div id="addOrUpdateNode" style="display: none;">
+	<form name="topicForm" action="AddTopic" method="post">
+            <table cellpadding="5" width="100%">
+              <tr><td class="txtlibform"><fmt:message key="TopicPath"/> :</td>
+                <td valign="top" id="path"></td>
+              </tr>
+              <%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
+              <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
+              <tr>
+                <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
+                <td><input type="text" name="Name" id="topicName" size="60" maxlength="60"/>
+                <input type="hidden" name="ParentId" id="parentId"/>
+                <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
+              </tr>
+                
+              <tr>
+                <td class="txtlibform"><fmt:message key="TopicDescription" /> :</td>
+                <td><input type="text" name="Description" id="topicDescription" size="60" maxlength="200"/></td>
+              </tr>
+                
+              <% if (kmeliaScc.isNotificationAllowed()) { %>
+                <tr>
+                  <td class="txtlibform" valign="top"><fmt:message key="TopicAlert" /> :</td>
+                  <td valign="top">
+                    <select name="AlertType">
+                      <option value="NoAlert" selected="selected"><fmt:message key="NoAlert" /></option>
+                      <option value="Publisher"><fmt:message key="OnlyPubsAlert" /></option>
+                      <option value="All"><fmt:message key="AllUsersAlert" /></option>
+                    </select>
+                  </td>
+                </tr>
+              <% } %>
+              <tr>
+                <td colspan="2">( <img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/> )</td>
+              </tr>
+            </table>
+          </form>
 </div>
 <view:progressMessage/>
 </body>

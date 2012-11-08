@@ -1,0 +1,948 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2012 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<MyDB-configuration version="$id">
+	<param>
+    <param-name>Drivers</param-name>
+    <param-description>list of available drivers</param-description>
+    <param-value>StandardJDBCDriver</param-value>
+    <param-value>StandardJDBCDriverOracle</param-value>
+    <param-value>StandardJDBCDriverPostgres</param-value>
+    <param-value>StandardJDBCODBCDriver</param-value>
+  </param>
+  
+  <StandardJDBCDriver-configuration>
+    <param>
+      <param-name>DriverName</param-name>
+      <param-description>name of the driver</param-description>
+      <param-value>Standard JDBC driver for MS SQL Server</param-value>
+    </param>
+    <param>
+      <param-name>ClassName</param-name>
+      <param-description>class name of the driver</param-description>
+      <param-value>com.inet.tds.TdsDriver</param-value>
+    </param>
+    <param>
+      <param-name>Description</param-name>
+      <param-description>description of the driver</param-description>
+      <param-value>Standard JDBC driver for MS SQL Server</param-value>
+    </param>
+    <param>
+      <param-name>JDBCUrls</param-name>
+      <param-description>connexion urls</param-description>
+      <param-value>jdbc:inetdae7:localhost?database=SilverpeasV5</param-value>
+    </param>
+    <param>
+      <param-name>DatabaseKeywords</param-name>
+      <param-description>reserved words</param-description>
+      <param-value>ADD</param-value>
+      <param-value>ALL</param-value>
+      <param-value>ALTER</param-value>
+      <param-value>AND</param-value>
+      <param-value>ANY</param-value>
+      <param-value>AS</param-value>
+      <param-value>ASC</param-value>
+      <param-value>AUTHORIZATION</param-value>
+      <param-value>BACKUP</param-value>
+      <param-value>BEGIN</param-value>
+      <param-value>BETWEEN</param-value>
+      <param-value>BREAK</param-value>
+      <param-value>BROWSE</param-value>
+      <param-value>BULK</param-value>
+      <param-value>BY</param-value>
+      <param-value>CASCADE</param-value>
+      <param-value>CASE</param-value>
+      <param-value>CHECK</param-value>
+      <param-value>CHECKPOINT</param-value>
+      <param-value>CLOSE</param-value>
+      <param-value>CLUSTERED</param-value>
+      <param-value>COALESCE</param-value>
+      <param-value>COLLATE</param-value>
+      <param-value>COLUMN</param-value>
+      <param-value>COMMIT</param-value>
+      <param-value>COMPUTE</param-value>
+      <param-value>CONSTRAINT</param-value>
+      <param-value>CONTAINS</param-value>
+      <param-value>CONTAINSTABLE</param-value>
+      <param-value>CONTINUE</param-value>
+      <param-value>CONVERT</param-value>
+      <param-value>CREATE</param-value>
+      <param-value>CROSS</param-value>
+      <param-value>CURRENT</param-value>
+      <param-value>CURRENT_DATE</param-value>
+      <param-value>CURRENT_TIME</param-value>
+      <param-value>CURRENT_TIMESTAMP</param-value>
+      <param-value>CURRENT_USER</param-value>
+      <param-value>CURSOR</param-value>
+      <param-value>DATABASE</param-value>
+      <param-value>DBCC</param-value>
+      <param-value>DEALLOCATE</param-value>
+      <param-value>DECLARE</param-value>
+      <param-value>DEFAULT</param-value>
+      <param-value>DELETE</param-value>
+      <param-value>DENY</param-value>
+      <param-value>DESC</param-value>
+      <param-value>DISK</param-value>
+      <param-value>DISTINCT</param-value>
+      <param-value>DISTRIBUTED</param-value>
+      <param-value>DOUBLE</param-value>
+      <param-value>DROP</param-value>
+      <param-value>DUMMY</param-value>
+      <param-value>DUMP</param-value>
+      <param-value>ELSE</param-value>
+      <param-value>END</param-value>
+      <param-value>ERRLVL</param-value>
+      <param-value>ESCAPE</param-value>
+      <param-value>EXCEPT</param-value>
+      <param-value>EXEC</param-value>
+      <param-value>EXECUTE</param-value>
+      <param-value>EXISTS</param-value>
+      <param-value>EXIT</param-value>
+      <param-value>FETCH</param-value>
+      <param-value>FILE</param-value>
+      <param-value>FILLFACTOR</param-value>
+      <param-value>FOR</param-value>
+      <param-value>FOREIGN</param-value>
+      <param-value>FREETEXT</param-value>
+      <param-value>FREETEXTTABLE</param-value>
+      <param-value>FROM</param-value>
+      <param-value>FULL</param-value>
+      <param-value>FUNCTION</param-value>
+      <param-value>GOTO</param-value>
+      <param-value>GRANT</param-value>
+      <param-value>GROUP</param-value>
+      <param-value>HAVING</param-value>
+      <param-value>HOLDLOCK</param-value>
+      <param-value>IDENTITY</param-value>
+      <param-value>IDENTITY_INSERT</param-value>
+      <param-value>IDENTITYCOL</param-value>
+      <param-value>IF</param-value>
+      <param-value>IN</param-value>
+      <param-value>INDEX</param-value>
+      <param-value>INNER</param-value>
+      <param-value>INSERT</param-value>
+      <param-value>INTERSECT</param-value>
+      <param-value>INTO</param-value>
+      <param-value>IS</param-value>
+      <param-value>JOIN</param-value>
+      <param-value>KEY</param-value>
+      <param-value>KILL</param-value>
+      <param-value>LEFT</param-value>
+      <param-value>LIKE</param-value>
+      <param-value>LINENO</param-value>
+      <param-value>LOAD</param-value>
+      <param-value>NATIONAL</param-value>
+      <param-value>NOCHECK</param-value>
+      <param-value>NONCLUSTERED</param-value>
+      <param-value>NOT</param-value>
+      <param-value>NULL</param-value>
+      <param-value>NULLIF</param-value>
+      <param-value>OF</param-value>
+      <param-value>OFF</param-value>
+      <param-value>OFFSETS</param-value>
+      <param-value>ON</param-value>
+      <param-value>OPEN</param-value>
+      <param-value>OPENDATASOURCE</param-value>
+      <param-value>OPENQUERY</param-value>
+      <param-value>OPENROWSET</param-value>
+      <param-value>OPENXML</param-value>
+      <param-value>OPTION</param-value>
+      <param-value>OR</param-value>
+      <param-value>ORDER</param-value>
+      <param-value>OUTER</param-value>
+      <param-value>OVER</param-value>
+      <param-value>PERCENT</param-value>
+      <param-value>PLAN</param-value>
+      <param-value>PRECISION</param-value>
+      <param-value>PRIMARY</param-value>
+      <param-value>PRINT</param-value>
+      <param-value>PROC</param-value>
+      <param-value>PROCEDURE</param-value>
+      <param-value>PUBLIC</param-value>
+      <param-value>RAISERROR</param-value>
+      <param-value>READ</param-value>
+      <param-value>READTEXT</param-value>
+      <param-value>RECONFIGURE</param-value>
+      <param-value>REFERENCES</param-value>
+      <param-value>REPLICATION</param-value>
+      <param-value>RESTORE</param-value>
+      <param-value>RESTRICT</param-value>
+      <param-value>RETURN</param-value>
+      <param-value>REVOKE</param-value>
+      <param-value>RIGHT</param-value>
+      <param-value>ROLLBACK</param-value>
+      <param-value>ROWCOUNT</param-value>
+      <param-value>ROWGUIDCOL</param-value>
+      <param-value>RULE</param-value>
+      <param-value>SAVE</param-value>
+      <param-value>SCHEMA</param-value>
+      <param-value>SELECT</param-value>
+      <param-value>SESSION_USER</param-value>
+      <param-value>SET</param-value>
+      <param-value>SETUSER</param-value>
+      <param-value>SHUTDOWN</param-value>
+      <param-value>SOME</param-value>
+      <param-value>STATISTICS</param-value>
+      <param-value>SYSTEM_USER</param-value>
+      <param-value>TABLE</param-value>
+      <param-value>TEXTSIZE</param-value>
+      <param-value>TO</param-value>
+      <param-value>TOP</param-value>
+      <param-value>TRAN</param-value>
+      <param-value>TRANSACTION</param-value>
+      <param-value>TRIGGER</param-value>
+      <param-value>TRUNCATE</param-value>
+      <param-value>TSEQUAL</param-value>
+      <param-value>UNION</param-value>
+      <param-value>UNIQUE</param-value>
+      <param-value>UPDATE</param-value>
+      <param-value>UPDATETEXT</param-value>
+      <param-value>USE</param-value>
+      <param-value>USER</param-value>
+      <param-value>VALUES</param-value>
+      <param-value>VARYING</param-value>
+      <param-value>VIEW</param-value>
+      <param-value>WAITFOR</param-value>
+      <param-value>WHEN</param-value>
+      <param-value>WHERE</param-value>
+      <param-value>WHILE</param-value>
+      <param-value>WITH</param-value>
+      <param-value>WRITETEXT</param-value>
+    </param>
+    <DataType name="BIGINT" sqlType="java.sql.Types.BIGINT" javaType="java.lang.Long"/>
+    <DataType name="BOOLEAN" sqlType="java.sql.Types.BIT" javaType="java.lang.Boolean"/>
+    <DataType name="CHAR" sqlType="java.sql.Types.CHAR" javaType="java.lang.String" length="true"/>
+    <DataType name="DATE" sqlType="java.sql.Types.DATE" javaType="java.sql.Date"/>
+    <DataType name="DOUBLE" sqlType="java.sql.Types.DOUBLE" javaType="java.lang.Double"/>
+    <DataType name="INTEGER" sqlType="java.sql.Types.INTEGER" javaType="java.lang.Integer"/>
+    <DataType name="NUMERIC" sqlType="java.sql.Types.NUMERIC" javaType="java.math.BigDecimal" length="true"/>
+    <DataType name="REAL" sqlType="java.sql.Types.REAL" javaType="java.lang.Float"/>
+    <DataType name="SMALLINT" sqlType="java.sql.Types.SMALLINT" javaType="java.lang.Short"/>
+    <DataType name="TIME" sqlType="java.sql.Types.TIME" javaType="java.sql.Time"/>
+    <DataType name="TIMESTAMP" sqlType="java.sql.Types.TIMESTAMP" javaType="java.sql.Timestamp"/>
+    <DataType name="VARCHAR" sqlType="java.sql.Types.VARCHAR" javaType="java.lang.String" length="true"/>
+  </StandardJDBCDriver-configuration>
+
+  <StandardJDBCDriverOracle-configuration>
+    <param>
+      <param-name>DriverName</param-name>
+      <param-description>name of the driver</param-description>
+      <param-value>Standard JDBC driver for Oracle</param-value>
+    </param>
+    <param>
+      <param-name>ClassName</param-name>
+      <param-description>class name of the driver</param-description>
+      <param-value>oracle.jdbc.driver.OracleDriver</param-value>
+    </param>
+    <param>
+      <param-name>Description</param-name>
+      <param-description>description of the driver</param-description>
+      <param-value>Standard JDBC driver for Oracle</param-value>
+    </param>
+    <param>
+      <param-name>JDBCUrls</param-name>
+      <param-description>connexion urls</param-description>
+      <param-value>jdbc:oracle:thin:@pcney.groupeoevo.local:1521:silverpeas</param-value>
+    </param>
+    <param>
+      <param-name>DatabaseKeywords</param-name>
+      <param-description>reserved words</param-description>
+      <param-value>ADD</param-value>
+      <param-value>ALL</param-value>
+      <param-value>ALTER</param-value>
+      <param-value>AND</param-value>
+      <param-value>ANY</param-value>
+      <param-value>AS</param-value>
+      <param-value>ASC</param-value>
+      <param-value>AUTHORIZATION</param-value>
+      <param-value>BACKUP</param-value>
+      <param-value>BEGIN</param-value>
+      <param-value>BETWEEN</param-value>
+      <param-value>BREAK</param-value>
+      <param-value>BROWSE</param-value>
+      <param-value>BULK</param-value>
+      <param-value>BY</param-value>
+      <param-value>CASCADE</param-value>
+      <param-value>CASE</param-value>
+      <param-value>CHECK</param-value>
+      <param-value>CHECKPOINT</param-value>
+      <param-value>CLOSE</param-value>
+      <param-value>CLUSTERED</param-value>
+      <param-value>COALESCE</param-value>
+      <param-value>COLLATE</param-value>
+      <param-value>COLUMN</param-value>
+      <param-value>COMMIT</param-value>
+      <param-value>COMPUTE</param-value>
+      <param-value>CONSTRAINT</param-value>
+      <param-value>CONTAINS</param-value>
+      <param-value>CONTAINSTABLE</param-value>
+      <param-value>CONTINUE</param-value>
+      <param-value>CONVERT</param-value>
+      <param-value>CREATE</param-value>
+      <param-value>CROSS</param-value>
+      <param-value>CURRENT</param-value>
+      <param-value>CURRENT_DATE</param-value>
+      <param-value>CURRENT_TIME</param-value>
+      <param-value>CURRENT_TIMESTAMP</param-value>
+      <param-value>CURRENT_USER</param-value>
+      <param-value>CURSOR</param-value>
+      <param-value>DATABASE</param-value>
+      <param-value>DBCC</param-value>
+      <param-value>DEALLOCATE</param-value>
+      <param-value>DECLARE</param-value>
+      <param-value>DEFAULT</param-value>
+      <param-value>DELETE</param-value>
+      <param-value>DENY</param-value>
+      <param-value>DESC</param-value>
+      <param-value>DISK</param-value>
+      <param-value>DISTINCT</param-value>
+      <param-value>DISTRIBUTED</param-value>
+      <param-value>DOUBLE</param-value>
+      <param-value>DROP</param-value>
+      <param-value>DUMMY</param-value>
+      <param-value>DUMP</param-value>
+      <param-value>ELSE</param-value>
+      <param-value>END</param-value>
+      <param-value>ERRLVL</param-value>
+      <param-value>ESCAPE</param-value>
+      <param-value>EXCEPT</param-value>
+      <param-value>EXEC</param-value>
+      <param-value>EXECUTE</param-value>
+      <param-value>EXISTS</param-value>
+      <param-value>EXIT</param-value>
+      <param-value>FETCH</param-value>
+      <param-value>FILE</param-value>
+      <param-value>FILLFACTOR</param-value>
+      <param-value>FOR</param-value>
+      <param-value>FOREIGN</param-value>
+      <param-value>FREETEXT</param-value>
+      <param-value>FREETEXTTABLE</param-value>
+      <param-value>FROM</param-value>
+      <param-value>FULL</param-value>
+      <param-value>FUNCTION</param-value>
+      <param-value>GOTO</param-value>
+      <param-value>GRANT</param-value>
+      <param-value>GROUP</param-value>
+      <param-value>HAVING</param-value>
+      <param-value>HOLDLOCK</param-value>
+      <param-value>IDENTITY</param-value>
+      <param-value>IDENTITY_INSERT</param-value>
+      <param-value>IDENTITYCOL</param-value>
+      <param-value>IF</param-value>
+      <param-value>IN</param-value>
+      <param-value>INDEX</param-value>
+      <param-value>INNER</param-value>
+      <param-value>INSERT</param-value>
+      <param-value>INTERSECT</param-value>
+      <param-value>INTO</param-value>
+      <param-value>IS</param-value>
+      <param-value>JOIN</param-value>
+      <param-value>KEY</param-value>
+      <param-value>KILL</param-value>
+      <param-value>LEFT</param-value>
+      <param-value>LIKE</param-value>
+      <param-value>LINENO</param-value>
+      <param-value>LOAD</param-value>
+      <param-value>NATIONAL</param-value>
+      <param-value>NOCHECK</param-value>
+      <param-value>NONCLUSTERED</param-value>
+      <param-value>NOT</param-value>
+      <param-value>NULL</param-value>
+      <param-value>NULLIF</param-value>
+      <param-value>OF</param-value>
+      <param-value>OFF</param-value>
+      <param-value>OFFSETS</param-value>
+      <param-value>ON</param-value>
+      <param-value>OPEN</param-value>
+      <param-value>OPENDATASOURCE</param-value>
+      <param-value>OPENQUERY</param-value>
+      <param-value>OPENROWSET</param-value>
+      <param-value>OPENXML</param-value>
+      <param-value>OPTION</param-value>
+      <param-value>OR</param-value>
+      <param-value>ORDER</param-value>
+      <param-value>OUTER</param-value>
+      <param-value>OVER</param-value>
+      <param-value>PERCENT</param-value>
+      <param-value>PLAN</param-value>
+      <param-value>PRECISION</param-value>
+      <param-value>PRIMARY</param-value>
+      <param-value>PRINT</param-value>
+      <param-value>PROC</param-value>
+      <param-value>PROCEDURE</param-value>
+      <param-value>PUBLIC</param-value>
+      <param-value>RAISERROR</param-value>
+      <param-value>READ</param-value>
+      <param-value>READTEXT</param-value>
+      <param-value>RECONFIGURE</param-value>
+      <param-value>REFERENCES</param-value>
+      <param-value>REPLICATION</param-value>
+      <param-value>RESTORE</param-value>
+      <param-value>RESTRICT</param-value>
+      <param-value>RETURN</param-value>
+      <param-value>REVOKE</param-value>
+      <param-value>RIGHT</param-value>
+      <param-value>ROLLBACK</param-value>
+      <param-value>ROWCOUNT</param-value>
+      <param-value>ROWGUIDCOL</param-value>
+      <param-value>RULE</param-value>
+      <param-value>SAVE</param-value>
+      <param-value>SCHEMA</param-value>
+      <param-value>SELECT</param-value>
+      <param-value>SESSION_USER</param-value>
+      <param-value>SET</param-value>
+      <param-value>SETUSER</param-value>
+      <param-value>SHUTDOWN</param-value>
+      <param-value>SOME</param-value>
+      <param-value>STATISTICS</param-value>
+      <param-value>SYSTEM_USER</param-value>
+      <param-value>TABLE</param-value>
+      <param-value>TEXTSIZE</param-value>
+      <param-value>TO</param-value>
+      <param-value>TOP</param-value>
+      <param-value>TRAN</param-value>
+      <param-value>TRANSACTION</param-value>
+      <param-value>TRIGGER</param-value>
+      <param-value>TRUNCATE</param-value>
+      <param-value>TSEQUAL</param-value>
+      <param-value>UNION</param-value>
+      <param-value>UNIQUE</param-value>
+      <param-value>UPDATE</param-value>
+      <param-value>UPDATETEXT</param-value>
+      <param-value>USE</param-value>
+      <param-value>USER</param-value>
+      <param-value>VALUES</param-value>
+      <param-value>VARYING</param-value>
+      <param-value>VIEW</param-value>
+      <param-value>WAITFOR</param-value>
+      <param-value>WHEN</param-value>
+      <param-value>WHERE</param-value>
+      <param-value>WHILE</param-value>
+      <param-value>WITH</param-value>
+      <param-value>WRITETEXT</param-value>
+    </param>
+    <DataType name="BIGINT" sqlType="java.sql.Types.BIGINT" javaType="java.lang.Long"/>
+    <DataType name="BOOLEAN" sqlType="java.sql.Types.BIT" javaType="java.lang.Boolean"/>
+    <DataType name="CHAR" sqlType="java.sql.Types.CHAR" javaType="java.lang.String" length="true"/>
+    <DataType name="DATE" sqlType="java.sql.Types.DATE" javaType="java.sql.Date"/>
+    <DataType name="DOUBLE" sqlType="java.sql.Types.DOUBLE" javaType="java.lang.Double"/>
+    <DataType name="INTEGER" sqlType="java.sql.Types.INTEGER" javaType="java.lang.Integer"/>
+    <DataType name="NUMERIC" sqlType="java.sql.Types.NUMERIC" javaType="java.math.BigDecimal" length="true"/>
+    <DataType name="REAL" sqlType="java.sql.Types.REAL" javaType="java.lang.Float"/>
+    <DataType name="SMALLINT" sqlType="java.sql.Types.SMALLINT" javaType="java.lang.Short"/>
+    <DataType name="TIME" sqlType="java.sql.Types.TIME" javaType="java.sql.Time"/>
+    <DataType name="TIMESTAMP" sqlType="java.sql.Types.TIMESTAMP" javaType="java.sql.Timestamp"/>
+    <DataType name="VARCHAR" sqlType="java.sql.Types.VARCHAR" javaType="java.lang.String" length="true"/>
+  </StandardJDBCDriverOracle-configuration>
+
+  <StandardJDBCDriverPostgres-configuration>
+    <param>
+      <param-name>DriverName</param-name>
+      <param-description>name of the driver</param-description>
+      <param-value>Standard JDBC driver for Postgres</param-value>
+    </param>
+    <param>
+      <param-name>ClassName</param-name>
+      <param-description>class name of the driver</param-description>
+      <param-value>org.postgresql.Driver</param-value>
+    </param>
+    <param>
+      <param-name>Description</param-name>
+      <param-description>description of the driver</param-description>
+      <param-value>Standard JDBC driver for Postgres</param-value>
+    </param>
+    <param>
+      <param-name>JDBCUrls</param-name>
+      <param-description>connexion urls</param-description>
+      <param-value>jdbc:postgresql://localhost:5432/SilverpeasV5</param-value>
+    </param>
+    <param>
+      <param-name>DatabaseKeywords</param-name>
+      <param-description>reserved words</param-description>
+      <param-value>ADD</param-value>
+      <param-value>ALL</param-value>
+      <param-value>ALTER</param-value>
+      <param-value>AND</param-value>
+      <param-value>ANY</param-value>
+      <param-value>AS</param-value>
+      <param-value>ASC</param-value>
+      <param-value>AUTHORIZATION</param-value>
+      <param-value>BACKUP</param-value>
+      <param-value>BEGIN</param-value>
+      <param-value>BETWEEN</param-value>
+      <param-value>BREAK</param-value>
+      <param-value>BROWSE</param-value>
+      <param-value>BULK</param-value>
+      <param-value>BY</param-value>
+      <param-value>CASCADE</param-value>
+      <param-value>CASE</param-value>
+      <param-value>CHECK</param-value>
+      <param-value>CHECKPOINT</param-value>
+      <param-value>CLOSE</param-value>
+      <param-value>CLUSTERED</param-value>
+      <param-value>COALESCE</param-value>
+      <param-value>COLLATE</param-value>
+      <param-value>COLUMN</param-value>
+      <param-value>COMMIT</param-value>
+      <param-value>COMPUTE</param-value>
+      <param-value>CONSTRAINT</param-value>
+      <param-value>CONTAINS</param-value>
+      <param-value>CONTAINSTABLE</param-value>
+      <param-value>CONTINUE</param-value>
+      <param-value>CONVERT</param-value>
+      <param-value>CREATE</param-value>
+      <param-value>CROSS</param-value>
+      <param-value>CURRENT</param-value>
+      <param-value>CURRENT_DATE</param-value>
+      <param-value>CURRENT_TIME</param-value>
+      <param-value>CURRENT_TIMESTAMP</param-value>
+      <param-value>CURRENT_USER</param-value>
+      <param-value>CURSOR</param-value>
+      <param-value>DATABASE</param-value>
+      <param-value>DBCC</param-value>
+      <param-value>DEALLOCATE</param-value>
+      <param-value>DECLARE</param-value>
+      <param-value>DEFAULT</param-value>
+      <param-value>DELETE</param-value>
+      <param-value>DENY</param-value>
+      <param-value>DESC</param-value>
+      <param-value>DISK</param-value>
+      <param-value>DISTINCT</param-value>
+      <param-value>DISTRIBUTED</param-value>
+      <param-value>DOUBLE</param-value>
+      <param-value>DROP</param-value>
+      <param-value>DUMMY</param-value>
+      <param-value>DUMP</param-value>
+      <param-value>ELSE</param-value>
+      <param-value>END</param-value>
+      <param-value>ERRLVL</param-value>
+      <param-value>ESCAPE</param-value>
+      <param-value>EXCEPT</param-value>
+      <param-value>EXEC</param-value>
+      <param-value>EXECUTE</param-value>
+      <param-value>EXISTS</param-value>
+      <param-value>EXIT</param-value>
+      <param-value>FETCH</param-value>
+      <param-value>FILE</param-value>
+      <param-value>FILLFACTOR</param-value>
+      <param-value>FOR</param-value>
+      <param-value>FOREIGN</param-value>
+      <param-value>FREETEXT</param-value>
+      <param-value>FREETEXTTABLE</param-value>
+      <param-value>FROM</param-value>
+      <param-value>FULL</param-value>
+      <param-value>FUNCTION</param-value>
+      <param-value>GOTO</param-value>
+      <param-value>GRANT</param-value>
+      <param-value>GROUP</param-value>
+      <param-value>HAVING</param-value>
+      <param-value>HOLDLOCK</param-value>
+      <param-value>IDENTITY</param-value>
+      <param-value>IDENTITY_INSERT</param-value>
+      <param-value>IDENTITYCOL</param-value>
+      <param-value>IF</param-value>
+      <param-value>IN</param-value>
+      <param-value>INDEX</param-value>
+      <param-value>INNER</param-value>
+      <param-value>INSERT</param-value>
+      <param-value>INTERSECT</param-value>
+      <param-value>INTO</param-value>
+      <param-value>IS</param-value>
+      <param-value>JOIN</param-value>
+      <param-value>KEY</param-value>
+      <param-value>KILL</param-value>
+      <param-value>LEFT</param-value>
+      <param-value>LIKE</param-value>
+      <param-value>LINENO</param-value>
+      <param-value>LOAD</param-value>
+      <param-value>NATIONAL</param-value>
+      <param-value>NOCHECK</param-value>
+      <param-value>NONCLUSTERED</param-value>
+      <param-value>NOT</param-value>
+      <param-value>NULL</param-value>
+      <param-value>NULLIF</param-value>
+      <param-value>OF</param-value>
+      <param-value>OFF</param-value>
+      <param-value>OFFSETS</param-value>
+      <param-value>ON</param-value>
+      <param-value>OPEN</param-value>
+      <param-value>OPENDATASOURCE</param-value>
+      <param-value>OPENQUERY</param-value>
+      <param-value>OPENROWSET</param-value>
+      <param-value>OPENXML</param-value>
+      <param-value>OPTION</param-value>
+      <param-value>OR</param-value>
+      <param-value>ORDER</param-value>
+      <param-value>OUTER</param-value>
+      <param-value>OVER</param-value>
+      <param-value>PERCENT</param-value>
+      <param-value>PLAN</param-value>
+      <param-value>PRECISION</param-value>
+      <param-value>PRIMARY</param-value>
+      <param-value>PRINT</param-value>
+      <param-value>PROC</param-value>
+      <param-value>PROCEDURE</param-value>
+      <param-value>PUBLIC</param-value>
+      <param-value>RAISERROR</param-value>
+      <param-value>READ</param-value>
+      <param-value>READTEXT</param-value>
+      <param-value>RECONFIGURE</param-value>
+      <param-value>REFERENCES</param-value>
+      <param-value>REPLICATION</param-value>
+      <param-value>RESTORE</param-value>
+      <param-value>RESTRICT</param-value>
+      <param-value>RETURN</param-value>
+      <param-value>REVOKE</param-value>
+      <param-value>RIGHT</param-value>
+      <param-value>ROLLBACK</param-value>
+      <param-value>ROWCOUNT</param-value>
+      <param-value>ROWGUIDCOL</param-value>
+      <param-value>RULE</param-value>
+      <param-value>SAVE</param-value>
+      <param-value>SCHEMA</param-value>
+      <param-value>SELECT</param-value>
+      <param-value>SESSION_USER</param-value>
+      <param-value>SET</param-value>
+      <param-value>SETUSER</param-value>
+      <param-value>SHUTDOWN</param-value>
+      <param-value>SOME</param-value>
+      <param-value>STATISTICS</param-value>
+      <param-value>SYSTEM_USER</param-value>
+      <param-value>TABLE</param-value>
+      <param-value>TEXTSIZE</param-value>
+      <param-value>TO</param-value>
+      <param-value>TOP</param-value>
+      <param-value>TRAN</param-value>
+      <param-value>TRANSACTION</param-value>
+      <param-value>TRIGGER</param-value>
+      <param-value>TRUNCATE</param-value>
+      <param-value>TSEQUAL</param-value>
+      <param-value>UNION</param-value>
+      <param-value>UNIQUE</param-value>
+      <param-value>UPDATE</param-value>
+      <param-value>UPDATETEXT</param-value>
+      <param-value>USE</param-value>
+      <param-value>USER</param-value>
+      <param-value>VALUES</param-value>
+      <param-value>VARYING</param-value>
+      <param-value>VIEW</param-value>
+      <param-value>WAITFOR</param-value>
+      <param-value>WHEN</param-value>
+      <param-value>WHERE</param-value>
+      <param-value>WHILE</param-value>
+      <param-value>WITH</param-value>
+      <param-value>WRITETEXT</param-value>
+    </param>
+    <DataType name="BIGINT" sqlType="java.sql.Types.BIGINT" javaType="java.lang.Long"/>
+    <DataType name="BOOLEAN" sqlType="java.sql.Types.BIT" javaType="java.lang.Boolean"/>
+    <DataType name="CHAR" sqlType="java.sql.Types.CHAR" javaType="java.lang.String" length="true"/>
+    <DataType name="DATE" sqlType="java.sql.Types.DATE" javaType="java.sql.Date"/>
+    <DataType name="DOUBLE" sqlType="java.sql.Types.DOUBLE" javaType="java.lang.Double"/>
+    <DataType name="INTEGER" sqlType="java.sql.Types.INTEGER" javaType="java.lang.Integer"/>
+    <DataType name="NUMERIC" sqlType="java.sql.Types.NUMERIC" javaType="java.math.BigDecimal" length="true"/>
+    <DataType name="REAL" sqlType="java.sql.Types.REAL" javaType="java.lang.Float"/>
+    <DataType name="SMALLINT" sqlType="java.sql.Types.SMALLINT" javaType="java.lang.Short"/>
+    <DataType name="TIME" sqlType="java.sql.Types.TIME" javaType="java.sql.Time"/>
+    <DataType name="TIMESTAMP" sqlType="java.sql.Types.TIMESTAMP" javaType="java.sql.Timestamp"/>
+    <DataType name="VARCHAR" sqlType="java.sql.Types.VARCHAR" javaType="java.lang.String" length="true"/>
+  </StandardJDBCDriverPostgres-configuration>
+
+  <StandardJDBCODBCDriver-configuration>
+    <param>
+      <param-name>DriverName</param-name>
+      <param-description>name of the driver</param-description>
+      <param-value>Standard JDBC-0DBC driver</param-value>
+    </param>
+    <param>
+      <param-name>ClassName</param-name>
+      <param-description>class name of the driver</param-description>
+      <param-value>com.inet.tds.TdsDriver</param-value>
+    </param>
+    <param>
+      <param-name>Description</param-name>
+      <param-description>description of the driver</param-description>
+      <param-value>Standard JDBC-ODBC driver</param-value>
+    </param>
+    <param>
+      <param-name>JDBCUrls</param-name>
+      <param-description>connexion urls</param-description>
+      <param-value>jdbc:inetdae7:localhost?database=SilverpeasODBC</param-value>
+    </param>
+    <param>
+      <param-name>DatabaseKeywords</param-name>
+      <param-description>reserved words</param-description>
+      <param-value>ABSOLUTE</param-value>
+      <param-value>ACTION</param-value>
+      <param-value>ADA</param-value>
+      <param-value>ADD</param-value>
+      <param-value>ALL</param-value>
+      <param-value>ALLOCATE</param-value>
+      <param-value>ALTER</param-value>
+      <param-value>AND</param-value>
+      <param-value>ANY</param-value>
+      <param-value>ARE</param-value>
+      <param-value>AS</param-value>
+      <param-value>ASC</param-value>
+      <param-value>ASSERTION</param-value>
+      <param-value>AT</param-value>
+      <param-value>AUTHORIZATION</param-value>
+      <param-value>AVG</param-value>
+      <param-value>BEGIN</param-value>
+      <param-value>BETWEEN</param-value>
+      <param-value>BIT</param-value>
+      <param-value>BIT_LENGTH</param-value>
+      <param-value>BOTH</param-value>
+      <param-value>BY</param-value>
+      <param-value>CASCADE</param-value>
+      <param-value>CASCADED</param-value>
+      <param-value>CASE</param-value>
+      <param-value>CAST</param-value>
+      <param-value>CATALOG</param-value>
+      <param-value>CHAR</param-value>
+      <param-value>CHAR_LENGTH</param-value>
+      <param-value>CHARACTER</param-value>
+      <param-value>CHARACTER_LENGTH</param-value>
+      <param-value>CHECK</param-value>
+      <param-value>CLOSE</param-value>
+      <param-value>COALESCE</param-value>
+      <param-value>COLLATE</param-value>
+      <param-value>COLLATION</param-value>
+      <param-value>COLUMN</param-value>
+      <param-value>COMMIT</param-value>
+      <param-value>CONNECT</param-value>
+      <param-value>CONNECTION</param-value>
+      <param-value>CONSTRAINT</param-value>
+      <param-value>CONSTRAINTS</param-value>
+      <param-value>CONTINUE</param-value>
+      <param-value>CONVERT</param-value>
+      <param-value>CORRESPONDING</param-value>
+      <param-value>COUNT</param-value>
+      <param-value>CREATE</param-value>
+      <param-value>CROSS</param-value>
+      <param-value>CURRENT</param-value>
+      <param-value>CURRENT_DATE</param-value>
+      <param-value>CURRENT_TIME</param-value>
+      <param-value>CURRENT_TIMESTAMP</param-value>
+      <param-value>CURRENT_USER</param-value>
+      <param-value>CURSOR</param-value>
+      <param-value>DATE</param-value>
+      <param-value>DAY</param-value>
+      <param-value>DEALLOCATE</param-value>
+      <param-value>DEC</param-value>
+      <param-value>DECIMAL</param-value>
+      <param-value>DECLARE</param-value>
+      <param-value>DEFAULT</param-value>
+      <param-value>DEFERRABLE</param-value>
+      <param-value>DEFERRED</param-value>
+      <param-value>DELETE</param-value>
+      <param-value>DESC</param-value>
+      <param-value>DESCRIBE</param-value>
+      <param-value>DESCRIPTOR</param-value>
+      <param-value>DIAGNOSTICS</param-value>
+      <param-value>DISCONNECT</param-value>
+      <param-value>DISTINCT</param-value>
+      <param-value>DOMAIN</param-value>
+      <param-value>DOUBLE</param-value>
+      <param-value>DROP</param-value>
+      <param-value>ELSE</param-value>
+      <param-value>END</param-value>
+      <param-value>END-EXEC</param-value>
+      <param-value>ESCAPE</param-value>
+      <param-value>EXCEPT</param-value>
+      <param-value>EXCEPTION</param-value>
+      <param-value>EXEC</param-value>
+      <param-value>EXECUTE</param-value>
+      <param-value>EXISTS</param-value>
+      <param-value>EXTERNAL</param-value>
+      <param-value>EXTRACT</param-value>
+      <param-value>FALSE</param-value>
+      <param-value>FETCH</param-value>
+      <param-value>FIRST</param-value>
+      <param-value>FLOAT</param-value>
+      <param-value>FOR</param-value>
+      <param-value>FOREIGN</param-value>
+      <param-value>FORTRAN</param-value>
+      <param-value>FOUND</param-value>
+      <param-value>FROM</param-value>
+      <param-value>FULL</param-value>
+      <param-value>GET</param-value>
+      <param-value>GLOBAL</param-value>
+      <param-value>GO</param-value>
+      <param-value>GOTO</param-value>
+      <param-value>GRANT</param-value>
+      <param-value>GROUP</param-value>
+      <param-value>HAVING</param-value>
+      <param-value>HOUR</param-value>
+      <param-value>IDENTITY</param-value>
+      <param-value>IMMEDIATE</param-value>
+      <param-value>IN</param-value>
+      <param-value>INCLUDE</param-value>
+      <param-value>INDEX</param-value>
+      <param-value>INDICATOR</param-value>
+      <param-value>INITIALY</param-value>
+      <param-value>INNER</param-value>
+      <param-value>INPUT</param-value>
+      <param-value>INSENSITIVE</param-value>
+      <param-value>INSERT</param-value>
+      <param-value>INT</param-value>
+      <param-value>INTEGER</param-value>
+      <param-value>INTERSECT</param-value>
+      <param-value>INTERVAL</param-value>
+      <param-value>INTO</param-value>
+      <param-value>IS</param-value>
+      <param-value>ISOLATION</param-value>
+      <param-value>JOIN</param-value>
+      <param-value>KEY</param-value>
+      <param-value>LANGUAGE</param-value>
+      <param-value>LAST</param-value>
+      <param-value>LEADING</param-value>
+      <param-value>LEFT</param-value>
+      <param-value>LEVEL</param-value>
+      <param-value>LIKE</param-value>
+      <param-value>LOCAL</param-value>
+      <param-value>LOWER</param-value>
+      <param-value>MATCH</param-value>
+      <param-value>MAX</param-value>
+      <param-value>MIN</param-value>
+      <param-value>MINUTE</param-value>
+      <param-value>MODULE</param-value>
+      <param-value>MONTH</param-value>
+      <param-value>NAMES</param-value>
+      <param-value>NATIONAL</param-value>
+      <param-value>NATURAL</param-value>
+      <param-value>NCHAR</param-value>
+      <param-value>NEXT</param-value>
+      <param-value>NO</param-value>
+      <param-value>NONE</param-value>
+      <param-value>NOT</param-value>
+      <param-value>NULL</param-value>
+      <param-value>NULLIF</param-value>
+      <param-value>NUMERIC</param-value>
+      <param-value>OCTET_LENGTH</param-value>
+      <param-value>OF</param-value>
+      <param-value>ON</param-value>
+      <param-value>ONLY</param-value>
+      <param-value>OPEN</param-value>
+      <param-value>OPTION</param-value>
+      <param-value>OR</param-value>
+      <param-value>ORDER</param-value>
+      <param-value>OUTER</param-value>
+      <param-value>OUTPUT</param-value>
+      <param-value>OVERLAPS</param-value>
+      <param-value>PAD</param-value>
+      <param-value>PARTIAL</param-value>
+      <param-value>PASCAL</param-value>
+      <param-value>POSITION</param-value>
+      <param-value>PRECISION</param-value>
+      <param-value>PREPARE</param-value>
+      <param-value>PRESERVE</param-value>
+      <param-value>PRIMARY</param-value>
+      <param-value>PRIOR</param-value>
+      <param-value>PRIVILEGES</param-value>
+      <param-value>PROCEDURE</param-value>
+      <param-value>PUBLIC</param-value>
+      <param-value>READ</param-value>
+      <param-value>REAL</param-value>
+      <param-value>REFERENCES</param-value>
+      <param-value>RELATIVE</param-value>
+      <param-value>RESTRICT</param-value>
+      <param-value>REVOKE</param-value>
+      <param-value>RIGHT</param-value>
+      <param-value>ROLLBACK</param-value>
+      <param-value>ROWS</param-value>
+      <param-value>SCHEMA</param-value>
+      <param-value>SCROLL</param-value>
+      <param-value>SECOND</param-value>
+      <param-value>SECTION</param-value>
+      <param-value>SELECT</param-value>
+      <param-value>SESSION</param-value>
+      <param-value>SESSION_USER</param-value>
+      <param-value>SET</param-value>
+      <param-value>SIZE</param-value>
+      <param-value>SMALLINT</param-value>
+      <param-value>SOME</param-value>
+      <param-value>SPACE</param-value>
+      <param-value>SQL</param-value>
+      <param-value>SQLCA</param-value>
+      <param-value>SQLCODE</param-value>
+      <param-value>SQLERROR</param-value>
+      <param-value>SQLSTATE</param-value>
+      <param-value>SQLWARNING</param-value>
+      <param-value>SUBSTRING</param-value>
+      <param-value>SUM</param-value>
+      <param-value>SYSTEM_USER</param-value>
+      <param-value>TABLE</param-value>
+      <param-value>TEMPORARY</param-value>
+      <param-value>THEN</param-value>
+      <param-value>TIME</param-value>
+      <param-value>TIMESTAMP</param-value>
+      <param-value>TIMEZONE_HOUR</param-value>
+      <param-value>TIMEZONE_MINUTE</param-value>
+      <param-value>TO</param-value>
+      <param-value>TRAILING</param-value>
+      <param-value>TRANSACTION</param-value>
+      <param-value>TRANSLATE</param-value>
+      <param-value>TRANSLATION</param-value>
+      <param-value>TRIM</param-value>
+      <param-value>TRUE</param-value>
+      <param-value>UNION</param-value>
+      <param-value>UNIQUE</param-value>
+      <param-value>UNKNOWN</param-value>
+      <param-value>UPDATE</param-value>
+      <param-value>UPPER</param-value>
+      <param-value>USAGE</param-value>
+      <param-value>USER</param-value>
+      <param-value>USING</param-value>
+      <param-value>VALUE</param-value>
+      <param-value>VALUES</param-value>
+      <param-value>VARCHAR</param-value>
+      <param-value>VARYING</param-value>
+      <param-value>VIEW</param-value>
+      <param-value>WHEN</param-value>
+      <param-value>WHENEVER</param-value>
+      <param-value>WHERE</param-value>
+      <param-value>WITH</param-value>
+      <param-value>WORK</param-value>
+      <param-value>WRITE</param-value>
+      <param-value>YEAR</param-value>
+      <param-value>ZONE</param-value>
+    </param>
+    <DataType name="BIGINT" sqlType="java.sql.Types.BIGINT" javaType="java.lang.Long"/>
+    <DataType name="BOOLEAN" sqlType="java.sql.Types.BIT" javaType="java.lang.Boolean"/>
+    <DataType name="CHAR" sqlType="java.sql.Types.CHAR" javaType="java.lang.String" length="true"/>
+    <DataType name="DATE" sqlType="java.sql.Types.DATE" javaType="java.sql.Date"/>
+    <DataType name="DOUBLE" sqlType="java.sql.Types.DOUBLE" javaType="java.lang.Double"/>
+    <DataType name="INTEGER" sqlType="java.sql.Types.INTEGER" javaType="java.lang.Integer"/>
+    <DataType name="NUMERIC" sqlType="java.sql.Types.NUMERIC" javaType="java.math.BigDecimal" length="true"/>
+    <DataType name="REAL" sqlType="java.sql.Types.REAL" javaType="java.lang.Float"/>
+    <DataType name="SMALLINT" sqlType="java.sql.Types.SMALLINT" javaType="java.lang.Short"/>
+    <DataType name="TIME" sqlType="java.sql.Types.TIME" javaType="java.sql.Time"/>
+    <DataType name="TIMESTAMP" sqlType="java.sql.Types.TIMESTAMP" javaType="java.sql.Timestamp"/>
+    <DataType name="VARCHAR" sqlType="java.sql.Types.VARCHAR" javaType="java.lang.String" length="true"/>
+  </StandardJDBCODBCDriver-configuration>
+
+</MyDB-configuration >

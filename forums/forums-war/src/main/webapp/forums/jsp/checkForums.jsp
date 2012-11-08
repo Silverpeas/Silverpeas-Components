@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,7 +38,7 @@
 <%@ page import="com.stratelia.webactiv.forums.forumsException.ForumsException"%>
 <%@ page import="com.stratelia.webactiv.forums.models.Forum"%>
 <%@ page import="com.stratelia.webactiv.forums.models.Message"%>
-<%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"%>
+<%@ page import="com.stratelia.webactiv.forums.control.ForumsSessionController"%>
 <%@ page import="com.stratelia.webactiv.forums.url.ActionUrl"%>
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
@@ -52,13 +52,14 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
-<%!  public static String IMAGE_UPDATE = "../../util/icons/update.gif";
+<%!  
+  public static String IMAGE_UPDATE = "../../util/icons/update.gif";
   public static String IMAGE_UNLOCK = "../../util/icons/lock.gif";
   public static String IMAGE_LOCK = "../../util/icons/unlock.gif";
   public static String IMAGE_DELETE = "../../util/icons/delete.gif";
   public static String IMAGE_MOVE = "../../util/icons/moveMessage.gif";
-  public static String IMAGE_ADD_FORUM = "../../util/icons/forums_to_add.gif";
-  public static String IMAGE_ADD_CATEGORY = "../../util/icons/folderAddBig.gif";
+  public static String IMAGE_ADD_FORUM = "../../util/icons/create-action/add-forum.png";
+  public static String IMAGE_ADD_CATEGORY = "../../util/icons/create-action/add-folder.png";
   public static String IMAGE_WORD = "icons/word.gif";
   public static String IMAGE_NOTATION_OFF = "../../util/icons/starEmpty.gif";
   public static String IMAGE_NOTATION_ON = "../../util/icons/starFilled.gif";

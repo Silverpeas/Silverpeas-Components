@@ -6,6 +6,7 @@
 .classpath
 .project
 /target/
+nb-configuration.xml
 wiki/wiki-jar/Test de base/
 /kmelia/kmelia-ejb/src/main/resources/META-INF/MANIFEST.MF
 /kmelia/kmelia-war/src/main/webapp/META-INF
@@ -24,3 +25,13 @@ wiki/wiki-jar/Test de base/
 
 /websites/websites-war/src/main/webapp/META-INF
 /websites/websites-ejb/src/main/resources/META-INF/MANIFEST.MF
+/formsonline/formsonline-war/src/main/webapp/META-INF
+
+/forums/forums-war/src/main/webapp/META-INF
+/forums/forums-ejb/src/main/resources/META-INF/MANIFEST.MF
+
+/quizz/quizz-war/src/main/webapp/META-INF
+
+/infoletter/infoletter-jar/bin
+/infoletter/infoletter-war/bin
+/infoletter/infoletter-war/src/main/webapp/META-INF

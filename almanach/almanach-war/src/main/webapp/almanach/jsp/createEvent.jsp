@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -55,9 +58,9 @@
 <title><fmt:message key="GML.popupTitle"/></title>
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
+<view:includePlugin name="wysiwyg"/>
 <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
 <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
 <script type="text/javascript">
 function reallyAdd() {
 	$('.WeekDayWeek').attr("disabled", false); 
@@ -299,6 +302,8 @@ $(document).ready(function() {
 	$('#eventPeriodicityChoiceMonthArea').hide();
 	$('#eventFrequencyArea').hide();
 	$('.eventPeriodicityDateArea').hide();
+	
+	<view:wysiwyg replace="Description" language="${language}" width="600" height="300" toolbar="almanach"/>
 });
 </script>
 </head>
@@ -481,22 +486,5 @@ $(document).ready(function() {
   <input type="hidden" name="Action"/>
   <input type="hidden" name="Id"/>
 </form>
-<script type="text/javascript">
-  <fmt:message key='configFile' var='configFile'/>
-  <c:if test="${configFile eq '???configFile???'}">
-  <c:url value="/wysiwyg/jsp/javaScript/myconfig.js" var="configFile"/>
-  </c:if>
-  var oFCKeditor = new FCKeditor('Description');
-  oFCKeditor.Width = "500";
-  oFCKeditor.Height = "300";
-  oFCKeditor.BasePath = "<c:url value='/wysiwyg/jsp/FCKeditor/'/>";
-  oFCKeditor.DisplayErrors = true;
-  oFCKeditor.Config["AutoDetectLanguage"] = false;
-  oFCKeditor.Config["DefaultLanguage"] = "<c:out value='${language}'/>";
-  oFCKeditor.Config["CustomConfigurationsPath"] = "<c:out value='${configFile}'/>"
-  oFCKeditor.ToolbarSet = 'almanach';
-  oFCKeditor.Config["ToolbarStartExpanded"] = true;
-  oFCKeditor.ReplaceTextarea();
-</script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,9 +33,9 @@
     <message lang="de">Multi-level Tracker</message>
   </label>
   <description>
-    <message lang="fr">Permet de créer une base documentaire classée suivant plusieurs axes.
-      L'utilisateur sélectionne les valeurs des différents axes pour retrouver les documents
-      répondant à sa requête.
+    <message lang="fr">Cette application gère également des publications. 
+		Mais celles-ci sont classées dans une taxonomie indépendante permettant
+		à l’utilisateur de faire des recherches croisées en toute simplicité.
     </message>
     <message lang="en">Create a document database where documents are classified according to various
       classification scheme. The user select
@@ -81,12 +81,12 @@
       <label>
         <message lang="fr">Rédacteurs</message>
         <message lang="en">Writers</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Redaktor</message>
       </label>
       <help>
         <message lang="fr">Les rédacteurs créent des publications.</message>
         <message lang="en">Writers create publications.</message>
-        <message lang="de">Schreiber</message>
+        <message lang="de">Redaktor</message>
       </help>
     </profile>
     <profile name="user">
@@ -418,9 +418,7 @@
       <order>16</order>
       <mandatory>true</mandatory>
       <value>2</value>
-      <type>select</type>
-      <updatable>always</updatable>
-	  <options>
+      <options>
         <option>
           <name>
             <message lang="fr">Nom du créateur croissant</message>
@@ -453,7 +451,7 @@
           </name>
           <value>3</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Titre croissant</message>
             <message lang="en">Ascending title</message>
@@ -461,7 +459,7 @@
           </name>
           <value>4</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Date de création croissante</message>
             <message lang="en">Ascending creation date</message>
@@ -469,7 +467,7 @@
           </name>
           <value>5</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Date de création décroissante</message>
             <message lang="en">Descending creation date</message>
@@ -477,7 +475,7 @@
           </name>
           <value>6</value>
         </option>
-		<option>
+        <option>
           <name>
             <message lang="fr">Description croissante</message>
             <message lang="en">Ascending description</message>
@@ -485,15 +483,9 @@
           </name>
           <value>7</value>
         </option>
-		<option>
-          <name>
-            <message lang="fr">Défini par le gestionnaire</message>
-            <message lang="en">Defined by the administrator</message>
-            <message lang="de">Defined by the administrator</message>
-          </name>
-          <value>8</value>
-        </option>
       </options>
+      <type>select</type>
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Permet de définir l'ordre d'affichage des publications par défaut.</message>
         <message lang="en">Sets the display order of publications.</message>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,10 @@
 
 package com.stratelia.webactiv.quizz.servlets;
 
+import java.io.File;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -35,10 +39,9 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-
 public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionController> {
+
+  private static final long serialVersionUID = -8909826089973730380L;
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -96,6 +99,9 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
         }
       } else if (function.startsWith("quizzCreator")) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
+          
+          quizzSC.createTemporaryQuizz(request);
+          
           destination = "quizzCreator.jsp";
         } else {
           profileError = true;
@@ -120,7 +126,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
           SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_COPY_FAILED",
               "function = " + function, e);
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD)
+        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
             + "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("paste")) {
         try {
@@ -129,7 +135,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
           SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_CUT_FAILED",
               "function = " + function, e);
         }
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp";
+        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null) + "Idle.jsp";
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
 
@@ -165,4 +171,5 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
 
     return destination;
   }
+
 }

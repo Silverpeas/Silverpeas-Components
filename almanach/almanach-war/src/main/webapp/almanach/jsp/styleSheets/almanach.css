@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -438,3 +438,81 @@ div.eventBeginDate {
 #eventFrequencyArea input{
 	width:auto;
 }
+
+.portlet li.events {
+	clear: both;
+    border-bottom:1px solid #efefef;
+    position: relative;
+    margin: 2px 0 0;
+    min-height: 50px;
+    padding: 3px 0 3px 58px;
+	background:transparent url(/silverpeas/util/icons/gradientSVG.jsp?from=ffffff&to=efefef&vertical=0&horizontal=100) 0 23px no-repeat;
+		-moz-background-size: 100%;
+}
+
+.portlet li.events div.event {
+	margin-bottom:2px;
+}
+
+.portlet li.events div.event:last-child{
+	margin-bottom:0;
+}
+
+.portlet  div.eventShortDate {
+	position:absolute;
+	top:3px;
+	left:3px;
+	background:transparent url("../icons/bgCalendar-portlet.png") top left no-repeat;
+	height:48px;
+	width:47px;
+	color:#33529b;
+	line-height:54px;
+	font-size:14px;
+	text-align:center;
+	font-weight:bold;
+}
+
+
+.portlet .priority  div.eventShortDate {
+	background-image:url("../icons/bgCalendarHight-portlet.png");
+}
+
+.portlet  div.eventLongDate {
+	color:#304f98;
+	font-weight:bold;
+}
+
+.portlet  div.eventName  {
+	font-size:11px;
+	font-weight: 100;
+	margin-bottom:2px;
+}
+
+.portlet  div.eventName  .eventBeginHours{
+	color:#666;
+}
+
+.portlet  div.eventShortDate .number {
+	font-size:16px;
+	color:#333;
+}
+
+.portlet li.event .eventDesc, .portlet li.event  .eventURL{
+	display:none;
+}
+.portlet .eventInfo div {
+    width: 90%;
+}
+.portlet .eventInfo div div.bloc {
+    padding: 0 8px 0 27px;
+	font-size:100%;
+}
+
+.portlet .eventList .eventInfo {
+	padding:1px 0;
+}
+
+.portlet .eventPlace .bloc {
+	background-position:6px center;
+}
+

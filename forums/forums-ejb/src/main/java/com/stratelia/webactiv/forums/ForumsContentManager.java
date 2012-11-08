@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,6 +29,7 @@ package com.stratelia.webactiv.forums;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.models.ForumDetail;
@@ -52,20 +54,13 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  */
 public class ForumsContentManager implements ContentInterface {
 
-  /**
-   * Find all the SilverContent with the given list of SilverContentId
-   * @param ids list of silverContentId to retrieve
-   * @param peasId the id of the instance
-   * @param userId the id of the user who wants to retrieve silverContent
-   * @param userRoles the roles of the user
-   * @return a List of SilverContent
-   */
-  public List getSilverContentById(List ids, String peasId, String userId,
-      List userRoles) {
+  @Override
+  public List<SilverContentInterface> getSilverContentById(List<Integer> alSilverContentId,
+      String sComponentId, String sUserId, List<String> alContentUserRoles) {
     if (getContentManager() == null) {
-      return new ArrayList();
+      return new ArrayList<SilverContentInterface>();
     }
-    return getHeaders(makePKArray(ids, peasId));
+    return getHeaders(makePKArray(alSilverContentId, sComponentId));
   }
 
   /**
@@ -99,10 +94,9 @@ public class ForumsContentManager implements ContentInterface {
       throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(true);
     SilverTrace.info("forums", "ForumsContentManager.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-        + scv.toString());
-    return getContentManager().addSilverContent(con, forumPK.getId(),
-        forumPK.getComponentName(), userId, scv);
+        "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = " + scv.toString());
+    return getContentManager().addSilverContent(con, forumPK.getId(), forumPK.getComponentName(),
+        userId, scv);
   }
 
   /**
@@ -122,7 +116,7 @@ public class ForumsContentManager implements ContentInterface {
       SilverTrace.info("forums",
           "ForumsContentManager.updateSilverContentVisibility()",
           "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-          + scv.toString());
+              + scv.toString());
       getContentManager().updateSilverContentVisibilityAttributes(scv,
           forumPK.getComponentName(), silverContentId);
       ClassifyEngine.clearCache();
@@ -141,7 +135,7 @@ public class ForumsContentManager implements ContentInterface {
     if (contentId != -1) {
       SilverTrace.info("forums", "ForumsContentManager.deleteSilverContent()",
           "root.MSG_GEN_ENTER_METHOD", "pubId = " + forumPK.getId()
-          + ", contentId = " + contentId);
+              + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId,
           forumPK.getComponentName());
     }
@@ -160,22 +154,22 @@ public class ForumsContentManager implements ContentInterface {
   /**
    * return a list of forumPK according to a list of silverContentId
    * @param idList a list of silverContentId
-   * @param peasId the id of the instance
+   * @param componentId the id of the instance
    * @return a list of forumPK
    */
-  private ArrayList makePKArray(List idList, String peasId) {
-    ArrayList fks = new ArrayList();
+  private List<ForumPK> makePKArray(List<Integer> idList, String componentId) {
+    List<ForumPK> fks = new ArrayList<ForumPK>();
     ForumPK forumPK = null;
-    Iterator iter = idList.iterator();
+    Iterator<Integer> iter = idList.iterator();
     String id = null;
 
     // for each silverContentId, we get the corresponding forumId
     while (iter.hasNext()) {
-      int contentId = ((Integer) iter.next()).intValue();
+      int contentId = iter.next().intValue();
 
       try {
         id = getContentManager().getInternalContentId(contentId);
-        forumPK = new ForumPK(peasId, id);
+        forumPK = new ForumPK(componentId, id);
         fks.add(forumPK);
       } catch (ClassCastException ignored) {
         // ignore unknown item
@@ -191,18 +185,16 @@ public class ForumsContentManager implements ContentInterface {
    * @param ids a list of ForumPK
    * @return a list of ForumDetail
    */
-  private List getHeaders(List ids) {
-    ForumDetail forumDetail = null;
-    ArrayList headers = new ArrayList();
+  private List getHeaders(List<ForumPK> ids) {
+    List<ForumDetail> headers = new ArrayList<ForumDetail>();
 
     try {
-      ArrayList forumDetails = (ArrayList) getForumsBM().getForums(ids);
-
-      for (int i = 0; i < forumDetails.size(); i++) {
-        forumDetail = (ForumDetail) forumDetails.get(i);
+      Collection<ForumDetail> forumDetails = getForumsBM().getForums(ids);
+      for (ForumDetail forumDetail : forumDetails) {
         forumDetail.setIconUrl("forumsSmall.gif");
         headers.add(forumDetail);
       }
+
     } catch (RemoteException e) {
       // skip unknown and ill formed id.
     }
@@ -220,8 +212,7 @@ public class ForumsContentManager implements ContentInterface {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("forums", "ForumsContentManager",
-            "root.EX_UNKNOWN_CONTENT_MANAGER", e);
+        SilverTrace.fatal("forums", "ForumsContentManager", "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }
     return contentManager;
@@ -241,8 +232,7 @@ public class ForumsContentManager implements ContentInterface {
         forumsBM = forumsBMHome.create();
       } catch (Exception e) {
         throw new ForumsRuntimeException("ForumsContentManager.getForumsBM()",
-            SilverpeasRuntimeException.ERROR,
-            "forums.EX_IMPOSSIBLE_DE_FABRIQUER_FORUMSBM_HOME", e);
+            SilverpeasRuntimeException.ERROR, "forums.EX_IMPOSSIBLE_DE_FABRIQUER_FORUMSBM_HOME", e);
       }
     }
     return forumsBM;
