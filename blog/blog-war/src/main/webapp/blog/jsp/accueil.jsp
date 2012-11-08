@@ -35,10 +35,10 @@
 
 <% 
 // recuperation des parametres
-Collection<PostDetail>  posts   = (Collection) request.getAttribute("Posts");
-Collection<NodeDetail>  categories  = (Collection) request.getAttribute("Categories");
-Collection<Archive>   archives  = (Collection) request.getAttribute("Archives");
-Collection<LinkDetail>  links   = (Collection) request.getAttribute("Links");
+Collection<PostDetail>  posts   = (Collection<PostDetail>) request.getAttribute("Posts");
+Collection<NodeDetail>  categories  = (Collection<NodeDetail>) request.getAttribute("Categories");
+Collection<Archive>   archives  = (Collection<Archive>) request.getAttribute("Archives");
+Collection<LinkDetail>  links   = (Collection<LinkDetail>) request.getAttribute("Links");
 String    profile   = (String) request.getAttribute("Profile");
 String    blogUrl   = (String) request.getAttribute("Url");
 String    rssURL    = (String) request.getAttribute("RSSUrl");
@@ -49,27 +49,6 @@ boolean   isDraftVisible  = ((Boolean) request.getAttribute("IsDraftVisible")).b
 int nbPostDisplayed   = ((Integer) request.getAttribute("NbPostDisplayed")).intValue();
 WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
 StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
-
-String wallPaperName = "";
-String wallPaperURL = "";
-String wallPaperSize = "";
-String styleSheetName = "";
-String styleSheetURL = "";
-String styleSheetSize = "";
-String styleSheetContent = "";
-
-if(wallPaper != null) {
-  wallPaperName = wallPaper.getName();
-  wallPaperURL = wallPaper.getUrl();
-  wallPaperSize = wallPaper.getSize();
-}
-
-if(styleSheet != null) {
-  styleSheetName = styleSheet.getName();
-  styleSheetURL = styleSheet.getUrl();
-  styleSheetSize = styleSheet.getSize();
-  styleSheetContent = styleSheet.getContent();
-}
 
 Date     dateCalendar = new Date(dateCal);
 boolean   isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
@@ -223,25 +202,19 @@ function hideStyleSheetFile() {
 }
 </script>
 
-  <%
-  if(!"".equals(wallPaperURL)) {
-  %>
+<% if(wallPaper != null) { %>
 <style type="text/css">
   #blog #blogContainer #bandeau  {
-  background:url("/silverpeas/OnlineFileServer/<%=wallPaperName%>?ComponentId=<%=instanceId%>&SourceFile=<%=wallPaperName%>&Directory=")  center no-repeat;
+  background:url("<%=wallPaper.getUrl()%>")  center no-repeat;
   }
 </style>
-  <%
-  }
+<% } %>
   
-  if(!"".equals(styleSheetContent)) {
-  %>
+<% if(styleSheet != null) { %>
 <style type="text/css">
-  <%=styleSheetContent%>
-</style>  
-  <%
-  }
-  %>
+  <%=styleSheet.getContent()%>
+</style>
+<% } %>
 </head>
 <body id="blog">
   <div id="<%=instanceId %>">
@@ -358,18 +331,14 @@ function hideStyleSheetFile() {
             <tr id="WallPaper">
               <td class="txtlibform"><%=resource.getString("blog.wallPaper")%></td>
               <td>
-              <%
-              if(!"".equals(wallPaperURL)) {
-              %>
+              <% if(wallPaper != null) { %>
                <div id="WallPaperFile">
-                 <a href="<%=wallPaperURL%>" target="_blank"><%=wallPaperName%></a> 
-                 <%=wallPaperSize%> 
-                 <a href="javascript:onClick=hideWallPaperFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"></a> 
-                 <BR/>
+                 <a href="<%=wallPaper.getUrl()%>" target="_blank"><%=wallPaper.getName()%></a> 
+                 <%=wallPaper.getSize()%> 
+                 <a href="javascript:onclick=hideWallPaperFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"/></a> 
+                 <br/>
                </div> 
-              <% 
-              }
-              %>
+              <% } %>
                <input type="file" name="wallPaper" id="WallPaperNewFile" size="40"/> <i>(.gif/.jpg/.png)</i>
                <input type="hidden" name="removeWallPaperFile" value="no"/>
               </td>
@@ -377,18 +346,14 @@ function hideStyleSheetFile() {
             <tr id="StyleSheet">
               <td class="txtlibform"><%=resource.getString("blog.styleSheet")%></td>
               <td>
-              <%
-              if(!"".equals(styleSheetURL)) {
-              %>
+              <% if (styleSheet != null) { %>
                <div id="StyleSheetFile">
-                 <a href="<%=styleSheetURL%>" target="_blank"><%=styleSheetName%></a> 
-                 <%=styleSheetSize%> 
-                 <a href="javascript:onClick=hideStyleSheetFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"></a> 
-                 <BR/>
+                 <a href="<%=styleSheet.getUrl()%>" target="_blank"><%=styleSheet.getName()%></a> 
+                 <%=styleSheet.getSize()%> 
+                 <a href="javascript:onclick=hideStyleSheetFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"/></a> 
+                 <br/>
                </div>
-              <% 
-              }
-              %>
+              <% } %>
                <input type="file" name="styleSheet" id="StyleSheetNewFile" size="40"/> <i>(.css)</i>
                <input type="hidden" name="removeStyleSheetFile" value="no"/>
               </td>

@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.blog.control.StyleSheet"%>
+<%@page import="com.silverpeas.blog.control.WallPaper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@page import="java.util.GregorianCalendar"%>
@@ -39,6 +41,8 @@ String		blogUrl		= (String) request.getAttribute("Url");
 String		rssURL		= (String) request.getAttribute("RSSUrl");
 List		events		= (List) request.getAttribute("Events");
 String 		dateCal		= (String) request.getAttribute("DateCalendar");
+WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
+StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 
 Date 	   dateCalendar	= new Date(dateCal);
 String categoryId = "";
@@ -73,6 +77,19 @@ if (!isUserGuest) {
 <head>
 <title></title>
 <view:looknfeel/>
+<% if(wallPaper != null) { %>
+<style type="text/css">
+#blog #blogContainer #bandeau {
+  background:url("<%=wallPaper.getUrl()%>") center no-repeat;
+}
+</style>
+<% } %>
+  
+<% if(styleSheet != null) { %>
+<style type="text/css">
+  <%=styleSheet.getContent()%>
+</style>
+<% } %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
