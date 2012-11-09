@@ -48,6 +48,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Class for unitary and massive import
  *
@@ -324,7 +326,7 @@ public class FileImport {
    */
   private String formatNameFile(String fileName) {
     String name = fileName;
-    if (fileName.lastIndexOf(".") != -1) {
+    if (fileName.lastIndexOf('.') != -1) {
       name = fileName.substring(0, fileName.lastIndexOf('.'));
     }
     return name;
@@ -384,8 +386,8 @@ public class FileImport {
    */
   private String getOfficeKeywords(MetaData metadata, String value) {
     String officeValue = value;
-    if (StringUtil.isDefined(metadata.getKeywords())) {
-      officeValue = metadata.getKeywords();
+    if (metadata.getKeywords()!= null && metadata.getKeywords().length > 0 ) {
+      officeValue = StringUtils.join(metadata.getKeywords(), ';');
     }
     return officeValue;
   }
