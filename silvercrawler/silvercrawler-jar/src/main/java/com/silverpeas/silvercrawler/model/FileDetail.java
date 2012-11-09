@@ -65,7 +65,7 @@ public class FileDetail extends Object implements java.io.Serializable {
 
   public String getFileIcon() {
     String icon = "";
-    int pointIndex = name.lastIndexOf(".");
+    int pointIndex = name.lastIndexOf('.');
     int theLength = name.length();
 
     if ((pointIndex >= 0) && ((pointIndex + 1) < theLength)) {
