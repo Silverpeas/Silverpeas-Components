@@ -188,18 +188,11 @@ else {
 				
 		boolean alreadyIn = (selectedPublications.get(publicationId)!=null );
 		
-		if (!alreadyIn) 
-		{
+		if (!alreadyIn)  {
         	PublicationDetail publicationToAdd = news.getPublicationDetail(publicationId);			
 			selectedPublications.put(publicationId,publicationToAdd);
         	selectedIds.addElement(publicationId);
-        
-        	//int max = (new Integer(settings.getString("pdfDescriptionMaxLength"))).intValue();
-			//if (pubDetail.getDescription().length() < max )
-			//	publicationToAdd.getDescription();
-			//else
-			//	newDescriptions[pubNumber] = pubDetail.getDescription().substring(0, max) + "...";
-		}
+    		}
     	action = "CompilePdf";
     }
 	else if (action.equals("RemovePublication"))

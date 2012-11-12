@@ -424,7 +424,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
         SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
           "root.MSG_GEN_PARAM_VALUE", "result =" + result.size());
 
-        
+        FileDetail file = null;
         for (MatchingIndexEntry matchIndex : result) {
           String type = matchIndex.getObjectType();
           String path = matchIndex.getObjectId();
@@ -434,14 +434,17 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
           if (fileOnServer.exists()) {
             // Récupération des objects indéxés
             // Modification du chemin absolu pour masquer le contexte
+            String absolutePath = path;
             path = path.substring(rootPath.length() + 1);
             if ("LinkedFile".equals(type)) {//File
-              FileDetail file = new FileDetail(matchIndex.getTitle(), path, fileOnServer.length(), false);
+              file =
+                  new FileDetail(matchIndex.getTitle(), path, absolutePath, fileOnServer.length(),
+                      false);
               docs.add(file);
               SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
                 "root.MSG_GEN_PARAM_VALUE", "fichier = " + path);
             } else if ("LinkedDir".equals(type)) {//Directory
-              FileDetail file = new FileDetail(matchIndex.getTitle(), path, 0, true);
+              file = new FileDetail(matchIndex.getTitle(), path, absolutePath, 0, true);
               docs.add(file);
               SilverTrace.info("silverCrawler", "SilverCrawlerSessionController.getResultSearch()",
                 "root.MSG_GEN_PARAM_VALUE", "répertoire = " + path);
@@ -865,5 +868,43 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
       lastReport = null;
     }
 
+  }
+  
+  public boolean checkUserLANAccess(String remoteIPAdress) {
+
+    // Step 1 - Checks user profile
+    String[] profiles = getUserRoles();
+    String bestProfile = ProfileHelper.getBestProfile(profiles);
+    if ((!bestProfile.equals("admin"))
+        && (!bestProfile.equals("publisher"))) {
+      SilverTrace.debug("silverCrawler",
+          "SilverCrawlerSessionController.checkUserLANAccess()",
+          "root.MSG_GEN_PARAM_VALUE",
+          "user is only reader => no LAN access");
+      return false;
+    }
+
+    // Step 2 - Checks component parameter value
+    boolean allowAccessByLAN = StringUtil
+        .getBooleanValue(getComponentParameterValue("allowAccessByLAN"));
+    SilverTrace.debug("silverCrawler",
+        "SilverCrawlerSessionController.checkUserLANAccess()",
+        "root.MSG_GEN_PARAM_VALUE", "allowAccessByLAN = "
+            + allowAccessByLAN);
+    if (!allowAccessByLAN) {
+      return false;
+    }
+
+    // Step 3 - Test remoteIPAddress over LAN subnetwork masks
+    String subnetworkMasks = getComponentParameterValue("LANMasks");
+    boolean ipElligible = IPMaskHelper.isIPElligible(remoteIPAdress,
+        subnetworkMasks);
+    SilverTrace.debug("silverCrawler",
+        "SilverCrawlerSessionController.checkUserLANAccess()",
+        "root.MSG_GEN_PARAM_VALUE", "remoteIP = " + remoteIPAdress
+            + ", masks = " + subnetworkMasks + ", elligible :"
+            + ipElligible);
+
+    return ipElligible;
   }
 }

@@ -64,4 +64,3 @@
     <url-pattern>/ForumsMessage/*</url-pattern>
   </servlet-mapping>
 </web-app>
-

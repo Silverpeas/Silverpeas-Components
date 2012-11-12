@@ -89,6 +89,8 @@
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="com.stratelia.webactiv.util.statistic.model.HistoryByUser"%>
 
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate" %>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplateException" %>
 <%@ page import="com.silverpeas.form.DataRecord" %>
 <%@ page import="com.silverpeas.form.Form" %>
@@ -120,6 +122,6 @@
 
 	String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("newsEdito", spaceId, componentId);
 
-	//R�cup�ration du contexte
+	//Recuperation du contexte
 	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>

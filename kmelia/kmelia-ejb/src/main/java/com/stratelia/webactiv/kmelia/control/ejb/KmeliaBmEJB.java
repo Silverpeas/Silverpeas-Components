@@ -2862,9 +2862,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   @Override
   public void unvalidatePublication(PublicationPK pubPK, String userId,
-      String refusalMotive, int validationType) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.unvalidatePublication()",
-        "root.MSG_GEN_ENTER_METHOD");
+          String refusalMotive, int validationType) {
+    SilverTrace.info("kmelia", "KmeliaBmEJB.unvalidatePublication()", "root.MSG_GEN_ENTER_METHOD");
     try {
       switch (validationType) {
         case VALIDATION_COLLEGIATE:
@@ -2902,10 +2901,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           oneFather = fathers.get(0);
         }
         sendValidationNotification(oneFather, clone, refusalMotive, userId);
+        
+        // remove tasks
+        removeAllTodosForPublication(clone.getPK());
       } else {
-        // send unvalidate publication to basket
-        // sendPublicationToBasket(pubPK);
-
         // change publication's status
         currentPubDetail.setStatus("UnValidate");
 
@@ -2919,19 +2918,19 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         // we have to alert publication's creator
         List<NodePK> fathers = (List<NodePK>) getPublicationFathers(pubPK);
         NodePK oneFather = null;
-        if (fathers != null && fathers.size() > 0) {
+        if (fathers != null && !fathers.isEmpty()) {
           oneFather = fathers.get(0);
         }
-        sendValidationNotification(oneFather, currentPubDetail, refusalMotive,
-            userId);
+        sendValidationNotification(oneFather, currentPubDetail, refusalMotive, userId);
+        
+        //remove tasks
+        removeAllTodosForPublication(currentPubDetail.getPK());
       }
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.unvalidatePublication()",
-          ERROR,
-          "kmelia.EX_IMPOSSIBLE_DE_REFUSER_LA_PUBLICATION", e);
+      throw new KmeliaRuntimeException("KmeliaBmEJB.unvalidatePublication()", ERROR,
+              "kmelia.EX_IMPOSSIBLE_DE_REFUSER_LA_PUBLICATION", e);
     }
-    SilverTrace.info("kmelia", "KmeliaBmEJB.unvalidatePublication()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("kmelia", "KmeliaBmEJB.unvalidatePublication()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   @Override

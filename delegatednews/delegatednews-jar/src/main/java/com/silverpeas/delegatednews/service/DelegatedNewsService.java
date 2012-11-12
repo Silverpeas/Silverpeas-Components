@@ -43,4 +43,5 @@ public interface DelegatedNewsService {
   public void deleteDelegatedNews(int pubId);
   public void notifyDelegatedNewsValid(String pubId, String pubName, String senderId, String senderName, String contributorId, String delegatednewsInstanceId);
   public void notifyDelegatedNewsRefused(String pubId, String pubName, String refusalMotive, String senderId, String senderName, String contributorId, String delegatednewsInstanceId);
+  public DelegatedNews updateOrderDelegatedNews(int pubId, int newsOrder);
 }

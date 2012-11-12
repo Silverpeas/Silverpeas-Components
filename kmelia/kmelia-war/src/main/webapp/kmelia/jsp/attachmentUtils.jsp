@@ -220,5 +220,4 @@ public boolean isUserReader(Document document, int user_id, VersioningUtil versi
           out.println("</TABLE>");
      }
   }
-
 %>

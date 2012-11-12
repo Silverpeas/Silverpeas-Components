@@ -60,7 +60,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
   "/spring-hibernate.xml", "/spring-datasource.xml"})
 public class TestMailProcessor {
 
-  private static int ATT_SIZE = 85922;
+  private static int ATT_SIZE = 84954;
   @Inject
   private MailProcessor processor;
   @Inject
@@ -126,13 +126,13 @@ public class TestMailProcessor {
     assertNotNull(attachment.getPath());
     assertEquals(attachment.getPath(), attachmentPath);
     assertEquals("lemonde.html", attachment.getFileName());
-    assertEquals(85922, message.getAttachmentsSize());
-    assertEquals(85922, attachment.getSize());
+    assertEquals(ATT_SIZE, message.getAttachmentsSize());
+    assertEquals(ATT_SIZE, attachment.getSize());
     assertEquals("lemonde.html", attachment.getFileName());
     File partFile = new File(attachment.getPath());
     assertTrue(partFile.exists());
     assertTrue(partFile.isFile());
-    assertEquals(85922, partFile.length());
+    assertEquals(84954, partFile.length());
     partFile.delete();
   }
 
@@ -338,7 +338,7 @@ public class TestMailProcessor {
     assertEquals(html, message.getBody());
     assertEquals(htmlEmailSummary, message.getSummary());
     assertEquals(1, message.getAttachments().size());
-    assertEquals(85922, message.getAttachmentsSize());
+    assertEquals(ATT_SIZE, message.getAttachmentsSize());
     assertEquals("componentId", message.getComponentId());
     Attachment attach = message.getAttachments().iterator().next();
     assertNotNull(attach.getPath());

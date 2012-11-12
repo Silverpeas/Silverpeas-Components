@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.blog.control.StyleSheet"%>
+<%@page import="com.silverpeas.blog.control.WallPaper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@page import="java.util.GregorianCalendar"%>
@@ -39,9 +41,10 @@ String		blogUrl		= (String) request.getAttribute("Url");
 String		rssURL		= (String) request.getAttribute("RSSUrl");
 List		events		= (List) request.getAttribute("Events");
 String 		dateCal		= (String) request.getAttribute("DateCalendar");
+WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
+StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 
 Date 	   dateCalendar	= new Date(dateCal);
-
 String categoryId = "";
 if (post.getCategory() != null)
 	categoryId = post.getCategory().getNodePK().getId();
@@ -55,19 +58,17 @@ String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEE
 
 boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
 
-if ("admin".equals(profile)) { 
+if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) { 
 	operationPane.addOperation("useless", resource.getString("blog.updatePost"), "EditPost?PostId="+postId);
 	if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
 	  	operationPane.addOperation("useless", resource.getString("blog.draftOutPost"), "DraftOutPost?PostId="+postId);
 	}
 	operationPane.addOperation("useless", resource.getString("blog.deletePost"), "javascript:onClick=deletePost('"+postId+"')");
 	operationPane.addLine();
-	
-	if (!isUserGuest) { 
-	  operationPane.addOperation("useless", resource.getString("GML.notify"), "javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')");
-	}
 }
-
+if (!isUserGuest) { 
+  operationPane.addOperation("useless", resource.getString("GML.notify"), "javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')");
+}
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
@@ -76,6 +77,19 @@ if ("admin".equals(profile)) {
 <head>
 <title></title>
 <view:looknfeel/>
+<% if(wallPaper != null) { %>
+<style type="text/css">
+#blog #blogContainer #bandeau {
+  background:url("<%=wallPaper.getUrl()%>") center no-repeat;
+}
+</style>
+<% } %>
+  
+<% if(styleSheet != null) { %>
+<style type="text/css">
+  <%=styleSheet.getContent()%>
+</style>
+<% } %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">

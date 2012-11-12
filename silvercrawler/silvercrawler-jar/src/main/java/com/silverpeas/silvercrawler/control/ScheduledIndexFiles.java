@@ -78,7 +78,7 @@ public class ScheduledIndexFiles
           RepositoryIndexer repositoryIndexer = new RepositoryIndexer(null,
               instance.getId());
 
-          List profiles = new ArrayList();
+          List<String> profiles = new ArrayList<String>();
           profiles.add("admin");
           String[] adminIds = orga.getUsersIdsByRoleNames(instance.getId(),
               profiles);

@@ -2291,29 +2291,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     sug.setComponentId(getComponentId());
 
     List<String> profiles = new ArrayList<String>();
-    profiles.add("publisher");
-    profiles.add("admin");
+    profiles.add(SilverpeasRole.publisher.toString());
+    profiles.add(SilverpeasRole.admin.toString());
 
     NodeDetail node = getNodeHeader(getCurrentFolderId());
     boolean haveRights = isRightsOnTopicsEnabled() && node.haveRights();
     if (haveRights) {
-      int rightsDependsOn = node.getRightsDependsOn();
-      List<ProfileInst> profileInsts =
-          getAdmin().getProfilesByObject(Integer.toString(rightsDependsOn),
-          ObjectType.NODE.getCode(),
-          getComponentId());
-      if (profileInsts != null) {
-        for (ProfileInst profileInst : profileInsts) {
-          if (profileInst != null) {
-            if (profiles.contains(profileInst.getName())) {
-              sug.addProfileId(profileInst.getId());
-            }
-          }
-        }
-      }
-    } else {
-      sug.setProfileNames((ArrayList<String>) profiles);
+      sug.setObjectId(ObjectType.NODE.getCode() + node.getRightsDependsOn());
     }
+    sug.setProfileNames((ArrayList<String>) profiles);
 
     sel.setExtraParams(sug);
 
@@ -4395,13 +4381,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           getAllVisiblePublicationsByTopic(getCurrentFolderId());
 
       // Store all descendant topicIds of this topic
-      List<String> nodeIDs = new ArrayList<String>();
+      List<NodePK> nodeIDs = new ArrayList<NodePK>();
 
       // Get current topic too
-      nodeIDs.add(getCurrentFolderId());
+      nodeIDs.add(getCurrentFolderPK());
       Collection<NodePK> nodePKs = getNodeBm().getDescendantPKs(getCurrentFolderPK());
       for (NodePK nodePK : nodePKs) {
-        nodeIDs.add(nodePK.getId());
+        nodeIDs.add(nodePK);
       }
 
       List<String> pubIds = new ArrayList<String>();
@@ -4416,7 +4402,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
             // Add the alias which have a link to the targets topics
             for (Alias alias : pubAliases) {
-              if (nodeIDs.contains(alias.getId())) {
+              if (nodeIDs.contains(new NodePK(alias.getId(), alias.getInstanceId()))) {
                 if (!pubIds.contains(pubDetail.getId())) {
                   pubIds.add(pubDetail.getId());
                 }

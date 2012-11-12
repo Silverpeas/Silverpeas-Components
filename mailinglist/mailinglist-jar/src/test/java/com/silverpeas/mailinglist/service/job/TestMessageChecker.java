@@ -64,7 +64,7 @@ public class TestMessageChecker {
 
   @Inject
   MessageChecker messageChecker;
-  private static int ATT_SIZE = 85922;
+  private static int ATT_SIZE = 84954;
   private static final String attachmentPath = BUILD_PATH + SEPARATOR +
       "uploads" + SEPARATOR + "componentId" + SEPARATOR + "{0}" + SEPARATOR + "lemonde.html";
   private static final String textEmailContent =

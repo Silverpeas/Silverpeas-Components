@@ -842,9 +842,6 @@ $(document).ready(
 				// The `root` node 
 				"root" : {
 					"valid_children" : [ "bin", getToValidateFolderId() ],
-					/*"icon" : {
-						"image" : "/static/v.1.0pre/_demo/root.png"
-					},*/
 					// those prevent the functions with the same name to be used on `root` nodes
 					// internally the `before` event is used
 					"start_drag" : false,
@@ -874,6 +871,15 @@ $(document).ready(
 						"image" : "<%=m_context%>/util/icons/ok_alpha.gif"
 					},
 					// those prevent the functions with the same name to be used on `tovalidate` nodes
+					// internally the `before` event is used
+					"start_drag" : false,
+					"move_node" : false,
+					"delete_node" : false,
+					"remove" : false
+				},
+				"folder" : {
+					"valid_children" : [ "folder" ],
+					// those prevent the functions with the same name to be used on `root` nodes
 					// internally the `before` event is used
 					"start_drag" : false,
 					"move_node" : false,

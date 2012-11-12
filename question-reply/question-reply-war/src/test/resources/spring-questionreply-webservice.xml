@@ -41,7 +41,7 @@
     <ctx:exclude-filter type="regex" expression="org.silverpeas.attachment.*Service" />
   </ctx:component-scan>
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory" factory-method="getInstance" />
-  
+
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
   <bean id="questionManagerFactory" class="com.silverpeas.questionReply.control.QuestionManagerFactory"
         factory-method="getFactory"/>
@@ -52,4 +52,3 @@
   <import resource="spring-silverpeas.xml"/>
   <import resource="spring-webservice.xml"/>
 </beans>
-

@@ -28,20 +28,26 @@ import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionController> {
 
@@ -72,10 +78,13 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
   // recherche du profile de l'utilisateur
   public String getFlag(String[] profiles) {
-    String flag = "user";
-    for (int i = 0; i < profiles.length; i++) {
-      if (profiles[i].equals("admin")) {
-        return profiles[i];
+    String flag = SilverpeasRole.user.toString();
+    for (String profile : profiles) {
+      if (SilverpeasRole.admin.isInRole(profile)) {
+        return profile;
+      }
+      if (SilverpeasRole.publisher.isInRole(profile)) {
+        flag = profile;
       }
     }
     return flag;
@@ -97,7 +106,8 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
     String rootDest = "/blog/jsp/";
 
     // paramètres généraux
-    request.setAttribute("Profile", getFlag(blogSC.getUserRoles()));
+    String flag = getFlag(blogSC.getUserRoles());
+    request.setAttribute("Profile", flag);
 
     try {
       if (function.startsWith("Main")) {
@@ -116,7 +126,8 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("Events", events);
 
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
-
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10));
+        
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("NewPost")) {
@@ -228,6 +239,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         Collection<Event> events = getEvents(blogSC, posts);
         request.setAttribute("Events", events);
         request.setAttribute("DateCalendar", beginDate);
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("PostByArchive")) {
@@ -249,6 +261,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         Collection<Event> events = getEvents(blogSC, posts);
         request.setAttribute("Events", events);
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("PostByDay")) {
@@ -267,6 +280,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         Collection<Event> events = getEvents(blogSC, posts);
         request.setAttribute("Events", events);
         request.setAttribute("DateCalendar", beginDate);
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("PreviousMonth")) {
@@ -284,7 +298,10 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("EndDate", blogSC.getCurrentEndDateAsString());
         destination = getDestination("PostByArchive", blogSC, request);
       } else if (function.equals("ViewCategory")) {
-        request.setAttribute("Categories", blogSC.getAllCategories());
+        Collection<NodeDetail> listCategorie = blogSC.getAllCategories();
+        request.setAttribute("Categories", listCategorie);
+        String listNodeJSON = blogSC.getListNodeJSON(listCategorie);
+        request.setAttribute("ListCategoryJSON", listNodeJSON);
         destination = rootDest + "viewCategory.jsp";
       } else if (function.equals("CreateCategory")) {
         // récupération des paramètres
@@ -328,6 +345,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
             "posts =" + posts);
         setCommonParam(blogSC, request);
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
+        request.setAttribute("NbPostDisplayed", Integer.valueOf(10000));
 
         destination = rootDest + "accueil.jsp";
       } else if (function.startsWith("searchResult")) {
@@ -356,7 +374,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         }
       } else if (function.startsWith("portlet")) {
         // récupération des derniers billets
-        request.setAttribute("Posts", blogSC.lastPosts());
+        request.setAttribute("Posts", blogSC.lastValidPosts());
         // appel de la page de portlet
         destination = rootDest + "portlet.jsp";
       } else if (function.equals("AddSubscription")) {
@@ -372,6 +390,25 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         blogSC.draftOutPost(postId);
         request.setAttribute("PostId", postId);
         destination = getDestination("ViewPost", blogSC, request);
+      } else if (function.equals("Customize")) {
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        String removeWallPaperFile = FileUploadUtil.getParameter(items, "removeWallPaperFile");
+        String removeStyleSheetFile = FileUploadUtil.getParameter(items, "removeStyleSheetFile");
+        FileItem fileWallPaper = FileUploadUtil.getFile(items, "wallPaper");
+        FileItem fileStyleSheet = FileUploadUtil.getFile(items, "styleSheet");
+        
+        if (fileWallPaper != null && StringUtil.isDefined(fileWallPaper.getName())) {//Update
+          blogSC.saveWallPaperFile(fileWallPaper);
+        } else if ("yes".equals(removeWallPaperFile)) {//Remove
+          blogSC.removeWallPaperFile();
+        }
+        if (fileStyleSheet != null && StringUtil.isDefined(fileStyleSheet.getName())) {//Update
+          blogSC.saveStyleSheetFile(fileStyleSheet);
+        } else if ("yes".equals(removeStyleSheetFile)) {//Remove
+          blogSC.removeStyleSheetFile();
+        }
+
+        destination = getDestination("Main", blogSC, request);
       } else {
         destination = rootDest + function;
       }
@@ -412,5 +449,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
     request.setAttribute("RSSUrl", blogSC.getRSSUrl());
     request.setAttribute("IsUsePdc", blogSC.isPdcUsed());
     request.setAttribute("IsDraftVisible", blogSC.isDraftVisible());
+    request.setAttribute("WallPaper", blogSC.getWallPaper());
+    request.setAttribute("StyleSheet", blogSC.getStyleSheet());
   }
 }

@@ -831,6 +831,7 @@ function doPagination(index) {
 							function(data){
 								$('#pubList').html(data);
 								activateUserZoom();
+								showPublicationCheckedBoxes();
 							},"html");
 }
 

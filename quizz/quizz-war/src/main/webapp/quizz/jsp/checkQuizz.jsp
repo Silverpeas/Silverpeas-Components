@@ -35,13 +35,14 @@
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="java.text.ParsePosition"%>
 <%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="java.text.ParsePosition"%>
 <%@ page import="java.util.*"%>
 
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
 <%@ page import="javax.ejb.RemoveException,javax.ejb.CreateException,java.sql.SQLException,javax.naming.NamingException,java.rmi.RemoteException,javax.ejb.FinderException"%>
-<%@ page import="javax.ejb.*,javax.naming.*,javax.rmi.PortableRemoteObject"%>
+<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
@@ -82,8 +83,10 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.questionContainer.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.questionContainer.control.*"%>
+<%@ page import="com.stratelia.webactiv.util.question.model.Question"%>
 <%@ page import="com.stratelia.webactiv.util.answer.model.Answer"%>
 <%@ page import="com.stratelia.webactiv.util.score.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.score.control.*"%>
@@ -99,7 +102,7 @@
   ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
   if (quizzScc == null) {
     String sessionTimeout =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+        GeneralPropertiesManager.getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(
         request, response);
     return;

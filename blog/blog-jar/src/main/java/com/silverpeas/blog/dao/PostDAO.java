@@ -129,29 +129,6 @@ public class PostDAO {
     return pubId;
   }
 
-  public static Collection<String> getLastEvents(Connection con, String instanceId, int nbReturned)
-      throws SQLException {
-    // récupérer les "nbReturned" derniers posts par date d'évènement
-    ArrayList<String> listEvents = new ArrayList<String>();
-    String query = "select pubId from SC_Blog_Post where instanceId = ? order by dateEvent DESC";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, instanceId);
-      rs = prepStmt.executeQuery();
-      while (rs.next() && nbReturned > 0) {
-        nbReturned = nbReturned - 1;
-        String pubId = "" + rs.getInt("pubId");
-        listEvents.add(pubId);
-      }
-    } finally {
-      // fermeture
-      DBUtil.close(rs, prepStmt);
-    }
-    return listEvents;
-  }
-
   public static Collection<String> getAllEvents(Connection con, String instanceId)
       throws SQLException {
     // récupérer les derniers posts par date d'évènement
