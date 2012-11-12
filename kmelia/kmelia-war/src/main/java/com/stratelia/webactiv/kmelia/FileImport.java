@@ -69,6 +69,10 @@ public class FileImport {
   private String topicId;
   private File fileUploaded;
   private KmeliaSessionController kmeliaScc;
+  
+  public FileImport(File fileUploaded){
+    this.fileUploaded = fileUploaded;
+  }
 
   public void setVersionType(int versionType) {
     this.versionType = versionType;
@@ -80,10 +84,6 @@ public class FileImport {
 
   public void setTopicId(String topicId) {
     this.topicId = topicId;
-  }
-
-  public void setFileUploaded(File fileUploaded) {
-    this.fileUploaded = fileUploaded;
   }
 
   public void setKmeliaScc(KmeliaSessionController kmeliaScc) {
@@ -237,8 +237,7 @@ public class FileImport {
           attDetail.setPK(new AttachmentPK(componentId));
           // Copy the file on the server and enhance the AttachmentDetail
           SilverTrace.info("kmelia", "FileImport.processImportFile()", "root.MSG_GEN_PARAM_VALUE",
-              "versioningIE.getVersioningPath(componentId) = " + versioningIE.getVersioningPath(
-                  componentId));
+              "versioningIE.getVersioningPath(componentId) = " + filesToProces.getAbsolutePath());
 
           String filePath = filesToProces.getAbsolutePath();
           MetaData metadata = metadataExtractor.extractMetadata(filePath);
@@ -249,13 +248,11 @@ public class FileImport {
           }
           attachments.add(attDetail);
         }
-        List<AttachmentDetail> copiedAttachments = attachmentIE.copyFiles(componentId,
-            attachments, versioningIE.getVersioningPath(componentId));
         SilverTrace.info("kmelia", "FileImport.processImportFile()",
-            "root.MSG_GEN_PARAM_VALUE", "copiedAttachments.size() = " +
-            copiedAttachments);
+            "root.MSG_GEN_PARAM_VALUE", "attachments.size() = " +
+            attachments);
         versioningIE.importDocuments(pubDetailToCreate.getId(), componentId,
-            copiedAttachments, Integer.parseInt(userDetail.getId()),
+            attachments, Integer.parseInt(userDetail.getId()),
             versionType, KmeliaHelper.isIndexable(pubDetailToCreate));
       } else {
         // Add attachments
@@ -324,7 +321,7 @@ public class FileImport {
    */
   private String formatNameFile(String fileName) {
     String name = fileName;
-    if (fileName.lastIndexOf(".") != -1) {
+    if (fileName.lastIndexOf('.') != -1) {
       name = fileName.substring(0, fileName.lastIndexOf('.'));
     }
     return name;

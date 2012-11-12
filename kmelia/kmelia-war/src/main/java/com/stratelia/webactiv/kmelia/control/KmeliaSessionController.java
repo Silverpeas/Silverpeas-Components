@@ -2587,8 +2587,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         + " fileType=" + fileType + " importMode=" + importMode + " draftMode=" + draftMode
         + " versionType=" + versionType);
     List<PublicationDetail> publicationDetails = null;
-    FileImport fileImport = new FileImport();
-    fileImport.setFileUploaded(fileUploaded);
+    FileImport fileImport = new FileImport(fileUploaded);
     fileImport.setTopicId(topicId);
     if (isDraftEnabled() && isPDCClassifyingMandatory()) {
       // classifying on PDC is mandatory, set publication in draft mode
