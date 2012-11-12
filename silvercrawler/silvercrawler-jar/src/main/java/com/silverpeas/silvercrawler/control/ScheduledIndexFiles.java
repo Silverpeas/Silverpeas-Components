@@ -40,13 +40,14 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.search.indexEngine.model.RepositoryIndexer;
+import org.silverpeas.search.indexEngine.model.RepositoryIndexer.IndexerAction;
 
 public class ScheduledIndexFiles
     implements SchedulerEventListener {
 
   public static final String SILVERCRAWLERENGINE_JOB_NAME = "SilverCrawlerEngineJob";
   private ResourceLocator resources = new ResourceLocator(
-      "com.silverpeas.silvercrawler.settings.silverCrawlerSettings", "");
+      "org.silverpeas.silvercrawler.settings.silverCrawlerSettings", "");
 
   public void initialize() {
     try {
@@ -95,7 +96,7 @@ public class ScheduledIndexFiles
           }
           Date dateIndex = new Date();
           repositoryIndexer.pathIndexer(pathRepository, dateIndex.toString(),
-              adminId, "add");
+              adminId, IndexerAction.add);
         }
       }
     } catch (Exception e) {
