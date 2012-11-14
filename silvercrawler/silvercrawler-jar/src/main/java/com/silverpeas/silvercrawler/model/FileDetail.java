@@ -64,17 +64,8 @@ public class FileDetail extends Object implements java.io.Serializable {
   }
 
   public String getFileIcon() {
-    String icon = "";
-    int pointIndex = name.lastIndexOf(".");
-    int theLength = name.length();
-
-    if ((pointIndex >= 0) && ((pointIndex + 1) < theLength)) {
-      String fileType = name.substring(pointIndex + 1, theLength);
-      icon = FileRepositoryManager.getFileIcon(true, fileType);
-    } else {
-      icon = FileRepositoryManager.getFileIcon("html");
-    }
-    return icon;
+    String fileType = FileRepositoryManager.getFileExtension(name);
+    return FileRepositoryManager.getFileIcon(fileType);
   }
 
   public String getFileURL(String userId, String componentId) {
@@ -110,8 +101,6 @@ public class FileDetail extends Object implements java.io.Serializable {
 	  if (fullPath.startsWith("/")) {
 		  return "file://"+fullPath;
 	  }
-	  else {
-		  return "file:///"+fullPath;
-	  }
+	  return "file:///"+fullPath;
   }
 }
