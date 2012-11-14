@@ -36,6 +36,8 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 /**
  *
  * @author ehugonnet
@@ -44,10 +46,12 @@ public class QuestionReplyExport {
 
   private File file;
   private ResourcesWrapper resource;
+  private UserDetail currentUser;
 
-  public QuestionReplyExport(ResourcesWrapper resource, File file) {
+  public QuestionReplyExport(UserDetail currentUser, ResourcesWrapper resource, File file) {
     this.file = file;
     this.resource = resource;
+    this.currentUser = currentUser;
   }
 
   public void exportQuestion(Question question, StringBuilder sb, QuestionReplySessionController scc)
@@ -144,7 +148,7 @@ public class QuestionReplyExport {
     sb.append(reply.readCurrentWysiwygContent());
     sb.append("</td>\n");
     // récupération des fichiers joints : copie de ces fichiers dans le dossier "files"
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(currentUser);
     Collection<AttachmentDetail> attachments = null;
     try {
       String filePath = file.getParentFile().getPath() + File.separator + "files";
@@ -156,7 +160,7 @@ public class QuestionReplyExport {
           "root.EX_CANT_GET_ATTACHMENTS", ex);
     }
 
-    if (attachments != null && attachments.size() > 0) {
+    if (attachments != null && ! attachments.isEmpty()) {
       // les fichiers joints : création du lien dans la page
       sb.append("<td valign=\"top\" align=\"left\">\n");
       sb.append("<a name=\"attachments\"></a>\n");

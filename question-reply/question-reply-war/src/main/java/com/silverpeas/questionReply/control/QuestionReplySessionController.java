@@ -967,7 +967,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     StringBuilder sb = new StringBuilder();
     sb.append("<table width=\"100%\">\n");
     Collection<NodeDetail> categories = getAllCategories();
-    QuestionReplyExport exporter = new QuestionReplyExport(resource, file);
+    QuestionReplyExport exporter = new QuestionReplyExport(getUserDetail(), resource, file);
     for (NodeDetail category : categories) {
       String categoryId = java.lang.Integer.toString(category.getId());
       exportCategory(exporter, category, categoryId, sb);

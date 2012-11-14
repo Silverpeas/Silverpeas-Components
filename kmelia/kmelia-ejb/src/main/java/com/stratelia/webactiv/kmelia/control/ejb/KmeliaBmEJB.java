@@ -4498,46 +4498,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return publicationImport.createTopic(name, description);
   }
 
-  /**
-   * Case standard -> LogicalName take from file name
-   *
-   * @param publicationId
-   * @param componentId
-   * @param userId
-   * @param filePath
-   * @param title
-   * @param info
-   * @param creationDate
-   * @throws RemoteException
-   */
-  @Override
-  public void importAttachment(String publicationId, String componentId, String userId,
-      String filePath, String title, String info, Date creationDate) throws RemoteException {
-    importAttachment(publicationId, componentId, userId, filePath, title, info, creationDate, null);
-  }
-
-  /**
-   * In case of move -> can force the logicalName
-   *
-   * @param publicationId
-   * @param componentId
-   * @param userId
-   * @param filePath
-   * @param title
-   * @param info
-   * @param creationDate
-   * @param logicalName
-   * @throws RemoteException
-   */
-  @Override
-  public void importAttachment(String publicationId, String componentId, String userId,
-      String filePath, String title, String info, Date creationDate, String logicalName)
-      throws RemoteException {
-    PublicationImport publicationImport = new PublicationImport(this, componentId);
-    publicationImport.importAttachment(publicationId, userId, filePath, title, info, creationDate,
-        logicalName);
-  }
-
   @Override
   public void deleteAttachment(AttachmentDetail attachmentDetail) throws RemoteException {
     com.stratelia.webactiv.util.attachment.control.AttachmentController.deleteAttachment(

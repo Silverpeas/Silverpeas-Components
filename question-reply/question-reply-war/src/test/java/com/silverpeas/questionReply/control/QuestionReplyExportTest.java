@@ -63,7 +63,7 @@ public class QuestionReplyExportTest {
     QuestionReplySessionController userScc = mock(QuestionReplySessionController.class);
     when(userScc.getUserRole()).thenReturn(SilverpeasRole.user);
     when(userScc.getUserId()).thenReturn("20");
-    QuestionReplyExport instance = new QuestionReplyExport(null, null);
+    QuestionReplyExport instance = new QuestionReplyExport(null, null, null);
     assertTrue("Admin should see everything", instance.isReplyVisible(question, privateReply,
         adminScc));
     assertTrue("Admin should see everything", instance.isReplyVisible(question, publicReply,

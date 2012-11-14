@@ -59,7 +59,7 @@ public class FileImport {
 
   private AttachmentImportExport attachmentImportExport;
   private VersioningImportExport versioningImportExport;
-  private MetadataExtractor metadataExtractor;
+  private final MetadataExtractor metadataExtractor = new MetadataExtractor();
   /**
    * Private or Public (ie DocumentVersion)
    */
@@ -72,8 +72,11 @@ public class FileImport {
   private File fileUploaded;
   private KmeliaSessionController kmeliaScc;
   
-  public FileImport(File fileUploaded){
-    this.fileUploaded = fileUploaded;
+  public FileImport(KmeliaSessionController kmeliaScc, File uploadedFile) {
+    this.kmeliaScc = kmeliaScc;
+    attachmentImportExport = new AttachmentImportExport(kmeliaScc.getUserDetail());
+    versioningImportExport = new VersioningImportExport(kmeliaScc.getUserDetail());
+    this.fileUploaded = uploadedFile;
   }
 
   public void setVersionType(int versionType) {
@@ -88,15 +91,6 @@ public class FileImport {
     this.topicId = topicId;
   }
 
-  public void setKmeliaScc(KmeliaSessionController kmeliaScc) {
-    this.kmeliaScc = kmeliaScc;
-  }
-
-  public FileImport() {
-    attachmentImportExport = new AttachmentImportExport();
-    versioningImportExport = new VersioningImportExport();
-    metadataExtractor = new MetadataExtractor();
-  }
 
   /**
    * Import a single file for a unique publication

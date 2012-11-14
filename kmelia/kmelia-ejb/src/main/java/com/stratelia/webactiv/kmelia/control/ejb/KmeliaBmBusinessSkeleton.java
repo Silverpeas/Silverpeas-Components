@@ -773,14 +773,6 @@ public interface KmeliaBmBusinessSkeleton {
   public String createTopic(String componentId, String topicId, String spaceId,
       String userId, String name, String description) throws RemoteException;
 
-  public void importAttachment(String publicationId, String componentId,
-      String userId, String filePath, String title, String info,
-      Date creationDate) throws RemoteException;
-
-  public void importAttachment(String publicationId, String componentId,
-      String userId, String filePath, String title, String info,
-      Date creationDate, String logicalName) throws RemoteException;
-
   public void deleteAttachment(AttachmentDetail attachmentDetail)
       throws RemoteException;
 
