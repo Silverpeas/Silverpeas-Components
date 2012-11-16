@@ -191,6 +191,9 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 public class KmeliaSessionController extends AbstractComponentSessionController implements
     ExportFileNameProducer {
 
@@ -361,8 +364,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public ResourceLocator getPublicationSettings() {
     if (publicationSettings == null) {
       publicationSettings = new ResourceLocator(
-          "org.silverpeas.util.publication.publicationSettings",
-          getLanguage());
+          "org.silverpeas.util.publication.publicationSettings", getLanguage());
     }
     return publicationSettings;
   }
@@ -1129,22 +1131,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       }
     } catch (PublicationTemplateException e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.removeXMLContentOfPublication()",
-          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML",
-          e);
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
     } catch (FormException e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.removeXMLContentOfPublication()",
-          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML",
-          e);
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
     }
   }
 
   private static boolean isInteger(String id) {
-    try {
-      Integer.parseInt(id);
-      return true;
-    } catch (NumberFormatException e) {
-      return false;
-    }
+    return StringUtil.isInteger(id);
   }
 
   public synchronized void addPublicationToTopic(String pubId, String fatherId)
@@ -1166,16 +1161,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized void createInfoModelDetail(String pubId, String modelId, InfoDetail infos)
       throws RemoteException {
-    String currentPubId = pubId;
-    currentPubId = getSessionPubliOrClone().getDetail().getPK().getId();
+    String currentPubId = getSessionPubliOrClone().getDetail().getPK().getId();
     if (isCloneNeeded()) {
       currentPubId = clonePublication();
     }
     if (getSessionClone() != null) {
       ModelPK modelPK = new ModelPK(modelId, getPublicationPK(currentPubId));
       getKmeliaBm().getPublicationBm().createInfoModelDetail(getPublicationPK(currentPubId),
-          modelPK,
-          infos);
+          modelPK, infos);
     } else {
       getKmeliaBm().createInfoModelDetail(getPublicationPK(currentPubId), modelId, infos);
     }
@@ -1848,13 +1841,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * KMELIA - Copier/coller des documents versionnés
    * **************************************************************************************
    */
+  /**
+   * Copy documents from a publication to another.
+   * @param pubPKFrom
+   * @param pubId
+   * @throws RemoteException 
+   */
   public void pasteDocuments(PublicationPK pubPKFrom, String pubId) throws RemoteException {
     SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "pubPKFrom = " + pubPKFrom.toString() + ", pubId = " + pubId);
-
+        "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + pubPKFrom.toString() + ", pubId = " + pubId);
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKey(pubPKFrom, getCurrentLanguage());
     // paste versioning documents attached to publication
-    List<Document> documents = getVersioningBm().getDocuments(new ForeignPK(pubPKFrom));
 
     SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
         "root.MSG_GEN_PARAM_VALUE", documents.size() + " to paste");
@@ -1862,72 +1860,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (documents.isEmpty()) {
       return;
     }
-
-    VersioningUtil versioningUtil = new VersioningUtil();
-    String pathFrom = null; // where the original files are
-    String pathTo = null; // where the copied files will be
-
     ForeignPK pubPK = new ForeignPK(pubId, getComponentId());
-
-    // change the list of workers
-    List<Worker> workers = getWorkers();
-
     // paste each document
-    for (Document document : documents) {
-      SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
-          "root.MSG_GEN_PARAM_VALUE", "document name = " + document.getName());
-
-      // retrieve all versions of the document (from last version to first version)
-      List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(document.getPk());
-
-      // sort versions (from first version to last version)
-      Collections.reverse(versions);
-
-      // retrieve the initial version of the document
-      DocumentVersion version = versions.get(0);
-
-      if (pathFrom == null) {
-        pathFrom = versioningUtil.createPath(document.getPk().getSpaceId(),
-            document.getPk().getInstanceId(), null);
-      }
-
-      // change some data to paste
-      document.setPk(new DocumentPK(-1, getSpaceId(), getComponentId()));
-      document.setForeignKey(pubPK);
-      document.setStatus(Document.STATUS_CHECKINED);
-      document.setLastCheckOutDate(new Date());
-      document.setWorkList((ArrayList<Worker>) workers);
-
-      if (pathTo == null) {
-        pathTo = versioningUtil.createPath(getSpaceId(), getComponentId(), null);
-      }
-
-      String newVersionFile = null;
-      if (version != null) {
-        // paste file on fileserver
-        newVersionFile = pasteVersionFile(version.getPhysicalName(), pathFrom, pathTo);
-        version.setPhysicalName(newVersionFile);
-        version.setInstanceId(getComponentId());
-      }
-
-      // create the document with its first version
-      DocumentPK documentPK = getVersioningBm().createDocument(document, version);
-      document.setPk(documentPK);
-
-      for (int v = 1; v < versions.size(); v++) {
-        version = versions.get(v);
-        version.setDocumentPK(documentPK);
-        version.setInstanceId(getComponentId());
-        SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
-            "root.MSG_GEN_PARAM_VALUE", "paste version = " + version.getLogicalName());
-
-        // paste file on fileserver
-        newVersionFile = pasteVersionFile(version.getPhysicalName(), pathFrom, pathTo);
-        version.setPhysicalName(newVersionFile);
-
-        // paste data
-        getVersioningBm().addVersion(version);
-      }
+    for (SimpleDocument original : documents) {
+      AttachmentServiceFactory.getAttachmentService().copyDocument(original, pubPK);
     }
   }
 

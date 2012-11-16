@@ -27,7 +27,7 @@
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@include file="checkKmelia.jsp" %>
