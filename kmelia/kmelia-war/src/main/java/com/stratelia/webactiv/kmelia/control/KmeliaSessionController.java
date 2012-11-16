@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
+import java.io.ByteArrayInputStream;
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_FOR_USER;
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_LANGUAGE;
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_TOPIC;
@@ -31,6 +32,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PipedInputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -190,9 +192,14 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 public class KmeliaSessionController extends AbstractComponentSessionController implements
     ExportFileNameProducer {
@@ -1806,19 +1813,23 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public Map<String, String> pasteFiles(PublicationPK pubPKFrom, String pubId)
-      throws RemoteException {
+      throws RemoteException, IOException {
     Map<String, String> fileIds = new HashMap<String, String>();
+    String componentId = pubPKFrom.getInstanceId();
 
-    boolean fromCompoVersion =
-        "yes".equals(getOrganizationController().getComponentParameterValue(
-        pubPKFrom.getInstanceId(), "versionControl"));
+    boolean fromCompoVersion = StringUtil.getBooleanValue(getOrganizationController().
+        getComponentParameterValue(componentId, "versionControl"));
 
     if (!fromCompoVersion && !isVersionControlled()) {
       // attachments --> attachments
       // paste attachments
-      fileIds =
-          AttachmentController.copyAttachmentByCustomerPKAndContext(pubPKFrom,
-          getPublicationPK(pubId), "Images");
+      List<SimpleDocument> origins = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(pubPKFrom, DocumentType.attachment, getLanguage());
+      for (SimpleDocument origin : origins) {
+        SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
+            origin, new ForeignPK(pubId, componentId));
+        fileIds.put(origin.getId(), copyPk.getId());
+      }
     } else if (fromCompoVersion && !isVersionControlled()) {
       // versioning --> attachments
       // Last public versions becomes the new attachment
@@ -1843,9 +1854,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   /**
    * Copy documents from a publication to another.
+   *
    * @param pubPKFrom
    * @param pubId
-   * @throws RemoteException 
+   * @throws RemoteException
    */
   public void pasteDocuments(PublicationPK pubPKFrom, String pubId) throws RemoteException {
     SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
@@ -1889,14 +1901,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return workers;
   }
 
-  public void pasteDocumentsAsAttachments(PublicationPK pubPKFrom, String pubId)
-      throws RemoteException {
+  public void pasteDocumentsAsAttachments(PublicationPK pubPKFrom, String pubId) throws
+      RemoteException, IOException {
     SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocumentsAsAttachments()",
         "root.MSG_GEN_ENTER_METHOD",
         "pubPKFrom = " + pubPKFrom.toString() + ", pubId = " + pubId);
 
     // paste versioning documents attached to publication
-    List<Document> documents = getVersioningBm().getDocuments(new ForeignPK(pubPKFrom));
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKeyAndType(pubPKFrom, DocumentType.attachment, getLanguage());
 
     SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocumentsAsAttachments()",
         "root.MSG_GEN_PARAM_VALUE", documents.size() + " documents to paste");
@@ -1905,46 +1918,53 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       return;
     }
 
-    VersioningUtil versioningUtil = new VersioningUtil();
-    String pathFrom = null; // where the original files are
-    String pathTo = null; // where the copied files will be
-
     // paste each document
-    for (Document document : documents) {
-
+    for (SimpleDocument document : documents) {
       SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocumentsAsAttachments()",
-          "root.MSG_GEN_PARAM_VALUE", "document name = " + document.getName());
-
+          "root.MSG_GEN_PARAM_VALUE", "document name = " + document.getTitle());
       // retrieve last public versions of the document
-      DocumentVersion version = getVersioningBm().getLastPublicDocumentVersion(document.getPk());
-
-      if (pathFrom == null) {
-        pathFrom =
-            versioningUtil.createPath(document.getPk().getSpaceId(),
-            document.getPk().getInstanceId(), null);
-      }
-
-      if (pathTo == null) {
-        pathTo = AttachmentController.createPath(getComponentId(), "Images");
-      }
-
-      String newVersionFile = null;
-      if (version != null) {
-        // paste file on fileserver
-        newVersionFile = pasteVersionFile(version.getPhysicalName(), pathFrom, pathTo);
-
-        if (newVersionFile != null) {
-          // create the attachment in DB
-          // Do not index it cause made by the updatePublication call later
-          AttachmentDetail attachment =
-              new AttachmentDetail(new AttachmentPK("unknown", getComponentId()),
-              newVersionFile,
-              version.getLogicalName(), "", version.getMimeType(), version.getSize(),
-              "Images",
-              new Date(), getPublicationPK(pubId), document.getName(),
-              document.getDescription(),
-              0);
-          AttachmentController.createAttachment(attachment, false);
+      SimpleDocument lastVersion = document.getLastPublicVersion();
+      if (lastVersion != null) {
+        SimpleDocument newVersion = new SimpleDocument(new SimpleDocumentPK(null, getComponentId()),
+            pubId, lastVersion.getOrder(), false, lastVersion.getEditedBy(),
+            new SimpleAttachment(lastVersion.getFilename(),
+            lastVersion.getLanguage(), lastVersion.getTitle(), lastVersion.getDescription(),
+            lastVersion.getSize(), lastVersion.getContentType(), getUserId(), new Date(),
+            lastVersion.getXmlFormId()));
+        
+        ByteArrayInputStream in = null;
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        try {
+          AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, lastVersion.getPk(),
+              getLanguage());
+          in = new ByteArrayInputStream(buffer.toByteArray());
+          newVersion = AttachmentServiceFactory.getAttachmentService().createAttachment(newVersion,
+              in, false);
+        } finally {
+          IOUtils.closeQuietly(buffer);
+          IOUtils.closeQuietly(in);
+        }
+        for (String lang : I18NHelper.getAllSupportedLanguages()) {
+          if (!lang.equalsIgnoreCase(getLanguage())) {
+            buffer = new ByteArrayOutputStream();   
+            try {
+              AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, lastVersion.
+                  getPk(), lang);
+              in = new ByteArrayInputStream(buffer.toByteArray());
+              lastVersion = AttachmentServiceFactory.getAttachmentService().
+                  searchDocumentById(document.getPk(), lang).getLastPublicVersion();
+              newVersion = new SimpleDocument(newVersion.getPk(), pubId, lastVersion.getOrder(),
+                  false, lastVersion.getEditedBy(), new SimpleAttachment(lastVersion.getFilename(),
+                  lastVersion.getLanguage(), lastVersion.getTitle(), lastVersion.getDescription(),
+                  lastVersion.getSize(), lastVersion.getContentType(), getUserId(), new Date(),
+                  lastVersion.getXmlFormId()));
+              AttachmentServiceFactory.getAttachmentService().updateAttachment(newVersion, in, 
+                  false, true);
+            } finally {
+              IOUtils.closeQuietly(buffer);
+              IOUtils.closeQuietly(in);
+            }
+          }
         }
       }
     }
@@ -3562,7 +3582,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       PublicationPK fromPubPK, ForeignPK toForeignPK, PublicationPK toPubPK,
       String imagesSubDirectory, String thumbnailsSubDirectory, String toAbsolutePath,
       String fromAbsolutePath)
-      throws RemoteException, ThumbnailException, PublicationTemplateException, PdcException {
+      throws RemoteException, ThumbnailException, PublicationTemplateException, PdcException, IOException {
 
     boolean indexIt = false;
 

@@ -1557,6 +1557,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
   }
   
+  @Override
   public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to, String userId)
       throws RemoteException {
     PublicationDetail pub = getPublicationDetail(pubPK);
