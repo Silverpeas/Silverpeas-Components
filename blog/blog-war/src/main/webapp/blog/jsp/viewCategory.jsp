@@ -182,14 +182,13 @@ function sortNode(updatedNodeJSON)
 <br clear="all"/>
 <%  
 	ArrayPane arrayPane = gef.getArrayPane("categoryList", "ViewCategory", request, session);
+	arrayPane.setSortable(false);
 	arrayPane.setXHTML(true);
 	arrayPane.setSortableLines(true);
-	ArrayColumn columnIcon = arrayPane.addArrayColumn("&nbsp;");
-    columnIcon.setSortable(false);
+	arrayPane.addArrayColumn("&nbsp;");
 	arrayPane.addArrayColumn(resource.getString("GML.title"));
 	arrayPane.addArrayColumn(resource.getString("GML.description"));
-	ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("GML.operation"));
-	columnOp.setSortable(false);
+	arrayPane.addArrayColumn(resource.getString("GML.operation"));
 		
 	// remplissage de l'ArrayPane avec les cat�gories
 	for (NodeDetail uneCategory : categories) {
