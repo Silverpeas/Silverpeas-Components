@@ -124,8 +124,8 @@
 
       var currentGallery = {
         id: "<%= albumId%>",
-        name: "<%= albumName%>",
-        description: "<%= albumDescription%>"
+        name: "<%= EncodeHelper.javaStringToJsString(albumName)%>",
+        description: "<%= EncodeHelper.javaStringToJsString(albumDescription)%>"
       };
 
       $(document).ready(function(){
