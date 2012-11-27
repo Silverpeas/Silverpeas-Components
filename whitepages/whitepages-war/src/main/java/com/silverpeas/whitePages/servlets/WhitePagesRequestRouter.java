@@ -415,7 +415,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
         }
       }
 
-      else if (function.equals("searchResult") || function.equals("Consult")) {
+      else if (function.equals("searchResult") || function.equals("consultIdentity")) {
         request.setAttribute("userCardId", request.getParameter("Id"));
         destination = getDestination("consultCard", scc, request);
       }
