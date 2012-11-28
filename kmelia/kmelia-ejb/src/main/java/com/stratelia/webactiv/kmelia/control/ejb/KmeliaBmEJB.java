@@ -4781,7 +4781,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
 
       // adding special folder "trash"
-      if (isUserCanWrite(instanceId, userId)) {
+      if (isUserCanWrite(instanceId, userId) && trash != null) {
         children.add(trash);
       }
 

@@ -25,6 +25,7 @@ package com.silverpeas.blog.control;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -35,9 +36,11 @@ import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.ejb.CreateException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.silverpeas.search.SearchEngineFactory;
 
 import com.silverpeas.blog.BlogContentManager;
@@ -76,9 +79,12 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodeOrderComparator;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
@@ -87,8 +93,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 
 /**
- * Default implementation of the services provided by the Blog component. It is managed by the underlying IoC container.
- * At initialization by the IoC container, it registers itself among different services for which it is interested.
+ * Default implementation of the services provided by the Blog component. It is managed by the
+ * underlying IoC container. At initialization by the IoC container, it registers itself among
+ * different services for which it is interested.
  */
 @Named("blogService")
 public class DefaultBlogService implements BlogService {
@@ -97,15 +104,14 @@ public class DefaultBlogService implements BlogService {
   private static final String MESSAGES_PATH = "org.silverpeas.blog.multilang.blogBundle";
   private static final String SETTINGS_PATH = "org.silverpeas.blog.settings.blogSettings";
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
-
   @Inject
   private CommentUserNotificationService commentUserNotificationService;
-
   @Inject
   private CommentService commentService;
 
   /**
-   * Initializes this service by registering itself among Silverpeas core services as interested by events.
+   * Initializes this service by registering itself among Silverpeas core services as interested by
+   * events.
    */
   @PostConstruct
   public void initialize() {
@@ -113,8 +119,8 @@ public class DefaultBlogService implements BlogService {
   }
 
   /**
-   * Releases all the resources required by this service. For instance, it unregisters from the Silverpeas core
-   * services.
+   * Releases all the resources required by this service. For instance, it unregisters from the
+   * Silverpeas core services.
    */
   @PreDestroy
   public void release() {
@@ -148,7 +154,7 @@ public class DefaultBlogService implements BlogService {
     Connection con = openConnection();
     try {
       return PostDAO.getDateEvent(con, pubId);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new BlogRuntimeException(getClass().getSimpleName() + ".getDateEvent()",
           SilverpeasRuntimeException.ERROR, "post.MSG_POST_NOT_CREATE", e);
     } finally {
@@ -160,7 +166,7 @@ public class DefaultBlogService implements BlogService {
   public String createPost(PostDetail post) {
     return createPost(post, null);
   }
-  
+
   @Override
   public String createPost(final PostDetail post, PdcClassification classification) {
     Connection con = openConnection();
@@ -173,15 +179,15 @@ public class DefaultBlogService implements BlogService {
         setCategory(pk, post.getCategoryId());
       }
       createSilverContent(con, pub, pub.getCreatorId());
-      
+
       // classify the publication on the PdC if its classification is defined
       if (classification != null && !classification.isEmpty()) {
         PdcClassificationService service = PdcServiceFactory.getFactory().
-                getPdcClassificationService();
+            getPdcClassificationService();
         classification.ofContent(pk.getId());
         service.classifyContent(pub, classification);
       }
-      
+
       return pk.getId();
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.createPost()", SilverpeasRuntimeException.ERROR,
@@ -192,7 +198,8 @@ public class DefaultBlogService implements BlogService {
   }
 
   @Override
-  public void sendSubscriptionsNotification(final NodePK fatherPK, final PostDetail post, final Comment comment,
+  public void sendSubscriptionsNotification(final NodePK fatherPK, final PostDetail post,
+      final Comment comment,
       final String type, final String senderId) {
     // send email alerts
     try {
@@ -206,21 +213,22 @@ public class DefaultBlogService implements BlogService {
           if (orgaController.isComponentAvailable(fatherPK.getInstanceId(), userId)) {
             if (!node.haveRights()
                 || orgaController.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
-                    fatherPK.getInstanceId(), userId)) {
+                fatherPK.getInstanceId(), userId)) {
               newSubscribers.add(userId);
             }
           }
         }
 
         if (!newSubscribers.isEmpty()) {
-          UserNotificationHelper.buildAndSend(new BlogUserNotification(fatherPK.getInstanceId(), post, comment, type,
+          UserNotificationHelper.buildAndSend(new BlogUserNotification(fatherPK.getInstanceId(),
+              post, comment, type,
               senderId, newSubscribers));
         }
       }
-    } catch (Exception e) {
+    } catch (RemoteException e) {
       SilverTrace.warn("blog", "BlogBmEJB.sendSubscriptionsNotification()",
           "blog.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = " + fatherPK.getId()
-              + ", pubId = " + post.getPublication().getPK().getId(), e);
+          + ", pubId = " + post.getPublication().getPK().getId(), e);
     }
   }
 
@@ -249,7 +257,10 @@ public class DefaultBlogService implements BlogService {
             getInstanceId()), post, null, "update", pub.getUpdaterId());
       }
 
-    } catch (Exception e) {
+    } catch (RemoteException e) {
+      throw new BlogRuntimeException("BlogBmEJB.updatePost()", SilverpeasRuntimeException.ERROR,
+          "post.MSG_POST_NOT_UPDATE", e);
+    } catch (SQLException e) {
       throw new BlogRuntimeException("BlogBmEJB.updatePost()", SilverpeasRuntimeException.ERROR,
           "post.MSG_POST_NOT_UPDATE", e);
     } finally {
@@ -328,7 +339,8 @@ public class DefaultBlogService implements BlogService {
         cat = getCategory(nodePK);
       }
       // rechercher le nombre de commentaire
-      CommentPK foreign_pk = new CommentPK(publication.getPK().getId(), null, publication.getPK().getInstanceId());
+      CommentPK foreign_pk = new CommentPK(publication.getPK().getId(), null, publication.getPK().
+          getInstanceId());
       List<Comment> comments =
           getCommentService().getAllCommentsOnPublication(PostDetail.getResourceType(), foreign_pk);
 
@@ -377,7 +389,7 @@ public class DefaultBlogService implements BlogService {
       closeConnection(con);
     }
   }
-  
+
   @Override
   public Collection<PostDetail> getAllValidPosts(String instanceId, int nbReturned) {
     PublicationPK pubPK = new PublicationPK("useless", instanceId);
@@ -391,17 +403,17 @@ public class DefaultBlogService implements BlogService {
           getPublicationBm().getAllPublications(pubPK);
       for (String pubId : lastEvents) {
         for (PublicationDetail publication : publications) {
-          if (publication.getPK().getId().equals(pubId) && 
-              PublicationDetail.VALID.equals(publication.getStatus()) &&
-              nbReturned > 0) {
-            nbReturned --;
+          if (publication.getPK().getId().equals(pubId) && PublicationDetail.VALID.
+              equals(publication.getStatus()) && nbReturned > 0) {
+            nbReturned--;
             posts.add(getPost(publication));
           }
         }
       }
       return posts;
     } catch (Exception e) {
-      throw new BlogRuntimeException("BlogBmEJB.getAllValidPosts()", SilverpeasRuntimeException.ERROR,
+      throw new BlogRuntimeException("BlogBmEJB.getAllValidPosts()",
+          SilverpeasRuntimeException.ERROR,
           "post.MSG_POST_NOT_CREATE", e);
     } finally {
       closeConnection(con);
@@ -506,7 +518,8 @@ public class DefaultBlogService implements BlogService {
         + query.getQuery());
     Connection con = openConnection();
     try {
-      List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).getEntries();
+      List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).
+          getEntries();
       SilverTrace.info("blog", "BlogBmEJB.getResultSearch()", "root.MSG_GEN_PARAM_VALUE",
           "result =" + result.size());
 
@@ -581,9 +594,8 @@ public class DefaultBlogService implements BlogService {
   @Override
   public Category getCategory(NodePK pk) {
     try {
-      Category category = new Category(getNodeBm().getDetail(pk));
-      return category;
-    } catch (Exception e) {
+      return new Category(getNodeBm().getDetail(pk));
+    } catch (RemoteException e) {
       throw new BlogRuntimeException("BlogBmEJB.getCategory()", SilverpeasRuntimeException.ERROR,
           "post.MSG_CATEGORY_NOT_EXIST", e);
     }
@@ -593,8 +605,10 @@ public class DefaultBlogService implements BlogService {
   public Collection<NodeDetail> getAllCategories(String instanceId) {
     try {
       NodePK nodePK = new NodePK("0", instanceId);
-      return getNodeBm().getChildrenDetails(nodePK, "orderNumber asc, nodeName");
-    } catch (Exception e) {
+      List<NodeDetail> result = new ArrayList<NodeDetail>(getNodeBm().getChildrenDetails(nodePK));
+      Collections.sort(result, new NodeOrderComparator());
+      return result;
+    } catch (RemoteException e) {
       throw new BlogRuntimeException("BlogBmEJB.getAllCategories()",
           SilverpeasRuntimeException.ERROR, "post.MSG_CATEGORIES_NOT_EXIST", e);
     }
@@ -679,9 +693,8 @@ public class DefaultBlogService implements BlogService {
   }
 
   private void indexTopics(NodePK nodePK) {
-    Collection<NodeDetail> nodes = null;
     try {
-      nodes = getNodeBm().getAllNodes(nodePK);
+       Collection<NodeDetail> nodes  = getNodeBm().getAllNodes(nodePK);
       if (nodes != null) {
         for (NodeDetail node : nodes) {
           if (!node.getNodePK().isRoot() && !node.getNodePK().isTrash()) {
@@ -689,7 +702,7 @@ public class DefaultBlogService implements BlogService {
           }
         }
       }
-    } catch (Exception e) {
+    } catch (RemoteException e) {
       throw new BlogRuntimeException("BlogBmEJB.indexTopics()", SilverpeasRuntimeException.ERROR,
           "kmelia.EX_IMPOSSIBLE_DINDEXER_LES_THEMES", e);
     }
@@ -775,7 +788,7 @@ public class DefaultBlogService implements BlogService {
         "pubId = " + pubDetail.getPK().getId());
     try {
       return getBlogContentManager().createSilverContent(con, pubDetail, creatorId);
-    } catch (Exception e) {
+    } catch (ContentManagerException e) {
       throw new BlogRuntimeException("BlogBmEJB.createSilverContent()",
           SilverpeasRuntimeException.ERROR, "blog.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
     }
@@ -794,7 +807,7 @@ public class DefaultBlogService implements BlogService {
         sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().
             getInstanceId()), post, null, "create", pub.getUpdaterId());
       }
-    } catch (Exception e) {
+    } catch (RemoteException e) {
       throw new BlogRuntimeException("BlogBmEJB.draftOutPost()",
           SilverpeasRuntimeException.ERROR, "blog.EX_CAN_DRAFT_OUT", e);
     }
@@ -810,7 +823,10 @@ public class DefaultBlogService implements BlogService {
       PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
-    } catch (Exception e) {
+    } catch (RemoteException e) {
+      throw new PublicationRuntimeException("BlogBmEJB.getPublicationBm()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    } catch (CreateException e) {
       throw new PublicationRuntimeException("BlogBmEJB.getPublicationBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
@@ -823,7 +839,10 @@ public class DefaultBlogService implements BlogService {
       NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
           NodeBmHome.class);
       nodeBm = nodeBmHome.create();
-    } catch (Exception e) {
+    } catch (RemoteException e) {
+      throw new PublicationRuntimeException("BlogBmEJB.getNodeBm()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    } catch (CreateException e) {
       throw new PublicationRuntimeException("BlogBmEJB.getNodeBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
@@ -832,10 +851,10 @@ public class DefaultBlogService implements BlogService {
 
   /**
    * Gets a DefaultCommentService instance.
+   *
    * @return a DefaultCommentService instance.
    */
   protected CommentService getCommentService() {
     return commentService;
   }
-
 }

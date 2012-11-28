@@ -218,7 +218,7 @@ out.println("<br>");
 	        	// allimenter l'arrayPane avec le fichier
 				ArrayLine  arrayLine = arrayPane.addArrayLine();
 			
-				ArrayCellText cell = arrayLine.addArrayCellText("<img src=\""+fileDetail.getFileIcon()+"\" width=\"20\" height=\"20\"/>");
+				ArrayCellText cell = arrayLine.addArrayCellText("<img src=\""+fileDetail.getFileIcon()+"\"/>");
 				cell.setCompareOn(FileRepositoryManager.getFileExtension(fileDetail.getName()));
 			    
 			    fileName = fileDetail.getName();

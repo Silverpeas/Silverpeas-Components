@@ -239,7 +239,7 @@ function pubDraftOut() {
         OperationPane operationPane = window.getOperationPane();
         if (!"supervisor".equals(profile)) {
           if (attachmentsEnabled) {
-          	operationPane.addOperationOfCreation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
+          	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
           }
           if (kmeliaScc.isDraftEnabled()) {
             if (pubDetail.isDraft()) {
