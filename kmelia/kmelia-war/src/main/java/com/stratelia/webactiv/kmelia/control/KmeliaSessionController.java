@@ -32,7 +32,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PipedInputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,8 +49,6 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.EJBObject;
-import javax.ejb.RemoveException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FilenameUtils;
@@ -113,13 +110,9 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
-import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.Reader;
 import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
@@ -201,6 +194,8 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
+import com.stratelia.webactiv.util.WAPrimaryKey;
+
 public class KmeliaSessionController extends AbstractComponentSessionController implements
     ExportFileNameProducer {
 
@@ -216,7 +211,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   /* EJBs used by sessionController */
   private ThumbnailService thumbnailService = null;
   private CommentService commentService = null;
-  private VersioningBm versioningBm = null;
   private PdcBm pdcBm = null;
   private StatisticBm statisticBm = null;
   private NotificationManager notificationManager = null;
@@ -352,20 +346,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     return statisticBm;
-  }
-
-  private VersioningBm getVersioningBm() {
-    if (versioningBm == null) {
-      try {
-        VersioningBmHome vscEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
-            VersioningBmHome.class);
-        versioningBm = vscEjbHome.create();
-      } catch (Exception e) {
-        throw new VersioningRuntimeException("KmeliaSessionController.getVersioningBm()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    return versioningBm;
   }
 
   public ResourceLocator getPublicationSettings() {
@@ -1864,11 +1844,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + pubPKFrom.toString() + ", pubId = " + pubId);
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKey(pubPKFrom, getCurrentLanguage());
-    // paste versioning documents attached to publication
-
     SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
         "root.MSG_GEN_PARAM_VALUE", documents.size() + " to paste");
-
     if (documents.isEmpty()) {
       return;
     }
@@ -1877,28 +1854,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     for (SimpleDocument original : documents) {
       AttachmentServiceFactory.getAttachmentService().copyDocument(original, pubPK);
     }
-  }
-
-  private List<Worker> getWorkers() {
-    List<Worker> workers = new ArrayList<Worker>();
-
-    List<String> workingProfiles = new ArrayList<String>();
-    workingProfiles.add("writer");
-    workingProfiles.add("publisher");
-    workingProfiles.add("admin");
-    String[] userIds =
-        getOrganizationController().getUsersIdsByRoleNames(getComponentId(), workingProfiles);
-
-    String userId = null;
-    Worker worker = null;
-    for (int u = 0; u < userIds.length; u++) {
-      userId = userIds[u];
-      worker = new Worker(Integer.parseInt(userId), -1, u, false, true, getComponentId(), "U",
-          false, true, 0);
-      workers.add(worker);
-    }
-
-    return workers;
   }
 
   public void pasteDocumentsAsAttachments(PublicationPK pubPKFrom, String pubId) throws
@@ -1931,11 +1886,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             lastVersion.getLanguage(), lastVersion.getTitle(), lastVersion.getDescription(),
             lastVersion.getSize(), lastVersion.getContentType(), getUserId(), new Date(),
             lastVersion.getXmlFormId()));
-        
+
         ByteArrayInputStream in = null;
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
-          AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, lastVersion.getPk(),
+          AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, lastVersion.
+              getPk(),
               getLanguage());
           in = new ByteArrayInputStream(buffer.toByteArray());
           newVersion = AttachmentServiceFactory.getAttachmentService().createAttachment(newVersion,
@@ -1946,7 +1902,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         }
         for (String lang : I18NHelper.getAllSupportedLanguages()) {
           if (!lang.equalsIgnoreCase(getLanguage())) {
-            buffer = new ByteArrayOutputStream();   
+            buffer = new ByteArrayOutputStream();
             try {
               AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, lastVersion.
                   getPk(), lang);
@@ -1958,7 +1914,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                   lastVersion.getLanguage(), lastVersion.getTitle(), lastVersion.getDescription(),
                   lastVersion.getSize(), lastVersion.getContentType(), getUserId(), new Date(),
                   lastVersion.getXmlFormId()));
-              AttachmentServiceFactory.getAttachmentService().updateAttachment(newVersion, in, 
+              AttachmentServiceFactory.getAttachmentService().updateAttachment(newVersion, in,
                   false, true);
             } finally {
               IOUtils.closeQuietly(buffer);
@@ -1976,8 +1932,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         "root.MSG_GEN_ENTER_METHOD",
         "pubPKFrom = " + pubPKFrom.toString() + ", pubId = " + pubId);
 
-    List<AttachmentDetail> attachments =
-        AttachmentController.searchAttachmentByPKAndContext(pubPKFrom, "Images");
+    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKeyAndType(pubPKFrom, DocumentType.attachment, getLanguage());
 
     SilverTrace.info("kmelia", "KmeliaSessionController.pasteAttachmentsAsDocuments()",
         "root.MSG_GEN_PARAM_VALUE", attachments.size() + " attachments to paste");
@@ -1986,71 +1942,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       return;
     }
 
-    List<Worker> workers = getWorkers();
-
-    VersioningUtil versioningUtil = new VersioningUtil();
-    String pathFrom = null; // where the original files are
-    String pathTo = null; // where the copied files will be
 
     // paste each attachment
-    for (AttachmentDetail attachment : attachments) {
-
+    for (SimpleDocument attachment : attachments) {
       SilverTrace.info("kmelia", "KmeliaSessionController.pasteAttachmentsAsDocuments()",
-          "root.MSG_GEN_PARAM_VALUE", "attachment name = " + attachment.getLogicalName());
-
-      if (pathTo == null) {
-        pathTo = versioningUtil.createPath(getSpaceId(), getComponentId(), null);
-      }
-
-      if (pathFrom == null) {
-        pathFrom = AttachmentController.createPath(pubPKFrom.getInstanceId(), "Images");
-      }
-
-      // paste file on fileserver
-      String newPhysicalName = pasteVersionFile(attachment.getPhysicalName(), pathFrom, pathTo);
-
-      if (newPhysicalName != null) {
-        // Document creation
-        Document document =
-            new Document(new DocumentPK(-1, "useless", getComponentId()),
-            getPublicationPK(pubId),
-            attachment.getLogicalName(), attachment.getInfo(), 0,
-            Integer.parseInt(getUserId()), new Date(), "", getComponentId(),
-            (ArrayList<Worker>) workers, new ArrayList<Reader>(), 0, 0);
-
-        // Version creation
-        DocumentVersion version =
-            new DocumentVersion(null, null, 1, 0, Integer.parseInt(getUserId()), new Date(),
-            "",
-            DocumentVersion.TYPE_PUBLIC_VERSION, DocumentVersion.STATUS_VALIDATION_NOT_REQ,
-            newPhysicalName, attachment.getLogicalName(), attachment.getType(), new Long(
-            attachment.getSize()).intValue(), getComponentId());
-
-        getVersioningBm().createDocument(document, version);
-      }
-    }
-  }
-
-  private String pasteVersionFile(String fileNameFrom, String from, String to) {
-    SilverTrace.info("kmelia", "KmeliaSessionController.pasteVersionFile()",
-        "root.MSG_GEN_ENTER_METHOD", "version = " + fileNameFrom);
-
-    if (!fileNameFrom.equals("dummy")) {
-      // we have to rename pasted file (in case the copy/paste append in the same instance)
-      String type = FileRepositoryManager.getFileExtension(fileNameFrom);
-      String fileNameTo = Long.toString(System.currentTimeMillis()) + "." + type;
-
-      try {
-        // paste file associated to the first version
-        FileRepositoryManager.copyFile(from + fileNameFrom, to + fileNameTo);
-      } catch (Exception e) {
-        SilverTrace.error("kmelia", "KmeliaSessionController.pasteVersionFile()",
-            "root.EX_FILE_NOT_FOUND", from + fileNameFrom);
-        return null;
-      }
-      return fileNameTo;
-    } else {
-      return fileNameFrom;
+          "root.MSG_GEN_PARAM_VALUE", "attachment name = " + attachment.getTitle());
+      SimpleDocumentPK pk = AttachmentServiceFactory.getAttachmentService().copyDocument(attachment,
+          new ForeignPK(pubId, getComponentId()));
+      AttachmentServiceFactory.getAttachmentService().changeVersionState(pk);
     }
   }
 
@@ -2333,18 +2232,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    */
   public boolean isWriterApproval(String pubId) throws RemoteException {
-    List<Document> documents =
-        getVersioningBm().getDocuments((new ForeignPK(pubId, getComponentId())));
-    for (Document document : documents) {
-      List<Worker> writers = document.getWorkList();
-      for (Worker user : writers) {
-        if (user.getUserId() == Integer.parseInt(getUserId())) {
-          if (user.isApproval()) {
-            return true;
-          }
-        }
-      }
-    }
     return false;
   }
 
@@ -2400,23 +2287,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
     }
     return silverObjectId;
-  }
-
-  @Override
-  public void close() {
-    removeEJBs(versioningBm);
-  }
-
-  private void removeEJBs(EJBObject ejbBm) {
-    try {
-      if (ejbBm != null) {
-        ejbBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", "KmeliaSessionController.removeEJBs", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("kmelia", "KmeliaSessionController.removeEJBs", "", e);
-    }
   }
 
   private boolean isPublicationClassifiedOnPDC(String pubId) {
@@ -3297,14 +3167,24 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
           // remove rights
           deleteTopicRoles(fromNode);
-
-          // move wysiwyg
           try {
-            AttachmentController.moveAttachments(new ForeignPK("Node_" + fromNode.getNodePK()),
-                new ForeignPK("Node_" + toNodePK.getId(), getComponentId()), true); // Change
-            // instanceId +
-            // move files
-          } catch (AttachmentException e) {
+            NodePK fromForeignPK = fromNode.getNodePK();
+            List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+                listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.form, getLanguage());
+            documents.addAll(AttachmentServiceFactory.getAttachmentService().
+                listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.image, getLanguage()));
+            documents.
+                addAll(AttachmentServiceFactory.getAttachmentService().
+                listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.wysiwyg, getLanguage()));
+            documents.addAll(AttachmentServiceFactory.getAttachmentService().
+                listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment,
+                getLanguage()));
+            ForeignPK toForeignPK = new ForeignPK(toNodePK.getId(), getComponentId());
+            for (SimpleDocument document : documents) {
+              AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
+            }
+
+          } catch (org.silverpeas.attachment.AttachmentException e) {
             SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
                 "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
           }
@@ -3409,8 +3289,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         if (fromComponentId.equals(getComponentId())) {
           getKmeliaBm().movePublicationInSameApplication(publi, currentNodePK, getUserId());
         } else {
-          movePublication(completePub, currentNodePK, publi, fromId, fromComponentId,
-              fromForeignPK,
+          movePublication(completePub, currentNodePK, publi, fromId, fromComponentId, fromForeignPK,
               fromPubPK, toForeignPK, toPubPK, imagesSubDirectory, thumbnailsSubDirectory,
               toAbsolutePath, fromAbsolutePath);
         }
@@ -3437,8 +3316,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         // Paste positions on Pdc
         pastePdcPositions(fromPubPK, id);
         // paste wysiwyg
-        WysiwygController.copy(fromComponentId, fromId, getComponentId(), id,
-            getUserId());
+        WysiwygController.copy(fromComponentId, fromId, getComponentId(), id, getUserId());
         // paste files
         Map<String, String> fileIds = pasteFiles(fromPubPK, id);
 
@@ -3470,9 +3348,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                 + xmlFormShortName, xmlFormShortName + ".xml");
 
             // Paste images
-            Map<String, String> imageIds =
-                AttachmentController.copyAttachmentByCustomerPKAndContext(fromPubPK, fromPubPK,
-                "XMLFormImages");
+            Map<String, String> imageIds = AttachmentController.
+                copyAttachmentByCustomerPKAndContext(fromPubPK, fromPubPK, "XMLFormImages");
 
             if (imageIds != null) {
               fileIds.putAll(imageIds);
@@ -3581,8 +3458,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       PublicationDetail publi, String fromId, String fromComponentId, ForeignPK fromForeignPK,
       PublicationPK fromPubPK, ForeignPK toForeignPK, PublicationPK toPubPK,
       String imagesSubDirectory, String thumbnailsSubDirectory, String toAbsolutePath,
-      String fromAbsolutePath)
-      throws RemoteException, ThumbnailException, PublicationTemplateException, PdcException, IOException {
+      String fromAbsolutePath) throws RemoteException, ThumbnailException,
+      PublicationTemplateException, PdcException, IOException {
 
     boolean indexIt = false;
 
@@ -3617,8 +3494,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     // move attachments first (wysiwyg, wysiwyg images, formXML files and images, attachments)
     try {
       // Change instanceId and move files
-      AttachmentController.moveAttachments(fromForeignPK, toForeignPK, indexIt);
-    } catch (AttachmentException e) {
+      List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.form, getLanguage());
+      documents.addAll(AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.image, getLanguage()));
+      documents.addAll(AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.wysiwyg, getLanguage()));
+      for (SimpleDocument doc : documents) {
+        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toForeignPK);
+      }
+    } catch (org.silverpeas.attachment.AttachmentException e) {
       SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
           "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
     }
@@ -3632,14 +3517,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           "root.MSG_GEN_PARAM_VALUE", e);
     }
 
-    boolean fromCompoVersion =
-        "yes".equals(getOrganizationController().getComponentParameterValue(fromComponentId,
-        "versionControl"));
+    boolean fromCompoVersion = StringUtil.getBooleanValue(getOrganizationController().
+        getComponentParameterValue(fromComponentId, "versionControl"));
 
     if (fromCompoVersion && isVersionControlled()) {
-      // move versioning files
-      VersioningUtil versioning = new VersioningUtil();
-      versioning.moveDocuments(fromForeignPK, toForeignPK, indexIt);
+      List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, getLanguage());
+      for (SimpleDocument doc : docs) {
+        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toForeignPK);
+      }
     } else if (fromCompoVersion && !isVersionControlled()) {
       // versioning --> attachments
       // Last public versions becomes the new attachment
@@ -3648,23 +3534,27 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       if (indexIt) {
         AttachmentController.attachmentIndexer(toForeignPK);
       }
-
+      List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, getLanguage());
       // remove files
-      getVersioningBm().deleteDocumentsByForeignPK(fromForeignPK);
+      for (SimpleDocument doc : docs) {
+        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+      }
     } else if (!fromCompoVersion && isVersionControlled()) {
-      // attachments --> versioning
-      // paste versioning documents
-
       // Be careful, attachments have already moved !
       pasteAttachmentsAsDocuments(toPubPK, publi.getPK().getId());
 
-      if (indexIt) {
-        VersioningUtil versioning = new VersioningUtil();
-        versioning.indexDocumentsByForeignKey(toForeignPK);
-      }
+      /* if (indexIt) {
+       AttachmentServiceFactory.getAttachmentService().indexDocumentsByForeignKey(toForeignPK);
+       }*/
 
       // remove only files
-      AttachmentController.deleteAttachmentsByCustomerPKAndContext(toForeignPK, "Images");
+      List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, getLanguage());
+      // remove files
+      for (SimpleDocument doc : docs) {
+        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+      }
     } else {
       // already made by moveAttachments
     }
@@ -3930,25 +3820,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public String getFirstAttachmentURLOfCurrentPublication() throws RemoteException {
     PublicationPK pubPK = getSessionPublication().getDetail().getPK();
     String url = null;
-    if (isVersionControlled()) {
-      VersioningUtil versioning = new VersioningUtil();
-      List<Document> documents = versioning.getDocuments(new ForeignPK(pubPK));
-      if (!documents.isEmpty()) {
-        Document document = documents.get(0);
-        DocumentVersion documentVersion = versioning.getLastPublicVersion(document.getPk());
-        if (documentVersion != null) {
-          url = URLManager.getApplicationURL() + versioning.getDocumentVersionURL(document.
-              getInstanceId(), documentVersion.getLogicalName(), document.getPk().getId(),
-              documentVersion.getPk().getId());
-        }
-      }
-    } else {
-      List<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(
-          pubPK, "Images");
-      if (!attachments.isEmpty()) {
-        AttachmentDetail attachment = attachments.get(0);
-        url = URLManager.getApplicationURL() + attachment.getAttachmentURL();
-      }
+    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKey(pubPK, getLanguage());
+    if (!attachments.isEmpty()) {
+      url = URLManager.getApplicationURL() + attachments.get(0).getLastPublicVersion().
+          getAttachmentURL();
     }
     return url;
   }
@@ -3961,21 +3837,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    */
   public String getAttachmentURL(String fileId) throws RemoteException {
-    String url = null;
-    if (isVersionControlled()) {
-      VersioningUtil versioningUtil = new VersioningUtil();
-      DocumentPK documentPk = new DocumentPK(Integer.parseInt(fileId));
-      Document document = versioningUtil.getDocument(documentPk);
-      DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(documentPk);
-      url = URLManager.getApplicationURL() + versioningUtil.getDocumentVersionURL(document.
-          getInstanceId(), documentVersion.getLogicalName(), document.getPk().getId(),
-          documentVersion.getPk().getId());
-    } else {
-      AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
-          fileId));
-      url = URLManager.getApplicationURL() + attachment.getAttachmentURL();
-    }
-    return url;
+    SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
+        searchDocumentById(new SimpleDocumentPK(fileId), getLanguage());
+    return URLManager.getApplicationURL() + attachment.getLastPublicVersion().getAttachmentURL();
   }
 
   public boolean useUpdateChain() {
