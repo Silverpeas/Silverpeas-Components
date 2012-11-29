@@ -359,6 +359,7 @@
                       }
 	  
     </script>
+    <%@include file="diaporama.jsp" %>
   </head>
   <body>
     <%
@@ -422,7 +423,7 @@
 
       if (photos.size() > 1) {
         // diaporama
-        operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString("gallery.diaporama"), "StartDiaporama?Debut=" + "ok");
+        operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString("gallery.diaporama"), "javascript:startSlideshow()");
       }
 
       // favoris
