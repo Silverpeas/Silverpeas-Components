@@ -1142,8 +1142,8 @@
     <parameter>
       <name>isNewsManage</name>
       <label>
-        <message lang="fr">Actualités décentralisées</message>
-        <message lang="en">Decentralized news</message>
+        <message lang="fr">Actualités déléguées</message>
+        <message lang="en">Delegated news</message>
         <message lang="de">Dezentralisierte Nachrichten</message>
       </label>
       <order>46</order>

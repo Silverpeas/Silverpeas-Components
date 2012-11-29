@@ -2309,23 +2309,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     NodeDetail node = getNodeHeader(getCurrentFolderId());
     boolean haveRights = isRightsOnTopicsEnabled() && node.haveRights();
     if (haveRights) {
-      int rightsDependsOn = node.getRightsDependsOn();
-      List<ProfileInst> profileInsts =
-              getAdmin().getProfilesByObject(Integer.toString(rightsDependsOn),
-                  ObjectType.NODE.getCode(),
-                  getComponentId());
-      if (profileInsts != null) {
-        for (ProfileInst profileInst : profileInsts) {
-          if (profileInst != null) {
-            if (profiles.contains(profileInst.getName())) {
-              sug.addProfileId(profileInst.getId());
-            }
-          }
-        }
-      }
-    } else {
-      sug.setProfileNames((ArrayList<String>) profiles);
+      sug.setObjectId(ObjectType.NODE.getCode() + node.getRightsDependsOn());
     }
+    sug.setProfileNames((ArrayList<String>) profiles);
 
     sel.setExtraParams(sug);
 

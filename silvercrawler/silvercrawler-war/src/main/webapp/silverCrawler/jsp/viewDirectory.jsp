@@ -711,7 +711,7 @@ if (nav || (!nav && !isRootPath))
 			ArrayLine  arrayLine = arrayPane.addArrayLine();
 
 		    // icone du type du fichier
-			ArrayCellText cell = arrayLine.addArrayCellText("<img src=\""+fileDetail.getFileIcon()+"\" width=\"20\" height=\"20\"/>");
+			ArrayCellText cell = arrayLine.addArrayCellText("<img src=\""+fileDetail.getFileIcon()+"\"/>");
 			cell.setCompareOn(FileRepositoryManager.getFileExtension(fileDetail.getName()));
 
 		    fileName = fileDetail.getName();
