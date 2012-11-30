@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -21,6 +20,7 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -47,6 +47,11 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FilenameUtils;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
@@ -87,8 +92,10 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
@@ -274,19 +281,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return statisticBm;
   }
 
-  public VersioningBm getVersioningBm() {
-    VersioningBm versioningBm = null;
-    try {
-      VersioningBmHome versioningBmHome = EJBUtilitaire.getEJBObjectRef(VERSIONING_EJBHOME,
-          VersioningBmHome.class);
-      versioningBm = versioningBmHome.create();
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.getVersioningBm()", ERROR,
-          "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_VERSIONING_EJBHOME", e);
-    }
-    return versioningBm;
-  }
-
   @Override
   public PdcBm getPdcBm() {
     PdcBm pdcBm = null;
@@ -411,7 +405,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationsOfFolder()", ERROR,
             "kmelia.EX_IMPOSSIBLE_DAVOIR_LA_LISTE_DES_PUBLICATIONS", e);
       }
-      SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsOfFolder()", 
+      SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsOfFolder()",
           "root.MSG_GEN_PARAM_VALUE", "pubBm.getDetailsByFatherPK(pk) END");
     }
     return pubDetails2userPubs(pubDetails);
@@ -421,7 +415,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   public List<KmeliaPublication> getLatestPublications(String instanceId, int nbPublisOnRoot,
       boolean isRightsOnTopicsUsed, String userId) throws RemoteException {
     PublicationPK pubPK = new PublicationPK("unknown", instanceId);
-    Collection<PublicationDetail> pubDetails = 
+    Collection<PublicationDetail> pubDetails =
         getPublicationBm().getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK,
         PublicationDetail.VALID, nbPublisOnRoot, NodePK.BIN_NODE_ID);
     if (isRightsOnTopicsUsed) {// The list of publications must be filtered
@@ -448,7 +442,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     List<NodeDetail> availableChildren = new ArrayList<NodeDetail>();
     for (NodeDetail child : children) {
       NodePK childId = child.getNodePK();
-      if (childId.isTrash() || childId.isUnclassed()|| !child.haveRights()) {
+      if (childId.isTrash() || childId.isUnclassed() || !child.haveRights()) {
         availableChildren.add(child);
       } else {
         int rightsDependsOn = child.getRightsDependsOn();
@@ -1556,25 +1550,27 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         getEndDate() != null && !pubDetail.getEndDate().equals(old.getEndDate())));
     return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
   }
-  
+
   @Override
-  public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to, String userId)
+  public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to,
+      String userId)
       throws RemoteException {
     PublicationDetail pub = getPublicationDetail(pubPK);
-    
+
     // check if user can cut publication from source folder
     String profile = getUserTopicProfile(from, userId);
-    boolean cutAllowed = KmeliaPublicationHelper.isCanBeCut(from.getComponentName(), userId, profile, pub.getCreator());
-    
+    boolean cutAllowed = KmeliaPublicationHelper.
+        isCanBeCut(from.getComponentName(), userId, profile, pub.getCreator());
+
     // check if user can paste publication into target folder
     String profileInTarget = getUserTopicProfile(to, userId);
     boolean pasteAllowed = KmeliaPublicationHelper.isCreationAllowed(to, profileInTarget);
-    
+
     if (cutAllowed && pasteAllowed) {
       movePublicationInSameApplication(pub, to, userId);
     }
   }
-  
+
   @Override
   public void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId)
       throws RemoteException {
@@ -1584,7 +1580,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // update parent
       getPublicationBm().removeAllFather(pub.getPK());
       getPublicationBm().addFather(pub.getPK(), to);
-      
+
       processPublicationAfterMove(pub, to, userId);
     }
   }
@@ -1625,122 +1621,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     // send notifications like a creation
     sendSubscriptionsNotification(pub, false);
-  }
-
-  /**
-   * ****************************************************************************************
-   * KMELIA - Copier/coller des documents versionnés
-   * ****************************************************************************************
-   */
-  public void pasteDocuments(PublicationPK pubPKFrom, String pubId) throws Exception {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.pasteDocuments()",
-        "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + pubPKFrom.toString()
-        + ", pubId = " + pubId);
-
-    // paste versioning documents attached to publication
-    List<Document> documents = getVersioningBm().getDocuments(new ForeignPK(pubPKFrom));
-
-    SilverTrace.info("kmelia", "KmeliaBmEJB.pasteDocuments()", "root.MSG_GEN_PARAM_VALUE",
-        documents.size() + " to paste");
-
-    VersioningUtil versioningUtil = new VersioningUtil();
-    String pathFrom = null; // where the original files are
-    String pathTo = null; // where the copied files will be
-
-    ForeignPK pubPK = new ForeignPK(pubId, pubPKFrom.getInstanceId());
-
-    // change the list of workers
-    List<Worker> workers = new ArrayList<Worker>();
-    if (!documents.isEmpty()) {
-      List<String> workingProfiles = new ArrayList<String>();
-      workingProfiles.add(SilverpeasRole.writer.toString());
-      workingProfiles.add(SilverpeasRole.publisher.toString());
-      workingProfiles.add(SilverpeasRole.admin.toString());
-      String[] userIds = getOrganizationController().getUsersIdsByRoleNames(
-          pubPKFrom.getInstanceId(), workingProfiles);
-
-      for (int u = 0; u < userIds.length; u++) {
-        String userId = userIds[u];
-        Worker worker = new Worker(Integer.parseInt(userId), -1, u, false, true,
-            pubPKFrom.getInstanceId(), "U", false, true, 0);
-        workers.add(worker);
-      }
-    }
-
-    // paste each document
-    for (Document document : documents) {
-      SilverTrace.info("kmelia", "KmeliaBmEJB.pasteDocuments()",
-          "root.MSG_GEN_PARAM_VALUE", "document name = " + document.getName());
-
-      // retrieve all versions of the document
-      List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(document.getPk());
-
-      // retrieve the initial version of the document
-      DocumentVersion version = versions.get(0);
-
-      if (pathFrom == null) {
-        pathFrom = versioningUtil.createPath(document.getPk().getSpaceId(),
-            document.getPk().getInstanceId(), null);
-      }
-
-      // change some data to paste
-      document.setPk(new DocumentPK(-1, pubPKFrom));
-      document.setForeignKey(pubPK);
-      document.setStatus(Document.STATUS_CHECKINED);
-      document.setLastCheckOutDate(new Date());
-      document.setWorkList((ArrayList<Worker>) workers);
-
-      if (pathTo == null) {
-        pathTo = versioningUtil.createPath("useless",
-            pubPKFrom.getInstanceId(), null);
-      }
-
-      String newVersionFile = null;
-      if (version != null) {
-        // paste file on fileserver
-        newVersionFile = pasteVersionFile(version, pathFrom, pathTo);
-        version.setPhysicalName(newVersionFile);
-      }
-
-      // create the document with its first version
-      DocumentPK documentPK = getVersioningBm().createDocument(document,
-          version);
-      document.setPk(documentPK);
-
-      for (DocumentVersion currentVersion : versions) {
-        currentVersion.setDocumentPK(documentPK);
-        SilverTrace.info("kmelia", "KmeliaBmEJB.pasteDocuments()",
-            "root.MSG_GEN_PARAM_VALUE", "paste version = " + currentVersion.getLogicalName());
-        // paste file on fileserver
-        newVersionFile = pasteVersionFile(currentVersion, pathFrom, pathTo);
-        currentVersion.setPhysicalName(newVersionFile);
-        // paste data
-        getVersioningBm().addVersion(currentVersion);
-      }
-    }
-  }
-
-  private String pasteVersionFile(DocumentVersion version, String from,
-      String to) {
-    String fileNameFrom = version.getPhysicalName();
-    SilverTrace.info("kmelia", "KmeliaBmEJB.pasteVersionFile()",
-        "root.MSG_GEN_ENTER_METHOD", "version = " + fileNameFrom);
-
-    if (!"dummy".equals(fileNameFrom)) {
-      // we have to rename pasted file (in case the copy/paste append in
-      // the same instance)
-      String type = FilenameUtils.getExtension(fileNameFrom);
-      String fileNameTo = String.valueOf(System.currentTimeMillis()) + '.' + type;
-      try {
-        // paste file associated to the first version
-        FileRepositoryManager.copyFile(from + fileNameFrom, to + fileNameTo);
-      } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaBmEJB.pasteVersionFile()", ERROR,
-            "root.EX_FILE_NOT_FOUND", e);
-      }
-      return fileNameTo;
-    }
-    return fileNameFrom;
   }
 
   private void updatePublication(PublicationPK pubPK, int updateScope) {
@@ -2863,7 +2743,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   @Override
   public void unvalidatePublication(PublicationPK pubPK, String userId,
-          String refusalMotive, int validationType) {
+      String refusalMotive, int validationType) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.unvalidatePublication()", "root.MSG_GEN_ENTER_METHOD");
     try {
       switch (validationType) {
@@ -2902,7 +2782,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           oneFather = fathers.get(0);
         }
         sendValidationNotification(oneFather, clone, refusalMotive, userId);
-        
+
         // remove tasks
         removeAllTodosForPublication(clone.getPK());
       } else {
@@ -2923,13 +2803,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           oneFather = fathers.get(0);
         }
         sendValidationNotification(oneFather, currentPubDetail, refusalMotive, userId);
-        
+
         //remove tasks
         removeAllTodosForPublication(currentPubDetail.getPK());
       }
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.unvalidatePublication()", ERROR,
-              "kmelia.EX_IMPOSSIBLE_DE_REFUSER_LA_PUBLICATION", e);
+          "kmelia.EX_IMPOSSIBLE_DE_REFUSER_LA_PUBLICATION", e);
     }
     SilverTrace.info("kmelia", "KmeliaBmEJB.unvalidatePublication()", "root.MSG_GEN_EXIT_METHOD");
   }
@@ -3557,20 +3437,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   private void removeExternalElementsOfPublications(PublicationPK pubPK) {
     // remove attachments
-    AttachmentController.deleteAttachmentByCustomerPK(pubPK);
-
-    // remove versioning
-    try {
-      getVersioningBm().deleteDocumentsByForeignPK(new ForeignPK(pubPK));
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.removeExternalElementsOfPublications()",
-          ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_FICHIERS_VERSIONNES", e);
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        listAllDocumentsByForeignKey(pubPK, null);
+    for (SimpleDocument doc : documents) {
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
     }
-
     // remove comments
     try {
-      getCommentService()
-          .deleteAllCommentsOnPublication(PublicationDetail.getResourceType(), pubPK);
+      getCommentService().deleteAllCommentsOnPublication(PublicationDetail.getResourceType(), pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.removeExternalElementsOfPublications()",
           ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_COMMENTAIRES", e);
@@ -4316,94 +4190,28 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void addAttachmentToPublication(PublicationPK pubPK, String userId, String filename,
       String description, byte[] contents) {
-    String context;
-    String path;
-    Date creationDate = new Date();
-
-    String type = FileRepositoryManager.getFileExtension(filename);
-
-    String versioning = getOrganizationController().getComponentParameterValue(
-        pubPK.getComponentName(), "versionControl");
-    boolean versioningActive = "yes".equalsIgnoreCase(versioning);
-
-    VersioningUtil versioningUtil = new VersioningUtil();
-    if (versioningActive) {
-      context = null;
-      path = versioningUtil.createPath(null, pubPK.getComponentName(), context);
-    } else {
-      context = "Images";
-      path = AttachmentController.createPath(pubPK.getInstanceId(), context);
-    }
-
-    String physicalName = Long.toString(creationDate.getTime()) + "." + type;
-    String logicalName = filename;
-
-    File f = new File(path + physicalName);
     try {
-      FileOutputStream fos = new FileOutputStream(f);
-
-      if (contents != null && contents.length > 0) {
-        fos.write(contents);
-        fos.close();
-
-        String mimeType = FileTypeMap.getDefaultFileTypeMap().getContentType(f);
-        long size = contents.length;
-
-        if (versioningActive) {
-          int user_id = Integer.parseInt(userId);
-          ForeignPK pubForeignKey = new ForeignPK(pubPK.getId(), pubPK.getComponentName());
-          DocumentPK docPK = new DocumentPK(-1, pubPK.getSpaceId(), pubPK.getComponentName());
-          Document document = new Document(docPK, pubForeignKey, logicalName,
-              description, -1, user_id, creationDate, null, null, null, null,
-              0, 0);
-
-          int majorNumber = 1;
-          int minorNumber = 0;
-
-          DocumentVersion newVersion = new DocumentVersion(null, docPK,
-              majorNumber, minorNumber, user_id, creationDate, "", 0, 0,
-              physicalName, logicalName, mimeType, (int) size, pubPK.getComponentName());
-
-          // create the document with its first version
-          DocumentPK documentPK = getVersioningBm().createDocument(document,
-              newVersion);
-          document.setPk(documentPK);
-
-          if (newVersion.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
-            CallBackManager callBackManager = CallBackManager.get();
-            callBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
-                newVersion.getAuthorId(), document.getForeignKey().getInstanceId(), document.
-                getForeignKey().getId());
-            PublicationDetail detail = getPublicationDetail(pubPK);
-            if (KmeliaHelper.isIndexable(detail)) {
-              versioningUtil.createIndex(document, newVersion);
-            }
-          }
-        } else {
-          // create AttachmentPK with componentId
-          AttachmentPK atPK = new AttachmentPK(null, pubPK.getComponentName());
-
-          // create foreignKey with spaceId, componentId and id
-          // use AttachmentPK to build the foreign key of customer
-          // object.
-          WAPrimaryKey pubForeignKey = new AttachmentPK(pubPK.getId(), pubPK.getComponentName());
-
-          // create AttachmentDetail Object
-          AttachmentDetail ad = new AttachmentDetail(atPK, physicalName,
-              logicalName, description, mimeType, size, context, creationDate,
-              pubForeignKey);
-          ad.setAuthor(userId);
-
-          AttachmentController.createAttachment(ad, true);
-        }
+      Date creationDate = new Date();
+      SimpleAttachment file = new SimpleAttachment(FileUtil.getFilename(filename),
+          I18NHelper.defaultLanguage, filename, "", contents.length, FileUtil.getMimeType(filename),
+          userId, creationDate, null);
+      boolean versioningActive = StringUtil.getBooleanValue(getOrganizationController().
+          getComponentParameterValue(pubPK.getComponentName(), "versionControl"));
+      SimpleDocument document;
+      if (versioningActive) {
+        document = new HistorisedDocument(new SimpleDocumentPK(null, pubPK.getComponentName()),
+            pubPK.
+            getId(), 0, file);
+        document.setPublicDocument(true);
+      } else {
+        document = new SimpleDocument(new SimpleDocumentPK(null, pubPK.getComponentName()), pubPK.
+            getId(), 0, false, file);
       }
-
-    } catch (FileNotFoundException fnfe) {
+      AttachmentServiceFactory.getAttachmentService().createAttachment(document,
+          new ByteArrayInputStream(contents));
+    } catch (org.silverpeas.attachment.AttachmentException fnfe) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.addAttachmentToPublication()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DAJOUTER_ATTACHEMENT", fnfe);
-    } catch (IOException ioe) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.addAttachmentToPublication()", ERROR,
-          "kmelia.EX_IMPOSSIBLE_DAJOUTER_ATTACHEMENT", ioe);
     }
   }
 

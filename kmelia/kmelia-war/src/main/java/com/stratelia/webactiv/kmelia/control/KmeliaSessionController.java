@@ -1891,8 +1891,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try {
           AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, lastVersion.
-              getPk(),
-              getLanguage());
+              getPk(), getLanguage());
           in = new ByteArrayInputStream(buffer.toByteArray());
           newVersion = AttachmentServiceFactory.getAttachmentService().createAttachment(newVersion,
               in, false);
@@ -3170,15 +3169,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           try {
             NodePK fromForeignPK = fromNode.getNodePK();
             List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-                listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.form, getLanguage());
-            documents.addAll(AttachmentServiceFactory.getAttachmentService().
-                listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.image, getLanguage()));
-            documents.
-                addAll(AttachmentServiceFactory.getAttachmentService().
-                listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.wysiwyg, getLanguage()));
-            documents.addAll(AttachmentServiceFactory.getAttachmentService().
-                listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment,
-                getLanguage()));
+                listAllDocumentsByForeignKey(fromForeignPK,getLanguage());
             ForeignPK toForeignPK = new ForeignPK(toNodePK.getId(), getComponentId());
             for (SimpleDocument document : documents) {
               AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
