@@ -185,6 +185,9 @@
 											<ul>
 												<c:forEach items="${category.classifieds}" var="classified" end="4">
 													<li><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
+													<c:if test="${classified.price > 0}">
+													${classified.price} €
+													</c:if>
 														<span class="date">
 															<c:if test="${not empty classified.updateDate}">
 																<span class="sep"> - </span><view:formatDateTime value="${classified.updateDate}" language="${language}"/>

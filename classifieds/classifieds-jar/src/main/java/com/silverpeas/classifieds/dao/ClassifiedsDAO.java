@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.silverpeas.classifieds.model.ClassifiedDetail;
+import com.silverpeas.classifieds.model.Image;
 import com.silverpeas.classifieds.model.Subscribe;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
@@ -60,9 +61,9 @@ public class ClassifiedsDAO {
       id = new Integer(newId).toString();
       // création de la requete
       String query =
-          "insert into SC_Classifieds_Classifieds (classifiedId, instanceId, title, creatorId, creationDate, "
+          "insert into SC_Classifieds_Classifieds (classifiedId, instanceId, title, description, price, creatorId, creationDate, "
               + "updateDate, status, validatorId, validateDate) "
-              + "values (?,?,?,?,?,?,?,?,?)";
+              + "values (?,?,?,?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       initParam(prepStmt, newId, classified);
@@ -86,25 +87,27 @@ public class ClassifiedsDAO {
     try {
       // création de la requete
       String query =
-          "update SC_Classifieds_Classifieds set title = ? , status = ?  , updateDate = ? , validatorId = ? , validateDate = ? "
+          "update SC_Classifieds_Classifieds set title = ? , description = ? , price = ? , status = ?  , updateDate = ? , validatorId = ? , validateDate = ? "
               +
               " where classifiedId = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, classified.getTitle());
-      prepStmt.setString(2, classified.getStatus());
+      prepStmt.setString(2, classified.getDescription());
+      prepStmt.setInt(3, classified.getPrice());
+      prepStmt.setString(4, classified.getStatus());
       if (classified.getUpdateDate() != null) {
-        prepStmt.setString(3, Long.toString((classified.getUpdateDate()).getTime()));
-      } else {
-        prepStmt.setString(3, null);
-      }
-      prepStmt.setString(4, classified.getValidatorId());
-      if (classified.getValidateDate() != null) {
-        prepStmt.setString(5, Long.toString((classified.getValidateDate()).getTime()));
+        prepStmt.setString(5, Long.toString((classified.getUpdateDate()).getTime()));
       } else {
         prepStmt.setString(5, null);
       }
-      prepStmt.setInt(6, new Integer(classified.getClassifiedId()).intValue());
+      prepStmt.setString(6, classified.getValidatorId());
+      if (classified.getValidateDate() != null) {
+        prepStmt.setString(7, Long.toString((classified.getValidateDate()).getTime()));
+      } else {
+        prepStmt.setString(7, null);
+      }
+      prepStmt.setInt(8, new Integer(classified.getClassifiedId()).intValue());
       prepStmt.executeUpdate();
     } finally {
       // fermeture
@@ -485,6 +488,8 @@ public class ClassifiedsDAO {
     int classifiedId = rs.getInt("classifiedId");
     String instanceId = rs.getString("instanceId");
     String title = rs.getString("title");
+    String description = rs.getString("description");
+    int price = rs.getInt("price");
     String creatorId = rs.getString("creatorId");
     Date creationDate = new Date(Long.parseLong(rs.getString("creationDate")));
     Date updateDate = null;
@@ -500,6 +505,8 @@ public class ClassifiedsDAO {
     classified.setClassifiedId(classifiedId);
     classified.setInstanceId(instanceId);
     classified.setTitle(title);
+    classified.setDescription(description);
+    classified.setPrice(price);
     classified.setCreatorId(creatorId);
     classified.setCreationDate(creationDate);
     classified.setUpdateDate(updateDate);
@@ -522,19 +529,21 @@ public class ClassifiedsDAO {
     prepStmt.setInt(1, new Integer(classifiedId).intValue());
     prepStmt.setString(2, classified.getInstanceId());
     prepStmt.setString(3, classified.getTitle());
-    prepStmt.setString(4, classified.getCreatorId());
-    prepStmt.setString(5, Long.toString((classified.getCreationDate()).getTime()));
+    prepStmt.setString(4, classified.getDescription());
+    prepStmt.setInt(5, classified.getPrice());
+    prepStmt.setString(6, classified.getCreatorId());
+    prepStmt.setString(7, Long.toString((classified.getCreationDate()).getTime()));
     if (classified.getUpdateDate() != null) {
-      prepStmt.setString(6, Long.toString((classified.getUpdateDate()).getTime()));
+      prepStmt.setString(8, Long.toString((classified.getUpdateDate()).getTime()));
     } else {
-      prepStmt.setString(6, null);
+      prepStmt.setString(8, null);
     }
-    prepStmt.setString(7, classified.getStatus());
-    prepStmt.setString(8, classified.getValidatorId());
+    prepStmt.setString(9, classified.getStatus());
+    prepStmt.setString(10, classified.getValidatorId());
     if (classified.getValidateDate() != null) {
-      prepStmt.setString(9, Long.toString((classified.getValidateDate()).getTime()));
+      prepStmt.setString(11, Long.toString((classified.getValidateDate()).getTime()));
     } else {
-      prepStmt.setString(9, null);
+      prepStmt.setString(11, null);
     }
   }
 
@@ -598,6 +607,52 @@ public class ClassifiedsDAO {
       DBUtil.close(rs, prepStmt);
     }
     return listClassifieds;
+  }
+  
+  /**
+   * Initialise les parametètres
+   * @param prepStmt : PreparedStatement
+   * @param imageId : String
+   * @param classifiedImage : Image
+   * @throws SQLException
+   */
+  private static void initParamImage(PreparedStatement prepStmt, int imageId,
+      Image classifiedImage) throws SQLException {
+    prepStmt.setInt(1, imageId);
+    prepStmt.setInt(2, classifiedImage.getClassifiedId());
+    prepStmt.setString(3, classifiedImage.getImageName());
+    prepStmt.setString(4, classifiedImage.getMimeType());
+  }
+  
+  /**
+   * Create a classified image
+   * @param con : Connection
+   * @param classifiedImage : Image
+   * @return imageId : String
+   * @throws SQLException
+   * @throws UtilException
+   */
+  public static String createClassifiedImage(Connection con, Image classifiedImage)
+      throws SQLException, UtilException {
+    // Création d'une nouvelle image de petite annonce
+    String id = "";
+    PreparedStatement prepStmt = null;
+    try {
+      int newId = DBUtil.getNextId("SC_Classifieds_Images", "imageId");
+      id = new Integer(newId).toString();
+      // création de la requete
+      String query =
+          "insert into SC_Classifieds_Images (imageId, classifiedId, imageName, mimeType) "
+              + "values (?,?,?,?)";
+      // initialisation des paramètres
+      prepStmt = con.prepareStatement(query);
+      initParamImage(prepStmt, newId, classifiedImage);
+      prepStmt.executeUpdate();
+    } finally {
+      // fermeture
+      DBUtil.close(prepStmt);
+    }
+    return id;
   }
 
 }

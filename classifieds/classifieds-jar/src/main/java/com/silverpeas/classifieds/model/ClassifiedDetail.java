@@ -33,6 +33,8 @@ public class ClassifiedDetail implements SilverpeasContent {
 
   private String title;
   private int classifiedId;
+  private String description;
+  private int price;
   private String instanceId;
   private String creatorId;
   private String creatorName;
@@ -59,8 +61,9 @@ public class ClassifiedDetail implements SilverpeasContent {
     this.classifiedId = classifiedId;
   }
 
-  public ClassifiedDetail(String title) {
+  public ClassifiedDetail(String title, String description) {
     this.title = title;
+    this.description = description;
   }
 
   @Override
@@ -74,7 +77,19 @@ public class ClassifiedDetail implements SilverpeasContent {
 
   @Override
   public String getDescription() {
-    return "";
+    return this.description;
+  }
+  
+  public void setDescription(String description) {
+    this.description = description;
+  }
+  
+  public int getPrice() {
+    return this.price;
+  }
+  
+  public void setPrice(int price) {
+    this.price = price;
   }
 
   public int getClassifiedId() {

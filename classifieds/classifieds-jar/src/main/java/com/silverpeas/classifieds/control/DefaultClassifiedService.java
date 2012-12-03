@@ -42,6 +42,7 @@ import org.silverpeas.search.SearchEngineFactory;
 import com.silverpeas.classifieds.dao.ClassifiedsDAO;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
+import com.silverpeas.classifieds.model.Image;
 import com.silverpeas.classifieds.model.Subscribe;
 import com.silverpeas.classifieds.notification.ClassifiedSubscriptionUserNotification;
 import com.silverpeas.classifieds.notification.ClassifiedSupervisorUserNotification;
@@ -569,6 +570,26 @@ public class DefaultClassifiedService implements ClassifiedService {
     while (it.hasNext()) {
       Subscribe subscribe = it.next();
       deleteSubscribe(subscribe.getSubscribeId());
+    }
+  }
+  
+  /**
+   * create a classified image
+   * @param classifiedImage : Image
+   * @return imageId : String
+   * @
+   */
+  public String createClassifiedImage(Image classifiedImage) {
+    Connection con = openConnection();
+    try {
+      String id = ClassifiedsDAO.createClassifiedImage(con, classifiedImage);
+      classifiedImage.setImageId(Integer.parseInt(id));
+      return id;
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.createClassifiedImage()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_CREATE", e);
+    } finally {
+      closeConnection(con);
     }
   }
 

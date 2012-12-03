@@ -66,6 +66,8 @@
 <c:if test="${not empty classified}">
 	<c:set var="classifiedId" value="${classified.classifiedId}" />
 	<c:set var="title" value="${classified.title}" />
+	<c:set var="description" value="${classified.description}" />
+	<c:set var="price" value="${classified.price}" />
 	<c:set var="instanceId" value="${classified.instanceId}" />
 	<c:set var="creatorId" value="${classified.creatorId}" />
 	<c:set var="status" value="${classified.status}" />
@@ -95,13 +97,14 @@
   	formUpdate.displayScripts(out, context);
 	%>
 </c:if>
-<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/checkForm.js"></script>
 
 <fmt:message var="GML_title" key="GML.title"/>
 <fmt:message var="GML_MustBeFilled" key="GML.MustBeFilled"/>
-<fmt:message var="GML_msgSize" key="GML.msgSize"/>
+<fmt:message var="GML_description" key="GML.description"/>
+<fmt:message var="classifieds_msgSize" key="classifieds.msgSize"/>
+<fmt:message var="classifieds_price" key="classifieds.price"/>
+<fmt:message var="GML_MustContainsNumber" key="GML.MustContainsNumber"/>
 <fmt:message var="GML_ThisFormContains" key="GML.ThisFormContains"/>
 <fmt:message var="GML_error" key="GML.error"/>
 <fmt:message var="GML_errors" key="GML.errors"/>
@@ -112,7 +115,7 @@
 	function sendData()
 	{
 		<c:if test="${not empty formUpdate}">
-			if (isCorrectForm() && isCorrectLocalForm()) {
+			if (isCorrectLocalForm() && isCorrectForm()) {
 		    	document.classifiedForm.submit();
 		    }
 		 </c:if>
@@ -125,20 +128,28 @@
 
 	function isCorrectLocalForm()
 	{
-	   	var errorMsg = "";
+		  var errorMsg = "";
 	   	var errorNb = 0;
 	   	var title = stripInitialWhitespace(document.classifiedForm.Title.value);
+	   	var description = stripInitialWhitespace(document.classifiedForm.Description.value);
 
-		if (title == "")
-		{
-			errorMsg+="  - '${GML_title}'  ${GML_MustBeFilled}\n";
-		    errorNb++;
-		}
-	   	if (title.length > 255)
-	   	{
-			errorMsg+="  - '${GML_title}'  ${GML_msgSize}\n";
-	       	errorNb++;
-	   	}
+	    if (title == "") {
+			 errorMsg+="  - '${GML_title}' ${GML_MustBeFilled}\n";
+		   errorNb++;
+		  }
+	   	
+	   	if (description == "") {
+	     errorMsg+="  - '${GML_description}' ${GML_MustBeFilled}\n";
+	     errorNb++;
+	    }
+	    if (description.length > 2000) {
+	     errorMsg+="  - '${GML_description}' ${classifieds_msgSize}\n";
+	     errorNb++;
+	    }
+	    if (! isInteger(document.classifiedForm.Price.value)) {
+	    	errorMsg+="  - '${classifieds_price}' ${GML_MustContainsNumber}\n";
+	      errorNb++;
+	    }
 	   	switch(errorNb)
 	   	{
 	       	case 0 :
@@ -179,6 +190,8 @@
 <view:frame>
 
 <c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
+<c:set var="displayedDescription"><view:encodeHtml string="${description}" /></c:set>
+<c:set var="displayedPrice"><view:encodeHtml string="${price}" /></c:set>
 <c:set var="displayedId"><view:encodeHtml string="${classifiedId}" /></c:set>
 <c:set var="displayedEmail"><view:encodeHtml string="${creatorEmail}" /></c:set>
 
@@ -196,11 +209,26 @@
 			</c:if>
 			<tr>
 				<td class="txtlibform"><fmt:message key="GML.title"/> :</td>
-				<td><input type="text" name="Title" size="60" maxlength="150" value="${displayedTitle}"/>
+				<td><input type="text" name="Title" size="60" maxlength="100" value="${displayedTitle}"/>
 					<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
 					<input type="hidden" name="ClassifiedId" value="${displayedId}"/>
 				</td>
 			</tr>
+			<tr>
+        <td class="txtlibform"><fmt:message key="GML.description"/> :</td>
+        <td><textarea cols="100" rows="5" name="Description">${displayedDescription}</textarea>
+          <img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
+        </td>
+      </tr>
+      <tr>
+        <td class="txtlibform"><fmt:message key="classifieds.price"/> :</td>
+        <td><input type="text" name="Price" size="10" maxlength="8" value="${displayedPrice}"/> €
+        </td>
+      </tr>
+      <tr>
+        <td class="txtlibform"><fmt:message key="classifieds.image"/> :</td>
+        <td><input type="file" name="Image" size="50"></td>
+      </tr>
 			<c:if test="${action eq 'UpdateClassified'}">
 				<tr>
 					<td class="txtlibform"><fmt:message key="classifieds.creationDate"/> :</td>
@@ -219,7 +247,7 @@
 					<td><view:formatDateTime value="${validateDate}" /> <span class="txtlibform"><fmt:message key="classifieds.by"/></span> ${validatorName}</td>
 				</tr>
 			</c:if>
-			<tr><td colspan="2">( <img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}" />" width="5" height="5"> : <fmt:message key="classifieds.mandatory"/> )</td></tr>
+			<tr><td colspan="2">( <img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}" />" width="5" height="5"> : <fmt:message key="GML.requiredField"/> )</td></tr>
 		</table>
 		</view:board>
 		<br/>
