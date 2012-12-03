@@ -31,6 +31,7 @@ import java.util.Iterator;
 
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
+import com.silverpeas.classifieds.model.Image;
 import com.silverpeas.classifieds.model.Subscribe;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.form.DataRecord;
@@ -77,7 +78,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
           ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
             "com.silverpeas.classifieds.multilang.classifiedsBundle",
-            "com.silverpeas.classifieds.settings.classifiedsIcons");
+            "com.silverpeas.classifieds.settings.classifiedsIcons",
+            "com.silverpeas.classifieds.settings.classifiedsSettings");
 
     // affectation du formulaire
     String xmlFormName = getXMLFormName();
@@ -551,4 +553,14 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     }
     return "";
   }
+  
+  /**
+   * create classified image
+   * @param classifiedImage : Image
+   * @return imageId : String
+   */
+  public synchronized String createClassifiedImage(Image classifiedImage) {
+    return getClassifiedService().createClassifiedImage(classifiedImage);
+  }
+
 }
