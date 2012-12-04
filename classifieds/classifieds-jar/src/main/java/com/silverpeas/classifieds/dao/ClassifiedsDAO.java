@@ -625,6 +625,23 @@ public class ClassifiedsDAO {
   }
   
   /**
+   * get a subscription to resultSet
+   * @param rs : ResultSet
+   * @return Subscribe
+   * @throws SQLException
+   */
+  private static Image recupImage(ResultSet rs) throws SQLException {
+    int imageId = rs.getInt("imageId");
+    int classifiedId = rs.getInt("classifiedId");
+    String imageName = rs.getString("imageName");
+    String mimeType = rs.getString("mimeType");
+
+    Image image = new Image(classifiedId, imageName, mimeType);
+    image.setImageId(imageId);
+    return image;
+  }
+  
+  /**
    * Create a classified image
    * @param con : Connection
    * @param classifiedImage : Image
@@ -654,5 +671,33 @@ public class ClassifiedsDAO {
     }
     return id;
   }
-
+  
+  /**
+   * get the images correspond to classifiedId
+   * @param con : Connection
+   * @param classifiedId : String
+   * @return a collection of Image
+   * @throws SQLException
+   */
+  public static Collection<Image> getAllImages(Connection con, String classifiedId)
+      throws SQLException {
+    // récupérer les images de la petite annonce
+    Collection<Image> listImages = new ArrayList<Image>();
+    String query = "select * from SC_Classifieds_Images where classifiedId = ? order by imageId";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setInt(1, Integer.parseInt(classifiedId));
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        Image image = recupImage(rs);
+        listImages.add(image);
+      }
+    } finally {
+      // fermeture
+      DBUtil.close(rs, prepStmt);
+    }
+    return listImages;
+  }
 }

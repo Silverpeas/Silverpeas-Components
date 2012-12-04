@@ -23,7 +23,7 @@
  */
 package com.silverpeas.classifieds.control;
 
-import java.rmi.RemoteException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -51,8 +51,15 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
+
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,8 +67,6 @@ import java.util.Map;
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
 
   private int indexOfFirstItemToDisplay = 0;
-  //private Map<String, String> fields1 = createListField(getSearchFields1());
-  //private Map<String, String> fields2 = createListField(getSearchFields2());
   private Map<String, String> fields1 = null;
   private Map<String, String> fields2 = null;
   private CommentService commentService = null;
@@ -91,7 +96,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
         getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
                 + xmlFormShortName, xmlFormName);
       } catch (PublicationTemplateException e) {
-        throw new ClassifiedsRuntimeException("GallerySessionController.super()",
+        throw new ClassifiedsRuntimeException("ClassifiedsSessionController.super()",
                 SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
@@ -191,12 +196,11 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * take out draft mode the classified corresponding to classified
    * @param classifiedId : String
    * @param profile : String
-   * @throws RemoteException
    * @throws PublicationTemplateException
    * @throws FormException
    */
   public synchronized void draftOutClassified(String classifiedId, ClassifiedsRole highestRole)
-          throws RemoteException, PublicationTemplateException, FormException {
+          throws PublicationTemplateException, FormException {
     getClassifiedService().draftOutClassified(classifiedId, highestRole.toString());
     if (highestRole == ClassifiedsRole.MANAGER) {
       sendSubscriptionsNotification(classifiedId);
@@ -206,9 +210,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   /**
    * pass the classified corresponding to classifiedId in draft mode
    * @param classifiedId : String
-   * @throws RemoteException
    */
-  public synchronized void draftInClassified(String classifiedId) throws RemoteException {
+  public synchronized void draftInClassified(String classifiedId) {
     getClassifiedService().draftInClassified(classifiedId);
   }
 
@@ -216,12 +219,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * pass to status validate because the user corresponding to userId validated the classified
    * corresponding to classifiedId
    * @param classifiedId : String
-   * @throws RemoteException
    * @throws PublicationTemplateException
    * @throws FormException
    */
-  public synchronized void validateClassified(String classifiedId) throws RemoteException,
-          PublicationTemplateException, FormException {
+  public synchronized void validateClassified(String classifiedId) throws PublicationTemplateException, FormException {
     getClassifiedService().validateClassified(classifiedId, getUserId());
     sendSubscriptionsNotification(classifiedId);
   }
@@ -231,10 +232,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * corresponding to classifiedId for the motive ResusalMotive
    * @param classifiedId : String
    * @param motive : String
-   * @throws RemoteException
    */
-  public synchronized void refusedClassified(String classifiedId, String motive)
-          throws RemoteException {
+  public synchronized void refusedClassified(String classifiedId, String motive) {
     getClassifiedService().refusedClassified(classifiedId, getUserId(), motive);
   }
 
@@ -556,11 +555,106 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   
   /**
    * create classified image
-   * @param classifiedImage : Image
+   * @param fileImage : FileItem
+   * @param classifiedId : String
    * @return imageId : String
    */
-  public synchronized String createClassifiedImage(Image classifiedImage) {
+  public synchronized String createClassifiedImage(FileItem fileImage, String classifiedId) {
+    Image classifiedImage = null;
+    String physicalName = null;
+    String mimeType = null;
+    
+    try {
+      String imageSubDirectory = getResources().getSetting("imagesSubDirectory");
+      String fullFileName = fileImage.getName();
+      String fileName = fullFileName.substring(
+                        fullFileName.lastIndexOf(File.separator) + 1,
+                        fullFileName.length());
+      String extension = FileRepositoryManager.getFileExtension(fullFileName);
+      
+      physicalName = new Long(new Date().getTime()).toString()
+          + "." + extension;
+      
+      mimeType = AttachmentController.getMimeType(fileName);
+
+      //save picture file in the fileServer
+      String filePath = FileRepositoryManager
+          .getAbsolutePath(this.getComponentId())
+          + imageSubDirectory + File.separator + physicalName;
+      File file = new File(filePath);
+      if (!file.exists()) {
+        FileFolderManager.createFolder(file.getParentFile());
+        file.createNewFile();
+      }
+      fileImage.write(file);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.createClassifiedImage()",
+            SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_CREATE", e);
+    }
+   
+    //save the picture in the data base
+    classifiedImage = new Image(Integer.parseInt(classifiedId), physicalName, mimeType);
     return getClassifiedService().createClassifiedImage(classifiedImage);
   }
 
+  /**
+   * get classified corresponding to classifiedId including images
+   * @param classifiedId : String
+   * @return classified : ClassifiedDetail
+   */
+  public ClassifiedDetail getClassifiedWithImages(String classifiedId) {
+    ClassifiedDetail classified = getClassified(classifiedId);
+    //load images object 
+    Collection<Image> images = getClassifiedService().getAllClassifiedImage(classifiedId);
+    classified.setImages(images);
+    return classified;
+  }
+  
+  /**
+   * update classified image
+   * @param classifiedImage : Image
+   * @return imageId : String
+   */
+  public synchronized String updateClassifiedImage(FileItem fileImage, String classifiedId) {
+    Image classifiedImage = null;
+    String physicalName = null;
+    String mimeType = null;
+    
+    try {
+      
+      ClassifiedDetail classified = getClassifiedWithImages(classifiedId);
+      Collection<Image> listImages = classified.getImages();
+      
+      
+      String imageSubDirectory = getResources().getSetting("imagesSubDirectory");
+      String fullFileName = fileImage.getName();
+      String fileName = fullFileName.substring(
+                        fullFileName.lastIndexOf(File.separator) + 1,
+                        fullFileName.length());
+      String extension = FileRepositoryManager.getFileExtension(fullFileName);
+      
+      physicalName = new Long(new Date().getTime()).toString()
+          + "." + extension;
+      
+      mimeType = AttachmentController.getMimeType(fileName);
+
+      //save picture file in the fileServer
+      String filePath = FileRepositoryManager
+          .getAbsolutePath(this.getComponentId())
+          + imageSubDirectory + File.separator + physicalName;
+      File file = new File(filePath);
+      if (!file.exists()) {
+        FileFolderManager.createFolder(file.getParentFile());
+        file.createNewFile();
+      }
+      fileImage.write(file);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.createClassifiedImage()",
+            SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_CREATE", e);
+    }
+   
+    //save the picture in the data base
+    classifiedImage = new Image(Integer.parseInt(classifiedId), physicalName, mimeType);
+    return getClassifiedService().createClassifiedImage(classifiedImage);
+  }
 }

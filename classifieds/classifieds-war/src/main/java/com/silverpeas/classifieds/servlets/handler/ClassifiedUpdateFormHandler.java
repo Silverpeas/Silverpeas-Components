@@ -22,7 +22,7 @@ public class ClassifiedUpdateFormHandler extends FunctionHandler {
 
     // Retrieves parameters
     String classifiedId = request.getParameter("ClassifiedId");
-    ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
+    ClassifiedDetail classified = classifiedsSC.getClassifiedWithImages(classifiedId);
 
     // Get form template and data
     Form formView = null;
@@ -39,6 +39,7 @@ public class ClassifiedUpdateFormHandler extends FunctionHandler {
     }
 
     // Stores objects in request
+    request.setAttribute("ImagesDirectory", classifiedsSC.getSettings().getString("imagesSubDirectory"));
     request.setAttribute("Classified", classified);
     request.setAttribute("UserName", classifiedsSC.getUserDetail().getDisplayedName());
     request.setAttribute("UserEmail", classifiedsSC.getUserDetail().geteMail());

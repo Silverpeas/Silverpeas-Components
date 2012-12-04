@@ -232,4 +232,12 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
    * @
    */
   public String createClassifiedImage(Image classifiedImage);
+  
+  /**
+   * get all images for the given classified 
+   * @param classifiedId : String
+   * @return a collection of Image
+   * @
+   */
+  public Collection<Image> getAllClassifiedImage(String classifiedId);
 }

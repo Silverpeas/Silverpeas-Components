@@ -33,6 +33,7 @@ public class ClassifiedCreationFormHandler extends FunctionHandler {
     }
 
     // Stores objects in request
+    request.setAttribute("ImagesDirectory", classifiedsSC.getSettings().getString("imagesSubDirectory"));
     request.setAttribute("Classified", null);
     request.setAttribute("UserName", classifiedsSC.getUserDetail().getDisplayedName());
     request.setAttribute("UserEmail", classifiedsSC.getUserDetail().geteMail());

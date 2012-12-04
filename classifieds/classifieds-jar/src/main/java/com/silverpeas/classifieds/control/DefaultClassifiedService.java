@@ -105,7 +105,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       return ClassifiedsDAO.getClassified(con, classifiedId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getClassified()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getContentById()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIED", e);
     } finally {
       closeConnection(con);
@@ -134,7 +134,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       }
       return id;
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.createClassified()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.createClassified()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_NOT_CREATE", e);
     } finally {
       closeConnection(con);
@@ -149,7 +149,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       ClassifiedsDAO.deleteClassified(con, classifiedId);
       deleteIndex(classified);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.deleteClassified()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteClassified()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_NOT_DELETE", e);
     } finally {
       closeConnection(con);
@@ -165,7 +165,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       classified.setUpdateDate(new Date());
       updateClassified(classified);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.unvalidateClassified()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.unpublishClassified()",
           SilverpeasRuntimeException.ERROR, "classifieds.EX_ERR_REFUSED_CLASSIFIED", e);
     } finally {
       closeConnection(con);
@@ -194,7 +194,7 @@ public class DefaultClassifiedService implements ClassifiedService {
         sendAlertToSupervisors(classified);
       }
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.updateClassified()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.updateClassified()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_NOT_UPDATE", e);
     } finally {
       closeConnection(con);
@@ -207,7 +207,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       return ClassifiedsDAO.getAllClassifieds(con, instanceId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getAllClassifieds()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllClassifieds()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
     } finally {
       closeConnection(con);
@@ -220,7 +220,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       return ClassifiedsDAO.getNbTotalClassifieds(con, instanceId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getNbTotalClassifieds()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getNbTotalClassifieds()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_NB_CLASSIFIEDS", e);
     } finally {
       closeConnection(con);
@@ -233,7 +233,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       return ClassifiedsDAO.getClassifiedsByUser(con, instanceId, userId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getClassifiedsByUser()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getClassifiedsByUser()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
     } finally {
       closeConnection(con);
@@ -246,7 +246,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       return ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.TO_VALIDATE);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getClassifiedsToValidate()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getClassifiedsToValidate()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
     } finally {
       closeConnection(con);
@@ -259,7 +259,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       return ClassifiedsDAO.getUnpublishedClassifieds(con, instanceId, userId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getClassifiedsToValidate()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getUnpublishedClassifieds()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
     } finally {
       closeConnection(con);
@@ -268,7 +268,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public void validateClassified(String classifiedId, String userId) {
-    SilverTrace.info("classified", "ClassifiedsBmEJB.validateClassified()",
+    SilverTrace.info("classified", "DefaultClassifiedService.validateClassified()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
       ClassifiedDetail classified = getContentById(classifiedId);
@@ -280,16 +280,16 @@ public class DefaultClassifiedService implements ClassifiedService {
       updateClassified(classified);
       sendValidationNotification(classified.getCreatorId(), classified, null, userId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.validateClassified()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.validateClassified()",
           SilverpeasRuntimeException.ERROR, "classifieds.EX_ERR_VALIDATE_CLASSIFIED", e);
     }
-    SilverTrace.info("classified", "ClassifiedsBmEJB.validateClassified()",
+    SilverTrace.info("classified", "DefaultClassifiedService.validateClassified()",
         "root.MSG_GEN_EXIT_METHOD", "classifiedId = " + classifiedId);
   }
 
   @Override
   public void refusedClassified(String classifiedId, String userId, String refusalMotive) {
-    SilverTrace.info("classified", "ClassifiedsBmEJB.refusedClassified()",
+    SilverTrace.info("classified", "DefaultClassifiedService.refusedClassified()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
       ClassifiedDetail classified = getContentById(classifiedId);
@@ -297,7 +297,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       updateClassified(classified);
       sendValidationNotification(classified.getCreatorId(), classified, refusalMotive, userId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.unvalidateClassified()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.refusedClassified()",
           SilverpeasRuntimeException.ERROR, "classifieds.EX_ERR_REFUSED_CLASSIFIED", e);
     }
   }
@@ -323,7 +323,7 @@ public class DefaultClassifiedService implements ClassifiedService {
           field1, field2)));
 
     } catch (Exception e) {
-      SilverTrace.warn("classifieds", "ClassifiedsBmEJB.sendSubscriptionsNotification()",
+      SilverTrace.warn("classifieds", "DefaultClassifiedService.sendSubscriptionsNotification()",
           "classifieds.EX_ERR_ALERT_USERS", "", e);
     }
   }
@@ -331,12 +331,12 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public Collection<ClassifiedDetail> getAllClassifiedsToUnpublish(int nbDays, String instanceId) {
     Connection con = openConnection();
-    SilverTrace.info("classifieds", "classifiedsBmEJB.getAllClassifiedsToDelete()",
+    SilverTrace.info("classifieds", "DefaultClassifiedService.getAllClassifiedsToUnpublish()",
         "root.MSG_GEN_ENTER_METHOD", "nbDays = " + nbDays);
     try {
       return ClassifiedsDAO.getAllClassifiedsToUnpublish(con, nbDays, instanceId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getAllClassifiedsToDelete()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllClassifiedsToUnpublish()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
     } finally {
       // fermer la connexion
@@ -355,7 +355,7 @@ public class DefaultClassifiedService implements ClassifiedService {
         if ("Classified".equals(matchIndex.getObjectType())) {
           ClassifiedDetail classified = getContentById(matchIndex.getObjectId());
           if (classified != null) {
-            SilverTrace.info("classifieds", "ClassifiedsBmEJB.search()",
+            SilverTrace.info("classifieds", "DefaultClassifiedService.search()",
                 "root.MSG_GEN_ENTER_METHOD", "classified = " + classified.getTitle());
             // ne l'ajouter que si elle est valide
             if (ClassifiedDetail.VALID.equals(classified.getStatus())) {
@@ -370,7 +370,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       // pour ordonner les petites annonces de la plus récente vers la plus ancienne
       Collections.reverse(classifieds);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.search()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.search()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e);
     }
     return classifieds;
@@ -411,10 +411,10 @@ public class DefaultClassifiedService implements ClassifiedService {
           RecordSet set = pubTemplate.getRecordSet();
           String classifiedId = Integer.toString(classified.getClassifiedId());
           set.indexRecord(classifiedId, xmlFormShortName, indexEntry);
-          SilverTrace.info("classifieds", "ClassifiedsBmEJB.createIndex()",
+          SilverTrace.info("classifieds", "DefaultClassifiedService.createIndex()",
               "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString());
         } catch (Exception e) {
-          throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.createIndex()",
+          throw new ClassifiedsRuntimeException("DefaultClassifiedService.createIndex()",
               SilverpeasRuntimeException.ERROR,
               "classifieds.EX_ERR_GET_SILVEROBJECTID", e);
         }
@@ -424,7 +424,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   public void deleteIndex(ClassifiedDetail classified) {
-    SilverTrace.info("classifieds", "ClassifiedsBmEJB.deleteIndex()", "root.MSG_GEN_ENTER_METHOD",
+    SilverTrace.info("classifieds", "DefaultClassifiedService.deleteIndex()", "root.MSG_GEN_ENTER_METHOD",
         "ClassifiedId = " + classified.toString());
     IndexEntryPK indexEntry =
         new IndexEntryPK(classified.getInstanceId(), "Classified", Integer.toString(classified
@@ -482,7 +482,7 @@ public class DefaultClassifiedService implements ClassifiedService {
         subscribe.setSubscribeId(id);
       }
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.createSubscribe()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.createSubscribe()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_SUBSCRIBE_NOT_CREATE", e);
     } finally {
       // fermer la connexion
@@ -496,7 +496,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       ClassifiedsDAO.deleteSubscribe(con, subscribeId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.deleteSubscribe()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteSubscribe()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_SUBSCRIBE_NOT_DELETE", e);
     } finally {
       // fermer la connexion
@@ -517,7 +517,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       return true;
 
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.checkSubscription()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.checkSubscription()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_SUBSCRIBE", e);
     }
   }
@@ -528,7 +528,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       return ClassifiedsDAO.getSubscribesByUser(con, instanceId, userId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getSubscribesByUser()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getSubscribesByUser()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_SUBSCRIBES", e);
     } finally {
       // fermer la connexion
@@ -542,7 +542,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       return ClassifiedsDAO.getUsersBySubscribe(con, field1, field2);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getUsersBySubscribe()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getUsersBySubscribe()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_SUBSCRIBES", e);
     } finally {
       // fermer la connexion
@@ -555,7 +555,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       return ClassifiedsDAO.getAllSubscribes(con, instanceId);
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getAllSubscribes()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllSubscribes()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_SUBSCRIBES", e);
     } finally {
       // fermer la connexion
@@ -586,9 +586,28 @@ public class DefaultClassifiedService implements ClassifiedService {
       classifiedImage.setImageId(Integer.parseInt(id));
       return id;
     } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.createClassifiedImage()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.createClassifiedImage()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_CREATE", e);
     } finally {
+      closeConnection(con);
+    }
+  }
+  
+  /**
+   * get all images for the given classified 
+   * @param classifiedId : String
+   * @return a collection of Image
+   * @
+   */
+  public Collection<Image> getAllClassifiedImage(String classifiedId) {
+    Connection con = openConnection();
+    try {
+      return ClassifiedsDAO.getAllImages(con, classifiedId);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllClassifiedImage()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGES", e);
+    } finally {
+      // fermer la connexion
       closeConnection(con);
     }
   }
@@ -598,7 +617,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       con.close();
     } catch (SQLException e) {
       // traitement des exceptions
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.fermerCon()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.closeConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", e);
     }
   }
@@ -610,7 +629,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
     } catch (UtilException e) {
       // traitement des exceptions
-      throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.initCon()",
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.openConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
     return con;

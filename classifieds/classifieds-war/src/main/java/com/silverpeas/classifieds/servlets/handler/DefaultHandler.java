@@ -66,7 +66,7 @@ public class DefaultHandler extends FunctionHandler {
       return "accueil.jsp";
     } catch (Exception e) {
       // form error
-      request.setAttribute("ErrorType", "labelErrorForm");
+      request.setAttribute("ErrorType", classifiedsSC.getResources().getString("classifieds.labelErrorForm"));      
       return "error.jsp";
     }
   }
