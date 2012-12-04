@@ -194,6 +194,7 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
+import com.silverpeas.kmelia.control.KmeliaServiceFactory;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class KmeliaSessionController extends AbstractComponentSessionController implements
@@ -1858,98 +1859,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public void pasteDocumentsAsAttachments(PublicationPK pubPKFrom, String pubId) throws
       RemoteException, IOException {
-    SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocumentsAsAttachments()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "pubPKFrom = " + pubPKFrom.toString() + ", pubId = " + pubId);
-
-    // paste versioning documents attached to publication
-    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKeyAndType(pubPKFrom, DocumentType.attachment, getLanguage());
-
-    SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocumentsAsAttachments()",
-        "root.MSG_GEN_PARAM_VALUE", documents.size() + " documents to paste");
-
-    if (documents.isEmpty()) {
-      return;
-    }
-
-    // paste each document
-    for (SimpleDocument document : documents) {
-      SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocumentsAsAttachments()",
-          "root.MSG_GEN_PARAM_VALUE", "document name = " + document.getTitle());
-      // retrieve last public versions of the document
-      SimpleDocument lastVersion = document.getLastPublicVersion();
-      if (lastVersion != null) {
-        SimpleDocument newVersion = new SimpleDocument(new SimpleDocumentPK(null, getComponentId()),
-            pubId, lastVersion.getOrder(), false, lastVersion.getEditedBy(),
-            new SimpleAttachment(lastVersion.getFilename(),
-            lastVersion.getLanguage(), lastVersion.getTitle(), lastVersion.getDescription(),
-            lastVersion.getSize(), lastVersion.getContentType(), getUserId(), new Date(),
-            lastVersion.getXmlFormId()));
-
-        ByteArrayInputStream in = null;
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        try {
-          AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, lastVersion.
-              getPk(), getLanguage());
-          in = new ByteArrayInputStream(buffer.toByteArray());
-          newVersion = AttachmentServiceFactory.getAttachmentService().createAttachment(newVersion,
-              in, false);
-        } finally {
-          IOUtils.closeQuietly(buffer);
-          IOUtils.closeQuietly(in);
-        }
-        for (String lang : I18NHelper.getAllSupportedLanguages()) {
-          if (!lang.equalsIgnoreCase(getLanguage())) {
-            buffer = new ByteArrayOutputStream();
-            try {
-              AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, lastVersion.
-                  getPk(), lang);
-              in = new ByteArrayInputStream(buffer.toByteArray());
-              lastVersion = AttachmentServiceFactory.getAttachmentService().
-                  searchDocumentById(document.getPk(), lang).getLastPublicVersion();
-              newVersion = new SimpleDocument(newVersion.getPk(), pubId, lastVersion.getOrder(),
-                  false, lastVersion.getEditedBy(), new SimpleAttachment(lastVersion.getFilename(),
-                  lastVersion.getLanguage(), lastVersion.getTitle(), lastVersion.getDescription(),
-                  lastVersion.getSize(), lastVersion.getContentType(), getUserId(), new Date(),
-                  lastVersion.getXmlFormId()));
-              AttachmentServiceFactory.getAttachmentService().updateAttachment(newVersion, in,
-                  false, true);
-            } finally {
-              IOUtils.closeQuietly(buffer);
-              IOUtils.closeQuietly(in);
-            }
-          }
-        }
-      }
-    }
+    KmeliaServiceFactory.getFactory().getKmeliaService().pasteDocumentsAsAttachments(pubPKFrom,
+        new PublicationPK(pubId, getComponentId()), getLanguage(), getUserId());
   }
 
   public void pasteAttachmentsAsDocuments(PublicationPK pubPKFrom, String pubId)
       throws RemoteException {
-    SilverTrace.info("kmelia", "KmeliaSessionController.pasteAttachmentsAsDocuments()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "pubPKFrom = " + pubPKFrom.toString() + ", pubId = " + pubId);
-
-    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKeyAndType(pubPKFrom, DocumentType.attachment, getLanguage());
-
-    SilverTrace.info("kmelia", "KmeliaSessionController.pasteAttachmentsAsDocuments()",
-        "root.MSG_GEN_PARAM_VALUE", attachments.size() + " attachments to paste");
-
-    if (attachments.isEmpty()) {
-      return;
-    }
-
-
-    // paste each attachment
-    for (SimpleDocument attachment : attachments) {
-      SilverTrace.info("kmelia", "KmeliaSessionController.pasteAttachmentsAsDocuments()",
-          "root.MSG_GEN_PARAM_VALUE", "attachment name = " + attachment.getTitle());
-      SimpleDocumentPK pk = AttachmentServiceFactory.getAttachmentService().copyDocument(attachment,
-          new ForeignPK(pubId, getComponentId()));
-      AttachmentServiceFactory.getAttachmentService().changeVersionState(pk);
-    }
+    KmeliaServiceFactory.getFactory().getKmeliaService().pasteAttachmentsAsDocuments(pubPKFrom,
+        new PublicationPK(pubId, getComponentId()), getLanguage());
   }
 
   /**
@@ -1961,11 +1878,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    */
   public int addPublicationsToLink(String pubId, HashSet<String> links) throws RemoteException {
-    StringTokenizer tokens = null;
-
     List<ForeignPK> infoLinks = new ArrayList<ForeignPK>();
     for (String link : links) {
-      tokens = new StringTokenizer(link, "/");
+      StringTokenizer tokens = new StringTokenizer(link, "/");
       infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
     }
     addInfoLinks(pubId, infoLinks);
@@ -3169,7 +3084,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           try {
             NodePK fromForeignPK = fromNode.getNodePK();
             List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-                listAllDocumentsByForeignKey(fromForeignPK,getLanguage());
+                listAllDocumentsByForeignKey(fromForeignPK, getLanguage());
             ForeignPK toForeignPK = new ForeignPK(toNodePK.getId(), getComponentId());
             for (SimpleDocument document : documents) {
               AttachmentServiceFactory.getAttachmentService().moveDocument(document, toForeignPK);
