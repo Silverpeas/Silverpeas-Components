@@ -176,8 +176,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String[] publicationIds = request.getParameterValues("pubid");
         Collection<KmeliaPublication> publications = kmelia.getPublications(asPks(kmelia.
                 getComponentId(), publicationIds));
-        request.setAttribute("Context", GeneralPropertiesManager.getGeneralResourceLocator().
-                    getString("ApplicationURL"));
+        request.setAttribute("Context", URLManager.getApplicationURL());
         request.setAttribute("PublicationsDetails", publications);
         destination = rootDestination + "validateImportedFilesClassification.jsp";
       } else if (function.startsWith("portlet")) {
@@ -1213,15 +1212,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         setWizardParams(request, kmelia);
         destination = rootDestination + "modelsList.jsp";
       } else if (function.equals("ModelUsed")) {
-        try {
-          List<PublicationTemplate> templates =
-                  getPublicationTemplateManager().getPublicationTemplates();
-          request.setAttribute("XMLForms", templates);
-        } catch (Exception e) {
-          SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination(ModelUsed)",
-                  "root.MSG_GEN_PARAM_VALUE", "", e);
-        }
-
+        request.setAttribute("XMLForms", kmelia.getForms());
+        
         // put dbForms
         Collection<ModelDetail> dbForms = kmelia.getAllModels();
         request.setAttribute("DBForms", dbForms);
@@ -1800,9 +1792,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       }
 
       if (profileError) {
-        String sessionTimeout =
-                GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
-        destination = sessionTimeout;
+        destination = GeneralPropertiesManager.getString("sessionTimeout");
       }
       SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
@@ -2016,26 +2006,21 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           fileSize = fileItem.getSize();
 
           // Directory Temp for the uploaded file
-          tempFolderPath = FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId())
-                  + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                      "RepositoryTypeTemp") + File.separator + tempFolderName;
+          tempFolderPath =
+              FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId())
+                  + GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator +
+                  tempFolderName;
           if (!new File(tempFolderPath).exists()) {
-            FileRepositoryManager.createAbsolutePath(
-                    kmeliaScc.getComponentId(), GeneralPropertiesManager
-                        .getGeneralResourceLocator().
-                        getString("RepositoryTypeTemp")
-                        +
-                        File.separator + tempFolderName);
+            FileRepositoryManager.createAbsolutePath(kmeliaScc.getComponentId(),
+                GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator +
+                    tempFolderName);
           }
 
           // Creation of the file in the temp folder
           File fileUploaded =
-                  new File(FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId())
-                      + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                          "RepositoryTypeTemp")
-                      + File.separator
-                      + tempFolderName
-                      + File.separator + logicalName);
+              new File(FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId()) +
+                  GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator +
+                  tempFolderName + File.separator + logicalName);
           fileItem.write(fileUploaded);
 
           // Is a real file ?
@@ -2080,8 +2065,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("ImportMode", importMode);
             request.setAttribute("DraftMode", draftMode);
             request.setAttribute("Title", importModeTitle);
-            request.setAttribute("Context", GeneralPropertiesManager.getGeneralResourceLocator().
-                    getString("ApplicationURL"));
+            request.setAttribute("Context", URLManager.getApplicationURL());
             destination = routeDestination + "reportImportFiles.jsp";
             String componentId = publicationDetails.get(0).getComponentInstanceId();
             if (kmeliaScc.isDefaultClassificationModifiable(topicId, componentId)) {
@@ -2611,24 +2595,17 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           HttpServletRequest request) throws RemoteException {
     Collection<String> modelUsed = kmelia.getModelUsed();
     Collection<PublicationTemplate> listModelXml = new ArrayList<PublicationTemplate>();
-    List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
-    try {
-      templates = getPublicationTemplateManager().getPublicationTemplates();
-      // recherche de la liste des modèles utilisables
-      PublicationTemplate xmlForm;
-      for (PublicationTemplate template : templates) {
-        xmlForm = template;
-        // recherche si le modèle est dans la liste
-        if (modelUsed.contains(xmlForm.getFileName())) {
-          listModelXml.add(xmlForm);
-        }
+    List<PublicationTemplate> templates = kmelia.getForms();
+    // recherche de la liste des modèles utilisables
+    for (PublicationTemplate template : templates) {
+      PublicationTemplate xmlForm = template;
+      // recherche si le modèle est dans la liste
+      if (modelUsed.contains(xmlForm.getFileName())) {
+        listModelXml.add(xmlForm);
       }
-
-      request.setAttribute("XMLForms", listModelXml);
-    } catch (Exception e) {
-      SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination(ListModels)",
-              "root.MSG_GEN_PARAM_VALUE", "", e);
     }
+
+    request.setAttribute("XMLForms", listModelXml);
 
     // put dbForms
     Collection<ModelDetail> dbForms = kmelia.getAllModels();
