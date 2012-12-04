@@ -12,23 +12,21 @@
                          responsibleid="6" createrid="6" updaterid="6"
                          description="Véhicules utilitaires"/>
 
-  <sc_resources_resource id="1" instanceId="resourcesManager42" categoryId="1"
-                         name="Salle Chartreuse"
+  <sc_resources_resource id="1" instanceId="resourcesManager42" categoryId="1" name="Salle Chartreuse"
                          creationdate="1315232852398" updatedate="1315232852398" bookable="1"
-                         createrid="5" updaterid="5"
-                         description="Salle de réunion jusqu'à 4 personnes"/>
-  <sc_resources_resource id="2" instanceId="resourcesManager42" categoryId="1"
-                         name="Salle Belledonne"
+                         createrid="5" updaterid="5" description="Salle de réunion jusqu'à 4 personnes" />
+  <sc_resources_resource id="2" instanceId="resourcesManager42" categoryId="1" name="Salle Belledonne"
                          creationdate="1315232852398" updatedate="1315232852398" bookable="1"
-                         createrid="5" updaterid="5"
-                         description="Salle de réunion jusqu'à 12 personnes"/>
-  <sc_resources_resource id="3" instanceId="resourcesManager42" categoryId="2"
-                         name="Twingo verte - 156 VV 38"
+                         createrid="5" updaterid="5" description="Salle de réunion jusqu'à 12 personnes"/>
+  <sc_resources_resource id="3" instanceId="resourcesManager42" categoryId="2" name="Twingo verte - 156 VV 38" 
                          creationdate="1315232852398" updatedate="1315232852398" bookable="1"
                          createrid="5" updaterid="5" description="Twingo verte 4 places 5 portes"/>
   <sc_resources_resource id="4" instanceId="resourcesManager42" categoryId="2" name="Twingo verte - 156 VV 73"
-                         creationdate="1315232852398" updatedate="1315232852398" bookable="0"
+                         creationdate="1315232852398" updatedate="1315232852398" bookable="0" 
                          createrid="5" updaterid="5" description="Twingo bleue 4 places 5 portes"/>
+  <sc_resources_resource id="5" instanceId="resourcesManager42" categoryId="1" name="Salle Vercors"
+                         creationdate="1315232852398" updatedate="1315232852398" bookable="1"
+                         createrid="5" updaterid="5" description="Salle de réunion jusqu'à 9 personnes"/>
                       
   <sc_resources_reservedresource reservationid="3" resourceid="1" status="V" />
   <sc_resources_reservedresource reservationid="3" resourceid="2" status="R" />
@@ -60,6 +58,7 @@
   <sc_resources_managers resourceid="2" managerid="0" />  
   <sc_resources_managers resourceid="3" managerid="0" />  
   <sc_resources_managers resourceid="3" managerid="9" />
+  <sc_resources_managers resourceid="5" managerid="3" />
 
   <uniqueId maxId="20" tablename="SC_Resources_Resource"/>
 
