@@ -70,6 +70,8 @@ public class ReservationService {
             .getResourceValidator(resourceId, Long.parseLong(savedReservation.getUserId())) ==
             null) {
           reservedResource.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
+        } else {
+          reservedResource.setStatus(ResourceStatus.STATUS_VALIDATE);
         }
       } else {
         reservedResource.setStatus(reservation.getStatus());

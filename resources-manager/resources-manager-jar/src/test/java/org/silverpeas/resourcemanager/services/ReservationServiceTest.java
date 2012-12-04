@@ -45,6 +45,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.resourcemanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -72,6 +73,8 @@ public class ReservationServiceTest {
   private ReservationService service;
   @Inject
   private ResourceService resourceService;
+  @Inject
+  private ReservedResourceService reservedResourceService;
   @Inject
   @Named("jpaDataSource")
   private DataSource dataSource;
@@ -126,6 +129,58 @@ public class ReservationServiceTest {
     assertThat(resources, hasSize(2));
   }
 
+  /**
+   * Test of createReservation method, of class ReservationService.
+   */
+  @Test
+  public void testCreateReservationFromUserNotManagerOfResource() {
+    String instanceId = "resourcesManager42";
+    Reservation reservation = new Reservation("Test de Noel", new Date(1320134400000L),
+        new Date(1320163200000L), "To test", "at work");
+    reservation.setInstanceId(instanceId);
+    reservation.setUserId("5");
+    long id = Long.parseLong(service.createReservation(reservation,
+        Arrays.asList(new Long[]{5L})));
+    Reservation createdReservation = service.getReservation(id);
+    reservation.setId(String.valueOf(id));
+    assertThat(reservation, is(createdReservation));
+    List<Resource> resources = resourceService.listResourcesOfReservation(id);
+    assertThat(resources, is(notNullValue()));
+    assertThat(resources, hasSize(1));
+    List<ReservedResource> reservedResources = reservedResourceService.findAllReservedResourcesOfReservation(id);
+    assertThat(reservedResources, is(notNullValue()));
+    assertThat(reservedResources, hasSize(1));
+    String status = reservedResources.get(0).getStatus();
+    assertThat(status, is(ResourceStatus.STATUS_FOR_VALIDATION));
+  }
+
+  
+  /**
+   * Test of createReservation method, of class ReservationService.
+   */
+  @Test
+  public void testCreateReservationWithResourceFromUserManagerOfResource() {
+    String instanceId = "resourcesManager42";
+    Reservation reservation = new Reservation("Autre Test de Noel", new Date(1320134400000L),
+        new Date(1320163200000L), "To test", "at work");
+    reservation.setInstanceId(instanceId);
+    reservation.setUserId("3");
+    long id = Long.parseLong(service.createReservation(reservation,
+        Arrays.asList(new Long[]{5L})));
+    Reservation createdReservation = service.getReservation(id);
+    reservation.setId(String.valueOf(id));
+    assertThat(reservation, is(createdReservation));
+    List<Resource> resources = resourceService.listResourcesOfReservation(id);
+    assertThat(resources, is(notNullValue()));
+    assertThat(resources, hasSize(1));
+    List<ReservedResource> reservedResources = reservedResourceService.findAllReservedResourcesOfReservation(id);
+    assertThat(reservedResources, is(notNullValue()));
+    assertThat(reservedResources, hasSize(1));
+    String status = reservedResources.get(0).getStatus();
+    assertThat(status, is(ResourceStatus.STATUS_VALIDATE));
+  }
+
+  
   /**
    * Test of computeReservationStatus method, of class ReservationService.
    */
