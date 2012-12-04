@@ -85,8 +85,6 @@ void displayUserAttachmentsView(PublicationDetail pubDetail, String m_context, J
 	              out.println("<TR><TD align=\"center\"><img src=\""+m_context+"/util/icons/attachedFiles.gif\"></td></TR>");
               while (iterator.hasNext()) {
                     document = (Document) iterator.next();
-/*                    if (isUserReader( document, Integer.parseInt(user_id), versioning_util))
-                    { */
                        document_version = versioning_util.getLastPublicVersion(document.getPk());
                        if ( document_version != null )
                        {
@@ -110,7 +108,6 @@ void displayUserAttachmentsView(PublicationDetail pubDetail, String m_context, J
 		                       }
 	                         out.println("</TD></TR>");
 	                       }
-//	                   }
 	              }
               out.println("</TABLE>");
               out.println("</td></tr>");

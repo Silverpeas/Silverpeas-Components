@@ -670,7 +670,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                     + kmelia.getSpaceId() + " componentId=" + kmelia.getComponentId());
         try {
           String attachmentId = request.getParameter("AttachmentOrDocumentId");
-          destination = kmelia.initAlertUserAttachment(attachmentId, false);
+          destination = kmelia.initAlertUserAttachment(attachmentId);
         } catch (Exception e) {
           SilverTrace.warn("kmelia", "KmeliaRequestRooter.getDestination()",
                   "root.EX_USERPANEL_FAILED", "function = " + function, e);
@@ -687,7 +687,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                     + kmelia.getSpaceId() + " componentId=" + kmelia.getComponentId());
         try {
           String documentId = request.getParameter("AttachmentOrDocumentId");
-          destination = kmelia.initAlertUserAttachment(documentId, true);
+          destination = kmelia.initAlertUserAttachment(documentId);
         } catch (Exception e) {
           SilverTrace.warn("kmelia", "KmeliaRequestRooter.getDestination()",
                   "root.EX_USERPANEL_FAILED", "function = " + function, e);

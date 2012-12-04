@@ -20,14 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import java.io.ByteArrayInputStream;
-import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_FOR_USER;
-import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_LANGUAGE;
-import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_TOPIC;
-import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.aKmeliaPublicationExporter;
-import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -46,15 +38,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
@@ -71,6 +72,7 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
+import com.silverpeas.kmelia.control.KmeliaServiceFactory;
 import com.silverpeas.kmelia.export.ExportFileNameProducer;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -95,6 +97,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
+
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -110,11 +113,6 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.Worker;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -145,8 +143,6 @@ import com.stratelia.webactiv.kmelia.model.updatechain.FieldParameter;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.model.updatechain.UpdateChainDescriptor;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -155,14 +151,10 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -183,19 +175,10 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
-import com.silverpeas.kmelia.control.KmeliaServiceFactory;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 public class KmeliaSessionController extends AbstractComponentSessionController implements
     ExportFileNameProducer {
@@ -663,9 +646,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             inFormat(inFormat.name());
         aKmeliaPublicationExporter().export(descriptor, publication);
       } catch (Exception ex) {
-        Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
+        SilverTrace.error("kmelia",
+            "KmeliaSessionControl.KmeliaSessionController.generateDocument()",
+            "root.EX_CANT_EXPORT_PUBLICATION", ex);
         if (document != null) {
-          document.delete();
+          FileUtils.deleteQuietly(document);
         }
         throw new KmeliaRuntimeException("KmeliaSessionController.generateDocument()",
             SilverpeasRuntimeException.ERROR, "kmelia.EX_CANT_EXPORT_PUBLICATION", ex);
@@ -680,7 +665,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * *******************************************************************************************
    */
   /**
-   * @return @throws RemoteException
+   * @return 
+   * @throws RemoteException
    */
   public String getProfile() throws RemoteException {
     return getUserTopicProfile();
@@ -691,10 +677,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public String getUserTopicProfile(String id) throws RemoteException {
+    String nodeId = id;
     if (!StringUtil.isDefined(id)) {
-      id = getCurrentFolderId();
+      nodeId = getCurrentFolderId();
     }
-    return getKmeliaBm().getUserTopicProfile(getNodePK(id), getUserId());
+    return getKmeliaBm().getUserTopicProfile(getNodePK(nodeId), getUserId());
   }
 
   public List<String> getUserIdsOfTopic() throws RemoteException {
@@ -707,13 +694,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     // check if we have to take care of topic's rights
     if (node != null && node.haveRights()) {
       int rightsDependsOn = node.getRightsDependsOn();
-      List<String> profileNames = new ArrayList<String>();
+      List<String> profileNames = new ArrayList<String>(4);
       profileNames.add(KmeliaHelper.ROLE_ADMIN);
       profileNames.add(KmeliaHelper.ROLE_PUBLISHER);
       profileNames.add(KmeliaHelper.ROLE_WRITER);
       profileNames.add(KmeliaHelper.ROLE_READER);
-      String[] userIds =
-          getOrganizationController().getUsersIdsByRoleNames(getComponentId(),
+      String[] userIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(),
           Integer.toString(rightsDependsOn), ObjectType.NODE, profileNames);
       return Arrays.asList(userIds);
     } else {
@@ -737,7 +723,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isUserComponentAdmin() {
-    return "admin".equalsIgnoreCase(KmeliaHelper.getProfile(getUserRoles()));
+    return SilverpeasRole.admin.isInRole(KmeliaHelper.getProfile(getUserRoles()));
   }
 
   /*
@@ -879,7 +865,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * @return @throws RemoteException
+   * @return 
+   * @throws RemoteException
    */
   public synchronized Collection<Collection<NodeDetail>> getSubscriptionList() throws
       RemoteException {
@@ -1755,27 +1742,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId,
-      String attachmentOrDocumentId, boolean isVersionning)
-      throws RemoteException {
+      String attachmentId) throws RemoteException {
     NotificationMetaData metaData = null;
     NodePK nodePK = null;
     if (!isKmaxMode) {
       nodePK = getCurrentFolderPK();
     }
-    if (isVersionning) {
-      DocumentPK documentPk =
-          new DocumentPK(Integer.parseInt(attachmentOrDocumentId), getSpaceId(),
-          getComponentId());
-      metaData =
-          getKmeliaBm().getAlertNotificationMetaData(getPublicationPK(pubId), documentPk,
-          nodePK, getUserDetail().getDisplayedName());
-    } else {
-      AttachmentPK attachmentPk = new AttachmentPK(attachmentOrDocumentId, getSpaceId(),
-          getComponentId());
-      metaData =
-          getKmeliaBm().getAlertNotificationMetaData(getPublicationPK(pubId), attachmentPk,
-          nodePK, getUserDetail().getDisplayedName());
-    }
+    SimpleDocumentPK documentPk = new SimpleDocumentPK(attachmentId, getComponentId());
+    metaData = getKmeliaBm().getAlertNotificationMetaData(getPublicationPK(pubId), documentPk,
+        nodePK, getUserDetail().getDisplayedName());
     metaData.setSender(getUserId());
     return metaData;
   }
@@ -2107,22 +2082,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return AlertUser.getAlertUserURL();
   }
 
-  public String initAlertUserAttachment(String attachmentOrDocumentId, boolean isVersionning)
-      throws RemoteException {
-
+  public String initAlertUserAttachment(String attachmentOrDocumentId) throws RemoteException {
     initAlertUser();
-
     AlertUser sel = getAlertUser();
     String pubId = getSessionPublication().getDetail().getPK().getId();
-    sel.setNotificationMetaData(getAlertNotificationMetaData(pubId, attachmentOrDocumentId,
-        isVersionning));
+    sel.setNotificationMetaData(getAlertNotificationMetaData(pubId, attachmentOrDocumentId));
     return AlertUser.getAlertUserURL();
   }
 
   public void toRecoverUserId() {
     Selection sel = getSelection();
-    idSelectedUser =
-        SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), sel
+    idSelectedUser = SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), sel
         .getSelectedSets());
   }
 
@@ -2136,8 +2106,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     String strVersionControlled =
         getOrganizationController().getComponentParameterValue(anotherComponentId,
         "versionControl");
-    return ((strVersionControlled != null) && !("").equals(strVersionControlled) && !("no")
-        .equals(strVersionControlled.toLowerCase()));
+    return StringUtil.getBooleanValue(strVersionControlled);
   }
 
   /**

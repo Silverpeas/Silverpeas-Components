@@ -20,32 +20,14 @@
  */
 package com.silverpeas.kmelia.workflowextensions;
 
-import java.awt.Color;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.rmi.RemoteException;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-
 import au.id.jericho.lib.html.Source;
-
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.DataRecordUtil;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
+import com.silverpeas.form.*;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.ExplorerField;
 import com.silverpeas.form.fieldType.FileField;
@@ -66,9 +48,6 @@ import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.external.impl.ExternalActionImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
@@ -77,13 +56,24 @@ import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SendInKmelia extends ExternalActionImpl {
 
@@ -254,21 +244,24 @@ public class SendInKmelia extends ExternalActionImpl {
 
   }
 
-  public Hashtable<String, String> pasteFiles(ForeignPK fromPK, ForeignPK toPK) {
-    Hashtable<String, String> fileIds = new Hashtable<String, String>();
-
+  public Map<String, String> pasteFiles(ForeignPK fromPK, ForeignPK toPK) {
+    Map<String, String> fileIds = new HashMap<String, String>();
     try {
-      boolean fromCompoVersion =
-          "yes".equals(getOrganizationController().getComponentParameterValue(
-          fromPK.getInstanceId(), "versionControl"));
-      boolean toCompoVersion =
-          "yes".equals(getOrganizationController().getComponentParameterValue(toPK.getInstanceId(),
-          "versionControl"));
+      boolean fromCompoVersion = StringUtil.getBooleanValue(getOrganizationController().
+          getComponentParameterValue(fromPK.getInstanceId(), "versionControl"));
+      boolean toCompoVersion = StringUtil.getBooleanValue(getOrganizationController().
+          getComponentParameterValue(toPK.getInstanceId(), "versionControl"));
 
       if (!fromCompoVersion && !toCompoVersion) {
         // attachments --> attachments
         // paste attachments
-        fileIds = AttachmentController.copyAttachmentByCustomerPKAndContext(fromPK, toPK, "Images");
+        List<SimpleDocument> origins = AttachmentServiceFactory.getAttachmentService().
+            listDocumentsByForeignKeyAndType(fromPK, DocumentType.attachment, getLanguage());
+        for (SimpleDocument origin : origins) {
+          SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
+              origin, toPK);
+          fileIds.put(origin.getId(), copyPk.getId());
+        }
       } else if (fromCompoVersion && !toCompoVersion) {
         // versioning --> attachments
         // Last public versions becomes the new attachment
@@ -282,7 +275,7 @@ public class SendInKmelia extends ExternalActionImpl {
         // paste versioning documents
         pasteDocuments(fromPK, toPK);
       }
-    } catch (Exception e) {
+    } catch (AttachmentException e) {
       SilverTrace.error("workflowEngine", "SendInKmelia.pasteFiles", "CANNOT_PASTE_FILES", e);
     }
 
@@ -296,7 +289,7 @@ public class SendInKmelia extends ExternalActionImpl {
   /**
    * **************************************************************************************
    */
-  public void pasteDocuments(ForeignPK fromPK, ForeignPK pubPK) throws AttachmentException {
+  public void pasteDocuments(ForeignPK fromPK, ForeignPK pubPK) {
     SilverTrace.info("workflowEngine", "SendInKmelia.pasteDocuments()",
         "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + fromPK.toString() + ", pubPK = " + pubPK);
     List<SimpleDocument> originals = AttachmentServiceFactory.getAttachmentService().
@@ -306,7 +299,7 @@ public class SendInKmelia extends ExternalActionImpl {
     }
   }
 
-  public void pasteDocumentsAsAttachments(ForeignPK fromPK, ForeignPK toPK) throws RemoteException {
+  public void pasteDocumentsAsAttachments(ForeignPK fromPK, ForeignPK toPK) {
     SilverTrace.info("workflowEngine", "SendInKmelia.pasteDocumentsAsAttachments()",
         "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + fromPK.toString() + ", toPK = " + toPK.
         toString());
@@ -318,14 +311,13 @@ public class SendInKmelia extends ExternalActionImpl {
     }
   }
 
-  public void pasteAttachmentsAsDocuments(ForeignPK fromPK, ForeignPK toPK) throws RemoteException {
+  public void pasteAttachmentsAsDocuments(ForeignPK fromPK, ForeignPK toPK) {
     SilverTrace.info("workflowEngine", "SendInKmelia.pasteAttachmentsAsDocuments()",
         "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + fromPK.toString() + ", toPK = " + toPK);
     KmeliaServiceFactory.getFactory().getKmeliaService().pasteAttachmentsAsDocuments(fromPK, toPK,
         getLanguage());
   }
 
-  
   private byte[] generatePDF(ProcessInstance instance) {
     com.lowagie.text.Document document = new com.lowagie.text.Document();
 
@@ -422,17 +414,12 @@ public class SendInKmelia extends ExternalActionImpl {
       XmlForm xmlForm = (XmlForm) form;
       if (xmlForm != null && step.getActionRecord() != null) {
         DataRecord data = step.getActionRecord();
-        VersioningUtil versioningUtil = new VersioningUtil();
 
         // Force simpletext displayers because itext cannot display HTML Form fields (select,
         // radio...)
         float[] colsWidth = {25, 75};
         PdfPTable tableContent = new PdfPTable(colsWidth);
         tableContent.setWidthPercentage(100);
-
-        PdfPCell cell = null;
-        Field field;
-        String fieldLabel;
         String fieldValue = "";
         Font fontLabel = new Font(Font.HELVETICA, 10, Font.BOLD);
         Font fontValue = new Font(Font.HELVETICA, 10, Font.NORMAL);
@@ -441,8 +428,8 @@ public class SendInKmelia extends ExternalActionImpl {
           try {
             GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) fieldTemplate1;
 
-            fieldLabel = fieldTemplate.getLabel("fr");
-            field = data.getField(fieldTemplate.getFieldName());
+            String fieldLabel = fieldTemplate.getLabel("fr");
+            Field field = data.getField(fieldTemplate.getFieldName());
             String componentId = step.getProcessInstance().getProcessModel().getModelId();
 
             // wysiwyg field
@@ -458,24 +445,13 @@ public class SendInKmelia extends ExternalActionImpl {
             } // Field file type
             else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) && StringUtil.
                 isDefined(field.getValue())) {
-              boolean fromCompoVersion = "yes".equals(getOrganizationController()
-                  .getComponentParameterValue(componentId, "versionControl"));
-              // Versioning Used
-              if (fromCompoVersion) {
-                Document doc = versioningUtil.getDocument(new DocumentPK(Integer.parseInt(field.
-                    getValue())));
-                if (doc != null) {
-                  fieldValue = doc.getName();
-                }
-              } else {
-                AttachmentDetail attDetail = AttachmentController
-                    .searchAttachmentByPK(new AttachmentPK(field.getValue(), componentId));
-                if (attDetail != null) {
-                  fieldValue = attDetail.getLogicalName(getLanguage());
-                }
+              SimpleDocument doc = AttachmentServiceFactory.getAttachmentService().
+                  searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
+              if (doc != null) {
+                fieldValue = doc.getFilename();
               }
             } // Field date type
-            else if (fieldTemplate.getTypeName().equals("date")) {
+            else if ("date".equals(fieldTemplate.getTypeName())) {
               fieldValue = DateUtil.getOutputDate(field.getValue(), "fr");
             } // Others fields type
             else {
@@ -483,7 +459,7 @@ public class SendInKmelia extends ExternalActionImpl {
               fieldValue = field.getValue(getLanguage());
             }
 
-            cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
+            PdfPCell cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
             cell.setBorderWidth(0);
             cell.setPaddingBottom(5);
             tableContent.addCell(cell);
@@ -497,12 +473,10 @@ public class SendInKmelia extends ExternalActionImpl {
                 "CANT_DISPLAY_DATA_OF_STEP", e);
           }
         }
-
         document.add(tableContent);
       }
     } catch (Exception e) {
-      SilverTrace
-          .error("workflowEngine", "SendInKmelia.generatePDFStep()", "root.MSG_GEN_ERROR", e);
+      SilverTrace.error("workflowEngine", "SendInKmelia.generatePDFStep()", "root.MSG_GEN_ERROR", e);
     }
   }
 
@@ -554,12 +528,12 @@ public class SendInKmelia extends ExternalActionImpl {
    * @return UserDetail
    */
   private UserDetail getBestUserDetail() {
-    String userId = ADMIN_ID;
+    String currentUserId = ADMIN_ID;
     // For a manual action (event)
     if (getEvent().getUser() != null) {
-      userId = getEvent().getUser().getUserId();
+      currentUserId = getEvent().getUser().getUserId();
     }
-    return getOrganizationController().getUserDetail(userId);
+    return getOrganizationController().getUserDetail(currentUserId);
   }
 
   private void addPdfHistory(PublicationPK pubPK, String userId) {

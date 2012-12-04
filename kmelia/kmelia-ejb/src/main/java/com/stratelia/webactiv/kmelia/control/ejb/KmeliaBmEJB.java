@@ -50,9 +50,8 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-
+import org.silverpeas.search.indexEngine.model.IndexManager;
 
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -61,7 +60,6 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.dao.ModelDAO;
-import com.silverpeas.kmelia.notification.KmeliaAttachmentSubscriptionPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaDefermentPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaDocumentSubscriptionPublicationUserNotification;
 import com.silverpeas.kmelia.notification.KmeliaModificationPublicationUserNotification;
@@ -99,10 +97,6 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -3026,32 +3020,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   /**
    * @param pubPK
-   * @param attachmentPk
-   * @param topicPK
-   * @param senderName
-   * @return
-   */
-  @Override
-  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
-      AttachmentPK attachmentPk, NodePK topicPK, String senderName) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(attachment)",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    final PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    final AttachmentDetail attachmentDetail = AttachmentController
-        .searchAttachmentByPK(attachmentPk);
-
-    final NotificationMetaData notifMetaData = UserNotificationHelper
-        .build(new KmeliaAttachmentSubscriptionPublicationUserNotification(topicPK, pubDetail,
-        attachmentDetail, senderName));
-
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(attachment)",
-        "root.MSG_GEN_EXIT_METHOD");
-    return notifMetaData;
-  }
-
-  /**
-   * @param pubPK
    * @param documentPk
    * @param topicPK
    * @param senderName
@@ -3060,18 +3028,17 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    */
   @Override
   public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
-      DocumentPK documentPk, NodePK topicPK, String senderName) throws RemoteException {
+      SimpleDocumentPK documentPk, NodePK topicPK, String senderName) throws RemoteException {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(document)",
         "root.MSG_GEN_ENTER_METHOD");
 
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    final VersioningUtil versioningUtil = new VersioningUtil();
-    final Document document = versioningUtil.getDocument(documentPk);
-    final DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(documentPk);
+    final SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+        searchDocumentById(documentPk, null).getLastPublicVersion();
 
     final NotificationMetaData notifMetaData = UserNotificationHelper
         .build(new KmeliaDocumentSubscriptionPublicationUserNotification(topicPK, pubDetail,
-        document, documentVersion, senderName));
+        document, senderName));
 
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(document)",
         "root.MSG_GEN_EXIT_METHOD");
@@ -3380,20 +3347,20 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   private void indexExternalElementsOfPublication(PublicationDetail pubDetail) {
     if (KmeliaHelper.isIndexable(pubDetail)) {
-      // index attachments
-      AttachmentController.attachmentIndexer(pubDetail.getPK(), pubDetail.getBeginDate(),
-          pubDetail.getEndDate());
-
       try {
-        // index versioning
-        VersioningUtil versioning = new VersioningUtil();
-        versioning.indexDocumentsByForeignKey(new ForeignPK(pubDetail.getPK()),
-            pubDetail.getBeginDate(), pubDetail.getEndDate());
+        List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+            listDocumentsByForeignKey(pubDetail.getPK(), pubDetail.getLanguage());
+        for (SimpleDocument document : documents) {
+          AttachmentServiceFactory.getAttachmentService().createIndex(document, pubDetail.
+              getBeginDate(), pubDetail.getEndDate());
+        }
+        // index attachments
+        AttachmentController.attachmentIndexer(pubDetail.getPK(), pubDetail.getBeginDate(),
+            pubDetail.getEndDate());
       } catch (Exception e) {
         SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
             "Indexing versioning documents failed", "pubPK = " + pubDetail.getPK().toString(), e);
       }
-
       try {
         // index comments
         getCommentService().indexAllCommentsOnPublication(pubDetail.getContributionType(),
@@ -3406,13 +3373,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   private void unIndexExternalElementsOfPublication(PublicationPK pubPK) {
-    // unindex attachments
-    AttachmentController.unindexAttachmentsByForeignKey(pubPK);
-
     try {
-      // index versioning
-      VersioningUtil versioning = new VersioningUtil();
-      versioning.unindexDocumentsByForeignKey(new ForeignPK(pubPK));
+      AttachmentServiceFactory.getAttachmentService().unindexAttachmentsOfExternalObject(pubPK);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
           "Indexing versioning documents failed", "pubPK = " + pubPK.toString(), e);
