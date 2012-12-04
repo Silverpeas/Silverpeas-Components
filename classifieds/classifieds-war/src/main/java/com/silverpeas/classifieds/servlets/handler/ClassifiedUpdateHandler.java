@@ -15,6 +15,7 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 
@@ -35,11 +36,20 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
       List<FileItem> items = FileUploadUtil.parseRequest(request);
       String title = FileUploadUtil.getParameter(items, "Title");
       String classifiedId = FileUploadUtil.getParameter(items, "ClassifiedId");
-
+      String description = FileUploadUtil.getParameter(items, "Description");
+      String price = FileUploadUtil.getParameter(items, "Price");
+      String removeImageFile = FileUploadUtil.getParameter(items, "removeImageFile"); //yes | no
+      FileItem fileImage = FileUploadUtil.getFile(items, "Image");
 
       ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
       classified.setTitle(title);
-
+      classified.setDescription(description);
+      if (price != null && ! price.isEmpty()) {
+        classified.setPrice(Integer.parseInt(price));
+      } else {
+        classified.setPrice(null);
+      }
+     
       // Populate data record
       PublicationTemplate pub = getPublicationTemplate(classifiedsSC);
       if (pub != null) {
@@ -57,8 +67,16 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
         form.update(items, data, context);
         set.save(data);
       }
+      //Update classified
       classifiedsSC.updateClassified(classified, true, SilverpeasRole.admin.isInRole(highestRole.getName()));
       request.setAttribute("ClassifiedId", classifiedId);
+      
+      //Image
+      if (fileImage != null && StringUtil.isDefined(fileImage.getName())) {//Update image
+        //classifiedsSC.updateClassifiedImage(fileImage, classifiedId);
+      } else if ("yes".equals(removeImageFile)) {//Remove image
+         
+      }
     }
 
     return HandlerProvider.getHandler("ViewMyClassifieds").computeDestination(classifiedsSC, request);

@@ -26,6 +26,9 @@ package com.silverpeas.classifieds.model;
 import com.silverpeas.SilverpeasContent;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 public class ClassifiedDetail implements SilverpeasContent {
@@ -34,7 +37,7 @@ public class ClassifiedDetail implements SilverpeasContent {
   private String title;
   private int classifiedId;
   private String description;
-  private int price;
+  private Integer price;
   private String instanceId;
   private String creatorId;
   private String creatorName;
@@ -45,6 +48,7 @@ public class ClassifiedDetail implements SilverpeasContent {
   private String validatorId;
   private String validatorName;
   private Date validateDate;
+  private Collection<Image> images = new ArrayList<Image>();
 
   public static final String DRAFT = "Draft";
   public static final String VALID = "Valid";
@@ -84,11 +88,11 @@ public class ClassifiedDetail implements SilverpeasContent {
     this.description = description;
   }
   
-  public int getPrice() {
+  public Integer getPrice() {
     return this.price;
   }
   
-  public void setPrice(int price) {
+  public void setPrice(Integer price) {
     this.price = price;
   }
 
@@ -213,5 +217,13 @@ public class ClassifiedDetail implements SilverpeasContent {
   @Override
   public String getSilverpeasContentId() {
     return "";
+  }
+
+  public Collection<Image> getImages() {
+    return images;
+  }
+
+  public void setImages(Collection<Image> images) {
+    this.images = images;
   }
 }

@@ -36,8 +36,8 @@
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+	response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -49,6 +49,7 @@
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="componentLabel" value="${browseContext[1]}" />
 
+<c:set var="imagesDirectory" value="${requestScope.ImagesDirectory}" />
 <c:set var="classified" value="${requestScope.Classified}" />
 <c:set var="userName" value="${requestScope.UserName}" />
 <c:set var="userEmail" value="${requestScope.UserEmail}" />
@@ -76,6 +77,7 @@
 	<c:set var="creationDate" value="${classified.creationDate}" />
 	<c:set var="validateDate" value="${classified.validateDate}" />
 	<c:set var="updateDate" value="${classified.updateDate}" />
+	<c:set var="images" value="${classified.images}" />
 </c:if>
 
 <%
@@ -105,6 +107,8 @@
 <fmt:message var="classifieds_msgSize" key="classifieds.msgSize"/>
 <fmt:message var="classifieds_price" key="classifieds.price"/>
 <fmt:message var="GML_MustContainsNumber" key="GML.MustContainsNumber"/>
+<fmt:message var="classifieds_image" key="classifieds.image"/>
+<fmt:message var="classifieds_imageFormat" key="classifieds.imageFormat"/>
 <fmt:message var="GML_ThisFormContains" key="GML.ThisFormContains"/>
 <fmt:message var="GML_error" key="GML.error"/>
 <fmt:message var="GML_errors" key="GML.errors"/>
@@ -150,6 +154,14 @@
 	    	errorMsg+="  - '${classifieds_price}' ${GML_MustContainsNumber}\n";
 	      errorNb++;
 	    }
+	    
+	    if (!isWhitespace(document.classifiedForm.Image.value)) {
+	     var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
+       if (verif.exec(document.classifiedForm.Image.value) == null) {
+        errorMsg+="  - '${classifieds_image}' ${classifieds_imageFormat}\n";
+        errorNb++;
+       }
+	    }
 	   	switch(errorNb)
 	   	{
 	       	case 0 :
@@ -174,6 +186,11 @@
 		<c:if test="${not empty fieldName}">
 	      document.classifiedForm.${fieldName}.value = '${fieldKey}';
 	    </c:if>
+	}
+	
+	function hideImageFile() {
+		document.getElementById("imageFile").style.visibility = "hidden";
+	  document.classifiedForm.removeImageFile.value = "yes";
 	}
 
 </script>
@@ -227,7 +244,17 @@
       </tr>
       <tr>
         <td class="txtlibform"><fmt:message key="classifieds.image"/> :</td>
-        <td><input type="file" name="Image" size="50"></td>
+        <td>
+          <c:forEach var="image" items="${images}">
+          <div id="imageFile">
+           <img src="/silverpeas/OnlineFileServer/${image.imageName}?ComponentId=${instanceId}&SourceFile=${image.imageName}&Directory=${imagesDirectory}"></img>&nbsp;&nbsp;
+           <a href="javascript:onClick=hideImageFile();"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a> 
+           <BR/>
+          </div>
+          </c:forEach>
+          <input type="file" name="Image1" size="50">
+          <input type="hidden" name="removeImageFile1" value="no"/>
+        </td>
       </tr>
 			<c:if test="${action eq 'UpdateClassified'}">
 				<tr>

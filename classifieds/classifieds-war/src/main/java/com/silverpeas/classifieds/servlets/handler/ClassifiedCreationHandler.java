@@ -48,49 +48,16 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       String price = FileUploadUtil.getParameter(items, "Price");
       FileItem fileImage = FileUploadUtil.getFile(items, "Image");
       
-      // Create classified
+      //Create classified
       ClassifiedDetail classified = new ClassifiedDetail(title, description);
       if (price != null && ! price.isEmpty()) {
         classified.setPrice(Integer.parseInt(price));
       }
       String classifiedId = classifiedsSC.createClassified(classified, highestRole);
       
-      //Create Image
+      //Create image
       if (fileImage != null && StringUtil.isDefined(fileImage.getName())) {
-        classified = classifiedsSC.getClassified(classifiedId);
-        String imageSubDirectory = classifiedsSC.getResources().getSetting("imagesSubDirectory");
-        String fullFileName = fileImage.getName();
-        String fileName = fullFileName.substring(
-                          fullFileName.lastIndexOf(File.separator) + 1,
-                          fullFileName.length());
-        String type = null;
-        if (fileName.lastIndexOf(".") != -1) {
-          type = fileName.substring(fileName.lastIndexOf(".") + 1,
-              fileName.length());
-        }
-        
-        String physicalName = new Long(new Date().getTime()).toString()
-            + "." + type;
-        
-        String mimeType = AttachmentController.getMimeType(fileName);
-
-        //save picture file in the fileServer
-        String filePath = FileRepositoryManager
-            .getAbsolutePath(classified.getComponentInstanceId())
-            + imageSubDirectory + File.separator + physicalName;
-        File file = new File(filePath);
-        if (!file.exists()) {
-          FileFolderManager.createFolder(file.getParentFile());
-          file.createNewFile();
-        }
-        fileImage.write(file);
-        
-        //Object Image
-        Image classifiedImage = new Image(Integer.parseInt(classifiedId), physicalName, mimeType);
-     
-        //save the picture in the data base
-        classifiedsSC.createClassifiedImage(classifiedImage);
-        
+        classifiedsSC.createClassifiedImage(fileImage, classifiedId);
       }
 
       PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
