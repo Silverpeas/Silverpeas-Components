@@ -37,9 +37,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -75,6 +72,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
 
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 
@@ -115,10 +115,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (kmeliaSC == null && (toLink || attachmentToLink)) {
       MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
           MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      ComponentContext componentContext =
-          mainSessionCtrl.createComponentContext(null, componentId);
-      kmeliaSC =
-          new KmeliaSessionController(mainSessionCtrl, componentContext);
+      ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, componentId);
+      kmeliaSC = new KmeliaSessionController(mainSessionCtrl, componentContext);
       session.setAttribute("Silverpeas_kmelia_" + componentId, kmeliaSC);
     }
 
@@ -938,44 +936,35 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   private String displayVersioning(PublicationDetail pubDetail, ResourcesWrapper resources,
       boolean linkAttachment, boolean alias) throws IOException {
-    VersioningUtil versioning = new VersioningUtil();
     ForeignPK foreignPK = new ForeignPK(pubDetail.getPK());
-    List<Document> documents = versioning.getDocuments(foreignPK);
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKey(foreignPK, null);
     StringBuilder result = new StringBuilder();
     boolean oneFile = false;
-    for (Document document : documents) {
-      DocumentVersion version = versioning.getLastPublicVersion(document.getPk());
+    for (SimpleDocument document : documents) {
+      SimpleDocument version = document.getLastPublicVersion();
       if (version != null) {
         if (result.length() == 0) {
           result.append("<table border=\"0\">");
           oneFile = true;
         }
-
         String id = version.getPk().getId();
-        String title = document.getName() + " v" + version.getMajorNumber();
-        String info = document.getDescription();
-        String icon = versioning.getDocumentVersionIconPath(version.getPhysicalName());
-        String logicalName = version.getLogicalName();
+        String title = version.getTitle() + " v" + version.getMajorVersion();
+        String info = version.getDescription();
+        String icon = FileRepositoryManager.getFileIcon(FilenameUtils.getExtension(document.
+            getFilename()));
+        String logicalName = version.getFilename();
         String size = FileRepositoryManager.formatFileSize(version.getSize());
-        String downloadTime = versioning.getDownloadEstimation(version.getSize());
-        Date creationDate = version.getCreationDate();
-        String permalink =
-            URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getPk().getId());
-        String url = FileServerUtils.getApplicationContext()
-            + versioning.getDocumentVersionURL(document.getPk().getInstanceId(),
-            logicalName, document.getPk().getId(), id);
+        String downloadTime = FileRepositoryManager.getFileDownloadTime(version.getSize());
+        Date creationDate = version.getCreated();
+        String permalink = URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getId());
+        String url = FileServerUtils.getApplicationContext() + version.getAttachmentURL();
 
         if (alias) {
-          url = FileServerUtils.getAliasURL(document.getPk().getInstanceId(), logicalName,
-              document.getPk().getId(), id);
+          url = version.getAliasURL();
         }
-
-        boolean previewable =
-            ViewerFactory.getPreviewService().isPreviewable(new File(version.getDocumentPath()));
-
-        boolean viewable =
-            ViewerFactory.getViewService().isViewable(new File(version.getDocumentPath()));
-
+        boolean previewable = ViewerFactory.isPreviewable(version.getAttachmentPath());
+        boolean viewable = ViewerFactory.isViewable(version.getAttachmentPath());
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
             creationDate, permalink, resources, linkAttachment, previewable, viewable, id));
       }
@@ -992,39 +981,32 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubDetail.getPK().getId());
     StringBuilder result = new StringBuilder();
 
-    AttachmentPK foreignKey = new AttachmentPK(pubDetail.getPK().getId(),
-        pubDetail.getPK().getInstanceId());
+    ForeignPK foreignKey = new ForeignPK(pubDetail.getPK().getId(), pubDetail.getPK().
+        getInstanceId());
 
-    Collection<AttachmentDetail> attachmentList =
-        AttachmentController.searchAttachmentByPKAndContext(foreignKey, "Images");
-    if (!attachmentList.isEmpty()) {
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKey(foreignKey, null);
+    if (!documents.isEmpty()) {
       result.append("<table border=\"0\">");
-      for (AttachmentDetail attachmentDetail : attachmentList) {
-        String url = attachmentDetail.getAttachmentURLToMemorize(userId, nodeId);
-        String title = attachmentDetail.getTitle();
-        String info = attachmentDetail.getInfo();
-        String icon = attachmentDetail.getAttachmentIcon();
-        String logicalName = attachmentDetail.getLogicalName();
-        String id = attachmentDetail.getPK().getId();
-        String size = attachmentDetail.getAttachmentFileSize();
-        String downloadTime = attachmentDetail.getAttachmentDownloadEstimation();
-        Date creationDate = attachmentDetail.getCreationDate();
-        String permalink = null;
-        if (!attachmentDetail.isAttachmentLinked()) {
-          permalink = URLManager.getSimpleURL(URLManager.URL_FILE, id);
-        }
-
+      for (SimpleDocument document : documents) {
+        String url = document.getAttachmentURL();
+        String title = document.getTitle();
+        String info = document.getDescription();
+        String icon = FileRepositoryManager.getFileIcon(FilenameUtils.getExtension(document.
+            getFilename()));
+        String logicalName = document.getFilename();
+        String id = document.getId();
+        String size = FileRepositoryManager.formatFileSize(document.getSize());
+        String downloadTime = FileRepositoryManager.getFileDownloadTime(document.getSize());
+        Date creationDate = document.getCreated();
+        String permalink = URLManager.getSimpleURL(URLManager.URL_FILE, id);
         if (alias) {
-          url = FileServerUtils.getAliasURL(foreignKey.getInstanceId(), logicalName, id);
+          url = FileServerUtils.getAliasURL(foreignKey.getInstanceId(), document.getFilename(), id);
         }
 
-        boolean previewable =
-            ViewerFactory.getPreviewService().isPreviewable(
-            new File(attachmentDetail.getAttachmentPath(null)));
+        boolean previewable = ViewerFactory.isPreviewable(document.getAttachmentPath());
 
-        boolean viewable =
-            ViewerFactory.getViewService().isViewable(
-            new File(attachmentDetail.getAttachmentPath(null)));
+        boolean viewable = ViewerFactory.isViewable(document.getAttachmentPath());
 
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
             creationDate, permalink, resources, linkAttachment, previewable, viewable, id));
@@ -1060,7 +1042,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       String id) throws IOException {
     SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayFile()",
         "root.MSG_GEN_ENTER_METHOD");
-    StringBuilder result = new StringBuilder();
+    StringBuilder result = new StringBuilder(1024);
 
     if (!attachmentLink) {
       String link = "<a href=\"" + url + "\" target=\"_blank\">";
@@ -1130,10 +1112,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         displayedTitle = title;
       }
       // create the javascript which allows the attachment link selecting
-      String javascriptFunction =
-          "selectAttachment('" + url + "','" + icon + "','"
-          + displayedTitle
-          + "')";
+      String javascriptFunction = "selectAttachment('" + url + "','" + icon + "','"
+          + displayedTitle + "')";
       String link = "<a href=\"javascript:" + javascriptFunction + "\" >";
       result.append("<tr><td valign=\"top\">");
 

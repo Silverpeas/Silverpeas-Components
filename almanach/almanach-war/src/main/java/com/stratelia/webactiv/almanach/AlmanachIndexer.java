@@ -53,11 +53,7 @@ public class AlmanachIndexer implements ComponentIndexerInterface {
         "root.MSG_GEN_ENTER_METHOD");
     for (EventDetail event : almanachSessionController.getAllEvents()) {
       almanachSessionController.indexEvent(event);
-      List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
-          .listDocumentsByForeignKey(event.getPK(), null);
-          for (SimpleDocument document : documents) {
-            AttachmentServiceFactory.getAttachmentService().createIndex(document);
-          }
-      }
+      AttachmentServiceFactory.getAttachmentService().indexAllDocuments(event.getPK(), null, null);
     }
+  }
 }

@@ -284,7 +284,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
         .listDocumentsByForeignKey(new ForeignPK(id, componentId), null);
     for (SimpleDocument document : documents) {
-      AttachmentServiceFactory.getAttachmentService().createIndex(document);
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
     }
     reservationService.deleteReservation(Integer.parseInt(id));
   }

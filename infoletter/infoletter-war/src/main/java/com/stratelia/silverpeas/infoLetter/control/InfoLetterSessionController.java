@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.infoLetter.control;
 
@@ -29,6 +26,8 @@ import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.CSVWriter;
@@ -53,16 +52,16 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilTrappedException;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -73,8 +72,6 @@ import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.event.TransportEvent;
-import javax.mail.event.TransportListener;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -84,16 +81,22 @@ import java.io.*;
 import java.util.*;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static java.io.File.separatorChar;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class InfoLetterSessionController extends AbstractComponentSessionController {
 
-  /** Interface metier du composant */
+  /**
+   * Interface metier du composant
+   */
   private InfoLetterDataInterface dataInterface = null;
-  /** the tuning parameters */
+  /**
+   * the tuning parameters
+   */
   private static final ResourceLocator smtpSettings = new ResourceLocator(
       "org.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
   public final static String EXPORT_CSV_NAME = "_emails.csv";
@@ -101,6 +104,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Standard Session Controller Constructeur
+   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -121,8 +125,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * Initialize UserPanel with the list of Silverpeas subscribers
    */
   public String initUserPanel(WAPrimaryKey letterPK) throws InfoLetterException {
-    String context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String context = URLManager.getApplicationURL();
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(),
         context + "/RinfoLetter/" + getComponentId() + "/Main");
@@ -214,6 +217,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   /**
    * Classify the info letter publication on the PdC only if the positions attribute is filled
    * inside object parameter
+   *
    * @param ilp the InfoLetterPublication to classify
    */
   private void classifyInfoLetterPublication(InfoLetterPublicationPdC ilp) {
@@ -229,11 +233,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       if (ilClassification != null && !ilClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = ilClassification.getPdcPositions();
         String ilpId = ilp.getPK().getId();
-        PdcClassification classification =
-            aPdcClassificationOfContent(ilpId, ilp.getInstanceId()).withPositions(pdcPositions);
+        PdcClassification classification = aPdcClassificationOfContent(ilpId, ilp.getInstanceId()).
+            withPositions(pdcPositions);
         if (!classification.isEmpty()) {
-          PdcClassificationService service =
-              PdcServiceFactory.getFactory().getPdcClassificationService();
+          PdcClassificationService service = PdcServiceFactory.getFactory().
+              getPdcClassificationService();
           classification.ofContent(ilpId);
           service.classifyContent(ilp, classification);
         }
@@ -302,7 +306,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, sSubject, templates,
-              "infoLetterNotification");
+          "infoLetterNotification");
 
       String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
       for (String lang : DisplayI18NHelper.getLanguages()) {
@@ -389,28 +393,15 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         // create and fill the first message part
         MimeBodyPart mbp1 = new MimeBodyPart();
         String fileName = WysiwygController.getWysiwygFileName(ilp.getPK().getId());
-        String htmlMessagePath =
-            com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(
-                getComponentId()) + "Attachment" + java.io.File.separator + "wysiwyg"
-                + java.io.File.separator;
-        FileReader htmlCodeFile = new FileReader(new File(htmlMessagePath + fileName));
+        String htmlMessagePath = com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(
+            getComponentId()) + "Attachment" + separatorChar + "wysiwyg" + separatorChar;
 
-        StringBuilder msgText1 = new StringBuilder();
-        int c;
-        c = htmlCodeFile.read();
-        while (c != -1) {
-          msgText1.append((char) c);
-          c = htmlCodeFile.read();
-        }
-        
-        htmlCodeFile.close();
 
-        mbp1.setDataHandler(new DataHandler(
-            new ByteArrayDataSource(replaceFileServerWithLocal(msgText1.toString(), server),
-                "text/html")));
+        mbp1.setDataHandler(new DataHandler(new ByteArrayDataSource(replaceFileServerWithLocal(
+            FileUtils.readFileToString(new File(htmlMessagePath + fileName)), server),
+            MimeTypes.HTML_MIME_TYPE)));
 
         // Fichiers joints
-        // AttachmentController ac = new AttachmentController();
         WAPrimaryKey publiPK = ilp.getPK();
         publiPK.setComponentName(getComponentId());
         publiPK.setSpace(getSpaceId());
@@ -422,27 +413,19 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         mp.addBodyPart(mbp1);
 
         // Images jointes
-        AttachmentPK foreignKey = new AttachmentPK(ilp.getPK().getId(), getSpaceId(),
-            getComponentId());
-        Collection<AttachmentDetail> fichiers =
-            AttachmentController.searchAttachmentByPKAndContext(foreignKey,
-                WysiwygController.getImagesFileName(ilp.getPK().getId()));
-
-        String attachmentPath =
-            AttachmentController.createPath(getComponentId(), WysiwygController.
-                getImagesFileName(ilp.getPK().getId()));
-        Iterator<AttachmentDetail> imageIter = fichiers.iterator();
-        while (imageIter.hasNext()) {
-          AttachmentDetail ad = imageIter.next();
+        ForeignPK foreignKey = new ForeignPK(ilp.getPK().getId(), getComponentId());
+        List<SimpleDocument> fichiers = AttachmentServiceFactory.getAttachmentService().
+            listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
+        for (SimpleDocument attachment : fichiers) {
           // create the second message part
           MimeBodyPart mbp2 = new MimeBodyPart();
 
           // attach the file to the message
-          FileDataSource fds = new FileDataSource(attachmentPath + ad.getPhysicalName());
+          FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
           mbp2.setDataHandler(new DataHandler(fds));
           // For Displaying images in the mail
-          mbp2.setFileName(ad.getLogicalName());
-          mbp2.setHeader("Content-ID", ad.getLogicalName());
+          mbp2.setFileName(attachment.getFilename());
+          mbp2.setHeader("Content-ID", attachment.getFilename());
           SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
               "root.MSG_GEN_PARAM_VALUE", "content-ID= " + mbp2.getContentID());
 
@@ -451,25 +434,21 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         }
 
         // Fichiers joints
-        fichiers = AttachmentController.searchAttachmentByPKAndContext(publiPK, "Images");
-        attachmentPath =
-            com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(
-                getComponentId()) + "Attachment" + java.io.File.separator + "Images"
-                + java.io.File.separator;
+        fichiers = AttachmentServiceFactory.getAttachmentService().
+            listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
 
-        if (fichiers.size() > 0) {
-          imageIter = fichiers.iterator();
-          while (imageIter.hasNext()) {
-            AttachmentDetail ad = (AttachmentDetail) imageIter.next();
+
+        if (!fichiers.isEmpty()) {
+          for (SimpleDocument attachment : fichiers) {
             // create the second message part
             MimeBodyPart mbp2 = new MimeBodyPart();
 
             // attach the file to the message
-            FileDataSource fds = new FileDataSource(attachmentPath + ad.getPhysicalName());
+            FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
             mbp2.setDataHandler(new DataHandler(fds));
-            mbp2.setFileName(ad.getLogicalName());
+            mbp2.setFileName(attachment.getFilename());
             // For Displaying images in the mail
-            mbp2.setHeader("Content-ID", ad.getLogicalName());
+            mbp2.setHeader("Content-ID", attachment.getFilename());
             SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
                 "root.MSG_GEN_PARAM_VALUE", "content-ID= " + mbp2.getContentID());
 
@@ -487,39 +466,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         // create a Transport connection (TCP)
         transport = session.getTransport("smtp");
 
-        // redefine the TransportListener interface.
-        TransportListener transportListener = new TransportListener() {
-
-          /**
-           * Method declaration
-           * @param e
-           * @see
-           */
-          public void messageDelivered(TransportEvent e) { // catch all messages delivered to the
-            // SMTP server.
-          }
-
-          /**
-           * Method declaration
-           * @param e
-           * @see
-           */
-          public void messageNotDelivered(TransportEvent e) { // catch all messages NOT delivered to
-            // the SMTP server.
-          }
-
-          /**
-           * Method declaration
-           * @param e
-           * @see
-           */
-          public void messagePartiallyDelivered(TransportEvent e) {
-          }
-        };
-
-        // Chaine de destination
-        transport.addTransportListener(transportListener);
-
         InternetAddress[] address = new InternetAddress[1];
         String email = null;
         for (i = 0; i < emails.size(); i++) {
@@ -530,8 +476,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             // add Transport Listener to the transport connection.
             if (isSmtpAuthentication) {
               SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-                  "root.MSG_GEN_PARAM_VALUE", "host = " + host + " m_Port=" + smtpPort +
-                      " m_User=" + smtpUser);
+                  "root.MSG_GEN_PARAM_VALUE", "host = " + host + " m_Port=" + smtpPort + " m_User="
+                  + smtpUser);
               transport.connect(host, smtpPort, smtpUser, smtpPwd);
               msg.saveChanges();
             } else {
@@ -541,8 +487,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           } catch (Exception ex) {
             SilverTrace.error("infoLetter", "InfoLetterSessionController.notifyExternals()",
                 "root.MSG_GEN_PARAM_VALUE", "Email = " + email, new InfoLetterException(
-                    "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-                    SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
+                "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
+                SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
             emailErrors.add(email);
           } finally {
             if (transport != null) {
@@ -561,7 +507,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             SilverpeasRuntimeException.ERROR, e.getMessage(), e);
       }
     }
-    return (String[]) emailErrors.toArray(new String[0]);
+    return emailErrors.toArray(new String[emailErrors.size()]);
   }
 
   // Notification des abonnes externes
@@ -576,6 +522,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Send letter to managers
+   *
    * @param ilp
    * @param server
    * @return
@@ -620,6 +567,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Remove all external emails
+   *
    * @param letterPK
    */
   public void deleteAllExternalsSuscribers(WAPrimaryKey letterPK) {
@@ -666,7 +614,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     try {
       template =
           WysiwygController.loadFileAndAttachment(getComponentId(),
-              InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
+          InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
     } catch (WysiwygException e) {
       throw new InfoLetterException("InfoLetterSessionController.isTemplateExist",
           SilverpeasRuntimeException.ERROR, e.getMessage(), e);
@@ -742,6 +690,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Replace /silverpeas/xxx by http(s)://server:port/silverpeas/xxx (Only in notifyExternals case)
+   *
    * @param codeHtml
    * @param serveur: http(s)://server:port
    * @return codeHtml
@@ -764,6 +713,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Method declaration
+   *
    * @return
    */
   private InfoLetter getCurrentLetter() {
@@ -773,6 +723,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Import Csv emails
+   *
    * @param filePart
    * @throws UtilTrappedException
    * @throws InfoLetterPeasTrappedException
@@ -842,6 +793,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Export Csv emails
+   *
    * @throws FileNotFoundException
    * @throws IOException
    * @throws InfoLetterException
@@ -851,7 +803,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     boolean exportOk = true;
     FileOutputStream fileOutput =
         new FileOutputStream(FileRepositoryManager.getTemporaryPath() + getCurrentLetter().
-            getName() + EXPORT_CSV_NAME);
+        getName() + EXPORT_CSV_NAME);
     try {
       List<String> emails = getExternalsSuscribers(getCurrentLetter().getPK());
 
@@ -879,6 +831,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Get emails of component Manager
+   *
    * @return Vector of emails
    */
   private List<String> getEmailsManagers() {
@@ -921,5 +874,4 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   private String getSmtpPwd() {
     return smtpSettings.getString("SMTPPwd");
   }
-
 }

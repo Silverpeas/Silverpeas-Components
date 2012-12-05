@@ -135,7 +135,7 @@ public class ImageHelper {
           fileHandler.copyFile(image, handledImageFile);
 
           photo.setImageName(name);
-          photo.setImageMimeType(AttachmentController.getMimeType(name));
+          photo.setImageMimeType(FileUtil.getMimeType(name));
           photo.setImageSize(image.length());
 
           createImage(name, handledImageFile, photo, subDirectory, watermark, watermarkHD,
