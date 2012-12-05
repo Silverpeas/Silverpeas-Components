@@ -20,18 +20,6 @@
  */
 package com.silverpeas.gallery.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
@@ -40,6 +28,7 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.peasCore.servlets.QuotaErrorManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -48,6 +37,19 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.rmi.ServerException;
+import java.util.List;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * Class declaration
@@ -79,11 +81,12 @@ public class GalleryDragAndDrop extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse res)
     throws ServletException, IOException {
     SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
+    String userId = null;
     try {
       request.setCharacterEncoding("UTF-8");
       String componentId = request.getParameter("ComponentId");
       String albumId = request.getParameter("AlbumId");
-      String userId = request.getParameter("UserId");
+      userId = request.getParameter("UserId");
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
         "componentId = " + componentId + " albumId = " + albumId + " userId = " + userId);
       String savePath = FileRepositoryManager.getTemporaryPath() + File.separatorChar + userId
@@ -120,8 +123,16 @@ public class GalleryDragAndDrop extends HttpServlet {
       importRepository(new File(savePath), userId, componentId, albumId);
       FileFolderManager.deleteFolder(savePath);
     } catch (Exception e) {
-      SilverTrace.debug("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE", e);
-      res.getOutputStream().println("ERROR");
+      SilverTrace.debug("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
+          e);
+      final StringBuilder sb = new StringBuilder("ERROR");
+      final String quotaErrorMessage = QuotaErrorManager.performQuotaExceptionMessage(e,
+          UserDetail.getById(userId).getUserPreferences().getLanguage());
+      if (isDefined(quotaErrorMessage)) {
+        sb.append(": ");
+        sb.append(quotaErrorMessage);
+      }
+      res.getOutputStream().println(sb.toString());
     }
     res.getOutputStream().println("SUCCESS");
   }
@@ -154,6 +165,9 @@ public class GalleryDragAndDrop extends HttpServlet {
     } catch (Exception e) {
       SilverTrace.info("gallery", "GalleryDragAndDrop.importRepository",
           "gallery.MSG_NOT_ADD_METADATA", "message = " + e.getMessage());
+      if (e instanceof ServerException) {
+        throw (ServerException) e;
+      }
     }
   }
 
