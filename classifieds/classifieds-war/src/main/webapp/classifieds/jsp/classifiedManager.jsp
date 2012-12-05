@@ -155,10 +155,26 @@
 	      errorNb++;
 	    }
 	    
-	    if (!isWhitespace(document.classifiedForm.Image.value)) {
+	    if (!isWhitespace(document.classifiedForm.Image1.value)) {
 	     var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
-       if (verif.exec(document.classifiedForm.Image.value) == null) {
-        errorMsg+="  - '${classifieds_image}' ${classifieds_imageFormat}\n";
+       if (verif.exec(document.classifiedForm.Image1.value) == null) {
+        errorMsg+="  - '${classifieds_image}1' : ${classifieds_imageFormat}\n";
+        errorNb++;
+       }
+	    }
+	    
+	    if (!isWhitespace(document.classifiedForm.Image2.value)) {
+       var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
+       if (verif.exec(document.classifiedForm.Image2.value) == null) {
+        errorMsg+="  - '${classifieds_image}2' : ${classifieds_imageFormat}\n";
+        errorNb++;
+       }
+	    }
+	    
+	    if (!isWhitespace(document.classifiedForm.Image3.value)) {
+       var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
+       if (verif.exec(document.classifiedForm.Image3.value) == null) {
+        errorMsg+="  - '${classifieds_image}3' : ${classifieds_imageFormat}\n";
         errorNb++;
        }
 	    }
@@ -188,9 +204,9 @@
 	    </c:if>
 	}
 	
-	function hideImageFile() {
-		document.getElementById("imageFile").style.visibility = "hidden";
-	  document.classifiedForm.removeImageFile.value = "yes";
+	function hideImageFile(idElement) {
+		document.getElementById("imageFile"+idElement).style.visibility = "hidden";
+		document.classifiedForm["RemoveImageFile"+idElement].value = "yes";
 	}
 
 </script>
@@ -243,17 +259,42 @@
         </td>
       </tr>
       <tr>
-        <td class="txtlibform"><fmt:message key="classifieds.image"/> :</td>
+        <td class="txtlibform"><fmt:message key="classifieds.images"/> :</td>
         <td>
-          <c:forEach var="image" items="${images}">
-          <div id="imageFile">
+          <c:forEach var="image" items="${images}" begin="0" end="0">
+          <div id="imageFile1">
            <img src="/silverpeas/OnlineFileServer/${image.imageName}?ComponentId=${instanceId}&SourceFile=${image.imageName}&Directory=${imagesDirectory}"></img>&nbsp;&nbsp;
-           <a href="javascript:onClick=hideImageFile();"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a> 
+           <a href="javascript:onClick=hideImageFile('1');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
+           <input type="hidden" name="IdImage1" value="${image.imageId}"> 
            <BR/>
           </div>
           </c:forEach>
-          <input type="file" name="Image1" size="50">
-          <input type="hidden" name="removeImageFile1" value="no"/>
+          <input type="file" name="Image1" size="30">
+          <input type="hidden" name="RemoveImageFile1" value="no"/>
+        </td>
+        <td>
+          <c:forEach var="image" items="${images}" begin="1" end="1">
+          <div id="imageFile2">
+           <img src="/silverpeas/OnlineFileServer/${image.imageName}?ComponentId=${instanceId}&SourceFile=${image.imageName}&Directory=${imagesDirectory}"></img>&nbsp;&nbsp;
+           <a href="javascript:onClick=hideImageFile('2');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
+           <input type="hidden" name="IdImage2" value="${image.imageId}"> 
+           <BR/>
+          </div>
+          </c:forEach>
+          <input type="file" name="Image2" size="30">
+          <input type="hidden" name="RemoveImageFile2" value="no"/>
+        </td>
+        <td>
+          <c:forEach var="image" items="${images}" begin="2" end="2">
+          <div id="imageFile3">
+           <img src="/silverpeas/OnlineFileServer/${image.imageName}?ComponentId=${instanceId}&SourceFile=${image.imageName}&Directory=${imagesDirectory}"></img>&nbsp;&nbsp;
+           <a href="javascript:onClick=hideImageFile('3');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
+           <input type="hidden" name="IdImage3" value="${image.imageId}"> 
+           <BR/>
+          </div>
+          </c:forEach>
+          <input type="file" name="Image3" size="30">
+          <input type="hidden" name="RemoveImageFile3" value="no"/>
         </td>
       </tr>
 			<c:if test="${action eq 'UpdateClassified'}">
