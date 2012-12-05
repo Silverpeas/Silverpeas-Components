@@ -38,8 +38,15 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
       String classifiedId = FileUploadUtil.getParameter(items, "ClassifiedId");
       String description = FileUploadUtil.getParameter(items, "Description");
       String price = FileUploadUtil.getParameter(items, "Price");
-      String removeImageFile = FileUploadUtil.getParameter(items, "removeImageFile"); //yes | no
-      FileItem fileImage = FileUploadUtil.getFile(items, "Image");
+      String idImage1 = FileUploadUtil.getParameter(items, "IdImage1");
+      String idImage2 = FileUploadUtil.getParameter(items, "IdImage2");
+      String idImage3 = FileUploadUtil.getParameter(items, "IdImage3");
+      String removeImageFile1 = FileUploadUtil.getParameter(items, "RemoveImageFile1"); //yes | no
+      String removeImageFile2 = FileUploadUtil.getParameter(items, "RemoveImageFile2"); //yes | no
+      String removeImageFile3 = FileUploadUtil.getParameter(items, "RemoveImageFile3"); //yes | no
+      FileItem fileImage1 = FileUploadUtil.getFile(items, "Image1");
+      FileItem fileImage2 = FileUploadUtil.getFile(items, "Image2");
+      FileItem fileImage3 = FileUploadUtil.getFile(items, "Image3");
 
       ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
       classified.setTitle(title);
@@ -71,11 +78,29 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
       classifiedsSC.updateClassified(classified, true, SilverpeasRole.admin.isInRole(highestRole.getName()));
       request.setAttribute("ClassifiedId", classifiedId);
       
-      //Image
-      if (fileImage != null && StringUtil.isDefined(fileImage.getName())) {//Update image
-        //classifiedsSC.updateClassifiedImage(fileImage, classifiedId);
-      } else if ("yes".equals(removeImageFile)) {//Remove image
-         
+      //Images
+      if(idImage1 == null && fileImage1 != null && StringUtil.isDefined(fileImage1.getName())) {//Create Image
+        classifiedsSC.createClassifiedImage(fileImage1, classifiedId);
+      } else if(idImage1 != null && fileImage1 != null && StringUtil.isDefined(fileImage1.getName())) {//Update Image
+        classifiedsSC.updateClassifiedImage(fileImage1, idImage1, classified.getId());
+      } else if(idImage1 != null && fileImage1 != null && ! StringUtil.isDefined(fileImage1.getName()) && "yes".equals(removeImageFile1)) {//Delete Image
+        classifiedsSC.deleteClassifiedImage(idImage1);
+      }
+      
+      if(idImage2 == null && fileImage2 != null && StringUtil.isDefined(fileImage2.getName())) {//Create Image
+        classifiedsSC.createClassifiedImage(fileImage2, classifiedId);
+      } else if(idImage2 != null && fileImage2 != null && StringUtil.isDefined(fileImage2.getName())) {//Update Image
+        classifiedsSC.updateClassifiedImage(fileImage2, idImage2, classified.getId());
+      } else if(idImage2 != null && fileImage2 != null && ! StringUtil.isDefined(fileImage2.getName()) && "yes".equals(removeImageFile2)) {//Delete Image
+        classifiedsSC.deleteClassifiedImage(idImage2);
+      }
+      
+      if(idImage3 == null && fileImage3 != null && StringUtil.isDefined(fileImage3.getName())) {//Create Image
+        classifiedsSC.createClassifiedImage(fileImage3, classifiedId);
+      } else if(idImage3 != null && fileImage3 != null && StringUtil.isDefined(fileImage3.getName())) {//Update Image
+        classifiedsSC.updateClassifiedImage(fileImage3, idImage3, classified.getId());
+      } else if(idImage3 != null && fileImage3 != null && ! StringUtil.isDefined(fileImage3.getName()) && "yes".equals(removeImageFile3)) {//Delete Image
+        classifiedsSC.deleteClassifiedImage(idImage3);
       }
     }
 

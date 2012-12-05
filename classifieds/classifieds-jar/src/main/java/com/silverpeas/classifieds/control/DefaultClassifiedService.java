@@ -394,6 +394,7 @@ public class DefaultClassifiedService implements ClassifiedService {
           new FullIndexEntry(classified.getInstanceId(), "Classified", Integer.toString(classified
               .getClassifiedId()));
       indexEntry.setTitle(classified.getTitle());
+      indexEntry.setPreView(classified.getDescription());
       indexEntry.setCreationDate(classified.getCreationDate());
       indexEntry.setCreationUser(classified.getCreatorId());
 
@@ -582,7 +583,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   public String createClassifiedImage(Image classifiedImage) {
     Connection con = openConnection();
     try {
-      String id = ClassifiedsDAO.createClassifiedImage(con, classifiedImage);
+      String id = ClassifiedsDAO.createImage(con, classifiedImage);
       classifiedImage.setImageId(Integer.parseInt(id));
       return id;
     } catch (Exception e) {
@@ -608,6 +609,60 @@ public class DefaultClassifiedService implements ClassifiedService {
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGES", e);
     } finally {
       // fermer la connexion
+      closeConnection(con);
+    }
+  }
+  
+  /**
+   * get an image for the given imageId 
+   * @param imageId : String
+   * @return an Image
+   * @
+   */
+  public Image getClassifiedImage(String imageId) {
+    Connection con = openConnection();
+    try {
+      return ClassifiedsDAO.getImage(con, imageId);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getClassifiedImage()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGE", e);
+    } finally {
+      // fermer la connexion
+      closeConnection(con);
+    }
+  }
+  
+  /**
+   * update the image given 
+   * @param classifiedImage : Image
+   * @
+   */
+  public void updateClassifiedImage(Image classifiedImage) {
+    Connection con = openConnection();
+    try {
+      ClassifiedsDAO.updateImage(con, classifiedImage);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.updateClassifiedImage()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_UPDATE", e);
+    } finally {
+      // fermer la connexion
+      closeConnection(con);
+    }
+  }
+  
+  /**
+   * delete the image for the given imageId 
+   * @param imageId : String
+   * @
+   */
+  public void deleteClassifiedImage(String imageId) {
+    Connection con = openConnection();
+    try {
+      ClassifiedsDAO.deleteImage(con, imageId);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteClassifiedImage()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_DELETE", e);
+    } finally {
       closeConnection(con);
     }
   }

@@ -585,6 +585,14 @@ public class ClassifiedsDAO {
     prepStmt.setString(5, subscribe.getField2());
   }
 
+  /**
+   * get the unpublished classified
+   * @param con : Connection
+   * @param instanceId : String
+   * @param userId : String
+   * @return a collection of ClassifiedDetail
+   * @throws SQLException
+   */
   public static Collection<ClassifiedDetail> getUnpublishedClassifieds(Connection con,
       String instanceId, String userId)
       throws SQLException {
@@ -613,21 +621,21 @@ public class ClassifiedsDAO {
    * Initialise les parametètres
    * @param prepStmt : PreparedStatement
    * @param imageId : String
-   * @param classifiedImage : Image
+   * @param image : Image
    * @throws SQLException
    */
   private static void initParamImage(PreparedStatement prepStmt, int imageId,
-      Image classifiedImage) throws SQLException {
+      Image image) throws SQLException {
     prepStmt.setInt(1, imageId);
-    prepStmt.setInt(2, classifiedImage.getClassifiedId());
-    prepStmt.setString(3, classifiedImage.getImageName());
-    prepStmt.setString(4, classifiedImage.getMimeType());
+    prepStmt.setInt(2, image.getClassifiedId());
+    prepStmt.setString(3, image.getImageName());
+    prepStmt.setString(4, image.getMimeType());
   }
   
   /**
-   * get a subscription to resultSet
+   * get an Image to resultSet
    * @param rs : ResultSet
-   * @return Subscribe
+   * @return Image
    * @throws SQLException
    */
   private static Image recupImage(ResultSet rs) throws SQLException {
@@ -642,14 +650,14 @@ public class ClassifiedsDAO {
   }
   
   /**
-   * Create a classified image
+   * Create an image
    * @param con : Connection
-   * @param classifiedImage : Image
+   * @param image : Image
    * @return imageId : String
    * @throws SQLException
    * @throws UtilException
    */
-  public static String createClassifiedImage(Connection con, Image classifiedImage)
+  public static String createImage(Connection con, Image image)
       throws SQLException, UtilException {
     // Création d'une nouvelle image de petite annonce
     String id = "";
@@ -663,7 +671,7 @@ public class ClassifiedsDAO {
               + "values (?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
-      initParamImage(prepStmt, newId, classifiedImage);
+      initParamImage(prepStmt, newId, image);
       prepStmt.executeUpdate();
     } finally {
       // fermeture
@@ -699,5 +707,79 @@ public class ClassifiedsDAO {
       DBUtil.close(rs, prepStmt);
     }
     return listImages;
+  }
+
+  /**
+   * get the image correspond to imageId
+   * @param con : Connection
+   * @param imageId : String
+   * @return an Image
+   * @throws SQLException
+   */
+  public static Image getImage(Connection con, String imageId)
+      throws SQLException {
+    Image image = null;
+    String query = "select * from SC_Classifieds_Images where imageId = ? ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setInt(1, Integer.parseInt(imageId));
+      rs = prepStmt.executeQuery();
+      if (rs.next()) {
+        image = recupImage(rs);
+      }
+    } finally {
+      // fermeture
+      DBUtil.close(rs, prepStmt);
+    }
+    return image;
+  }
+  
+  /**
+   * update the image given
+   * @param con : Connection
+   * @param image : Image
+   * @throws SQLException
+   */
+  public static void updateImage(Connection con, Image image)
+      throws SQLException {
+    PreparedStatement prepStmt = null;
+    try {
+      String query =
+          "update SC_Classifieds_Images set imageName = ? , mimeType = ? "+
+              " where imageId = ? ";
+      // initialisation des paramètres
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setString(1, image.getImageName());
+      prepStmt.setString(2, image.getMimeType());
+      prepStmt.setInt(3, image.getImageId());
+      prepStmt.executeUpdate();
+    } finally {
+      // fermeture
+      DBUtil.close(prepStmt);
+    }
+  }
+  
+  /**
+   * delete the image correspond to imageId
+   * @param con : Connection
+   * @param imageId : String
+   * @throws SQLException
+   */
+  public static void deleteImage(Connection con, String imageId)
+      throws SQLException {
+    PreparedStatement prepStmt = null;
+    try {
+      // création de la requete
+      String query = "delete from SC_Classifieds_Images where imageId = ? ";
+      // initialisation des paramètres
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setInt(1, Integer.parseInt(imageId));
+      prepStmt.executeUpdate();
+    } finally {
+      // fermeture
+      DBUtil.close(prepStmt);
+    }
   }
 }

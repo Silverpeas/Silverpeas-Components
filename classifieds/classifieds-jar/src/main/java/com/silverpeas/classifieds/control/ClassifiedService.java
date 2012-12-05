@@ -240,4 +240,26 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
    * @
    */
   public Collection<Image> getAllClassifiedImage(String classifiedId);
+  
+  /**
+   * get an image for the given imageId 
+   * @param imageId : String
+   * @return an Image
+   * @
+   */
+  public Image getClassifiedImage(String imageId);
+  
+  /**
+   * update the image given 
+   * @param classifiedImage : Image
+   * @
+   */
+  public void updateClassifiedImage(Image classifiedImage);
+  
+  /**
+   * delete the image for the given imageId 
+   * @param imageId : String
+   * @
+   */
+  public void deleteClassifiedImage(String imageId);
 }

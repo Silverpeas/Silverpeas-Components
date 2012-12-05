@@ -561,44 +561,54 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * create classified image
    * @param fileImage : FileItem
    * @param classifiedId : String
-   * @return imageId : String
    */
-  public synchronized String createClassifiedImage(FileItem fileImage, String classifiedId) {
+  public synchronized void createClassifiedImage(FileItem fileImage, String classifiedId) {
     Image classifiedImage = null;
     String physicalName = null;
     String mimeType = null;
     
     try {
-      String imageSubDirectory = getResources().getSetting("imagesSubDirectory");
-      String fullFileName = fileImage.getName();
-      String fileName = fullFileName.substring(
-                        fullFileName.lastIndexOf(File.separator) + 1,
-                        fullFileName.length());
-      String extension = FileRepositoryManager.getFileExtension(fullFileName);
-      
-      physicalName = new Long(new Date().getTime()).toString()
-          + "." + extension;
-      
-      mimeType = AttachmentController.getMimeType(fileName);
-
-      //save picture file in the fileServer
-      String filePath = FileRepositoryManager
-          .getAbsolutePath(this.getComponentId())
-          + imageSubDirectory + File.separator + physicalName;
-      File file = new File(filePath);
-      if (!file.exists()) {
-        FileFolderManager.createFolder(file.getParentFile());
-        file.createNewFile();
-      }
-      fileImage.write(file);
+        String imageSubDirectory = getResources().getSetting("imagesSubDirectory");
+        String fullFileName = fileImage.getName();
+        String fileName = fullFileName.substring(
+                          fullFileName.lastIndexOf(File.separator) + 1,
+                          fullFileName.length());
+        String extension = FileRepositoryManager.getFileExtension(fullFileName);
+        
+        physicalName = new Long(new Date().getTime()).toString()
+            + "." + extension;
+        
+        mimeType = AttachmentController.getMimeType(fileName);
+  
+        //save the picture file in the file server
+        String filePath = FileRepositoryManager
+            .getAbsolutePath(this.getComponentId())
+            + imageSubDirectory + File.separator + physicalName;
+        File file = new File(filePath);
+        if (!file.exists()) {
+          FileFolderManager.createFolder(file.getParentFile());
+          file.createNewFile();
+        }
+        fileImage.write(file);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsSessionController.createClassifiedImage()",
             SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_CREATE", e);
     }
    
-    //save the picture in the data base
+    //create the picture in the data base
     classifiedImage = new Image(Integer.parseInt(classifiedId), physicalName, mimeType);
-    return getClassifiedService().createClassifiedImage(classifiedImage);
+    getClassifiedService().createClassifiedImage(classifiedImage);
+  }
+  
+  /**
+   * create classified images
+   * @param listImage : Collection de FileItem
+   * @param classifiedId : String
+   */
+  public synchronized void createClassifiedImages(Collection<FileItem> listImage, String classifiedId) {
+    for(FileItem fileImage : listImage) {
+      createClassifiedImage(fileImage, classifiedId);
+    }    
   }
 
   /**
@@ -608,57 +618,101 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public ClassifiedDetail getClassifiedWithImages(String classifiedId) {
     ClassifiedDetail classified = getClassified(classifiedId);
-    //load images object 
     Collection<Image> images = getClassifiedService().getAllClassifiedImage(classifiedId);
     classified.setImages(images);
     return classified;
   }
   
   /**
-   * update classified image
-   * @param classifiedImage : Image
-   * @return imageId : String
+   * get classified image
+   * @param imageId : String
+   * @return image : Image
    */
-  public synchronized String updateClassifiedImage(FileItem fileImage, String classifiedId) {
-    Image classifiedImage = null;
+  public Image getClassifiedImage(String imageId) {
+    return getClassifiedService().getClassifiedImage(imageId);
+  }
+  
+  /**
+   * update classified image 
+   * @param fileImage : FileItem
+   * @param imageId : String
+   * @param classifiedId : String
+   */
+  public void updateClassifiedImage(FileItem fileImage, String imageId, String classifiedId) {
+    String filePath = null;
+    File file = null;
     String physicalName = null;
     String mimeType = null;
     
-    try {
+    String imageSubDirectory = getResources().getSetting("imagesSubDirectory");
+    
+    Image classifiedImage = getClassifiedImage(imageId);
+    if(classifiedImage != null) {
+      //delete the actual picture file in the file server
+      filePath = FileRepositoryManager
+          .getAbsolutePath(this.getComponentId())
+          + imageSubDirectory + File.separator + classifiedImage.getImageName();
+      file = new File(filePath);
+      file.delete();
+    
+      try {
+          String fullFileName = fileImage.getName();
+          String fileName = fullFileName.substring(
+                            fullFileName.lastIndexOf(File.separator) + 1,
+                            fullFileName.length());
+          String extension = FileRepositoryManager.getFileExtension(fullFileName);
+          
+          physicalName = new Long(new Date().getTime()).toString()
+              + "." + extension;
+          
+          mimeType = AttachmentController.getMimeType(fileName);
+    
+          //save picture file in the file server
+          filePath = FileRepositoryManager
+                .getAbsolutePath(this.getComponentId())
+                + imageSubDirectory + File.separator + physicalName;
+          file = new File(filePath);
+          if (!file.exists()) {
+            FileFolderManager.createFolder(file.getParentFile());
+            file.createNewFile();
+          }
+          fileImage.write(file);
+      } catch (Exception e) {
+        throw new ClassifiedsRuntimeException("ClassifiedsSessionController.updateClassifiedImage()",
+              SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_CREATE", e);
+      }
+     
+      //update the picture in the data base
+      classifiedImage.setImageName(physicalName);
+      classifiedImage.setMimeType(mimeType);
+      getClassifiedService().updateClassifiedImage(classifiedImage);
       
-      ClassifiedDetail classified = getClassifiedWithImages(classifiedId);
-      Collection<Image> listImages = classified.getImages();
-      
-      
+    } else {
+      createClassifiedImage(fileImage, classifiedId);
+    }
+  }
+  
+  /**
+   * delete classified image 
+   * @param imageId : String
+   */
+  public void deleteClassifiedImage(String imageId) {
+    Image classifiedImage = getClassifiedImage(imageId);
+    if(classifiedImage != null) {
+      //delete the actual picture file in the file server
       String imageSubDirectory = getResources().getSetting("imagesSubDirectory");
-      String fullFileName = fileImage.getName();
-      String fileName = fullFileName.substring(
-                        fullFileName.lastIndexOf(File.separator) + 1,
-                        fullFileName.length());
-      String extension = FileRepositoryManager.getFileExtension(fullFileName);
-      
-      physicalName = new Long(new Date().getTime()).toString()
-          + "." + extension;
-      
-      mimeType = AttachmentController.getMimeType(fileName);
-
-      //save picture file in the fileServer
       String filePath = FileRepositoryManager
           .getAbsolutePath(this.getComponentId())
-          + imageSubDirectory + File.separator + physicalName;
+          + imageSubDirectory + File.separator + classifiedImage.getImageName();
       File file = new File(filePath);
-      if (!file.exists()) {
-        FileFolderManager.createFolder(file.getParentFile());
-        file.createNewFile();
-      }
-      fileImage.write(file);
-    } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.createClassifiedImage()",
-            SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_CREATE", e);
+      file.delete();
+     
+      //delete the picture in the data base
+      getClassifiedService().deleteClassifiedImage(imageId);
+      
+    } else {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.deleteClassifiedImage()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_DELETE", imageId+" does not exist");
     }
-   
-    //save the picture in the data base
-    classifiedImage = new Image(Integer.parseInt(classifiedId), physicalName, mimeType);
-    return getClassifiedService().createClassifiedImage(classifiedImage);
   }
 }

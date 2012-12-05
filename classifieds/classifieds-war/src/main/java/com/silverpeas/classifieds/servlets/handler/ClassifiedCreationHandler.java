@@ -1,7 +1,7 @@
 package com.silverpeas.classifieds.servlets.handler;
 
-import java.io.File;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,22 +11,14 @@ import org.apache.commons.fileupload.FileItem;
 import com.silverpeas.classifieds.control.ClassifiedsRole;
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
-import com.silverpeas.classifieds.model.Image;
 import com.silverpeas.classifieds.servlets.FunctionHandler;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.thumbnail.ThumbnailRuntimeException;
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * Use Case : for all users, show all adds of given category
@@ -46,7 +38,9 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       String title = FileUploadUtil.getParameter(items, "Title");
       String description = FileUploadUtil.getParameter(items, "Description");
       String price = FileUploadUtil.getParameter(items, "Price");
-      FileItem fileImage = FileUploadUtil.getFile(items, "Image");
+      FileItem fileImage1 = FileUploadUtil.getFile(items, "Image1");
+      FileItem fileImage2 = FileUploadUtil.getFile(items, "Image2");
+      FileItem fileImage3 = FileUploadUtil.getFile(items, "Image3");
       
       //Create classified
       ClassifiedDetail classified = new ClassifiedDetail(title, description);
@@ -55,11 +49,21 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       }
       String classifiedId = classifiedsSC.createClassified(classified, highestRole);
       
-      //Create image
-      if (fileImage != null && StringUtil.isDefined(fileImage.getName())) {
-        classifiedsSC.createClassifiedImage(fileImage, classifiedId);
+      //Create images of the classified
+      Collection<FileItem> listImage = new ArrayList<FileItem>();
+      if (fileImage1 != null && StringUtil.isDefined(fileImage1.getName())) {
+        listImage.add(fileImage1);
       }
-
+      if (fileImage2 != null && StringUtil.isDefined(fileImage2.getName())) {
+        listImage.add(fileImage2);
+      }
+      if (fileImage3 != null && StringUtil.isDefined(fileImage3.getName())) {
+        listImage.add(fileImage3);
+      }
+      if(listImage.size() > 0) {
+        classifiedsSC.createClassifiedImages(listImage, classifiedId);
+      }
+      
       PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
       if (pubTemplate != null) {
         // populate data record
