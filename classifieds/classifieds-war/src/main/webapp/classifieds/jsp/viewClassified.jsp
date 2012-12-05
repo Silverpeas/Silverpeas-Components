@@ -49,6 +49,8 @@
 
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="componentLabel" value="${browseContext[1]}" />
+
+<c:set var="imagesDirectory" value="${requestScope.ImagesDirectory}" />
 <c:set var="isDraftEnabled" value="${requestScope.IsDraftEnabled}" />
 <c:set var="isCommentsEnabled" value="${requestScope.IsCommentsEnabled}" />
 <c:set var="profile" value="${requestScope.Profile}" />
@@ -256,6 +258,26 @@
 									</span>
 								</div>
 							</c:if>
+							<div id="classified-view-header-description">
+                <span class="txtlibform"><fmt:message
+                    key="GML.description" />: </span> <span class="txtvalform"><c:out
+                    value="${classified.description}" />
+                </span>
+              </div>
+              <div id="classified-view-header-price">
+                <span class="txtlibform"><fmt:message
+                    key="classifieds.price" />: </span> <span class="txtvalform"><c:out
+                    value="${classified.price}" />
+                </span>
+              </div>
+              <div id="classified-view-header-images">
+                <span class="txtlibform"><fmt:message key="classifieds.images" />: </span>
+                <span class="txtvalform">
+                <c:forEach var="image" items="${classified.images}">
+                  <img src="/silverpeas/OnlineFileServer/${image.imageName}?ComponentId=${classified.instanceId}&SourceFile=${image.imageName}&Directory=${imagesDirectory}"></img>&nbsp;&nbsp;
+                </c:forEach>
+                </span>
+              </div>
 							<hr class="clear" />
 						</div> <c:if test="${not empty xmlForm}">
 							<div class="tableBoard" id="classified-view-content">
