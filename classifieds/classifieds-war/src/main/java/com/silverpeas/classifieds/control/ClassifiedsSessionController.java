@@ -131,16 +131,6 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   }
 
   /**
-   * get all classifieds for this instance
-   * @return a collection of ClassifiedDetail
-   */
-  public Collection<ClassifiedDetail> getAllClassifieds() {
-    Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    classifieds = getClassifiedService().getAllClassifieds(getComponentId());
-    return classifieds;
-  }
-
-  /**
    * get the number of classifieds for this instance
    * @return number : String
    */
@@ -166,9 +156,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return a collection of ClassifiedDetail
    */
   public Collection<ClassifiedDetail> getClassifiedsByUser() {
-    Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    classifieds = getClassifiedService().getClassifiedsByUser(getComponentId(), getUserId());
-    return classifieds;
+    return getClassifiedService().getClassifiedsByUser(getComponentId(), getUserId());
   }
 
   /**
