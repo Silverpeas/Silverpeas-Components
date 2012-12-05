@@ -31,7 +31,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.silverpeas.search.indexEngine.model.FieldDescription;
@@ -1055,9 +1057,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
       SilverTrace.info("gallery", "GalleryRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
           "clipboard = " + getClipboardName() + " count=" + getClipboardCount());
-      CallBackManager callBackManager = CallBackManager.get();
 
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
+      Map<Object, ClipboardSelection> clipObjectPerformed = new HashMap<Object, ClipboardSelection>();
       for (ClipboardSelection clipObject : clipObjects) {
         if (clipObject != null) {
           if (clipObject.isDataFlavorSupported(PhotoSelection.PhotoDetailFlavor)) {
@@ -1065,11 +1067,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
                 PhotoSelection.PhotoDetailFlavor);
 
             delegate.addPhoto(photo, clipObject.isCutted());
-
-            if (clipObject.isCutted()) {
-              callBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer.parseInt(
-                  getUserId()), getComponentId(), photo.getPhotoPK());
-            }
+            clipObjectPerformed.put(photo.getPhotoPK(), clipObject);
           }
           if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
             AlbumDetail album = (AlbumDetail) clipObject.getTransferData(
@@ -1078,17 +1076,22 @@ public final class GallerySessionController extends AbstractComponentSessionCont
                 "albumId = " + album.getId());
 
             delegate.addAlbum(album, clipObject.isCutted());
-
-            if (clipObject.isCutted()) {
-              callBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer.parseInt(
-                  getUserId()), getComponentId(), album.getNodePK());
-            }
+            clipObjectPerformed.put(album.getNodePK(), clipObject);
           }
         }
       }
 
       // Persisting the paste operation
       getGalleryBm().paste(getUserDetail(), getComponentId(), delegate);
+
+      // End of treatment
+      CallBackManager callBackManager = CallBackManager.get();
+      for (Map.Entry<Object, ClipboardSelection> entry : clipObjectPerformed.entrySet()) {
+        if (entry.getValue().isCutted()) {
+          callBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer.parseInt(
+              getUserId()), getComponentId(), entry.getKey());
+        }
+      }
 
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.paste()",

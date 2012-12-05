@@ -1251,14 +1251,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       } else if (function.startsWith("paste")) {
         SilverTrace.debug("gallery", "GalleryRequestRouter.paste", "root.MSG_GEN_PARAM_VALUE",
             "Entrée coller");
-
         gallerySC.paste();
-
-        SilverTrace.debug("gallery", "GalleryRequestRouter.paste", "root.MSG_GEN_PARAM_VALUE",
-            "destination = " + URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp");
-
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp";
-      } // fonctions de gestion du panier et des demandes
+        gallerySC.loadCurrentAlbum();
+        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+      }
+      // fonctions de gestion du panier et des demandes
       else if (function.startsWith("Basket")) {
         if (function.equals("BasketView")) {
           // voir le panier
