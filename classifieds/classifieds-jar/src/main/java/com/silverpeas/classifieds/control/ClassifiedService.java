@@ -54,10 +54,11 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
 
   /**
    * delete the classified corresponding to classifiedId
+   * @param componentId : String
    * @param classifiedId : String
    * @
    */
-  public void deleteClassified(String classifiedId) ;
+  public void deleteClassified(String componentId, String classifiedId);
 
   /**
    * delete all classifieds for the instance corresponding to instanceId
@@ -262,4 +263,5 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
    * @
    */
   public void deleteClassifiedImage(String imageId);
+  
 }

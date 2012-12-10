@@ -132,7 +132,7 @@
       </label>
       <order>3</order>
       <mandatory>false</mandatory>
-      <value>category</value>
+      <value>type</value>
       <type>text</type>
       <size>25</size>
       <updatable>always</updatable>

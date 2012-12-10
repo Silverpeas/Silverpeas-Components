@@ -255,7 +255,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param profile : String
    * @return classifiedId : String
    */
-  public synchronized String createClassified(ClassifiedDetail classified, ClassifiedsRole profile) {
+  public synchronized String createClassified(ClassifiedDetail classified, Collection<FileItem> listImage, ClassifiedsRole profile) {
     UserDetail user = getUserDetail();
     classified.setCreatorId(getUserId());
     classified.setCreationDate(new Date());
@@ -272,7 +272,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
         classified.setStatus(ClassifiedDetail.TO_VALIDATE);
       }
     }
-    return getClassifiedService().createClassified(classified);
+    String classifiedId = getClassifiedService().createClassified(classified);
+    createClassifiedImages(listImage, classifiedId);
+    return classifiedId;
   }
 
   /**
@@ -280,14 +282,13 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param classifiedId : String
    */
   public void deleteClassified(String classifiedId) {
-    getClassifiedService().deleteClassified(classifiedId);
-    // supprimer les commentaires
+    //supprime la petite annonce et ses images
+    getClassifiedService().deleteClassified(this.getComponentId(), classifiedId);
+    
+    //supprime les commentaires
     Collection<Comment> comments = getAllComments(classifiedId);
-    Iterator<Comment> it = comments.iterator();
-    while (it.hasNext()) {
-      Comment comment = it.next();
-      CommentPK commentPK = comment.getCommentPK();
-      getCommentService().deleteComment(commentPK);
+    for(Comment comment : comments) {
+      getCommentService().deleteComment(comment.getCommentPK());
     }
   }
 
@@ -589,7 +590,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param listImage : Collection de FileItem
    * @param classifiedId : String
    */
-  public synchronized void createClassifiedImages(Collection<FileItem> listImage, String classifiedId) {
+  private synchronized void createClassifiedImages(Collection<FileItem> listImage, String classifiedId) {
     for(FileItem fileImage : listImage) {
       createClassifiedImage(fileImage, classifiedId);
     }    

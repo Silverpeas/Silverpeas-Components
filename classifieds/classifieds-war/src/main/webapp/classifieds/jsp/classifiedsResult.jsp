@@ -37,8 +37,8 @@
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+	response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+	response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -98,9 +98,9 @@
 								DataRecord data = (DataRecord) pageContext.getAttribute("data");
 
 								PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
-							    context.setIgnoreDefaultValues(true);
-							    context.setUseMandatory(false);
-							    context.setBorderPrinted(false);
+							  context.setIgnoreDefaultValues(true);
+							  context.setUseMandatory(false);
+							  context.setBorderPrinted(false);
 								formSearch.display(out, context, data);
 								%>
 								<br/>
@@ -127,6 +127,9 @@
 						<c:forEach items="${classifieds}" var="classified">
 							<li>
 								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
+								<c:if test="${classified.price > 0}">
+                  ${classified.price} € - 
+                 </c:if>
 								<span class="creatorName_result_classifieds">${classified.creatorName}</span><span class="sep_creatorName_result_classifieds"> - </span>
 								<c:if test="${not empty classified.updateDate}">
 									<span class="date_result_classifieds updateDate"><view:formatDateTime value="${classified.updateDate}" language="${language}"/></span>

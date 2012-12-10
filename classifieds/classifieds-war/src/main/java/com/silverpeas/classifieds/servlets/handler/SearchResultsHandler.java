@@ -27,10 +27,10 @@ public class SearchResultsHandler extends FunctionHandler {
             request);
       }
 
-      // Comment
+      // CommentX
       else if (type.startsWith("Comment")) {
         request.setAttribute("ClassifiedId", id);
-        return HandlerProvider.getHandler("Comments").computeDestination(classifiedsSC, request);
+        return HandlerProvider.getHandler("ViewClassified").computeDestination(classifiedsSC, request);
       }
 
       // Default : Main page

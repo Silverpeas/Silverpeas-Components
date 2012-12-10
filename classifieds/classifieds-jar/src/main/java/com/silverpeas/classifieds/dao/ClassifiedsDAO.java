@@ -762,7 +762,7 @@ public class ClassifiedsDAO {
   }
   
   /**
-   * delete the image correspond to imageId
+   * delete the image corresponding to imageId
    * @param con : Connection
    * @param imageId : String
    * @throws SQLException
@@ -776,6 +776,28 @@ public class ClassifiedsDAO {
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(imageId));
+      prepStmt.executeUpdate();
+    } finally {
+      // fermeture
+      DBUtil.close(prepStmt);
+    }
+  }
+  
+  /**
+   * delete all of the images corresponding to classifiedId
+   * @param con : Connection
+   * @param classifiedId : String
+   * @throws SQLException
+   */
+  public static void deleteAllImage(Connection con, String classifiedId)
+      throws SQLException {
+    PreparedStatement prepStmt = null;
+    try {
+      // création de la requete
+      String query = "delete from SC_Classifieds_Images where classifiedId = ? ";
+      // initialisation des paramètres
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setInt(1, Integer.parseInt(classifiedId));
       prepStmt.executeUpdate();
     } finally {
       // fermeture

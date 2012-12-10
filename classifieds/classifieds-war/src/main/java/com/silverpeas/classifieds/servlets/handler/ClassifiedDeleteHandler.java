@@ -21,7 +21,6 @@ public class ClassifiedDeleteHandler extends FunctionHandler {
     // Delete classified
     classifiedsSC.deleteClassified(classifiedId);
 
-    // Return to "MyClassifieds" view
-    return HandlerProvider.getHandler("ViewMyClassifieds").computeDestination(classifiedsSC, request);
+    return HandlerProvider.getHandler("Main").computeDestination(classifiedsSC, request);
   }
 }
