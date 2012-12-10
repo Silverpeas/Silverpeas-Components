@@ -23,6 +23,7 @@
  */
 package com.silverpeas.classifieds.control;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -142,12 +144,32 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   @Override
-  public void deleteClassified(String classifiedId) {
+  public void deleteClassified(String componentId, String classifiedId) {
     Connection con = openConnection();
     try {
       ClassifiedDetail classified = getContentById(classifiedId);
+      
+      //supprime la petite annonce
       ClassifiedsDAO.deleteClassified(con, classifiedId);
+      
+      //supprime l'index
       deleteIndex(classified);
+     
+      //supprime les images
+      Collection<Image> images = getAllClassifiedImage(classifiedId);
+      String imageSubDirectory = getComponentSettings().getString("imagesSubDirectory");
+      for(Image classifiedImage : images) {
+        //delete the picture file in the file server
+        String filePath = FileRepositoryManager
+            .getAbsolutePath(componentId)
+            + imageSubDirectory + File.separator + classifiedImage.getImageName();
+        File file = new File(filePath);
+        file.delete();
+      }
+      
+      //delete the pictures in the data base
+      deleteAllClassifiedImage(classifiedId);
+      
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteClassified()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_NOT_DELETE", e);
@@ -176,7 +198,8 @@ public class DefaultClassifiedService implements ClassifiedService {
   public void deleteAllClassifieds(String instanceId) {
     Collection<ClassifiedDetail> classifieds = getAllClassifieds(instanceId);
     for (ClassifiedDetail classified : classifieds) {
-      deleteClassified(Integer.toString(classified.getClassifiedId()));
+      //supprime la petite annonce, ses images et son index
+      deleteClassified(instanceId, Integer.toString(classified.getClassifiedId()));
     }
   }
 
@@ -231,7 +254,14 @@ public class DefaultClassifiedService implements ClassifiedService {
   public Collection<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId) {
     Connection con = openConnection();
     try {
-      return ClassifiedsDAO.getClassifiedsByUser(con, instanceId, userId);
+      OrganizationController orga = new OrganizationController();
+      Collection<ClassifiedDetail> listClassified =  ClassifiedsDAO.getClassifiedsByUser(con, instanceId, userId);
+      for(ClassifiedDetail classified : listClassified) {
+        //ajouter le nom du createur
+        classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
+            .getDisplayedName());     
+      }
+      return listClassified;
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.getClassifiedsByUser()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
@@ -244,7 +274,14 @@ public class DefaultClassifiedService implements ClassifiedService {
   public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId) {
     Connection con = openConnection();
     try {
-      return ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.TO_VALIDATE);
+      OrganizationController orga = new OrganizationController();
+      Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.TO_VALIDATE);
+      for(ClassifiedDetail classified : listClassified) {
+        //ajouter le nom du createur
+        classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
+            .getDisplayedName());     
+      }
+      return listClassified;
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.getClassifiedsToValidate()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
@@ -574,12 +611,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     }
   }
   
-  /**
-   * create a classified image
-   * @param classifiedImage : Image
-   * @return imageId : String
-   * @
-   */
+  @Override
   public String createClassifiedImage(Image classifiedImage) {
     Connection con = openConnection();
     try {
@@ -594,12 +626,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     }
   }
   
-  /**
-   * get all images for the given classified 
-   * @param classifiedId : String
-   * @return a collection of Image
-   * @
-   */
+  @Override
   public Collection<Image> getAllClassifiedImage(String classifiedId) {
     Connection con = openConnection();
     try {
@@ -613,12 +640,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     }
   }
   
-  /**
-   * get an image for the given imageId 
-   * @param imageId : String
-   * @return an Image
-   * @
-   */
+  @Override
   public Image getClassifiedImage(String imageId) {
     Connection con = openConnection();
     try {
@@ -632,11 +654,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     }
   }
   
-  /**
-   * update the image given 
-   * @param classifiedImage : Image
-   * @
-   */
+  @Override
   public void updateClassifiedImage(Image classifiedImage) {
     Connection con = openConnection();
     try {
@@ -650,11 +668,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     }
   }
   
-  /**
-   * delete the image for the given imageId 
-   * @param imageId : String
-   * @
-   */
+  @Override
   public void deleteClassifiedImage(String imageId) {
     Connection con = openConnection();
     try {
@@ -662,6 +676,23 @@ public class DefaultClassifiedService implements ClassifiedService {
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteClassifiedImage()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_DELETE", e);
+    } finally {
+      closeConnection(con);
+    }
+  }
+  
+  /**
+   * delete all of the images for the given classifiedId 
+   * @param classifiedId : String
+   * @
+   */
+  private void deleteAllClassifiedImage(String classifiedId) {
+    Connection con = openConnection();
+    try {
+      ClassifiedsDAO.deleteAllImage(con, classifiedId);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteAllClassifiedImage()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGES_NOT_DELETE", e);
     } finally {
       closeConnection(con);
     }

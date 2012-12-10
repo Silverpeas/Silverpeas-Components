@@ -42,14 +42,13 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       FileItem fileImage2 = FileUploadUtil.getFile(items, "Image2");
       FileItem fileImage3 = FileUploadUtil.getFile(items, "Image3");
       
-      //Create classified
+      //Classified
       ClassifiedDetail classified = new ClassifiedDetail(title, description);
       if (price != null && ! price.isEmpty()) {
         classified.setPrice(Integer.parseInt(price));
       }
-      String classifiedId = classifiedsSC.createClassified(classified, highestRole);
       
-      //Create images of the classified
+      //Images of the classified
       Collection<FileItem> listImage = new ArrayList<FileItem>();
       if (fileImage1 != null && StringUtil.isDefined(fileImage1.getName())) {
         listImage.add(fileImage1);
@@ -60,9 +59,7 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       if (fileImage3 != null && StringUtil.isDefined(fileImage3.getName())) {
         listImage.add(fileImage3);
       }
-      if(listImage.size() > 0) {
-        classifiedsSC.createClassifiedImages(listImage, classifiedId);
-      }
+      String classifiedId = classifiedsSC.createClassified(classified, listImage, highestRole);
       
       PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
       if (pubTemplate != null) {
