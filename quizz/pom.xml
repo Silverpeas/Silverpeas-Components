@@ -12,22 +12,6 @@
   <packaging>pom</packaging>
   <name>Quizz Component</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>questioncontainer</artifactId>
-      <classifier>client</classifier>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
-
   <modules>
     <module>quizz-jar</module>
     <module>quizz-war</module>

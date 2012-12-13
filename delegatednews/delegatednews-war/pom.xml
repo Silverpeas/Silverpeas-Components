@@ -23,11 +23,17 @@
       <groupId>com.silverpeas.core</groupId>
       <artifactId>web-core</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>publication</artifactId>
+      <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -42,12 +48,6 @@
       <artifactId>ws-test-core</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>publication</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 
