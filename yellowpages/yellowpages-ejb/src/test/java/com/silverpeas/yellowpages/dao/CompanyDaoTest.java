@@ -25,17 +25,25 @@ package com.silverpeas.yellowpages.dao;
 
 import com.silverpeas.yellowpages.model.Company;
 import com.silverpeas.yellowpages.model.GenericContact;
+import org.dbunit.DataSourceDatabaseTester;
+import org.dbunit.IDatabaseTester;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -43,25 +51,8 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class CompanyDaoTest {
-
-    private static CompanyDao dao;
-    private static ClassPathXmlApplicationContext context;
-
-    @BeforeClass
-    public static void generalSetUp() throws IOException, NamingException, Exception {
-        context = new ClassPathXmlApplicationContext("spring-company.xml");
-        dao = (CompanyDao) context.getBean("companyDao");
-        DataSource ds = (DataSource) context.getBean("jpaDataSource");
-        IDataSet dataSet = new FlatXmlDataSetBuilder().setColumnSensing(true).build(CompanyDaoTest.class.getClassLoader().getResourceAsStream("com/silverpeas/yellowpages/dao/company-dataset.xml"));
-        IDatabaseConnection connection = new DatabaseConnection(ds.getConnection());
-        DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        context.close();
-    }
+public class CompanyDaoTest extends SpringDbTest {
+    @Inject private CompanyDao dao;
 
     @Test
     public void testSearchByPatternWithSpacesAndMajMin() throws Exception {
@@ -146,5 +137,4 @@ public class CompanyDaoTest {
         assertFalse(contactList.isEmpty());
         assertEquals(1,contactList.size());
     }
-
 }

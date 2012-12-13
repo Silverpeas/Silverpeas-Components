@@ -38,6 +38,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -45,37 +46,10 @@ import java.sql.SQLException;
 import static org.junit.Assert.*;
 
 @Transactional
-public class GenericContactDaoTest {
+public class GenericContactDaoTest extends SpringDbTest{
 
-    private static GenericContactDao dao;
-    private static GenericContactTopicRelationDao daoGcTopicRel;
-    private static DataSource ds;
-    private static ClassPathXmlApplicationContext context;
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        context = new ClassPathXmlApplicationContext("spring-company.xml");
-        dao = (GenericContactDao) context.getBean("genericContactDao");
-        daoGcTopicRel = (GenericContactTopicRelationDao) context.getBean("genericContactTopicRelationDao");
-        ds = (DataSource) context.getBean("jpaDataSource");
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        context.close();
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        cleanDatabase();
-    }
-
-    @BeforeTransaction
-    protected static void cleanDatabase() throws IOException, SQLException, DatabaseUnitException {
-        IDataSet dataSet = new FlatXmlDataSetBuilder().setColumnSensing(true).build(CompanyDaoTest.class.getClassLoader().getResourceAsStream("com/silverpeas/yellowpages/dao/company-dataset.xml"));
-        IDatabaseConnection connection = new DatabaseConnection(ds.getConnection());
-        DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-    }
+    @Inject private GenericContactDao dao;
+    @Inject private GenericContactTopicRelationDao daoGcTopicRel;
 
     @Test
     public void testSaveGenericContact() throws Exception {

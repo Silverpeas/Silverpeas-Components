@@ -60,7 +60,7 @@
                         companyEmail="walmart@oosphere.com" companyPhone="" companyFax="" instanceId="yellowpages6"/>
 
     <!-- Generic Contact (Contacts) -->
-    <sc_contact_genericcontact genericContactId="210" contactType="1" contactId="10"/>
+    <sc_contact_genericcontact genericContactId="210" contactType="1" contactId="10" companyId="[NULL]"/>
     <sc_contact_genericcontact genericContactId="211" contactType="1" contactId="11"/>
     <sc_contact_genericcontact genericContactId="212" contactType="1" contactId="12"/>
     <sc_contact_genericcontact genericContactId="213" contactType="1" contactId="13"/>

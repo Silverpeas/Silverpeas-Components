@@ -1,3 +1,11 @@
+DROP SEQUENCE IF EXISTS hibernate_sequence;
+DROP TABLE IF EXISTS UniqueId;
+DROP TABLE IF EXISTS SB_Contact_Contact;
+DROP TABLE IF EXISTS SC_Contact_GenericContact;
+DROP TABLE IF EXISTS sc_contact_genericcontact_rel;
+DROP TABLE IF EXISTS SC_Contact_GenericContact_Topic;
+DROP TABLE IF EXISTS SC_Contact_Company;
+
 CREATE SEQUENCE hibernate_sequence;
 
 -- ================= UniqueId =================

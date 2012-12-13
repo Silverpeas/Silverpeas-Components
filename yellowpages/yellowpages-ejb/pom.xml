@@ -29,6 +29,12 @@
           <artifactId>ws-test-core</artifactId>
           <version>${core.version}</version>
           <scope>test</scope>
+          <exclusions>
+              <exclusion>
+                  <groupId>javax.validation</groupId>
+                  <artifactId>validation-api</artifactId>
+              </exclusion>
+          </exclusions>
       </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>

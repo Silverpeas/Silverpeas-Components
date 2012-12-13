@@ -17,12 +17,6 @@
     <context:component-scan base-package="com.silverpeas.yellowpages"/>
     <context:component-scan base-package="com.silverpeas.rest.mock"/>
 
-    <bean name="companyService"
-          class="com.silverpeas.yellowpages.service.CompanyServiceImpl"/>
-
-    <bean name="companyServiceFactory"
-          class="com.silverpeas.yellowpages.service.ServicesFactory" factory-method="getInstance"/>
-
     <jpa:repositories base-package="com.silverpeas.yellowpages" transaction-manager-ref="jpaTransactionManager"/>
 
     <import resource="spring-jpa.xml"/>

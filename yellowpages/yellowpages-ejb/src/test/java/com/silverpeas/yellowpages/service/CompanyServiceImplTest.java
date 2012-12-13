@@ -2,6 +2,7 @@ package com.silverpeas.yellowpages.service;
 
 import com.silverpeas.yellowpages.dao.CompanyDaoTest;
 import com.silverpeas.yellowpages.dao.GenericContactDao;
+import com.silverpeas.yellowpages.dao.SpringDbTest;
 import com.silverpeas.yellowpages.model.Company;
 import com.silverpeas.yellowpages.model.GenericContact;
 import org.dbunit.DatabaseUnitException;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -25,36 +27,10 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @Transactional
-public class CompanyServiceImplTest {
+public class CompanyServiceImplTest extends SpringDbTest {
 
-    private static CompanyService service;
-    private static GenericContactDao genericContactDao;
-    private static DataSource ds;
-    private static ClassPathXmlApplicationContext context;
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        context = new ClassPathXmlApplicationContext("spring-company.xml");
-        service = (CompanyService) context.getBean("companyService");
-        genericContactDao = (GenericContactDao) context.getBean("genericContactDao");
-        ds = (DataSource) context.getBean("jpaDataSource");
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        context.close();
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        cleanDatabase();
-    }
-
-    protected static void cleanDatabase() throws IOException, SQLException, DatabaseUnitException {
-        IDataSet dataSet = new FlatXmlDataSetBuilder().setColumnSensing(true).build(CompanyDaoTest.class.getClassLoader().getResourceAsStream("com/silverpeas/yellowpages/dao/company-dataset.xml"));
-        IDatabaseConnection connection = new DatabaseConnection(ds.getConnection());
-        DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-    }
+    @Inject private CompanyService service;
+    @Inject private GenericContactDao genericContactDao;
 
     @Test
     public void testCreateCompany() throws Exception {
