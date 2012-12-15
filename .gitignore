@@ -5,6 +5,7 @@
 .settings
 .classpath
 .project
+.idea
 /target/
 nb-configuration.xml
 wiki/wiki-jar/Test de base/
