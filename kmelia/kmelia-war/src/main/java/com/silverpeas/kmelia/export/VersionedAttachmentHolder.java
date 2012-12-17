@@ -22,14 +22,11 @@
  */
 package com.silverpeas.kmelia.export;
 
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.Worker;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
+import org.silverpeas.attachment.model.SimpleDocument;
+
+import com.silverpeas.util.StringUtil;
+
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
 
 /**
  * Holder of a versioned attachment for the ODTDocumentBuilder.
@@ -38,49 +35,13 @@ import java.util.ArrayList;
  */
 class VersionedAttachmentHolder {
 
-  public static VersionedAttachmentHolder hold(final Document versionedAttachment) {
+  public static VersionedAttachmentHolder hold(final SimpleDocument versionedAttachment) {
     return new VersionedAttachmentHolder(versionedAttachment);
   }
-  private final Document versionedAttachment;
+  private final SimpleDocument versionedAttachment;
 
-  private VersionedAttachmentHolder(final Document versionedAttachment) {
+  private VersionedAttachmentHolder(final SimpleDocument versionedAttachment) {
     this.versionedAttachment = versionedAttachment;
-  }
-
-  /**
-   * Is the specified user has the priviledges to access the holded attachment?
-   * @param user the user.
-   * @return true if the user is authorized to access the holded attachment, false otherwise.
-   */
-  public boolean isUserAuthorized(final UserDetail user) {
-    VersioningUtil versioningService = getVersioningService();
-    int userId = Integer.parseInt(user.getId());
-    return versioningService.isReader(versionedAttachment, userId) || versioningService.isWriter(
-            versionedAttachment, userId) || user.isAccessAdmin();
-  }
-
-  /**
-   * Gets the last version of the holded attachment that can be accessible by the specified user.
-   * If an error occurs while getting the version of the attachment, a runtime exception
-   * DocumentBuildException is thrown (as the holder is used in the context of the export document
-   * build).
-   * @param user the user.
-   * @return the last version of the holded attachment the user can access.
-   */
-  public DocumentVersion getLastVersionAccessibleBy(final UserDetail user) {
-    try {
-      DocumentVersion documentVersion = null;
-      VersioningUtil versioningService = getVersioningService();
-      int userId = Integer.parseInt(user.getId());
-      ArrayList<DocumentVersion> documentFilteredVersions =
-              versioningService.getDocumentFilteredVersions(versionedAttachment.getPk(), userId);
-      if (!documentFilteredVersions.isEmpty()) {
-        documentVersion = documentFilteredVersions.get(0);
-      }
-      return documentVersion;
-    } catch (RemoteException ex) {
-      throw new DocumentBuildException(ex.getMessage(), ex);
-    }
   }
 
   /**
@@ -92,28 +53,17 @@ class VersionedAttachmentHolder {
    * @return the display name of the creator or of the validators. In the case of validators, each
    * of their name is separated by a comma.
    */
-  public String getCreatorOrValidatorsDisplayedName(final DocumentVersion version) {
+  public String getCreatorOrValidatorsDisplayedName(final SimpleDocument version) {
     StringBuilder creatorOrValidators = new StringBuilder();
-    if (isVersionDefined(version)) {
-      if (isOrderedWithApprobation(versionedAttachment)) {
-        ArrayList<Worker> workers = versionedAttachment.getWorkList();
-        for (Worker worker : workers) {
-          if (worker.isApproval()) {
-            if (creatorOrValidators.length() > 0) {
-              creatorOrValidators.append(", ");
-            }
-            creatorOrValidators.append(getOrganizationService().getUserDetail(
-                    String.valueOf(worker.getUserId())).getDisplayedName());
-          }
-        }
-      } else {
-        creatorOrValidators.append(getOrganizationService().getUserDetail(
-                String.valueOf(version.getAuthorId())).getDisplayedName());
+    if (isVersionDefined(version) && !version.isReadOnly()) {
+      String author = version.getUpdatedBy();
+      if(!StringUtil.isDefined(author)) {
+        author = version.getCreatedBy();
       }
+      creatorOrValidators.append(getOrganizationService().getUserDetail(author).getDisplayedName());
     } else {
-      int creatorId = versionedAttachment.getOwnerId();
-      creatorOrValidators.append(getOrganizationService().getUserDetail(String.valueOf(creatorId)).
-              getDisplayedName());
+      String author = versionedAttachment.getEditedBy();
+      creatorOrValidators.append(getOrganizationService().getUserDetail(author).getDisplayedName());
     }
     return creatorOrValidators.toString();
   }
@@ -123,10 +73,10 @@ class VersionedAttachmentHolder {
    * @param version a version of the holded attachment.
    * @return the version number (major number plus minor number) of the specified version.
    */
-  public String getVersionNumber(final DocumentVersion version) {
+  public String getVersionNumber(final SimpleDocument version) {
     String versionNumber = "";
     if (isVersionDefined(version)) {
-      versionNumber = version.getMajorNumber() + "." + version.getMinorNumber();
+      versionNumber = version.getMajorVersion() + "." + version.getMinorVersion();
     }
     return versionNumber;
   }
@@ -138,18 +88,10 @@ class VersionedAttachmentHolder {
    * @param version the version of the holded attachment.
    * @return true if the version is well defined, false otherwise.
    */
-  private boolean isVersionDefined(final DocumentVersion version) {
-    return version.getSize() != 0 || !"dummy".equals(version.getLogicalName());
+  private boolean isVersionDefined(final SimpleDocument version) {
+    return version.getSize() != 0L || !"dummy".equals(version.getFile());
   }
-
-  private boolean isOrderedWithApprobation(final Document versionedAttachment) {
-    return 2 == versionedAttachment.getTypeWorkList();
-  }
-
-  private VersioningUtil getVersioningService() {
-    return new VersioningUtil();
-  }
-
+  
   private OrganizationController getOrganizationService() {
     return new OrganizationController();
   }

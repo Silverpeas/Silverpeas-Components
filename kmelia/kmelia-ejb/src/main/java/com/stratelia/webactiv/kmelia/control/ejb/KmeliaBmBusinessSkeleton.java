@@ -21,7 +21,6 @@
 package com.stratelia.webactiv.kmelia.control.ejb;
 
 import java.rmi.RemoteException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -29,14 +28,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.util.ForeignPK;
+
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.node.control.NodeBm;
@@ -49,8 +49,6 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 
 /**
  * @author sfariello
@@ -583,7 +581,7 @@ public interface KmeliaBmBusinessSkeleton {
   /**
    * ***********************************************************************************
    */
-  public Collection<AttachmentDetail> getAttachments(PublicationPK pubPK) throws RemoteException;
+  
 
   public String getWysiwyg(PublicationPK pubPK) throws RemoteException;
 
@@ -836,8 +834,7 @@ public interface KmeliaBmBusinessSkeleton {
   public void setAlias(PublicationPK pubPK, List<Alias> alias) throws RemoteException;
 
   public void addAttachmentToPublication(PublicationPK pubPK, String userId,
-      String filename, String description, byte[] contents)
-      throws RemoteException;
+      String filename, String description, byte[] contents) throws RemoteException;
 
   public boolean importPublication(String componentId, String topicId,
       String spaceId, String userId, Map<String, String> publiParams,
@@ -866,9 +863,6 @@ public interface KmeliaBmBusinessSkeleton {
 
   public String createTopic(String componentId, String topicId, String spaceId,
       String userId, String name, String description) throws RemoteException;
-
-  public void deleteAttachment(AttachmentDetail attachmentDetail)
-      throws RemoteException;
 
   public Collection<String> getPublicationsSpecificValues(String componentId,
       String xmlFormName, String fieldName) throws RemoteException;

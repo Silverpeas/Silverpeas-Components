@@ -121,7 +121,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.control.CoordinatesBm;
 import com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
@@ -2196,9 +2195,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             + pubPK.toString());
         // This publication have got no father !
         // Check if it's a clone (a clone have got no father ever)
-        boolean alwaysVisibleModeActivated =
-            "yes".equalsIgnoreCase(getOrganizationController().getComponentParameterValue(
-            pubPK.getInstanceId(), "publicationAlwaysVisible"));
+        boolean alwaysVisibleModeActivated = StringUtil.getBooleanValue(getOrganizationController().
+            getComponentParameterValue(pubPK.getInstanceId(), "publicationAlwaysVisible"));
         if (alwaysVisibleModeActivated) {
           SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
               "root.MSG_GEN_PARAM_VALUE", "Getting the publication");
@@ -2212,8 +2210,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
               // Get fathers from main publication
               fathers = getPublicationBm().getAllFatherPK(publi.getClonePK());
               SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
-                  "root.MSG_GEN_PARAM_VALUE",
-                  "Main publication's fathers fetched. # of fathers = " + fathers.size());
+                  "root.MSG_GEN_PARAM_VALUE", "Main publication's fathers fetched. # of fathers = "
+                  + fathers.size());
             }
           }
         }
@@ -2249,8 +2247,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationDetails()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_PUBLICATIONS", e);
     }
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationDetails()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationDetails()", "root.MSG_GEN_EXIT_METHOD");
     return publications;
   }
 
@@ -3306,29 +3303,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   @Override
-  public Collection<AttachmentDetail> getAttachments(PublicationPK pubPK) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getAttachments()", "root.MSG_GEN_ENTER_METHOD",
-        "pubId = " + pubPK.getId());
-    String ctx = "Images";
-    AttachmentPK foreignKey = new AttachmentPK(pubPK.getId(), pubPK);
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
-        "foreignKey = " + foreignKey.toString());
-
-    Connection con = null;
-    try {
-      con = getConnection();
-      Collection<AttachmentDetail> attachmentList = AttachmentController.
-          searchAttachmentByPKAndContext(foreignKey, ctx, con);
-      SilverTrace.info("kmelia", "KmeliaBmEJB.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
-          "attachmentList.size() = " + attachmentList.size());
-      return attachmentList;
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.getAttachments()", ERROR,
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS", e);
-    }
-  }
-
-  @Override
   public String getWysiwyg(PublicationPK pubPK) {
     String wysiwygContent = null;
     try {
@@ -3348,15 +3322,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   private void indexExternalElementsOfPublication(PublicationDetail pubDetail) {
     if (KmeliaHelper.isIndexable(pubDetail)) {
       try {
-        List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-            listDocumentsByForeignKey(pubDetail.getPK(), pubDetail.getLanguage());
-        for (SimpleDocument document : documents) {
-          AttachmentServiceFactory.getAttachmentService().createIndex(document, pubDetail.
-              getBeginDate(), pubDetail.getEndDate());
-        }
-        // index attachments
-        AttachmentController.attachmentIndexer(pubDetail.getPK(), pubDetail.getBeginDate(),
-            pubDetail.getEndDate());
+        AttachmentServiceFactory.getAttachmentService().indexAllDocuments(pubDetail.getPK(),
+            pubDetail.getBeginDate(), pubDetail.getEndDate());
       } catch (Exception e) {
         SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
             "Indexing versioning documents failed", "pubPK = " + pubDetail.getPK().toString(), e);
@@ -3379,7 +3346,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       SilverTrace.error("kmelia", "KmeliaBmEJB.indexExternalElementsOfPublication",
           "Indexing versioning documents failed", "pubPK = " + pubPK.toString(), e);
     }
-
     try {
       // index comments
       getCommentService().unindexAllCommentsOnPublication(PublicationDetail.getResourceType(),
@@ -4263,12 +4229,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   @Override
-  public void deleteAttachment(AttachmentDetail attachmentDetail) throws RemoteException {
-    com.stratelia.webactiv.util.attachment.control.AttachmentController.deleteAttachment(
-        attachmentDetail);
-  }
-
-  @Override
   public Collection<String> getPublicationsSpecificValues(String componentId, String xmlFormName,
       String fieldName) throws RemoteException {
     PublicationImport publicationImport = new PublicationImport(this, componentId);
@@ -4423,14 +4383,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       WysiwygController.copy(fromComponentId, fromId, fromComponentId, cloneId, clone.
           getCreatorId());
 
-      // clone attachments
-      AttachmentPK pkFrom = new AttachmentPK(fromId, fromComponentId);
-      AttachmentPK pkTo = new AttachmentPK(cloneId, fromComponentId);
-      AttachmentController.cloneAttachments(pkFrom, pkTo);
-
-      // paste versioning documents
-      // pasteDocuments(pubPKFrom, clonePK.getId());
-
+      List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
+          .listDocumentsByForeignKey(new ForeignPK(fromId, fromComponentId), null);
+      for (SimpleDocument document : documents) {
+        AttachmentServiceFactory.getAttachmentService().cloneDocument(document, cloneId);
+      }
       // affectation de l'id du clone à la publication de référence
       refPub.setCloneId(cloneId);
       refPub.setCloneStatus(nextStatus);
@@ -4450,24 +4407,17 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         } else {
           String thumbnailsSubDirectory = publicationSettings.getString("imagesSubDirectory");
           String from = absolutePath + thumbnailsSubDirectory + File.separator + vignette;
-
           String type = FilenameUtils.getExtension(vignette);
           String newVignette = Long.toString(System.currentTimeMillis()) + "." + type;
-
           String to = absolutePath + thumbnailsSubDirectory + File.separator + newVignette;
           FileRepositoryManager.copyFile(from, to);
-
           thumbDetail.setOriginalFileName(newVignette);
         }
-
         new ThumbnailServiceImpl().createThumbnail(thumbDetail);
       }
     } catch (IOException e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.clonePublication", ERROR,
           "kmelia.CANT_CLONE_PUBLICATION", e);
-    } catch (AttachmentException ae) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.clonePublication", ERROR,
-          "kmelia.CANT_CLONE_PUBLICATION_FILES", ae);
     } catch (FormException fe) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.clonePublication", ERROR,
           "kmelia.CANT_CLONE_PUBLICATION_XMLCONTENT", fe);
@@ -4497,6 +4447,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return new ResourceLocator("org.silverpeas.kmelia.multilang.kmeliaBundle", "fr");
   }
 
+  @Override
   public NodeDetail getRoot(String componentId, String userId) throws RemoteException {
     return getRoot(componentId, userId, null);
   }

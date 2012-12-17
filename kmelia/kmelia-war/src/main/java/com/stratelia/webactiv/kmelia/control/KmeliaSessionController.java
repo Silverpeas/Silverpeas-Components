@@ -665,8 +665,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * *******************************************************************************************
    */
   /**
-   * @return 
-   * @throws RemoteException
+   * @return @throws RemoteException
    */
   public String getProfile() throws RemoteException {
     return getUserTopicProfile();
@@ -865,8 +864,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * @return 
-   * @throws RemoteException
+   * @return @throws RemoteException
    */
   public synchronized Collection<Collection<NodeDetail>> getSubscriptionList() throws
       RemoteException {
@@ -3419,9 +3417,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       // Be careful, attachments have already moved !
       pasteAttachmentsAsDocuments(toPubPK, publi.getPK().getId());
 
-      /* if (indexIt) {
-       AttachmentServiceFactory.getAttachmentService().indexDocumentsByForeignKey(toForeignPK);
-       }*/
+      if (indexIt) {
+        AttachmentServiceFactory.getAttachmentService().indexAllDocuments(toForeignPK, null, null);
+      }
 
       // remove only files
       List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
@@ -3439,16 +3437,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       // Move images of model
       if (completePub.getInfoDetail().getInfoImageList() != null) {
         for (InfoImageDetail attachment : completePub.getInfoDetail().getInfoImageList()) {
-          String from = fromAbsolutePath + imagesSubDirectory + File.separator
-              + attachment.getPhysicalName();
-          String to = toAbsolutePath + imagesSubDirectory + File.separator
-              + attachment.getPhysicalName();
-
+          String from = fromAbsolutePath + imagesSubDirectory + File.separator + attachment.
+              getPhysicalName();
+          String to = toAbsolutePath + imagesSubDirectory + File.separator + attachment.
+              getPhysicalName();
           File fromImage = new File(from);
           File toImage = new File(to);
-
           boolean moveOK = fromImage.renameTo(toImage);
-
           SilverTrace.info("kmelia", "KmeliaSessionController.pastePublication()",
               "root.MSG_GEN_PARAM_VALUE", "dbImage move = " + moveOK);
         }
