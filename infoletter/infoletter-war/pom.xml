@@ -14,15 +14,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.silverpeas.components.infoletter</groupId>
-      <artifactId>infoletter-jar</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>web-core</artifactId>
       <version>${core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.components.infoletter</groupId>
+      <artifactId>infoletter-jar</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

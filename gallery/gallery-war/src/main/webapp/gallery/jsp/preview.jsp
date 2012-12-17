@@ -148,7 +148,27 @@ function goToNotify(url)
 	    top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>cut?Object=Image&Id=<%=photo.getId()%>';
 	}
 
+  $(window).keydown(function(e){
+    var keyCode = eval(e.keyCode);
+    if (37 == keyCode || keyCode == 39) {
+      e.preventDefault();
+      var button;
+      if (37 == keyCode) {
+        // Previous
+        button = $('#previousButton').get(0);
+      } else if (39 == keyCode) {
+        // Next
+        button = $('#nextButton').get(0);
+      }
+      if (button) {
+        button.click();
+      }
+      return true;
+    }
+  });
+
 </script>
+<%@include file="diaporama.jsp" %>
 </head>
 <body class="yui-skin-sam">
   <%
@@ -176,7 +196,7 @@ function goToNotify(url)
     if (albumSize.intValue() > 1) {
       // diaporama
       operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString(
-          "gallery.diaporama"), "StartDiaporama");
+          "gallery.diaporama"), "javascript:startSlideshow('"+photoId+"')");
     }
       
     if ("user".equals(profile) && isBasket) {
@@ -224,7 +244,7 @@ function goToNotify(url)
 				<tr>
 					<td align="center" width="25">
 						<%	if ( !debut ) { %>
-							<a href="PreviousPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowLeft.gif" align="middle" border="0" alt="<%=resource.getString("gallery.previous")%>" title="<%=resource.getString("gallery.previous")%>"/></a>
+							<a id="previousButton" href="PreviousPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowLeft.gif" align="middle" border="0" alt="<%=resource.getString("gallery.previous")%>" title="<%=resource.getString("gallery.previous")%>"/></a>
 						<% } else { %>
 							&nbsp;
 						<% } %>
@@ -234,7 +254,7 @@ function goToNotify(url)
 					</td>
 					<td align="center" width="25">
 						<% if ( !fin ) { %>
-							<a href="NextPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowRight.gif" align="middle" border="0" alt="<%=resource.getString("gallery.next")%>" title="<%=resource.getString("gallery.next")%>"/></a>
+							<a id="nextButton" href="NextPhoto"><img src="/silverpeas/util/viewGenerator/icons/arrows/arrowRight.gif" align="middle" border="0" alt="<%=resource.getString("gallery.next")%>" title="<%=resource.getString("gallery.next")%>"/></a>
 						<% } else { %>
 							&nbsp;
 						<% } %>
@@ -256,7 +276,9 @@ function goToNotify(url)
 					%>
 					<table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto"><tr><td align="center">
 						<table cellspacing="1" cellpadding="5" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
-							<center><img src="<%=preview_url%>"/></center>
+              <center>
+                <img src="<%=preview_url%>" onclick="javascript:startSlideshow('<%=photo.getPhotoPK().getId()%>')" style="cursor: pointer"/>
+              </center>
 						</td></tr></table>
 					</td></tr></table>
 					<%

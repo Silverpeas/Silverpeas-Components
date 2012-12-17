@@ -24,11 +24,9 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import java.rmi.RemoteException;
 
 import javax.inject.Named;
 
-import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.notification.AttachmentDeletionNotification;
 import org.silverpeas.attachment.notification.AttachmentRef;
 import org.silverpeas.versioning.notification.VersioningDeletionNotification;
@@ -37,6 +35,7 @@ import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
@@ -75,12 +74,8 @@ public class AttachmentKmeliaListener extends DefaultNotificationSubscriber {
         if (attachment != null) {
           PublicationPK pubPK = new PublicationPK(attachment.getForeignId(), attachment
               .getInstanceId());
-          try {
-            getKmeliaBm().externalElementsOfPublicationHaveChanged(pubPK, null, -1);
-          } catch (RemoteException e) {
-            throw new KmeliaRuntimeException("AttachmentKmeliaListener.onNotification()",
-                SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-          }
+          anExternalPublicationElementHaveChanged(pubPK);
+
         }
       } else if (notification instanceof VersioningDeletionNotification) {
         VersioningDeletionNotification deletion = (VersioningDeletionNotification) notification;
@@ -88,17 +83,22 @@ public class AttachmentKmeliaListener extends DefaultNotificationSubscriber {
         if (document != null) {
           PublicationPK pubPK = new PublicationPK(document.getForeignKey().getId(), document
               .getInstanceId());
-          try {
-            getKmeliaBm().externalElementsOfPublicationHaveChanged(pubPK, null, -1);
-          } catch (RemoteException e) {
-            throw new KmeliaRuntimeException("AttachmentKmeliaListener.onNotification()",
-                SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-          }
+          anExternalPublicationElementHaveChanged(pubPK);
         }
       }
     }
   }
-
+  
+  private void anExternalPublicationElementHaveChanged(PublicationPK pubPK) {
+    try {
+      getKmeliaBm().externalElementsOfPublicationHaveChanged(pubPK, null, -1);
+    } catch (Exception e) {
+      // if exception is throw, JMS will attempt to execute it again and again...
+      SilverTrace.error("kmelia", "AttachmentKmeliaListener.onNotification",
+          "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
+    }
+  }
+  
   private KmeliaBm getKmeliaBm() {
     try {
       return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBmHome.class).create();

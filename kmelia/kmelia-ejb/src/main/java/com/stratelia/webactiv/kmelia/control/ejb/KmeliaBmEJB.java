@@ -1617,7 +1617,17 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
       int action) {
-    PublicationDetail pubDetail = getPublicationDetail(pubPK);
+    PublicationDetail pubDetail;
+    try {
+      pubDetail = getPublicationDetail(pubPK);
+    } catch (Exception e) {
+      // publication no longer exists
+      // do not throw exception because this method is called by JMS layer
+      // if exception is throw, JMS will attempt to execute it again and again...
+      SilverTrace.info("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
+          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
+      return;
+    }
     if (isDefined(userId)) {
       pubDetail.setUpdaterId(userId);
     }
@@ -1643,7 +1653,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
               + " is not allowed to update publication " + pubDetail.getPK().toString());
         }
       }
-
       // index all attached files to taking into account visibility period
       indexExternalElementsOfPublication(pubDetail);
 
