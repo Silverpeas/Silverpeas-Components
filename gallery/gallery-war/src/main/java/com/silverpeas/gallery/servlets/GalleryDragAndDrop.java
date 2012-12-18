@@ -28,7 +28,7 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.peasCore.servlets.QuotaErrorManager;
+import com.stratelia.silverpeas.peasCore.servlets.SilverpeasWebErrorManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -126,11 +126,11 @@ public class GalleryDragAndDrop extends HttpServlet {
       SilverTrace.debug("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
           e);
       final StringBuilder sb = new StringBuilder("ERROR");
-      final String quotaErrorMessage = QuotaErrorManager.performQuotaExceptionMessage(e,
+      final String errorMessage = SilverpeasWebErrorManager.performAppletAlertExceptionMessage(e,
           UserDetail.getById(userId).getUserPreferences().getLanguage());
-      if (isDefined(quotaErrorMessage)) {
+      if (isDefined(errorMessage)) {
         sb.append(": ");
-        sb.append(quotaErrorMessage);
+        sb.append(errorMessage);
       }
       res.getOutputStream().println(sb.toString());
     }
