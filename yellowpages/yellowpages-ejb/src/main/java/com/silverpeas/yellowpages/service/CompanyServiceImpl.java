@@ -127,7 +127,7 @@ public class CompanyServiceImpl implements CompanyService {
             // Recuperation de la relation entre les deux si elle existe, ou creation sinon
             GenericContactRelation relation = genericContactRelationDao.findByGenericCompanyIdAndGenericContactId(gcCompany.getGenericContactId(), gcContact.getGenericContactId());
             if (relation == null) {
-                relation = new GenericContactRelation(gcContact.getGenericContactId(), gcCompany.getGenericContactId(), GenericContactRelation.RELATION_TYPE_BELONGS_TO, GenericContactRelation.ENABLE_TRUE);
+                relation = new GenericContactRelation(gcContact.getGenericContactId(), gcCompany.getGenericContactId());
                 genericContactRelationDao.saveAndFlush(relation);
             }
 
@@ -143,7 +143,6 @@ public class CompanyServiceImpl implements CompanyService {
             GenericContact gcContact = genericContactDao.findGenericContactFromContactId(contactId);
 
             if (gcCompany != null && gcContact != null) {
-                // TODO à la place de supprimer, set enabled = false sur la relation ?
                 GenericContactRelation relationToDelete = genericContactRelationDao.findByGenericCompanyIdAndGenericContactId(gcCompany.getGenericContactId(), gcContact.getGenericContactId());
                 if (relationToDelete != null) {
                     genericContactRelationDao.delete(relationToDelete.getRelationId());

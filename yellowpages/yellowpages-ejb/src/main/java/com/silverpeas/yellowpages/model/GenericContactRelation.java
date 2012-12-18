@@ -37,24 +37,13 @@ public class GenericContactRelation implements java.io.Serializable {
     private int genericContactId;
     @Column(name = "genericCompanyId")
     private int genericCompanyId;
-    @Column(name = "relationType")
-    private int relationType;
-    @Column(name = "enabled")
-    private int enabled;
-
-    public static final int ENABLE_FALSE = 0;
-    public static final int ENABLE_TRUE = 1;
-
-    public static final int RELATION_TYPE_BELONGS_TO = 0;
 
     public GenericContactRelation() {
     }
 
-    public GenericContactRelation(int genericContactId, int genericCompanyId, int relationType, int enabled) {
+    public GenericContactRelation(int genericContactId, int genericCompanyId) {
         this.genericContactId = genericContactId;
         this.genericCompanyId = genericCompanyId;
-        this.relationType = relationType;
-        this.enabled = enabled;
     }
 
     public int getGenericContactId() {
@@ -71,22 +60,6 @@ public class GenericContactRelation implements java.io.Serializable {
 
     public void setGenericCompanyId(int genericCompanyId) {
         this.genericCompanyId = genericCompanyId;
-    }
-
-    public int getRelationType() {
-        return relationType;
-    }
-
-    public void setRelationType(int relationType) {
-        this.relationType = relationType;
-    }
-
-    public int getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(int enabled) {
-        this.enabled = enabled;
     }
 
     public int getRelationId() {

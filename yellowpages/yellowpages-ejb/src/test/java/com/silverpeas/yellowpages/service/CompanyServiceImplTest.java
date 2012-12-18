@@ -120,8 +120,7 @@ public class CompanyServiceImplTest extends SpringDbTest {
         List<Company> list = service.findCompanyListByContactId(contactId);
         assertNotNull(list);
         assertFalse(list.isEmpty());
-        // nombre d'élements avec ENABLED = true
-        assertTrue(list.size() == 2);
+        assertEquals(3,list.size());
     }
 
     @Test

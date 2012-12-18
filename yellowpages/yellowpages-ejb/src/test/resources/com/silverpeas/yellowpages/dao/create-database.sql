@@ -99,9 +99,7 @@ CREATE TABLE sc_contact_genericcontact_rel
 (
     relationId          int     NOT NULL,
 	genericContactId	int		NOT NULL,
-	genericCompanyId    int		NOT NULL,
-	relationType	    int		NOT NULL,
-	enabled 	    	int 	DEFAULT(1) NOT NULL
+	genericCompanyId    int		NOT NULL
 )
 ;
 

@@ -34,27 +34,20 @@ import java.util.List;
 public interface GenericContactRelationDao extends JpaRepository<GenericContactRelation, Integer> {
 
     @Query("FROM GenericContactRelation GCR " +
-            "WHERE GCR.genericCompanyId = :genericCompanyId AND " +
-            "GCR.relationType = " + GenericContactRelation.RELATION_TYPE_BELONGS_TO + " AND " +
-            "GCR.enabled = " + GenericContactRelation.ENABLE_TRUE)
+            "WHERE GCR.genericCompanyId = :genericCompanyId")
     List<GenericContactRelation> findByGenericCompanyId(@Param("genericCompanyId") int genericCompanyId);
 
      @Query("FROM GenericContactRelation GCR " +
-            "WHERE GCR.genericContactId = :genericContactId AND " +
-            "GCR.relationType = " + GenericContactRelation.RELATION_TYPE_BELONGS_TO + " AND " +
-            "GCR.enabled = " + GenericContactRelation.ENABLE_TRUE)
+            "WHERE GCR.genericContactId = :genericContactId")
     List<GenericContactRelation> findByGenericContactId(@Param("genericContactId") int genericContactId);
 
     @Query("FROM GenericContactRelation GCR " +
-            "WHERE GCR.genericContactId = :genericContactId AND " +
-            "GCR.relationType = " + GenericContactRelation.RELATION_TYPE_BELONGS_TO)
+            "WHERE GCR.genericContactId = :genericContactId")
     List<GenericContactRelation> findAllByGenericContactId(@Param("genericContactId") int genericContactId);
 
     @Query("FROM GenericContactRelation GCR " +
            "WHERE GCR.genericContactId = :genericContactId AND " +
-           "GCR.genericCompanyId = :genericCompanyId AND " +
-           "GCR.relationType = " + GenericContactRelation.RELATION_TYPE_BELONGS_TO + " AND " +
-           "GCR.enabled = " + GenericContactRelation.ENABLE_TRUE)
+           "GCR.genericCompanyId = :genericCompanyId")
     GenericContactRelation findByGenericCompanyIdAndGenericContactId(@Param("genericCompanyId") int genericCompanyId, @Param("genericContactId") int genericContactId);
 }
 

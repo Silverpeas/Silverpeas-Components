@@ -30,9 +30,7 @@ CREATE TABLE SC_Contact_GenericContact_Rel
 (
     relationId          int     NOT NULL,
 	genericContactId	int		NOT NULL,
-	genericCompanyId    int		NOT NULL,
-	relationType	    int		NOT NULL,
-	enabled 	    	int 	DEFAULT(1) NOT NULL
+	genericCompanyId    int		NOT NULL
 )
 ;
 

@@ -135,6 +135,6 @@ public class CompanyDaoTest extends SpringDbTest {
         List<GenericContact> contactList = dao.findContactListByCompanyId(id);
         assertNotNull(contactList);
         assertFalse(contactList.isEmpty());
-        assertEquals(1,contactList.size());
+        assertEquals(2,contactList.size());
     }
 }

@@ -56,27 +56,14 @@ public class GenericContactRelationDaoTest extends SpringDbTest{
         // Genericcontact entreprise = "Boïng"
         int genCompanyId = 115;
 
-        GenericContactRelation relation = new GenericContactRelation(genContactId, genCompanyId, GenericContactRelation.RELATION_TYPE_BELONGS_TO, GenericContactRelation.ENABLE_TRUE);
+        GenericContactRelation relation = new GenericContactRelation(genContactId, genCompanyId);
         GenericContactRelation result = dao.save(relation);
         assertNotNull(result);
 
         GenericContactRelation relationFromDb = dao.findByGenericCompanyIdAndGenericContactId(genCompanyId, genContactId);
         assertNotNull(relationFromDb);
-        assertEquals(GenericContactRelation.ENABLE_TRUE, relationFromDb.getEnabled());
         assertEquals(genCompanyId, relationFromDb.getGenericCompanyId());
         assertEquals(genContactId, relationFromDb.getGenericContactId());
-        assertEquals(GenericContactRelation.RELATION_TYPE_BELONGS_TO, relationFromDb.getRelationType());
-    }
-
-    @Test
-    public void testFindDisabledRelationShouldReturnNull() throws Exception {
-        // Generic contact à chercher
-        int genContactId = 217;
-        int genCompanyId = 114;
-        // Cette relation est flagguée à ENALBED=0, elle ne doit pas faire partie des résultat de recherche
-
-        GenericContactRelation relation = dao.findByGenericCompanyIdAndGenericContactId(genCompanyId, genContactId);
-        assertNull(relation);
     }
 
     @Test
@@ -102,9 +89,6 @@ public class GenericContactRelationDaoTest extends SpringDbTest{
         assertNotNull(liste);
         assertFalse(liste.isEmpty());
         assertEquals(1, liste.size());
-        for (GenericContactRelation genericContactRelation : liste) {
-            assertEquals(1, genericContactRelation.getEnabled());
-        }
     }
 
     @Test
@@ -112,10 +96,7 @@ public class GenericContactRelationDaoTest extends SpringDbTest{
         int genericContactId = 217;
         List<GenericContactRelation> liste = dao.findByGenericContactId(genericContactId);
         assertNotNull(liste);
-        assertEquals(2, liste.size());
-        for (GenericContactRelation genericContactRelation : liste) {
-            assertEquals(1, genericContactRelation.getEnabled());
-        }
+        assertEquals(3, liste.size());
     }
 
     @Test
@@ -124,7 +105,6 @@ public class GenericContactRelationDaoTest extends SpringDbTest{
         int genericCompanyId = 110;
         GenericContactRelation relation = dao.findByGenericCompanyIdAndGenericContactId(genericCompanyId, genericContactId);
         assertNotNull(relation);
-        assertEquals(1, relation.getEnabled());
     }
 
 }

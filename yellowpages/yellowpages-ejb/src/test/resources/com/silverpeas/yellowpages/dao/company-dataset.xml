@@ -78,17 +78,12 @@
     <sc_contact_genericcontact genericContactId="115" contactType="2" companyId="6"/>
 
     <!-- Generic Contact Rel -->
-    <sc_contact_genericcontact_rel relationId="0" genericContactId="217" genericCompanyId="113" relationType="0"
-                                   enabled="1"/>
-    <sc_contact_genericcontact_rel relationId="1" genericContactId="217" genericCompanyId="110" relationType="0"
-                                   enabled="1"/>
-    <sc_contact_genericcontact_rel relationId="2" genericContactId="217" genericCompanyId="114" relationType="0"
-                                   enabled="0"/>
+    <sc_contact_genericcontact_rel relationId="0" genericContactId="217" genericCompanyId="113" />
+    <sc_contact_genericcontact_rel relationId="1" genericContactId="217" genericCompanyId="110" />
+    <sc_contact_genericcontact_rel relationId="2" genericContactId="217" genericCompanyId="114" />
 
-    <sc_contact_genericcontact_rel relationId="3" genericContactId="212" genericCompanyId="111" relationType="0"
-                                   enabled="1"/>
-    <sc_contact_genericcontact_rel relationId="4" genericContactId="213" genericCompanyId="111" relationType="0"
-                                   enabled="0"/>
+    <sc_contact_genericcontact_rel relationId="3" genericContactId="212" genericCompanyId="111" />
+    <sc_contact_genericcontact_rel relationId="4" genericContactId="213" genericCompanyId="111" />
 
     <!-- generic contacts topics -->
     <sc_contact_genericcontact_topic relationId="100" genericContactId="217" nodeId="5" />

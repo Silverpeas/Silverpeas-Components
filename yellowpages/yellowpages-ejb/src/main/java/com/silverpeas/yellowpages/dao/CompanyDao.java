@@ -40,7 +40,6 @@ public interface CompanyDao extends JpaRepository<Company, Integer> {
             "WHERE gccontact.contactId = :contactId " +
             "AND gccontact.contactType = " + GenericContact.TYPE_COMPANY + " " +
             "AND gccontact.genericContactId = rel.genericContactId " +
-            "AND rel.enabled = " + GenericContactRelation.ENABLE_TRUE + " " +
             "AND rel.genericCompanyId = gccompany.companyId " +
             "AND gccompany.companyId = comp.companyId")
     List<Company> findCompanyListByContactId(@Param("contactId") int contactId);
@@ -52,7 +51,6 @@ public interface CompanyDao extends JpaRepository<Company, Integer> {
     @Query("select gccontact FROM GenericContact gccontact, GenericContact gccompany, GenericContactRelation rel " +
             "WHERE gccontact.genericContactId = rel.genericContactId " +
             "AND rel.genericCompanyId = gccompany.genericContactId " +
-            "AND rel.enabled = " + GenericContactRelation.ENABLE_TRUE + " " +
             "AND gccompany.contactType = " + GenericContact.TYPE_COMPANY + " "  +
             "AND gccompany.companyId = :companyId")
     List<GenericContact> findContactListByCompanyId(@Param("companyId") int companyId);
