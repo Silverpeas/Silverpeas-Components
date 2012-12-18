@@ -20,39 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
-import org.apache.commons.io.FilenameUtils;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
@@ -60,14 +27,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.dao.ModelDAO;
-import com.silverpeas.kmelia.notification.KmeliaDefermentPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaDocumentSubscriptionPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaModificationPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaPendingValidationPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaSubscriptionPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaTopicUserNotification;
-import com.silverpeas.kmelia.notification.KmeliaValidationPublicationUserNotification;
+import com.silverpeas.kmelia.notification.*;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.ejb.PdcBm;
@@ -91,7 +51,6 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -108,19 +67,9 @@ import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.kmelia.KmeliaContentManager;
 import com.stratelia.webactiv.kmelia.KmeliaSecurity;
 import com.stratelia.webactiv.kmelia.PublicationImport;
-import com.stratelia.webactiv.kmelia.model.KmaxRuntimeException;
-import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
-import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.kmelia.model.TopicComparator;
-import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.kmelia.model.*;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.coordinates.control.CoordinatesBm;
 import com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
@@ -136,14 +85,26 @@ import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
-import com.stratelia.webactiv.util.publication.model.Alias;
-import com.stratelia.webactiv.util.publication.model.CompletePublication;
-import com.stratelia.webactiv.util.publication.model.NodeTree;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.publication.model.ValidationStep;
+import com.stratelia.webactiv.util.publication.model.*;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.*;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.*;
 
 import static com.silverpeas.util.StringUtil.getBooleanValue;
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -2719,9 +2680,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
 
       // merge des fichiers joints
-      AttachmentPK pkFrom = new AttachmentPK(pubPK.getId(), pubPK.getInstanceId());
-      AttachmentPK pkTo = new AttachmentPK(cloneId, tempPK.getInstanceId());
-      AttachmentController.mergeAttachments(pkFrom, pkTo);
+      ForeignPK pkFrom = new ForeignPK(pubPK.getId(), pubPK.getInstanceId());
+      ForeignPK pkTo = new ForeignPK(cloneId, tempPK.getInstanceId());
+      AttachmentServiceFactory.getAttachmentService().mergeDocuments(pkFrom, pkTo,
+          DocumentType.attachment);
 
       // merge des fichiers versionnés
 
@@ -4076,11 +4038,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void setAlias(PublicationPK pubPK, List<Alias> alias) {
     List<Alias> oldAliases = (List<Alias>) getAlias(pubPK);
-
-    List<Alias> newAliases = new ArrayList<Alias>();
-    List<Alias> remAliases = new ArrayList<Alias>();
-    List<Alias> stayAliases = new ArrayList<Alias>();
-
+    List<Alias> newAliases = new ArrayList<Alias>(alias.size());
+    List<Alias> remAliases = new ArrayList<Alias>(oldAliases.size());
     // Compute the remove list
     for (Alias a : oldAliases) {
       if (!alias.contains(a)) {
@@ -4091,12 +4050,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     for (Alias a : alias) {
       if (!oldAliases.contains(a)) {
         newAliases.add(a);
-      } else {
-        stayAliases.add(a);
       }
     }
-
-
     try {
       getPublicationBm().addAlias(pubPK, newAliases);
       getPublicationBm().removeAlias(pubPK, remAliases);
@@ -4104,7 +4059,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       throw new KmeliaRuntimeException("KmeliaBmEJB.setAlias()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DENREGISTRER_LES_ALIAS_DE_PUBLICATION", e);
     }
-
     // Send subscriptions to aliases subscribers
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
     String originalComponentId = pubPK.getInstanceId();

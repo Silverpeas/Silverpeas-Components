@@ -56,7 +56,6 @@
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@ page import="com.stratelia.webactiv.util.attachment.control.AttachmentController"%>
 <%@ page import="com.stratelia.webactiv.util.attachment.model.AttachmentDetail"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
@@ -87,11 +86,7 @@
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeI18NDetail"%>
 
-<%@ page import="com.stratelia.silverpeas.versioning.util.VersioningUtil"%>
-<%@ page import="com.stratelia.silverpeas.versioning.model.Document"%>
-<%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion"%>
 
-<%@ page import="org.silverpeas.search.searchEngine.searchEngine.control.ejb.* "%>
 <%@ page import="org.silverpeas.search.searchEngine.model.* "%>
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>

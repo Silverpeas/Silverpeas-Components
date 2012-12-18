@@ -21,24 +21,17 @@
 package com.silverpeas.processManager.servlets;
 
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.processManager.LockVO;
-import com.silverpeas.processManager.ProcessFilter;
-import com.silverpeas.processManager.ProcessManagerException;
-import com.silverpeas.processManager.ProcessManagerSessionController;
-import com.silverpeas.processManager.StepVO;
+import com.silverpeas.processManager.*;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.workflow.api.error.WorkflowError;
 import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.instance.Question;
-import com.silverpeas.workflow.api.model.AllowedAction;
-import com.silverpeas.workflow.api.model.AllowedActions;
-import com.silverpeas.workflow.api.model.Item;
-import com.silverpeas.workflow.api.model.QualifiedUsers;
-import com.silverpeas.workflow.api.model.State;
+import com.silverpeas.workflow.api.model.*;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.engine.model.ActionRefs;
 import com.silverpeas.workflow.engine.model.StateImpl;
@@ -47,11 +40,14 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -63,13 +59,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-
-import com.silverpeas.form.FormException;
 
 public class ProcessManagerRequestRouter
     extends ComponentRequestRouter<ProcessManagerSessionController> {
@@ -318,15 +307,9 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
-
-      try {
         String welcomeMessage = WysiwygController.load(session.getComponentId(), session.getComponentId(),
             session.getLanguage());
         request.setAttribute("WelcomeMessage", welcomeMessage);
-      } catch (WysiwygException e) {
-        SilverTrace.error("processManager", "ProcessManagerRequestRouter.listProcessHandler",
-            "processManager.CANT_LOAD_WYSIWYG_WELCOME_MESSAGE", e);
-      }
       setProcessFilterAttributes(session, request, session.getCurrentFilter());
       setSharedAttributes(session, request);
       return "/processManager/jsp/listProcess.jsp";

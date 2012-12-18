@@ -25,16 +25,6 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="com.stratelia.silverpeas.versioning.model.Worker"%><%@ page import="javax.servlet.*,
-                 com.stratelia.silverpeas.versioning.model.Document,
-                 com.stratelia.silverpeas.versioning.model.DocumentVersion,
-                 com.stratelia.webactiv.util.attachment.ejb.AttachmentPK,
-                 com.stratelia.webactiv.util.attachment.control.AttachmentController,
-                 com.stratelia.webactiv.util.attachment.model.AttachmentDetail,
-                 com.stratelia.webactiv.util.publication.model.PublicationPK,
-                 com.stratelia.silverpeas.versioning.model.Reader,
-                 com.stratelia.silverpeas.silvertrace.SilverTrace,
-                 com.stratelia.silverpeas.versioning.util.VersioningUtil"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
 <%@ page import="java.io.PrintWriter"%>
@@ -50,171 +40,75 @@
 <%@ page import="com.stratelia.webactiv.util.publication.info.model.InfoDetail, com.stratelia.webactiv.util.publication.info.model.InfoAttachmentDetail"%>
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
 <%@ page import="java.util.Enumeration "%>
-<%@ page import="org.silverpeas.servlets.FileServer"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.silverpeas.util.ForeignPK"%>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 
 <%!
-void displayUserAttachmentsView(PublicationDetail pubDetail, String m_context, JspWriter out, int type, String user_id, boolean showIcon, ResourcesWrapper resources) throws IOException {
+void displayUserAttachmentsView(PublicationDetail pubDetail, String webContext, JspWriter out,
+                                String lang, boolean showIcon, ResourcesWrapper resources) throws IOException {
 
-	//construction du path context
-  int VERSIONING = 1;
-  String ctx = "Images";
-    if ( type == VERSIONING )
-    {
-        //construction d'une AttachmentPK (c'est une foreignKey) � partir  de la publication
+
         ForeignPK foreignKey = new ForeignPK(pubDetail.getPK());
-        String space_id = foreignKey.getSpace();
-        String component_id = foreignKey.componentName;
-        VersioningUtil versioning_util = new VersioningUtil();
+        List<SimpleDocument> documents =
+                AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(foreignKey,lang);
 
-        List documents = versioning_util.getDocuments(foreignKey);
 
-        Iterator iterator = documents.iterator();
-        Document document;
-        DocumentVersion document_version;
-        Vector dv;
-        if (iterator.hasNext()) {
-              out.println("<TABLE ALIGN=CENTER CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
+        if (!documents.isEmpty()) {
+              out.println("<table ALIGN=CENTER CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
               out.println("<tr><td>");
-              out.println("<TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH=\"100%\" CLASS=intfdcolor4>");
-              if (showIcon)
-	              out.println("<TR><TD align=\"center\"><img src=\""+m_context+"/util/icons/attachedFiles.gif\"></td></TR>");
-              while (iterator.hasNext()) {
-                    document = (Document) iterator.next();
-                       document_version = versioning_util.getLastPublicVersion(document.getPk());
-                       if ( document_version != null )
-                       {
-                           out.println("<TR>");
-                           out.println("<TD><IMG alt=\"\" src=\""+versioning_util.getDocumentVersionIconPath(document_version.getPhysicalName())+"\" width=20>&nbsp;<A href=\""+versioning_util.getDocumentVersionURL(component_id, document_version.getLogicalName(), document.getPk().getId(), document_version.getPk().getId())+"\" target=\"_blank\">"+document.getName()+"</A>&nbsp;(v"+document_version.getMajorNumber()+"."+document_version.getMinorNumber()+")<BR>");
+              out.println("<table ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH=\"100%\" CLASS=intfdcolor4>");
+              if (showIcon) {
+	              out.println("<tr><td align=\"center\"><img src=\""+ webContext + "/util/icons" +
+                          "/attachedFiles.gif\"></td></tr>");   }
+              for (SimpleDocument document : documents) {
+                  SimpleDocument document_version =document.getLastPublicVersion();
+                       if ( document_version != null ) {
+                           String title	= document_version.getTitle();
+                           if(!StringUtil.isDefined(title)) {
+                               title = document_version.getFilename();
+                           }
+                           out.println("<tr>");
+                           out.print("<td><img alt=\"\" src=\""+document_version.getDisplayIcon()+"\" width=20>&nbsp;<A href=\""+document_version.getAttachmentURL()+"\" target=\"_blank\">"+title+"</a>");
+                           if(document_version.isVersioned()) {
+                               out.println("&nbsp;(v"+document_version.getMajorVersion()+"."+document_version.getMinorVersion()+")<br/>");
+                           } else {
+                               out.println("&nbsp;<br/>");
+                           }
                            String separator = "";
-                           if (!"no".equals(resources.getSetting("showFileSize")))
+                           if (!"no".equals(resources.getSetting("showFileSize"))) {
+                               out.println(" " +FileRepositoryManager.formatFileSize(document_version.getSize()));
+                               separator = " / ";
+                           }
+                           if (!"no".equals(resources.getSetting("showDownloadEstimation"))) {
+                               out.println(separator+FileRepositoryManager.getFileDownloadTime(document_version.getSize()));
+                           }
+                           if (StringUtil.isDefined(document_version.getDescription()))
                            {
-														out.println(" "+FileRepositoryManager.formatFileSize(document_version.getSize()));
-														separator = " / ";
-												   }
-												   if (!"no".equals(resources.getSetting("showDownloadEstimation")))
-                           		out.println(separator+versioning_util.getDownloadEstimation(document_version.getSize()));
+                               if (!"no".equals(resources.getSetting("showInfo"))) {
+                                   out.println("<br><i>"+document_version.getDescription()+"</i>");
+                               }
 
-                           if (document_version.getMajorNumber() > 1)
-                           {
-                           		if (showIcon)
-	                           		out.println("<BR> >> <a href=\"javaScript:viewPublicVersions("+document.getPk().getId()+")\">Toutes les versions...</a>");
-	                           	else
-	                           		out.println(" (<a href=\"javaScript:viewPublicVersions("+document.getPk().getId()+")\">Toutes les versions...</a>)");
+                           }
+                           if (document_version.isVersioned()
+                                   && document_version.getMajorVersion() > 1) {
+                           		if (showIcon) {
+                                       out.println("<br/> >> <a href=\"javaScript:viewPublicVersions("+document.getPk().getId()+")\">Toutes les versions...</a>");
+                                } else {
+                                       out.println(" (<a href=\"javaScript:viewPublicVersions("+document.getPk().getId()+")\">Toutes les versions...</a>)");
+                                   }
 		                       }
-	                         out.println("</TD></TR>");
+	                         out.println("</td></tr>");
 	                       }
 	              }
-              out.println("</TABLE>");
+              out.println("</table>");
               out.println("</td></tr>");
-              out.println("</TABLE>");
+              out.println("</table>");
          }
-    }
-    else
-    {
-        displayUserAttachmentsView(pubDetail, m_context, out, showIcon, resources);
-    }
+
 }
-
-public boolean isUserReader(Document document, int user_id, VersioningUtil versioning_util )
-    {
-        try
-        {
-            ArrayList readers = (ArrayList)document.getReadList().clone();
-            ArrayList writers = versioning_util.getAllNoReader( document );
-
-            for ( int i=0; i<readers.size(); i++ )
-            {
-                Reader user = (Reader) readers.get(i);
-                if ( user.getUserId() == user_id )
-                {
-                    return true;
-                }
-            }
-
-            for ( int i=0; i<writers.size(); i++ )
-            {
-                Reader user = (Reader) writers.get(i);
-                if ( user.getUserId() == user_id )
-                {
-                    return true;
-                }
-            }
-        } catch (Exception e)
-        {
-            SilverTrace.error( "kmelia", "attachmentUtils.jsp", "root.EX_REMOTE_EXCEPTION", e );
-        }
-
-        return false;
-    }
-
-
-  void displayUserAttachmentsView(PublicationDetail pubDetail, String m_context, JspWriter out, boolean showIcon, ResourcesWrapper resources) throws IOException
-  {
-  	//construction du path context
-    String ctx = "Images";
-    //construction d'une AttachmentPK (c'est une foreignKey) � partir  de la publication
-    AttachmentPK foreignKey =  new AttachmentPK(pubDetail.getPK().getId(), pubDetail.getPK().getSpace(), pubDetail.getPK().getComponentName());
-
-    Collection attachmentList = AttachmentController.searchAttachmentByPKAndContext(foreignKey, ctx);
-    Iterator iterator = attachmentList.iterator();
-    if (iterator.hasNext())
-    {
-			out.println("<TABLE ALIGN=CENTER CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
-			out.println("<tr><td>");
-			out.println("<TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH=\"100%\" CLASS=intfdcolor4>");
-			if (showIcon)
-	      out.println("<TR><TD align=\"center\"><img src=\""+m_context+"/util/icons/attachedFiles.gif\"></td></TR>");
-		  AttachmentDetail attachmentDetail = null;
-		  String author = "";
-		  String title  = "";
-		  String info	= "";
-      while (iterator.hasNext()) {
-        attachmentDetail = (AttachmentDetail) iterator.next();
-				title	= attachmentDetail.getTitle();
-				info	= attachmentDetail.getInfo();
-        out.println("<TR>");
-        out.println("<TD><IMG src=\""+attachmentDetail.getAttachmentIcon()+"\" width=20>&nbsp;");
-				out.println("<A href=\"" + m_context +attachmentDetail.getAttachmentURL()+"\" target=\"_blank\">");
-				if (title != null && title.length()>0)
-					out.print(title);
-				else
-					out.print(attachmentDetail.getLogicalName());
-				out.print("</A>"+author+"<BR>");
-
-				String separator = "";
-				if (title != null && title.length()>0) {
-					if (!"no".equals(resources.getSetting("showTitle")))
-					{
-						out.println(attachmentDetail.getLogicalName());
-						separator = " / ";
-					}
-				}
-
-				if (!"no".equals(resources.getSetting("showFileSize")))
-               	{
-					out.println(separator + attachmentDetail.getAttachmentFileSize());
-					separator = " / ";
-			   	}
-
-			   	if (!"no".equals(resources.getSetting("showDownloadEstimation")))
-               		out.println(separator + attachmentDetail.getAttachmentDownloadEstimation());
-
-                if (info != null && info.length()>0)
-                {
-                	if (!"no".equals(resources.getSetting("showInfo")))
-						out.println("<br><i>"+info+"</i>");
-				}
-				out.println("</TD></TR>");
-				author = "";
-          }
-          out.println("</TABLE>");
-          out.println("</td></tr>");
-          out.println("</TABLE>");
-     }
-  }
 %>

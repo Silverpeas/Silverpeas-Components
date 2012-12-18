@@ -51,7 +51,6 @@ import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -293,7 +292,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     }
     // Delete the Wysiwyg if exists
     if (WysiwygController.haveGotWysiwyg(getComponentId(), id)) {
-      FileFolderManager.deleteFile(WysiwygController.getWysiwygPath(getComponentId(), id));
+      WysiwygController.deleteWysiwygAttachments(getComponentId(), id);
     }
 
     SilverTrace.info("almanach", "AlmanachSessionController.removeEvent()",
@@ -416,7 +415,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       // Update the Wysiwyg if exists, create one otherwise
       if (isDefined(eventDetail.getWysiwyg())) {
         WysiwygController.updateFileAndAttachment(eventDetail.getDescription(getLanguage()),
-            getSpaceId(), getComponentId(), eventDetail.getId(), getUserId());
+            getComponentId(), eventDetail.getId(), getUserId());
       } else {
         WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
             getComponentId(),

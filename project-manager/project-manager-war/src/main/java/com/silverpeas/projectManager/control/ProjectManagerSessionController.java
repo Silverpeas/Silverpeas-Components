@@ -26,6 +26,8 @@ import com.silverpeas.projectManager.model.*;
 import com.silverpeas.projectManager.vo.DayVO;
 import com.silverpeas.projectManager.vo.MonthVO;
 import com.silverpeas.projectManager.vo.WeekVO;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -37,18 +39,13 @@ import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.*;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
-import com.silverpeas.util.ForeignPK;
 
 /**
  * This class contains all the business model for project manager component
@@ -82,15 +79,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return currentTask;
   }
 
-  /**
-   * ******************************************************************
-   */
-  /**
-   * ******** Gestion de l'arborescence des taches *******************
-   */
-  /**
-   * ******************************************************************
-   */
   public void addUnfoldTask(String id) {
     unfoldTasks.add(Integer.parseInt(id));
   }
@@ -107,9 +95,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return unfoldTasks.contains(Integer.valueOf(actionId));
   }
 
-  /**
-   * ******************************************************************
-   */
   public List<TaskDetail> getAllTasks() throws RemoteException {
     List<TaskDetail> tasks = getProjectManagerBm().getAllTasks(getComponentId(), getFiltre());
     for (TaskDetail task : tasks) {
@@ -702,15 +687,13 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   private ProjectManagerBm getProjectManagerBm() {
     if (projectManagerBm == null) {
       try {
-        ProjectManagerBmHome projectManagerBmHome = (ProjectManagerBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.PROJECTMANAGERBM_EJBHOME,
-            ProjectManagerBmHome.class);
+        ProjectManagerBmHome projectManagerBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames
+            .PROJECTMANAGERBM_EJBHOME, ProjectManagerBmHome.class);
         projectManagerBm = projectManagerBmHome.create();
       } catch (Exception e) {
         throw new ProjectManagerRuntimeException(
             "ProjectManagerSessionController.getProjectManagerBm()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
-            e);
+            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
     return projectManagerBm;
@@ -721,15 +704,14 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    */
   public String getRole() {
     String[] roles = getUserRoles();
-    String role = null;
     String higherRole = "lecteur";
     for (int i = 0; i < roles.length; i++) {
-      role = roles[i];
+      String role = roles[i];
       // if admin, return it, we won't find a better profile
-      if (role.equals("admin")) {
+      if ("admin".equals(role)) {
         return role;
       }
-      if (role.equals("responsable")) {
+      if ("responsable".equals(role)) {
         higherRole = role;
       }
     }
@@ -832,8 +814,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     // Building Month ValueObject in order to prepare view
     Calendar curDayCal = new GregorianCalendar();
     curDayCal.setTime(startDate);
-    ResourceLocator resource =
-        new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", this.getLanguage());
+    ResourceLocator resource = new ResourceLocator("org.silverpeas.multilang.generalMultilang",
+        this.getLanguage());
     int nbDaysDisplayed = curDayCal.getActualMaximum(Calendar.DAY_OF_MONTH);
     int currentWeek = -1;
     int numWeekInYear = curDayCal.get(Calendar.WEEK_OF_YEAR);
@@ -863,13 +845,13 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       }
       oldNumWeekInYear = numWeekInYear;
     }
-    MonthVO curMonth =
-        new MonthVO(weeks, Integer.toString(curDayCal.get(Calendar.MONTH)), nbDaysDisplayed);
+    MonthVO curMonth = new MonthVO(weeks, Integer.toString(curDayCal.get(Calendar.MONTH)),
+        nbDaysDisplayed);
     return curMonth;
   }
 
   /**
-   * @param startDate If null parameter we get the current month system.
+   * @param curDate If null parameter we get the current month system.
    * @return a quarter which contains 3 month value object starting from start date month
    * @throws ParseException
    */
@@ -878,7 +860,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * @param startDate If null parameter we get the current month system.
+   * @param curDate If null parameter we get the current month system.
    * @return a quarter which contains 3 month value object starting from start date month
    * @throws ParseException
    */
@@ -922,12 +904,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    * relevant date in order to display current tasks
    * @return the most relevant date
    * @throws ParseException
-   * @see getProjectManagerRelevantDate method
    */
   public Date getMostRelevantDate(String startDate) throws ParseException {
     Date curDate;
     if (startDate != null) {
-      curDate = DateUtil.stringToDate(startDate, "fr");
+      curDate = DateUtil.stringToDate(startDate, I18NHelper.defaultLanguage);
     } else {
       // Search for the most relevant date
       curDate = getProjectManagerRelevantDate();

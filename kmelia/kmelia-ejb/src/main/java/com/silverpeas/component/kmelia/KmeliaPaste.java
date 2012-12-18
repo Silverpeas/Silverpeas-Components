@@ -23,8 +23,14 @@
  */
 package com.silverpeas.component.kmelia;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+
 import com.silverpeas.admin.components.ComponentPasteInterface;
 import com.silverpeas.admin.components.PasteDetail;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -39,11 +45,6 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 
 public class KmeliaPaste implements ComponentPasteInterface {
 

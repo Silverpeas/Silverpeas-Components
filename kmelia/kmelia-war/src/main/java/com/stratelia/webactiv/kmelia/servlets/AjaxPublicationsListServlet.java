@@ -49,9 +49,6 @@ import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -59,6 +56,9 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.viewer.ViewerFactory;
 
@@ -72,9 +72,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
 
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 

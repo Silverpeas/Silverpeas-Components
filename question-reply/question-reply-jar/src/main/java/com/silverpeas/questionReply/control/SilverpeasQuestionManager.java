@@ -150,9 +150,6 @@ public class SilverpeasQuestionManager implements QuestionManager {
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.createReply", SilverpeasException.ERROR,
           "questionReply.EX_CREATE_REPLY_FAILED", "", e);
-    } catch (WysiwygException e) {
-      throw new QuestionReplyException("QuestionManager.createReply", SilverpeasException.ERROR,
-          "questionReply.EX_CREATE_REPLY_FAILED", "", e);
     } finally {
       DBUtil.close(con);
     }
@@ -971,7 +968,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
 
   protected void updateWysiwygContent(Reply reply) throws WysiwygException {
     if (WysiwygController.haveGotWysiwyg(reply.getPK().getInstanceId(), reply.getPK().getId())) {
-      WysiwygController.updateFileAndAttachment(reply.readCurrentWysiwygContent(), "",
+      WysiwygController.updateFileAndAttachment(reply.readCurrentWysiwygContent(),
           reply.getPK().getInstanceId(), reply.getPK().getId(), reply.getCreatorId());
     } else {
       WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(),

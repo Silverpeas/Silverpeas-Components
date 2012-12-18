@@ -547,11 +547,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public String getWysiwygHeader() {
     if (isWysiwygHeaderEnabled()) {
-      try {
         return WysiwygController.load(getComponentId(), "Node_0", getLanguage());
-      } catch (WysiwygException e) {
-        return "";
-      }
     }
     return "";
   }

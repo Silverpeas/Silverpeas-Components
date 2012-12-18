@@ -24,30 +24,13 @@
 
 package com.stratelia.webactiv.quickinfo.control;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.RemoveException;
-import javax.xml.bind.JAXBException;
-
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -62,11 +45,21 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.RemoveException;
+import javax.xml.bind.JAXBException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
  * @author squere
@@ -74,7 +67,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  */
 public class QuickInfoSessionController extends AbstractComponentSessionController {
   private ResourceLocator message = null;
-  private ResourceLocator settings = null;
+  private ResourceLocator settings = new ResourceLocator("org.silverpeas.quickinfo.settings" +
+      ".quickInfoSettings", "");
   private PublicationBm publicationBm = null;
   private QuickInfoContentManager pdcManager = null;
 
@@ -94,11 +88,10 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   private PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
+        publicationBm = (EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBmHome.class)).create();
       } catch (Exception e) {
-        SilverTrace.error("quickinfo",
-            "QuickInfoSessionController.getPublicationBm()",
+        SilverTrace.error("quickinfo", "QuickInfoSessionController.getPublicationBm()",
             "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
         throw new EJBException(e);
       }
@@ -179,22 +172,10 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    */
   public void add(String name, String description, Date begin, Date end, String positions)
       throws RemoteException, CreateException, WysiwygException {
-    // m_quickInfoSilverObject.add (name, description, begin, end);
-    if (name == null) {
-      throw new javax.ejb.CreateException("titreObligatoire");
-    }
-    if (name.length() == 0) {
-      throw new javax.ejb.CreateException("titreObligatoire");
-    }
-    if ((begin != null) && (end != null)) {
-      if (begin.compareTo(end) > 0) {
-        throw new javax.ejb.CreateException("dateDebutAvantDateFin");
-      }
-    }
+    validateInformations(name, begin, end);
 
-    PublicationDetail detail =
-        new PublicationDetail(new PublicationPK("unknown", getSpaceId(), getComponentId()), name,
-            null, new Date(), begin, end, getUserId(), 1, "", "", "");
+    PublicationDetail detail = new PublicationDetail(new PublicationPK("unknown", getSpaceId(),
+        getComponentId()), name, null, new Date(), begin, end, getUserId(), 1, "", "", "");
     try {
       // Create the Publication
       PublicationPK pubPK = getPublicationBm().createPublication(detail);
@@ -205,36 +186,23 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
         SilverTrace.error("quickinfo", "QuickInfoSessionController.add()",
             "root.ContentManagerException", e);
       }
-
       // Add the wysiwyg content
-      WysiwygController.createFileAndAttachment(description, getComponentId(),
-          pubPK.getId());
+      WysiwygController.createFileAndAttachment(description, getComponentId(), pubPK.getId());
 
       classifyQuickInfo(detail, positions);
     } catch (RemoteException e) {
-      SilverTrace
-          .error("quickinfo", "QuickInfoSessionController.add()", "root.REMOTE_EXCEPTION", e);
+      SilverTrace .error("quickinfo", "QuickInfoSessionController.add()",
+          "root.REMOTE_EXCEPTION", e);
       throw e;
     }
   }
 
   public void update(String id, String name, String description, Date begin, Date end)
       throws RemoteException, javax.ejb.CreateException, WysiwygException {
-    if (name == null) {
-      throw new javax.ejb.CreateException("titreObligatoire");
-    }
-    if (name.length() == 0) {
-      throw new javax.ejb.CreateException("titreObligatoire");
-    }
+    validateInformations(name, begin, end);
 
-    if ((begin != null) && (end != null)) {
-      if (begin.compareTo(end) > 0) {
-        throw new javax.ejb.CreateException("dateDebutAvantDateFin");
-      }
-    }
-
-    PublicationDetail detail =
-        new PublicationDetail(new PublicationPK(id, this.getSpaceId(), this.getComponentId()),
+    PublicationDetail detail = new PublicationDetail(new PublicationPK(id, this.getSpaceId(),
+        this.getComponentId()),
             name, null, new java.util.Date(), begin, end, getUserId(), 1, "", "", "");
 
     try {
@@ -250,7 +218,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
       // Update the Wysiwyg if exists, create one otherwise
       if (detail.getWysiwyg() != null && !"".equals(detail.getWysiwyg())) {
-        WysiwygController.updateFileAndAttachment(description, getSpaceId(), getComponentId(), id,
+        WysiwygController.updateFileAndAttachment(description, getComponentId(), id,
             getUserId());
       } else {
         WysiwygController.createFileAndAttachment(description, getComponentId(), id);
@@ -260,6 +228,19 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       SilverTrace.error("quickinfo", "QuickInfoSessionController.update()",
           "root.REMOTE_EXCEPTION", e);
       throw e;
+    }
+  }
+
+  private void validateInformations(String name, Date begin, Date end)
+      throws CreateException {
+    if (!StringUtil.isDefined(name)) {
+      throw new CreateException("titreObligatoire");
+    }
+
+    if ((begin != null) && (end != null)) {
+      if (begin.after(end)) {
+        throw new CreateException("dateDebutAvantDateFin");
+      }
     }
   }
 
@@ -285,7 +266,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
       // Delete the Wysiwyg if exists
       if (WysiwygController.haveGotWysiwyg(getComponentId(), id)) {
-        FileFolderManager.deleteFile(WysiwygController.getWysiwygPath(getComponentId(), id));
+        WysiwygController.deleteFileAndAttachment(getComponentId(), id);
       }
     } catch (RemoteException e) {
       SilverTrace.error("quickinfo", "QuickInfoSessionController.remove('" + id + "')",
@@ -295,24 +276,20 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public ResourceLocator getMessage() {
-    try {
-      String langue = getLanguage();
-      message = new ResourceLocator("com.stratelia.webactiv.quickinfo.multilang.quickinfo", langue);
+      try {
+      message = new ResourceLocator("org.silverpeas.quickinfo.multilang.quickinfo", getLanguage());
     } catch (Exception e) {
       SilverTrace.error("quickinfo", "NewsSessionControl.getMessage()",
           "quickinfo.CANT_GET_LANGUAGE", e);
       if (message == null) {
-        message = new ResourceLocator("com.stratelia.webactiv.quickinfo.multilang.quickinfo", "fr");
+        message = new ResourceLocator("org.silverpeas.quickinfo.multilang.quickinfo",
+            I18NHelper.defaultLanguage);
       }
     }
     return message;
   }
 
   public ResourceLocator getSettings() {
-    if (settings == null) {
-      settings =
-          new ResourceLocator("com.stratelia.webactiv.quickinfo.settings.quickInfoSettings", "");
-    }
     return settings;
   }
 
@@ -385,8 +362,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       if (qiClassification != null && !qiClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = qiClassification.getPdcPositions();
         String qiId = publi.getPK().getId();
-        PdcClassification classification =
-            aPdcClassificationOfContent(qiId, publi.getInstanceId()).withPositions(pdcPositions);
+        PdcClassification classification = aPdcClassificationOfContent(qiId,
+            publi.getInstanceId()).withPositions(pdcPositions);
         if (!classification.isEmpty()) {
           PdcClassificationService service =
               PdcServiceFactory.getFactory().getPdcClassificationService();

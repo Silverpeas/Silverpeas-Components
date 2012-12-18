@@ -23,26 +23,6 @@
  */
 package com.silverpeas.blog.control;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.ejb.CreateException;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import edu.emory.mathcs.backport.java.util.Collections;
-import org.silverpeas.search.SearchEngineFactory;
-
 import com.silverpeas.blog.BlogContentManager;
 import com.silverpeas.blog.dao.PostDAO;
 import com.silverpeas.blog.model.Archive;
@@ -64,23 +44,15 @@ import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -91,6 +63,20 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.ejb.CreateException;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Default implementation of the services provided by the Blog component. It is managed by the

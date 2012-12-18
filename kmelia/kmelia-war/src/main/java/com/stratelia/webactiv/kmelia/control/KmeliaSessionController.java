@@ -20,43 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.search.SearchEngineFactory;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
@@ -87,17 +50,12 @@ import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailService;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.ZipManager;
+import com.silverpeas.util.*;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
-
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -116,41 +74,17 @@ import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.kmelia.FileImport;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
-import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
-import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.kmelia.model.PubliAuthorComparatorAsc;
-import com.stratelia.webactiv.kmelia.model.PubliCreationDateComparatorAsc;
-import com.stratelia.webactiv.kmelia.model.PubliImportanceComparatorDesc;
-import com.stratelia.webactiv.kmelia.model.PubliRankComparatorAsc;
-import com.stratelia.webactiv.kmelia.model.PubliUpdateDateComparatorAsc;
-import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.kmelia.model.Treeview;
+import com.stratelia.webactiv.kmelia.model.*;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldParameter;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.model.updatechain.UpdateChainDescriptor;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.WAAttributeValuePair;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -166,15 +100,32 @@ import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
-import com.stratelia.webactiv.util.publication.model.Alias;
-import com.stratelia.webactiv.util.publication.model.CompletePublication;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.publication.model.PublicationSelection;
-import com.stratelia.webactiv.util.publication.model.ValidationStep;
+import com.stratelia.webactiv.util.publication.model.*;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.*;
 
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -270,6 +221,21 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     init();
   }
 
+  public static List<String> getLanguagesOfAttachments(ForeignPK foreignPK) {
+    List<String> languages = new ArrayList<String>();
+    for (String availableLanguage : I18NHelper.getAllSupportedLanguages()) {
+      List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService()
+          .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.attachment, availableLanguage);
+      for (SimpleDocument attachment : attachments) {
+        if (availableLanguage.equalsIgnoreCase(attachment.getLanguage())) {
+          languages.add(availableLanguage);
+          break;
+        }
+      }
+    }
+    return languages;
+  }
+
   private void init() {
     // Remove all data store by this SessionController
     removeSessionObjects();
@@ -319,8 +285,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public StatisticBm getStatisticBm() {
     if (statisticBm == null) {
       try {
-        StatisticBmHome statisticHome =
-            EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
+        StatisticBmHome statisticHome = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
             StatisticBmHome.class);
         statisticBm = statisticHome.create();
       } catch (Exception e) {
@@ -2005,8 +1970,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public String initUPToSelectValidator(String pubId) throws RemoteException {
-    String m_context =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     PairObject hostComponentName = new PairObject(getComponentLabel(), "");
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(getString("kmelia.SelectValidator"), "");
@@ -2323,7 +2287,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   /**
    * Return if publication is in the basket
    *
-   * @param pubId
+   * @param pk
    * @return true or false
    */
   public boolean isPublicationDeleted(PublicationPK pk) {
@@ -2687,8 +2651,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public String initUserPanelForTopicProfile(String role, String nodeId) throws RemoteException {
-    String m_context =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(getString("kmelia.SelectValidator"), "");
 
@@ -3221,13 +3184,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                 + xmlFormShortName, xmlFormShortName + ".xml");
 
             // Paste images
-            Map<String, String> imageIds = AttachmentController.
-                copyAttachmentByCustomerPKAndContext(fromPubPK, fromPubPK, "XMLFormImages");
-
-            if (imageIds != null) {
-              fileIds.putAll(imageIds);
+            List<SimpleDocument> images = AttachmentServiceFactory.getAttachmentService()
+                .listDocumentsByForeignKeyAndType(fromPubPK, DocumentType.form, getLanguage());
+            for (SimpleDocument image : images) {
+              SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService()
+                  .copyDocument(image, toForeignPK);
+              fileIds.put(image.getId(), copyPk.getId());
             }
-
             // Paste wysiwyg fields content
             WysiwygFCKFieldDisplayer wysiwygField = new WysiwygFCKFieldDisplayer();
             wysiwygField.cloneContents(fromComponentId, fromId, getComponentId(), id);
@@ -3238,9 +3201,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             IdentifiedRecordTemplate recordTemplateFrom =
                 (IdentifiedRecordTemplate) pubTemplateFrom.getRecordSet().getRecordTemplate();
 
-            PublicationTemplate pubTemplate =
-                getPublicationTemplateManager().getPublicationTemplate(
-                getComponentId() + ":" + xmlFormShortName);
+            PublicationTemplate pubTemplate = getPublicationTemplateManager()
+                .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
             IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate.
                 getRecordSet().getRecordTemplate();
 
@@ -3405,7 +3367,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       pasteDocumentsAsAttachments(fromPubPK, publi.getPK().getId());
 
       if (indexIt) {
-        AttachmentController.attachmentIndexer(toForeignPK);
+        AttachmentServiceFactory.getAttachmentService().indexAllDocuments(toForeignPK, null, null);
       }
       List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
           listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, getLanguage());
@@ -3551,7 +3513,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
     // get attachments languages
     List<String> languages = new ArrayList<String>();
-    List<String> attLanguages = AttachmentController.getLanguagesOfAttachments(
+    List<String> attLanguages = getLanguagesOfAttachments(
         new ForeignPK(pubPK.getId(), pubPK.getInstanceId()));
     for (String language : attLanguages) {
       if (!languages.contains(language)) {
@@ -3892,14 +3854,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public String getWysiwygOnTopic(String id) {
     String currentId = id;
     if (isWysiwygOnTopicsEnabled()) {
-      try {
-        if (!StringUtil.isDefined(currentId)) {
-          currentId = getCurrentFolderId();
-        }
-        return WysiwygController.load(getComponentId(), "Node_" + currentId, getLanguage());
-      } catch (WysiwygException e) {
-        return "";
+      if (!StringUtil.isDefined(currentId)) {
+        currentId = getCurrentFolderId();
       }
+      return WysiwygController.load(getComponentId(), "Node_" + currentId, getLanguage());
     }
     return "";
   }
@@ -4005,9 +3963,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     Iterator<NodeDetail> iterator = path.iterator();
     boolean alreadyCut = false;
     int i = 0;
-    NodeDetail nodeInPath = null;
     while (iterator.hasNext()) {
-      nodeInPath = iterator.next();
+      NodeDetail  nodeInPath = iterator.next();
       if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)) {
         if (!nodeInPath.getNodePK().getId().equals("0")) {
           String nodeName;
@@ -4034,7 +3991,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       }
       i++;
     }
-    nodeInPath = null;
     if (linked) {
       return linkedPathString.toString();
     } else {

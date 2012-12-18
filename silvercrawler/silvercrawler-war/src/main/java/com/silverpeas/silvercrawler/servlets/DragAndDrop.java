@@ -32,15 +32,16 @@ import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import org.apache.commons.fileupload.FileItem;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload.FileItem;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Class declaration
@@ -161,7 +162,7 @@ public class DragAndDrop extends HttpServlet {
     }
 
     catch (Exception e) {
-      SilverTrace.debug("importExportPeas", "FileUploader.doPost", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverTrace.debug("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", e);
       res.getOutputStream().println("ERROR");
       return;
     }

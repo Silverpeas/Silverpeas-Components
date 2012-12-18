@@ -24,15 +24,14 @@
 package com.silverpeas.questionReply.model;
 
 import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import java.util.Date;
-
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.DateUtil;
+
+import java.util.Date;
 
 public class Reply extends SilverpeasBean {
 
@@ -139,13 +138,9 @@ public class Reply extends SilverpeasBean {
   }
 
   public String loadWysiwygContent() {
-    try {
-       this.wysiwygContent = WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
+       wysiwygContent = WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
           I18NHelper.defaultLanguage);
-       return  this.wysiwygContent;
-    } catch (WysiwygException e) {
-      return this.wysiwygContent;
-    }
+       return  wysiwygContent;
   }
 
   public String readCurrentWysiwygContent() {

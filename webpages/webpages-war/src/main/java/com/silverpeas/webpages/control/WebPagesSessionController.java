@@ -23,16 +23,7 @@
  */
 package com.silverpeas.webpages.control;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.fileupload.FileItem;
-
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.*;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -46,13 +37,16 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import com.stratelia.webactiv.util.node.model.NodePK;
+
+import java.util.Date;
+import java.util.List;
 
 public class WebPagesSessionController extends AbstractComponentSessionController {
 
@@ -102,16 +96,11 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   public boolean haveGotWysiwygNotEmpty() {
     boolean returnValue = false;
     if (WysiwygController.haveGotWysiwyg(getComponentId(), getComponentId())) {
-      try {
         String contenuWysiwyg = WysiwygController.loadFileAndAttachment(
             getComponentId(), getComponentId());
         if ((contenuWysiwyg != null) && (contenuWysiwyg.length() != 0)) {
           returnValue = true;
         }
-      } catch (WysiwygException ex) {
-        SilverTrace.error("webPages",
-                "WebPagesSessionController.haveGotWysiwyg()", "root.", ex);
-      }
     }
     return returnValue;
   }

@@ -46,7 +46,6 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -610,16 +609,10 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   public boolean isTemplateExist(InfoLetterPublicationPdC ilp) {
-    String template;
-    try {
-      template =
+    String template =
           WysiwygController.loadFileAndAttachment(getComponentId(),
-          InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
-    } catch (WysiwygException e) {
-      throw new InfoLetterException("InfoLetterSessionController.isTemplateExist",
-          SilverpeasRuntimeException.ERROR, e.getMessage(), e);
-    }
-    return !"<body></body>".equals(template);
+              InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
+    return !"<body></body>".equalsIgnoreCase(template);
   }
 
   public String getTemplate(InfoLetterPublicationPdC ilp) {

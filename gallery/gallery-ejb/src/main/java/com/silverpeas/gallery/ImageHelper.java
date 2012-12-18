@@ -20,13 +20,6 @@
  */
 package com.silverpeas.gallery;
 
-import java.awt.Font;
-import java.io.OutputStream;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.process.io.file.FileBasePath;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-
 import com.silverpeas.gallery.image.DrewImageMetadataExtractor;
 import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.image.ImageMetadataExtractor;
@@ -44,25 +37,27 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.process.io.file.FileBasePath;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
 import org.silverpeas.util.ImageLoader;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
-
-import javax.ws.rs.HEAD;
-
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 
 public class ImageHelper {
 
   private final static FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;
   final static ResourceLocator gallerySettings = new ResourceLocator(
-      "com.silverpeas.gallery.settings.gallerySettings", "");
+      "org.silverpeas.gallery.settings.gallerySettings", "");
   final static ResourceLocator settings = new ResourceLocator(
-      "com.silverpeas.gallery.settings.metadataSettings", "");
+      "org.silverpeas.gallery.settings.metadataSettings", "");
   static final String thumbnailSuffix_small = "_66x50.jpg";
   static final String thumbnailSuffix_medium = "_133x100.jpg";
   static final String thumbnailSuffix_large = "_266x150.jpg";
@@ -71,9 +66,10 @@ public class ImageHelper {
   static final String watermarkSuffix = "_watermark.jpg";
 
   /**
+   *
+   * @param fileHandler
    * @param photo
    * @param image
-   * @param subDirectory
    * @param watermark
    * @param watermarkHD
    * @param watermarkOther
@@ -89,20 +85,15 @@ public class ImageHelper {
       String name = image.getName();
       if (name != null) {
         name = FileUtil.getFilename(name);
-
         if (ImageType.isImage(name)) {
-
           final String subDirectory = gallerySettings.getString("imagesSubDirectory");
-          final HandledFile handledImageFile =
-              fileHandler.getHandledFile(BASE_PATH, instanceId, subDirectory + photoId, name);
+          final HandledFile handledImageFile = fileHandler.getHandledFile(BASE_PATH, instanceId,
+              subDirectory + photoId, name);
           handledImageFile.writeByteArrayToFile(image.get());
-
           photo.setImageName(name);
           photo.setImageMimeType(image.getContentType());
           photo.setImageSize(image.getSize());
-
-          createImage(name, handledImageFile, photo, subDirectory, watermark, watermarkHD,
-              watermarkOther);
+          createImage(name, handledImageFile, photo, watermark, watermarkHD, watermarkOther);
         }
       }
     }
@@ -110,13 +101,14 @@ public class ImageHelper {
 
   /**
    * In case of drag And Drop upload.
+   *
    * @param fileHandler
    * @param photo
    * @param image
    * @param watermark
    * @param watermarkHD
    * @param watermarkOther
-   * @throws Exception 
+   * @throws Exception
    */
   public static void processImage(final FileHandler fileHandler, final PhotoDetail photo,
       final File image, final boolean watermark, final String watermarkHD,
@@ -130,24 +122,23 @@ public class ImageHelper {
         name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
         if (ImageType.isImage(name)) {
           String subDirectory = gallerySettings.getString("imagesSubDirectory");
-          final HandledFile handledImageFile =
-              fileHandler.getHandledFile(BASE_PATH, instanceId, subDirectory + photoId, name);
+          final HandledFile handledImageFile = fileHandler.getHandledFile(BASE_PATH, instanceId,
+              subDirectory + photoId, name);
           fileHandler.copyFile(image, handledImageFile);
 
           photo.setImageName(name);
           photo.setImageMimeType(FileUtil.getMimeType(name));
           photo.setImageSize(image.length());
 
-          createImage(name, handledImageFile, photo, subDirectory, watermark, watermarkHD,
-              watermarkOther);
+          createImage(name, handledImageFile, photo, watermark, watermarkHD, watermarkOther);
         }
       }
     }
   }
 
   private static void createImage(final String name, final HandledFile handledImageFile,
-      final PhotoDetail photo, final String subDirectory, final boolean watermark,
-      final String watermarkHD, final String watermarkOther) throws Exception,
+      final PhotoDetail photo, final boolean watermark, final String watermarkHD,
+      final String watermarkOther) throws Exception,
       ImageMetadataException {
 
     // Getting the percent size parameter value of watermark
@@ -168,9 +159,8 @@ public class ImageHelper {
       getDimension(image, photo);
 
       // Computing watermark data
-      final String nameForWatermark =
-          computeWatermarkText(watermarkHD, watermark, type, handledImageFile, photo, percentSize,
-          watermarkOther);
+      final String nameForWatermark = computeWatermarkText(watermarkHD, watermark, type,
+          handledImageFile, photo, percentSize, watermarkOther);
 
       // Creating preview and thumbnails
       try {
@@ -195,8 +185,7 @@ public class ImageHelper {
     final String mimeType = photo.getImageMimeType();
 
     if ("image/jpeg".equals(mimeType) || "image/pjpeg".equals(mimeType)) {
-      final HandledFile handledFile =
-          fileHandler.getHandledFile(BASE_PATH, photo.getInstanceId(),
+      final HandledFile handledFile = fileHandler.getHandledFile(BASE_PATH, photo.getInstanceId(),
           settings.getString("imagesSubDirectory") + photoId, name);
       if (handledFile.exists()) {
         final ImageMetadataExtractor extractor =
@@ -242,16 +231,14 @@ public class ImageHelper {
     // Medium
     // Small
     final int[] imageSize = new int[]{600, 600, 266, 133, 66};
-    final boolean[] isWatermark =
-        new boolean[]{false, watermark, watermark, watermark, watermark};
-    final int[] imageWatermarkSize =
-        new int[]{0, Integer.parseInt(gallerySettings.getString("sizeWatermark600x400")),
+    final boolean[] isWatermark = new boolean[]{false, watermark, watermark, watermark, watermark};
+    final int[] imageWatermarkSize = new int[]{0, Integer.parseInt(gallerySettings.getString(
+      "sizeWatermark600x400")),
       Integer.parseInt(gallerySettings.getString("sizeWatermark266x150")),
       Integer.parseInt(gallerySettings.getString("sizeWatermark133x100")),
       Integer.parseInt(gallerySettings.getString("sizeWatermark66x50"))};
-    final String[] imageSuffixName =
-        new String[]{thumbnailSuffix_Xlarge, previewSuffix, thumbnailSuffix_large,
-      thumbnailSuffix_medium, thumbnailSuffix_small};
+    final String[] imageSuffixName = new String[]{thumbnailSuffix_Xlarge, previewSuffix,
+      thumbnailSuffix_large, thumbnailSuffix_medium, thumbnailSuffix_small};
 
     // Image creation
     HandledFile currentThumblail = null;
@@ -259,9 +246,8 @@ public class ImageHelper {
     for (int i = 0; i < imageSize.length; i++) {
 
       // Current thumbnail
-      currentThumblail =
-          originalHandedImageFile.getParentHandledFile().
-          getHandledFile(photoId + imageSuffixName[i]);
+      currentThumblail = originalHandedImageFile.getParentHandledFile().getHandledFile(photoId
+          + imageSuffixName[i]);
 
       // Thumbnail creation
       redimPhoto((previewImage != null ? previewImage : originalImage), currentThumblail,
@@ -388,8 +374,8 @@ public class ImageHelper {
 
       // copy thumbnails & watermark (only if it does exist)
       for (final String thumbnailSuffix : new String[]{thumbnailSuffix_large,
-            thumbnailSuffix_medium, thumbnailSuffix_small, previewSuffix, thumbnailSuffix_Xlarge,
-            watermarkSuffix}) {
+        thumbnailSuffix_medium, thumbnailSuffix_small, previewSuffix, thumbnailSuffix_Xlarge,
+        watermarkSuffix}) {
         pasteFile(fromDir.getHandledFile(fromPK.getId() + thumbnailSuffix),
             toDir.getHandledFile(toPK.getId() + thumbnailSuffix), cut);
       }
