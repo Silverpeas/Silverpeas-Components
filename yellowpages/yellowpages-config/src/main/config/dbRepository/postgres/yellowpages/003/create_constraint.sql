@@ -5,13 +5,6 @@ ADD CONSTRAINT PK_SC_Contact_GroupFather PRIMARY KEY
 	)   
 ;
 
-ALTER TABLE SC_Contact_Company_GroupFather
-ADD CONSTRAINT PK_SC_Contact_Company_GroupFather PRIMARY KEY
-	(
-		groupId, fatherId, instanceId
-	)   
-;
-
 ALTER TABLE SC_Contact_Company
 ADD CONSTRAINT PK_Contact_Company PRIMARY KEY 
 	(

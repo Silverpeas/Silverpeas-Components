@@ -34,11 +34,6 @@ public class GenericContactTopicRelation implements java.io.Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int relationId;
 
-
-//    @OneToMany
-//    @JoinColumn(name = "genericContactId")
-//    private Set<GenericContact> genericContacts;
-
     @Column(name = "genericContactId")
     private int genericContactId;
 
@@ -49,16 +44,9 @@ public class GenericContactTopicRelation implements java.io.Serializable {
     }
 
     public GenericContactTopicRelation(int nodeId, int genericContactId) {
-        //this.genericContacts = new HashSet<GenericContact>();
         this.nodeId = nodeId;
         this.genericContactId = genericContactId;
     }
-
-//    public void addGenericContact(GenericContact genericContact) {
-//        this.genericContacts.add(genericContact);
-//        genericContact.getTopicIds().add(this);
-//    }
-
 
     public int getRelationId() {
         return relationId;

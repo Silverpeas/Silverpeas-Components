@@ -2,10 +2,6 @@ ALTER TABLE SC_Contact_GroupFather
 DROP CONSTRAINT PK_SC_Contact_GroupFather
 ;
 
-ALTER TABLE SC_Contact_Company_GroupFather
-DROP CONSTRAINT PK_SC_Contact_Company_GroupFather
-;
-
 ALTER TABLE SC_Contact_GenericContact_Rel
 DROP CONSTRAINT PK_Contact_GenericContact_Rel
 ;

@@ -1,12 +1,4 @@
-CREATE TABLE SC_Contact_Company_GroupFather
-(
-	groupId			int		NOT NULL,
-	fatherId		int		NOT NULL,
-	instanceId		varchar(50)     NOT NULL
-) 
-;
-
-CREATE TABLE SC_Contact_Company 
+CREATE TABLE SC_Contact_Company
 (
 	companyId			int			NOT NULL,
 	companyName			varchar (1000)	NULL,
