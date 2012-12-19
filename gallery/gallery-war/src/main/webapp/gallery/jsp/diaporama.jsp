@@ -49,7 +49,7 @@
 <script type="text/JavaScript">
   function startSlideshow(fromPhotoId) {
     $.popup.showWaiting();
-    nbPauses = -1;
+    var nbPauses = -1;
     var $slider = $('#gallerySlider');
     if ($slider.size() == 0) {
       $slider = $("<div>").attr("id", "gallerySlider");
