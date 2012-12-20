@@ -32,7 +32,6 @@ import static com.stratelia.webactiv.SilverpeasRole.admin;
 import static com.stratelia.webactiv.SilverpeasRole.writer;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.net.URI;
@@ -75,7 +74,7 @@ public class ReplyEntity implements Exposable {
   private boolean readOnly = true;
   @XmlElement
   private AttachmentEntity[] attachments;
-  
+
   @XmlTransient
   private String language = DisplayI18NHelper.getDefaultLanguage();
 
@@ -135,7 +134,7 @@ public class ReplyEntity implements Exposable {
   public String getLanguage() {
     return this.language;
   }
-  
+
   public AttachmentEntity[] getAttachments() {
     return this.attachments;
   }
@@ -259,12 +258,12 @@ public class ReplyEntity implements Exposable {
   public ReplyEntity withURI(final URI uri) {
     this.uri = uri;
     return this;
-  } 
-  
+  }
+
   /**
    * Sets a URI to this entity.
    * With this URI, it can then be accessed through the Web.
-   * @param attachmentDetails 
+   * @param attachmentDetails
    * @return itself.
    */
   public ReplyEntity withAttachments(final Collection<SimpleDocument> attachmentDetails) {
@@ -276,8 +275,8 @@ public class ReplyEntity implements Exposable {
       this.attachments = entities.toArray(new AttachmentEntity[entities.size()]);
     }
     return this;
-  } 
-  
+  }
+
   /**
    * Sets the accessing user profile to this entity.
    * With this profile the status of this reply can be defined.

@@ -38,7 +38,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 public abstract class ElementVO {
 

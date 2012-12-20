@@ -30,13 +30,15 @@ import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.util.UnitUtil;
+
 import java.io.File;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Iterator;
-
-import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  *
@@ -211,16 +213,16 @@ public class QuestionReplyExport {
     sb.append("</a>\n");
     sb.append("</nobr>\n");
     sb.append("<br>\n");
-    sb.append(attachment.getAttachmentFileSize(attachment.getLanguage())).append("  ");
-    sb.append(attachment.getAttachmentDownloadEstimation(attachment.getLanguage()));
+    sb.append(UnitUtil.formatMemSize(attachment.getSize())).append("  ");
+    sb.append(FileRepositoryManager.formatFileUploadTime(attachment.getSize()));
     sb.append("</td>\n");
     sb.append("</tr>\n");
   }
-  
+
   public boolean  isReplyVisible(Question question, Reply reply, QuestionReplySessionController scc) {
     return isReplyVisible(question, reply, scc.getUserRole(), scc.getUserId()) ;
   }
-  
+
   public static boolean isReplyVisible(Question question, Reply reply, SilverpeasRole role, String userId) {
     boolean isPrivate = reply.getPublicReply() == 0;
     boolean isPublisherQuestion = true;

@@ -27,7 +27,14 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.dao.ModelDAO;
-import com.silverpeas.kmelia.notification.*;
+import com.silverpeas.kmelia.notification.KmeliaDefermentPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaDocumentSubscriptionPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaModificationPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaPendingValidationPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaSubscriptionPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaSupervisorPublicationUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaTopicUserNotification;
+import com.silverpeas.kmelia.notification.KmeliaValidationPublicationUserNotification;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.ejb.PdcBm;
@@ -67,9 +74,16 @@ import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.kmelia.KmeliaContentManager;
 import com.stratelia.webactiv.kmelia.KmeliaSecurity;
 import com.stratelia.webactiv.kmelia.PublicationImport;
-import com.stratelia.webactiv.kmelia.model.*;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
+import com.stratelia.webactiv.kmelia.model.KmaxRuntimeException;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
+import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
+import com.stratelia.webactiv.kmelia.model.TopicComparator;
+import com.stratelia.webactiv.kmelia.model.TopicDetail;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.coordinates.control.CoordinatesBm;
 import com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
@@ -85,12 +99,22 @@ import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
-import com.stratelia.webactiv.util.publication.model.*;
+import com.stratelia.webactiv.util.publication.model.Alias;
+import com.stratelia.webactiv.util.publication.model.CompletePublication;
+import com.stratelia.webactiv.util.publication.model.NodeTree;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.*;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.search.indexEngine.model.IndexManager;
@@ -2632,10 +2656,9 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           getPublicationBm().updateInfoDetail(pubPK, tempPubli.getInfoDetail());
         } else {
           // il n'y avait pas encore de contenu
-          ModelPK modelPK = new ModelPK(tempPubli.getModelDetail().getId(),
-              "useless", tempPK.getInstanceId());
-          getPublicationBm().createInfoModelDetail(pubPK, modelPK,
-              tempPubli.getInfoDetail());
+          ModelPK modelPK = new ModelPK(tempPubli.getModelDetail().getId(), "useless",
+              tempPK.getInstanceId());
+          getPublicationBm().createInfoModelDetail(pubPK, modelPK, tempPubli.getInfoDetail());
 
           // recupere nouvel infoId
           PublicationDetail modifiedPubli = getPublicationDetail(pubPK);
@@ -3291,7 +3314,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   private void indexExternalElementsOfPublication(PublicationDetail pubDetail) {
-    if (KmeliaHelper.isIndexable(pubDetail)) {
+    if (isIndexable(pubDetail)) {
       try {
         AttachmentServiceFactory.getAttachmentService().indexAllDocuments(pubDetail.getPK(),
             pubDetail.getBeginDate(), pubDetail.getEndDate());
@@ -4533,7 +4556,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
     } else {
       // no rights are used
-      // keep children as they are 
+      // keep children as they are
     }
   }
 

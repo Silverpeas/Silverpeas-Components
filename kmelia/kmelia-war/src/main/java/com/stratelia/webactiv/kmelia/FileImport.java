@@ -34,8 +34,8 @@ import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -71,7 +71,7 @@ public class FileImport {
   private String topicId;
   private File fileUploaded;
   private KmeliaSessionController kmeliaScc;
-  
+
   public FileImport(KmeliaSessionController kmeliaScc, File uploadedFile) {
     this.kmeliaScc = kmeliaScc;
     attachmentImportExport = new AttachmentImportExport(kmeliaScc.getUserDetail());

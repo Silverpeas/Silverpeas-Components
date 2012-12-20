@@ -56,7 +56,7 @@
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@ page import="com.stratelia.webactiv.util.attachment.model.AttachmentDetail"%>
+<%@ page import="org.silverpeas.importExport.attachment.AttachmentDetail"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
@@ -135,10 +135,10 @@
 	String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("kmelia", spaceId, componentId);
 
 	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-	
+
 	boolean kmaxMode 	= (componentId != null && componentId.startsWith("kmax"));
 	boolean toolboxMode = (componentId != null && componentId.startsWith("toolbox"));
 	boolean kmeliaMode 	= (componentId != null && componentId.startsWith("kmelia"));
-	
+
 	ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", kmeliaScc.getLanguage());
 %>
