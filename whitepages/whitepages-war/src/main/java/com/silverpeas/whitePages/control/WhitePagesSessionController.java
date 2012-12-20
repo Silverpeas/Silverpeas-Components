@@ -506,6 +506,18 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
               "WhitePagesSessionController.setUserRecords",
               SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
+    
+    Collections.sort(listCards, new Comparator<Card>() {
+      public int compare(Card o1, Card o2)
+      {
+        int result =  o1.readUserRecord().getUserDetail().getLastName().compareTo(o2.readUserRecord().getUserDetail().getLastName());
+        if(result == 0) {
+          result = o1.readUserRecord().getUserDetail().getFirstName().compareTo(o2.readUserRecord().getUserDetail().getFirstName());
+        }
+        return result;
+      }
+    });
+    
     return listCards;
   }
 

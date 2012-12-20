@@ -180,7 +180,7 @@
     <parameter>
       <name>domainId</name>
       <label>
-        <message lang="fr">Domaine auquel rattachée l'annuaire</message>
+        <message lang="fr">Domaine auquel est rattaché l'annuaire</message>
         <message lang="en">Silverpeas's domains to which the directory is attached</message>
         <message lang="de">Silverpeas-Domänen auf, die das Verzeichnis angeschlossen ist</message>
       </label>      
