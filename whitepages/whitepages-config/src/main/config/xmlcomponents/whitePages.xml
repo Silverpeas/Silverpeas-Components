@@ -93,6 +93,7 @@
       <mandatory>true</mandatory>
       <value>whitePages/annuaire.xml</value>
       <type>text</type>
+	  <size>30</size>
       <updatable>creation</updatable>
       <help>
         <message lang="fr">Modèle xml spécifique permettant de saisir des informations sur l'expert.</message>
@@ -111,6 +112,7 @@
       <mandatory>true</mandatory>
       <value>whitePages/annuaire.html</value>
       <type>text</type>
+	  <size>30</size>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Fichier html permettant de présenter les informations de l'expert.</message>
@@ -181,13 +183,14 @@
       <name>domainId</name>
       <label>
         <message lang="fr">Domaine auquel est rattaché l'annuaire</message>
-        <message lang="en">Silverpeas's domains to which the directory is attached</message>
+        <message lang="en">Silverpeas's domain to which the directory is attached</message>
         <message lang="de">Silverpeas-Domänen auf, die das Verzeichnis angeschlossen ist</message>
       </label>      
       <order>6</order>
       <mandatory>true</mandatory>
       <value>0</value>
       <type>text</type>
+	  <size>5</size>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Définit le domaine auquel on souhaite rattacher l'annuaire.</message>
