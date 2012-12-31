@@ -743,7 +743,7 @@
 		out.println("</div>");
        %>
 
-      <div id="publication-export">
+      <div id="publication-export" style="display:none">
         <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
           <fieldset>
             <legend><%=resources.getString("kmelia.format")%></legend>
