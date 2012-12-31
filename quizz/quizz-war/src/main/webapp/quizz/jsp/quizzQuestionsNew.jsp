@@ -264,16 +264,10 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 		        }
 		        else
 		        {
-		        	url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+		        	url = FileServerUtils.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 		        }
 		        r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
 	      }
-              //if (answer.getImage() != null) {
-                //String url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
-                //r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
-              //} else
-                //r += "<td align=\"left\" width=\"50%\">&nbsp;</td>";
-
               if (answer.isOpened()) {
                   isOpened = 1;
                   r += "<td align=\"left\" width=\"1%\">";
@@ -373,7 +367,7 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 				        }
 				        else
 				        {
-				        	url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+				        	url = FileServerUtils.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 				        }
 				        r += "<td><img src=\""+url+"\" align=\"left\"></td>";
 			      }
@@ -540,16 +534,10 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 				        }
 				        else
 				        {
-				        	url = FileServer.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+				        	url = FileServerUtils.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 				        }
 				        r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
 			      }
-
-	            //if (answer.getImage() != null) {
-	              //String url = FileServer.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
-	              //r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
-	            //} else
-	              //r += "<td align=\"left\" width=\"50%\">&nbsp;</td>";
 	            r += "<td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\"></td><td align=\"left\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
 	            r += "</tr></table>";
 	        }
@@ -990,7 +978,7 @@ if (action.equals("ViewQuizz")) {
   out.println(quizzPart);
 %>
   <view:pdcClassification componentId="<%= quizzScc.getComponentId() %>" contentId="<%= quizzId %>" />
-<%        
+<%
   out.println(frame.printMiddle());
   out.println(frame.printAfter());
   out.println(window.printAfter());

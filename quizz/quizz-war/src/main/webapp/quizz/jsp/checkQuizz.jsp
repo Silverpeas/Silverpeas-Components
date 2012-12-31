@@ -59,7 +59,7 @@
 <%@ page import="com.stratelia.webactiv.quizz.QuizzException"%>
 <%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
 <%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
-<%@ page import="org.silverpeas.servlets.FileServer"%>
+<%@ page import="com.stratelia.webactiv.util.FileServerUtils"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>

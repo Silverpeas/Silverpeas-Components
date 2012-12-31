@@ -20,7 +20,7 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import com.silverpeas.attachment.importExport.AttachmentImportExport;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -55,7 +55,8 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.silverpeas.versioning.importExport.VersioningImportExport;
+
+import org.silverpeas.importExport.versioning.VersioningImportExport;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;

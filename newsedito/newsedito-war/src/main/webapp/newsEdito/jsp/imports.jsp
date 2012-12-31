@@ -34,11 +34,10 @@
 
 <%@ page import="java.util.*"%>
 <%@ page import="java.lang.*"%>
-<%@ page import="java.io.IOException"%> 
+<%@ page import="java.io.IOException"%>
 <%@ page import="java.beans.*"%>
 <%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="org.silverpeas.servlets.FileServer"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>

@@ -19,19 +19,17 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 4 avr. 2005
- *
- */
+
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.webactiv.SilverpeasRole;
 import java.io.Serializable;
 
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.versioning.Document;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 

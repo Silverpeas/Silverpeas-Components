@@ -23,13 +23,6 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>versioning</artifactId>
-      <version>${core.version}</version>
-      <classifier>client</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>com.ecyrd.jspwiki</groupId>
       <artifactId>jspwiki_silverpeas</artifactId>
     </dependency>

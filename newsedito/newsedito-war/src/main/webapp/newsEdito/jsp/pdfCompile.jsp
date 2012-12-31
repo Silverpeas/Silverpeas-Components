@@ -34,7 +34,7 @@
 <HEAD>
 <%
 	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-	
+
 	out.println(gef.getLookStyleSheet());
 %>
 <TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
@@ -43,7 +43,7 @@
 
 function doConsult(){
     document.newsForm.Action.value = "Consult";
-    document.newsForm.submit();	
+    document.newsForm.submit();
 
 }
 function doOrganize(){
@@ -109,7 +109,7 @@ function compileResult(fileName) {
   Hashtable selectedPublications ;
   Vector selectedIds;//to maitain order
   Collection availablePublications;
-  
+
   void showPdfGeneration(JspWriter out, NewsEditoSessionController news, String[] pubList)
     throws NewsEditoException, IOException
   {
@@ -117,16 +117,16 @@ function compileResult(fileName) {
 	String link = "";
 	try{
 		name = news.generatePdf(pubList);
-    
+
 	}
 	catch(NewsEditoException e){
-		throw new NewsEditoException("pdfCompile_JSP.showPdfGeneration",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_SHOW_PDF_GENERATION",e);			
+		throw new NewsEditoException("pdfCompile_JSP.showPdfGeneration",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_SHOW_PDF_GENERATION",e);
 	}
-		link = org.silverpeas.servlets.FileServer.getUrlToTempDir(name, name, "application/pdf");
+		link = FileServerUtils.getUrlToTempDir(name);
 		out.println("<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad=\"compileResult('"+link+"')\">");
 		out.println("</BODY>");
 
-  } 
+  }
 
 %>
 
@@ -136,9 +136,9 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
-if (action == null)		
+if (action == null)
 	action = "CompilePdf";
-	
+
 if (action.equals("CompileArchive"))
 {
 	showPdfGeneration(out, news, null);
@@ -158,15 +158,15 @@ else {
     <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5>
 
     <%
-	
+
 	if (action.equals("CompilePdf"))
 	{
 		news.selectFirstOnLineArchive();
-		selectedPublications = new Hashtable();	
+		selectedPublications = new Hashtable();
 		selectedIds = new Vector();
 		availablePublications = null;
 		action = "CompilePdf";
-	}       
+	}
 	else if (action.equals("SelectArchive"))
     {
 		String archiveId = (String) request.getParameter("ArchiveId");
@@ -185,11 +185,11 @@ else {
     if (action.equals("AddPublication"))
     {
 		String publicationId = (String) request.getParameter("PubId");
-				
+
 		boolean alreadyIn = (selectedPublications.get(publicationId)!=null );
-		
+
 		if (!alreadyIn)  {
-        	PublicationDetail publicationToAdd = news.getPublicationDetail(publicationId);			
+        	PublicationDetail publicationToAdd = news.getPublicationDetail(publicationId);
 			selectedPublications.put(publicationId,publicationToAdd);
         	selectedIds.addElement(publicationId);
     		}
@@ -197,7 +197,7 @@ else {
     }
 	else if (action.equals("RemovePublication"))
     {
-		String publicationId = (String) request.getParameter("PubId");			
+		String publicationId = (String) request.getParameter("PubId");
 		selectedPublications.remove(publicationId);
     	int i = 0;
     	while (! ((String) selectedIds.elementAt(i)).equals(publicationId))
@@ -228,10 +228,10 @@ else {
 	//Les onglets
     TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(consultationTP, "javaScript:doConsult()", true);
-    
+
     if (flag.equals("publisher") || flag.equals("admin"))
     	tabbedPane.addTab(organisationTP, "javaScript:doOrganize()", false);
-	
+
 	if (flag.equals("admin"))
 		tabbedPane.addTab(inLineSettingTP, "javaScript:doSetInLine()", false);
 
@@ -256,21 +256,21 @@ else {
 		</td>
 	</tr>
 	<tr>
-    <td width="70%" valign="top"> 
+    <td width="70%" valign="top">
 			<TABLE CELLPADDING=5 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
 				<TR>
 					<TD CLASS=intfdcolor4 NOWRAP>
             <table width="100%" border="0" cellspacing="1" cellpadding="3">
-              <tr> 
-                <td width="25%" valign="top"> 
-				<% 
+              <tr>
+                <td width="25%" valign="top">
+				<%
 					action = "Consult";
 				%>
 				<%@ include file="navigationDisplaying.jsp.inc" %>
-                
+
                 </td>
-                <td valign="top"> 
-<%             
+                <td valign="top">
+<%
 			switch(detailLevel)
 			{
 				case 0 :
@@ -285,10 +285,10 @@ else {
 				break;
 				case 2 :
 				{
-		
+
 					if (availablePublications!=null)
-						displayPublicationList(out,availablePublications,news,false,"addPublication","textePetitBold","txtnote");			
-		
+						displayPublicationList(out,availablePublications,news,false,"addPublication","textePetitBold","txtnote");
+
 				}
 				break;
 			}
@@ -303,18 +303,18 @@ else {
       </table>
     </td>
     <td>&nbsp;</td>
-    <td valign="top"> 
+    <td valign="top">
       <table width="100%" border="0" cellspacing="0" cellpadding="0" height="250">
-        <tr> 
+        <tr>
           <td height="245" valign="top">
             <table width="100%" border="0" cellspacing="1" cellpadding="3" class="intfdcolor1" height="250">
-              <tr class="intfdcolor1" valign="top"> 
+              <tr class="intfdcolor1" valign="top">
                 <td height="5" class="txtGrandBlanc"><%=news.getString("listPubACompiler")%></td>
               </tr>
-              <tr class="intfdcolor4" valign="top"> 
+              <tr class="intfdcolor4" valign="top">
                 <td>
 
-<%             
+<%
 
 		Vector publist = new Vector();
 		Iterator i = selectedIds.iterator();
@@ -323,7 +323,7 @@ else {
 			publist.addElement(selectedPublications.get(i.next()));
 		}
 		if (publist!=null)
-			displayPublicationList(out,publist,news,false,"removePublication","textePetitBold","txtnote");			
+			displayPublicationList(out,publist,news,false,"removePublication","textePetitBold","txtnote");
 
 
 
@@ -332,22 +332,22 @@ else {
               </tr>
               <tr class="intfdcolor4" valign="top">
                 <td height="5">
-                
+
                   <div align="right">
                   <%
                   	String link = "#";
-                  	if (selectedIds.size()!=0) 
+                  	if (selectedIds.size()!=0)
                   		link = "javascript:onClick=compileListPub()";
                   %>
                   	<a href="<%=link%>"><%=news.getString("compilerListePub")%></a>
                   </div>
-               
+
                 </td>
               </tr>
             </table>
           </td>
         </tr>
-        <tr height="5"> 
+        <tr height="5">
           <td valign="bottom" class="txtnote"><br>
             <br>
 			<%=news.getString("aucunePublicationSelectionne")%></td>
@@ -390,5 +390,5 @@ else {
 <%
 }
 %>
-  
+
 </HTML>

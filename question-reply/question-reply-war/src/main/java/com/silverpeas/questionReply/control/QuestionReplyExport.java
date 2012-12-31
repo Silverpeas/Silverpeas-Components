@@ -23,7 +23,7 @@
  */
 package com.silverpeas.questionReply.control;
 
-import com.silverpeas.attachment.importExport.AttachmentImportExport;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
