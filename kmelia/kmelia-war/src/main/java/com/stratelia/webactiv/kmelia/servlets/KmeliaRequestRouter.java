@@ -527,6 +527,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("Publication", kmeliaPublication);
         request.setAttribute("Profile", kmelia.getProfile());
         request.setAttribute("VisiblePublicationId", pubDetail.getPK().getId());
+        request.setAttribute("UserCanValidate", kmelia.isUserCanValidatePublication());
 
         putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(), kmelia,
                 request);
@@ -594,6 +595,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
           request.setAttribute("Publication", kmeliaPublication);
           request.setAttribute("PubId", id);
+          request.setAttribute("UserCanValidate", kmelia.isUserCanValidatePublication());
           request.setAttribute("ValidationStep", kmelia.getValidationStep());
           request.setAttribute("ValidationType", kmelia.getValidationType());
 

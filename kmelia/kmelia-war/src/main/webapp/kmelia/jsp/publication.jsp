@@ -62,6 +62,7 @@
   List languages = (List) request.getAttribute("Languages");
   String contentLanguage = (String) request.getAttribute("ContentLanguage");
   String singleFileURL = (String) request.getAttribute("SingleAttachmentURL");
+  boolean userCanValidate = (Boolean) request.getAttribute("UserCanValidate");
   ValidationStep validation = (ValidationStep) request.getAttribute("ValidationStep");
   int validationType = ((Integer) request.getAttribute("ValidationType")).intValue();
   boolean isWriterApproval = ((Boolean) request.getAttribute("WriterApproval")).booleanValue();
@@ -448,14 +449,10 @@
           }
         }
         if (!toolboxMode && isOwner) {
-          if (profile.equals("admin") || profile.equals("publisher") || isWriterApproval) {
-            if (pubDetail.isValidationRequired()) {
-              if (validation == null) {
-                operationPane.addLine();
-                operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate()");
-                operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
-              }
-            }
+          if (userCanValidate) {
+            operationPane.addLine();
+            operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate()");
+            operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
           }
           if (profile.equals("supervisor")) {
             operationPane.addLine();

@@ -416,14 +416,16 @@ public interface KmeliaBmBusinessSkeleton {
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication)
       throws RemoteException;
 
-  public List<KmeliaPublication> getPublicationsToValidate(String componentId)
+  public List<KmeliaPublication> getPublicationsToValidate(String componentId, String userId)
+      throws RemoteException;
+  
+  public boolean isUserCanValidatePublication(PublicationPK pubPK, String userId)
       throws RemoteException;
 
-  public List<String> getAllValidators(PublicationPK pubPK, int validationType)
-      throws RemoteException;
+  public List<String> getAllValidators(PublicationPK pubPK) throws RemoteException;
 
-  public boolean validatePublication(PublicationPK pubPK, String userId,
-      int validationType, boolean force) throws RemoteException;
+  public boolean validatePublication(PublicationPK pubPK, String userId, boolean force)
+      throws RemoteException;
 
   public void unvalidatePublication(PublicationPK pubPK, String userId,
       String refusalMotive, int validationType) throws RemoteException;
