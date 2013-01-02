@@ -57,9 +57,10 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 	String 					profile 		= (String) request.getAttribute("Profile");
 	String 					action 			= (String) request.getAttribute("Action");
 	String 					checkPath 		= (String) request.getAttribute("CheckPath");
-	KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
+	KmeliaPublication 		kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
 	String					visiblePubId	= (String) request.getAttribute("VisiblePublicationId");
-	boolean 				attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
+	boolean 				attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
+	boolean 				userCanValidate = (Boolean) request.getAttribute("UserCanValidate");
 
 	if (action == null) {
 		action = "ViewClone";
@@ -249,16 +250,11 @@ function pubDraftOut() {
           }
           operationPane.addOperation(deletePubliSrc, resources.getString("kmelia.DeleteClone"), "javaScript:deleteCloneConfirm();");
         }
-        if (profile.equals("admin") || profile.equals("publisher")) {
-            if (pubDetail.isValid()) {
-              operationPane.addLine();
-              operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate('" + id + "')");
-            } else if (pubDetail.isValidationRequired() || pubDetail.isClone()) {
-              operationPane.addLine();
-              operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate('" + id + "')");
-              operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate('" + id + "')");
-            }
-          }
+        if (userCanValidate) {
+	      operationPane.addLine();
+	      operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate('" + id + "')");
+	      operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate('" + id + "')");
+        }
         if (profile.equals("supervisor")) {
           operationPane.addLine();
           operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javaScript:pubSuspend('"+id+"')");

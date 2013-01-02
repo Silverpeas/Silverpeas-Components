@@ -292,8 +292,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (StringUtil.getBooleanValue(getSettings().getString("massiveDragAndDropAllowed"))) {
       isDragAndDropEnableByUser = isDragAndDropEnableByUser();
     }
-    componentManageable = GeneralPropertiesManager.getGeneralResourceLocator().getBoolean(
-            "AdminFromComponentEnable", true);
+    componentManageable = GeneralPropertiesManager.getBoolean("AdminFromComponentEnable", true);
     if (componentManageable) {
       componentManageable = getOrganizationController().isComponentManageable(getComponentId(),
               getUserId());
@@ -1398,7 +1397,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       sort = Integer.parseInt(sortType);
     }
     List<KmeliaPublication> publications =
-            sort(getKmeliaBm().getPublicationsToValidate(getComponentId()), sort);
+            sort(getKmeliaBm().getPublicationsToValidate(getComponentId(), getUserId()), sort);
     sessionPublicationsList = publications;
   }
 
@@ -1666,14 +1665,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized boolean validatePublication(String publicationId) throws RemoteException {
-    return getKmeliaBm().validatePublication(getPublicationPK(publicationId), getUserId(),
-            getValidationType(), false);
+    return getKmeliaBm().validatePublication(getPublicationPK(publicationId), getUserId(), false);
   }
 
   public synchronized boolean forcePublicationValidation(String publicationId)
           throws RemoteException {
-    return getKmeliaBm().validatePublication(getPublicationPK(publicationId), getUserId(),
-            getValidationType(), true);
+    return getKmeliaBm().validatePublication(getPublicationPK(publicationId), getUserId(), true);
   }
 
   public synchronized void unvalidatePublication(String publicationId, String refusalMotive)
@@ -1701,9 +1698,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     List<String> allValidators =
-            getKmeliaBm().getAllValidators(
-                getSessionPubliOrClone().getDetail().getPK(),
-                getValidationType());
+        getKmeliaBm().getAllValidators(getSessionPubliOrClone().getDetail().getPK());
 
     for (String allValidator : allValidators) {
       if (!validators.contains(allValidator)) {
@@ -1715,6 +1710,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     return steps;
+  }
+  
+  public boolean isUserCanValidatePublication() throws RemoteException {
+    return getKmeliaBm().isUserCanValidatePublication(getSessionPubliOrClone().getDetail().getPK(),
+        getUserId());
   }
 
   public ValidationStep getValidationStep() throws RemoteException {
@@ -2264,8 +2264,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public String initUPToSelectValidator(String pubId) throws RemoteException {
-    String m_context =
-            GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String m_context = GeneralPropertiesManager.getString("ApplicationURL");
     PairObject hostComponentName = new PairObject(getComponentLabel(), "");
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(getString("kmelia.SelectValidator"), "");
@@ -2394,15 +2393,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isTargetValidationEnable() {
-    return "1".equalsIgnoreCase(getComponentParameterValue("targetValidation"));
+    return "1".equalsIgnoreCase(getComponentParameterValue(InstanceParameters.validation));
   }
 
   public boolean isTargetMultiValidationEnable() {
-    return "2".equalsIgnoreCase(getComponentParameterValue("targetValidation"));
+    return "2".equalsIgnoreCase(getComponentParameterValue(InstanceParameters.validation));
   }
 
   public boolean isCollegiateValidationEnable() {
-    return "3".equalsIgnoreCase(getComponentParameterValue("targetValidation"));
+    return "3".equalsIgnoreCase(getComponentParameterValue(InstanceParameters.validation));
   }
 
   public boolean isValidationTabVisible() {
@@ -2977,8 +2976,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public String initUserPanelForTopicProfile(String role, String nodeId) throws RemoteException {
-    String m_context =
-            GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String m_context = GeneralPropertiesManager.getString("ApplicationURL");
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(getString("kmelia.SelectValidator"), "");
 
@@ -4699,7 +4697,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             getUserTopicProfile(currentFolderId), getUserId(), isTreeStructure(),
             isRightsOnTopicsEnabled());
     } else {
-      publications = getKmeliaBm().getPublicationsToValidate(getComponentId());
+      publications = getKmeliaBm().getPublicationsToValidate(getComponentId(), getUserId());
     }
     setSessionPublicationsList(publications);
     applyVisibilityFilter();
