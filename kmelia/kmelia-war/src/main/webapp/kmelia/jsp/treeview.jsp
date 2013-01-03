@@ -90,11 +90,7 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 <view:includePlugin name="userZoom"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
-
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.noty.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/layouts/top.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/layouts/topCenter.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/noty/themes/silverpeas.js"></script>
+<view:includePlugin name="notifier"/>
 
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
@@ -707,15 +703,7 @@ function getUserProfile(id) {
 
 function publicationMovedInError(id, data) {
 	var pubName = getPublicationName(id);
-	noty({
-		text: "<%=resources.getString("kmelia.drag.publication.error1")%>"+pubName+"<%=resources.getString("kmelia.drag.publication.error2")%>"+"<br/><br/>"+data,
-		layout: 'topCenter',
-		theme: 'silverpeas',
-		timeout: false,
-		closeWith: ['button'], // ['click', 'button', 'hover']
-		dismissQueue: true,
-		type: 'error'}
-	);
+  notyError("<%=resources.getString("kmelia.drag.publication.error1")%>" + pubName + "<%=resources.getString("kmelia.drag.publication.error2")%>" + "<br/><br/>" + data);
 }
 
 function getPublicationName(id) {
@@ -728,16 +716,9 @@ function extractPublicationId(id) {
 
 function publicationMovedSuccessfully(id, targetId) {
 	var pubName = getPublicationName(id);
-	noty({
-		text: "<%=resources.getString("kmelia.drag.publication.success1")%>"+pubName+"<%=resources.getString("kmelia.drag.publication.success2")%>",
-		layout: 'topCenter',
-		theme: 'silverpeas',
-		timeout: 5000,
-		dismissQueue: true,
-		type: 'success'}
-	);
-	
-	if (params["nbPublisDisplayed"]) {	
+  notySuccess("<%=resources.getString("kmelia.drag.publication.success1")%>" + pubName + "<%=resources.getString("kmelia.drag.publication.success2")%>");
+
+	if (params["nbPublisDisplayed"]) {
 		// add one publi to target node and its parents
 		var path = getTreeview().get_path("#"+targetId, true);
 		for (i=0; i<path.length; i++) {

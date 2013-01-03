@@ -11,4 +11,19 @@
   <artifactId>quizz-jar</artifactId>
   <packaging>jar</packaging>
   <name>Lib quizz</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>lib-core</artifactId>
+      <version>${core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>questioncontainer</artifactId>
+      <classifier>client</classifier>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

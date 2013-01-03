@@ -157,6 +157,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         String albumId = request.getParameter("Id");
         gallerySC.goToAlbum(albumId);
         gallerySC.setIndexOfFirstItemToDisplay("0");
+        // Slideshow requirements
+        request.setAttribute("albumId", albumId);
+        request.setAttribute("wait", gallerySC.getSlideshowWait());
         // retour à l'album courant
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
       } else if (function.equals("Pagination")) {
@@ -437,6 +440,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           // pour l'affichage du formulaire
           putXMLDisplayerIntoRequest(photo, request, gallerySC);
+          // Slideshow requirements
+          request.setAttribute("albumId", gallerySC.getCurrentAlbumId());
+          request.setAttribute("wait", gallerySC.getSlideshowWait());
           // appel jsp
           destination = rootDest + "preview.jsp";
         } catch (Exception e) {
@@ -451,27 +457,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // récupération de la photo suivante
         PhotoDetail photo = gallerySC.getNext();
         request.setAttribute("PhotoId", photo.getPhotoPK().getId());
-        destination = getDestination("PreviewPhoto", gallerySC, request);
-      } else if (function.equals("StartDiaporama")) {
-        String debut = request.getParameter("Debut");
-        int rang;
-        if ("ok".equals(debut)) {
-          rang = 0;
-        } else {
-          rang = gallerySC.getRang();
-        }
-        List<PhotoDetail> photos = (List<PhotoDetail>) gallerySC.goToAlbum().getPhotos();
-        request.setAttribute("Photos", photos);
-        request.setAttribute("Rang", new Integer(rang));
-        request.setAttribute("Path", gallerySC.getPath());
-        request.setAttribute("Wait", gallerySC.getSlideshowWait());
-        destination = rootDest + "diaporama.jsp";
-      } else if (function.equals("StopDiaporama")) {
-        // récupération du rang de la photo
-        int rang = Integer.parseInt(request.getParameter("Rang"));
-        // recherche de l'Id de la photo en fonction de son rang
-        String photoId = gallerySC.getPhotoId(rang);
-        request.setAttribute("PhotoId", photoId);
         destination = getDestination("PreviewPhoto", gallerySC, request);
       } else if (function.startsWith("searchResult")) {
         // traitement des recherches
@@ -1251,14 +1236,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       } else if (function.startsWith("paste")) {
         SilverTrace.debug("gallery", "GalleryRequestRouter.paste", "root.MSG_GEN_PARAM_VALUE",
             "Entrée coller");
-
         gallerySC.paste();
-
-        SilverTrace.debug("gallery", "GalleryRequestRouter.paste", "root.MSG_GEN_PARAM_VALUE",
-            "destination = " + URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp");
-
-        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp";
-      } // fonctions de gestion du panier et des demandes
+        gallerySC.loadCurrentAlbum();
+        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+      }
+      // fonctions de gestion du panier et des demandes
       else if (function.startsWith("Basket")) {
         if (function.equals("BasketView")) {
           // voir le panier

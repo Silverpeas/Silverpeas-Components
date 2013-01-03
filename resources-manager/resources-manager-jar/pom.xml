@@ -22,13 +22,14 @@
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>publication</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
+      <classifier>client</classifier>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>formtemplate</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
+      <classifier>client</classifier>
     </dependency>
   </dependencies>
 </project>

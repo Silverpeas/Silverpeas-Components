@@ -259,8 +259,8 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       // Photos
       for (final Map.Entry<PhotoDetail, Boolean> photoToPaste : delegate.getPhotosToPaste()
           .entrySet()) {
-        processManagement.addPastePhotoProcesses(photoToPaste.getKey(), delegate.getAlbum()
-            .getNodePK(), photoToPaste.getValue());
+        processManagement.addPastePhotoProcesses(getPhoto(photoToPaste.getKey().getPhotoPK()),
+            delegate.getAlbum().getNodePK(), photoToPaste.getValue());
       }
 
       // Albums
