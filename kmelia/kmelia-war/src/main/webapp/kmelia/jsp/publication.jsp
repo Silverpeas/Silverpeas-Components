@@ -68,6 +68,8 @@
   boolean isWriterApproval = ((Boolean) request.getAttribute("WriterApproval")).booleanValue();
   boolean notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
   boolean attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
+  boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
+  boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
   boolean isNewsManage = ((Boolean) request.getAttribute("NewsManage")).booleanValue();
   DelegatedNews delegatedNews = null;
   boolean isBasket = false;
@@ -199,6 +201,7 @@
     <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/pubHighlight.css"/>
     <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/kmelia-print.css" media="print"/>
     <view:includePlugin name="wysiwyg"/>
+    <view:includePlugin name="popup"/>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
     <script type="text/javascript">
@@ -218,7 +221,20 @@
               $( this ).dialog( "close" );
             }
           }
-        })
+        });
+        
+        $("#publication-draftout").dialog({
+            autoOpen: false,
+            title: "<%=resources.getString("PubDraftOut")%>",
+            modal: true,
+            minWidth: 500,
+            resizable : false,
+            buttons: {
+              'OK': function() {
+                $(this).dialog("close");
+              }
+            }
+          });
       });
 
       var refusalMotiveWindow = window;
@@ -287,10 +303,10 @@
 	      }
 	
 	      function pubDraftOut() {
-	        if (<%=kmeliaScc.isDraftOutAllowed()%>) {
+	        if (<%= draftOutTaxonomyOK && draftOutValidatorsOK %>) {
 	          location.href = "<%=routerUrl%>DraftOut?From=ViewPublication";
 	        } else {
-	          window.alert("<%=resources.getString("kmelia.PdcClassificationMandatory")%>");
+	        	$("#publication-draftout").dialog('open');
 	        }
 	      }
 	  <% } %>
@@ -742,7 +758,7 @@
 		out.println("</div>");
        %>
 		
-      <div id="publication-export">
+      <div id="publication-export" style="display: none;">
         <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
           <fieldset>
             <legend><%=resources.getString("kmelia.format")%></legend>
@@ -766,6 +782,19 @@
           </fieldset>
         </form>
       </div>
+      
+      <div id="publication-draftout" style="display: none;">
+        <%=resources.getString("kmelia.publication.draftout.impossible")%>
+      	<ul>
+      	<% if(!draftOutTaxonomyOK) { %>
+      		<li><%=resources.getString("kmelia.PdcClassificationMandatory")%></li>
+      	<% } %>
+      	<% if(!draftOutValidatorsOK) { %>
+      		<li><%=resources.getString("kmelia.publication.validators.mandatory")%></li>
+      	<% } %>
+      	</ul>
+      </div>
+      
       <%
         out.flush();
         out.println(frame.printAfter());
