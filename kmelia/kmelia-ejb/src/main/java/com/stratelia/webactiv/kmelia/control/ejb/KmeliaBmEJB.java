@@ -2448,7 +2448,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         }
         if (targetedValidationEnabled) {
           // only publications which must be explicitly validated by current user must be returned
-          List validatorIds = getValidatorIds(toValidate);
+          List<String> validatorIds = getValidatorIds(toValidate);
           if (validatorIds.contains(userId)) {
             publications.add(toValidate);
           }
@@ -2602,13 +2602,19 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         validationComplete = true;
       } else {
         int validationType = getValidationType(pubPK.getInstanceId());
-        switch (validationType) {
-          case KmeliaHelper.VALIDATION_CLASSIC:
-          case KmeliaHelper.VALIDATION_TARGET_1:
-            validationComplete = true;
-            break;
-          case KmeliaHelper.VALIDATION_COLLEGIATE:
-          case KmeliaHelper.VALIDATION_TARGET_N:
+        if (validationType == KmeliaHelper.VALIDATION_CLASSIC ||
+            validationType == KmeliaHelper.VALIDATION_TARGET_1) {
+          validationComplete = true;
+        } else {
+          if (validationType == KmeliaHelper.VALIDATION_TARGET_N) {
+            // check that validators are well defined
+            // If not, considering validation as classic one
+            PublicationDetail publi = getPublicationBm().getDetail(pubPK);
+            if (!isDefined(publi.getTargetValidatorId())) {
+              validationComplete = true;
+            }
+          }
+          if (!validationComplete) {
             // get all users who have to validate
             List<String> allValidators = getAllValidators(pubPK);
             if (allValidators.size() == 1) {
@@ -2624,7 +2630,9 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
               // check if all validators have give their decision
               validationComplete = isValidationComplete(pubPK, allValidators);
             }
+          }
         }
+        
       }
 
       if (validationComplete) {

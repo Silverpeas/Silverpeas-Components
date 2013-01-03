@@ -1637,7 +1637,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * la publication est classée sur le PDC
    * @throws RemoteException
    */
-  public boolean isDraftOutAllowed() throws RemoteException {
+  public boolean isPublicationTaxonomyOK() {
     if (!isPdcUsed()) {
       // le PDC n'est pas utilisé
       return true;
@@ -1647,11 +1647,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         // Aucun axe n'est utilisé
         return true;
       } else {
-        String pubId =
-                getSessionPublication().getDetail().getPK().getId();
+        String pubId = getSessionPublication().getDetail().getPK().getId();
         return isPublicationClassifiedOnPDC(pubId);
       }
     }
+  }
+  
+  public boolean isPublicationValidatorsOK() throws RemoteException {
+    if (SilverpeasRole.writer.isInRole(getUserTopicProfile()) &&
+        (isTargetValidationEnable() || isTargetMultiValidationEnable())) {
+      return StringUtil.isDefined(getSessionPublication().getDetail().getTargetValidatorId());
+    }
+    return true;
   }
 
   /**
@@ -2393,15 +2400,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isTargetValidationEnable() {
-    return "1".equalsIgnoreCase(getComponentParameterValue(InstanceParameters.validation));
+    return String.valueOf(KmeliaHelper.VALIDATION_TARGET_1).equalsIgnoreCase(
+        getComponentParameterValue(InstanceParameters.validation));
   }
 
   public boolean isTargetMultiValidationEnable() {
-    return "2".equalsIgnoreCase(getComponentParameterValue(InstanceParameters.validation));
+    return String.valueOf(KmeliaHelper.VALIDATION_TARGET_N).equalsIgnoreCase(
+        getComponentParameterValue(InstanceParameters.validation));
   }
 
   public boolean isCollegiateValidationEnable() {
-    return "3".equalsIgnoreCase(getComponentParameterValue(InstanceParameters.validation));
+    return String.valueOf(KmeliaHelper.VALIDATION_COLLEGIATE).equalsIgnoreCase(
+        getComponentParameterValue(InstanceParameters.validation));
   }
 
   public boolean isValidationTabVisible() {

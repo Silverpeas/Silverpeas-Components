@@ -368,6 +368,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         List<NodeDetail> path = kmelia.getTopicPath(kmelia.getCurrentFolderId());
         request.setAttribute("Path", path);
         request.setAttribute("Profile", kmelia.getProfile());
+        request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
+        request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
         
         if (!StringUtil.isDefined((String) request.getAttribute("Action"))) {
           request.setAttribute("Action", "UpdateView");
@@ -527,6 +529,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("Profile", kmelia.getProfile());
         request.setAttribute("VisiblePublicationId", pubDetail.getPK().getId());
         request.setAttribute("UserCanValidate", kmelia.isUserCanValidatePublication());
+        request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
+        request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
 
         putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(), kmelia,
                 request);
@@ -597,7 +601,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("UserCanValidate", kmelia.isUserCanValidatePublication());
           request.setAttribute("ValidationStep", kmelia.getValidationStep());
           request.setAttribute("ValidationType", kmelia.getValidationType());
-
+          
           // check if user is writer with approval right (versioning case)
           request.setAttribute("WriterApproval", kmelia.isWriterApproval(id));
           request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
@@ -610,6 +614,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("IsAlias", "1");
           } else {
             request.setAttribute("Profile", kmelia.getProfile());
+            request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
+            request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
           }
 
           request.setAttribute("Wizard", kmelia.getWizard());

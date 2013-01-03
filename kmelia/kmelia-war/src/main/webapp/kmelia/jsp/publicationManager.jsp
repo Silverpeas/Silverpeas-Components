@@ -107,6 +107,8 @@
     String wizard = (String) request.getAttribute("Wizard");
     String currentLang = (String) request.getAttribute("Language");
     List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
+    boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
+  	boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
 
     String resultThumbnail = (String)request.getParameter("resultThumbnail");
     boolean errorThumbnail = false;
@@ -355,6 +357,7 @@
     <title></title>
     <view:looknfeel/>
     <view:includePlugin name="datepicker"/>
+    <view:includePlugin name="popup"/>
     <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
     <style type="text/css">
       #thumbnailPreviewAndActions {
@@ -403,14 +406,11 @@
       }
 
   function pubDraftOut() {
-        if (<%=kmeliaScc.isDraftOutAllowed()%>)
-        {
-          location.href = "<%=routerUrl%>DraftOut";
-        }
-        else
-        {
-          window.alert("<%=kmeliaScc.getString("kmelia.PdcClassificationMandatory")%>");
-        }
+	  if (<%= draftOutTaxonomyOK && draftOutValidatorsOK %>) {
+	        location.href = "<%=routerUrl%>DraftOut";
+	    } else {
+	    	$("#publication-draftout").dialog('open');
+	    }
       }
 
       function alertUsers()
@@ -619,6 +619,19 @@
 	        };
 	
 	        $("#thumbnailDialog").dialog(dialogOpts);    //end dialog
+	        
+	        $("#publication-draftout").dialog({
+	            autoOpen: false,
+	            title: "<%=resources.getString("PubDraftOut")%>",
+	            modal: true,
+	            minWidth: 500,
+	            resizable : false,
+	            buttons: {
+	              'OK': function() {
+	                $(this).dialog("close");
+	              }
+	            }
+	          });
         });
 
         function updateThumbnail() {
@@ -999,6 +1012,17 @@
   <form name="toRouterForm">
     <input type="hidden" name="PubId" value="<%=id%>"/>
   </form>
+  <div id="publication-draftout" style="display: none;">
+      	<%=resources.getString("kmelia.publication.draftout.impossible")%>
+      	<ul>
+      	<% if(!draftOutTaxonomyOK) { %>
+      		<li><%=resources.getString("kmelia.PdcClassificationMandatory")%></li>
+      	<% } %>
+      	<% if(!draftOutValidatorsOK) { %>
+      		<li><%=resources.getString("kmelia.publication.validators.mandatory")%></li>
+      	<% } %>
+      	</ul>
+      </div>
   <script type="text/javascript">
      $(document).ready(function() {
       document.pubForm.Name.focus();
