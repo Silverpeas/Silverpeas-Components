@@ -482,9 +482,10 @@
           }
       <% }%>
 
-        var beginDate = {label : "'<%=resources.getString("PubDateDebut")%>'", date : document.pubForm.BeginDate.value, hour : document.pubForm.BeginHour.value};
-        var endDate = {label : "'<%=resources.getString("PubDateFin")%>'", date : document.pubForm.EndDate.value, hour : document.pubForm.EndHour.value};
-        var dateErrors = isDateAfterAnother(endDate, beginDate).concat(isDateAfterNow(endDate));
+
+        var beginDate = {dateId : 'beginDate', hourId : 'beginHour'};
+        var endDate = {dateId : 'endDate', hourId : 'endHour'};
+        var dateErrors = isPeriodEndingInFuture(beginDate, endDate);
         $(dateErrors).each(function(index, error) {
           errorMsg += "  - " + error.message + "\n";
           errorNb++;
@@ -893,15 +894,15 @@
 						<div class="champs">
 							<input id="beginDate" type="text" class="dateToPick" name="BeginDate" value="<%=beginDate%>" size="12" maxlength="10"/>
 							<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
-							<input class="inputHour" type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5" /> <i>(hh:mm)</i>
+							<input id="beginHour" class="inputHour" type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 						</div>
 					</div>
 					<div class="field" id="endArea">
-						<label for="endHour" class="txtlibform"><%=resources.getString("PubDateFin")%></label>
+						<label for="endDate" class="txtlibform"><%=resources.getString("PubDateFin")%></label>
 						<div class="champs">
-							<input type="text" class="dateToPick" name="EndDate" value="<%=endDate %>" size="12" maxlength="10"/>
+							<input id="endDate" type="text" class="dateToPick" name="EndDate" value="<%=endDate %>" size="12" maxlength="10"/>
 							<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
-							<input class="inputHour" id="endHour" type="text" name="EndHour" value="<%=endHour %>" size="5" maxlength="5" /> <i>(hh:mm)</i>
+							<input id="endHour" class="inputHour" type="text" name="EndHour" value="<%=endHour %>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 						</div>
 					</div>
 				</div>
