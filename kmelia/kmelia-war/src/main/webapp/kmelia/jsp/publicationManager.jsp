@@ -487,7 +487,7 @@
         var endDate = {dateId : 'endDate', hourId : 'endHour'};
         var dateErrors = isPeriodEndingInFuture(beginDate, endDate);
         $(dateErrors).each(function(index, error) {
-          errorMsg += "  - " + error.message + "\n";
+          errorMsg += " - " + error.message + "\n";
           errorNb++;
         });
 
