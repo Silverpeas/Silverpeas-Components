@@ -26,9 +26,11 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
 	isELIgnored="false"%>
 
+<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
+<%@page import="com.stratelia.webactiv.util.attachment.model.AttachmentDetail"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -50,7 +52,6 @@
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="componentLabel" value="${browseContext[1]}" />
 
-<c:set var="imagesDirectory" value="${requestScope.ImagesDirectory}" />
 <c:set var="isDraftEnabled" value="${requestScope.IsDraftEnabled}" />
 <c:set var="isCommentsEnabled" value="${requestScope.IsCommentsEnabled}" />
 <c:set var="profile" value="${requestScope.Profile}" />
@@ -65,6 +66,11 @@
 <c:set var="xmlForm" value="${requestScope.Form}" />
 <c:set var="xmlData" value="${requestScope.Data}" />
 <c:set var="xmlContext" value="${requestScope.Context}" />
+
+<%
+String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String language = (String) pageContext.getAttribute("language");
+%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -274,7 +280,11 @@
                 <span class="txtlibform"><fmt:message key="classifieds.images" />: </span>
                 <span class="txtvalform">
                 <c:forEach var="image" items="${classified.images}">
-                  <img src="/silverpeas/OnlineFileServer/${image.imageName}?ComponentId=${classified.instanceId}&SourceFile=${image.imageName}&Directory=${imagesDirectory}"></img>&nbsp;&nbsp;
+                <%
+                AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
+                String url = m_context +  attDetail.getAttachmentURL(language);
+                %>
+                  <img src="<%=url%>"></img>&nbsp;&nbsp;
                 </c:forEach>
                 </span>
               </div>

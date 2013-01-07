@@ -77,7 +77,6 @@ public class ViewClassifiedHandler extends FunctionHandler {
     }
 
     // Stores objects in request
-    request.setAttribute("ImagesDirectory", classifiedsSC.getSettings().getString("imagesSubDirectory"));
     request.setAttribute("IsDraftEnabled", classifiedsSC.isDraftEnabled());
     request.setAttribute("IsCommentsEnabled", classifiedsSC.isCommentsEnabled());
     request.setAttribute("CreationDate", creationDate);
