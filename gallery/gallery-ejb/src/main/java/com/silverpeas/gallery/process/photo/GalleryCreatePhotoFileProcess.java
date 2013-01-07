@@ -68,7 +68,6 @@ public class GalleryCreatePhotoFileProcess extends AbstractGalleryFileProcess {
    * @param watermark
    * @param watermarkHD
    * @param watermarkOther
-   * @param parameters
    */
   protected GalleryCreatePhotoFileProcess(final PhotoDetail photo, final Object file,
       final boolean watermark, final String watermarkHD, final String watermarkOther) {
