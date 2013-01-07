@@ -25,9 +25,11 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
+<%@page import="com.stratelia.webactiv.util.attachment.model.AttachmentDetail"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -49,7 +51,6 @@
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="componentLabel" value="${browseContext[1]}" />
 
-<c:set var="imagesDirectory" value="${requestScope.ImagesDirectory}" />
 <c:set var="classified" value="${requestScope.Classified}" />
 <c:set var="userName" value="${requestScope.UserName}" />
 <c:set var="userEmail" value="${requestScope.UserEmail}" />
@@ -81,6 +82,7 @@
 </c:if>
 
 <%
+  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	String language = (String) pageContext.getAttribute("language");
 	String instanceId = (String) pageContext.getAttribute("instanceId");
 	Form formUpdate = (Form) pageContext.getAttribute("formUpdate");
@@ -263,9 +265,13 @@
         <td>
           <c:forEach var="image" items="${images}" begin="0" end="0">
           <div id="imageFile1">
-           <img src="/silverpeas/OnlineFileServer/${image.imageName}?ComponentId=${instanceId}&SourceFile=${image.imageName}&Directory=${imagesDirectory}"></img>&nbsp;&nbsp;
+          <%
+          AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
+          String url = m_context +  attDetail.getAttachmentURL(language);
+          %>
+           <img src="<%=url%>"></img>&nbsp;&nbsp;
            <a href="javascript:onClick=hideImageFile('1');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-           <input type="hidden" name="IdImage1" value="${image.imageId}"> 
+           <input type="hidden" name="IdImage1" value="${image.PK.id}"> 
            <BR/>
           </div>
           </c:forEach>
@@ -275,9 +281,13 @@
         <td>
           <c:forEach var="image" items="${images}" begin="1" end="1">
           <div id="imageFile2">
-           <img src="/silverpeas/OnlineFileServer/${image.imageName}?ComponentId=${instanceId}&SourceFile=${image.imageName}&Directory=${imagesDirectory}"></img>&nbsp;&nbsp;
+          <%
+          AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
+          String url = m_context +  attDetail.getAttachmentURL(language);
+          %>
+           <img src="<%=url%>"></img>&nbsp;&nbsp;
            <a href="javascript:onClick=hideImageFile('2');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-           <input type="hidden" name="IdImage2" value="${image.imageId}"> 
+           <input type="hidden" name="IdImage2" value="${image.PK.id}"> 
            <BR/>
           </div>
           </c:forEach>
@@ -287,9 +297,13 @@
         <td>
           <c:forEach var="image" items="${images}" begin="2" end="2">
           <div id="imageFile3">
-           <img src="/silverpeas/OnlineFileServer/${image.imageName}?ComponentId=${instanceId}&SourceFile=${image.imageName}&Directory=${imagesDirectory}"></img>&nbsp;&nbsp;
+          <%
+          AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
+          String url = m_context +  attDetail.getAttachmentURL(language);
+          %>
+           <img src="<%=url%>"></img>&nbsp;&nbsp;
            <a href="javascript:onClick=hideImageFile('3');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-           <input type="hidden" name="IdImage3" value="${image.imageId}"> 
+           <input type="hidden" name="IdImage3" value="${image.PK.id}"> 
            <BR/>
           </div>
           </c:forEach>

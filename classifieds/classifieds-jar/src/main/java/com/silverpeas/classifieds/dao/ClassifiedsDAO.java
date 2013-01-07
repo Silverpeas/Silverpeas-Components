@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Locale;
 
 import com.silverpeas.classifieds.model.ClassifiedDetail;
-import com.silverpeas.classifieds.model.Image;
 import com.silverpeas.classifieds.model.Subscribe;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
@@ -74,6 +73,7 @@ public class ClassifiedsDAO {
     }
     return id;
   }
+  
 
   /**
    * update a classified
@@ -615,193 +615,5 @@ public class ClassifiedsDAO {
       DBUtil.close(rs, prepStmt);
     }
     return listClassifieds;
-  }
-  
-  /**
-   * Initialise les parametètres
-   * @param prepStmt : PreparedStatement
-   * @param imageId : String
-   * @param image : Image
-   * @throws SQLException
-   */
-  private static void initParamImage(PreparedStatement prepStmt, int imageId,
-      Image image) throws SQLException {
-    prepStmt.setInt(1, imageId);
-    prepStmt.setInt(2, image.getClassifiedId());
-    prepStmt.setString(3, image.getImageName());
-    prepStmt.setString(4, image.getMimeType());
-  }
-  
-  /**
-   * get an Image to resultSet
-   * @param rs : ResultSet
-   * @return Image
-   * @throws SQLException
-   */
-  private static Image recupImage(ResultSet rs) throws SQLException {
-    int imageId = rs.getInt("imageId");
-    int classifiedId = rs.getInt("classifiedId");
-    String imageName = rs.getString("imageName");
-    String mimeType = rs.getString("mimeType");
-
-    Image image = new Image(classifiedId, imageName, mimeType);
-    image.setImageId(imageId);
-    return image;
-  }
-  
-  /**
-   * Create an image
-   * @param con : Connection
-   * @param image : Image
-   * @return imageId : String
-   * @throws SQLException
-   * @throws UtilException
-   */
-  public static String createImage(Connection con, Image image)
-      throws SQLException, UtilException {
-    // Création d'une nouvelle image de petite annonce
-    String id = "";
-    PreparedStatement prepStmt = null;
-    try {
-      int newId = DBUtil.getNextId("SC_Classifieds_Images", "imageId");
-      id = new Integer(newId).toString();
-      // création de la requete
-      String query =
-          "insert into SC_Classifieds_Images (imageId, classifiedId, imageName, mimeType) "
-              + "values (?,?,?,?)";
-      // initialisation des paramètres
-      prepStmt = con.prepareStatement(query);
-      initParamImage(prepStmt, newId, image);
-      prepStmt.executeUpdate();
-    } finally {
-      // fermeture
-      DBUtil.close(prepStmt);
-    }
-    return id;
-  }
-  
-  /**
-   * get the images correspond to classifiedId
-   * @param con : Connection
-   * @param classifiedId : String
-   * @return a collection of Image
-   * @throws SQLException
-   */
-  public static Collection<Image> getAllImages(Connection con, String classifiedId)
-      throws SQLException {
-    // récupérer les images de la petite annonce
-    Collection<Image> listImages = new ArrayList<Image>();
-    String query = "select * from SC_Classifieds_Images where classifiedId = ? order by imageId";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, Integer.parseInt(classifiedId));
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        Image image = recupImage(rs);
-        listImages.add(image);
-      }
-    } finally {
-      // fermeture
-      DBUtil.close(rs, prepStmt);
-    }
-    return listImages;
-  }
-
-  /**
-   * get the image correspond to imageId
-   * @param con : Connection
-   * @param imageId : String
-   * @return an Image
-   * @throws SQLException
-   */
-  public static Image getImage(Connection con, String imageId)
-      throws SQLException {
-    Image image = null;
-    String query = "select * from SC_Classifieds_Images where imageId = ? ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, Integer.parseInt(imageId));
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        image = recupImage(rs);
-      }
-    } finally {
-      // fermeture
-      DBUtil.close(rs, prepStmt);
-    }
-    return image;
-  }
-  
-  /**
-   * update the image given
-   * @param con : Connection
-   * @param image : Image
-   * @throws SQLException
-   */
-  public static void updateImage(Connection con, Image image)
-      throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      String query =
-          "update SC_Classifieds_Images set imageName = ? , mimeType = ? "+
-              " where imageId = ? ";
-      // initialisation des paramètres
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, image.getImageName());
-      prepStmt.setString(2, image.getMimeType());
-      prepStmt.setInt(3, image.getImageId());
-      prepStmt.executeUpdate();
-    } finally {
-      // fermeture
-      DBUtil.close(prepStmt);
-    }
-  }
-  
-  /**
-   * delete the image corresponding to imageId
-   * @param con : Connection
-   * @param imageId : String
-   * @throws SQLException
-   */
-  public static void deleteImage(Connection con, String imageId)
-      throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      // création de la requete
-      String query = "delete from SC_Classifieds_Images where imageId = ? ";
-      // initialisation des paramètres
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, Integer.parseInt(imageId));
-      prepStmt.executeUpdate();
-    } finally {
-      // fermeture
-      DBUtil.close(prepStmt);
-    }
-  }
-  
-  /**
-   * delete all of the images corresponding to classifiedId
-   * @param con : Connection
-   * @param classifiedId : String
-   * @throws SQLException
-   */
-  public static void deleteAllImage(Connection con, String classifiedId)
-      throws SQLException {
-    PreparedStatement prepStmt = null;
-    try {
-      // création de la requete
-      String query = "delete from SC_Classifieds_Images where classifiedId = ? ";
-      // initialisation des paramètres
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, Integer.parseInt(classifiedId));
-      prepStmt.executeUpdate();
-    } finally {
-      // fermeture
-      DBUtil.close(prepStmt);
-    }
   }
 }

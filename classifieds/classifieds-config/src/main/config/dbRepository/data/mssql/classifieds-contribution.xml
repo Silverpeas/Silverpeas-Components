@@ -55,12 +55,9 @@
         <create_table>
             <file name="mssql\classifieds\up002\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_table>
-		<create_constraint>
-            <file name="mssql\classifieds\up002\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </create_constraint>
-        <create_index>
-        	<file name="mssql\classifieds\up002\create_index.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-        </create_index>
+        <create_table>
+			<file name="xmlFormToClassifiedDb.jar" type="javalib" classname="org.silverpeas.migration.classified.XmlFormToClassifiedDb" methodname="migrate"/>
+		</create_table>
     </upgrade>
 
 </contribution>

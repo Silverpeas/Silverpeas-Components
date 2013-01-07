@@ -25,7 +25,6 @@ package com.silverpeas.classifieds.control;
 
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
-import com.silverpeas.classifieds.model.Image;
 import com.silverpeas.classifieds.model.Subscribe;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import java.util.Collection;
@@ -225,43 +224,5 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
    * @
    */
   Collection<ClassifiedDetail> getUnpublishedClassifieds(String instanceId, String userId);
-  
-  /**
-   * create a classified image
-   * @param classifiedImage : Image
-   * @return imageId : String
-   * @
-   */
-  public String createClassifiedImage(Image classifiedImage);
-  
-  /**
-   * get all images for the given classified 
-   * @param classifiedId : String
-   * @return a collection of Image
-   * @
-   */
-  public Collection<Image> getAllClassifiedImage(String classifiedId);
-  
-  /**
-   * get an image for the given imageId 
-   * @param imageId : String
-   * @return an Image
-   * @
-   */
-  public Image getClassifiedImage(String imageId);
-  
-  /**
-   * update the image given 
-   * @param classifiedImage : Image
-   * @
-   */
-  public void updateClassifiedImage(Image classifiedImage);
-  
-  /**
-   * delete the image for the given imageId 
-   * @param imageId : String
-   * @
-   */
-  public void deleteClassifiedImage(String imageId);
   
 }

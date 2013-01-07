@@ -28,10 +28,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Vector;
 
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
-import com.silverpeas.classifieds.model.Image;
 import com.silverpeas.classifieds.model.Subscribe;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.form.DataRecord;
@@ -56,13 +56,17 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.activation.FileTypeMap;
 
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
 
@@ -548,41 +552,39 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param classifiedId : String
    */
   public synchronized void createClassifiedImage(FileItem fileImage, String classifiedId) {
-    Image classifiedImage = null;
-    String physicalName = null;
-    String mimeType = null;
     
     try {
-        String imageSubDirectory = getResources().getSetting("imagesSubDirectory");
-        String fullFileName = fileImage.getName();
-        String fileName = fullFileName.substring(
-                          fullFileName.lastIndexOf(File.separator) + 1,
-                          fullFileName.length());
-        String extension = FileRepositoryManager.getFileExtension(fullFileName);
-        
-        physicalName = new Long(new Date().getTime()).toString()
-            + "." + extension;
-        
-        mimeType = AttachmentController.getMimeType(fileName);
+      // create AttachmentPK with componentId
+      AttachmentPK atPK = new AttachmentPK(null, getComponentId());
   
-        //save the picture file in the file server
-        String filePath = FileRepositoryManager
-            .getAbsolutePath(this.getComponentId())
-            + imageSubDirectory + File.separator + physicalName;
-        File file = new File(filePath);
-        if (!file.exists()) {
-          FileFolderManager.createFolder(file.getParentFile());
-          file.createNewFile();
-        }
-        fileImage.write(file);
+      // create foreignKey with spaceId, componentId and id
+      // use AttachmentPK to build the foreign key of customer
+      // object.
+      WAPrimaryKey pubForeignKey = new AttachmentPK(classifiedId, getComponentId());
+  
+      // create AttachmentDetail Object
+      Date creationDate = new Date();
+      String fullFileName = fileImage.getName();
+      String extension = FileRepositoryManager.getFileExtension(fullFileName);
+      String physicalName = Long.toString(creationDate.getTime()) + "." + extension;
+      String logicalName = fullFileName;
+      String context = "Images";
+      String path = AttachmentController.createPath(getComponentId(), context);
+      File file = new File(path + physicalName);
+      fileImage.write(file);
+      String mimeType = FileTypeMap.getDefaultFileTypeMap().getContentType(file);
+      long size = fileImage.getSize();
+          
+      AttachmentDetail ad = new AttachmentDetail(atPK, physicalName,
+              logicalName, "", mimeType, size, context, creationDate,
+              pubForeignKey);
+      ad.setAuthor(getUserId());
+  
+      AttachmentController.createAttachment(ad, true);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsSessionController.createClassifiedImage()",
             SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_CREATE", e);
     }
-   
-    //create the picture in the data base
-    classifiedImage = new Image(Integer.parseInt(classifiedId), physicalName, mimeType);
-    getClassifiedService().createClassifiedImage(classifiedImage);
   }
   
   /**
@@ -603,8 +605,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public ClassifiedDetail getClassifiedWithImages(String classifiedId) {
     ClassifiedDetail classified = getClassified(classifiedId);
-    Collection<Image> images = getClassifiedService().getAllClassifiedImage(classifiedId);
-    classified.setImages(images);
+    WAPrimaryKey pubForeignKey = new AttachmentPK(classifiedId, getComponentId());
+    Vector<AttachmentDetail> listAttachment = AttachmentController.searchAttachmentByCustomerPK(pubForeignKey);
+    classified.setImages(listAttachment);
     return classified;
   }
   
@@ -613,8 +616,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param imageId : String
    * @return image : Image
    */
-  public Image getClassifiedImage(String imageId) {
-    return getClassifiedService().getClassifiedImage(imageId);
+  public AttachmentDetail getClassifiedImage(String imageId) {
+    AttachmentPK atPK = new AttachmentPK(imageId, getComponentId());
+    return AttachmentController.searchAttachmentByPK(atPK);
   }
   
   /**
@@ -624,54 +628,44 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param classifiedId : String
    */
   public void updateClassifiedImage(FileItem fileImage, String imageId, String classifiedId) {
-    String filePath = null;
-    File file = null;
-    String physicalName = null;
-    String mimeType = null;
+    AttachmentPK atPK = new AttachmentPK(imageId, getComponentId());
+    AttachmentDetail classifiedImage = AttachmentController.searchAttachmentByPK(atPK);
     
-    String imageSubDirectory = getResources().getSetting("imagesSubDirectory");
-    
-    Image classifiedImage = getClassifiedImage(imageId);
     if(classifiedImage != null) {
       //delete the actual picture file in the file server
-      filePath = FileRepositoryManager
-          .getAbsolutePath(this.getComponentId())
-          + imageSubDirectory + File.separator + classifiedImage.getImageName();
-      file = new File(filePath);
-      file.delete();
-    
+      AttachmentController.deleteFileAndIndex(classifiedImage);
+          
+      Date creationDate = new Date();
+      String context = "Images";
+      String physicalName = null;
+      String logicalName = null;
+      String mimeType = null;
+      long size;
       try {
-          String fullFileName = fileImage.getName();
-          String fileName = fullFileName.substring(
-                            fullFileName.lastIndexOf(File.separator) + 1,
-                            fullFileName.length());
-          String extension = FileRepositoryManager.getFileExtension(fullFileName);
-          
-          physicalName = new Long(new Date().getTime()).toString()
-              + "." + extension;
-          
-          mimeType = AttachmentController.getMimeType(fileName);
+        //save picture file in the file server
+        String fullFileName = fileImage.getName();
+        String extension = FileRepositoryManager.getFileExtension(fullFileName);
+        physicalName = Long.toString(creationDate.getTime()) + "." + extension;
+        logicalName = fullFileName;
+        String path = AttachmentController.createPath(getComponentId(), context);
+        File file = new File(path + physicalName);
+        fileImage.write(file);
+        mimeType = FileTypeMap.getDefaultFileTypeMap().getContentType(file);
+        size = fileImage.getSize();
     
-          //save picture file in the file server
-          filePath = FileRepositoryManager
-                .getAbsolutePath(this.getComponentId())
-                + imageSubDirectory + File.separator + physicalName;
-          file = new File(filePath);
-          if (!file.exists()) {
-            FileFolderManager.createFolder(file.getParentFile());
-            file.createNewFile();
-          }
-          fileImage.write(file);
       } catch (Exception e) {
         throw new ClassifiedsRuntimeException("ClassifiedsSessionController.updateClassifiedImage()",
               SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_CREATE", e);
       }
      
       //update the picture in the data base
-      classifiedImage.setImageName(physicalName);
-      classifiedImage.setMimeType(mimeType);
-      getClassifiedService().updateClassifiedImage(classifiedImage);
-      
+      WAPrimaryKey pubForeignKey = new AttachmentPK(classifiedId, getComponentId());
+      AttachmentDetail ad = new AttachmentDetail(atPK, physicalName,
+          logicalName, "", mimeType, size, context, creationDate,
+          pubForeignKey);
+      ad.setAuthor(getUserId());
+      ad.setInstanceId(getComponentId());
+      AttachmentController.updateAttachment(ad);
     } else {
       createClassifiedImage(fileImage, classifiedId);
     }
@@ -682,19 +676,11 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param imageId : String
    */
   public void deleteClassifiedImage(String imageId) {
-    Image classifiedImage = getClassifiedImage(imageId);
+    AttachmentPK atPK = new AttachmentPK(imageId, getComponentId());
+    AttachmentDetail classifiedImage = AttachmentController.searchAttachmentByPK(atPK);
     if(classifiedImage != null) {
-      //delete the actual picture file in the file server
-      String imageSubDirectory = getResources().getSetting("imagesSubDirectory");
-      String filePath = FileRepositoryManager
-          .getAbsolutePath(this.getComponentId())
-          + imageSubDirectory + File.separator + classifiedImage.getImageName();
-      File file = new File(filePath);
-      file.delete();
-     
-      //delete the picture in the data base
-      getClassifiedService().deleteClassifiedImage(imageId);
-      
+      //delete the actual picture file in the file server and database
+      AttachmentController.deleteAttachment(classifiedImage);
     } else {
       throw new ClassifiedsRuntimeException("ClassifiedsSessionController.deleteClassifiedImage()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_DELETE", imageId+" does not exist");
