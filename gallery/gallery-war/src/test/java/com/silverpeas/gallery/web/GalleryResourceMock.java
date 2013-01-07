@@ -108,7 +108,7 @@ public class GalleryResourceMock extends GalleryResource {
    * .gallery.model.PhotoDetail)
    */
   @Override
-  protected void verifyViewAllPhotoAuthorized(final PhotoDetail photo) {
+  protected void verifyUserPhotoAccess(final PhotoDetail photo) {
     // Nothing to do.
   }
 }
