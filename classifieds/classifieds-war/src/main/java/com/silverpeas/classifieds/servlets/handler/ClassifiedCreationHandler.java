@@ -41,6 +41,7 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       FileItem fileImage1 = FileUploadUtil.getFile(items, "Image1");
       FileItem fileImage2 = FileUploadUtil.getFile(items, "Image2");
       FileItem fileImage3 = FileUploadUtil.getFile(items, "Image3");
+      FileItem fileImage4 = FileUploadUtil.getFile(items, "Image4");
       
       //Classified
       ClassifiedDetail classified = new ClassifiedDetail(title, description);
@@ -58,6 +59,9 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       }
       if (fileImage3 != null && StringUtil.isDefined(fileImage3.getName())) {
         listImage.add(fileImage3);
+      }
+      if (fileImage4 != null && StringUtil.isDefined(fileImage4.getName())) {
+        listImage.add(fileImage4);
       }
       String classifiedId = classifiedsSC.createClassified(classified, listImage, highestRole);
       

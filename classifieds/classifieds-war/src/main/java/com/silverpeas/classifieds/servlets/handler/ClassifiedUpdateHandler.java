@@ -41,20 +41,21 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
       String idImage1 = FileUploadUtil.getParameter(items, "IdImage1");
       String idImage2 = FileUploadUtil.getParameter(items, "IdImage2");
       String idImage3 = FileUploadUtil.getParameter(items, "IdImage3");
+      String idImage4 = FileUploadUtil.getParameter(items, "IdImage4");
       String removeImageFile1 = FileUploadUtil.getParameter(items, "RemoveImageFile1"); //yes | no
       String removeImageFile2 = FileUploadUtil.getParameter(items, "RemoveImageFile2"); //yes | no
       String removeImageFile3 = FileUploadUtil.getParameter(items, "RemoveImageFile3"); //yes | no
+      String removeImageFile4 = FileUploadUtil.getParameter(items, "RemoveImageFile4"); //yes | no
       FileItem fileImage1 = FileUploadUtil.getFile(items, "Image1");
       FileItem fileImage2 = FileUploadUtil.getFile(items, "Image2");
       FileItem fileImage3 = FileUploadUtil.getFile(items, "Image3");
+      FileItem fileImage4 = FileUploadUtil.getFile(items, "Image4");
 
       ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
       classified.setTitle(title);
       classified.setDescription(description);
       if (price != null && ! price.isEmpty()) {
         classified.setPrice(Integer.parseInt(price));
-      } else {
-        classified.setPrice(null);
       }
      
       // Populate data record
@@ -101,6 +102,14 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
         classifiedsSC.updateClassifiedImage(fileImage3, idImage3, classified.getId());
       } else if(idImage3 != null && fileImage3 != null && ! StringUtil.isDefined(fileImage3.getName()) && "yes".equals(removeImageFile3)) {//Delete Image
         classifiedsSC.deleteClassifiedImage(idImage3);
+      }
+      
+      if(idImage4 == null && fileImage4 != null && StringUtil.isDefined(fileImage4.getName())) {//Create Image
+        classifiedsSC.createClassifiedImage(fileImage4, classifiedId);
+      } else if(idImage4 != null && fileImage4 != null && StringUtil.isDefined(fileImage4.getName())) {//Update Image
+        classifiedsSC.updateClassifiedImage(fileImage4, idImage4, classified.getId());
+      } else if(idImage4 != null && fileImage4 != null && ! StringUtil.isDefined(fileImage4.getName()) && "yes".equals(removeImageFile4)) {//Delete Image
+        classifiedsSC.deleteClassifiedImage(idImage4);
       }
     }
 

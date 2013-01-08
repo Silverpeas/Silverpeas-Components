@@ -128,15 +128,20 @@
 							<li>
 								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
 								<c:if test="${classified.price > 0}">
-                  ${classified.price} € - 
+                  ${classified.price} &euro; - 
                  </c:if>
 								<span class="creatorName_result_classifieds">${classified.creatorName}</span><span class="sep_creatorName_result_classifieds"> - </span>
-								<c:if test="${not empty classified.updateDate}">
-									<span class="date_result_classifieds updateDate"><view:formatDateTime value="${classified.updateDate}" language="${language}"/></span>
-								</c:if>
-								<c:if test="${empty classified.updateDate}">
-									<span class="date_result_classifieds creationDate"><view:formatDateTime value="${classified.creationDate}" language="${language}"/></span>
-								</c:if>
+								<c:if test="${not empty classified.validateDate}">
+                  <span class="date_result_classifieds validationDate"><view:formatDateTime value="${classified.validateDate}" language="${language}"/></span>
+                </c:if>
+                <c:if test="${empty classified.validateDate}">
+									<c:if test="${not empty classified.updateDate}">
+										<span class="date_result_classifieds updateDate"><view:formatDateTime value="${classified.updateDate}" language="${language}"/></span>
+									</c:if>
+									<c:if test="${empty classified.updateDate}">
+										<span class="date_result_classifieds creationDate"><view:formatDateTime value="${classified.creationDate}" language="${language}"/></span>
+									</c:if>
+								</c:if>	
 							</li>
 						</c:forEach>
 						</ul>
