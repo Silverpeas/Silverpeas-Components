@@ -148,7 +148,7 @@
 	     errorMsg+="  - '${GML_description}' ${GML_MustBeFilled}\n";
 	     errorNb++;
 	    }
-	    if (description.length > 2000) {
+	    if (description.length > 4000) {
 	     errorMsg+="  - '${GML_description}' ${classifieds_msgSize}\n";
 	     errorNb++;
 	    }
@@ -179,6 +179,13 @@
         errorMsg+="  - '${classifieds_image}3' : ${classifieds_imageFormat}\n";
         errorNb++;
        }
+	    }
+	    if (!isWhitespace(document.classifiedForm.Image4.value)) {
+	        var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
+	        if (verif.exec(document.classifiedForm.Image4.value) == null) {
+	         errorMsg+="  - '${classifieds_image}4' : ${classifieds_imageFormat}\n";
+	         errorNb++;
+	        }
 	    }
 	   	switch(errorNb)
 	   	{
@@ -226,7 +233,11 @@
 
 <c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
 <c:set var="displayedDescription"><view:encodeHtml string="${description}" /></c:set>
-<c:set var="displayedPrice"><view:encodeHtml string="${price}" /></c:set>
+<c:set var="displayedPrice">
+<c:if test="${price > 0}">
+<view:encodeHtml string="${price}" />
+</c:if>
+</c:set>
 <c:set var="displayedId"><view:encodeHtml string="${classifiedId}" /></c:set>
 <c:set var="displayedEmail"><view:encodeHtml string="${creatorEmail}" /></c:set>
 
@@ -257,7 +268,7 @@
       </tr>
       <tr>
         <td class="txtlibform"><fmt:message key="classifieds.price"/> :</td>
-        <td><input type="text" name="Price" size="10" maxlength="8" value="${displayedPrice}"/> €
+        <td><input type="text" name="Price" size="10" maxlength="8" value="${displayedPrice}"/> &euro;
         </td>
       </tr>
       <tr>
@@ -309,6 +320,22 @@
           </c:forEach>
           <input type="file" name="Image3" size="30">
           <input type="hidden" name="RemoveImageFile3" value="no"/>
+        </td>
+        <td>
+          <c:forEach var="image" items="${images}" begin="3" end="3">
+          <div id="imageFile4">
+          <%
+          AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
+          String url = m_context +  attDetail.getAttachmentURL(language);
+          %>
+           <img src="<%=url%>"></img>&nbsp;&nbsp;
+           <a href="javascript:onClick=hideImageFile('4');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
+           <input type="hidden" name="IdImage4" value="${image.PK.id}"> 
+           <BR/>
+          </div>
+          </c:forEach>
+          <input type="file" name="Image4" size="30">
+          <input type="hidden" name="RemoveImageFile4" value="no"/>
         </td>
       </tr>
 			<c:if test="${action eq 'UpdateClassified'}">

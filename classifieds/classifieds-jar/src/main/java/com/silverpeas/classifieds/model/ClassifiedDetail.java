@@ -37,7 +37,7 @@ public class ClassifiedDetail implements SilverpeasContent {
   private String title;
   private int classifiedId;
   private String description;
-  private Integer price;
+  private Integer price = new Integer(0);
   private String instanceId;
   private String creatorId;
   private String creatorName;

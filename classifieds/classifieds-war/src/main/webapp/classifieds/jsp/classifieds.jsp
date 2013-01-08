@@ -86,7 +86,7 @@
 						<li class="status_${classified.status}">
 								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
 								<c:if test="${classified.price > 0}">
-                  ${classified.price} € - 
+                  ${classified.price} &euro; - 
                  </c:if>
 									<span class="status_result_classifieds">
 										<c:choose>

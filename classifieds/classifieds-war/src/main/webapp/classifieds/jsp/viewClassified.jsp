@@ -55,9 +55,6 @@
 <c:set var="isDraftEnabled" value="${requestScope.IsDraftEnabled}" />
 <c:set var="isCommentsEnabled" value="${requestScope.IsCommentsEnabled}" />
 <c:set var="profile" value="${requestScope.Profile}" />
-<c:set var="creationDate" value="${requestScope.CreationDate}" />
-<c:set var="updateDate" value="${requestScope.UpdateDate}" />
-<c:set var="validationDate" value="${requestScope.ValidateDate}" />
 <c:set var="userId" value="${requestScope.UserId}" />
 <c:set var="classified" value="${requestScope.Classified}" />
 <c:set var="instanceId" value="${classified.instanceId}" />
@@ -89,7 +86,7 @@ String language = (String) pageContext.getAttribute("language");
 	}
 
 	function updateClassified(id) {
-		document.classifiedForm.action = "EditClassified";
+		document.classifiedForm.action = "EditClassified?ClassifiedId="+id;
 		document.classifiedForm.ClassifiedId.value = id;
 		document.classifiedForm.submit();
 	}
@@ -156,9 +153,20 @@ String language = (String) pageContext.getAttribute("language");
 		}
 		return result;
 	}
+	
+	$(document).ready(function() {
+
+		  $('.classified_thumbs a').click(function() {
+		        cheminImage=$(this).children('img').attr('src');
+		        $('.selected').removeClass('selected');
+		        $(this).addClass('selected');
+		        $('.classified_selected_photo img').attr('src',cheminImage)   ;
+		  });
+		});
 </script>
 </head>
-<body id="classified-view">
+<body id="classifieds">
+<div id="${instanceId}">
 	<fmt:message var="classifiedPath" key="classifieds.classified" />
 	<view:browseBar>
 		<view:browseBarElt label="${classifiedPath}" link="" />
@@ -226,83 +234,95 @@ String language = (String) pageContext.getAttribute("language");
 
 	<view:window>
 		<view:frame>
-			<table cellpadding="5" width="100%">
-				<tr>
-					<td>
-						<div class="tableBoard" id="classified-view-header">
-							<h1 class="titreFenetre" id="classified-title">
-								<c:out value="${classified.title}" />
-							</h1>
-							<div id="classified-view-header-owner">
-								<span class="txtlibform"><fmt:message
-										key="classifieds.annonceur" />: </span> <span class="txtvalform"><c:out
-										value="${classified.creatorName} (${classified.creatorEmail})" />
-								</span>
-							</div>
-							<div id="classified-view-header-parutionDate">
-								<span class="txtlibform"><fmt:message
-										key="classifieds.parutionDate" />: </span> <span class="txtvalform"><c:out
-										value="${creationDate}" />
-								</span>
-							</div>
-							<c:if test="${fn:length(updateDate) > 0}">
-								<div id="classified-view-header-updateDate">
-									<span class="txtlibform"><fmt:message
-											key="classifieds.updateDate" />: </span> <span class="txtvalform"><c:out
-											value="${updateDate}" />
-									</span>
-								</div>
-							</c:if>
-							<c:if
-								test="${fn:length(validationDate) > 0 and classified.validatorName != null and fn:length(classified.validatorName) > 0}">
-								<div id="classified-view-header-validateDate">
-									<span class="txtlibform"><fmt:message
-											key="classifieds.validateDate" />: </span> <span class="txtvalform"><c:out
-											value="${validationDate}" />&nbsp;<span><fmt:message
-												key="classifieds.by" />
-									</span>&nbsp;<c:out value="${classified.validatorName}" />
-									</span>
-								</div>
-							</c:if>
-							<div id="classified-view-header-description">
-                <span class="txtlibform"><fmt:message
-                    key="GML.description" />: </span> <span class="txtvalform"><c:out
-                    value="${classified.description}" />
-                </span>
+			  <table cellpadding="5" width="100%">
+			  <tr>
+            <td valign="top"> 
+              <div id="header_classifieds"> </div>
+              <div class="rightContent">
+                <div class="bgDegradeGris" id="classified_info">
+                  <div class="paragraphe" id="classified_info_creation"><fmt:message key="classifieds.online" /> <br>
+                    <c:if test="${not empty classified.validateDate}">
+                      <b><view:formatDateTime value="${classified.validateDate}" language="${language}"/></b>
+                    </c:if>
+                    <c:if test="${empty classified.validateDate}">
+	                    <c:if test="${not empty classified.updateDate}">
+	                    <b><view:formatDateTime value="${classified.updateDate}" language="${language}"/></b>
+	                    </c:if>
+	                    <c:if test="${empty classified.updateDate}">
+	                      <b><view:formatDateTime value="${classified.creationDate}" language="${language}"/></b>
+	                    </c:if>
+                    </c:if>
+                    <fmt:message key="classifieds.by" />
+                    <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-profile.js" type="text/javascript"></script>
+                    <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-messageme.js" type="text/javascript"></script>
+                    <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-invitme.js" type="text/javascript"></script>
+                    <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-userZoom.js" type="text/javascript"></script>
+                    <span class="userToZoom" rel="${classified.creatorId}">${classified.creatorName}</span>
+                    <div class="profilPhoto"><img class="defaultAvatar" alt="" src="${pageContext.request.contextPath}${classified.creator.avatar}"></div>
+                  </div>
+                  <div id="classified_contact_link" class="bgDegradeGris"><a  href="mailto:${classified.creatorEmail}"><fmt:message key="classifieds.contactAd" /></a></div>
+                  <p></p>
+                </div>
               </div>
-              <div id="classified-view-header-price">
-                <span class="txtlibform"><fmt:message
-                    key="classifieds.price" />: </span> <span class="txtvalform"><c:out
-                    value="${classified.price}" />
-                </span>
-              </div>
-              <div id="classified-view-header-images">
-                <span class="txtlibform"><fmt:message key="classifieds.images" />: </span>
-                <span class="txtvalform">
-                <c:forEach var="image" items="${classified.images}">
+              <div class="principalContent">
+                <div id="menubar-creation-actions"></div>
+                <div class="classified_fiche">
+                  <h2 class="classified_title">${classified.title}</h2>
+                  <div class="classified_photos">
+                    <div class="classified_thumbs">
+                    <%
+                    int i = 0;
+                    %>
+		                <c:forEach var="image" items="${classified.images}">
+		                <%
+		                AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
+		                String url = m_context +  attDetail.getAttachmentURL(language);
+		                String select = "";
+		                if (i == 0) {
+		                  select = "class=\"selected\"";
+		                }
+		                %>
+		                  <a <%=select%> href="#"><img src="<%=url%>"></a>
+		                <%
+		                i++;
+		                %>
+		                </c:forEach>
+                    </div>
+                    <c:if test="${not empty classified.images}">
+                    <div class="classified_selected_photo">
+                    <c:forEach var="image" items="${classified.images}" begin="0" end="0">
+                    <%
+                    AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
+                    String url = m_context +  attDetail.getAttachmentURL(language);
+                    %>
+                      <a href="#"><img src="<%=url%>"></a>
+                    </c:forEach>
+                    </div>
+                    </c:if>
+                  </div>
+                  <c:if test="${classified.price > 0}">
+                    <div class="classified_price">${classified.price} &euro;</div>
+                  </c:if>  
+                  <p class="classified_description">${classified.description}</p>
+                  
+                  <!-- <hr class="clear" /> -->
+                  <c:if test="${not empty xmlForm}">
+                     <div id="classified_content_form">
                 <%
-                AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
-                String url = m_context +  attDetail.getAttachmentURL(language);
-                %>
-                  <img src="<%=url%>"></img>&nbsp;&nbsp;
-                </c:forEach>
-                </span>
-              </div>
-							<hr class="clear" />
-						</div> <c:if test="${not empty xmlForm}">
-							<div class="tableBoard" id="classified-view-content">
-								<%
-									Form xmlForm = (Form) pageContext.getAttribute("xmlForm");
-									DataRecord data = (DataRecord) pageContext.getAttribute("xmlData");
-									PagesContext context = (PagesContext) pageContext.getAttribute("xmlContext");
+                  Form xmlForm = (Form) pageContext.getAttribute("xmlForm");
+                  DataRecord data = (DataRecord) pageContext.getAttribute("xmlData");
+                  PagesContext context = (PagesContext) pageContext.getAttribute("xmlContext");
 
-									xmlForm.display(out, context, data);
-								%>
-								<hr class="clear" />
-							</div>
-						</c:if>
-					</td>
-				</tr>
+                  xmlForm.display(out, context, data);
+                %>
+                      <hr class="clear" />
+                    </div>
+                  </c:if>
+                </div>
+              </div>
+             </td>
+          </tr>
+          
 				<tr>
 					<td>
 						<!--Afficher les commentaires-->
@@ -344,5 +364,6 @@ String language = (String) pageContext.getAttribute("language");
 			</table>
 		</form>
 	</div>
+</div>	
 </body>
 </html>

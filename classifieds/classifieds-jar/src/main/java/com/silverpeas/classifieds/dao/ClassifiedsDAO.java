@@ -489,7 +489,10 @@ public class ClassifiedsDAO {
     String instanceId = rs.getString("instanceId");
     String title = rs.getString("title");
     String description = rs.getString("description");
-    int price = rs.getInt("price");
+    Integer price = new Integer(0);
+    if(rs.getString("price") != null) {
+      price = new Integer(rs.getString("price"));
+    }
     String creatorId = rs.getString("creatorId");
     Date creationDate = new Date(Long.parseLong(rs.getString("creationDate")));
     Date updateDate = null;
