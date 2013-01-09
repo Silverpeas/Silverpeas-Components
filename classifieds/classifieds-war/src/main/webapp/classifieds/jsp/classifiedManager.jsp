@@ -96,6 +96,7 @@
 <html>
 <head>
 <view:looknfeel/>
+<link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
 <c:if test="${not empty formUpdate}">
 	<%
   	formUpdate.displayScripts(out, context);
@@ -242,141 +243,189 @@
 <c:set var="displayedEmail"><view:encodeHtml string="${creatorEmail}" /></c:set>
 
 <form name="classifiedForm" action="${action}" method="post" enctype="multipart/form-data" onsubmit="sendData();return false;">
-<table cellpadding="5" width="100%">
-<tr>
-	<td>
-		<view:board>
-		<table cellpadding="5">
-			<c:if test="${action eq 'UpdateClassified'}">
-				<tr>
-					<td class="txtlibform"><fmt:message key="classifieds.number"/> :</td>
-					<td>${displayedId}</td>
-				</tr>
-			</c:if>
-			<tr>
-				<td class="txtlibform"><fmt:message key="GML.title"/> :</td>
-				<td><input type="text" name="Title" size="60" maxlength="100" value="${displayedTitle}"/>
-					<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
-					<input type="hidden" name="ClassifiedId" value="${displayedId}"/>
-				</td>
-			</tr>
-			<tr>
-        <td class="txtlibform"><fmt:message key="GML.description"/> :</td>
-        <td><textarea cols="100" rows="5" name="Description">${displayedDescription}</textarea>
-          <img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
-        </td>
-      </tr>
-      <tr>
-        <td class="txtlibform"><fmt:message key="classifieds.price"/> :</td>
-        <td><input type="text" name="Price" size="10" maxlength="8" value="${displayedPrice}"/> &euro;
-        </td>
-      </tr>
-      <tr>
-        <td class="txtlibform"><fmt:message key="classifieds.images"/> :</td>
-        <td>
-          <c:forEach var="image" items="${images}" begin="0" end="0">
-          <div id="imageFile1">
+<fieldset id="classifiedInfo" class="skinFieldset">
+<legend><fmt:message key="classifieds.mainInfos"/></legend>
+<div class="fields">
+        
+  <c:if test="${action eq 'UpdateClassified'}">
+    <div class="field" id="classifiedNumberArea">
+      <label for="classifiedNumber" class="txtlibform"><fmt:message key="classifieds.number"/> :</label>
+      <div class="champs">
+        ${displayedId}
+    </div>
+	</c:if>
+	
+  <div class="field" id="classifiedNameArea">
+	  <label for="classifiedName" class="txtlibform"><fmt:message key="GML.title"/> :</label>
+	  <div class="champs">
+	    <input type="text" name="Title" id="classifiedName" size="60" maxlength="100" value="${displayedTitle}"/>
+	    &nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
+	    <input type="hidden" name="ClassifiedId" value="${displayedId}"/>
+	  </div>
+	</div>
+	
+	<div class="field" id="descriptionArea">
+    <label for="classifiedDesc" class="txtlibform"><fmt:message key="GML.description"/> :</label>
+    <div class="champs">
+      <textarea cols="100" rows="5" name="Description" id="classifiedDesc">${displayedDescription}</textarea>
+      &nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
+    </div>
+  </div>
+  
+  <div class="field" id="priceArea">
+	  <label for="classifiedPrice" class="txtlibform"><fmt:message key="classifieds.price"/> :</label>
+	  <div class="champs">
+	    <input type="text" name="Price" size="10" maxlength="8" id="classifiedPrice" value="${displayedPrice}"/> &euro;
+	  </div>
+	</div>
+	
+  <c:if test="${action eq 'UpdateClassified'}">
+    <div class="field" id="creationDateArea">
+      <label class="txtlibform"><fmt:message key="classifieds.creationDate"/> :</label>
+      <div class="champs">
+        <view:formatDateTime value="${creationDate}"/> <fmt:message key="classifieds.by"/> ${creatorName} (${displayedEmail})
+      </div>
+    </div>
+  </c:if>
+  <c:if test="${not empty updateDate}">
+    <div class="field" id="updateDateArea">
+      <label class="txtlibform"><fmt:message key="classifieds.updateDate"/> :</label>
+      <div class="champs">
+        <view:formatDateTime value="${updateDate}"/>
+      </div>
+    </div>
+  </c:if>
+  <c:if test="${(not empty validateDate) && (not empty validatorName)}">
+    <div class="field" id="validationDateArea">
+      <label class="txtlibform"><fmt:message key="classifieds.validateDate"/> :</label>
+      <div class="champs">
+        <view:formatDateTime value="${validateDate}" /> <fmt:message key="classifieds.by"/> ${validatorName}
+      </div>
+    </div>
+  </c:if>
+  
+  <div class="field" id="mandatoryArea">
+    <label class="txtlibform">(<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>)</label>
+  </div>
+    
+  
+  </div>    
+</fieldset>
+
+<div class="table">      
+  <div class="cell">
+    <fieldset id="pubThumb" class="skinFieldset">
+    <legend><fmt:message key="classifieds.images"/></legend>
+    <div class="fields">
+    
+	   <div class="field thumb">
+	     <c:forEach var="image" items="${images}" begin="0" end="0">
+       <div class="thumbnailPreviewAndActions" id="imageFile1">
+         <div class="thumbnailPreview">
           <%
           AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
           String url = m_context +  attDetail.getAttachmentURL(language);
           %>
-           <img src="<%=url%>"></img>&nbsp;&nbsp;
-           <a href="javascript:onClick=hideImageFile('1');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-           <input type="hidden" name="IdImage1" value="${image.PK.id}"> 
-           <BR/>
-          </div>
-          </c:forEach>
-          <input type="file" name="Image1" size="30">
-          <input type="hidden" name="RemoveImageFile1" value="no"/>
-        </td>
-        <td>
-          <c:forEach var="image" items="${images}" begin="1" end="1">
-          <div id="imageFile2">
+          <img src="<%=url%>" class="thumbnail" id="actualImage1"/>
+         </div>
+         <div id="thumbnailActions">
+          <a href="javascript:onClick=hideImageFile('1');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
+          <input type="hidden" name="IdImage1" value="${image.PK.id}"> 
+         </div>
+       </div>
+       </c:forEach>
+     
+       <div class="thumbnailInputs">
+         <input type="file" name="Image1" size="30" id="Image1"/><br/> <i>(<fmt:message key="classifieds.mainImage"/>)</i>
+         <input type="hidden" name="RemoveImageFile1" value="no"/>
+       </div>
+     </div>
+       
+     <div class="field thumb">
+       <c:forEach var="image" items="${images}" begin="1" end="1">
+       <div class="thumbnailPreviewAndActions" id="imageFile2">
+         <div class="thumbnailPreview">
           <%
           AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
           String url = m_context +  attDetail.getAttachmentURL(language);
           %>
-           <img src="<%=url%>"></img>&nbsp;&nbsp;
-           <a href="javascript:onClick=hideImageFile('2');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-           <input type="hidden" name="IdImage2" value="${image.PK.id}"> 
-           <BR/>
-          </div>
-          </c:forEach>
-          <input type="file" name="Image2" size="30">
-          <input type="hidden" name="RemoveImageFile2" value="no"/>
-        </td>
-        <td>
-          <c:forEach var="image" items="${images}" begin="2" end="2">
-          <div id="imageFile3">
+          <img src="<%=url%>" class="thumbnail" id="actualImage2"/>
+         </div>
+         <div id="thumbnailActions">
+          <a href="javascript:onClick=hideImageFile('2');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
+          <input type="hidden" name="IdImage2" value="${image.PK.id}"> 
+         </div>
+       </div>
+       </c:forEach>
+     
+       <div class="thumbnailInputs">
+         <input type="file" name="Image2" size="30" id="Image1"/>
+         <input type="hidden" name="RemoveImageFile2" value="no"/>
+       </div>
+     </div>
+     
+     <div class="field thumb">
+       <c:forEach var="image" items="${images}" begin="2" end="2">
+       <div class="thumbnailPreviewAndActions" id="imageFile3">
+         <div class="thumbnailPreview">
           <%
           AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
           String url = m_context +  attDetail.getAttachmentURL(language);
           %>
-           <img src="<%=url%>"></img>&nbsp;&nbsp;
-           <a href="javascript:onClick=hideImageFile('3');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-           <input type="hidden" name="IdImage3" value="${image.PK.id}"> 
-           <BR/>
-          </div>
-          </c:forEach>
-          <input type="file" name="Image3" size="30">
-          <input type="hidden" name="RemoveImageFile3" value="no"/>
-        </td>
-        <td>
-          <c:forEach var="image" items="${images}" begin="3" end="3">
-          <div id="imageFile4">
+          <img src="<%=url%>" class="thumbnail" id="actualImage3"/>
+         </div>
+         <div id="thumbnailActions">
+          <a href="javascript:onClick=hideImageFile('3');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
+          <input type="hidden" name="IdImage3" value="${image.PK.id}"> 
+         </div>
+       </div>
+       </c:forEach>
+     
+       <div class="thumbnailInputs">
+         <input type="file" name="Image3" size="30" id="Image3"/>
+         <input type="hidden" name="RemoveImageFile3" value="no"/>
+       </div>
+     </div>
+     
+     <div class="field thumb">
+       <c:forEach var="image" items="${images}" begin="3" end="3">
+       <div class="thumbnailPreviewAndActions" id="imageFile4">
+         <div class="thumbnailPreview">
           <%
           AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
           String url = m_context +  attDetail.getAttachmentURL(language);
           %>
-           <img src="<%=url%>"></img>&nbsp;&nbsp;
-           <a href="javascript:onClick=hideImageFile('4');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-           <input type="hidden" name="IdImage4" value="${image.PK.id}"> 
-           <BR/>
-          </div>
-          </c:forEach>
-          <input type="file" name="Image4" size="30">
-          <input type="hidden" name="RemoveImageFile4" value="no"/>
-        </td>
-      </tr>
-			<c:if test="${action eq 'UpdateClassified'}">
-				<tr>
-					<td class="txtlibform"><fmt:message key="classifieds.creationDate"/> :</td>
-					<td><view:formatDateTime value="${creationDate}"/> <span class="txtlibform"><fmt:message key="classifieds.by"/></span> ${creatorName} ( ${displayedEmail} )</td>
-				</tr>
-			</c:if>
-			<c:if test="${not empty updateDate}">
-				<tr>
-					<td class="txtlibform"><fmt:message key="classifieds.updateDate"/> :</td>
-					<td><view:formatDateTime value="${updateDate}"/></td>
-				</tr>
-			</c:if>
-			<c:if test="${(not empty validateDate) && (not empty validatorName)}">
-				<tr>
-					<td class="txtlibform"><fmt:message key="classifieds.validateDate"/> :</td>
-					<td><view:formatDateTime value="${validateDate}" /> <span class="txtlibform"><fmt:message key="classifieds.by"/></span> ${validatorName}</td>
-				</tr>
-			</c:if>
-			<tr><td colspan="2">( <img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}" />" width="5" height="5"> : <fmt:message key="GML.requiredField"/> )</td></tr>
-		</table>
-		</view:board>
-		<br/>
+          <img src="<%=url%>" class="thumbnail" id="actualImage4"/>
+         </div>
+         <div id="thumbnailActions">
+          <a href="javascript:onClick=hideImageFile('4');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
+          <input type="hidden" name="IdImage4" value="${image.PK.id}"> 
+         </div>
+       </div>
+       </c:forEach>
+     
+       <div class="thumbnailInputs">
+         <input type="file" name="Image4" size="30" id="Image4"/>
+         <input type="hidden" name="RemoveImageFile4" value="no"/>
+       </div>
+     </div>
+     
+    </div>
+    </fieldset>
+  </div>
+  <div class="cell">
+    <fieldset id="specifiedInfo" class="skinFieldset">
+    <legend><fmt:message key="classifieds.specificInfos"/></legend>
+    <div class="fields">
 			<c:if test="${not empty formUpdate}">
-	  				<view:board>
-					<!-- AFFICHAGE du formulaire -->
-					<table>
-					<tr>
-						<td>
-							<%
-							formUpdate.display(out, context, data);
-							%>
-						</td>
-					</tr>
-					</table>
-					</view:board>
+			<!-- AFFICHAGE du formulaire -->
+			<%
+			formUpdate.display(out, context, data);
+			%>
 			</c:if>
-	</td>
-</tr>
-</table>
+		</div>
+  </div>
+</div>			
 </form>
 <center>
 <view:buttonPane>

@@ -493,3 +493,65 @@ div.tableBoard {
 .rightContent .other_classified {
 	paddin-bottom:11px;
 }
+
+/**  formulaire de creation **/
+#classifiedInfo legend{
+    background:transparent url(../../../kmelia/jsp/icons/mini_publi.gif) 11px 0px no-repeat; /*icone présente dans kmelia */
+}
+
+#pubThumb legend {
+    background: url("../../../util/icons/images.png") no-repeat scroll 11px 0 transparent;
+}
+
+#specifiedInfo legend {
+    background: url("../../../util/icons/component/formsOnlineSmall.gif") no-repeat scroll 11px 0 transparent;
+}
+#classifiedNumberArea, #classifiedNameArea, #descriptionArea, #creationDateArea, #updateDateArea, #validationDateArea, #mandatoryArea, .field.thumb {
+    clear: both;
+    display: block;
+    float: none;
+    width: 98%;
+}
+#descriptionArea textarea, #classifiedNameArea input{
+    width:94%;
+}
+
+.thumbnailInputs {
+    clear: both;
+}
+
+.thumbnailInputs img, .thumbnailInputs input, .thumbnailInputs select {
+    vertical-align: middle;
+}
+.thumbnailPreviewAndActions {
+    background-color:#EEEEEE;
+    border:1px solid #DDDDDD;
+    float:left;
+    margin-left:0;
+    padding:3px;
+    margin-bottom: 3px;
+}
+
+.thumbnailPreview {
+    float: left;
+}
+
+
+#thumbnailActions {
+    float: left;
+    margin-left: 4px;
+}
+
+#thumbnailActions a {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#thumbnailActions img {
+    vertical-align: middle;
+}
+
+.thumbnailPreview .thumbnail {
+    height: 50px;
+    border:1px solid #DDDDDD;
+}
