@@ -555,3 +555,16 @@ div.tableBoard {
     height: 50px;
     border:1px solid #DDDDDD;
 }
+
+#pubThumb {
+    height: 90%;
+}
+
+#specifiedInfo {
+    height: 90%;
+}
+
+.classifiedForm .table {
+	margin-bottom:15px
+}
+

@@ -606,7 +606,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   public ClassifiedDetail getClassifiedWithImages(String classifiedId) {
     ClassifiedDetail classified = getClassified(classifiedId);
     WAPrimaryKey pubForeignKey = new AttachmentPK(classifiedId, getComponentId());
-    Vector<AttachmentDetail> listAttachment = AttachmentController.searchAttachmentByCustomerPK(pubForeignKey);
+    Vector<AttachmentDetail> listAttachment = AttachmentController.searchAttachmentByPKAndContext(pubForeignKey, "Images");
     classified.setImages(listAttachment);
     return classified;
   }

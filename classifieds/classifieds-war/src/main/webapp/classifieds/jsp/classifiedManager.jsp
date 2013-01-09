@@ -95,8 +95,8 @@
 
 <html>
 <head>
-<view:looknfeel/>
 <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
+<view:looknfeel/>
 <c:if test="${not empty formUpdate}">
 	<%
   	formUpdate.displayScripts(out, context);
@@ -242,7 +242,7 @@
 <c:set var="displayedId"><view:encodeHtml string="${classifiedId}" /></c:set>
 <c:set var="displayedEmail"><view:encodeHtml string="${creatorEmail}" /></c:set>
 
-<form name="classifiedForm" action="${action}" method="post" enctype="multipart/form-data" onsubmit="sendData();return false;">
+<form name="classifiedForm" class="classifiedForm" action="${action}" method="post" enctype="multipart/form-data" onsubmit="sendData();return false;">
 <fieldset id="classifiedInfo" class="skinFieldset">
 <legend><fmt:message key="classifieds.mainInfos"/></legend>
 <div class="fields">
@@ -409,7 +409,6 @@
          <input type="hidden" name="RemoveImageFile4" value="no"/>
        </div>
      </div>
-     
     </div>
     </fieldset>
   </div>
