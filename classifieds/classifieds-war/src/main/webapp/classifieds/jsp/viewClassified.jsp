@@ -55,6 +55,9 @@
 <c:set var="isDraftEnabled" value="${requestScope.IsDraftEnabled}" />
 <c:set var="isCommentsEnabled" value="${requestScope.IsCommentsEnabled}" />
 <c:set var="profile" value="${requestScope.Profile}" />
+<c:set var="creationDate" value="${requestScope.CreationDate}" />
+<c:set var="updateDate" value="${requestScope.UpdateDate}" />
+<c:set var="validationDate" value="${requestScope.ValidateDate}" />
 <c:set var="userId" value="${requestScope.UserId}" />
 <c:set var="classified" value="${requestScope.Classified}" />
 <c:set var="instanceId" value="${classified.instanceId}" />
@@ -240,27 +243,23 @@ String language = (String) pageContext.getAttribute("language");
               <div id="header_classifieds"> </div>
               <div class="rightContent">
                 <div class="bgDegradeGris" id="classified_info">
-                  <div class="paragraphe" id="classified_info_creation"><fmt:message key="classifieds.online" /> <br>
-                    <c:if test="${not empty classified.validateDate}">
-                      <b><view:formatDateTime value="${classified.validateDate}" language="${language}"/></b>
-                    </c:if>
-                    <c:if test="${empty classified.validateDate}">
-	                    <c:if test="${not empty classified.updateDate}">
-	                    <b><view:formatDateTime value="${classified.updateDate}" language="${language}"/></b>
-	                    </c:if>
-	                    <c:if test="${empty classified.updateDate}">
-	                      <b><view:formatDateTime value="${classified.creationDate}" language="${language}"/></b>
-	                    </c:if>
-                    </c:if>
-                    <fmt:message key="classifieds.by" />
+                  <div class="paragraphe" id="classified_info_creation">
+                   <fmt:message key="classifieds.annonceur" /> : 
                     <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-profile.js" type="text/javascript"></script>
                     <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-messageme.js" type="text/javascript"></script>
                     <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-invitme.js" type="text/javascript"></script>
                     <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-userZoom.js" type="text/javascript"></script>
                     <span class="userToZoom" rel="${classified.creatorId}">${classified.creatorName}</span>
-                    <div class="profilPhoto"><img class="defaultAvatar" alt="" src="${pageContext.request.contextPath}${classified.creator.avatar}"></div>
-                  </div>
-                  <div id="classified_contact_link" class="bgDegradeGris"><a  href="mailto:${classified.creatorEmail}"><fmt:message key="classifieds.contactAd" /></a></div>
+                    <div class="profilPhoto"><img class="defaultAvatar" alt="" src="${pageContext.request.contextPath}${classified.creator.avatar}"></div></BR>
+									 <fmt:message key="classifieds.parutionDate" /> : <c:out value="${creationDate}" /></BR>
+									 <c:if test="${fn:length(updateDate) > 0}">
+									   <fmt:message key="classifieds.updateDate" /> : <c:out value="${updateDate}" /></BR>
+									 </c:if>
+									 <c:if test="${fn:length(validationDate) > 0 and classified.validatorName != null and fn:length(classified.validatorName) > 0}">
+									   <fmt:message key="classifieds.validateDate" /> : <c:out value="${validationDate}" />&nbsp;
+									   <fmt:message key="classifieds.by" />&nbsp;${classified.validatorName}
+									 </c:if>
+									</div>
                   <p></p>
                 </div>
               </div>
