@@ -94,7 +94,7 @@ function AddAttachment() {
 	if (isOwner)
 	{
 		operationPane.addOperation(resource.getIcon("resourcesManager.updateBig"), resource.getString("resourcesManager.modifierReservation"),"EditReservation?id="+reservationId);
-		operationPane.addOperationOfCreation("#", resource.getString("resourcesManager.addFile"), "javaScript:AddAttachment()");
+		operationPane.addOperation("#", resource.getString("resourcesManager.addFile"), "javaScript:AddAttachment()");
 		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("resourcesManager.basketDelete"), resource.getString("resourcesManager.supprimerReservation"),"javascript:deleteReservation();");
 	}	
@@ -105,7 +105,6 @@ function AddAttachment() {
 		out.println(window.printBefore());
   %>
 <view:frame>
-<view:areaOfOperationOfCreation/>
 <table width="100%">
 	<tr>
 		<td valign="top">

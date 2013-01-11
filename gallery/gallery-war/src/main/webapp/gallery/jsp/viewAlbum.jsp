@@ -116,6 +116,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <view:looknfeel/>
+    <view:progressMessage />
     <script type="text/javascript" src="<%=m_context%>/gallery/jsp/javaScript/dragAndDrop.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
@@ -130,7 +131,7 @@
       $(document).ready(function(){
       <%if ("admin".equals(profile)) {%>
           $("#albumList").sortable({opacity: 0.4, cursor: 'move'});
-      
+
           $('#albumList').bind('sortupdate', function(event, ui) {
             var reg=new RegExp("album", "g");
             var data = $('#albumList').sortable('serialize');
@@ -148,7 +149,7 @@
       <%}%>
         });
 
-  
+
         function sortAlbums(orderedList)
         {
           $.get('<%=m_context%>/Album', { orderedList:orderedList,Action:'Sort'},
@@ -164,10 +165,10 @@
             reloadIncludingPage();
           }
         }
-  
+
         var albumWindow = window;
-	
-        function addFavorite(m_sAbsolute,m_context,name,description,url) 
+
+        function addFavorite(m_sAbsolute,m_context,name,description,url)
         {
           urlWindow = m_sAbsolute + m_context + "/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
           windowName = "albumWindow";
@@ -188,7 +189,7 @@
             document.albumForm.submit();
           }
         }
-	
+
         function choiceGoTo(selectedIndex) {
           // envoi du choix de la taille des vignettes
           if (selectedIndex != 0 && selectedIndex != 1) {
@@ -196,7 +197,7 @@
             document.ChoiceSelectForm.submit();
           }
         }
-	
+
         function sendData() {
           // envoi des photos selectionnees pour la modif par lot
           var selectedPhotos = getObjects(true);
@@ -207,7 +208,7 @@
             document.photoForm.submit();
           }
         }
-	
+
         function sendToBasket() {
           // envoi des photos selectionnees dans le panier
           var selectedPhotos = getObjects(true);
@@ -216,10 +217,10 @@
             document.photoForm.SelectedIds.value 	= selectedPhotos;
             document.photoForm.NotSelectedIds.value = getObjects(false);
             document.photoForm.action	= "BasketAddPhotos";
-            document.photoForm.submit(); 
+            document.photoForm.submit();
           }
         }
-	
+
         function sendDataDelete() {
           //confirmation de suppression de l'album
           var selectedPhotos = getObjects(true);
@@ -234,14 +235,14 @@
             }
           }
         }
-	
+
         function sendDataCategorize() {
           var selectedPhotos = getObjects(true);
           if (selectedPhotos && selectedPhotos.length > 0)
           {
             var selectedIds = selectedPhotos;
             var notSelectedIds = getObjects(false);
-		
+
             urlWindow = "CategorizeSelectedPhoto?SelectedIds="+selectedIds+"&NotSelectedIds="+notSelectedIds;
             windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
             if (!albumWindow.closed && albumWindow.name== "albumWindow") {
@@ -250,8 +251,8 @@
             albumWindow = SP_openWindow(urlWindow, "albumWindow", "550", "250", windowParams);
           }
         }
-	
-        function sendDataForAddPath() 
+
+        function sendDataForAddPath()
         {
           // envoi des photos selectionnees pour le placement par lot
           var selectedPhotos = getObjects(true);
@@ -263,7 +264,7 @@
             document.photoForm.submit();
           }
         }
-	
+
         function getObjects(selected)	{
           var  items = "";
           try {
@@ -275,7 +276,7 @@
                 // il n'y a qu'une checkbox non selectionnee
                 items += boxItems.value+",";
               } else {
-                // search not checked boxes 
+                // search not checked boxes
                 for (i=0;i<boxItems.length ;i++ ) {
                   if (boxItems[i].checked == selected) {
                     items += boxItems[i].value+",";
@@ -285,11 +286,11 @@
             }
           }
           catch (e)  {
-            //Checkboxes are not displayed 
+            //Checkboxes are not displayed
           }
           return items;
         }
-	
+
         function doPagination(index) {
           document.photoForm.SelectedIds.value 	= getObjects(true);
           document.photoForm.NotSelectedIds.value = getObjects(false);
@@ -297,7 +298,7 @@
           document.photoForm.action				= "Pagination";
           document.photoForm.submit();
         }
-	
+
         function sortGoTo(selectedIndex) {
           // envoi du choix du tri
           if (selectedIndex != 0 && selectedIndex != 1)  {
@@ -305,7 +306,7 @@
             document.OrderBySelectForm.submit();
           }
         }
-	
+
         function uploadCompleted(s)  {
           //window.alert("In uploadCompleted !"+s);
           location.href="<%=m_context + URLManager.getURL(null, componentId)%>ViewAlbum?Id=<%=currentAlbum.getNodePK().getId()%>";
@@ -315,27 +316,27 @@
         function showDnD() {
           var url = "<%=URLManager.getFullApplicationURL(request)%>/RgalleryDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&AlbumId=<%=currentAlbum.getNodePK().getId()%>";
           var message = "<%=URLManager.getFullApplicationURL(request)%>/upload/Gallery_<%=resource.getLanguage()%>.html";
-		
+
       <%ResourceLocator uploadSettings = new ResourceLocator(
                 "com.stratelia.webactiv.util.uploads.uploadSettings", "");
         String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");%>
             showHideDragDrop(url, message,'<%=resource.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
           }
-	
-	
-          function clipboardPaste() {
-            top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RGallery&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("GoToCurrentAlbum",
-                    "UTF-8"))%>&TargetFrame=MyMain&message=REFRESH');
-                      }
+
+        function clipboardPaste() {
+          $.progressMessage();
+          document.albumForm.action = "paste";
+          document.albumForm.submit();
+        }
 
                       function clipboardCopy() {
                         top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>copy?Object=Node&Id=<%=currentAlbum.getNodePK().getId()%>';
                       }
-	
+
                       function clipboardCut() {
                         top.IdleFrame.location.href = '../..<%=gallerySC.getComponentUrl()%>cut?Object=Node&Id=<%=currentAlbum.getNodePK().getId()%>';
                       }
-	
+
                       function CopySelectedPhoto()  {
                         var selectedPhotos = getObjects(true);
                         if (selectedPhotos && selectedPhotos.length > 0)
@@ -346,7 +347,7 @@
                           document.photoForm.submit();
                         }
                       }
-	
+
                       function CutSelectedPhoto()  {
                         var selectedPhotos = getObjects(true);
                         if (selectedPhotos && selectedPhotos.length > 0)
@@ -357,8 +358,9 @@
                           document.photoForm.submit();
                         }
                       }
-	  
+
     </script>
+    <%@include file="diaporama.jsp" %>
   </head>
   <body>
     <%
@@ -422,7 +424,7 @@
 
       if (photos.size() > 1) {
         // diaporama
-        operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString("gallery.diaporama"), "StartDiaporama?Debut=" + "ok");
+        operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString("gallery.diaporama"), "javascript:startSlideshow()");
       }
 
       // favoris
@@ -443,8 +445,8 @@
 
       out.println(window.printBefore());
       out.println(frame.printBefore());
-%>      
-<view:areaOfOperationOfCreation/>    
+%>
+<view:areaOfOperationOfCreation/>
 <%
       // afficher les sous albums
       // ------------------------
@@ -499,7 +501,7 @@
 
     <%// afficher les photos
       // -------------------
-      // affichage des photos sous forme de vignettes	
+      // affichage des photos sous forme de vignettes
       if (photos != null) {%>
     <br/>
     <%String vignette_url = null;
@@ -510,8 +512,8 @@
         out.println(board.printBefore());
         // affichage de l'entete%>
         <form name="photoForm" action="EditSelectedPhoto">
-        	<input type="hidden" name="AlbumId" value="<%=albumId%>"/> 
-        	<input type="hidden" name="Index"/> 
+        	<input type="hidden" name="AlbumId" value="<%=albumId%>"/>
+        	<input type="hidden" name="Index"/>
         	<input type="hidden" name="SelectedIds"/> <input type="hidden" name="NotSelectedIds"/>
     <table width="98%" border="0" cellspacing="0" cellpadding="0" align="center">
         <tr>
@@ -804,8 +806,8 @@
             out.println(frame.printAfter());
             out.println(window.printAfter());%>
           <form name="albumForm" action="" method="post">
-            <input type="hidden" name="Id"/> 
-            <input type="hidden" name="Name"/> 
+            <input type="hidden" name="Id"/>
+            <input type="hidden" name="Name"/>
             <input type="hidden" name="Description"/>
           </form>
           <form name="ChoiceSelectForm" action="ChoiceSize" method="post">

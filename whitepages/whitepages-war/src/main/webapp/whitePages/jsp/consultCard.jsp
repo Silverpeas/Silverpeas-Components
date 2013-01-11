@@ -50,7 +50,7 @@
 	Card card = (Card) request.getAttribute("card");
 	String userCardId = card.getPK().getId();
 	
-	boolean isAdmin = ( (Boolean) request.getAttribute("isAdmin")).booleanValue();
+	boolean isAdmin = (Boolean) request.getAttribute("isAdmin");
 	
 	Collection<WhitePagesCard> whitePagesCards = (Collection<WhitePagesCard>) request.getAttribute("whitePagesCards");
 	Form viewForm = (Form) request.getAttribute("Form");

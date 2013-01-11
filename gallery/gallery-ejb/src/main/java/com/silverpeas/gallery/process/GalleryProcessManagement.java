@@ -66,8 +66,7 @@ public class GalleryProcessManagement {
 
   private final UserDetail user;
   private final String componentInstanceId;
-  private final ProcessList<GalleryProcessExecutionContext> processList =
-      new ProcessList<GalleryProcessExecutionContext>();
+  private final ProcessList<GalleryProcessExecutionContext> processList;
 
   /**
    * Default constructor
@@ -75,6 +74,7 @@ public class GalleryProcessManagement {
   public GalleryProcessManagement(final UserDetail user, final String componentInstanceId) {
     this.user = user;
     this.componentInstanceId = componentInstanceId;
+    processList = new ProcessList<GalleryProcessExecutionContext>();
   }
 
   /*
@@ -178,16 +178,20 @@ public class GalleryProcessManagement {
   public void addImportFromRepositoryProcesses(final File repository, final String albumId,
       final boolean watermark, final String watermarkHD, final String watermarkOther,
       final PhotoDataCreateDelegate delegate) throws Exception {
-    for (final File file : repository.listFiles()) {
-      if (file.isFile()) {
-        if (ImageType.isImage(file.getName())) {
-          // création de la photo
-          addCreatePhotoProcesses(new PhotoDetail(), albumId, file, watermark, watermarkHD,
+    final File[] fileList = repository.listFiles();
+    if (fileList != null) {
+      for (final File file : fileList) {
+        if (file.isFile()) {
+          if (ImageType.isImage(file.getName())) {
+            // création de la photo
+            addCreatePhotoProcesses(new PhotoDetail(), albumId, file, watermark, watermarkHD,
+                watermarkOther, delegate);
+          }
+        } else if (file.isDirectory()) {
+          addImportFromRepositoryProcesses(file,
+              createAlbum(file.getName(), albumId).getNodePK().getId(), watermark, watermarkHD,
               watermarkOther, delegate);
         }
-      } else if (file.isDirectory()) {
-        addImportFromRepositoryProcesses(file, createAlbum(file.getName(), albumId).getNodePK()
-            .getId(), watermark, watermarkHD, watermarkOther, delegate);
       }
     }
   }
@@ -225,7 +229,7 @@ public class GalleryProcessManagement {
       // CUT & PASTE
 
       // Move images
-      NodePK toSubAlbumPK = null;
+      NodePK toSubAlbumPK;
       for (final NodeDetail subAlbumToPaste : getNodeBm().getSubTree(fromAlbum.getNodePK())) {
         toSubAlbumPK = new NodePK(subAlbumToPaste.getNodePK().getId(), componentInstanceId);
         addPastePhotoAlbumProcesses(subAlbumToPaste.getNodePK(), toSubAlbumPK, isCutted);
