@@ -458,40 +458,35 @@
         var errorMsg = "";
         var errorNb = 0;
         var title = stripInitialWhitespace(document.pubForm.Name.value);
-
         var beginDate = document.pubForm.BeginDate.value;
         var endDate = document.pubForm.EndDate.value;
-
         var beginHour = document.pubForm.BeginHour.value;
         var endHour = document.pubForm.EndHour.value;
-
-        var beginDateOK = true;
-
-    	if (isWhitespace(title)) {
+        if (isWhitespace(title)) {
           errorMsg+=" - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
           errorNb++;
         }
 
       <% if (isFieldDescriptionVisible) {%>
-             var description = document.pubForm.Description;
+        var description = document.pubForm.Description;
       <% if (isFieldDescriptionMandatory) {%>
-                if (isWhitespace(description.value)) {
-                  errorMsg+=" - '<%=resources.getString("PubDescription")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-                  errorNb++;
-                }
+            if (isWhitespace(description.value)) {
+              errorMsg+=" - '<%=resources.getString("PubDescription")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+              errorNb++;
+            }
       <% }%>
-                if (!isValidTextArea(description)) {
-                  errorMsg+=" - '<%=resources.getString("GML.description")%>' <%=resources.getString("kmelia.containsTooLargeText") + resources.getString("kmelia.nbMaxTextArea") + resources.getString("kmelia.characters")%>\n";
-                  errorNb++;
-                }
+            if (!isValidTextArea(description)) {
+              errorMsg+=" - '<%=resources.getString("GML.description")%>' <%=resources.getString("kmelia.containsTooLargeText") + resources.getString("kmelia.nbMaxTextArea") + resources.getString("kmelia.characters")%>\n";
+              errorNb++;
+            }
       <% }%>
 
       <% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {%>
-             var validatorId = stripInitialWhitespace(document.pubForm.ValideurId.value);
-             if (isWhitespace(validatorId)) {
-               errorMsg+=" - '<%=resources.getString("kmelia.Valideur")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-               errorNb++;
-             }
+          var validatorId = stripInitialWhitespace(document.pubForm.ValideurId.value);
+          if (isWhitespace(validatorId)) {
+            errorMsg+=" - '<%=resources.getString("kmelia.Valideur")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+            errorNb++;
+          }
       <% }%>
              if (!isWhitespace(beginDate)) {
             	if (!isDateOK(beginDate, '<%=kmeliaScc.getLanguage()%>')) {
@@ -933,15 +928,15 @@
 						<div class="champs">
 							<input id="beginDate" type="text" class="dateToPick" name="BeginDate" value="<%=beginDate%>" size="12" maxlength="10"/>
 							<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
-							<input class="inputHour" type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5" /> <i>(hh:mm)</i>
+							<input id="beginHour" class="inputHour" type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 						</div>
 					</div>
 					<div class="field" id="endArea">
-						<label for="endHour" class="txtlibform"><%=resources.getString("PubDateFin")%></label>
+						<label for="endDate" class="txtlibform"><%=resources.getString("PubDateFin")%></label>
 						<div class="champs">
-							<input type="text" class="dateToPick" name="EndDate" value="<%=endDate %>" size="12" maxlength="10"/>
+							<input id="endDate" type="text" class="dateToPick" name="EndDate" value="<%=endDate %>" size="12" maxlength="10"/>
 							<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
-							<input class="inputHour" id="endHour" type="text" name="EndHour" value="<%=endHour %>" size="5" maxlength="5" /> <i>(hh:mm)</i>
+							<input id="endHour" class="inputHour" type="text" name="EndHour" value="<%=endHour %>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 						</div>
 					</div>
 				</div>

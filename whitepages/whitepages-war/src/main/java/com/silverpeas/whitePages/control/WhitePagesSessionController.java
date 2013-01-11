@@ -102,6 +102,10 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private Card notifiedUserCard;
   private PdcBm pdcBm = null;
   private static DomainDriverManager m_DDManager = new DomainDriverManager();
+  
+  public boolean isAdmin() {
+    return Boolean.valueOf(getUserRoleLevel().equals("admin"));
+  }
 
   /*
    * Recherche une fiche Retourne currentCard si son id est le même que celui de la fiche recherchée
@@ -128,7 +132,8 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
         }
 
         if (card.getInstanceId().equals(getComponentId())) {
-          card.writeReadOnly(false);
+          // user can update card if he is admin or if it's his own card
+          card.writeReadOnly(!isAdmin() && !getUserId().equals(card.getUserId()));
           card.writeCardUpdateForm(getCardTemplate().getUpdateForm());
         }
 
@@ -506,6 +511,18 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
               "WhitePagesSessionController.setUserRecords",
               SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
+    
+    Collections.sort(listCards, new Comparator<Card>() {
+      public int compare(Card o1, Card o2)
+      {
+        int result =  o1.readUserRecord().getUserDetail().getLastName().compareTo(o2.readUserRecord().getUserDetail().getLastName());
+        if(result == 0) {
+          result = o1.readUserRecord().getUserDetail().getFirstName().compareTo(o2.readUserRecord().getUserDetail().getFirstName());
+        }
+        return result;
+      }
+    });
+    
     return listCards;
   }
 
