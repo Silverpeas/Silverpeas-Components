@@ -572,7 +572,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       String extension = FileRepositoryManager.getFileExtension(fullFileName);
       String physicalName = Long.toString(creationDate.getTime()) + "." + extension;
       String logicalName = fullFileName;
-      String context = "Images";
+      String context = "Pictures";
       String path = AttachmentController.createPath(getComponentId(), context);
       File file = new File(path + physicalName);
       fileImage.write(file);
@@ -610,7 +610,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   public ClassifiedDetail getClassifiedWithImages(String classifiedId) {
     ClassifiedDetail classified = getClassified(classifiedId);
     WAPrimaryKey pubForeignKey = new AttachmentPK(classifiedId, getComponentId());
-    Vector<AttachmentDetail> listAttachment = AttachmentController.searchAttachmentByPKAndContext(pubForeignKey, "Images");
+    Vector<AttachmentDetail> listAttachment = AttachmentController.searchAttachmentByPKAndContext(pubForeignKey, "Pictures");
     classified.setImages(listAttachment);
     return classified;
   }
@@ -640,7 +640,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       AttachmentController.deleteFileAndIndex(classifiedImage);
           
       Date creationDate = new Date();
-      String context = "Images";
+      String context = "Pictures";
       String physicalName = null;
       String logicalName = null;
       String mimeType = null;
