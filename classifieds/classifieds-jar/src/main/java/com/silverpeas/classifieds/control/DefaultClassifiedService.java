@@ -159,7 +159,7 @@ public class DefaultClassifiedService implements ClassifiedService {
      
       //supprime les images
       WAPrimaryKey pubForeignKey = new AttachmentPK(classifiedId, componentId);
-      Vector<AttachmentDetail> images = AttachmentController.searchAttachmentByPKAndContext(pubForeignKey, "Images");
+      Vector<AttachmentDetail> images = AttachmentController.searchAttachmentByPKAndContext(pubForeignKey, "Pictures");
       for(AttachmentDetail classifiedImage : images) {
         //delete the picture file in the file server and database
         AttachmentController.deleteAttachment(classifiedImage);
