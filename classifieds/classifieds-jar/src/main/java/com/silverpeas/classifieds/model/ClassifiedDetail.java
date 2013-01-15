@@ -26,10 +26,12 @@ package com.silverpeas.classifieds.model;
 import com.silverpeas.SilverpeasContent;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
+
+import org.silverpeas.attachment.model.SimpleDocument;
 
 public class ClassifiedDetail implements SilverpeasContent {
   private static final long serialVersionUID = -355125879163002184L;
@@ -48,7 +50,7 @@ public class ClassifiedDetail implements SilverpeasContent {
   private String validatorId;
   private String validatorName;
   private Date validateDate;
-  private Vector<AttachmentDetail> images = new Vector<AttachmentDetail>();
+  private List<SimpleDocument> images = new ArrayList<SimpleDocument>();
 
   public static final String DRAFT = "Draft";
   public static final String VALID = "Valid";
@@ -219,11 +221,11 @@ public class ClassifiedDetail implements SilverpeasContent {
     return "";
   }
 
-  public Vector<AttachmentDetail> getImages() {
+  public List<SimpleDocument> getImages() {
     return images;
   }
 
-  public void setImages(Vector<AttachmentDetail> images) {
+  public void setImages(List<SimpleDocument> images) {
     this.images = images;
   }
 }

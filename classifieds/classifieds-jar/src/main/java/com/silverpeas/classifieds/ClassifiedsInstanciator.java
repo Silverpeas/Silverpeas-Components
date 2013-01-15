@@ -26,14 +26,11 @@ package com.silverpeas.classifieds;
 import java.sql.Connection;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.classifieds.control.ClassifiedService;
 import com.silverpeas.classifieds.control.ClassifiedServiceFactory;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.comment.service.CommentServiceFactory;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class ClassifiedsInstanciator implements ComponentsInstanciatorIntf {
