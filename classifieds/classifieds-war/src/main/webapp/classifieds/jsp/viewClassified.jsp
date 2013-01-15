@@ -30,7 +30,7 @@
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
-<%@page import="com.stratelia.webactiv.util.attachment.model.AttachmentDetail"%>
+<%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -274,8 +274,8 @@ String language = (String) pageContext.getAttribute("language");
                     %>
 		                <c:forEach var="image" items="${classified.images}">
 		                <%
-		                AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
-		                String url = m_context +  attDetail.getAttachmentURL(language);
+		                SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
+		                String url = m_context +  simpleDocument.getAttachmentURL();
 		                String select = "";
 		                if (i == 0) {
 		                  select = "class=\"selected\"";
@@ -291,8 +291,8 @@ String language = (String) pageContext.getAttribute("language");
                     <div class="classified_selected_photo">
                     <c:forEach var="image" items="${classified.images}" begin="0" end="0">
                     <%
-                    AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
-                    String url = m_context +  attDetail.getAttachmentURL(language);
+                    SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
+                    String url = m_context +  simpleDocument.getAttachmentURL();
                     %>
                       <a href="#"><img src="<%=url%>"></a>
                     </c:forEach>

@@ -31,13 +31,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.SearchEngineFactory;
 
 import com.silverpeas.classifieds.dao.ClassifiedsDAO;
@@ -61,9 +64,6 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -146,7 +146,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   } 
 
   @Override
-  public void deleteClassified(String componentId, String classifiedId) {
+  public void deleteClassified(String instanceId, String classifiedId) {
     Connection con = openConnection();
     try {
       ClassifiedDetail classified = getContentById(classifiedId);
@@ -157,13 +157,18 @@ public class DefaultClassifiedService implements ClassifiedService {
       //supprime l'index
       deleteIndex(classified);
      
-      //supprime les images
-      WAPrimaryKey pubForeignKey = new AttachmentPK(classifiedId, componentId);
-      Vector<AttachmentDetail> images = AttachmentController.searchAttachmentByPKAndContext(pubForeignKey, "Pictures");
-      for(AttachmentDetail classifiedImage : images) {
-        //delete the picture file in the file server and database
-        AttachmentController.deleteAttachment(classifiedImage);
-      }
+      try {
+        //supprime les images attachées à la petite annonce
+        WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, instanceId);
+        List<SimpleDocument> images = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.picture, null);
+        for(SimpleDocument classifiedImage : images) {
+          //delete the picture file in the file server and database
+          AttachmentServiceFactory.getAttachmentService().deleteAttachment(classifiedImage);
+        }
+      } catch (Exception e) {
+        throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteClassified()",
+            SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGES_NOT_DELETE", e);
+      } 
       
     } catch (SQLException e) {
       throw new ClassifiedsRuntimeException("DefaultClassifiedService.deleteClassified()",

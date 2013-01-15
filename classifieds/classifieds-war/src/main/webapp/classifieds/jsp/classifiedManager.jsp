@@ -29,7 +29,7 @@
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
-<%@page import="com.stratelia.webactiv.util.attachment.model.AttachmentDetail"%>
+<%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -323,8 +323,8 @@
        <div class="thumbnailPreviewAndActions" id="imageFile1">
          <div class="thumbnailPreview">
           <%
-          AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
-          String url = m_context +  attDetail.getAttachmentURL(language);
+          SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
+          String url = m_context +  simpleDocument.getAttachmentURL();
           %>
           <img src="<%=url%>" class="thumbnail" id="actualImage1"/>
          </div>
@@ -346,8 +346,8 @@
        <div class="thumbnailPreviewAndActions" id="imageFile2">
          <div class="thumbnailPreview">
           <%
-          AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
-          String url = m_context +  attDetail.getAttachmentURL(language);
+          SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
+          String url = m_context +  simpleDocument.getAttachmentURL();
           %>
           <img src="<%=url%>" class="thumbnail" id="actualImage2"/>
          </div>
@@ -369,8 +369,8 @@
        <div class="thumbnailPreviewAndActions" id="imageFile3">
          <div class="thumbnailPreview">
           <%
-          AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
-          String url = m_context +  attDetail.getAttachmentURL(language);
+          SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
+          String url = m_context +  simpleDocument.getAttachmentURL();
           %>
           <img src="<%=url%>" class="thumbnail" id="actualImage3"/>
          </div>
@@ -392,8 +392,8 @@
        <div class="thumbnailPreviewAndActions" id="imageFile4">
          <div class="thumbnailPreview">
           <%
-          AttachmentDetail attDetail = (AttachmentDetail) pageContext.getAttribute("image");
-          String url = m_context +  attDetail.getAttachmentURL(language);
+          SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
+          String url = m_context +  simpleDocument.getAttachmentURL();
           %>
           <img src="<%=url%>" class="thumbnail" id="actualImage4"/>
          </div>

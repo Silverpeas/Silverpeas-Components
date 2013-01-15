@@ -23,12 +23,11 @@
  */
 package com.silverpeas.classifieds.control;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
@@ -40,6 +39,7 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -48,25 +48,23 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.activation.FileTypeMap;
 
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
 
@@ -90,6 +88,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
             "com.silverpeas.classifieds.settings.classifiedsIcons",
             "com.silverpeas.classifieds.settings.classifiedsSettings");
 
+    
     // affectation du formulaire
     String xmlFormName = getXMLFormName();
     String xmlFormShortName = null;
@@ -558,36 +557,23 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   public synchronized void createClassifiedImage(FileItem fileImage, String classifiedId) {
     
     try {
-      // create AttachmentPK with componentId
-      AttachmentPK atPK = new AttachmentPK(null, getComponentId());
+      // create SimpleDocumentPK with componentId
+      SimpleDocumentPK sdPK = new SimpleDocumentPK(null, getComponentId());
   
-      // create foreignKey with spaceId, componentId and id
-      // use AttachmentPK to build the foreign key of customer
-      // object.
-      WAPrimaryKey pubForeignKey = new AttachmentPK(classifiedId, getComponentId());
-  
-      // create AttachmentDetail Object
+      // create SimpleDocument Object
       Date creationDate = new Date();
-      String fullFileName = fileImage.getName();
-      String extension = FileRepositoryManager.getFileExtension(fullFileName);
-      String physicalName = Long.toString(creationDate.getTime()) + "." + extension;
-      String logicalName = fullFileName;
-      String context = "Pictures";
-      String path = AttachmentController.createPath(getComponentId(), context);
-      File file = new File(path + physicalName);
-      fileImage.write(file);
-      String mimeType = FileTypeMap.getDefaultFileTypeMap().getContentType(file);
+      String fileName = FileUtil.getFilename(fileImage.getName());
       long size = fileImage.getSize();
-          
-      AttachmentDetail ad = new AttachmentDetail(atPK, physicalName,
-              logicalName, "", mimeType, size, context, creationDate,
-              pubForeignKey);
-      ad.setAuthor(getUserId());
+      String mimeType = FileUtil.getMimeType(fileName);
+      
+      SimpleDocument sd = new SimpleDocument(sdPK, classifiedId, 0, false, new SimpleAttachment(fileName, getLanguage(), "", "", size 
+              , mimeType, getUserId(), creationDate, null));
+      sd.setDocumentType(DocumentType.picture);
   
-      AttachmentController.createAttachment(ad, true);
+      AttachmentServiceFactory.getAttachmentService().createAttachment(sd, fileImage.getInputStream(), true);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsSessionController.createClassifiedImage()",
-            SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_CREATE", e);
+            SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_CREATE", e);
     }
   }
   
@@ -609,20 +595,15 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public ClassifiedDetail getClassifiedWithImages(String classifiedId) {
     ClassifiedDetail classified = getClassified(classifiedId);
-    WAPrimaryKey pubForeignKey = new AttachmentPK(classifiedId, getComponentId());
-    Vector<AttachmentDetail> listAttachment = AttachmentController.searchAttachmentByPKAndContext(pubForeignKey, "Pictures");
-    classified.setImages(listAttachment);
+    try {
+      WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, getComponentId());
+      List<SimpleDocument> listSimpleDocument = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.picture, null);
+      classified.setImages(listSimpleDocument);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.getClassifiedWithImages()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGES", e);
+    }
     return classified;
-  }
-  
-  /**
-   * get classified image
-   * @param imageId : String
-   * @return image : Image
-   */
-  public AttachmentDetail getClassifiedImage(String imageId) {
-    AttachmentPK atPK = new AttachmentPK(imageId, getComponentId());
-    return AttachmentController.searchAttachmentByPK(atPK);
   }
   
   /**
@@ -632,44 +613,38 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param classifiedId : String
    */
   public void updateClassifiedImage(FileItem fileImage, String imageId, String classifiedId) {
-    AttachmentPK atPK = new AttachmentPK(imageId, getComponentId());
-    AttachmentDetail classifiedImage = AttachmentController.searchAttachmentByPK(atPK);
+    SimpleDocument classifiedImage = null;
+    try {
+      SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
+      classifiedImage = AttachmentServiceFactory.getAttachmentService().searchDocumentById(sdPK, null);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.updateClassifiedImage()",
+        SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGE", e);
+    }
     
     if(classifiedImage != null) {
-      //delete the actual picture file in the file server
-      AttachmentController.deleteFileAndIndex(classifiedImage);
-          
-      Date creationDate = new Date();
-      String context = "Pictures";
-      String physicalName = null;
-      String logicalName = null;
-      String mimeType = null;
-      long size;
+      Date updateDate = new Date();
+      String fileName = FileUtil.getFilename(fileImage.getName());
+      long size = fileImage.getSize();
+      String mimeType = FileUtil.getMimeType(fileName);
+      
+      classifiedImage.setDocumentType(DocumentType.picture);
+      classifiedImage.setFilename(fileName);
+      classifiedImage.setLanguage(null);
+      classifiedImage.setTitle("");
+      classifiedImage.setDescription("");
+      classifiedImage.setSize(size);
+      classifiedImage.setContentType(mimeType);
+      classifiedImage.setUpdatedBy(getUserId());
+      classifiedImage.setUpdated(updateDate);
+      
       try {
-        //save picture file in the file server
-        String fullFileName = fileImage.getName();
-        String extension = FileRepositoryManager.getFileExtension(fullFileName);
-        physicalName = Long.toString(creationDate.getTime()) + "." + extension;
-        logicalName = fullFileName;
-        String path = AttachmentController.createPath(getComponentId(), context);
-        File file = new File(path + physicalName);
-        fileImage.write(file);
-        mimeType = FileTypeMap.getDefaultFileTypeMap().getContentType(file);
-        size = fileImage.getSize();
-    
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(classifiedImage, fileImage.getInputStream(), true, false);
       } catch (Exception e) {
-        throw new ClassifiedsRuntimeException("ClassifiedsSessionController.updateClassifiedImage()",
-              SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_CREATE", e);
+          throw new ClassifiedsRuntimeException("ClassifiedsSessionController.updateClassifiedImage()",
+            SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_UPDATE", e);
       }
-     
-      //update the picture in the data base
-      WAPrimaryKey pubForeignKey = new AttachmentPK(classifiedId, getComponentId());
-      AttachmentDetail ad = new AttachmentDetail(atPK, physicalName,
-          logicalName, "", mimeType, size, context, creationDate,
-          pubForeignKey);
-      ad.setAuthor(getUserId());
-      ad.setInstanceId(getComponentId());
-      AttachmentController.updateAttachment(ad);
+      
     } else {
       createClassifiedImage(fileImage, classifiedId);
     }
@@ -680,14 +655,21 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param imageId : String
    */
   public void deleteClassifiedImage(String imageId) {
-    AttachmentPK atPK = new AttachmentPK(imageId, getComponentId());
-    AttachmentDetail classifiedImage = AttachmentController.searchAttachmentByPK(atPK);
+    SimpleDocument classifiedImage = null;
+    try {
+      SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
+      classifiedImage = AttachmentServiceFactory.getAttachmentService().searchDocumentById(sdPK, null);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.deleteClassifiedImage()",
+        SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGE", e);
+    }
+    
     if(classifiedImage != null) {
       //delete the actual picture file in the file server and database
-      AttachmentController.deleteAttachment(classifiedImage);
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(classifiedImage);
     } else {
       throw new ClassifiedsRuntimeException("ClassifiedsSessionController.deleteClassifiedImage()",
-          SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_FILE_NOT_DELETE", imageId+" does not exist");
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_DELETE", imageId+" does not exist");
     }
   }
 }

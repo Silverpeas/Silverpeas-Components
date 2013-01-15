@@ -53,11 +53,11 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
 
   /**
    * delete the classified corresponding to classifiedId
-   * @param componentId : String
+   * @param instanceId : String
    * @param classifiedId : String
    * @
    */
-  public void deleteClassified(String componentId, String classifiedId);
+  public void deleteClassified(String instanceId, String classifiedId);
 
   /**
    * delete all classifieds for the instance corresponding to instanceId
