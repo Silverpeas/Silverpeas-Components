@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.infoLetter.implementation;
 
@@ -41,7 +38,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
@@ -54,6 +53,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class InfoLetterDataManager implements InfoLetterDataInterface {
@@ -61,7 +61,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   // Statiques
   private final static String TableExternalEmails = "SC_IL_ExtSus";
   private final static String TableInternalEmails = "SC_IL_IntSus";
-
   // Membres
   private SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
   private SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
@@ -70,10 +69,10 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   // Constructeur
   public InfoLetterDataManager() {
     try {
-      infoLetterDAO = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.infoLetter.model.InfoLetter");
-      infoLetterPublicationDAO = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication");
+      infoLetterDAO = SilverpeasBeanDAOFactory.getDAO(
+          "com.stratelia.silverpeas.infoLetter.model.InfoLetter");
+      infoLetterPublicationDAO = SilverpeasBeanDAOFactory.getDAO(
+          "com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication");
       infoLetterContentManager = new InfoLetterContentManager();
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
@@ -85,12 +84,10 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   /**
    * Implementation of InfoLetterDataInterface interface
    */
-
   // Creation d'une lettre d'information
   @Override
   public void createInfoLetter(InfoLetter il) {
     try {
-
       WAPrimaryKey pk = infoLetterDAO.add(il);
       il.setPK(pk);
     } catch (PersistenceException pe) {
@@ -149,7 +146,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
           "instanceId = '" + letter.getInstanceId() + "' and letterId = " + letterPK.getId();
       publications =
           new ArrayList<InfoLetterPublication>(infoLetterPublicationDAO.findByWhereClause(letterPK,
-              whereClause));
+          whereClause));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
@@ -271,16 +268,15 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Creation de la lettre par defaut a l'instanciation
+  @Override
   public InfoLetter createDefaultLetter(String spaceId, String componentId) {
-    com.stratelia.webactiv.beans.admin.OrganizationController oc =
-        new com.stratelia.webactiv.beans.admin.OrganizationController();
-    com.stratelia.webactiv.beans.admin.ComponentInst ci = oc
-        .getComponentInst(componentId);
+    OrganizationController oc = new OrganizationController();
+    ComponentInst ci = oc.getComponentInst(componentId);
     InfoLetter ie = new InfoLetter();
     ie.setInstanceId(componentId);
     ie.setName(ci.getLabel());
     createInfoLetter(ie);
-    initTemplate(spaceId, componentId, ie.getPK());
+    initTemplate(spaceId, componentId, ie.getPK(), "0");
     return ie;
   }
 
@@ -616,12 +612,12 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // initialisation du template
-  public void initTemplate(String spaceId, String componentId,
-      WAPrimaryKey letterPK) {
+  @Override
+  public void initTemplate(String spaceId, String componentId, WAPrimaryKey letterPK, String userId) {
     try {
       String basicTemplate = "<body></body>";
-      WysiwygController.createFileAndAttachment(basicTemplate,
-          componentId, InfoLetterPublication.TEMPLATE_ID + letterPK.getId());
+      WysiwygController.createFileAndAttachment(basicTemplate, componentId,
+          InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), userId);
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
@@ -631,6 +627,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   /**
    * open connection
+   *
    * @return Connection
    * @throws InfoLetterException
    * @author frageade
