@@ -160,7 +160,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       try {
         //supprime les images attachées à la petite annonce
         WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, instanceId);
-        List<SimpleDocument> images = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.picture, null);
+        List<SimpleDocument> images = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.image, null);
         for(SimpleDocument classifiedImage : images) {
           //delete the picture file in the file server and database
           AttachmentServiceFactory.getAttachmentService().deleteAttachment(classifiedImage);

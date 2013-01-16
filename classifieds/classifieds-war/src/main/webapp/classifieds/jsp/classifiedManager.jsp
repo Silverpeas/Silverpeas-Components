@@ -330,7 +330,7 @@
          </div>
          <div id="thumbnailActions">
           <a href="javascript:onClick=hideImageFile('1');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-          <input type="hidden" name="IdImage1" value="${image.PK.id}"> 
+          <input type="hidden" name="IdImage1" value="${image.id}"> 
          </div>
        </div>
        </c:forEach>
@@ -353,7 +353,7 @@
          </div>
          <div id="thumbnailActions">
           <a href="javascript:onClick=hideImageFile('2');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-          <input type="hidden" name="IdImage2" value="${image.PK.id}"> 
+          <input type="hidden" name="IdImage2" value="${image.id}"> 
          </div>
        </div>
        </c:forEach>
@@ -376,7 +376,7 @@
          </div>
          <div id="thumbnailActions">
           <a href="javascript:onClick=hideImageFile('3');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-          <input type="hidden" name="IdImage3" value="${image.PK.id}"> 
+          <input type="hidden" name="IdImage3" value="${image.id}"> 
          </div>
        </div>
        </c:forEach>
@@ -399,7 +399,7 @@
          </div>
          <div id="thumbnailActions">
           <a href="javascript:onClick=hideImageFile('4');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-          <input type="hidden" name="IdImage4" value="${image.PK.id}"> 
+          <input type="hidden" name="IdImage4" value="${image.id}"> 
          </div>
        </div>
        </c:forEach>
