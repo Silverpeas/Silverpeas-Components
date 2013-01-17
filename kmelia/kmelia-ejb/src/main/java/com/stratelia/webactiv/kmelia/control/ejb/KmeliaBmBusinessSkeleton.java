@@ -754,6 +754,11 @@ public interface KmeliaBmBusinessSkeleton {
       Map<String, String> formParams,
       String language, String xmlFormName, String discrimatingParameterName,
       String userProfile) throws RemoteException;
+  
+  public boolean importPublication(String componentId, String topicId, String userId,
+      Map<String, String> publiParams, Map<String, String> formParams, String language,
+      String xmlFormName, String discriminantParameterName, String userProfile,
+      boolean ignoreMissingFormFields) throws RemoteException;
 
   public boolean importPublication(String publicationId, String componentId, String topicId,
       String spaceId, String userId, Map<String, String> publiParams,
