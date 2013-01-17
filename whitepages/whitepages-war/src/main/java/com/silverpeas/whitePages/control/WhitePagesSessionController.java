@@ -36,6 +36,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.whitePages.WhitePagesException;
@@ -1068,8 +1070,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           for (Card card : cards) {
             UserRecord userRecord = card.readUserRecord();
             if (userRecord != null) {
-              Collection<SessionInfo> sessionInfos = SessionManager.getInstance().
-                      getConnectedUsersList();
+              SessionManagementFactory factory = SessionManagementFactory.getFactory();
+              SessionManagement sessionManagement = factory.getSessionManagement();
+              Collection<SessionInfo> sessionInfos = sessionManagement.getConnectedUsersList();
               for (SessionInfo varSi : sessionInfos) {
                 if (varSi.getUserDetail().equals(userRecord.getUserDetail())) {
                   userRecord.setConnected(true);

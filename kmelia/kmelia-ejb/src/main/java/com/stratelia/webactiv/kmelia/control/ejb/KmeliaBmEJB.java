@@ -4410,6 +4410,17 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return publicationImport.importPublication(publiParams, formParams,
             language, xmlFormName, discrimatingParameterName, userProfile);
   }
+  
+  public boolean importPublication(String componentId, String topicId, String userId,
+      Map<String, String> publiParams, Map<String, String> formParams, String language,
+      String xmlFormName, String discriminantParameterName, String userProfile,
+      boolean ignoreMissingFormFields) throws RemoteException {
+    PublicationImport publicationImport =
+        new PublicationImport(this, componentId, topicId, null, userId);
+    publicationImport.setIgnoreMissingFormFields(ignoreMissingFormFields);
+    return publicationImport.importPublication(publiParams, formParams, language, xmlFormName,
+        discriminantParameterName, userProfile);
+  }
 
   /**
    * Creates or updates a publication.
