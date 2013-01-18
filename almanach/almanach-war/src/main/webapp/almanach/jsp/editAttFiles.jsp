@@ -73,7 +73,7 @@
         <view:tab label="${tabLabel}" action="editAttFiles.jsp?Id=${id}&Date=${startDate}" selected="true"/>
       </view:tabs>
       <view:frame>
-        <c:import  url="/attachment/jsp/editAttFiles.jsp?Id=${id}&Date=${startDate}&SpaceId=${spaceId}&ComponentId=${instanceId}&Context=Images&Url=${url}"/>
+        <c:import  url="/attachment/jsp/editAttachedFiles.jsp?Id=${id}&Date=${startDate}&SpaceId=${spaceId}&ComponentId=${instanceId}&Context=Images&Url=${url}"/>
       </view:frame>
     </view:window>
   </body>

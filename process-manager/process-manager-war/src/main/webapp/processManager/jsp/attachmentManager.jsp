@@ -36,7 +36,7 @@
 	boolean isVersionControlled = false;
 	if (versionning.equals("1"))
 		isVersionControlled = true;
-	
+
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
 	browseBar.setPath(process.getTitle(currentRole, language));
@@ -75,10 +75,7 @@
 <%
 
 String url = URLManager.getNewComponentURL(spaceId, componentId)+"attachmentManager";
-
-if (isVersionControlled)
-	getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/documents.jsp?Id="+URLEncoder.encode(process.getInstanceId())+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images"+"&Url="+URLEncoder.encode(url)+"&SL="+URLEncoder.encode(spaceLabel)+"&CL="+URLEncoder.encode(componentLabel)).include(request, response);
-else getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+URLEncoder.encode(process.getInstanceId())+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images"+"&Url="+URLEncoder.encode(url)).include(request, response);
+getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+URLEncoder.encode(process.getInstanceId())+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images"+"&Url="+URLEncoder.encode(url)).include(request, response);
 
 %>
 </CENTER>
