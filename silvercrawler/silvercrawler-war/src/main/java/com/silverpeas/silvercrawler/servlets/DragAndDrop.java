@@ -24,12 +24,13 @@
 package com.silverpeas.silvercrawler.servlets;
 
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.silvercrawler.control.SilverCrawlerSessionController;
 import com.silverpeas.silvercrawler.control.UploadItem;
 import com.silverpeas.silvercrawler.control.UploadReport;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.fileupload.FileItem;
@@ -84,7 +85,10 @@ public class DragAndDrop extends HttpServlet {
       String instanceId = request.getParameter("ComponentId");
       String ignoreFolders = request.getParameter("IgnoreFolders");
 
-      SessionInfo session = SessionManager.getInstance().getSessionInfo(sessionId);
+      SessionManagementFactory factory = SessionManagementFactory.getFactory();
+      SessionManagement sessionManagement = factory.getSessionManagement();
+      SessionInfo session = sessionManagement.getSessionInfo(sessionId);
+
       SilverCrawlerSessionController sessionController = session.getAttribute("Silverpeas_SilverCrawler_"+instanceId);
 
       // build report
