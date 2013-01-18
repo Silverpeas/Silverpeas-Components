@@ -20,22 +20,6 @@
  */
 package com.silverpeas.gallery;
 
-import java.awt.Font;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.process.io.file.FileBasePath;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.util.ImageLoader;
-
 import com.silverpeas.gallery.image.DrewImageMetadataExtractor;
 import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.image.ImageMetadataExtractor;
@@ -53,14 +37,30 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.process.io.file.FileBasePath;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.util.ImageLoader;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 public class ImageHelper {
   private final static FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;
 
-  final static ResourceLocator gallerySettings = new ResourceLocator(
-      "com.silverpeas.gallery.settings.gallerySettings", "");
-  final static ResourceLocator settings = new ResourceLocator(
-      "com.silverpeas.gallery.settings.metadataSettings", "");
+  final static ResourceLocator gallerySettings =
+      new ResourceLocator("com.silverpeas.gallery.settings.gallerySettings", "");
+  final static ResourceLocator settings =
+      new ResourceLocator("com.silverpeas.gallery.settings.metadataSettings", "");
   static final String thumbnailSuffix_small = "_66x50.jpg";
   static final String thumbnailSuffix_medium = "_133x100.jpg";
   static final String thumbnailSuffix_large = "_266x150.jpg";
@@ -69,9 +69,34 @@ public class ImageHelper {
   static final String watermarkSuffix = "_watermark.jpg";
 
   /**
+   * Open an output stream of an image according to given details of a photo.
+   * @param photo
+   * @param isOriginalRequired
+   * @return
+   * @throws IOException
+   */
+  public static InputStream openInputStream(final PhotoDetail photo,
+      final boolean isOriginalRequired) {
+    final String photoId = photo.getPhotoPK().getId();
+    final String instanceId = photo.getPhotoPK().getInstanceId();
+    if (StringUtil.isDefined(photoId) && StringUtil.isDefined(instanceId)) {
+      final String subDirectory = gallerySettings.getString("imagesSubDirectory");
+      try {
+        return FileUtils.openInputStream(FileUtils
+            .getFile(new File(BASE_PATH.getPath()), instanceId, subDirectory + photoId,
+                (isOriginalRequired ? photo.getImageName() : photoId + previewSuffix)));
+      } catch (IOException e) {
+        SilverTrace.error("gallery", "ImageHelper.getBytes", "gallery.ERR_CANT_GET_IMAGE_BYTES",
+            "image = " + photo.getTitle() + " (#" + photo.getId() + ")");
+        return null;
+      }
+    }
+    return null;
+  }
+
+  /**
    * @param photo
    * @param image
-   * @param subDirectory
    * @param watermark
    * @param watermarkHD
    * @param watermarkOther
@@ -101,8 +126,7 @@ public class ImageHelper {
           photo.setImageMimeType(image.getContentType());
           photo.setImageSize(image.getSize());
 
-          createImage(name, handledImageFile, photo, subDirectory, watermark, watermarkHD,
-              watermarkOther);
+          createImage(name, handledImageFile, photo, watermark, watermarkHD, watermarkOther);
         }
       }
     }
@@ -136,16 +160,14 @@ public class ImageHelper {
         photo.setImageMimeType(AttachmentController.getMimeType(name));
         photo.setImageSize(image.length());
 
-        createImage(name, handledImageFile, photo, subDirectory, watermark, watermarkHD,
-            watermarkOther);
+        createImage(name, handledImageFile, photo, watermark, watermarkHD, watermarkOther);
       }
     }
   }
 
   private static void createImage(final String name, final HandledFile handledImageFile,
-      final PhotoDetail photo, final String subDirectory, final boolean watermark,
-      final String watermarkHD, final String watermarkOther) throws Exception,
-      ImageMetadataException {
+      final PhotoDetail photo, final boolean watermark, final String watermarkHD,
+      final String watermarkOther) throws Exception {
 
     // Getting the percent size parameter value of watermark
     String percent = gallerySettings.getString("percentSizeWatermark");
@@ -173,9 +195,9 @@ public class ImageHelper {
       try {
         createThumbnails(photo, handledImageFile, image, watermark, nameForWatermark);
       } catch (final Exception e) {
-        SilverTrace.error("gallery", "ImageHelper.createImage",
-            "gallery.ERR_CANT_CREATE_THUMBNAILS",
-            "image = " + photo.getTitle() + " (#" + photo.getId() + ")");
+        SilverTrace
+            .error("gallery", "ImageHelper.createImage", "gallery.ERR_CANT_CREATE_THUMBNAILS",
+                "image = " + photo.getTitle() + " (#" + photo.getId() + ")");
       }
     }
   }
@@ -192,16 +214,17 @@ public class ImageHelper {
     final String mimeType = photo.getImageMimeType();
 
     if ("image/jpeg".equals(mimeType) || "image/pjpeg".equals(mimeType)) {
-      final HandledFile handledFile =
-          fileHandler.getHandledFile(BASE_PATH, photo.getInstanceId(),
-              settings.getString("imagesSubDirectory") + photoId, name);
+      final HandledFile handledFile = fileHandler.getHandledFile(BASE_PATH, photo.getInstanceId(),
+          settings.getString("imagesSubDirectory") + photoId, name);
       if (handledFile.exists()) {
         final ImageMetadataExtractor extractor =
             new DrewImageMetadataExtractor(photo.getInstanceId());
-        for (final MetaData meta : extractor.extractImageExifMetaData(handledFile.getFile(), lang)) {
+        for (final MetaData meta : extractor
+            .extractImageExifMetaData(handledFile.getFile(), lang)) {
           photo.addMetaData(meta);
         }
-        for (final MetaData meta : extractor.extractImageIptcMetaData(handledFile.getFile(), lang)) {
+        for (final MetaData meta : extractor
+            .extractImageIptcMetaData(handledFile.getFile(), lang)) {
           photo.addMetaData(meta);
         }
       }
@@ -238,26 +261,25 @@ public class ImageHelper {
     // Large
     // Medium
     // Small
-    final int[] imageSize = new int[] { 600, 600, 266, 133, 66 };
-    final boolean[] isWatermark =
-        new boolean[] { false, watermark, watermark, watermark, watermark };
+    final int[] imageSize = new int[]{600, 600, 266, 133, 66};
+    final boolean[] isWatermark = new boolean[]{false, watermark, watermark, watermark, watermark};
     final int[] imageWatermarkSize =
-        new int[] { 0, Integer.parseInt(gallerySettings.getString("sizeWatermark600x400")),
+        new int[]{0, Integer.parseInt(gallerySettings.getString("sizeWatermark600x400")),
             Integer.parseInt(gallerySettings.getString("sizeWatermark266x150")),
             Integer.parseInt(gallerySettings.getString("sizeWatermark133x100")),
-            Integer.parseInt(gallerySettings.getString("sizeWatermark66x50")) };
+            Integer.parseInt(gallerySettings.getString("sizeWatermark66x50"))};
     final String[] imageSuffixName =
-        new String[] { thumbnailSuffix_Xlarge, previewSuffix, thumbnailSuffix_large,
-            thumbnailSuffix_medium, thumbnailSuffix_small };
+        new String[]{thumbnailSuffix_Xlarge, previewSuffix, thumbnailSuffix_large,
+            thumbnailSuffix_medium, thumbnailSuffix_small};
 
     // Image creation
-    HandledFile currentThumblail = null;
+    HandledFile currentThumblail;
     BufferedImage previewImage = null;
     for (int i = 0; i < imageSize.length; i++) {
 
       // Current thumbnail
-      currentThumblail =
-          originalHandedImageFile.getParentHandledFile().getHandledFile(photoId + imageSuffixName[i]);
+      currentThumblail = originalHandedImageFile.getParentHandledFile()
+          .getHandledFile(photoId + imageSuffixName[i]);
 
       // Thumbnail creation
       redimPhoto((previewImage != null ? previewImage : originalImage), currentThumblail,
@@ -362,8 +384,8 @@ public class ImageHelper {
       size = (int) Math.rint(max * percentSizeWatermark / 100);
     }
     final Watermarker watermarker = new Watermarker(imageWidth, imageHeight);
-    watermarker.addWatermark(image, outputBuf, new Font("Arial", Font.BOLD, size), watermarkLabel,
-        size);
+    watermarker
+        .addWatermark(image, outputBuf, new Font("Arial", Font.BOLD, size), watermarkLabel, size);
 
     ImageIO.write(outputBuf, "JPEG", watermarkedTargetStream);
   }
@@ -372,9 +394,8 @@ public class ImageHelper {
       final PhotoDetail image, final boolean cut) {
     final PhotoPK toPK = image.getPhotoPK();
     final String subDirectory = gallerySettings.getString("imagesSubDirectory");
-    final HandledFile fromDir =
-        fileHandler
-            .getHandledFile(BASE_PATH, fromPK.getInstanceId(), subDirectory + fromPK.getId());
+    final HandledFile fromDir = fileHandler
+        .getHandledFile(BASE_PATH, fromPK.getInstanceId(), subDirectory + fromPK.getId());
     final HandledFile toDir =
         fileHandler.getHandledFile(BASE_PATH, toPK.getInstanceId(), subDirectory + toPK.getId());
 
@@ -382,15 +403,16 @@ public class ImageHelper {
     if (fromDir.exists()) {
 
       // copy thumbnails & watermark (only if it does exist)
-      for (final String thumbnailSuffix : new String[] { thumbnailSuffix_large,
+      for (final String thumbnailSuffix : new String[]{thumbnailSuffix_large,
           thumbnailSuffix_medium, thumbnailSuffix_small, previewSuffix, thumbnailSuffix_Xlarge,
-          watermarkSuffix }) {
+          watermarkSuffix}) {
         pasteFile(fromDir.getHandledFile(fromPK.getId() + thumbnailSuffix),
             toDir.getHandledFile(toPK.getId() + thumbnailSuffix), cut);
       }
 
       // copy original image
-      pasteFile(fromDir.getHandledFile(image.getImageName()), toDir.getHandledFile(image.getImageName()), cut);
+      pasteFile(fromDir.getHandledFile(image.getImageName()),
+          toDir.getHandledFile(image.getImageName()), cut);
     }
   }
 
@@ -413,7 +435,7 @@ public class ImageHelper {
 
   private static String computeWatermarkText(final String watermarkHD, final boolean watermark,
       final String type, final HandledFile image, final PhotoDetail photo, final int percentSize,
-      final String watermarkOther) throws Exception, NumberFormatException, ImageMetadataException {
+      final String watermarkOther) throws Exception {
     String nameAuthor = "";
     String nameForWatermark = "";
     if (ImageType.isJpeg(type) && watermark) {
@@ -453,7 +475,8 @@ public class ImageHelper {
     return nameForWatermark;
   }
 
-  private static String getWatermarkValue(final String property, final List<MetaData> iptcMetadata) {
+  private static String getWatermarkValue(final String property,
+      final List<MetaData> iptcMetadata) {
     String value = null;
     for (final MetaData metadata : iptcMetadata) {
       if (property.equalsIgnoreCase(metadata.getProperty())) {

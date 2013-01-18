@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.web;
 
+import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.AlbumDetail;
@@ -31,7 +32,6 @@ import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -42,9 +42,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 
@@ -68,40 +67,16 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   }
 
   /**
-   * Converts the given list of data into their corresponding web entities.
-   * @param entityClass the entity class returned.
-   * @param data data to convert.
-   * @return an array with the corresponding web entities.
-   */
-  @SuppressWarnings("unchecked")
-  protected <T, E extends AbstractMediaEntity<?>> Collection<E> asWebEntities(
-      Class<E> entityClass, Collection<T> data) {
-    Collection<E> entities = new ArrayList<E>(data.size());
-    for (Object object : data) {
-      if (object instanceof PhotoDetail) {
-        entities.add((E) asWebEntity(object));
-      } else if (object instanceof ComponentInstLight) {
-        entities.add((E) asWebEntity(object));
-      } else {
-        asWebEntity(object);
-      }
-    }
-    return entities;
-  }
-
-  /**
    * Converts the album into its corresponding web entity.
    * @param album the album.
    * @return the corresponding photo entity.
    */
   protected AlbumEntity asWebEntity(AlbumDetail album) {
     checkNotFoundStatus(album);
-    AlbumEntity albumEntity =
-        AlbumEntity.createFrom(album, getUserPreferences().getLanguage())
-            .withURI(getUriInfo().getRequestUri())
-            .withParentURI(buildAlbumURI(album.getFatherPK()));
+    AlbumEntity albumEntity = AlbumEntity.createFrom(album, getUserPreferences().getLanguage())
+        .withURI(getUriInfo().getRequestUri()).withParentURI(buildAlbumURI(album.getFatherPK()));
     for (PhotoDetail photo : album.getPhotos()) {
-      if (isViewAllPhotoAuthorized() || photo.isVisible(new Date())) {
+      if (hasUserPhotoAccess(photo)) {
         albumEntity.addPhoto(asWebEntity(photo, album));
       }
     }
@@ -118,14 +93,33 @@ public abstract class AbstractGalleryResource extends RESTWebService {
     checkNotFoundStatus(photo);
     checkNotFoundStatus(album);
     verifyPhotoInAlbum(photo, album);
-    if (!CollectionUtils.intersection(
-        EnumSet.of(SilverpeasRole.admin, SilverpeasRole.publisher, SilverpeasRole.privilegedUser),
-        getUserRoles()).isEmpty()) {
-      photo.setDownload(true);
-    }
     return PhotoEntity.createFrom(photo, getUserPreferences().getLanguage())
         .withURI(buildPhotoURI(photo.getPhotoPK(), album.getNodePK()))
         .withParentURI(buildAlbumURI(album.getNodePK()));
+  }
+
+  /**
+   * Converts the photo into an input stream.
+   * @param photo the photo to convert.
+   * @param album the album of the photo.
+   * @param isOriginalRequired the original or preview content
+   * @return the corresponding photo entity.
+   */
+  protected InputStream asInputStream(PhotoDetail photo, AlbumDetail album, boolean isOriginalRequired) {
+    checkNotFoundStatus(photo);
+    checkNotFoundStatus(album);
+    verifyPhotoInAlbum(photo, album);
+    return ImageHelper.openInputStream(photo, isOriginalRequired);
+  }
+
+  /**
+   * Indicates if the current user is a privileged one.
+   * @return
+   */
+  protected boolean isUserPrivileged() {
+    return !CollectionUtils.intersection(
+        EnumSet.of(SilverpeasRole.admin, SilverpeasRole.publisher, SilverpeasRole.privilegedUser),
+        getUserRoles()).isEmpty();
   }
 
   /**
@@ -157,15 +151,6 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   }
 
   /**
-   * Converts the component into its corresponding web entity.
-   * @param object the object to convert.
-   * @return the corresponding component entity.
-   */
-  protected AbstractMediaEntity<?> asWebEntity(Object object) {
-    throw new WebApplicationException(Status.NOT_FOUND);
-  }
-
-  /**
    * Centralization
    * @param object any object
    */
@@ -176,21 +161,30 @@ public abstract class AbstractGalleryResource extends RESTWebService {
   }
 
   /**
+   * Centralization
+   * @param photo
+   * @return
+   */
+  protected boolean hasUserPhotoAccess(PhotoDetail photo) {
+    return (isViewAllPhotoAuthorized() || photo.isVisible(new Date()));
+  }
+
+  /**
+   * Verifying that the authenticated user is authorized to view the given photo.
+   * @return
+   */
+  protected void verifyUserPhotoAccess(PhotoDetail photo) {
+    if (!hasUserPhotoAccess(photo)) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  /**
    * Checking if the authenticated user is authorized to view all photos.
    * @return
    */
   protected boolean isViewAllPhotoAuthorized() {
     return getUserRoles().contains(SilverpeasRole.admin);
-  }
-
-  /**
-   * Verifying that the authenticated user is authorized to view all photos.
-   * @return
-   */
-  protected void verifyViewAllPhotoAuthorized(PhotoDetail photo) {
-    if (!isViewAllPhotoAuthorized() || !photo.isVisible(new Date())) {
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
-    }
   }
 
   /**
@@ -208,7 +202,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
    * @return
    */
   protected GalleryBm getGalleryBm() {
-    GalleryBm galleryBm = null;
+    GalleryBm galleryBm;
     try {
       final GalleryBmHome galleryBmHome =
           EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);

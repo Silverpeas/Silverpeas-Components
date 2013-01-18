@@ -107,6 +107,8 @@
     String wizard = (String) request.getAttribute("Wizard");
     String currentLang = (String) request.getAttribute("Language");
     List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
+    boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
+  	boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
 
     String resultThumbnail = (String)request.getParameter("resultThumbnail");
     boolean errorThumbnail = false;
@@ -355,6 +357,7 @@
     <title></title>
     <view:looknfeel/>
     <view:includePlugin name="datepicker"/>
+    <view:includePlugin name="popup"/>
     <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
     <style type="text/css">
       #thumbnailPreviewAndActions {
@@ -403,14 +406,11 @@
       }
 
   function pubDraftOut() {
-        if (<%=kmeliaScc.isDraftOutAllowed()%>)
-        {
-          location.href = "<%=routerUrl%>DraftOut";
-        }
-        else
-        {
-          window.alert("<%=kmeliaScc.getString("kmelia.PdcClassificationMandatory")%>");
-        }
+	  if (<%= draftOutTaxonomyOK && draftOutValidatorsOK %>) {
+	        location.href = "<%=routerUrl%>DraftOut";
+	    } else {
+	    	$("#publication-draftout").dialog('open');
+	    }
       }
 
       function alertUsers()
@@ -454,115 +454,80 @@
         var errorMsg = "";
         var errorNb = 0;
         var title = stripInitialWhitespace(document.pubForm.Name.value);
-     
-        var beginDate = document.pubForm.BeginDate.value;
-        var endDate = document.pubForm.EndDate.value;
 
-        var beginHour = document.pubForm.BeginHour.value;
-        var endHour = document.pubForm.EndHour.value;
-
-        var beginDateOK = true;
-
-    	if (isWhitespace(title)) {
+        if (isWhitespace(title)) {
           errorMsg+=" - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
           errorNb++;
         }
          
       <% if (isFieldDescriptionVisible) {%>
-             var description = document.pubForm.Description;
+        var description = document.pubForm.Description;
       <% if (isFieldDescriptionMandatory) {%>
-                if (isWhitespace(description.value)) {
-                  errorMsg+=" - '<%=resources.getString("PubDescription")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-                  errorNb++;
-                }
+            if (isWhitespace(description.value)) {
+              errorMsg+=" - '<%=resources.getString("PubDescription")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+              errorNb++;
+            }
       <% }%>
-                if (!isValidTextArea(description)) {
-                  errorMsg+=" - '<%=resources.getString("GML.description")%>' <%=resources.getString("kmelia.containsTooLargeText") + resources.getString("kmelia.nbMaxTextArea") + resources.getString("kmelia.characters")%>\n";
-                  errorNb++;
-                }
+            if (!isValidTextArea(description)) {
+              errorMsg+=" - '<%=resources.getString("GML.description")%>' <%=resources.getString("kmelia.containsTooLargeText") + resources.getString("kmelia.nbMaxTextArea") + resources.getString("kmelia.characters")%>\n";
+              errorNb++;
+            }
       <% }%>
      
       <% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {%>
-             var validatorId = stripInitialWhitespace(document.pubForm.ValideurId.value);
-             if (isWhitespace(validatorId)) {
-               errorMsg+=" - '<%=resources.getString("kmelia.Valideur")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-               errorNb++;
-             }
+          var validatorId = stripInitialWhitespace(document.pubForm.ValideurId.value);
+          if (isWhitespace(validatorId)) {
+            errorMsg+=" - '<%=resources.getString("kmelia.Valideur")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+            errorNb++;
+          }
       <% }%>
-             if (!isWhitespace(beginDate)) {
-            	if (!isDateOK(beginDate, '<%=kmeliaScc.getLanguage()%>')) {
-	                 errorMsg+=" - '<%=resources.getString("PubDateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-    	             errorNb++;
-        	         beginDateOK = false;
-               	} 
-             }
-             if (!checkHour(beginHour))
-             {
-               errorMsg+=" - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
+
+
+        var beginDate = {dateId : 'beginDate', hourId : 'beginHour'};
+        var endDate = {dateId : 'endDate', hourId : 'endHour'};
+        var dateErrors = isPeriodEndingInFuture(beginDate, endDate);
+        $(dateErrors).each(function(index, error) {
+          errorMsg += " - " + error.message + "\n";
+          errorNb++;
+        });
+
+        if (<%=isThumbnailMandatory%>) {
+          if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == 'null') {
+            errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+            errorNb++;
+          }
+          if($('#thumbnail').attr("src") == 'null'){
+            var logicalName = $('#thumbnailFile').val();
+            var type = logicalName.substring(logicalName.lastIndexOf(".") + 1, logicalName.length);
+            if (type != 'gif' && type != 'jpg' && type != 'jpeg' && type != 'png') {
+               errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
                errorNb++;
-             }
-             if (!isWhitespace(endDate)) {
-            	 if (!isDateOK(endDate, '<%=kmeliaScc.getLanguage()%>')) {
-                	errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                 	errorNb++;
-               	} else {
-                	if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
-              			if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=kmeliaScc.getLanguage()%>')) {
-                    		errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
-                    		errorNb++;
-                  		}
-                	} else {
-                  		if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
-                			if (!isFuture(endDate, '<%=kmeliaScc.getLanguage()%>')) {
-                      			errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
-                      			errorNb++;
-                    		}
-                  		}
-                	}
-               }
-             }
-             if (!checkHour(endHour))
-             {
-               errorMsg+=" - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
-               errorNb++;
-             }
-             if (<%=isThumbnailMandatory%>) {
-                 if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == 'null') {
-                	 errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-                     errorNb++;
-                 }
-				 if($('#thumbnail').attr("src") == 'null'){
-					var logicalName = $('#thumbnailFile').val();
-					var type = logicalName.substring(logicalName.lastIndexOf(".") + 1, logicalName.length);
-                 	if (type != 'gif' && type != 'jpg' && type != 'jpeg' && type != 'png') {
-                 		errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
-                        errorNb++;
-                    }
-                 }
-                 
-             }
-             
-             <% if(!kmaxMode && "New".equals(action)) { %>
-             	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
-             <% } %>
-             
-             switch(errorNb) {
-               case 0 :
-                 result = true;
-             break;
-               case 1 :
-                 errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-                 window.alert(errorMsg);
-                 result = false;
-             break    ;
-               default :
-                 errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-                 window.alert(errorMsg);
-                 result = false;
-                 break;
-               }
-               return result;
-             }
+            }
+          }
+        }
+
+        <% if(!kmaxMode && "New".equals(action)) { %>
+          <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
+        <% } %>
+
+        var result;
+        switch(errorNb) {
+          case 0 :
+            result = true;
+            break;
+          case 1 :
+            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+            window.alert(errorMsg);
+            result = false;
+            break;
+          default :
+            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+            window.alert(errorMsg);
+            result = false;
+            break;
+        }
+        return result;
+      }
 
       <%
         if (pubDetail != null) {
@@ -654,6 +619,19 @@
 	        };
 	
 	        $("#thumbnailDialog").dialog(dialogOpts);    //end dialog
+	        
+	        $("#publication-draftout").dialog({
+	            autoOpen: false,
+	            title: "<%=resources.getString("PubDraftOut")%>",
+	            modal: true,
+	            minWidth: 500,
+	            resizable : false,
+	            buttons: {
+	              'OK': function() {
+	                $(this).dialog("close");
+	              }
+	            }
+	          });
         });
 
         function updateThumbnail() {
@@ -929,15 +907,15 @@
 						<div class="champs">
 							<input id="beginDate" type="text" class="dateToPick" name="BeginDate" value="<%=beginDate%>" size="12" maxlength="10"/>
 							<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
-							<input class="inputHour" type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5" /> <i>(hh:mm)</i>
+							<input id="beginHour" class="inputHour" type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 						</div>
 					</div>
 					<div class="field" id="endArea">
-						<label for="endHour" class="txtlibform"><%=resources.getString("PubDateFin")%></label>
+						<label for="endDate" class="txtlibform"><%=resources.getString("PubDateFin")%></label>
 						<div class="champs">
-							<input type="text" class="dateToPick" name="EndDate" value="<%=endDate %>" size="12" maxlength="10"/>
+							<input id="endDate" type="text" class="dateToPick" name="EndDate" value="<%=endDate %>" size="12" maxlength="10"/>
 							<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
-							<input class="inputHour" id="endHour" type="text" name="EndHour" value="<%=endHour %>" size="5" maxlength="5" /> <i>(hh:mm)</i>
+							<input id="endHour" class="inputHour" type="text" name="EndHour" value="<%=endHour %>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 						</div>
 					</div>
 				</div>
@@ -1034,6 +1012,17 @@
   <form name="toRouterForm">
     <input type="hidden" name="PubId" value="<%=id%>"/>
   </form>
+  <div id="publication-draftout" style="display: none;">
+      	<%=resources.getString("kmelia.publication.draftout.impossible")%>
+      	<ul>
+      	<% if(!draftOutTaxonomyOK) { %>
+      		<li><%=resources.getString("kmelia.PdcClassificationMandatory")%></li>
+      	<% } %>
+      	<% if(!draftOutValidatorsOK) { %>
+      		<li><%=resources.getString("kmelia.publication.validators.mandatory")%></li>
+      	<% } %>
+      	</ul>
+      </div>
   <script type="text/javascript">
      $(document).ready(function() {
       document.pubForm.Name.focus();

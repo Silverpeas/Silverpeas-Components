@@ -127,8 +127,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         + "kmelia" + "_" + componentId);
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
         "SessionGraphicElementFactory");
-    String context =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String context = GeneralPropertiesManager.getString("ApplicationURL");
 
     if (kmeliaSC == null && (toLink || attachmentToLink)) {
       MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(

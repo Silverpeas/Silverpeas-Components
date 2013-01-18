@@ -36,6 +36,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.whitePages.WhitePagesException;
@@ -102,6 +104,10 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private Card notifiedUserCard;
   private PdcBm pdcBm = null;
   private static DomainDriverManager m_DDManager = new DomainDriverManager();
+  
+  public boolean isAdmin() {
+    return Boolean.valueOf(getUserRoleLevel().equals("admin"));
+  }
 
   /*
    * Recherche une fiche Retourne currentCard si son id est le même que celui de la fiche recherchée
@@ -128,7 +134,8 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
         }
 
         if (card.getInstanceId().equals(getComponentId())) {
-          card.writeReadOnly(false);
+          // user can update card if he is admin or if it's his own card
+          card.writeReadOnly(!isAdmin() && !getUserId().equals(card.getUserId()));
           card.writeCardUpdateForm(getCardTemplate().getUpdateForm());
         }
 
@@ -506,6 +513,18 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
               "WhitePagesSessionController.setUserRecords",
               SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
     }
+    
+    Collections.sort(listCards, new Comparator<Card>() {
+      public int compare(Card o1, Card o2)
+      {
+        int result =  o1.readUserRecord().getUserDetail().getLastName().compareTo(o2.readUserRecord().getUserDetail().getLastName());
+        if(result == 0) {
+          result = o1.readUserRecord().getUserDetail().getFirstName().compareTo(o2.readUserRecord().getUserDetail().getFirstName());
+        }
+        return result;
+      }
+    });
+    
     return listCards;
   }
 
@@ -1051,8 +1070,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           for (Card card : cards) {
             UserRecord userRecord = card.readUserRecord();
             if (userRecord != null) {
-              Collection<SessionInfo> sessionInfos = SessionManager.getInstance().
-                      getConnectedUsersList();
+              SessionManagementFactory factory = SessionManagementFactory.getFactory();
+              SessionManagement sessionManagement = factory.getSessionManagement();
+              Collection<SessionInfo> sessionInfos = sessionManagement.getConnectedUsersList();
               for (SessionInfo varSi : sessionInfos) {
                 if (varSi.getUserDetail().equals(userRecord.getUserDetail())) {
                   userRecord.setConnected(true);
