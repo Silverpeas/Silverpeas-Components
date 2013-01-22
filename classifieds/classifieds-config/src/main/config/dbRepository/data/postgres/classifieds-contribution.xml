@@ -56,7 +56,7 @@
             <file name="postgres\classifieds\up002\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_table>
         <create_table>
-			<file name="xmlFormImagesToAttachmentPictures.jar" type="javalib" classname="org.silverpeas.migration.classified.XmlFormImagesToAttachmentPictures" methodname="migrate"/>
+			<file name="xmlFormImagesToAttachment.jar" type="javalib" classname="org.silverpeas.migration.classified.XmlFormImagesToAttachment" methodname="migrate"/>
 		</create_table>
     </upgrade>
 
