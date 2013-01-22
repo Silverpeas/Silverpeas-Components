@@ -568,7 +568,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       
       SimpleDocument sd = new SimpleDocument(sdPK, classifiedId, 0, false, new SimpleAttachment(fileName, getLanguage(), "", "", size 
               , mimeType, getUserId(), creationDate, null));
-      sd.setDocumentType(DocumentType.image);
+      sd.setDocumentType(DocumentType.attachment);
   
       AttachmentServiceFactory.getAttachmentService().createAttachment(sd, fileImage.getInputStream(), true);
     } catch (Exception e) {
@@ -597,7 +597,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     ClassifiedDetail classified = getClassified(classifiedId);
     try {
       WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, getComponentId());
-      List<SimpleDocument> listSimpleDocument = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.image, null);
+      List<SimpleDocument> listSimpleDocument = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
       classified.setImages(listSimpleDocument);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsSessionController.getClassifiedWithImages()",
@@ -628,7 +628,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       long size = fileImage.getSize();
       String mimeType = FileUtil.getMimeType(fileName);
       
-      classifiedImage.setDocumentType(DocumentType.image);
+      classifiedImage.setDocumentType(DocumentType.attachment);
       classifiedImage.setFilename(fileName);
       classifiedImage.setLanguage(null);
       classifiedImage.setTitle("");
