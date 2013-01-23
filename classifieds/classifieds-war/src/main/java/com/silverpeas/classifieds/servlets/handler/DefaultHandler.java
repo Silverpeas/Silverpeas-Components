@@ -26,25 +26,13 @@ public class DefaultHandler extends FunctionHandler {
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
       HttpServletRequest request) throws Exception {
-
-    Collection<Category> categories = null;
+    
     Form formUpdate = null;
     DataRecord data = null;
 
     PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
     try {
       if (pubTemplate != null) {
-        // Template Name
-        String templateFileName = pubTemplate.getFileName();
-        String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
-
-        // Category list based on a listbox field
-        String field = classifiedsSC.getSearchFields1();
-        FieldTemplate fieldTemplate = pubTemplate.getRecordTemplate().getFieldTemplate(field);
-        String keys = fieldTemplate.getParameters(classifiedsSC.getLanguage()).get("keys");
-        String values = fieldTemplate.getParameters(classifiedsSC.getLanguage()).get("values");
-        String label = fieldTemplate.getFieldName();
-        categories = createCategory(templateName, label, keys, values, classifiedsSC);
 
         // Update form
         formUpdate = pubTemplate.getSearchForm();
@@ -59,16 +47,45 @@ public class DefaultHandler extends FunctionHandler {
       request.setAttribute("Data", data);
       request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
       request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
-      request.setAttribute("Categories", categories);
       request.setAttribute("wysiwygHeader", classifiedsSC.getWysiwygHeader());
 
-      // Returns jsp to redirect to
-      return "accueil.jsp";
     } catch (Exception e) {
       // form error
       request.setAttribute("ErrorType", classifiedsSC.getResources().getString("classifieds.labelErrorForm"));      
       return "error.jsp";
     }
+
+    //Affichage page d'accueil annonces par catégorie
+    if(classifiedsSC.isHomePageDisplayCategorized()) {
+      
+      Collection<Category> categories = null;
+      
+      if (pubTemplate != null) {
+        // Template Name
+        String templateFileName = pubTemplate.getFileName();
+        String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
+
+        // Category list based on a listbox field
+        String field = classifiedsSC.getSearchFields1();
+        FieldTemplate fieldTemplate = pubTemplate.getRecordTemplate().getFieldTemplate(field);
+        String keys = fieldTemplate.getParameters(classifiedsSC.getLanguage()).get("keys");
+        String values = fieldTemplate.getParameters(classifiedsSC.getLanguage()).get("values");
+        String label = fieldTemplate.getFieldName();
+        categories = createCategory(templateName, label, keys, values, classifiedsSC);
+      }
+      request.setAttribute("Categories", categories);
+        
+      // Returns jsp to redirect to
+      return "accueil.jsp";
+        
+     } else { //Affichage page d'accueil annonces listées
+        
+       request.setAttribute("Classifieds", null);
+       
+       // Returns jsp to redirect to
+       return "accueilNotCategorized.jsp";
+     }
+    
   }
 
   /**
