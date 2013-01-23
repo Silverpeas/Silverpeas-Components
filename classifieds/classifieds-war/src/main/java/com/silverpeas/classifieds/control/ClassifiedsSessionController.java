@@ -672,4 +672,12 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_DELETE", imageId+" does not exist");
     }
   }
+  
+  /**
+   * return true if Home page displays classifieds organized by category
+   * @return boolean
+   */
+  public boolean isHomePageDisplayCategorized() {
+    return "0".equalsIgnoreCase(getComponentParameterValue("homePage"));
+  }
 }
