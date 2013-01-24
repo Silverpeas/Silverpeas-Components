@@ -670,11 +670,11 @@ function spreadNbItems(children) {
 	if (children) {
 		for(var i = 0; i < children.length; i++) {
 			var child = children[i];
+			<% if (kmeliaScc.isOrientedWebContent()) { %>
+				child.attr['class'] = child.attr['status'];
+			<% } %>
 			if (child.attr['nbItems']) {
 				child.data = child.data + " ("+child.attr['nbItems']+")";
-				<% if (kmeliaScc.isOrientedWebContent()) { %>
-					child.attr['class'] = child.attr['status'];
-				<% } %>
 				spreadNbItems(child.children);
 			}
 		}
@@ -797,10 +797,10 @@ $(document).ready(
 								n.data = "<%=componentLabel%>";
 								if (n.attr['nbItems']) {
 									n.data = n.data + " ("+n.attr['nbItems']+")";
-									<% if (kmeliaScc.isOrientedWebContent()) { %>
-										n.attr['class'] = n.attr['status'];
-									<% } %>
 								}
+								<% if (kmeliaScc.isOrientedWebContent()) { %>
+									n.attr['class'] = n.attr['status'];
+								<% } %>
 								spreadNbItems(n.children);
 							}
 						}
