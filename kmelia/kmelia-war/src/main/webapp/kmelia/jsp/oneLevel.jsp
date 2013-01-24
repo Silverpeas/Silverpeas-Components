@@ -351,27 +351,33 @@ function displayTopicContent(id) {
 	
 function displaySubTopics(id) {
 	var sUrl = "<%=m_context%>/services/folders/<%=componentId%>/"+id+"/children?lang="+getTranslation();
-	$.getJSON(sUrl, function(data){
-		$("#subTopics").empty();
-		$("#subTopics").append("<ul>");
-		var basket = "";
-		var tovalidate = "";
-		$.each(data, function(i, folder) {
-				var folderId = folder.attr["id"];
-				if (folderId == "1") {
-					basket = getSubFolder(folder);
-				} else if (folderId == getToValidateFolderId()) {
-					tovalidate = getSubFolder(folder);
-				} else if (folderId != "2") {
-					$("#subTopics ul").append(getSubFolder(folder));
-				}
-		});
-		if (id == "0") {
-			$("#subTopics ul").append(tovalidate);
-			$("#subTopics ul").append(basket);
+	$.ajax(sUrl, {
+		 type: 'GET', 
+		 dataType : 'json',
+		 async : false,
+		 cache : false,
+		 success : function(data){
+			$("#subTopics").empty();
+			$("#subTopics").append("<ul>");
+			var basket = "";
+			var tovalidate = "";
+			$.each(data, function(i, folder) {
+					var folderId = folder.attr["id"];
+					if (folderId == "1") {
+						basket = getSubFolder(folder);
+					} else if (folderId == getToValidateFolderId()) {
+						tovalidate = getSubFolder(folder);
+					} else if (folderId != "2") {
+						$("#subTopics ul").append(getSubFolder(folder));
+					}
+			});
+			if (id == "0") {
+				$("#subTopics ul").append(tovalidate);
+				$("#subTopics ul").append(basket);
+			}
+			$("#subTopics").append("</ul>");
+			$("#subTopics").append("<br clear=\"all\">");
 		}
-		$("#subTopics").append("</ul>");
-		$("#subTopics").append("<br clear=\"all\">");
 	});
 }
 
