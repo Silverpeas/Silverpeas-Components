@@ -674,6 +674,7 @@ function spreadNbItems(children) {
 	if (children) {
 		for(var i = 0; i < children.length; i++) {
 			var child = children[i];
+			child.attr['title'] = child.attr['description'];
 			<% if (kmeliaScc.isOrientedWebContent()) { %>
 				child.attr['class'] = child.attr['status'];
 			<% } %>
