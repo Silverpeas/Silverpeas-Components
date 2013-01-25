@@ -60,3 +60,44 @@ function getNotSelectedPublicationIds() {
 function sendPubId() {
 	//do nothing
 }
+
+function startsWith(haystack, needle){
+	return haystack.substr(0,needle.length)==needle?true:false;
+}
+
+function deletePublications() {
+	var confirm = labels["js.publications.trash.confirm"];
+	if (getCurrentNodeId() == "1") {
+		confirm = labels["js.publications.delete.confirm"];
+	}
+	if (window.confirm(confirm)) {
+		var componentId = getComponentId();
+		var selectedPublicationIds = getSelectedPublicationIds();
+		var notSelectedPublicationIds = getNotSelectedPublicationIds();
+		var url = getWebContext()+'/KmeliaAJAXServlet';
+		$.get(url, { SelectedIds:selectedPublicationIds,NotSelectedIds:notSelectedPublicationIds,ComponentId:componentId,Action:'DeletePublications'},
+				function(data){
+					if (startsWith(data, "ok")) {
+						// fires event
+						try {
+							var nb = data.substring(3);
+							displayPublications(getCurrentNodeId());
+							if (getCurrentNodeId() == "1") {
+								notySuccess(nb+ labels["js.publications.delete.info"]);
+							} else {
+								notySuccess(nb+ labels["js.publications.trash.info"]);
+							}
+							publicationsRemovedSuccessfully(nb);
+						} catch (e) {
+							writeInConsole(e);
+						}
+					} else {
+						publicationsRemovedInError(data);
+					}
+				}, 'text');
+	}
+}
+
+function publicationsRemovedInError(data) {
+  	notyError(data);
+}

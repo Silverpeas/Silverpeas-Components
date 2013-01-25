@@ -53,7 +53,7 @@ public class AjaxServlet extends HttpServlet {
     HttpSession session = req.getSession(true);
     String componentId = req.getParameter("ComponentId");
     KmeliaSessionController kmeliaSC =
-        (KmeliaSessionController) session.getAttribute("Silverpeas_" + "kmelia" + "_" + componentId);
+        (KmeliaSessionController) session.getAttribute("Silverpeas_kmelia_" + componentId);
     if (kmeliaSC == null) {
       kmeliaSC = createSessionController(session, componentId);
     }

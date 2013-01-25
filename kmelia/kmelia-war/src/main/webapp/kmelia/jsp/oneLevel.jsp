@@ -79,6 +79,7 @@ String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute)
 <view:includePlugin name="datepicker" />
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
+<view:includePlugin name="notifier"/>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
@@ -264,6 +265,7 @@ labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPre
 labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.exportSelection")%>";
 labels["operation.shareTopic"] = "<%=resources.getString("kmelia.operation.shareTopic")%>";
 labels["operation.statistics"] = "<fmt:message key="kmelia.operation.statistics"/>";
+labels["operation.deletePublications"] = "<fmt:message key="kmelia.operation.deletePublications"/>";
 
 labels["js.topicTitle"] = "<fmt:message key="TopicTitle"/>";
 labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
@@ -275,6 +277,10 @@ labels["js.status.visible2invisible"] = "<fmt:message key="TopicVisible2Invisibl
 labels["js.status.invisible2visible"] = "<fmt:message key="TopicInvisible2VisibleRecursive"/>";
 
 labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
+labels["js.publications.trash.confirm"] = "<fmt:message key="kmelia.publications.trash.confirm"/>";
+labels["js.publications.delete.confirm"] = "<fmt:message key="kmelia.publications.delete.confirm"/>";
+labels["js.publications.trash.info"] = " <fmt:message key="kmelia.publications.trash.info"/>";
+labels["js.publications.delete.info"] = " <fmt:message key="kmelia.publications.delete.info"/>";
 
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";

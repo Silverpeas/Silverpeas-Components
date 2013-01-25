@@ -69,9 +69,7 @@ import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.export.ExportDescriptor;
-import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
@@ -1077,21 +1075,20 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     // sinon non
     String nodeId = getCurrentFolderId();
     if (NodePK.BIN_NODE_ID.equals(nodeId)) {
-      // la publication sera supprimée définitivement, il faut donc supprimer les fichiers joints
-      try {
-        WysiwygController.deleteWysiwygAttachments(getSpaceId(), getComponentId(), pubId);
-      } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaSessionController.deletePublication",
-                SilverpeasRuntimeException.ERROR, "root.EX_DELETE_ATTACHMENT_FAILED", e);
-      }
-
-      removeXMLContentOfPublication(getPublicationPK(pubId));
       getKmeliaBm().deletePublication(getPublicationPK(pubId));
     } else {
       getKmeliaBm().sendPublicationToBasket(getPublicationPK(pubId), kmaxMode);
     }
     SilverTrace.spy("kmelia", "KmeliaSessionController.deletePublication", getSpaceId(),
             getComponentId(), pubId, getUserDetail().getId(), SilverTrace.SPY_ACTION_DELETE);
+  }
+  
+  public List<String> deleteSelectedPublications() throws RemoteException {
+    List<String> removed =
+        getKmeliaBm().deletePublications(getSelectedPublicationIds(), getCurrentFolderPK(),
+            getUserId());
+    resetSelectedPublicationIds();
+    return removed;
   }
 
   public synchronized void deleteClone() throws RemoteException {
@@ -1100,7 +1097,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       String cloneId = getSessionClone().getDetail().getPK().getId();
       PublicationPK clonePK = getPublicationPK(cloneId);
 
-      removeXMLContentOfPublication(clonePK);
       getKmeliaBm().deletePublication(clonePK);
 
       setSessionClone(null);
@@ -1117,30 +1113,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
       SilverTrace.spy("kmelia", "KmeliaSessionController.deleteClone", getSpaceId(),
               getComponentId(), cloneId, getUserDetail().getId(), SilverTrace.SPY_ACTION_DELETE);
-    }
-  }
-
-  private void removeXMLContentOfPublication(PublicationPK pubPK) throws RemoteException {
-    try {
-      PublicationDetail pubDetail = getKmeliaBm().getPublicationDetail(pubPK);
-      String infoId = pubDetail.getInfoId();
-      if (!isInteger(infoId)) {
-        String xmlFormShortName = infoId;
-        PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
-                pubDetail.getPK().getInstanceId() + ":" + xmlFormShortName);
-
-        RecordSet set = pubTemplate.getRecordSet();
-        DataRecord data = set.getRecord(pubDetail.getPK().getId());
-        set.delete(data);
-      }
-    } catch (PublicationTemplateException e) {
-      throw new KmeliaRuntimeException("KmeliaSessionController.removeXMLContentOfPublication()",
-              SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML",
-              e);
-    } catch (FormException e) {
-      throw new KmeliaRuntimeException("KmeliaSessionController.removeXMLContentOfPublication()",
-              SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML",
-              e);
     }
   }
 

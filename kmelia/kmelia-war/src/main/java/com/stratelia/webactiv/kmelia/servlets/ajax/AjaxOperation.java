@@ -26,6 +26,7 @@ package com.stratelia.webactiv.kmelia.servlets.ajax;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.BindToPubliHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.DeleteHandler;
+import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.DeletePublicationsHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.EmptyTrashHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.GetProfileHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.GetTopicWysiwygHandler;
@@ -55,7 +56,8 @@ public enum AjaxOperation {
   Unsubscribe(new UnsubscribeHandler(), true),
   IsSubscriber(new IsSubscriberHandler(), true),
   Paste(new PasteHandler(), true),
-  MovePublication(new MovePublicationHandler(), true);
+  MovePublication(new MovePublicationHandler(), true),
+  DeletePublications(new DeletePublicationsHandler(), true);
 
   private AjaxHandler handler;
   private boolean controllerRequired;

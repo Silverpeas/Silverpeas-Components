@@ -369,6 +369,11 @@ function initOperations(id, op) {
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
+	if (op.deletePublications) {
+		menuItem = new YAHOO.widget.MenuItem(labels["operation.deletePublications"], {url: "javascript:onclick=deletePublications()"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
 	
 	if (!groupEmpty) {
 		groupIndex++;

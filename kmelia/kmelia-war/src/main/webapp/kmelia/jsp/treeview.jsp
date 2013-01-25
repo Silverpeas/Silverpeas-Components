@@ -177,6 +177,7 @@ labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPre
 labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.exportSelection")%>";
 labels["operation.shareTopic"] = "<%=resources.getString("kmelia.operation.shareTopic")%>";
 labels["operation.statistics"] = "<fmt:message key="kmelia.operation.statistics"/>";
+labels["operation.deletePublications"] = "<fmt:message key="kmelia.operation.deletePublications"/>";
 
 labels["js.topicTitle"] = "<fmt:message key="TopicTitle"/>";
 labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
@@ -188,6 +189,10 @@ labels["js.status.visible2invisible"] = "<fmt:message key="TopicVisible2Invisibl
 labels["js.status.invisible2visible"] = "<fmt:message key="TopicInvisible2VisibleRecursive"/>";
 
 labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
+labels["js.publications.trash.confirm"] = "<fmt:message key="kmelia.publications.trash.confirm"/>";
+labels["js.publications.delete.confirm"] = "<fmt:message key="kmelia.publications.delete.confirm"/>";
+labels["js.publications.trash.info"] = " <fmt:message key="kmelia.publications.trash.info"/>";
+labels["js.publications.delete.info"] = " <fmt:message key="kmelia.publications.delete.info"/>";
 
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
@@ -756,6 +761,30 @@ function publicationMovedSuccessfully(id, targetId) {
 	$("#pubList #pub-"+id).closest("li").fadeOut('500', function() {
 		$(this).remove();
 	});
+}
+
+function publicationsRemovedSuccessfully(nb) {
+	if (params["nbPublisDisplayed"]) {
+		if (getCurrentNodeId() == "1") {
+			// publications are definitively removed
+			// remove nb publis from trash and root folders
+			addNbPublis("1", 0-eval(nb));
+			addNbPublis("0", 0-eval(nb));
+		} else {
+			// publications goes to trash
+			// remove nb publi to current node and its parents except root
+			var path = getTreeview().get_path("#"+getCurrentNodeId(), true);
+			for (i=0; i<path.length; i++) {
+				var elementId = path[i];
+				if (elementId != "0") {
+					addNbPublis(elementId, 0-eval(nb));
+				}
+			}
+			
+			// add nb publi to trash
+			addNbPublis("1", eval(nb));
+		}
+	}
 }
 
 $(document).ready(
