@@ -103,8 +103,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
     boolean toLink = (StringUtil.isDefined(sToLink) && "1".equals(sToLink));
 
-    KmeliaSessionController kmeliaSC = (KmeliaSessionController) session.getAttribute("Silverpeas_"
-        + "kmelia" + "_" + componentId);
+    KmeliaSessionController kmeliaSC = (KmeliaSessionController) session.getAttribute(
+        "Silverpeas_kmelia_" + componentId);
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
         GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     String context = URLManager.getApplicationURL();

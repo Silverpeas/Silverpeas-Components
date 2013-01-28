@@ -105,7 +105,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
      * Retrieves user highest role and store information in request.
      */
     String flag = scc.getUserRoleLevel();
-    request.setAttribute("isAdmin", Boolean.valueOf(flag.equals("admin")));
+    request.setAttribute("isAdmin", scc.isAdmin());
 
     try {
 

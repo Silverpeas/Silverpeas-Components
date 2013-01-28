@@ -57,9 +57,12 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 	String 					profile 		= (String) request.getAttribute("Profile");
 	String 					action 			= (String) request.getAttribute("Action");
 	String 					checkPath 		= (String) request.getAttribute("CheckPath");
-	KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
+	KmeliaPublication 		kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
 	String					visiblePubId	= (String) request.getAttribute("VisiblePublicationId");
-	boolean 				attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
+	boolean 				attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
+	boolean 				userCanValidate = (Boolean) request.getAttribute("UserCanValidate");
+	boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
+  	boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
 
 	if (action == null) {
 		action = "ViewClone";
@@ -132,6 +135,7 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 <title></title>
 <view:looknfeel/>
 <view:includePlugin name="wysiwyg"/>
+<view:includePlugin name="popup"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
@@ -217,12 +221,27 @@ function viewPublicVersions(docId) {
 }
 
 function pubDraftOut() {
-	if (<%=kmeliaScc.isDraftOutAllowed()%>) {
-		location.href = "<%=routerUrl%>DraftOut?From=ViewPublication";
-	} else {
-		window.alert("<%=kmeliaScc.getString("kmelia.PdcClassificationMandatory")%>");
-	}
+	if (<%= draftOutTaxonomyOK && draftOutValidatorsOK %>) {
+        location.href = "<%=routerUrl%>DraftOut?From=ViewPublication";
+    } else {
+    	$("#publication-draftout").dialog('open');
+    }
 }
+
+$(function() {
+    $("#publication-draftout").dialog({
+        autoOpen: false,
+        title: "<%=resources.getString("PubDraftOut")%>",
+        modal: true,
+        minWidth: 500,
+        resizable : false,
+        buttons: {
+          'OK': function() {
+            $(this).dialog("close");
+          }
+        }
+      });
+  });
 </script>
 </head>
 <body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()">
@@ -249,16 +268,11 @@ function pubDraftOut() {
           }
           operationPane.addOperation(deletePubliSrc, resources.getString("kmelia.DeleteClone"), "javaScript:deleteCloneConfirm();");
         }
-        if (profile.equals("admin") || profile.equals("publisher")) {
-            if (pubDetail.isValid()) {
-              operationPane.addLine();
-              operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate('" + id + "')");
-            } else if (pubDetail.isValidationRequired() || pubDetail.isClone()) {
-              operationPane.addLine();
-              operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate('" + id + "')");
-              operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate('" + id + "')");
-            }
-          }
+        if (userCanValidate) {
+	      operationPane.addLine();
+	      operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate('" + id + "')");
+	      operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate('" + id + "')");
+        }
         if (profile.equals("supervisor")) {
           operationPane.addLine();
           operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javaScript:pubSuspend('"+id+"')");
@@ -272,7 +286,7 @@ function pubDraftOut() {
         if (screenMessage != null && screenMessage.length()>0) {
           out.println("<center>"+screenMessage+"</center>");
         }
-          
+
           InfoDetail infos = pubComplete.getInfoDetail();
           ModelDetail model = pubComplete.getModelDetail();
 
@@ -303,8 +317,8 @@ function pubDraftOut() {
 		out.println("<br><b>"+EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper.convertHTMLEntities(pubDetail.getDescription()))+"<b><BR><BR>");
 
 		out.println("</TD></TR></table>");
-%>		
-	<view:areaOfOperationOfCreation/>	
+%>
+	<view:areaOfOperationOfCreation/>
 <%
 		/*********************************************************************************************************************/
 		/** Affichage du contenu de la publication																			**/
@@ -327,12 +341,12 @@ function pubDraftOut() {
               xmlContext.setNodeId(kmeliaScc.getCurrentFolderId());
               xmlContext.setBorderPrinted(false);
               xmlContext.setContentLanguage(currentLang);
-                
+
               xmlForm.display(out, xmlContext, xmlData);
             }
           }
     	out.println("</TD>");
-    	
+
     	if (attachmentsEnabled) {
 	    	/*********************************************************************************************************************/
 			/** Affichage des fichiers joints																					**/
@@ -353,9 +367,9 @@ function pubDraftOut() {
 			try {
 				out.flush();
 				if (kmeliaScc.isVersionControlled()) {
-					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+visiblePubId+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo).include(request, response);
+					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+visiblePubId+"&ComponentId="+componentId+"&Context=attachment&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo).include(request, response);
 				} else {
-					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+id+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&Profile="+profile).include(request, response);
+					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+id+"&ComponentId="+componentId+"&Context=attachment&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&Profile="+profile).include(request, response);
 				}
 			} catch (Exception e) {
 				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
@@ -401,5 +415,16 @@ function pubDraftOut() {
 <form name="toRouterForm" method="post">
 	<input type="hidden" name="PubId"/>
 </form>
+<div id="publication-draftout" style="display: none;">
+	<%=resources.getString("kmelia.publication.draftout.impossible")%>
+	<ul>
+   	<% if(!draftOutTaxonomyOK) { %>
+   		<li><%=resources.getString("kmelia.PdcClassificationMandatory")%></li>
+   	<% } %>
+   	<% if(!draftOutValidatorsOK) { %>
+   		<li><%=resources.getString("kmelia.publication.validators.mandatory")%></li>
+   	<% } %>
+   	</ul>
+</div>
 </body>
 </html>

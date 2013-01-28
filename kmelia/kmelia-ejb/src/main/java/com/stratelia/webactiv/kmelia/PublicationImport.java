@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +65,7 @@ public class PublicationImport {
   private String topicId;
   private String spaceId;
   private String userId;
+  private boolean ignoreMissingFormFields = false;
 
   public PublicationImport(KmeliaBmEJB kmeliaBm, String componentId,
       String topicId, String spaceId, String userId) {
@@ -85,7 +85,7 @@ public class PublicationImport {
       List<Map<String, String>> formParamsList, String language, String xmlFormName,
       String discrimatingParameterName, String userProfile)
       throws RemoteException {
-    for (int i = 0, n = publiParamsList.size(); i < n; i++) {
+    for (int i = 0; i < publiParamsList.size(); i++) {
       importPublication(publiParamsList.get(i), formParamsList
           .get(i), language, xmlFormName, discrimatingParameterName,
           userProfile);
@@ -111,12 +111,11 @@ public class PublicationImport {
     String publicationToUpdateId = null;
     if (discrimatingParameterName != null && discrimatingParameterName.length() > 0) {
       String discrimatingParameterValue = formParams.get(discrimatingParameterName);
-      publicationToUpdateId = getPublicationId(
-          xmlFormName, discrimatingParameterName, discrimatingParameterValue);
+      publicationToUpdateId = getPublicationId(xmlFormName, discrimatingParameterName,
+          discrimatingParameterValue);
     }
-
-    return importPublication(
-        publicationToUpdateId, publiParams, formParams, language, xmlFormName, userProfile);
+    return importPublication(publicationToUpdateId, publiParams, formParams, language, xmlFormName,
+        userProfile);
   }
 
   /**
@@ -139,7 +138,6 @@ public class PublicationImport {
     PublicationPK pubPK;
     if (publicationToUpdateId != null) {
       // Update
-      // Update
       try {
         resultStatus = false;
         pubPK = new PublicationPK(publicationToUpdateId, spaceId, componentId);
@@ -147,10 +145,8 @@ public class PublicationImport {
         updatePublicationDetail(pubDetail, publiParams, language);
         updatePublication(pubDetail, true);
       } catch (Exception e) {
-        throw new KmeliaRuntimeException(
-            "PublicationImport.importPublication()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
+        throw new KmeliaRuntimeException("PublicationImport.importPublication()",
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
       }
     } else {
       // Creation
@@ -164,10 +160,8 @@ public class PublicationImport {
 
         pubPK = pubDetail.getPK();
       } catch (Exception e) {
-        throw new KmeliaRuntimeException(
-            "PublicationImport.importPublication()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
+        throw new KmeliaRuntimeException("PublicationImport.importPublication()",
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
       }
     }
 
@@ -198,22 +192,18 @@ public class PublicationImport {
       context.setNodeId(topicId);
       context.setObjectId(pubId);
       context.setContentLanguage(language);
-
-
-      String[] fieldNames = data.getFieldNames();
-      List<FileItem> items = new ArrayList<FileItem>(fieldNames.length);
-      for (int i = 0, n = fieldNames.length; i < n; i++) {
-        String fieldName = fieldNames[i];
+      if (ignoreMissingFormFields) {
+        context.setUpdatePolicy(PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES);
+      }
+      List< FileItem> items = new ArrayList<FileItem>();
+      for (String fieldName : data.getFieldNames()) {
         String fieldValue = formParams.get(fieldName);
         fieldValue = (fieldValue == null ? "" : fieldValue);
         items.add(new InternalFileItem(fieldName, fieldValue));
       }
-
       form.update(items, data, context);
       set.save(data);
-
       updatePublication(pubDetail, true);
-
       NodePK nodePK = new NodePK(topicId, spaceId, componentId);
       kmeliaBm.draftOutPublication(pubPK, nodePK, userProfile, true);
     } catch (Exception e) {
@@ -278,6 +268,10 @@ public class PublicationImport {
       jUpdateDate = DateUtil.stringToDate(updateDate, language);
     }
 
+    if (!StringUtil.isInteger(importance)) {
+      importance = "5";
+    }
+
     String pubId = (StringUtil.isDefined(id) ? id : "X");
     PublicationDetail pubDetail = new PublicationDetail(pubId, name,
         description, jCreationDate, jBeginDate, jEndDate, null, importance, version,
@@ -306,8 +300,7 @@ public class PublicationImport {
    * @return The id of the newly created publication.
    * @throws RemoteException
    */
-  private String createPublication(PublicationDetail pubDetail)
-      throws RemoteException {
+  private String createPublication(PublicationDetail pubDetail) throws RemoteException {
     pubDetail.getPK().setSpace(spaceId);
     pubDetail.getPK().setComponentName(componentId);
     pubDetail.setCreatorId(userId);
@@ -317,8 +310,7 @@ public class PublicationImport {
 
     NodePK nodePK = new NodePK(topicId, spaceId, componentId);
     String result = kmeliaBm.createPublicationIntoTopic(pubDetail, nodePK);
-    SilverTrace.info("kmelia", "PublicationImport.createPublication()",
-        "Kmelia.MSG_ENTRY_METHOD");
+    SilverTrace.info("kmelia", "PublicationImport.createPublication()", "Kmelia.MSG_ENTRY_METHOD");
     return result;
   }
 
@@ -455,15 +447,17 @@ public class PublicationImport {
     String validatorId = parameters.get("ValideurId");
     String tempId = parameters.get("TempId");
     String infoId = parameters.get("InfoId");
+    String updateDate = parameters.get("UpdateDate");
 
-    Date jBeginDate = null;
-    Date jEndDate = null;
-
-    if (beginDate != null && !beginDate.trim().isEmpty()) {
-      jBeginDate = DateUtil.stringToDate(beginDate, language);
+    if (StringUtil.isDefined(updateDate)) {
+      pubDetail.setUpdateDate(DateUtil.stringToDate(updateDate, language));
     }
-    if (endDate != null && !endDate.trim().isEmpty()) {
-      jEndDate = DateUtil.stringToDate(endDate, language);
+
+    if (StringUtil.isDefined(beginDate)) {
+      pubDetail.setBeginDate(DateUtil.stringToDate(beginDate, language));
+    }
+    if (StringUtil.isDefined(endDate)) {
+      pubDetail.setEndDate(DateUtil.stringToDate(endDate, language));
     }
 
     if (name != null) {
@@ -474,9 +468,7 @@ public class PublicationImport {
       pubDetail.setDescription(description);
     }
 
-    pubDetail.setBeginDate(jBeginDate);
-    pubDetail.setEndDate(jEndDate);
-    if ((StringUtil.isInteger(importance))) {
+    if (StringUtil.isInteger(importance)) {
       pubDetail.setImportance(Integer.parseInt(importance));
     }
 
@@ -508,5 +500,9 @@ public class PublicationImport {
     if (StringUtil.isDefined(infoId)) {
       pubDetail.setInfoId(infoId);
     }
+  }
+  
+  public void setIgnoreMissingFormFields(boolean ignore) {
+    ignoreMissingFormFields = ignore;
   }
 }

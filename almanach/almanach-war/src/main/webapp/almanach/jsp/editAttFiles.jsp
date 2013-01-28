@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
-<%@ page import="com.stratelia.webactiv.almanach.control.AlmanachPdfGenerator"%>
+<%@ page import="org.silverpeas.attachment.model.DocumentType"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -59,8 +59,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel/>
+    <title><fmt:message key="GML.popupTitle"/></title>
   </head>
-  <title><fmt:message key="GML.popupTitle"/></title>
   <body marginheight="5" marginwidth="5" topmargin="5" leftmargin="5">
     <view:browseBar componentId="${instanceId}" extraInformations="${title}"/>
     <view:window>
@@ -73,7 +73,7 @@
         <view:tab label="${tabLabel}" action="editAttFiles.jsp?Id=${id}&Date=${startDate}" selected="true"/>
       </view:tabs>
       <view:frame>
-        <c:import  url="/attachment/jsp/editAttFiles.jsp?Id=${id}&Date=${startDate}&SpaceId=${spaceId}&ComponentId=${instanceId}&Context=Images&Url=${url}"/>
+        <c:import url="/attachment/jsp/editAttachedFiles.jsp?Id=${id}&Date=${startDate}&SpaceId=${spaceId}&ComponentId=${instanceId}&Context=attachment&Url=${url}"/>
       </view:frame>
     </view:window>
   </body>

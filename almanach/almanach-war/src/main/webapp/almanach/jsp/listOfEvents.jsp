@@ -62,7 +62,7 @@
           $.progressMessage();
           document.almanachForm.submit();
         }
-      
+
         function viewNextEvents()
         {
           document.almanachForm.Action.value = "ViewNextEvents";
@@ -156,10 +156,10 @@
           '<fmt:message key="GML.mois8"/>', '<fmt:message key="GML.mois9"/>', '<fmt:message key="GML.mois10"/>', '<fmt:message key="GML.mois11"/>'];
         var DAY_NAMES = ['<fmt:message key="GML.jour1"/>', '<fmt:message key="GML.jour2"/>', '<fmt:message key="GML.jour3"/>', '<fmt:message key="GML.jour4"/>',
           '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'];
-        
+
         var monthsHavingEvents = [];
         var events = <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>;
-        
+
         /**
          * Formats the specified date into a string according the pattern 'yyyy/MM/dd'.
          */
@@ -169,7 +169,7 @@
           if (day < 10) day = "0" + day;
           return year + "/" + month + "/" + day;
         }
-        
+
         /**
          * Formats the specified date and time into a string according the patterm 'HH:mm'.
          */
@@ -185,7 +185,7 @@
           dateTimeToUpdate.setMonth(withDate.getMonth());
           dateTimeToUpdate.setDate(withDate.getDate())
         }
-        
+
         /**
          * Selects the specified month by showing the events that occur in this month and by hiding
          * thoses in others specified months.
@@ -195,7 +195,7 @@
           elt.addClass("active");
           printEventsInMonth(monthWithEvents);
         }
-        
+
         /**
          * Prints the events that occur in the specified month. The month is indicated as a string
          * with the following pattern 'NAME_OF_MONTH YEAR'.
@@ -211,7 +211,7 @@
           });
           if (selectedMonth != null) $('#' + selectedMonth.replace(' ', '')).show();
         }
-        
+
         /**
          * Builds the calendar view with the specified next events categorized by month and
          * ordered by date.
@@ -246,7 +246,7 @@
               }
               if (event.startTimeDefined) {
                 if (startTime.length > 0) {
-                  startTime = startTime + " <fmt:message key='GML.at'/> "; 
+                  startTime = startTime + " <fmt:message key='GML.at'/> ";
                 } else {
                   startTime = "<fmt:message key='GML.From'/> ";
                 }
@@ -254,7 +254,7 @@
               }
               if (endDate.getFullYear() > startDate.getFullYear() || endDate.getMonth() > startDate.getMonth() ||
                 endDate.getDate() > startDate.getDate()) {
-                endTime = "<fmt:message key='GML.to'/> " + endDate.toLocaleDateString(); 
+                endTime = "<fmt:message key='GML.to'/> " + endDate.toLocaleDateString();
               }
               if (event.endTimeDefined) {
                 endTime = endTime + " <fmt:message key='GML.at'/> " + formatTime(endDate);
@@ -272,8 +272,8 @@
             .append($("<a>").addClass(event.className.join(' ')).attr({
               "href": "javascript:viewEvent(" + event.id + ", '" + formatDate(startDate) + "' , '" + event.instanceId + "');",
               "title": "<fmt:message key='almanach.openEvent'/>"}).html(event.title))).appendTo(monthSection);
-            
-            if (event.location.length > 0 || startTime.length > 0 || endTime.length > 0 || 
+
+            if (event.location.length > 0 || startTime.length > 0 || endTime.length > 0 ||
               (event.eventURL != null && event.eventURL.length > 0)) {
               var eventInfoSection = $("<div>").addClass("eventInfo");
               if (event.location.length > 0) {
@@ -284,7 +284,7 @@
               if (startTime.length > 0 || endTime.length > 0) {
                 eventInfoSection.append($("<div>").addClass("eventDate")
                 .append($("<div>").addClass("bloc")
-                .append($("<span>").addClass("eventBeginDate").html(startTime))              
+                .append($("<span>").addClass("eventBeginDate").html(startTime))
                 .append($("<span>").addClass("eventEndDate").html(endTime))));
               }
               if (event.eventURL != null && event.eventURL.length > 0) {
@@ -297,16 +297,16 @@
               }
               eventInfoSection.append($("<br>").attr("clear", "left")).appendTo(eventSection);
             }
-            
+
             var eventDescSection = $("<div>").addClass("eventDesc").appendTo(eventSection);
             if (event.hasAttachments) {
               eventDescSection.append($("<div>").addClass("eventAttachments")
-              .load("<c:url value='/attachment/jsp/displayAttachedFiles.jsp?Context=Images&ComponentId=${instanceId}' />&Id=" + event.id));
+              .load("<c:url value='/attachment/jsp/displayAttachedFiles.jsp?Context=attachment&ComponentId=${instanceId}' />&Id=" + event.id));
             }
             eventDescSection.append($("<div>").html(event.description)).append($("<br>").addClass("clearAll"));
           });
         }
-        
+
         /**
          * Builds the navigation by month from the specified array of months. Each element in the
          * array is a string in the form of "NAME_OF_THE_MONTH YEAR".
@@ -324,13 +324,13 @@
           })
       </c:if>
         }
-                
+
         $(document).ready(function() {
 
           // page is now ready, initialize the calendar...
           buildCalendarView(events, monthsHavingEvents);
           buildNavigationByMonth(monthsHavingEvents);
-          
+
         });
         -->
     </script>
@@ -412,7 +412,7 @@
     </view:operationPane>
 
     <view:window>
-    
+
     <view:areaOfOperationOfCreation/>
 
       <c:if test="${calendarView.viewType.nextEventsView}">

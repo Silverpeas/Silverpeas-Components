@@ -62,11 +62,14 @@
   List languages = (List) request.getAttribute("Languages");
   String contentLanguage = (String) request.getAttribute("ContentLanguage");
   String singleFileURL = (String) request.getAttribute("SingleAttachmentURL");
+  boolean userCanValidate = (Boolean) request.getAttribute("UserCanValidate");
   ValidationStep validation = (ValidationStep) request.getAttribute("ValidationStep");
   int validationType = ((Integer) request.getAttribute("ValidationType")).intValue();
   boolean isWriterApproval = ((Boolean) request.getAttribute("WriterApproval")).booleanValue();
   boolean notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
   boolean attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
+  boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
+  boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
   boolean isNewsManage = ((Boolean) request.getAttribute("NewsManage")).booleanValue();
   DelegatedNews delegatedNews = null;
   boolean isBasket = false;
@@ -198,6 +201,7 @@
     <link type="text/css" rel="stylesheet" href='<c:url value="/kmelia/jsp/styleSheets/pubHighlight.css" />'/>
     <link type="text/css" rel="stylesheet" href='<c:url value="/kmelia/jsp/styleSheets/kmelia-print.css" />' media="print"/>
     <view:includePlugin name="wysiwyg"/>
+    <view:includePlugin name="popup"/>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
     <script type="text/javascript">
@@ -217,7 +221,20 @@
               $( this ).dialog( "close" );
             }
           }
-        })
+        });
+
+        $("#publication-draftout").dialog({
+            autoOpen: false,
+            title: "<%=resources.getString("PubDraftOut")%>",
+            modal: true,
+            minWidth: 500,
+            resizable : false,
+            buttons: {
+              'OK': function() {
+                $(this).dialog("close");
+              }
+            }
+          });
       });
 
       var refusalMotiveWindow = window;
@@ -286,10 +303,10 @@
 	      }
 
 	      function pubDraftOut() {
-	        if (<%=kmeliaScc.isDraftOutAllowed()%>) {
+	        if (<%= draftOutTaxonomyOK && draftOutValidatorsOK %>) {
 	          location.href = "<%=routerUrl%>DraftOut?From=ViewPublication";
 	        } else {
-	          window.alert("<%=resources.getString("kmelia.PdcClassificationMandatory")%>");
+	        	$("#publication-draftout").dialog('open');
 	        }
 	      }
 	  <% } %>
@@ -448,14 +465,10 @@
           }
         }
         if (!toolboxMode && isOwner) {
-          if (profile.equals("admin") || profile.equals("publisher") || isWriterApproval) {
-            if (pubDetail.isValidationRequired()) {
-              if (validation == null) {
-                operationPane.addLine();
-                operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate()");
-                operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
-              }
-            }
+          if (userCanValidate) {
+            operationPane.addLine();
+            operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate()");
+            operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
           }
           if (profile.equals("supervisor")) {
             operationPane.addLine();
@@ -553,7 +566,7 @@
 			                attProfile = "user";
 			              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
-			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
+			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
 			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
 			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
 			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
@@ -563,7 +576,7 @@
 				                attProfile = "user";
 				              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
-			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
+			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
 			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
 			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
 			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
@@ -742,7 +755,6 @@
 
 		out.println("</div>");
        %>
-
       <div id="publication-export" style="display:none">
         <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
           <fieldset>
@@ -767,6 +779,19 @@
           </fieldset>
         </form>
       </div>
+
+      <div id="publication-draftout" style="display: none;">
+        <%=resources.getString("kmelia.publication.draftout.impossible")%>
+      	<ul>
+      	<% if(!draftOutTaxonomyOK) { %>
+      		<li><%=resources.getString("kmelia.PdcClassificationMandatory")%></li>
+      	<% } %>
+      	<% if(!draftOutValidatorsOK) { %>
+      		<li><%=resources.getString("kmelia.publication.validators.mandatory")%></li>
+      	<% } %>
+      	</ul>
+      </div>
+
       <%
         out.flush();
         out.println(frame.printAfter());

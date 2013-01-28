@@ -33,7 +33,7 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
-<% 
+<%
 //Recuperation des details de l'ulisateur
 List<Resource> listResourcesofReservation = (List<Resource>)request.getAttribute("listResourcesofReservation");
 String reservationId = (String)request.getAttribute("reservationId");
@@ -66,7 +66,7 @@ if (!isOwner) {
 <script type="text/javascript">
 function deleteReservation(){
 	if(confirm("<%=resource.getString("resourcesManager.suppressionConfirmation")%>")){
-		location.href="DeleteReservation?id="+<%=reservationId%>;	
+		location.href="DeleteReservation?id="+<%=reservationId%>;
 	}
 }
 
@@ -97,11 +97,11 @@ function AddAttachment() {
 		operationPane.addOperation("#", resource.getString("resourcesManager.addFile"), "javaScript:AddAttachment()");
 		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("resourcesManager.basketDelete"), resource.getString("resourcesManager.supprimerReservation"),"javascript:deleteReservation();");
-	}	
+	}
 		browseBar.setDomainName(spaceLabel);
 		browseBar.setComponentName(componentLabel,"Main");
 		browseBar.setPath(resource.getString("resourcesManager.recapitulatifReservation"));
-				
+
 		out.println(window.printBefore());
   %>
 <view:frame>
@@ -115,10 +115,10 @@ function AddAttachment() {
 					<td width="100%"><%=event%></td>
 				</tr>
 				<tr>
-				<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateBegin"));%> :</td> 
+				<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateBegin"));%> :</td>
 				<td> <%=dateBegin%></td>
 				</tr>
-				
+
 				<tr>
 				<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateEnd"));%> :</td>
 				<td><%=dateEnd%></td>
@@ -136,10 +136,10 @@ function AddAttachment() {
 					<td><%=resource.getOutputDateAndHour(maReservation.getUpdateDate())%></td>
 				</tr>
 				<tr>
-				<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> :</td> 
+				<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> :</td>
 				<td><%=reason%></td>
 				</tr>
-				
+
 				<tr>
 				<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.lieuReservation"));%> :</td>
 				<td><%=place%></td>
@@ -160,12 +160,12 @@ function AddAttachment() {
             String currentUser = resourcesManagerSC.getUserId() ;
             List<String> managers = resourcesManagerSC.getManagerIds(resourceId);
             if (maResource.isValidationRequired()) { %>
-             <a style="color:red" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
+             <a style="color:red" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
             <% } else if (maResource.isRefused()) { %>
               <a style="color:grey" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
             <% } else {%>
-              <a style="color:black" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
-             <% } 
+              <a style="color:black" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
+             <% }
             if (maResource.isValidationRequired() &&  managers != null && !managers.isEmpty() && managers.contains(currentUser)) { %>
               <a href="javascript:valideResource(<%=resourceId%>, '<%=objectView%>')">
               <img src="<%=m_context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.valideResource")%>" title="<%=resource.getString("resourcesManager.valideResource")%>"/>
@@ -188,7 +188,7 @@ function AddAttachment() {
     <%
     out.flush();
     // traitement des fichiers joints
-    getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+reservationId+"&ComponentId="+componentId+"&Alias=&Context=Images&AttachmentPosition=right&ShowIcon=true&ShowTitle=&ShowFileSize=true&ShowDownloadEstimation=&ShowInfo=&UpdateOfficeMode=&Language="+resourcesManagerSC.getLanguage()+"&Profile="+profileForAttachments+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewReservation?reservationId="+reservationId+"&IndexIt=").include(request, response);
+    getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+reservationId+"&ComponentId="+componentId+"&Alias=&Context=attachment&AttachmentPosition=right&ShowIcon=true&ShowTitle=&ShowFileSize=true&ShowDownloadEstimation=&ShowInfo=&UpdateOfficeMode=&Language="+resourcesManagerSC.getLanguage()+"&Profile="+profileForAttachments+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewReservation?reservationId="+reservationId+"&IndexIt=").include(request, response);
     %>
     <br/>
 		</td>

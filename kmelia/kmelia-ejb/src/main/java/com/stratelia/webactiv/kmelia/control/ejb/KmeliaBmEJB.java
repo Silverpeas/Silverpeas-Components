@@ -2323,30 +2323,34 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   @Override
-  public List<KmeliaPublication> getPublicationsToValidate(String componentId) {
+  public List<KmeliaPublication> getPublicationsToValidate(String componentId, String userId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
         "root.MSG_GEN_ENTER_METHOD");
     Collection<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     PublicationPK pubPK = new PublicationPK("useless", componentId);
     try {
-      Collection<PublicationDetail> temp =
-          getPublicationBm().getPublicationsByStatus(PublicationDetail.TO_VALIDATE, pubPK);
+      Collection<PublicationDetail> temp = getPublicationBm().getPublicationsByStatus(PublicationDetail.TO_VALIDATE, pubPK);
+      boolean targetedValidationEnabled = isTargetedValidationEnabled(componentId);
       // retrieve original publications according to clones
       for (PublicationDetail publi : temp) {
-        boolean isClone = PublicationDetail.TO_VALIDATE.equals(publi.getStatus()) && !"-1"
-            .equals(publi.getCloneId());
+        boolean isClone = PublicationDetail.TO_VALIDATE.equals(publi.getStatus()) && !"-1".equals(publi.getCloneId());
+        PublicationDetail toValidate = publi;
         if (isClone) {
           // publication is a clone, get original one
-          publications.add(
-              getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK())));
+          toValidate = getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK()));
+        }
+        if (targetedValidationEnabled) {
+          // only publications which must be explicitly validated by current user must be returned
+          List<String> validatorIds = getValidatorIds(toValidate);
+          if (validatorIds.contains(userId)) {
+            publications.add(toValidate);
+          }
         } else {
-          // publication is not a clone, return it
-          publications.add(publi);
+          publications.add(toValidate);
         }
       }
     } catch (Exception e) {
-      throw new KmeliaRuntimeException(
-          "KmeliaBmEJB.getPublicationsToValidate()", ERROR,
+      throw new KmeliaRuntimeException( "KmeliaBmEJB.getPublicationsToValidate()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_PUBLICATIONS_A_VALIDER", e);
     }
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
@@ -2385,42 +2389,46 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   private int getValidationType(String instanceId) {
     String sParam =
-        getOrganizationController().getComponentParameterValue(instanceId, "targetValidation");
+        getOrganizationController().getComponentParameterValue(instanceId, InstanceParameters.validation);
     if (isDefined(sParam)) {
       return Integer.parseInt(sParam);
     }
     return VALIDATION_CLASSIC;
   }
+  
+  private boolean isTargetedValidationEnabled(String componentId) {
+    int value = getValidationType(componentId);
+    return value == KmeliaHelper.VALIDATION_TARGET_N || value == KmeliaHelper.VALIDATION_TARGET_1;
+  }
+  
+  private List<String> getValidatorIds(PublicationDetail publi) {
+    List<String> allValidators = new ArrayList<String>();
+    if (isDefined(publi.getTargetValidatorId())) {
+      StringTokenizer tokenizer = new StringTokenizer(publi.getTargetValidatorId(), ",");
+      while (tokenizer.hasMoreTokens()) {
+        allValidators.add(tokenizer.nextToken());
+      }
+    }
+    return allValidators;
+  }
 
   @Override
-  public List<String> getAllValidators(PublicationPK pubPK, int validationType) throws
-      RemoteException {
+  public List<String> getAllValidators(PublicationPK pubPK) throws RemoteException {
     SilverTrace.debug("kmelia", "KmeliaBmEJB.getAllValidators",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId()
-        + ", validationType = " + validationType);
-    if (validationType == -1) {
-      validationType = getValidationType(pubPK.getInstanceId());
-    }
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.getAllValidators",
-        "root.MSG_GEN_PARAM_VALUE", "validationType = " + validationType);
+            "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId());
 
     // get all users who have to validate
     List<String> allValidators = new ArrayList<String>();
-    if (validationType == VALIDATION_TARGET_N || validationType == VALIDATION_TARGET_1) {
+    if (isTargetedValidationEnabled(pubPK.getInstanceId())) {
       PublicationDetail publi = getPublicationBm().getDetail(pubPK);
-      if (isDefined(publi.getTargetValidatorId())) {
-        StringTokenizer tokenizer = new StringTokenizer(publi.getTargetValidatorId(), ",");
-        while (tokenizer.hasMoreTokens()) {
-          allValidators.add(tokenizer.nextToken());
-        }
-      }
+      allValidators = getValidatorIds(publi);
     }
     if (allValidators.isEmpty()) {
       // It's not a targeted validation or it is but no validators has
       // been selected !
-      List<String> roles = new ArrayList<String>();
-      roles.add("admin");
-      roles.add("publisher");
+      List<String> roles = new ArrayList<String>(2);
+      roles.add(SilverpeasRole.admin.name());
+      roles.add(SilverpeasRole.publisher.name());
 
       if (KmeliaHelper.isKmax(pubPK.getInstanceId())) {
         allValidators.addAll(Arrays.asList(getOrganizationController().getUsersIdsByRoleNames(
@@ -2459,12 +2467,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    *
    * @param pubPK
    * @param allValidators
-   * @param validationType
    * @return
    * @throws RemoteException
    */
-  private boolean isValidationComplete(PublicationPK pubPK, List<String> allValidators) throws
-      RemoteException {
+  private boolean isValidationComplete(PublicationPK pubPK, List<String> allValidators)
+      throws RemoteException {
     List<ValidationStep> steps = getPublicationBm().getValidationSteps(pubPK);
 
     // get users who have already validate
@@ -2484,23 +2491,29 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   @Override
-  public boolean validatePublication(PublicationPK pubPK, String userId, int validationType,
-      boolean force) {
+  public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
     boolean validationComplete = false;
     try {
       if (force) {
         validationComplete = true;
       } else {
-        switch (validationType) {
-          case VALIDATION_CLASSIC:
-          case VALIDATION_TARGET_1:
-            validationComplete = true;
-            break;
-          case VALIDATION_COLLEGIATE:
-          case VALIDATION_TARGET_N:
+        int validationType = getValidationType(pubPK.getInstanceId());
+        if (validationType == KmeliaHelper.VALIDATION_CLASSIC ||
+            validationType == KmeliaHelper.VALIDATION_TARGET_1) {
+          validationComplete = true;
+        } else {
+          if (validationType == KmeliaHelper.VALIDATION_TARGET_N) {
+            // check that validators are well defined
+            // If not, considering validation as classic one
+            PublicationDetail publi = getPublicationBm().getDetail(pubPK);
+            if (!isDefined(publi.getTargetValidatorId())) {
+              validationComplete = true;
+            }
+          }
+          if (!validationComplete) {
             // get all users who have to validate
-            List<String> allValidators = getAllValidators(pubPK, validationType);
+            List<String> allValidators = getAllValidators(pubPK);
             if (allValidators.size() == 1) {
               // special case : only once user is concerned by validation
               validationComplete = true;
@@ -2513,11 +2526,9 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
               // check if all validators have give their decision
               validationComplete = isValidationComplete(pubPK, allValidators);
             }
-            break;
-          default:
-            validationComplete = true;
-            break;
+          }
         }
+        
       }
 
       if (validationComplete) {
@@ -3147,7 +3158,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         // removing potential older validation decision
         getPublicationBm().removeValidationSteps(pubDetail.getPK());
       }
-      List<String> validators = getAllValidators(pubDetail.getPK(), validationType);
+      List<String> validators = getAllValidators(pubDetail.getPK());
       String[] users = validators.toArray(new String[validators.size()]);
       // For each publisher create a todo
       addTodo(pubDetail, users);
@@ -4149,6 +4160,17 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return publicationImport.importPublication(publiParams, formParams,
         language, xmlFormName, discrimatingParameterName, userProfile);
   }
+  
+  public boolean importPublication(String componentId, String topicId, String userId,
+      Map<String, String> publiParams, Map<String, String> formParams, String language,
+      String xmlFormName, String discriminantParameterName, String userProfile,
+      boolean ignoreMissingFormFields) throws RemoteException {
+    PublicationImport publicationImport =
+        new PublicationImport(this, componentId, topicId, null, userId);
+    publicationImport.setIgnoreMissingFormFields(ignoreMissingFormFields);
+    return publicationImport.importPublication(publiParams, formParams, language, xmlFormName,
+        discriminantParameterName, userProfile);
+  }
 
   /**
    * Creates or updates a publication.
@@ -4474,7 +4496,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         temp.getNodePK().setId("tovalidate");
         temp.setName(getMultilang().getString("ToValidateShort"));
         if (isNbItemsDisplayed(instanceId)) {
-          int nbPublisToValidate = getPublicationsToValidate(instanceId).size();
+          int nbPublisToValidate = getPublicationsToValidate(instanceId, userId).size();
           temp.setNbObjects(nbPublisToValidate);
         }
         children.add(temp);
@@ -4619,7 +4641,31 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   private NodePK getRootPK(String componentId) {
     return new NodePK(NodePK.ROOT_NODE_ID, componentId);
   }
+  
+  @Override
+  public boolean isUserCanValidatePublication(PublicationPK pubPK, String userId)
+      throws RemoteException {
+    PublicationDetail publi = getPublicationDetail(pubPK);
+    if (!publi.isValidationRequired()) {
+      // publication is not in a state which allow a validation
+      return false;
+    }
+    List<String> validatorIds = getAllValidators(pubPK);
+    if (!validatorIds.contains(userId)) {
+      // current user is not part of users who are able to validate this publication
+      return false;
+    }
 
+    if (getValidationType(pubPK.getInstanceId()) == KmeliaHelper.VALIDATION_TARGET_N) {
+      ValidationStep validationStep = getPublicationBm().getValidationStepByUser(pubPK, userId);
+      // user has not yet validated publication, so validation is allowed
+      return validationStep == null;
+    }
+
+    return true;
+  }
+  
+  @Override
   public boolean isUserCanValidate(String componentId, String userId) throws RemoteException {
     if (KmeliaHelper.isToolbox(componentId)) {
       return false;
@@ -4735,4 +4781,5 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
     return null;
   }
+ 
 }
