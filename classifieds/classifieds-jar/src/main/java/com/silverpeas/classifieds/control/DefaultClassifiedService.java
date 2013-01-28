@@ -51,6 +51,7 @@ import com.silverpeas.classifieds.notification.ClassifiedSubscriptionUserNotific
 import com.silverpeas.classifieds.notification.ClassifiedSupervisorUserNotification;
 import com.silverpeas.classifieds.notification.ClassifiedValidationUserNotification;
 import com.silverpeas.comment.service.notification.CommentUserNotificationService;
+import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -608,6 +609,66 @@ public class DefaultClassifiedService implements ClassifiedService {
     while (it.hasNext()) {
       Subscribe subscribe = it.next();
       deleteSubscribe(subscribe.getSubscribeId());
+    }
+  }
+  
+  @Override
+  public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId, String searchField1, String searchField2) {
+    Connection con = openConnection();
+    try {
+      OrganizationController orga = new OrganizationController();
+      List<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID);
+      for(ClassifiedDetail classified : listClassified) {
+        String classifiedId = Integer.toString(classified.getClassifiedId());
+        
+        //Ajout du nom du createur
+        classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
+            .getDisplayedName());   
+        
+        //Ajout des champs de recherche
+        String xmlFormName =
+            orga.getComponentParameterValue(classified.getInstanceId(), "XMLFormName");
+        if (StringUtil.isDefined(xmlFormName)) {
+          String xmlFormShortName =
+              xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+          try {
+            PublicationTemplate pubTemplate = PublicationTemplateManager.getInstance()
+                .getPublicationTemplate(classified.getInstanceId() + ":" + xmlFormShortName);
+            if (pubTemplate != null) {
+              RecordSet recordSet = pubTemplate.getRecordSet();
+              DataRecord data = recordSet.getRecord(classifiedId);
+              String searchValue1 = (data.getField(searchField1)).getValue();
+              String searchValue2 = (data.getField(searchField2)).getValue();
+              classified.setSearchValue1(searchValue1);
+              classified.setSearchValue2(searchValue2);
+            }
+          } catch (Exception e) {
+            throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllValidClassifieds()",
+                SilverpeasRuntimeException.ERROR,
+                "classifieds.MSG_ERR_GET_CLASSIFIED_TEMPLATE", "classifiedId = "+classified.getId(), e);
+          }
+        }
+        
+        //Ajout des images
+        try {
+          WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, classified.getInstanceId());
+          List<SimpleDocument> listSimpleDocument = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
+          classified.setImages(listSimpleDocument);
+        } catch (Exception e) {
+          throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllValidClassifieds()",
+              SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGES", e);
+        }
+      }
+      
+      // pour ordonner les petites annonces de la plus récente vers la plus ancienne
+      Collections.reverse(listClassified);
+      
+      return listClassified;
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("DefaultClassifiedService.getAllValidClassifieds()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_CLASSIFIEDS", e);
+    } finally {
+      closeConnection(con);
     }
   }
 

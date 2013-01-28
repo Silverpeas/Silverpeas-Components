@@ -80,7 +80,7 @@ public class DefaultHandler extends FunctionHandler {
         
      } else { //Affichage page d'accueil annonces listées
         
-       request.setAttribute("Classifieds", null);
+       request.setAttribute("Classifieds", classifiedsSC.getAllValidClassifieds());
        
        // Returns jsp to redirect to
        return "accueilNotCategorized.jsp";

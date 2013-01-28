@@ -676,4 +676,14 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   public boolean isHomePageDisplayCategorized() {
     return "0".equalsIgnoreCase(getComponentParameterValue("homePage"));
   }
+  
+  /**
+   * get all valid classifieds
+   * @return a collection of ClassifiedDetail
+   */
+  public Collection<ClassifiedDetail> getAllValidClassifieds() {
+    Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
+    classifieds = getClassifiedService().getAllValidClassifieds(getComponentId(), getSearchFields1(), getSearchFields2());
+    return classifieds;
+  }
 }

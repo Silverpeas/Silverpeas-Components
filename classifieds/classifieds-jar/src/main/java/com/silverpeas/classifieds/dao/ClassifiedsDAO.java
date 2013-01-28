@@ -260,12 +260,12 @@ public class ClassifiedsDAO {
    * @param con : Connection
    * @param instanceId : String
    * @param status : status
-   * @return a collection of ClassifiedDetail
+   * @return a list of ClassifiedDetail
    * @throws SQLException
    */
-  public static Collection<ClassifiedDetail> getClassifiedsWithStatus(Connection con,
+  public static List<ClassifiedDetail> getClassifiedsWithStatus(Connection con,
       String instanceId, String status) throws SQLException {
-    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
+    List<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
     String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
