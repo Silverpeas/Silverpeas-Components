@@ -25,13 +25,15 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.net.URLEncoder"%>
+<%@ page import="org.silverpeas.util.URLUtils" %>
 
 <%!
 void displayAttachmentEdit(String id, String spaceId, String componentId, String url, HttpServletRequest request, HttpServletResponse response)
 	throws com.stratelia.silverpeas.infoLetter.InfoLetterException {
     try {
 	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="
-		+ id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId + "&Context=Images" + "&Url=" + response.encodeURL(URLEncoder.encode(url))).include(request, response);
+		+ id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId + "&Context=attachment" + "&Url=" +
+      URLUtils.encodeQueryNameOrValue(url)).include(request, response);
 
     } catch (Exception e) {
 		throw new com.stratelia.silverpeas.infoLetter.InfoLetterException("viewLetter_JSP.displayViewWysiwyg",

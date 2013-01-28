@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.util.URLUtils" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -75,7 +76,8 @@
 <%
 
 String url = URLManager.getNewComponentURL(spaceId, componentId)+"attachmentManager";
-getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+URLEncoder.encode(process.getInstanceId())+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images"+"&Url="+URLEncoder.encode(url)).include(request, response);
+getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+
+    URLUtils.encodeQueryNameOrValue(process.getInstanceId())+"&SpaceId="+URLUtils.encodeQueryNameOrValue(spaceId)+"&ComponentId="URLUtils.encodeQueryNameOrValue(componentId)+"&Context=attachment"+"&Url="+URLUtils.encodeQueryNameOrValue(url)).include(request, response);
 
 %>
 </CENTER>

@@ -69,7 +69,7 @@ out.println(gef.getLookStyleSheet());
 
 	try {
      //Attachments links
-			getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+replyId+"&ComponentId="+componentId+"&Context=Images&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+scc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+scc.getUserProfil()+"&Language="+currentLang).include(request, response);
+			getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+replyId+"&ComponentId="+componentId+"&Context=attachment&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+scc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+scc.getUserProfil()+"&Language="+currentLang).include(request, response);
 	} catch (Exception e) {
 	}
 	out.println(frame.printAfter());

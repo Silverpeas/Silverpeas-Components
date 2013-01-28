@@ -63,7 +63,7 @@
 	String context = GeneralPropertiesManager.getString("ApplicationURL");
     getServletConfig().getServletContext().getRequestDispatcher(
         "/attachment/jsp/editAttachedFiles.jsp?Id=" + elmtType +"_" + elmtId + "&SpaceId=" + spaceId
-        + "&ComponentId=" + componentId + "&Context=Images"
+        + "&ComponentId=" + componentId + "&Context=attachment"
         + "&Url=" + java.net.URLEncoder.encode(url.substring(context.length()), "UTF-8")).include(request, response);
 %>
 		</view:frame>

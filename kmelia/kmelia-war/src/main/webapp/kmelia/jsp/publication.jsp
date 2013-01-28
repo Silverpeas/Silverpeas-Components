@@ -222,7 +222,7 @@
             }
           }
         });
-        
+
         $("#publication-draftout").dialog({
             autoOpen: false,
             title: "<%=resources.getString("PubDraftOut")%>",
@@ -566,7 +566,7 @@
 			                attProfile = "user";
 			              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
-			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
+			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
 			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
 			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
 			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
@@ -576,7 +576,7 @@
 				                attProfile = "user";
 				              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
-			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
+			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
 			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
 			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
 			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
@@ -779,7 +779,7 @@
           </fieldset>
         </form>
       </div>
-      
+
       <div id="publication-draftout" style="display: none;">
         <%=resources.getString("kmelia.publication.draftout.impossible")%>
       	<ul>
@@ -791,7 +791,7 @@
       	<% } %>
       	</ul>
       </div>
-      
+
       <%
         out.flush();
         out.println(frame.printAfter());

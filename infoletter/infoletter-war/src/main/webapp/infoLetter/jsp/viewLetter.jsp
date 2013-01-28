@@ -28,11 +28,11 @@
 void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServletRequest request, HttpServletResponse response)
 	throws com.stratelia.silverpeas.infoLetter.InfoLetterException {
     try {
-        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId=" + 
+        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId=" +
 		id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId).include(request, response);
     } catch (Exception e) {
 		throw new com.stratelia.silverpeas.infoLetter.InfoLetterException("viewLetter_JSP.displayViewWysiwyg",
-		com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR, e.getMessage());			
+		com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR, e.getMessage());
     }
 }
 %>
@@ -58,7 +58,7 @@ function goFiles (){
 <%
 	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));
 	out.println(window.printBefore());
- 
+
 	//Instanciation du cadre avec le view generator
 	out.println(frame.printBefore());
 %>
@@ -67,17 +67,17 @@ function goFiles (){
 		<tr><td width="80%">
 			<%
 				out.flush();
-				displayViewWysiwyg(parution, spaceId, componentId, request, response);		
+				displayViewWysiwyg(parution, spaceId, componentId, request, response);
 			%>
 		</td>
 		<td valign="top">
 			<%
 				out.flush();
-				getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+parution+"&ComponentId="+componentId+"&Context=Images").include(request, response);
+				getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+parution+"&ComponentId="+componentId+"&Context=attachment").include(request, response);
 			%>
 		</td></tr>
 	</table>
-	<form name="attachedFiles" action="FilesView" method="post">			
+	<form name="attachedFiles" action="FilesView" method="post">
 		<input type="hidden" name="parution" value="<%= parution %>"/>
 	</form>
 <%

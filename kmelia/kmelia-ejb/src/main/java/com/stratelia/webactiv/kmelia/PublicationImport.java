@@ -31,9 +31,6 @@ import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
 
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.importExport.attachment.AttachmentPK;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
@@ -51,9 +48,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmEJB;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -305,8 +300,7 @@ public class PublicationImport {
    * @return The id of the newly created publication.
    * @throws RemoteException
    */
-  private String createPublication(PublicationDetail pubDetail)
-      throws RemoteException {
+  private String createPublication(PublicationDetail pubDetail) throws RemoteException {
     pubDetail.getPK().setSpace(spaceId);
     pubDetail.getPK().setComponentName(componentId);
     pubDetail.setCreatorId(userId);

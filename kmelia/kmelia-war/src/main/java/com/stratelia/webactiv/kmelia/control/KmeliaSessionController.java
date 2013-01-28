@@ -1569,24 +1569,23 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    */
   public boolean isPublicationTaxonomyOK() {
-    if (!isPdcUsed()) {
-      // le PDC n'est pas utilisé
+    if (!isPdcUsed()) {// le PDC n'est pas utilisé
       return true;
-    } else {
-      boolean pdcClassifyingMandatory = isPDCClassifyingMandatory();
-      if (!pdcClassifyingMandatory) {
-        // Aucun axe n'est utilisé
-        return true;
-      } else {
-        String pubId = getSessionPublication().getDetail().getPK().getId();
-        return isPublicationClassifiedOnPDC(pubId);
-      }
     }
+    boolean pdcClassifyingMandatory = isPDCClassifyingMandatory();
+    if (!pdcClassifyingMandatory) {// Aucun axe n'est utilisé
+      return true;
+    }
+    if (getSessionPublication() != null) {
+      String pubId = getSessionPublication().getDetail().getPK().getId();
+      return isPublicationClassifiedOnPDC(pubId);
+    }
+    return true;
   }
 
   public boolean isPublicationValidatorsOK() throws RemoteException {
-    if (SilverpeasRole.writer.isInRole(getUserTopicProfile()) && (isTargetValidationEnable()
-        || isTargetMultiValidationEnable())) {
+    if (getSessionPublication() != null && SilverpeasRole.writer.isInRole(getUserTopicProfile()) &&
+        (isTargetValidationEnable() || isTargetMultiValidationEnable())) {
       return StringUtil.isDefined(getSessionPublication().getDetail().getTargetValidatorId());
     }
     return true;
@@ -1635,7 +1634,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       validators.add(step.getUserId());
     }
 
-    List<String> allValidators = getKmeliaBm().getAllValidators(getSessionPubliOrClone().getDetail().getPK());
+    List<String> allValidators = getKmeliaBm().getAllValidators(getSessionPubliOrClone().getDetail()
+        .getPK());
 
     for (String allValidator : allValidators) {
       if (!validators.contains(allValidator)) {
