@@ -270,9 +270,13 @@ labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
 labels["js.contains"] = "<fmt:message key="GML.ThisFormContains"/>";
 labels["js.error"] = "<fmt:message key="GML.error"/>";
 labels["js.errors"] = "<fmt:message key="GML.errors"/>";
+labels["js.yes"] = "<fmt:message key="GML.yes"/>";
+labels["js.no"] = "<fmt:message key="GML.no"/>";
+labels["js.cancel"] = "<fmt:message key="GML.cancel"/>";
 
 labels["js.status.visible2invisible"] = "<fmt:message key="TopicVisible2InvisibleRecursive"/>";
 labels["js.status.invisible2visible"] = "<fmt:message key="TopicInvisible2VisibleRecursive"/>";
+labels["js.status.onlythisfolder"] = "<fmt:message key="kmelia.folder.onlythisfolder"/>";
 
 labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
 
@@ -421,6 +425,10 @@ $(document).ready(function() {
 
 });
 </script>
+</div>
+<div id="visibleInvisible-message" style="display: none;">
+	<p>
+	</p>
 </div>
 <div id="addOrUpdateNode" style="display: none;">
 	<form name="topicForm" action="AddTopic" method="post">
