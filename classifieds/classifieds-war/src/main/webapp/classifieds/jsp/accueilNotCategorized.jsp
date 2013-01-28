@@ -39,11 +39,10 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="componentLabel" value="${browseContext[1]}" />
 <c:set var="profile" value="${requestScope.Profile}" />
-<c:set var="categories" value="${requestScope.Categories}" />
+<c:set var="classifieds" value="${requestScope.Classifieds}" />
 <c:set var="nbTotal" value="${requestScope.NbTotal}" />
 <c:set var="validation" value="${requestScope.Validation}" />
 <c:set var="componentInstanceId" value="${requestScope.InstanceId}" />
@@ -142,9 +141,9 @@
 											DataRecord data = (DataRecord) pageContext.getAttribute("data");
 
 											PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
-										    context.setIgnoreDefaultValues(true);
-										    context.setUseMandatory(false);
-										    context.setBorderPrinted(false);
+										  context.setIgnoreDefaultValues(true);
+										  context.setUseMandatory(false);
+										  context.setBorderPrinted(false);
 											formSearch.display(out, context, data);
 										%>
 										<br/>
@@ -163,72 +162,58 @@
 						</c:if>
 					</form>
 
-					<div id="categories">
-						<c:if test="${not empty categories}">
-							<c:forEach items="${categories}" var="category"
-								varStatus="loopStatus">
-								<div
-									id="category${category.key}"
-									class="category${((loopStatus.index % 2) == 0) ? 'left' : 'right'}">
-									<div class="categoryTitle">
-										<a
-											href="ViewAllClassifiedsByCategory?CategoryName=${category.value}&FieldKey=${category.key}">
-											${category.value} </a>
-									</div>
-									<div class="categoryContent">
-										<c:if test="${empty category.classifieds}">
-											<span class="emptyCategory"><fmt:message
-													key="classifieds.CategoryEmpty" />
-											</span>
-										</c:if>
-										<c:if test="${not empty category.classifieds}">
-											<ul>
-												<c:forEach items="${category.classifieds}" var="classified" end="4">
-													<li><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
-													<c:if test="${classified.price > 0}">
-													${classified.price} &euro;
-													</c:if>
-														<span class="date">
-														  <c:if test="${not empty classified.validateDate}">
-                                <span class="sep"> - </span><view:formatDateTime value="${classified.validateDate}" language="${language}"/>
-                              </c:if>
-                              <c:if test="${empty classified.validateDate}">
-						                    <c:if test="${not empty classified.updateDate}">
-                                  <span class="sep"> - </span><view:formatDateTime value="${classified.updateDate}" language="${language}"/>
-                                </c:if>
-                                <c:if test="${empty classified.updateDate}">
-                                  <span class="sep"> - </span><view:formatDateTime value="${classified.creationDate}" language="${language}"/>
-                                </c:if>
-						                  </c:if>
-														</span>
-													</li>
-												</c:forEach>
-											</ul>
-										</c:if>
-									</div>
-									<div class="ViewAllClassifiedsByCategory">
-										<a
-											href="ViewAllClassifiedsByCategory?CategoryName=${category.value}&FieldKey=${category.key}">
-											<fmt:message key="classifieds.viewAllClassifiedsByCategory" />
-										</a>
-									</div>
-									<c:if
-										test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
-										<div class="newClassified">
-											<a href="NewClassified?FieldKey=${category.key}"> <fmt:message
-													key="classifieds.newClassified" /> </a>
-										</div>
-									</c:if>
-								</div>
-							</c:forEach>
-						</c:if>
+          <ul id="classifieds_rich_list">
+            <c:if test="${not empty classifieds}">
+              <c:forEach items="${classifieds}" var="classified"
+                varStatus="loopStatus">
+                <li onclick="window.open('http://www.silverpeas.com','MyMain')">
+                  <div class="classified_thumb"><img src="images/cat.png" alt=""/></div>
+                    <div class="classified_info">
+                      <h4><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a></h4>
+                        <div class="classified_type"><a href="http://www.silverpeas.org">Voiture</a> <a href="http://www.silverpeas.org">Vente</a></div>
+                    </div>
+                    <div class="classified_price">
+                      <c:if test="${classified.price > 0}">
+                        ${classified.price} &euro;
+                      </c:if>
+                    </div>
+                    <div class="classified_creationInfo">
+                      <c:if test="${not empty classified.validateDate}">
+                         - <view:formatDateTime value="${classified.validateDate}" language="${language}"/>
+                      </c:if>
+                      <c:if test="${empty classified.validateDate}">
+                        <c:if test="${not empty classified.updateDate}">
+                           - <view:formatDateTime value="${classified.updateDate}" language="${language}"/>
+                        </c:if>
+                        <c:if test="${empty classified.updateDate}">
+                           - <view:formatDateTime value="${classified.creationDate}" language="${language}"/>
+                        </c:if>
+                      </c:if>
+                    </div>
+                </li>
+              </c:forEach>
+            </c:if>
+          </ul>
 
 						<!-- legal notice -->
 						<div id="infos" class="tableBoard">
 							<fmt:message key="classifieds.infos" />
 						</div>
-					</div>
 
+              <div id="pagination">
+                <div class="pageNav">
+                  <div class="pageNavContent">
+                    <div class="pageOn">1</div>
+                    <div class="pageOff"> <a href="javascript:onClick=doPagination(20)" title="Aller à la page 2" class="ArrayNavigation">2</a></div>
+                    <div class="pageOff"> <a href="javascript:onClick=doPagination(40)" title="Aller à la page 3" class="ArrayNavigation">3</a></div>
+                    <div class="pageOff"> <a href="javascript:onClick=doPagination(60)" title="Aller à la page 4" class="ArrayNavigation">4</a></div>
+                    <div class="pageOff"> <a href="javascript:onClick=doPagination(80)" title="Aller à la page 5" class="ArrayNavigation">5</a></div>
+                    <div class="pageOff"> <a href="javascript:onClick=doPagination(100)" title="Aller à la page 6" class="ArrayNavigation">6</a></div>
+                    <div class="pageOff"> <a href="javascript:onClick=doPagination(20)" title="Page suivante" class="ArrayNavigation"><img border="0" align="absmiddle" alt="Page suivante" src="/silverpeas/util/viewGenerator/icons/arrows/arrowRight.gif"></a></div>
+                  </div>
+                </div>
+              </div>
+              
 				</view:frame>
 			</view:window>
 </body>

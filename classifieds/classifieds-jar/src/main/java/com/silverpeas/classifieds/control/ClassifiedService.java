@@ -110,7 +110,7 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
   /**
    * get all classifieds to validate for an instance corresponding to instanceId
    * @param instanceId : String
-   * @return a collection of ClassifiedDetail
+   * @return a Collection of ClassifiedDetail
    * @
    */
   public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId)
@@ -224,5 +224,14 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
    * @
    */
   Collection<ClassifiedDetail> getUnpublishedClassifieds(String instanceId, String userId);
+  
+  /**
+  * get all valid classifieds
+  * @param instanceId : String
+  * @param searchField1 : champ de recherche 1
+  * @param searchField2 : champ de recherche 2
+  * @return a collection of ClassifiedDetail
+  */
+ public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId, String searchField1, String searchField2);
   
 }
