@@ -723,8 +723,12 @@
 	text-align: center;
 }
 
-.jstree .Invisible a {
+.jstree li.Invisible > a {
 	color: #BBBBBB;
+}
+
+.jstree li.Visible > a {
+	color: #000000;
 }
 
 .vsplitbar {
