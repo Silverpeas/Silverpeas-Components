@@ -183,9 +183,13 @@ labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
 labels["js.contains"] = "<fmt:message key="GML.ThisFormContains"/>";
 labels["js.error"] = "<fmt:message key="GML.error"/>";
 labels["js.errors"] = "<fmt:message key="GML.errors"/>";
+labels["js.yes"] = "<fmt:message key="GML.yes"/>";
+labels["js.no"] = "<fmt:message key="GML.no"/>";
+labels["js.cancel"] = "<fmt:message key="GML.cancel"/>";
 
 labels["js.status.visible2invisible"] = "<fmt:message key="TopicVisible2InvisibleRecursive"/>";
 labels["js.status.invisible2visible"] = "<fmt:message key="TopicInvisible2VisibleRecursive"/>";
+labels["js.status.onlythisfolder"] = "<fmt:message key="kmelia.folder.onlythisfolder"/>";
 
 labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
 
@@ -400,7 +404,7 @@ function changeCurrentTopicStatus() {
 	changeStatus(getCurrentNodeId(), node.attr("status"));
 }
 
-function updateUIStatus(nodeId, newStatus) {
+function updateUIStatus(nodeId, newStatus, recursive) {
 	// updating data stored in treeview
 	var node = getTreeview()._get_node("#"+nodeId);
 	node.attr("status", newStatus);
@@ -408,6 +412,17 @@ function updateUIStatus(nodeId, newStatus) {
 	//changing label style according to topic's new status
 	node.removeClass("Visible Invisible");
 	node.addClass(newStatus);
+	
+	// 
+	if (recursive == "1") {
+		var children = getTreeview()._get_children("#"+nodeId);
+		for (var i=0; i<children.length; i++) {
+			try {
+				updateUIStatus(children[i].id, newStatus, recursive);
+			} catch (e) {
+			}
+		}
+	}
 	
 	if (nodeId == getCurrentNodeId()) {
 		// refreshing operations of current folder
@@ -670,11 +685,12 @@ function spreadNbItems(children) {
 	if (children) {
 		for(var i = 0; i < children.length; i++) {
 			var child = children[i];
+			child.attr['title'] = child.attr['description'];
+			<% if (kmeliaScc.isOrientedWebContent()) { %>
+				child.attr['class'] = child.attr['status'];
+			<% } %>
 			if (child.attr['nbItems']) {
 				child.data = child.data + " ("+child.attr['nbItems']+")";
-				<% if (kmeliaScc.isOrientedWebContent()) { %>
-					child.attr['class'] = child.attr['status'];
-				<% } %>
 				spreadNbItems(child.children);
 			}
 		}
@@ -797,10 +813,10 @@ $(document).ready(
 								n.data = "<%=componentLabel%>";
 								if (n.attr['nbItems']) {
 									n.data = n.data + " ("+n.attr['nbItems']+")";
-									<% if (kmeliaScc.isOrientedWebContent()) { %>
-										n.attr['class'] = n.attr['status'];
-									<% } %>
 								}
+								<% if (kmeliaScc.isOrientedWebContent()) { %>
+									n.attr['class'] = n.attr['status'];
+								<% } %>
 								spreadNbItems(n.children);
 							}
 						}
@@ -950,6 +966,10 @@ $(document).ready(
 );
 
 </script>
+</div>
+<div id="visibleInvisible-message" style="display: none;">
+	<p>
+	</p>
 </div>
 <div id="rightClick-message" title="<%=resources.getString("kmelia.help.rightclick.title") %>" style="display: none;">
 	<p>
