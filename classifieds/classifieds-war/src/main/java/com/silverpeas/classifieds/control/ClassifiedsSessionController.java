@@ -674,7 +674,11 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return boolean
    */
   public boolean isHomePageDisplayCategorized() {
-    return "0".equalsIgnoreCase(getComponentParameterValue("homePage"));
+    String parameterHomePage = getComponentParameterValue("homePage");
+    if(parameterHomePage != null) {
+      return "0".equalsIgnoreCase(getComponentParameterValue("homePage"));
+    }
+    return true;
   }
   
   /**

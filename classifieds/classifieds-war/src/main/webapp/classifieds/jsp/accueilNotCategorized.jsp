@@ -166,27 +166,28 @@
             <c:if test="${not empty classifieds}">
               <c:forEach items="${classifieds}" var="classified"
                 varStatus="loopStatus">
-                <li onclick="window.open('http://www.silverpeas.com','MyMain')">
+                <li onclick="location.href='ViewClassified?ClassifiedId=${classified.classifiedId}'">
                   <div class="classified_thumb"><img src="images/cat.png" alt=""/></div>
                     <div class="classified_info">
                       <h4><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a></h4>
-                        <div class="classified_type"><a href="http://www.silverpeas.org">Voiture</a> <a href="http://www.silverpeas.org">Vente</a></div>
+                        <div class="classified_type"><a href="http://www.silverpeas.org">${classified.searchValue1}</a> <a href="http://www.silverpeas.org">${classified.searchValue2}</a></div>
                     </div>
-                    <div class="classified_price">
+                    
                       <c:if test="${classified.price > 0}">
-                        ${classified.price} &euro;
+                        <div class="classified_price">
+                          ${classified.price} &euro;
+                        </div>
                       </c:if>
-                    </div>
                     <div class="classified_creationInfo">
                       <c:if test="${not empty classified.validateDate}">
-                         - <view:formatDateTime value="${classified.validateDate}" language="${language}"/>
+                         <view:formatDateTime value="${classified.validateDate}" language="${language}"/>
                       </c:if>
                       <c:if test="${empty classified.validateDate}">
                         <c:if test="${not empty classified.updateDate}">
-                           - <view:formatDateTime value="${classified.updateDate}" language="${language}"/>
+                           <view:formatDateTime value="${classified.updateDate}" language="${language}"/>
                         </c:if>
                         <c:if test="${empty classified.updateDate}">
-                           - <view:formatDateTime value="${classified.creationDate}" language="${language}"/>
+                           <view:formatDateTime value="${classified.creationDate}" language="${language}"/>
                         </c:if>
                       </c:if>
                     </div>
