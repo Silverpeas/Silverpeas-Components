@@ -2453,7 +2453,9 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             publications.add(toValidate);
           }
         } else {
-          publications.add(toValidate);
+          if (isUserCanValidatePublication(toValidate.getPK(), userId)) {
+            publications.add(toValidate);
+          }
         }
       }
     } catch (Exception e) {
