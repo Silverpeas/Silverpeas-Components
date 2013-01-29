@@ -368,11 +368,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         List<NodeDetail> path = kmelia.getTopicPath(kmelia.getCurrentFolderId());
         request.setAttribute("Path", path);
         request.setAttribute("Profile", kmelia.getProfile());
-        request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
-        request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
         
-        if (!StringUtil.isDefined((String) request.getAttribute("Action"))) {
-          request.setAttribute("Action", "UpdateView");
+        String action = (String) request.getAttribute("Action");
+        if (!StringUtil.isDefined(action)) {
+          action = "UpdateView";
+          request.setAttribute("Action", action);
+        }
+        
+        if ("UpdateView".equals(action)) {
+          request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
+          request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
+        } else {
+          // case of creation
+          request.setAttribute("TaxonomyOK", true);
+          request.setAttribute("ValidatorsOK", true);
         }
                 
         destination = rootDestination + "publicationManager.jsp";
