@@ -36,16 +36,12 @@
   <description>
     <message lang="fr">Permet de fédérer et structurer une simple base de fichiers en indiquant des
   métadonnées de base (titre, auteur, date). Permet également l'indexation manuelle sur le
-  Plan de Classement Silverpeas et l'abonnement.
-  Deux options d'usage sont possibles : visualisation via le portail Silverpeas d'une arborescence
-  de fichiers stockés sur un serveur Windows©, ou création d'une base de fichiers sous Silverpeas.
+  Plan de Classement et l'abonnement aux dossiers.
     </message>
-    <message lang="en">Structure and federate a simple group of files using metadata 'author, title, date). Files
-  can be classfied on the classification scheme, and users can subscribe to them.
-  Thre two ways of using this application : a view through Silverpeas of a tree of files and directories
-  stored on a Windows© server, or the creation of a database of files on Silverpeas.
+    <message lang="en">Structure and federate a simple group of files using metadata (author, title, date). Files
+  can be classified on the classification scheme. Users can subscribe to folders.
     </message>
-    <message lang="de">Strukturiert und föderiert eine einfache Gruppe von Dateien anhand von Metadaten "Autor, Titel, Datum". Dateien können auf dem KP klassifiziert werden, Benutzer können sich auch abonnieren. Die zwei Möglichkeiten diese Komponente zu benützen sind: Zugang durch Silverpeas auf Dateien und Verzeichnissen die auf einem Windows © Server gespeichert sind, oder die Schaffung einer Datenbank von Dateien auf Silverpeas.</message>
+    <message lang="de">Strukturiert und föderiert eine einfache Gruppe von Dateien anhand von Metadaten "Autor, Titel, Datum". Dateien können auf dem KP klassifiziert werden, Benutzer können sich auch abonnieren.</message>
   </description>
   <suite>
     <message lang="fr">01 Gestion Documentaire</message>
@@ -250,7 +246,7 @@
     <parameter>
       <name>tabReadersList</name>
       <label>
-        <message lang="fr">Contrôles de Lecture</message>
+        <message lang="fr">Contrôles de lecture</message>
         <message lang="en">Readers list</message>
         <message lang="de">Leser-Liste</message>
       </label>
