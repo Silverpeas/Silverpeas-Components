@@ -38,7 +38,7 @@ public class TestCryptMd5 {
 
   @Test
   public void testCrypt() throws UtilException {
-    String hash = CryptMD5.crypt("Hello World");
+    String hash = CryptMD5.encrypt("Hello World");
     assertThat(hash, is(notNullValue()));
     assertThat(hash, is("b10a8db164e0754105b7a99be72e3fe5"));
   }
@@ -53,7 +53,7 @@ public class TestCryptMd5 {
     assertThat(file, is(notNullValue()));
     assertThat(file.exists(), is(true));
     assertThat(file.isFile(), is(true));
-    String hash = CryptMD5.hash(file);
+    String hash = CryptMD5.encrypt(file);
     assertThat(hash, is(notNullValue()));
     assertThat(hash, is("7d0d6464f2bcfd92cfc16c8a4fd62306"));
   }
