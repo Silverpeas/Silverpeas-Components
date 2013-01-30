@@ -57,7 +57,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilTrappedException;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -78,9 +77,14 @@ import javax.mail.internet.MimeMultipart;
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
 
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static java.io.File.separatorChar;
 
 /**
  * Class declaration
@@ -124,11 +128,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * Initialize UserPanel with the list of Silverpeas subscribers
    */
   public String initUserPanel(WAPrimaryKey letterPK) throws InfoLetterException {
-    String context = URLManager.getApplicationURL();
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(),
-        context + "/RinfoLetter/" + getComponentId() + "/Main");
-    String hostUrl = context + "/RinfoLetter/" + getComponentId() + "/RetourPanel";
+        URLManager.getApplicationURL() + "/RinfoLetter/" + getComponentId() + "/Main");
+    String hostUrl = URLManager.getApplicationURL() + "/RinfoLetter/" + getComponentId()
+        + "/RetourPanel";
     Selection sel = getSelection();
     sel.resetAll();
     sel.setHostSpaceName(hostSpaceName);
@@ -170,8 +174,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     Selection sel = getSelection();
     UserDetail[] users = SelectionUsersGroups.getUserDetails(sel.getSelectedElements());
     Group[] groups = SelectionUsersGroups.getGroups(sel.getSelectedSets());
-    InternalSubscribers internalSubs =
-        new InternalSubscribers(Arrays.asList(users), Arrays.asList(groups));
+    InternalSubscribers internalSubs = new InternalSubscribers(Arrays.asList(users), Arrays.asList(
+        groups));
     dataInterface.setInternalSuscribers(letterPK, internalSubs);
   }
 
@@ -205,10 +209,19 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   // Creation d'une publication
-  public void createInfoLetterPublication(InfoLetterPublicationPdC ilp) {
+  public void createInfoLetterPublication(InfoLetterPublicationPdC ilp) throws IOException {
     ilp.setInstanceId(getComponentId());
     dataInterface.createInfoLetterPublication(ilp, getUserId());
-    copyWYSIWYG(InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId(), ilp.getPK().getId());
+    File template = new File(WysiwygController.getWysiwygPath(getComponentId(),
+        InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId()));
+
+    String content = "";
+    if (template.exists() && template.isFile()) {
+      content = FileUtils.readFileToString(template);
+    }
+    WysiwygController.createFileAndAttachment(content, WysiwygController.getWysiwygFileName(
+        ilp.getId(), getLanguage()), getComponentId(), DocumentType.wysiwyg.getName(), ilp.getId(),
+        getUserId());
     // Classify content on PdC
     classifyInfoLetterPublication(ilp);
   }
@@ -235,8 +248,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         PdcClassification classification = aPdcClassificationOfContent(ilpId, ilp.getInstanceId()).
             withPositions(pdcPositions);
         if (!classification.isEmpty()) {
-          PdcClassificationService service = PdcServiceFactory.getFactory().
-              getPdcClassificationService();
+          PdcClassificationService service = PdcServiceFactory.getFactory()
+              .getPdcClassificationService();
           classification.ofContent(ilpId);
           service.classifyContent(ilp, classification);
         }
@@ -275,7 +288,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     return dataInterface.getInfoLetterPublication(publiPK);
   }
 
-  protected SilverpeasTemplate getNewTemplate() {
+  protected SilverpeasTemplate getNotificationMessageTemplate() {
     ResourceLocator rs =
         new ResourceLocator("org.silverpeas.infoLetter.settings.infoLetterSettings", "");
     Properties templateConfiguration = new Properties();
@@ -309,7 +322,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
       String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
       for (String lang : DisplayI18NHelper.getLanguages()) {
-        SilverpeasTemplate template = getNewTemplate();
+        SilverpeasTemplate template = getNotificationMessageTemplate();
         templates.put(lang, template);
         template.setAttribute("infoLetter", ilp);
         template.setAttribute("infoLetterTitle", ilp.getName(lang));
@@ -362,12 +375,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       int i = 0;
 
       // Corps et sujet du message
-      //InfoLetter il = dataInterface.getInfoLetter(letterPK);
       String subject = getString("infoLetter.emailSubject") + ilp.getName();
-
       // Email du publieur
       String from = getUserDetail().geteMail();
-
       // create some properties and get the default Session
       Properties props = System.getProperties();
       props.put("mail.smtp.host", host);
@@ -387,32 +397,32 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         // create a message
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(from));
-        msg.setSubject(subject, "UTF-8");
-
+        msg.setSubject(subject, CharEncoding.UTF_8);
+        ForeignPK foreignKey = new ForeignPK(ilp.getPK().getId(), getComponentId());
         // create and fill the first message part
         MimeBodyPart mbp1 = new MimeBodyPart();
-        String fileName = WysiwygController.getWysiwygFileName(ilp.getPK().getId());
-        String htmlMessagePath = com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(
-            getComponentId()) + "Attachment" + separatorChar + "wysiwyg" + separatorChar;
-
-
+        List<SimpleDocument> contents = AttachmentServiceFactory.getAttachmentService().
+            listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg, null);
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        for (SimpleDocument content : contents) {
+          AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, content.getPk(),
+              content.getLanguage());
+        }
         mbp1.setDataHandler(new DataHandler(new ByteArrayDataSource(replaceFileServerWithLocal(
-            FileUtils.readFileToString(new File(htmlMessagePath + fileName)), server),
+            IOUtils.toString(buffer.toByteArray(), CharEncoding.UTF_8), server),
             MimeTypes.HTML_MIME_TYPE)));
-
+        IOUtils.closeQuietly(buffer);
         // Fichiers joints
         WAPrimaryKey publiPK = ilp.getPK();
         publiPK.setComponentName(getComponentId());
         publiPK.setSpace(getSpaceId());
 
         // create the Multipart and its parts to it
-        // Multipart mp = new MimeMultipart("related");
         String mimeMultipart = getSettings().getString("SMTPMimeMultipart", "related");
         Multipart mp = new MimeMultipart(mimeMultipart);
         mp.addBodyPart(mbp1);
 
-        // Images jointes
-        ForeignPK foreignKey = new ForeignPK(ilp.getPK().getId(), getComponentId());
+        // Images jointes        
         List<SimpleDocument> fichiers = AttachmentServiceFactory.getAttachmentService().
             listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
         for (SimpleDocument attachment : fichiers) {
@@ -458,10 +468,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
         // add the Multipart to the message
         msg.setContent(mp);
-
         // set the Date: header
         msg.setSentDate(new Date());
-
         // create a Transport connection (TCP)
         transport = session.getTransport("smtp");
 
@@ -601,7 +609,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       if (WysiwygController.loadFileAndAttachment(getComponentId(), target) != null) {
         WysiwygController.deleteWysiwygAttachments(getComponentId(), target);
       }
-      WysiwygController.copy(getComponentId(), source, getComponentId(), target, getUserId());
+      String publicationSource = source;
+      /* if(StringUtil.isDefined(source) && source.startsWith(InfoLetterPublication.TEMPLATE_ID)) {
+       publicationSource = source.substring(InfoLetterPublication.TEMPLATE_ID.length());
+       }*/
+      WysiwygController.copy(getComponentId(), publicationSource, getComponentId(), target,
+          getUserId());
     } catch (Exception e) {
       throw new InfoLetterException("InfoLetterSessionController.copyWYSIWYG",
           SilverpeasRuntimeException.ERROR, e.getMessage(), e);
@@ -609,9 +622,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   public boolean isTemplateExist(InfoLetterPublicationPdC ilp) {
-    String template =
-          WysiwygController.loadFileAndAttachment(getComponentId(),
-              InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
+    String template = WysiwygController.loadFileAndAttachment(getComponentId(),
+        InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
     return !"<body></body>".equalsIgnoreCase(template);
   }
 

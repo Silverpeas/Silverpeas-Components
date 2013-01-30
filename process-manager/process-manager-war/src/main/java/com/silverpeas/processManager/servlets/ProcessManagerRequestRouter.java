@@ -59,6 +59,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 
 public class ProcessManagerRequestRouter
     extends ComponentRequestRouter<ProcessManagerSessionController> {
@@ -307,9 +311,9 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
-        String welcomeMessage = WysiwygController.load(session.getComponentId(), session.getComponentId(),
-            session.getLanguage());
-        request.setAttribute("WelcomeMessage", welcomeMessage);
+      String welcomeMessage = WysiwygController.load(session.getComponentId(), 
+          session.getComponentId(), session.getLanguage());
+      request.setAttribute("WelcomeMessage", welcomeMessage);
       setProcessFilterAttributes(session, request, session.getCurrentFilter());
       setSharedAttributes(session, request);
       return "/processManager/jsp/listProcess.jsp";
@@ -386,7 +390,7 @@ public class ProcessManagerRequestRouter
       String userId = request.getParameter("userId");
       session.resetCurrentProcessInstance(processId);
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
-          "root.MSG_GEN_ENTER_METHOD", session.getTrace("removeLock", 
+          "root.MSG_GEN_ENTER_METHOD", session.getTrace("removeLock",
           "stateName=" + stateName + ",lock_userId=" + userId));
 
       session.unlock(userId, stateName);

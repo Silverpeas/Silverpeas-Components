@@ -983,7 +983,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   void notifySubscribers(Question question, Reply reply) throws
       QuestionReplyException {
     if (reply.getPublicReply() == 1) {
-      UserDetail sender = reply.readAuthor(controller);
+      UserDetail sender = reply.readAuthor();
       SubscriptionNotifier notifier =
           new SubscriptionNotifier(sender, URLManager.getServerURL(null),
           question, reply);
