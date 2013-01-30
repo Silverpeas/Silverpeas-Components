@@ -69,7 +69,6 @@ import java.util.Map;
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
 
   private int currentPage = 0;
-  private int elementsPerPage = 10;
   private Map<String, String> fields1 = null;
   private Map<String, String> fields2 = null;
   private CommentService commentService = null;
@@ -698,9 +697,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     if (fields2 == null) {
       fields2 = createListField(getSearchFields2());
     }
-    
+    int nbElementsPerPage = Integer.parseInt(getResources().getString("nbElementsPerPage"));
     Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    classifieds = getClassifiedService().getAllValidClassifieds(getComponentId(), fields1, fields2, getSearchFields1(), getSearchFields2(), currentPage, this.elementsPerPage);
+    classifieds = getClassifiedService().getAllValidClassifieds(getComponentId(), fields1, fields2, getSearchFields1(), getSearchFields2(), currentPage, nbElementsPerPage);
     return classifieds;
   }
   
@@ -710,8 +709,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public String getNbPages(String nbClassifieds) {
     int nbClassifiedsInt = Integer.parseInt(nbClassifieds);
-    int nbPages = nbClassifiedsInt / this.elementsPerPage;
-    if (nbClassifiedsInt % this.elementsPerPage != 0) {
+    int nbElementsPerPage = Integer.parseInt(getResources().getString("nbElementsPerPage"));
+    int nbPages = nbClassifiedsInt / nbElementsPerPage;
+    if (nbClassifiedsInt % nbElementsPerPage != 0) {
       nbPages = nbPages + 1;
     }
     return Integer.toString(nbPages);

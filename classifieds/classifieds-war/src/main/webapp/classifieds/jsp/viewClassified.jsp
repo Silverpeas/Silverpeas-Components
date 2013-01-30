@@ -163,9 +163,13 @@ String language = (String) pageContext.getAttribute("language");
 		        cheminImage=$(this).children('img').attr('src');
 		        $('.selected').removeClass('selected');
 		        $(this).addClass('selected');
-		        $('.classified_selected_photo img').attr('src',cheminImage)   ;
+		        $('.classified_selected_photo img').attr('src',cheminImage);
 		  });
 		});
+	
+	function openImage(url) {
+		  SP_openWindow(url,'image','500','230','scrollbars=yes, noresize, alwaysRaised');
+  }
 </script>
 </head>
 <body id="classifieds">
@@ -294,7 +298,7 @@ String language = (String) pageContext.getAttribute("language");
                     SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
                     String url = m_context +  simpleDocument.getAttachmentURL();
                     %>
-                      <a href="#"><img src="<%=url%>"></a>
+                      <a href="javascript:onClick=openImage('<%=url%>')"><img src="<%=url%>"></a>
                     </c:forEach>
                     </div>
                     </c:if>

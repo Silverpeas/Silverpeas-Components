@@ -225,13 +225,15 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
             </c:if>
           </ul>
 
+          <view:pagination currentPage="${currentPage}" nbPages="${nbPages}" 
+                action="Main" pageParam="CurrentPage" />
+                
 						<!-- legal notice -->
 						<div id="infos" class="tableBoard">
 							<fmt:message key="classifieds.infos" />
 						</div>
 						    
-            <view:pagination currentPage="${currentPage}" nbPages="${nbPages}" action="Main"
-                pageParam="CurrentPage" />
+            
             
         </form>      
 				</view:frame>
