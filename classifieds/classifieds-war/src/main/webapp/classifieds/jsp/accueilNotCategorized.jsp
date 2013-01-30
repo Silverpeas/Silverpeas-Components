@@ -23,9 +23,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
+<%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -52,6 +54,12 @@
 <c:set var="instanceId" value="${requestScope.InstanceId}" />
 <c:set var="isWysiwygHeaderEnabled" value="${requestScope.isWysiwygHeaderEnabled}"/>
 <c:set var="wysiwygHeader" value="${requestScope.wysiwygHeader}"/>
+<c:set var="nbPages" value="${requestScope.NbPages}" />
+<c:set var="currentPage" value="${requestScope.CurrentPage}" />
+
+<%
+String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -64,13 +72,18 @@
 <script type="text/javascript">
 	var subscriptionWindow = window;
 
+	function doPagination(index) {
+     document.classifiedForm.action = "Pagination";
+     document.classifiedForm.submit();
+  }
+	
 	function openSPWindow(fonction, windowName) {
 		pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600',
 				'400', 'scrollbars=yes, resizable, alwaysRaised');
 	}
 
 	function sendData() {
-		document.classifiedForm.submit();
+		document.searchForm.submit();
 	}
 </script>
 
@@ -129,7 +142,7 @@
 				<view:frame>
 					<view:areaOfOperationOfCreation/>
 					<jsp:include page="subscriptionManager.jsp"/>
-					<form name="classifiedForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
+					<form name="searchForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
 						<c:if test="${not empty formSearch}">
 								<div id="search" >
 									<!-- Search Form -->
@@ -162,35 +175,51 @@
 						</c:if>
 					</form>
 
+          <form name="classifiedForm" action="Pagination">
           <ul id="classifieds_rich_list">
             <c:if test="${not empty classifieds}">
               <c:forEach items="${classifieds}" var="classified"
                 varStatus="loopStatus">
                 <li onclick="location.href='ViewClassified?ClassifiedId=${classified.classifiedId}'">
-                  <div class="classified_thumb"><img src="images/cat.png" alt=""/></div>
-                    <div class="classified_info">
-                      <h4><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a></h4>
-                        <div class="classified_type"><a href="http://www.silverpeas.org">${classified.searchValue1}</a> <a href="http://www.silverpeas.org">${classified.searchValue2}</a></div>
-                    </div>
+                  <c:if test="${not empty classified.images}">
+		                <div class="classified_thumb">
+		                <c:forEach var="image" items="${classified.images}" begin="0" end="0">
+		                <%
+		                SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
+		                String url = m_context +  simpleDocument.getAttachmentURL();
+		                %>
+		                  <a href="#"><img src="<%=url%>"></a>
+		                </c:forEach>
+		                </div>
+                  </c:if>
+                  
+                  <div class="classified_info">
+                   <h4><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a></h4>
+                   <div class="classified_type">
+                    <a href="ViewAllClassifiedsByCategory?CategoryName=${classified.searchValue1}&FieldKey=${classified.searchValueId1}">${classified.searchValue1}</a> 
+                    <a href="ViewAllClassifiedsByCategory?CategoryName=${classified.searchValue2}&FieldKey=${classified.searchValueId2}">${classified.searchValue2}</a>
+                   </div>
+                  </div>
                     
-                      <c:if test="${classified.price > 0}">
-                        <div class="classified_price">
-                          ${classified.price} &euro;
-                        </div>
-                      </c:if>
-                    <div class="classified_creationInfo">
-                      <c:if test="${not empty classified.validateDate}">
-                         <view:formatDateTime value="${classified.validateDate}" language="${language}"/>
-                      </c:if>
-                      <c:if test="${empty classified.validateDate}">
-                        <c:if test="${not empty classified.updateDate}">
-                           <view:formatDateTime value="${classified.updateDate}" language="${language}"/>
-                        </c:if>
-                        <c:if test="${empty classified.updateDate}">
-                           <view:formatDateTime value="${classified.creationDate}" language="${language}"/>
-                        </c:if>
-                      </c:if>
+                  <c:if test="${classified.price > 0}">
+                    <div class="classified_price">
+                      ${classified.price} &euro;
                     </div>
+                  </c:if>
+                  
+                  <div class="classified_creationInfo">
+                    <c:if test="${not empty classified.validateDate}">
+                       <view:formatDateTime value="${classified.validateDate}" language="${language}"/>
+                    </c:if>
+                    <c:if test="${empty classified.validateDate}">
+                      <c:if test="${not empty classified.updateDate}">
+                         <view:formatDateTime value="${classified.updateDate}" language="${language}"/>
+                      </c:if>
+                      <c:if test="${empty classified.updateDate}">
+                         <view:formatDateTime value="${classified.creationDate}" language="${language}"/>
+                      </c:if>
+                    </c:if>
+                  </div>
                 </li>
               </c:forEach>
             </c:if>
@@ -200,21 +229,11 @@
 						<div id="infos" class="tableBoard">
 							<fmt:message key="classifieds.infos" />
 						</div>
-
-              <div id="pagination">
-                <div class="pageNav">
-                  <div class="pageNavContent">
-                    <div class="pageOn">1</div>
-                    <div class="pageOff"> <a href="javascript:onClick=doPagination(20)" title="Aller à la page 2" class="ArrayNavigation">2</a></div>
-                    <div class="pageOff"> <a href="javascript:onClick=doPagination(40)" title="Aller à la page 3" class="ArrayNavigation">3</a></div>
-                    <div class="pageOff"> <a href="javascript:onClick=doPagination(60)" title="Aller à la page 4" class="ArrayNavigation">4</a></div>
-                    <div class="pageOff"> <a href="javascript:onClick=doPagination(80)" title="Aller à la page 5" class="ArrayNavigation">5</a></div>
-                    <div class="pageOff"> <a href="javascript:onClick=doPagination(100)" title="Aller à la page 6" class="ArrayNavigation">6</a></div>
-                    <div class="pageOff"> <a href="javascript:onClick=doPagination(20)" title="Page suivante" class="ArrayNavigation"><img border="0" align="absmiddle" alt="Page suivante" src="/silverpeas/util/viewGenerator/icons/arrows/arrowRight.gif"></a></div>
-                  </div>
-                </div>
-              </div>
-              
+						    
+            <view:pagination currentPage="${currentPage}" nbPages="${nbPages}" action="Main"
+                pageParam="CurrentPage" />
+            
+        </form>      
 				</view:frame>
 			</view:window>
 </body>

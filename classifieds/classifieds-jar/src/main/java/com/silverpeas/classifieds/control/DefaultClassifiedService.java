@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -276,7 +277,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     Connection con = openConnection();
     try {
       OrganizationController orga = new OrganizationController();
-      Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.TO_VALIDATE);
+      Collection<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.TO_VALIDATE, 0, -1);
       for(ClassifiedDetail classified : listClassified) {
         //ajouter le nom du createur
         classified.setCreatorName(orga.getUserDetail(classified.getCreatorId())
@@ -613,11 +614,15 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
   
   @Override
-  public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId, String searchField1, String searchField2) {
+  public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId, 
+          Map<String, String> mapFields1, Map<String, String> mapFields2, 
+          String searchField1, String searchField2, 
+          int currentPage, int elementsPerPage) {
     Connection con = openConnection();
     try {
       OrganizationController orga = new OrganizationController();
-      List<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID);
+      List<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID, currentPage, elementsPerPage);
+      
       for(ClassifiedDetail classified : listClassified) {
         String classifiedId = Integer.toString(classified.getClassifiedId());
         
@@ -637,8 +642,12 @@ public class DefaultClassifiedService implements ClassifiedService {
             if (pubTemplate != null) {
               RecordSet recordSet = pubTemplate.getRecordSet();
               DataRecord data = recordSet.getRecord(classifiedId);
-              String searchValue1 = (data.getField(searchField1)).getValue();
-              String searchValue2 = (data.getField(searchField2)).getValue();
+              String searchValueId1 = (data.getField(searchField1)).getValue();
+              String searchValueId2 = (data.getField(searchField2)).getValue();
+              String searchValue1 = mapFields1.get(searchValueId1);
+              String searchValue2 = mapFields2.get(searchValueId2);
+              classified.setSearchValueId1(searchValueId1);
+              classified.setSearchValueId2(searchValueId2);
               classified.setSearchValue1(searchValue1);
               classified.setSearchValue2(searchValue2);
             }

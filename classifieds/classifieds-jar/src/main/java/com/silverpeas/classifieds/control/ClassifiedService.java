@@ -28,6 +28,7 @@ import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.Subscribe;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Services provided by the Classified Silverpeas component.
@@ -228,10 +229,14 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
   /**
   * get all valid classifieds
   * @param instanceId : String
+  * @param mapFields1 : HashMap des champs de recherche 1 
+  * @param mapFields2 : HashMap des champs de recherche 1
   * @param searchField1 : champ de recherche 1
   * @param searchField2 : champ de recherche 2
+  * @param currentPage : numéro de page actuelle 
+  * @param elementsPerPage : nombre d'éléments à afficher par page
   * @return a collection of ClassifiedDetail
   */
- public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId, String searchField1, String searchField2);
+  public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId, Map<String, String> mapFields1, Map<String, String> mapFields2, String searchField1, String searchField2, int currentPage, int elementsPerPage);
   
 }
