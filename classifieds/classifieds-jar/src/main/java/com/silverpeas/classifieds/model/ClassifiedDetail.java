@@ -50,6 +50,8 @@ public class ClassifiedDetail implements SilverpeasContent {
   private String validatorId;
   private String validatorName;
   private Date validateDate;
+  private String searchValueId1;
+  private String searchValueId2;
   private String searchValue1;
   private String searchValue2;
   private List<SimpleDocument> images = new ArrayList<SimpleDocument>();
@@ -223,10 +225,26 @@ public class ClassifiedDetail implements SilverpeasContent {
     return "";
   }
   
+  public String getSearchValueId1() {
+    return this.searchValueId1;
+  }
+
+  public void setSearchValueId1(String searchValueId1) {
+    this.searchValueId1 = searchValueId1;
+  }
+  
+  public String getSearchValueId2() {
+    return this.searchValueId2;
+  }
+  
+  public void setSearchValueId2(String searchValueId2) {
+    this.searchValueId2 = searchValueId2;
+  }
+  
   public String getSearchValue1() {
     return this.searchValue1;
   }
-
+  
   public void setSearchValue1(String searchValue1) {
     this.searchValue1 = searchValue1;
   }

@@ -14,6 +14,8 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.util.StringUtil;
+
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 
@@ -29,6 +31,7 @@ public class DefaultHandler extends FunctionHandler {
     
     Form formUpdate = null;
     DataRecord data = null;
+    String nbTotalClassifieds = null;
 
     PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
     try {
@@ -43,9 +46,10 @@ public class DefaultHandler extends FunctionHandler {
       }
 
       // Stores objects in request
+      nbTotalClassifieds = classifiedsSC.getNbTotalClassifieds();
       request.setAttribute("Form", formUpdate);
       request.setAttribute("Data", data);
-      request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
+      request.setAttribute("NbTotal", nbTotalClassifieds);
       request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
       request.setAttribute("wysiwygHeader", classifiedsSC.getWysiwygHeader());
 
@@ -79,8 +83,17 @@ public class DefaultHandler extends FunctionHandler {
       return "accueil.jsp";
         
      } else { //Affichage page d'accueil annonces listées
-        
-       request.setAttribute("Classifieds", classifiedsSC.getAllValidClassifieds());
+       
+       String currentPage = request.getParameter("CurrentPage");
+       if (!StringUtil.isDefined(currentPage)) {
+         currentPage = "0";
+       }
+       int currentPageInt = Integer.parseInt(currentPage);
+       classifiedsSC.setCurrentPage(currentPageInt);
+       
+       request.setAttribute("CurrentPage", currentPage);
+       request.setAttribute("NbPages", classifiedsSC.getNbPages(nbTotalClassifieds));
+       request.setAttribute("Classifieds", classifiedsSC.getAllValidClassifieds(currentPageInt));
        
        // Returns jsp to redirect to
        return "accueilNotCategorized.jsp";

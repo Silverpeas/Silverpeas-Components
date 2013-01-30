@@ -264,19 +264,35 @@ public class ClassifiedsDAO {
    * @throws SQLException
    */
   public static List<ClassifiedDetail> getClassifiedsWithStatus(Connection con,
-      String instanceId, String status) throws SQLException {
+      String instanceId, String status, int currentPage, int elementsPerPage) throws SQLException {
     List<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
-    String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = ? ";
+    String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = ? " +
+                  " order by CASE WHEN validatedate IS NULL THEN " +
+                  " CASE WHEN updatedate IS NULL THEN creationdate ELSE updatedate END "+ 
+                  " ELSE validatedate END, "+
+                  " validatedate, updatedate, creationdate";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
+    
+    int firstIndexResult = currentPage * elementsPerPage;
+    int lastIndexResult = firstIndexResult + elementsPerPage - 1;
+    boolean displayAllElements = false;
+    if(elementsPerPage == -1) {
+      displayAllElements = true;
+    }
+    
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, status);
       rs = prepStmt.executeQuery();
+      int index = 0;
       while (rs.next()) {
-        ClassifiedDetail classified = recupClassified(rs);
-        listClassifieds.add(classified);
+        if(displayAllElements || (index >= firstIndexResult && index <= lastIndexResult)) {
+          ClassifiedDetail classified = recupClassified(rs);
+          listClassifieds.add(classified);
+        }
+        index ++;
       }
     } finally {
       // fermeture

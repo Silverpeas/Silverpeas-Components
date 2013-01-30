@@ -68,7 +68,8 @@ import java.util.Map;
 
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
 
-  private int indexOfFirstItemToDisplay = 0;
+  private int currentPage = 0;
+  private int elementsPerPage = 10;
   private Map<String, String> fields1 = null;
   private Map<String, String> fields2 = null;
   private CommentService commentService = null;
@@ -471,12 +472,12 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     return subscribes;
   }
 
-  public void setIndexOfFirstItemToDisplay(String index) {
-    this.indexOfFirstItemToDisplay = new Integer(index).intValue();
+  public void setCurrentPage(int currentPage) {
+    this.currentPage = currentPage;
   }
 
-  public int getIndexOfFirstItemToDisplay() {
-    return indexOfFirstItemToDisplay;
+  public int getCurrentPage() {
+    return this.currentPage;
   }
 
   /**
@@ -679,7 +680,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public boolean isHomePageDisplayCategorized() {
     String parameterHomePage = getComponentParameterValue("homePage");
-    if(parameterHomePage != null) {
+    if(StringUtil.isDefined(parameterHomePage)) {
       return "0".equalsIgnoreCase(getComponentParameterValue("homePage"));
     }
     return true;
@@ -687,11 +688,32 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   
   /**
    * get all valid classifieds
+   * @param currentPage
    * @return a collection of ClassifiedDetail
    */
-  public Collection<ClassifiedDetail> getAllValidClassifieds() {
+  public Collection<ClassifiedDetail> getAllValidClassifieds(int currentPage) {
+    if (fields1 == null) {
+      fields1 = createListField(getSearchFields1());
+    }
+    if (fields2 == null) {
+      fields2 = createListField(getSearchFields2());
+    }
+    
     Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    classifieds = getClassifiedService().getAllValidClassifieds(getComponentId(), getSearchFields1(), getSearchFields2());
+    classifieds = getClassifiedService().getAllValidClassifieds(getComponentId(), fields1, fields2, getSearchFields1(), getSearchFields2(), currentPage, this.elementsPerPage);
     return classifieds;
+  }
+  
+  /**
+   * get the number of pages to display
+   * @return number : String
+   */
+  public String getNbPages(String nbClassifieds) {
+    int nbClassifiedsInt = Integer.parseInt(nbClassifieds);
+    int nbPages = nbClassifiedsInt / this.elementsPerPage;
+    if (nbClassifiedsInt % this.elementsPerPage != 0) {
+      nbPages = nbPages + 1;
+    }
+    return Integer.toString(nbPages);
   }
 }
