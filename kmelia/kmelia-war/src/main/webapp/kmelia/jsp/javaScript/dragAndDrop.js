@@ -38,11 +38,13 @@ function showHideDragDrop(targetURL1, message1, targetURL2, message2, altMessage
   dNdVisible = !dNdVisible;
 }
 
-function uploadCompleted(s)
-{
-    if (s.indexOf('pubid=') > -1)
+function uploadCompleted(s) {
+    if (s.indexOf('pubid=') > -1) {
       validatePublicationClassification(s);
-    else
+    } else if (s.indexOf('newFolder=true') > -1) {
+      reloadPage(getCurrentNodeId());
+    } else {
       refreshPublications();
+    }
 	return true;
 }
