@@ -1422,10 +1422,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = rootDestination + "xmlForm.jsp";
       } else if (function.equals("UpdateXMLForm")) {
-        boolean creation = false;
         if (kmelia.isCloneNeeded()) {
           kmelia.clonePublication();
-          creation = true;
         }
 
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
@@ -1483,7 +1481,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
         context.setObjectId(pubId);
         context.setContentLanguage(kmelia.getCurrentLanguage());
-        context.setCreation(creation);
 
         form.update(items, data, context);
         set.save(data);
