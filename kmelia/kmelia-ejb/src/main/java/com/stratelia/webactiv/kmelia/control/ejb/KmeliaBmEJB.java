@@ -2763,6 +2763,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       currentPubDetail.setStatus(PublicationDetail.VALID);
       currentPubDetail.setCloneId("-1");
       currentPubDetail.setCloneStatus(null);
+      
+      // merge des fichiers joints
+      AttachmentPK pkFrom = new AttachmentPK(pubPK.getId(), pubPK.getInstanceId());
+      AttachmentPK pkTo = new AttachmentPK(cloneId, tempPK.getInstanceId());
+      HashMap<String, String> attachmentIds = AttachmentController.mergeAttachments(pkFrom, pkTo);
+
+      // merge des fichiers versionnés
 
       // merge du contenu DBModel
       if (tempPubli.getModelDetail() != null) {
@@ -2800,13 +2807,15 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
           if (memInfoId != null && !"0".equals(memInfoId)) {
             // il existait déjà un contenu
-            set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId());
+            set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
+                attachmentIds);
           } else {
             // il n'y avait pas encore de contenu
             publicationTemplateManager.addDynamicPublicationTemplate(tempPK.getInstanceId()
                     + ":" + xmlFormShortName, xmlFormShortName + ".xml");
 
-            set.clone(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId());
+            set.clone(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
+                attachmentIds);
           }
         }
       }
@@ -2819,13 +2828,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                 "useless", pubPK.getInstanceId(), pubPK.getId(), tempPubli.getPublicationDetail().
                 getUpdaterId());
       }
-
-      // merge des fichiers joints
-      AttachmentPK pkFrom = new AttachmentPK(pubPK.getId(), pubPK.getInstanceId());
-      AttachmentPK pkTo = new AttachmentPK(cloneId, tempPK.getInstanceId());
-      AttachmentController.mergeAttachments(pkFrom, pkTo);
-
-      // merge des fichiers versionnés
 
       // delete xml content
       removeXMLContentOfPublication(tempPK);
@@ -4636,6 +4638,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       PublicationPK clonePK = getPublicationBm().createPublication(clone);
       clonePK.setComponentName(fromComponentId);
       cloneId = clonePK.getId();
+      
+      // clone attachments
+      AttachmentPK pkFrom = new AttachmentPK(fromId, fromComponentId);
+      AttachmentPK pkTo = new AttachmentPK(cloneId, fromComponentId);
+      HashMap<String, String> attachmentIds = AttachmentController.cloneAttachments(pkFrom, pkTo);
 
       // eventually, paste the model content
       if (refPubComplete.getModelDetail() != null && refPubComplete.getInfoDetail() != null) {
@@ -4672,7 +4679,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           RecordSet set = pubTemplate.getRecordSet();
 
           // clone dataRecord
-          set.clone(fromId, fromComponentId, cloneId, fromComponentId);
+          set.clone(fromId, fromComponentId, cloneId, fromComponentId, attachmentIds);
         }
       }
       // paste only links, reverseLinks can't be cloned because it'is a new content not referenced
@@ -4684,11 +4691,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // paste wysiwyg
       WysiwygController.copy(null, fromComponentId, fromId, null, fromComponentId, cloneId, clone.
               getCreatorId());
-
-      // clone attachments
-      AttachmentPK pkFrom = new AttachmentPK(fromId, fromComponentId);
-      AttachmentPK pkTo = new AttachmentPK(cloneId, fromComponentId);
-      AttachmentController.cloneAttachments(pkFrom, pkTo);
 
       // paste versioning documents
       // pasteDocuments(pubPKFrom, clonePK.getId());
