@@ -372,9 +372,9 @@ function emptyTrash() {
 							// remove nb publis to root
 							var nbPublisDeleted = getNbPublis("1");
 							addNbPublis("0", 0-nbPublisDeleted);
+							// set nb publis on bin to 0
+							resetNbPublis("1");
 						}
-						// set nb publis on bin to 0
-						resetNbPublis("1");
 						displayTopicContent("1");
 					} else {
 						alert(data);
