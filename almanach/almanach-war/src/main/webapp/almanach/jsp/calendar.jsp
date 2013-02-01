@@ -188,9 +188,9 @@
           // page is now ready, initialize the calendar...
 
           var currentDay = new Date();
+          currentDay.setDate(${currentDay.dayOfMonth});
           currentDay.setFullYear(${currentDay.year});
           currentDay.setMonth(${currentDay.month});
-          currentDay.setDate(${currentDay.dayOfMonth});
 
         // page is now ready, initialize the calendar...
         <c:if test='${not calendarView.viewType.nextEventsView}'>
