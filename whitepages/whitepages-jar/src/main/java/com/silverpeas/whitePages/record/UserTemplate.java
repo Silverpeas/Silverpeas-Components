@@ -37,7 +37,6 @@ public class UserTemplate implements RecordTemplate {
 
   /**
    * A UserTemplate is built from a fileName and a language : use addFieldTemplate for each field.
-   * @see addFieldTemplate
    */
   public UserTemplate(String fileName, String language) {
     label = new ResourceLocator(
@@ -54,6 +53,7 @@ public class UserTemplate implements RecordTemplate {
   /**
    * Returns all the field names of the UserRecord built on this template.
    */
+  @Override
   public String[] getFieldNames() {
     String[] fieldNames = new String[9];
     fieldNames[0] = "Id";
@@ -72,6 +72,7 @@ public class UserTemplate implements RecordTemplate {
   /**
    * Returns all the field templates.
    */
+  @Override
   public FieldTemplate[] getFieldTemplates() {
     FieldTemplate[] fieldTemplates = new FieldTemplate[9];
     try {
@@ -95,6 +96,7 @@ public class UserTemplate implements RecordTemplate {
    * Returns the FieldTemplate of the named field.
    * @throw FormException if the field name is unknown.
    */
+  @Override
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     GenericFieldTemplate fieldTemplate = null;
 
@@ -114,6 +116,7 @@ public class UserTemplate implements RecordTemplate {
    * Returns the field index of the named field.
    * @throw FormException if the field name is unknown.
    */
+  @Override
   public int getFieldIndex(String fieldName) throws FormException {
     return -1;
   }
@@ -121,6 +124,7 @@ public class UserTemplate implements RecordTemplate {
   /**
    * Returns an empty DataRecord built on this template.
    */
+  @Override
   public DataRecord getEmptyRecord() throws FormException {
     return null;
   }
@@ -128,6 +132,7 @@ public class UserTemplate implements RecordTemplate {
   /**
    * Returns true if the data record is built on this template and all the constraints are ok.
    */
+  @Override
   public boolean checkDataRecord(DataRecord record) {
     return true;
   }
