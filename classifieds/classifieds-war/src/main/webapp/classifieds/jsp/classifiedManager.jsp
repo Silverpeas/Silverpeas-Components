@@ -63,7 +63,6 @@
 
 <c:set var="action" value="${(not empty classified) ? 'UpdateClassified' : 'CreateClassified' }" />
 <c:set var="creatorName" value="${(not empty classified) ? classified.creatorName : userName }" />
-<c:set var="creatorEmail" value="${(not empty classified) ? classified.creatorEmail : userEmail }" />
 
 <c:if test="${not empty classified}">
 	<c:set var="classifiedId" value="${classified.classifiedId}" />
@@ -240,7 +239,6 @@
 </c:if>
 </c:set>
 <c:set var="displayedId"><view:encodeHtml string="${classifiedId}" /></c:set>
-<c:set var="displayedEmail"><view:encodeHtml string="${creatorEmail}" /></c:set>
 
 <form name="classifiedForm" class="classifiedForm" action="${action}" method="post" enctype="multipart/form-data" onsubmit="sendData();return false;">
 <fieldset id="classifiedInfo" class="skinFieldset">
@@ -283,7 +281,12 @@
     <div class="field" id="creationDateArea">
       <label class="txtlibform"><fmt:message key="classifieds.creationDate"/> :</label>
       <div class="champs">
-        <view:formatDateTime value="${creationDate}"/> <fmt:message key="classifieds.by"/> ${creatorName} (${displayedEmail})
+	      <view:formatDateTime value="${creationDate}"/> <fmt:message key="classifieds.by"/>
+	      <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-profile.js" type="text/javascript"></script>
+	      <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-messageme.js" type="text/javascript"></script>
+	      <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-invitme.js" type="text/javascript"></script>
+	      <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-userZoom.js" type="text/javascript"></script>
+	      <span class="userToZoom" rel="${creatorId}">${creatorName}</span>
       </div>
     </div>
   </c:if>

@@ -225,9 +225,13 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
             </c:if>
           </ul>
 
+          <fmt:message var="altPreviousLabel" key="classifieds.pagination.previousPage" />
+          <fmt:message var="altNextLabel" key="classifieds.pagination.nextPage" />
+          <fmt:message var="altGoToLabel" key="classifieds.pagination.gotoPage" />
           <view:pagination currentPage="${currentPage}" nbPages="${nbPages}" 
-                action="Main" pageParam="CurrentPage" />
-                
+                action="Main" pageParam="CurrentPage" altPreviousAction="${altPreviousLabel}" 
+                altNextAction="${altNextLabel}" altGoToAction="${altGoToLabel}"/>
+            
 						<!-- legal notice -->
 						<div id="infos" class="tableBoard">
 							<fmt:message key="classifieds.infos" />

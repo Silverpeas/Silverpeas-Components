@@ -693,7 +693,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     if (fields2 == null) {
       fields2 = createListField(getSearchFields2());
     }
-    int nbElementsPerPage = Integer.parseInt(getResources().getString("nbElementsPerPage"));
+    int nbElementsPerPage = Integer.parseInt(getResources().getSetting("nbElementsPerPage"));
     Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
     classifieds = getClassifiedService().getAllValidClassifieds(getComponentId(), fields1, fields2, getSearchFields1(), getSearchFields2(), currentPage, nbElementsPerPage);
     return classifieds;
@@ -705,7 +705,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public String getNbPages(String nbClassifieds) {
     int nbClassifiedsInt = Integer.parseInt(nbClassifieds);
-    int nbElementsPerPage = Integer.parseInt(getResources().getString("nbElementsPerPage"));
+    int nbElementsPerPage = Integer.parseInt(getResources().getSetting("nbElementsPerPage"));
     int nbPages = nbClassifiedsInt / nbElementsPerPage;
     if (nbClassifiedsInt % nbElementsPerPage != 0) {
       nbPages = nbPages + 1;
