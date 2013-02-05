@@ -40,6 +40,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class JSONServlet extends HttpServlet {
 
@@ -62,7 +63,7 @@ public class JSONServlet extends HttpServlet {
     String action = req.getParameter("Action");
 
     KmeliaSessionController kmeliaSC = (KmeliaSessionController) req.getSession().getAttribute(
-                "Silverpeas_" + "kmelia" + "_" + componentId);
+                "Silverpeas_kmelia_" + componentId);
     if(kmeliaSC == null) {
       return;
     }
@@ -85,8 +86,8 @@ public class JSONServlet extends HttpServlet {
     boolean isAdmin = SilverpeasRole.admin.isInRole(profile);
     boolean isPublisher = SilverpeasRole.publisher.isInRole(profile);
     boolean isWriter = SilverpeasRole.writer.isInRole(profile);
-    boolean isRoot = "0".equals(id);
-    boolean isBasket = "1".equals(id);
+    boolean isRoot = NodePK.ROOT_NODE_ID.equals(id);
+    boolean isBasket = NodePK.BIN_NODE_ID.equals(id);
     boolean statisticEnable = kmeliaSC.getSettings().getBoolean("kmelia.stats.enable", false);
     boolean canShowStats =
         isPublisher || SilverpeasRole.supervisor.isInRole(profile) || isAdmin &&
@@ -96,6 +97,9 @@ public class JSONServlet extends HttpServlet {
       boolean binOperationsAllowed = isAdmin || isPublisher || isWriter;
       operations.put("emptyTrash", binOperationsAllowed);
       operations.put("exportSelection", binOperationsAllowed);
+      operations.put("copyPublications", binOperationsAllowed);
+      operations.put("cutPublications", binOperationsAllowed);
+      operations.put("deletePublications", binOperationsAllowed);
     } else {
       // general operations
       operations.put("admin", kmeliaSC.isComponentManageable());
@@ -127,16 +131,21 @@ public class JSONServlet extends HttpServlet {
       boolean publicationsInTopic = !isRoot || (isRoot && (kmeliaSC.getNbPublicationsOnRoot() == 0
               || !kmeliaSC.isTreeStructure()));
       boolean addPublicationAllowed = !SilverpeasRole.user.isInRole(profile) && publicationsInTopic;
+      boolean operationsOnSelectionAllowed = (isAdmin || isPublisher) && publicationsInTopic; 
 
       operations.put("addPubli", addPublicationAllowed);
       operations.put("wizard", addPublicationAllowed && kmeliaSC.isWizardEnabled());
       operations.put("importFile", addPublicationAllowed && kmeliaSC.isImportFileAllowed());
       operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
+      operations.put("copyPublications", operationsOnSelectionAllowed);
+      operations.put("cutPublications", operationsOnSelectionAllowed);
       operations.put("paste", addPublicationAllowed);
 
       operations.put("sortPublications", isAdmin && publicationsInTopic);
       operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.
               isTopicHaveUpdateChainDescriptor(id));
+      
+      operations.put("deletePublications", operationsOnSelectionAllowed);
 
       operations.put("exportSelection", !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
