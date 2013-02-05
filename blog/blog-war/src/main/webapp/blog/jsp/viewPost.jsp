@@ -32,43 +32,39 @@
 
 <% 
 // recuperation des parametres
-PostDetail	post		= (PostDetail) request.getAttribute("Post");
-Collection<NodeDetail>	categories	= (Collection) request.getAttribute("Categories");
-Collection<Archive>		archives	= (Collection) request.getAttribute("Archives");
-Collection<LinkDetail>	links		= (Collection) request.getAttribute("Links");
-String 		profile		= (String) request.getAttribute("Profile");
-String		blogUrl		= (String) request.getAttribute("Url");
-String		rssURL		= (String) request.getAttribute("RSSUrl");
-List		events		= (List) request.getAttribute("Events");
-String 		dateCal		= (String) request.getAttribute("DateCalendar");
-WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
-StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
+  PostDetail post = (PostDetail) request.getAttribute("Post");
+  String profile = (String) request.getAttribute("Profile");
+  WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
+  StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 
-Date 	   dateCalendar	= new Date(dateCal);
-String categoryId = "";
-if (post.getCategory() != null)
-	categoryId = post.getCategory().getNodePK().getId();
-String postResourceType = post.getContributionType();
-String postId = post.getPublication().getPK().getId();
-String link	= post.getPermalink();
+  String categoryId = "";
+  if (post.getCategory() != null) {
+    categoryId = post.getCategory().getNodePK().getId();
+  }
+  String postResourceType = post.getContributionType();
+  String postId = post.getPublication().getPK().getId();
+  String link = post.getPermalink();
 
-java.util.Calendar cal = GregorianCalendar.getInstance();
-cal.setTime(post.getDateEvent());
-String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEEK));
+  java.util.Calendar cal = GregorianCalendar.getInstance();
+  cal.setTime(post.getDateEvent());
+  String day = resource.getString("GML.jour" + cal.get(java.util.Calendar.DAY_OF_WEEK));
 
-boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
-
-if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) { 
-	operationPane.addOperation("useless", resource.getString("blog.updatePost"), "EditPost?PostId="+postId);
-	if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
-	  	operationPane.addOperation("useless", resource.getString("blog.draftOutPost"), "DraftOutPost?PostId="+postId);
-	}
-	operationPane.addOperation("useless", resource.getString("blog.deletePost"), "javascript:onClick=deletePost('"+postId+"')");
-	operationPane.addLine();
-}
-if (!isUserGuest) { 
-  operationPane.addOperation("useless", resource.getString("GML.notify"), "javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')");
-}
+  if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) ||
+      SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) {
+    operationPane.addOperation("useless", resource.getString("blog.updatePost"),
+        "EditPost?PostId=" + postId);
+    if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
+      operationPane.addOperation("useless", resource.getString("blog.draftOutPost"),
+          "DraftOutPost?PostId=" + postId);
+    }
+    operationPane.addOperation("useless", resource.getString("blog.deletePost"),
+        "javascript:onClick=deletePost('" + postId + "')");
+    operationPane.addLine();
+  }
+  if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest()) {
+    operationPane.addOperation("useless", resource.getString("GML.notify"),
+        "javaScript:onClick=goToNotify('ToAlertUser?PostId=" + postId + "')");
+  }
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
