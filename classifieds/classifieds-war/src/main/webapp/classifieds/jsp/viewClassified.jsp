@@ -27,9 +27,11 @@
 	isELIgnored="false"%>
 
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
+<%@page import="com.silverpeas.classifieds.model.ClassifiedDetail"%>
 <%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -62,20 +64,22 @@
 <c:set var="classified" value="${requestScope.Classified}" />
 <c:set var="instanceId" value="${classified.instanceId}" />
 <c:set var="creatorId" value="${classified.creatorId}" />
-
 <c:set var="xmlForm" value="${requestScope.Form}" />
 <c:set var="xmlData" value="${requestScope.Data}" />
 <c:set var="xmlContext" value="${requestScope.Context}" />
-
+<c:set var="title" value="${classified.title}" />
+<c:set var="description" value="${classified.description}" />
+<c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
+<c:set var="displayedDescription"><view:encodeHtml string="${description}" /></c:set>
 <%
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-String language = (String) pageContext.getAttribute("language");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <view:looknfeel />
+<view:includePlugin name="messageme"/>
 <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
 <fmt:message var="deletionConfirm" key="classifieds.confirmDeleteClassified" />
 <script type="text/javascript">
@@ -164,11 +168,12 @@ String language = (String) pageContext.getAttribute("language");
 		        $('.selected').removeClass('selected');
 		        $(this).addClass('selected');
 		        $('.classified_selected_photo img').attr('src',cheminImage);
+		        $('.classified_selected_photo a').attr('href',"javascript:onClick=openImage('"+cheminImage+"')");
 		  });
 		});
 	
 	function openImage(url) {
-		  SP_openWindow(url,'image','500','230','scrollbars=yes, noresize, alwaysRaised');
+		  SP_openWindow(url,'image','700','500','scrollbars=yes, noresize, alwaysRaised');
   }
 </script>
 </head>
@@ -248,21 +253,27 @@ String language = (String) pageContext.getAttribute("language");
               <div class="rightContent">
                 <div class="bgDegradeGris" id="classified_info">
                   <div class="paragraphe" id="classified_info_creation">
-                   <fmt:message key="classifieds.annonceur" /> : 
+                   <fmt:message key="classifieds.online" /></BR>
+                   <c:if test="${fn:length(validationDate) > 0}">
+                     <b><c:out value="${validationDate}" /></b>&nbsp;
+                   </c:if>
+                   <c:if test="${empty validationDate}">
+                      <b><c:out value="${creationDate}" /></b>&nbsp;
+                   </c:if>
+                   <fmt:message key="classifieds.by" />&nbsp;
                     <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-profile.js" type="text/javascript"></script>
                     <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-messageme.js" type="text/javascript"></script>
                     <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-invitme.js" type="text/javascript"></script>
                     <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-userZoom.js" type="text/javascript"></script>
                     <span class="userToZoom" rel="${classified.creatorId}">${classified.creatorName}</span>
                     <div class="profilPhoto"><img class="defaultAvatar" alt="" src="${pageContext.request.contextPath}${classified.creator.avatar}"></div></BR>
-									 <fmt:message key="classifieds.parutionDate" /> : <c:out value="${creationDate}" /></BR>
+
 									 <c:if test="${fn:length(updateDate) > 0}">
-									   <fmt:message key="classifieds.updateDate" /> : <c:out value="${updateDate}" /></BR>
+									   <fmt:message key="classifieds.updateDate" /> : <b><c:out value="${updateDate}" /></b></BR>
 									 </c:if>
-									 <c:if test="${fn:length(validationDate) > 0 and classified.validatorName != null and fn:length(classified.validatorName) > 0}">
-									   <fmt:message key="classifieds.validateDate" /> : <c:out value="${validationDate}" />&nbsp;
-									   <fmt:message key="classifieds.by" />&nbsp;${classified.validatorName}
-									 </c:if>
+									</div>
+									<div id="classified_contact_link" class="bgDegradeGris">
+									 <a rel="${classified.creatorId},${classified.creatorName}" class="link notification" href="#"><fmt:message key="classifieds.contactAdvertiser"/></a>
 									</div>
                   <p></p>
                 </div>
@@ -270,7 +281,7 @@ String language = (String) pageContext.getAttribute("language");
               <div class="principalContent">
                 <div id="menubar-creation-actions"></div>
                 <div class="classified_fiche">
-                  <h2 class="classified_title">${classified.title}</h2>
+                  <h2 class="classified_title">${displayedTitle}</h2>
                   <div class="classified_photos">
                     <div class="classified_thumbs">
                     <%
@@ -306,7 +317,7 @@ String language = (String) pageContext.getAttribute("language");
                   <c:if test="${classified.price > 0}">
                     <div class="classified_price">${classified.price} &euro;</div>
                   </c:if>  
-                  <p class="classified_description">${classified.description}</p>
+                  <p class="classified_description">${displayedDescription}</p>
                   
                   <!-- <hr class="clear" /> -->
                   <c:if test="${not empty xmlForm}">
@@ -353,7 +364,7 @@ String language = (String) pageContext.getAttribute("language");
 							</tr>
 							<tr>
 								<td class="txtlibform"><fmt:message key="GML.title" /> :</td>
-								<td valign="top">${classified.title}</td>
+								<td valign="top">${displayedTitle}</td>
 							</tr>
 							<tr>
 								<td class="txtlibform" valign="top"><fmt:message key="classifieds.refusalMotive" /> :</td>
