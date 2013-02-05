@@ -25,7 +25,7 @@ import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.almanach.AlmanachContentManager;
 import com.stratelia.webactiv.almanach.model.*;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -46,7 +46,6 @@ import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -394,31 +393,6 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
-   * getNextEvents(java.lang.String, int)
-   */
-  //@Override
-//  public Collection<EventDetail> getNextEvents(String instanceId, int nbReturned) {
-//    SilverTrace.info("almanach", "AlmanachBmEJB.getNextEvents()",
-//        "root.MSG_GEN_ENTER_METHOD");
-//    Connection con = null;
-//    try {
-//      EventPK pk = new EventPK("", "", instanceId);
-//      con = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
-//      Collection<EventDetail> events = getEventDAO().getNextEvents(con, pk, nbReturned);
-//      for (EventDetail event : events) {
-//        event.setPeriodicity(getPeriodicity(event.getId()));
-//      }
-//      return events;
-//    } catch (Exception e) {
-//      throw new AlmanachRuntimeException("AlmanachBmEJB.getNextEvents()",
-//          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL", e);
-//    } finally {
-//      DBUtil.close(con);
-//    }
-//  }
   /**
    * @return
    */

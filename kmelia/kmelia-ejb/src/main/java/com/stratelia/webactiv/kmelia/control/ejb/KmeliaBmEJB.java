@@ -63,7 +63,7 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
@@ -2395,12 +2395,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
     return VALIDATION_CLASSIC;
   }
-  
+
   private boolean isTargetedValidationEnabled(String componentId) {
     int value = getValidationType(componentId);
     return value == KmeliaHelper.VALIDATION_TARGET_N || value == KmeliaHelper.VALIDATION_TARGET_1;
   }
-  
+
   private List<String> getValidatorIds(PublicationDetail publi) {
     List<String> allValidators = new ArrayList<String>();
     if (isDefined(publi.getTargetValidatorId())) {
@@ -2528,7 +2528,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             }
           }
         }
-        
+
       }
 
       if (validationComplete) {
@@ -4160,7 +4160,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return publicationImport.importPublication(publiParams, formParams,
         language, xmlFormName, discrimatingParameterName, userProfile);
   }
-  
+
   public boolean importPublication(String componentId, String topicId, String userId,
       Map<String, String> publiParams, Map<String, String> formParams, String language,
       String xmlFormName, String discriminantParameterName, String userProfile,
@@ -4641,7 +4641,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   private NodePK getRootPK(String componentId) {
     return new NodePK(NodePK.ROOT_NODE_ID, componentId);
   }
-  
+
   @Override
   public boolean isUserCanValidatePublication(PublicationPK pubPK, String userId)
       throws RemoteException {
@@ -4664,7 +4664,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     return true;
   }
-  
+
   @Override
   public boolean isUserCanValidate(String componentId, String userId) throws RemoteException {
     if (KmeliaHelper.isToolbox(componentId)) {
@@ -4781,5 +4781,5 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
     return null;
   }
- 
+
 }

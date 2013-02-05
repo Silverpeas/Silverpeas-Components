@@ -40,7 +40,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import org.apache.commons.fileupload.FileItem;
@@ -59,10 +59,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 
 public class ProcessManagerRequestRouter
     extends ComponentRequestRouter<ProcessManagerSessionController> {
@@ -311,7 +307,7 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
-      String welcomeMessage = WysiwygController.load(session.getComponentId(), 
+      String welcomeMessage = WysiwygController.load(session.getComponentId(),
           session.getComponentId(), session.getLanguage());
       request.setAttribute("WelcomeMessage", welcomeMessage);
       setProcessFilterAttributes(session, request, session.getCurrentFilter());

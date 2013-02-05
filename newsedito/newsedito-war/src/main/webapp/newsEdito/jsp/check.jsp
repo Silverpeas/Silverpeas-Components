@@ -76,8 +76,8 @@
 <%@ page import="com.stratelia.webactiv.util.publication.model.CompletePublication"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.ValidationStep"%>
 
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.WysiwygException"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
 <%@ page import="com.silverpeas.util.ForeignPK"%>
@@ -86,8 +86,6 @@
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="com.stratelia.webactiv.util.statistic.model.HistoryByUser"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate" %>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplateException" %>
 <%@ page import="com.silverpeas.form.DataRecord" %>
 <%@ page import="com.silverpeas.form.Form" %>

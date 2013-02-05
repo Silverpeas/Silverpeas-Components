@@ -43,7 +43,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import org.silverpeas.importExport.versioning.DocumentVersion;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.kmelia.KmeliaSecurity;
@@ -579,7 +579,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("UserCanValidate", kmelia.isUserCanValidatePublication());
           request.setAttribute("ValidationStep", kmelia.getValidationStep());
           request.setAttribute("ValidationType", kmelia.getValidationType());
-          
+
           // check if user is writer with approval right (versioning case)
           request.setAttribute("WriterApproval", kmelia.isWriterApproval(id));
           request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
@@ -1599,7 +1599,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String newPositionName = request.getParameter("Name");
         String newPositionDescription = request.getParameter("Description");
         String translation = request.getParameter("Translation");
-        NodeDetail position = new NodeDetail("toDefine", newPositionName, newPositionDescription, 
+        NodeDetail position = new NodeDetail("toDefine", newPositionName, newPositionDescription,
             null, null, null, "0", "X");
         // I18N
         I18NHelper.setI18NInfo(position, request);
@@ -1611,7 +1611,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String positionId = request.getParameter("PositionId");
         String positionName = request.getParameter("PositionName");
         String positionDescription = request.getParameter("PositionDescription");
-        NodeDetail position = new NodeDetail(positionId, positionName, positionDescription, null, 
+        NodeDetail position = new NodeDetail(positionId, positionName, positionDescription, null,
             null, null, "0", "X");
         // I18N
         I18NHelper.setI18NInfo(position, request);

@@ -98,8 +98,8 @@
 <%@ page import="com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper"%>
 
 <%@ page import="com.silverpeas.comment.model.Comment"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.WysiwygException"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
 <%@ page import="com.silverpeas.util.ForeignPK"%>

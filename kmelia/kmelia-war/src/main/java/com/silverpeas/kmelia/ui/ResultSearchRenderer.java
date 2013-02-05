@@ -34,7 +34,7 @@ import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -161,7 +161,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
         template.setAttribute("wysiwygContent", content);
       }
     } else {
-      // 
+      //
 
       String infoId = pubDetail.getInfoId();
       String pubId = pubDetail.getPK().getId();

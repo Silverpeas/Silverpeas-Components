@@ -46,7 +46,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
@@ -77,8 +77,6 @@ import javax.mail.internet.MimeMultipart;
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -422,7 +420,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         Multipart mp = new MimeMultipart(mimeMultipart);
         mp.addBodyPart(mbp1);
 
-        // Images jointes        
+        // Images jointes
         List<SimpleDocument> fichiers = AttachmentServiceFactory.getAttachmentService().
             listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
         for (SimpleDocument attachment : fichiers) {

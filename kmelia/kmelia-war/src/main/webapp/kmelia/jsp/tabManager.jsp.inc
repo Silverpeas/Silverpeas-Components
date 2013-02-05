@@ -7,28 +7,37 @@
 <%!
 
 void displayJavascriptAndFormToOperations(KmeliaSessionController kmeliaScc, JspWriter out) throws IOException {
-     out.println("<Form Name=\"operationsForm\" ACTION=\"null\" Method=\"POST\">");
+     out.println("<form Name=\"operationsForm\" ACTION=\"null\" Method=\"POST\">");
          out.println("<input type=\"hidden\" name=\"PubId\">");
          out.println("<input type=\"hidden\" name=\"Action\">");
-     out.println("</Form>");
+     out.println("</form>");
 
-     out.println("<Form Name=\"pathForm\" ACTION=\"null\" Method=\"POST\">");
+     out.println("<form Name=\"pathForm\" ACTION=\"null\" Method=\"POST\">");
          out.println("<input type=\"hidden\" name=\"PubId\">");
          out.println("<input type=\"hidden\" name=\"TopicId\">");
          out.println("<input type=\"hidden\" name=\"Action\">");
-     out.println("</Form>");
+     out.println("</form>");
 
      out.println("<script language=\"javascript\">");
+      out.println("function goToOperationByGet(target, pubId, operation) {");
+      out.println("goToOperation(target, pubId, operation, 'GET');");
+     out.println("}");
+
+    out.println("function goToOperation(target, pubId, operation, method) {");
+      out.println("alertMsg = \""+kmeliaScc.getString("PubRemplirFormulaire")+"\";");
+      out.println("if (pubId == \"\") {");
+	    out.println("window.alert(alertMsg);");
+      out.println("} else { ");
+        out.println("document.operationsForm.PubId.value = pubId;");
+        out.println("document.operationsForm.Action.value = operation;");
+        out.println("document.operationsForm.action = target;");
+        out.println("document.operationsForm.method = method");
+        out.println("document.operationsForm.submit();");
+      out.println("}");
+     out.println("}");
+
      out.println("function goToOperation(target, pubId, operation) {");
-          out.println("alertMsg = \""+kmeliaScc.getString("PubRemplirFormulaire")+"\";");
-          out.println("if (pubId == \"\") {");
-	        out.println("window.alert(alertMsg);");
-          out.println("} else { ");
-                out.println("document.operationsForm.PubId.value = pubId;");
-                out.println("document.operationsForm.Action.value = operation;");
-                out.println("document.operationsForm.action = target;");
-                out.println("document.operationsForm.submit();");
-          out.println("}");
+        out.println("goToOperation(target, pubId, operation, 'POST');");
      out.println("}");
 
      out.println("function goToOperationInAnotherWindow(target, pubId, operation) {");
@@ -130,11 +139,10 @@ public void displayAllOperations(String id, KmeliaSessionController kmeliaScc, G
        	  tabbedPane.addTab(resources.getString("Model")+decoration, "javaScript:onClick=goToOperation('"+routerUrl+"ToPubliContent', '"+id+"', 'ModelUpdateView')", action.equals("ModelUpdateView") || action.equals("NewModel") || action.equals("ModelChoice"), enabled, row);
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_ATTACHMENTS) == -1) {
-          if (kmeliaScc.getComponentId().startsWith("toolbox"))
-          {
-          i++;
+          if (kmeliaScc.getComponentId().startsWith("toolbox")) {
+            i++;
           	decoration = "";
-          tabbedPane.addTab(resources.getString("GML.attachments")+decoration, "javaScript:onClick=goToOperation('"+routerUrl+"ViewAttachments', '"+id+"', 'ViewAttachments')", action.equals("ViewAttachments"), enabled, row);
+            tabbedPane.addTab(resources.getString("GML.attachments")+decoration, "javaScript:onClick=goToOperationByGet('"+routerUrl+"ViewAttachments', '"+id+"', 'ViewAttachments')", action.equals("ViewAttachments"), enabled, row);
           }
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_SEE_ALSO) == -1 && !kmaxMode) {

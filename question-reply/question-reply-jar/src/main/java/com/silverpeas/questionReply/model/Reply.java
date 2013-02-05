@@ -21,7 +21,7 @@
 package com.silverpeas.questionReply.model;
 
 import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
@@ -31,7 +31,6 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 
 public class Reply extends SilverpeasBean {
@@ -46,80 +45,80 @@ public class Reply extends SilverpeasBean {
   private String creationDate;
   private int publicReply = 0;
   private int privateReply = 1;
-  
+
   public Reply() {
   }
-  
+
   public Reply(String creatorId) {
     this.creatorId = creatorId;
     this.creationDate = DateUtil.date2SQLDate(new Date());
   }
-  
+
   public Reply(long questionId, String creatorId) {
     this(creatorId);
     this.questionId = questionId;
   }
-  
+
   public long getQuestionId() {
     return questionId;
   }
-  
+
   public String getTitle() {
     return title;
   }
-  
+
   public String getContent() {
     return content;
   }
-  
+
   public String getCreatorId() {
     return creatorId;
   }
-  
+
   public String getCreationDate() {
     return creationDate;
   }
-  
+
   public int getPublicReply() {
     return publicReply;
   }
-  
+
   public int getPrivateReply() {
     return privateReply;
   }
-  
+
   public void setQuestionId(long questionId) {
     this.questionId = questionId;
   }
-  
+
   public void setCreatorId(String creatorId) {
     this.creatorId = creatorId;
   }
-  
+
   public void setCreationDate() {
     this.creationDate = DateUtil.date2SQLDate(new Date());
   }
-  
+
   public void setCreationDate(String creationDate) {
     this.creationDate = creationDate;
   }
-  
+
   public void setTitle(String title) {
     this.title = title;
   }
-  
+
   public void setContent(String content) {
     this.content = content;
   }
-  
+
   public void setPublicReply(int publicReply) {
     this.publicReply = publicReply;
   }
-  
+
   public void setPrivateReply(int privateReply) {
     this.privateReply = privateReply;
   }
-  
+
   public String readCreatorName() {
     String creatorName = null;
     UserDetail userDetail = readAuthor();
@@ -128,36 +127,36 @@ public class Reply extends SilverpeasBean {
     }
     return creatorName;
   }
-  
+
   public UserDetail readAuthor() {
     return OrganizationControllerFactory.getOrganizationController().getUserDetail(String.valueOf(
         getCreatorId()));
   }
-  
+
   public String loadWysiwygContent() {
    this.wysiwygContent = WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
           I18NHelper.defaultLanguage);
     return wysiwygContent;
   }
-  
+
   public String readCurrentWysiwygContent() {
     return this.wysiwygContent;
   }
-  
+
   public void writeWysiwygContent(String wysiwygContent) {
     this.wysiwygContent = wysiwygContent;
   }
-  
+
   @Override
   public String _getTableName() {
     return "SC_QuestionReply_Reply";
   }
-  
+
   @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
-  
+
   @Override
   public String toString() {
     return "Reply{" + "questionId=" + questionId + ", title=" + title + ", content=" + content
