@@ -20,10 +20,10 @@ void displayJavascriptAndFormToOperations(KmeliaSessionController kmeliaScc, Jsp
 
      out.println("<script language=\"javascript\">");
       out.println("function goToOperationByGet(target, pubId, operation) {");
-      out.println("goToOperation(target, pubId, operation, 'GET');");
+      out.println("goToOperationWithMethod(target, pubId, operation, 'GET');");
      out.println("}");
 
-    out.println("function goToOperation(target, pubId, operation, method) {");
+    out.println("function goToOperationWithMethod(target, pubId, operation, formMethod) {");
       out.println("alertMsg = \""+kmeliaScc.getString("PubRemplirFormulaire")+"\";");
       out.println("if (pubId == \"\") {");
 	    out.println("window.alert(alertMsg);");
@@ -31,13 +31,13 @@ void displayJavascriptAndFormToOperations(KmeliaSessionController kmeliaScc, Jsp
         out.println("document.operationsForm.PubId.value = pubId;");
         out.println("document.operationsForm.Action.value = operation;");
         out.println("document.operationsForm.action = target;");
-        out.println("document.operationsForm.method = method");
+        out.println("document.operationsForm.method = formMethod;");
         out.println("document.operationsForm.submit();");
       out.println("}");
      out.println("}");
 
      out.println("function goToOperation(target, pubId, operation) {");
-        out.println("goToOperation(target, pubId, operation, 'POST');");
+        out.println("goToOperationWithMethod(target, pubId, operation, 'POST');");
      out.println("}");
 
      out.println("function goToOperationInAnotherWindow(target, pubId, operation) {");
