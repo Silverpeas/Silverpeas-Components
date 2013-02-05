@@ -1610,7 +1610,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    */
   public boolean isPublicationTaxonomyOK() {
-    if (!isPdcUsed()) {
+    if (!isPdcUsed() || getSessionPublication() == null) {
       // le PDC n'est pas utilisé
       return true;
     } else {
@@ -1626,7 +1626,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
   
   public boolean isPublicationValidatorsOK() throws RemoteException {
-    if (SilverpeasRole.writer.isInRole(getUserTopicProfile()) &&
+    if (getSessionPublication() != null && SilverpeasRole.writer.isInRole(getUserTopicProfile()) &&
         (isTargetValidationEnable() || isTargetMultiValidationEnable())) {
       return StringUtil.isDefined(getSessionPublication().getDetail().getTargetValidatorId());
     }

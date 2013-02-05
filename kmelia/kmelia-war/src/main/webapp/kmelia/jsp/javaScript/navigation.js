@@ -856,21 +856,42 @@ function changeStatus(nodeId, currentStatus) {
 		newStatus = "Invisible";
 	}
 
+	var title = labels["operation.visible2invisible"];
 	if (newStatus == 'Invisible') {
-		question = labels["js.status.visible2invisible"];
+		$("#visibleInvisible-message p").html(labels["js.status.visible2invisible"]);
 	} else {
-		question = labels["js.status.invisible2visible"];
+		$("#visibleInvisible-message p").html(labels["js.status.invisible2visible"]);
+		title = labels["operation.invisible2visible"];
 	}
+	
+	$( "#visibleInvisible-message" ).dialog({
+		modal: true,
+		resizable: false,
+		width: 400,
+		title: title,
+		buttons: [ {
+					text: labels["js.yes"],
+					click: function() {
+						_updateTopicStatus(nodeId, newStatus, '1');
+						$( this ).dialog( "close" ); }
+				}, {
+					text: labels["js.status.onlythisfolder"],
+					click: function() {
+						_updateTopicStatus(nodeId, newStatus, '0');
+						$( this ).dialog( "close" ); }
+				}, {
+					text: labels["js.cancel"],
+					click: function() {
+						$( this ).dialog( "close" ); }
+				}]
+	});	
+}
 
-	var recursive = "0";
-	if(window.confirm(question)){
-		recursive = "1";
-	}
-
-	$.get(getWebContext()+'/KmeliaAJAXServlet', {ComponentId:getComponentId(),Action:'UpdateTopicStatus',Id:nodeId,Status:newStatus,Recursive:recursive},
+function _updateTopicStatus(nodeId, status, recursive) {
+	$.get(getWebContext()+'/KmeliaAJAXServlet', {ComponentId:getComponentId(),Action:'UpdateTopicStatus',Id:nodeId,Status:status,Recursive:recursive},
 			function(data){
 				if (data == "ok") {
-					updateUIStatus(nodeId, newStatus);
+					updateUIStatus(nodeId, status, recursive);
 				} else {
 					alert(data);
 				}

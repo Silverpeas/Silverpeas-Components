@@ -82,6 +82,7 @@ public class UserRecord implements DataRecord {
    * Returns the named field.
    * @throw FormException when the fieldName is unknown.
    */
+  @Override
   public Field getField(String fieldName) throws FormException {
     TextFieldImpl text = new TextFieldImpl();
 
@@ -100,7 +101,7 @@ public class UserRecord implements DataRecord {
     else if (fieldName.equals("Mail"))
       text.setStringValue(user.geteMail());
     else if (fieldName.equals("AccessLevel"))
-      text.setStringValue(user.getAccessLevel());
+      text.setStringValue(user.getAccessLevel().code());
     else if (fieldName.startsWith("DC.")) {
       String specificDetail = fieldName.substring(fieldName.indexOf(".") + 1);
       if (user instanceof UserFull) {

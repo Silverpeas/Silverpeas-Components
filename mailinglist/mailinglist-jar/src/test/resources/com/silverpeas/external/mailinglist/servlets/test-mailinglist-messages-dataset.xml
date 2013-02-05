@@ -36,7 +36,7 @@
 
   <domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs" passwordvalid="Y" />
   
-  <st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
+  <st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
 
   <st_space id="3" name="MGI Coutier" description="''" createdby="0" firstpagetype="1"
     firstpageextraparam="indicateurs16" ordernum="2" createtime="1194276699849" updatetime="1205750893265"
@@ -72,15 +72,15 @@
   <st_instance_data id="362" componentid="45" name="moderated" label="Liste modérée" value="yes" />
   <st_instance_data id="363" componentid="45" name="rss" label="Flux RSS" value="yes" />
   <st_user id="8" domainid="0" specificid="12" firstname="Homer" lastname="Simpson" email="homer.simpson@silverpeas.com"
-    login="hsimpson" accesslevel="U" />
+    login="hsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="7" domainid="0" specificid="11" firstname="Bart" lastname="Simpson" email="bart.simpson@silverpeas.com"
-    login="bsimpson" accesslevel="U" />
+    login="bsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="9" domainid="0" specificid="13" firstname="Marge" lastname="Simpson" email="marge.simpson@silverpeas.com"
-    login="msimpson" accesslevel="U" />
+    login="msimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="10" domainid="0" specificid="14" firstname="Lisa" lastname="Simpson" email="lisa.simpson@silverpeas.com"
-    login="lsimpson" accesslevel="U" />
+    login="lsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="11" domainid="0" specificid="15" firstname="Maggie" lastname="Simpson"
-    email="maggie.simpson@silverpeas.com" login="bbsimpson" accesslevel="U" />
+    email="maggie.simpson@silverpeas.com" login="bbsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
 
   <sc_mailinglist_internal_sub id="100" version="0" externalid="10"
     mailinglistid="2c90815b18bc148e0118bc1f86c90002" subscriber_type="user" />

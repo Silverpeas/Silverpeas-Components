@@ -272,9 +272,13 @@ labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
 labels["js.contains"] = "<fmt:message key="GML.ThisFormContains"/>";
 labels["js.error"] = "<fmt:message key="GML.error"/>";
 labels["js.errors"] = "<fmt:message key="GML.errors"/>";
+labels["js.yes"] = "<fmt:message key="GML.yes"/>";
+labels["js.no"] = "<fmt:message key="GML.no"/>";
+labels["js.cancel"] = "<fmt:message key="GML.cancel"/>";
 
 labels["js.status.visible2invisible"] = "<fmt:message key="TopicVisible2InvisibleRecursive"/>";
 labels["js.status.invisible2visible"] = "<fmt:message key="TopicInvisible2VisibleRecursive"/>";
+labels["js.status.onlythisfolder"] = "<fmt:message key="kmelia.folder.onlythisfolder"/>";
 
 labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
 labels["js.publications.trash.confirm"] = "<fmt:message key="kmelia.publications.trash.confirm"/>";
@@ -357,27 +361,33 @@ function displayTopicContent(id) {
 	
 function displaySubTopics(id) {
 	var sUrl = "<%=m_context%>/services/folders/<%=componentId%>/"+id+"/children?lang="+getTranslation();
-	$.getJSON(sUrl, function(data){
-		$("#subTopics").empty();
-		$("#subTopics").append("<ul>");
-		var basket = "";
-		var tovalidate = "";
-		$.each(data, function(i, folder) {
-				var folderId = folder.attr["id"];
-				if (folderId == "1") {
-					basket = getSubFolder(folder);
-				} else if (folderId == getToValidateFolderId()) {
-					tovalidate = getSubFolder(folder);
-				} else if (folderId != "2") {
-					$("#subTopics ul").append(getSubFolder(folder));
-				}
-		});
-		if (id == "0") {
-			$("#subTopics ul").append(tovalidate);
-			$("#subTopics ul").append(basket);
+	$.ajax(sUrl, {
+		 type: 'GET', 
+		 dataType : 'json',
+		 async : false,
+		 cache : false,
+		 success : function(data){
+			$("#subTopics").empty();
+			$("#subTopics").append("<ul>");
+			var basket = "";
+			var tovalidate = "";
+			$.each(data, function(i, folder) {
+					var folderId = folder.attr["id"];
+					if (folderId == "1") {
+						basket = getSubFolder(folder);
+					} else if (folderId == getToValidateFolderId()) {
+						tovalidate = getSubFolder(folder);
+					} else if (folderId != "2") {
+						$("#subTopics ul").append(getSubFolder(folder));
+					}
+			});
+			if (id == "0") {
+				$("#subTopics ul").append(tovalidate);
+				$("#subTopics ul").append(basket);
+			}
+			$("#subTopics").append("</ul>");
+			$("#subTopics").append("<br clear=\"all\">");
 		}
-		$("#subTopics").append("</ul>");
-		$("#subTopics").append("<br clear=\"all\">");
 	});
 }
 
@@ -421,6 +431,10 @@ $(document).ready(function() {
 
 });
 </script>
+</div>
+<div id="visibleInvisible-message" style="display: none;">
+	<p>
+	</p>
 </div>
 <div id="addOrUpdateNode" style="display: none;">
 	<form name="topicForm" action="AddTopic" method="post">
