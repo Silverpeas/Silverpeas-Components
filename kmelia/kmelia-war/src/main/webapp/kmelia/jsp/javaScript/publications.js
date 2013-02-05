@@ -66,9 +66,9 @@ function startsWith(haystack, needle){
 }
 
 function deletePublications() {
-	var confirm = labels["js.publications.trash.confirm"];
+	var confirm = getString('kmelia.publications.trash.confirm');
 	if (getCurrentNodeId() == "1") {
-		confirm = labels["js.publications.delete.confirm"];
+		confirm = getString('kmelia.publications.delete.confirm');
 	}
 	if (window.confirm(confirm)) {
 		var componentId = getComponentId();
@@ -83,9 +83,9 @@ function deletePublications() {
 							var nb = data.substring(3);
 							displayPublications(getCurrentNodeId());
 							if (getCurrentNodeId() == "1") {
-								notySuccess(nb+ labels["js.publications.delete.info"]);
+								notySuccess(nb+ getString('kmelia.publications.delete.info'));
 							} else {
-								notySuccess(nb+ labels["js.publications.trash.info"]);
+								notySuccess(nb+ getString('kmelia.publications.trash.info'));
 							}
 							publicationsRemovedSuccessfully(nb);
 						} catch (e) {
