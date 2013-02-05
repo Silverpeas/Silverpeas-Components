@@ -364,6 +364,16 @@ function initOperations(id, op) {
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
+	if (op.copyPublications) {
+		menuItem = new YAHOO.widget.MenuItem(labels["operation.copyPublications"], {url: "javascript:onclick=copyPublications()"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
+	if (op.cutPublications) {
+		menuItem = new YAHOO.widget.MenuItem(labels["operation.cutPublications"], {url: "javascript:onclick=cutPublications()"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
 	if (op.paste) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.paste"], {url: "javascript:onclick=pasteFromOperations()"});
 		oMenu.addItem(menuItem, groupIndex);

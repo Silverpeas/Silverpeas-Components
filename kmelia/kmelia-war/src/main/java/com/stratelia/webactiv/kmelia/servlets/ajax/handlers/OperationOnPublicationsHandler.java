@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2013 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,6 @@
 package com.stratelia.webactiv.kmelia.servlets.ajax.handlers;
 
 import java.rmi.RemoteException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,19 +32,15 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxHandler;
 
-public class DeletePublicationsHandler extends OperationOnPublicationsHandler implements AjaxHandler {
+public abstract class OperationOnPublicationsHandler implements AjaxHandler {
 
-  @Override
-  public String handleRequest(HttpServletRequest request, ComponentSessionController controller) {
-    KmeliaSessionController kmelia = (KmeliaSessionController) controller;
-    processSelectedPublications(request, kmelia);
-    try {
-      List<String> removed = kmelia.deleteSelectedPublications();
-      return "ok-" + removed.size();
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", "DeletePublicationsHandler.handleRequest",
-          "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }
+  protected void processSelectedPublications(HttpServletRequest request,
+      KmeliaSessionController kmelia) {
+    String selectedIds = request.getParameter("SelectedIds");
+    String notSelectedIds = request.getParameter("NotSelectedIds");
+    kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds);
   }
+  
+  @Override
+  public abstract String handleRequest(HttpServletRequest request, ComponentSessionController controller);
 }

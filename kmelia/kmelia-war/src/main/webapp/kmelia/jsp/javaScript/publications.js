@@ -101,3 +101,35 @@ function deletePublications() {
 function publicationsRemovedInError(data) {
   	notyError(data);
 }
+
+function copyPublications() {
+	var componentId = getComponentId();
+	var selectedPublicationIds = getSelectedPublicationIds();
+	var notSelectedPublicationIds = getNotSelectedPublicationIds();
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, { SelectedIds:selectedPublicationIds,NotSelectedIds:notSelectedPublicationIds,ComponentId:componentId,Action:'CopyPublications'},
+			function(data){
+				if (data == "ok") {
+					// fires event
+					// do nothing
+				} else {
+					notyError(data);
+				}
+			}, 'text');
+}
+
+function cutPublications() {
+	var componentId = getComponentId();
+	var selectedPublicationIds = getSelectedPublicationIds();
+	var notSelectedPublicationIds = getNotSelectedPublicationIds();
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, { SelectedIds:selectedPublicationIds,NotSelectedIds:notSelectedPublicationIds,ComponentId:componentId,Action:'CutPublications'},
+			function(data){
+				if (data == "ok") {
+					// fires event
+					// do nothing
+				} else {
+					notyError(data);
+				}
+			}, 'text');
+}

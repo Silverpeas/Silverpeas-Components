@@ -97,6 +97,8 @@ public class JSONServlet extends HttpServlet {
       boolean binOperationsAllowed = isAdmin || isPublisher || isWriter;
       operations.put("emptyTrash", binOperationsAllowed);
       operations.put("exportSelection", binOperationsAllowed);
+      operations.put("copyPublications", binOperationsAllowed);
+      operations.put("cutPublications", binOperationsAllowed);
       operations.put("deletePublications", binOperationsAllowed);
     } else {
       // general operations
@@ -129,19 +131,21 @@ public class JSONServlet extends HttpServlet {
       boolean publicationsInTopic = !isRoot || (isRoot && (kmeliaSC.getNbPublicationsOnRoot() == 0
               || !kmeliaSC.isTreeStructure()));
       boolean addPublicationAllowed = !SilverpeasRole.user.isInRole(profile) && publicationsInTopic;
+      boolean operationsOnSelectionAllowed = (isAdmin || isPublisher) && publicationsInTopic; 
 
       operations.put("addPubli", addPublicationAllowed);
       operations.put("wizard", addPublicationAllowed && kmeliaSC.isWizardEnabled());
       operations.put("importFile", addPublicationAllowed && kmeliaSC.isImportFileAllowed());
       operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
+      operations.put("copyPublications", operationsOnSelectionAllowed);
+      operations.put("cutPublications", operationsOnSelectionAllowed);
       operations.put("paste", addPublicationAllowed);
 
       operations.put("sortPublications", isAdmin && publicationsInTopic);
       operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.
               isTopicHaveUpdateChainDescriptor(id));
       
-      boolean deletePublicationsAllowed = (isAdmin || isPublisher) && publicationsInTopic;
-      operations.put("deletePublications", deletePublicationsAllowed);
+      operations.put("deletePublications", operationsOnSelectionAllowed);
 
       operations.put("exportSelection", !kmeliaSC.getUserDetail().isAnonymous());
       operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());

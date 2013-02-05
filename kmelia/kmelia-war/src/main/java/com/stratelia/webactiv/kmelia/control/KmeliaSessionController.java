@@ -2180,6 +2180,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public void setCurrentFolderId(String id, boolean resetSessionPublication) {
     if (!id.equals(currentFolderId)) {
       indexOfFirstPubToDisplay = 0;
+      resetSelectedPublicationIds();
     }
     if (resetSessionPublication) {
       setSessionPublication(null);
@@ -3204,12 +3205,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     addClipboardSelection(pubSelect);
   }
 
-  public void copyPublications(String[] pubIds) throws RemoteException {
+  private void copyPublications(List<String> pubIds) throws RemoteException {
     for (String pubId : pubIds) {
       if (StringUtil.isDefined(pubId)) {
         copyPublication(pubId);
       }
     }
+  }
+  
+  public void copySelectedPublications() throws RemoteException {
+    copyPublications(getSelectedPublicationIds());
   }
 
   public void cutPublication(String pubId) throws RemoteException {
@@ -3223,12 +3228,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     addClipboardSelection(pubSelect);
   }
 
-  public void cutPublications(String[] pubIds) throws RemoteException {
+  private void cutPublications(List<String> pubIds) throws RemoteException {
     for (String pubId : pubIds) {
       if (StringUtil.isDefined(pubId)) {
         cutPublication(pubId);
       }
     }
+  }
+  
+  public void cutSelectedPublications() throws RemoteException {
+    cutPublications(getSelectedPublicationIds());
   }
 
   public void copyTopic(String id) throws RemoteException {
@@ -3252,6 +3261,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
   
   public List<Object> paste(String nodeId) throws RemoteException {
+    resetSelectedPublicationIds();
     return paste(getNodeHeader(nodeId));
   }
 

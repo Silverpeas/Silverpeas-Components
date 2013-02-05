@@ -178,6 +178,8 @@ labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.
 labels["operation.shareTopic"] = "<%=resources.getString("kmelia.operation.shareTopic")%>";
 labels["operation.statistics"] = "<fmt:message key="kmelia.operation.statistics"/>";
 labels["operation.deletePublications"] = "<fmt:message key="kmelia.operation.deletePublications"/>";
+labels["operation.copyPublications"] = "<fmt:message key="kmelia.operation.copyPublications"/>";
+labels["operation.cutPublications"] = "<fmt:message key="kmelia.operation.cutPublications"/>";
 
 labels["js.topicTitle"] = "<fmt:message key="TopicTitle"/>";
 labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
