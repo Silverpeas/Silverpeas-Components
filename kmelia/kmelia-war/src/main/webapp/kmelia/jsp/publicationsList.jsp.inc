@@ -225,8 +225,8 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
 						if (checkboxAllowed)
 							out.println("<td width=\"1\">&nbsp;</td>");
 						out.println("<td width=\"1\">&nbsp;</td>");
-						out.println("<td colspan=\"3\">"+getUserName(kmeliaPub, kmeliaScc)+" - "+resources.getOutputDate(pub.getUpdateDate())+"<br>");
-						out.println(Encode.javaStringToHtmlString(pub.getDescription(language))+"<BR><BR></td>");
+						out.println("<td colspan=\"3\">"+getUserName(kmeliaPub, kmeliaScc)+" - "+resources.getOutputDate(pub.getUpdateDate())+"<br/>");
+						out.println(Encode.javaStringToHtmlString(pub.getDescription(language))+"<br/><br/></td>");
 						out.println("</td></tr></table>");
 						out.println("</td>");
                       out.println("</tr>");

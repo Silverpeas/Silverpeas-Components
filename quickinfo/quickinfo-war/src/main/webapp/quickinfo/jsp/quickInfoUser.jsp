@@ -29,7 +29,7 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController" %>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController" %>
 <%@ page import="com.silverpeas.util.*" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -42,7 +42,7 @@
 function clipboardCopy() {
 	parent.IdleFrame.location.href = '../..<%=quickinfo.getComponentUrl()%>copy.jsp?Id=<%=request.getParameter("Id")%>';
 }
-		
+
 </script>
 </head>
 <body class="txtlist" id="quickinfo">

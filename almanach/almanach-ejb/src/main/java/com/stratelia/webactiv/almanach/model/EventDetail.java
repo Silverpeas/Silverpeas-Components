@@ -40,8 +40,8 @@ import java.util.Iterator;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.almanach.AlmanachContentManager;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.util.DateUtil;
@@ -433,7 +433,7 @@ public class EventDetail extends AbstractI18NBean implements
     }
     return this.silverObjectId;
   }
-  
+
   protected void setSilverpeasContentId(String contentId) {
     this.silverObjectId = contentId;
   }

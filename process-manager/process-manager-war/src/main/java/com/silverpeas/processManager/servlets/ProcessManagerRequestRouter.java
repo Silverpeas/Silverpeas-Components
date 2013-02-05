@@ -40,7 +40,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import org.apache.commons.fileupload.FileItem;
@@ -307,9 +307,9 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
-        String welcomeMessage = WysiwygController.load(session.getComponentId(), session.getComponentId(),
-            session.getLanguage());
-        request.setAttribute("WelcomeMessage", welcomeMessage);
+      String welcomeMessage = WysiwygController.load(session.getComponentId(),
+          session.getComponentId(), session.getLanguage());
+      request.setAttribute("WelcomeMessage", welcomeMessage);
       setProcessFilterAttributes(session, request, session.getCurrentFilter());
       setSharedAttributes(session, request);
       return "/processManager/jsp/listProcess.jsp";
@@ -386,7 +386,7 @@ public class ProcessManagerRequestRouter
       String userId = request.getParameter("userId");
       session.resetCurrentProcessInstance(processId);
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()",
-          "root.MSG_GEN_ENTER_METHOD", session.getTrace("removeLock", 
+          "root.MSG_GEN_ENTER_METHOD", session.getTrace("removeLock",
           "stateName=" + stateName + ",lock_userId=" + userId));
 
       session.unlock(userId, stateName);

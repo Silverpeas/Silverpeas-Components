@@ -32,9 +32,7 @@
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="java.util.*, java.io.File"%>
 
-<%@ page import="java.util.*"%>
 <%@ page import="java.lang.*"%>
-<%@ page import="java.io.IOException"%>
 <%@ page import="java.beans.*"%>
 <%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
@@ -62,11 +60,10 @@
 <%@ page import="com.stratelia.webactiv.newsEdito.control.*"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
-<%@ page import="com.stratelia.webactiv.newsEdito.control.*"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.publication.info.model.*"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.WysiwygException"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 
 <%@ page import="com.stratelia.webactiv.newsEdito.NewsEditoException"%>

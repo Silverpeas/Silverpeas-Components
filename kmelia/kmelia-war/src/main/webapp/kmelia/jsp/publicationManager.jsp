@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.silverpeas.util.URLUtils"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
@@ -293,7 +294,7 @@
 
       nextAction = "UpdatePublication";
 
-    } else if (action.equals("New")) {
+    } else if ("New".equals(action)) {
       creationDate = resources.getOutputDate(new Date());
       beginDate = resources.getInputDate(new Date());
       tempId = "-1";
@@ -319,7 +320,7 @@
 
 	String standardParamaters = "&ComponentId=" + componentId +
 		                        "&ObjectId=" + objectId +
-		                        "&BackUrl=" + URLEncoder.encode(backUrl) +
+		                        "&BackUrl=" + URLUtils.encodePathParamValue(backUrl) +
 	                            "&ObjectType=" + ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
 
 	int[] thumbnailSize = kmeliaScc.getThumbnailWidthAndHeight();

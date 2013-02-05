@@ -26,7 +26,7 @@ package com.stratelia.webactiv.almanach.control;
 import java.util.Collection;
 
 import com.silverpeas.calendar.DateTime;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ import static com.silverpeas.util.StringUtil.*;
 
 /**
  * An occurrence of an event in the time and that can be rendered in a calendar view.
- * 
+ *
  * A DisplayableEventOccurrence instance decorates an event occurrence by adding to it rendering
  * information so that the occurrence can be displayed into a calendar view.
  */

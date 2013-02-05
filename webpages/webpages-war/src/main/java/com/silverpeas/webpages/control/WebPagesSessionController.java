@@ -37,7 +37,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -265,7 +265,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     // index updated data
     indexForm(set);
   }
-  
+
   private void indexForm(RecordSet recordSet) throws WebPagesException {
     try {
       if (recordSet == null) {

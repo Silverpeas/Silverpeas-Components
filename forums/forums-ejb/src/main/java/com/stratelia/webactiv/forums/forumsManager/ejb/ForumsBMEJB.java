@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -47,8 +46,8 @@ import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.forums.ForumsContentManager;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
@@ -1094,11 +1093,7 @@ public class ForumsBMEJB implements SessionBean {
       indexEntry.setTitle(message.getTitle());
       indexEntry.setCreationDate(message.getDate());
       indexEntry.setCreationUser(message.getAuthor());
-
-      String wysiwygPath = getWysiwygPath(componentId, messageId);
-      if (StringUtil.isDefined(wysiwygPath)) {
-        indexEntry.addFileContent(wysiwygPath, null, "text/html", null);
-      }
+      WysiwygController.index(componentId, messageId);
     }
     IndexEngineProxy.addIndexEntry(indexEntry);
   }
@@ -1148,6 +1143,7 @@ public class ForumsBMEJB implements SessionBean {
    *
    * @see
    */
+  @Override
   public void ejbActivate() {
   }
 
@@ -1156,6 +1152,7 @@ public class ForumsBMEJB implements SessionBean {
    *
    * @see
    */
+  @Override
   public void ejbPassivate() {
   }
 
@@ -1164,6 +1161,7 @@ public class ForumsBMEJB implements SessionBean {
    *
    * @see
    */
+  @Override
   public void ejbRemove() {
   }
 
@@ -1173,6 +1171,7 @@ public class ForumsBMEJB implements SessionBean {
    * @param sc
    * @see
    */
+  @Override
   public void setSessionContext(SessionContext sc) {
   }
 
@@ -1186,16 +1185,10 @@ public class ForumsBMEJB implements SessionBean {
   public void ejbCreate() throws CreateException {
   }
 
-  // Methodes internes
   /**
    * Ouverture de la connection vers la source de donnees
    *
    * @return Connection la connection
-   * @exception RemoteException
-   * @exception SQLException
-   * @exception NamingException
-   * @author frageade
-   * @since 28 Septembre 2000
    */
   public Connection openConnection() {
     try {
@@ -1296,8 +1289,8 @@ public class ForumsBMEJB implements SessionBean {
   private NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
+          NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getNodeBm()",
@@ -1368,17 +1361,13 @@ public class ForumsBMEJB implements SessionBean {
     createTagCloud(tagCloud, keywords);
   }
 
-  private void createTagCloud(TagCloud tagCloud, String keywords)
-      throws RemoteException {
+  private void createTagCloud(TagCloud tagCloud, String keywords) throws RemoteException {
     if (keywords != null) {
       TagCloudBm tagCloudBm = getTagCloudBm();
-      StringTokenizer st = new StringTokenizer(keywords, " ");
-      String tag;
-      String tagKey;
-      ArrayList tagList = new ArrayList();
-      while (st.hasMoreElements()) {
-        tag = (String) st.nextElement();
-        tagKey = TagCloudUtil.getTag(tag);
+      String[] words = StringUtil.split(keywords, ' ');
+      List<String> tagList = new ArrayList<String>(words.length);
+      for (String tag : words) {
+        String tagKey = TagCloudUtil.getTag(tag);
         if (!tagList.contains(tagKey)) {
           tagCloud.setTag(tagKey);
           tagCloud.setLabel(tag.toLowerCase());
@@ -1396,13 +1385,13 @@ public class ForumsBMEJB implements SessionBean {
    * @throws RemoteException
    */
   private void deleteTagCloud(ForumPK forumPK) throws RemoteException {
-    getTagCloudBm().deleteTagCloud(
-        new TagCloudPK(forumPK.getId(), forumPK.getComponentName()), TagCloud.TYPE_FORUM);
+    getTagCloudBm().deleteTagCloud(new TagCloudPK(forumPK.getId(), forumPK.getComponentName()),
+        TagCloud.TYPE_FORUM);
   }
 
   private void deleteTagCloud(MessagePK messagePK) throws RemoteException {
-    getTagCloudBm().deleteTagCloud(
-        new TagCloudPK(messagePK.getId(), messagePK.getComponentName()), TagCloud.TYPE_MESSAGE);
+    getTagCloudBm().deleteTagCloud(new TagCloudPK(messagePK.getId(), messagePK.getComponentName()),
+        TagCloud.TYPE_MESSAGE);
   }
 
   /**
@@ -1424,25 +1413,22 @@ public class ForumsBMEJB implements SessionBean {
   }
 
   public String getForumTags(ForumPK forumPK) throws RemoteException {
-    Collection tagClouds = getTagCloudBm().getTagCloudsByElement(
+    Collection<TagCloud> tagClouds = getTagCloudBm().getTagCloudsByElement(
         forumPK.getComponentName(), forumPK.getId(), TagCloud.TYPE_FORUM);
     return getTags(tagClouds);
   }
 
   public String getMessageTags(MessagePK messagePK) throws RemoteException {
-    Collection tagClouds = getTagCloudBm().getTagCloudsByElement(
+    Collection<TagCloud> tagClouds = getTagCloudBm().getTagCloudsByElement(
         messagePK.getComponentName(), messagePK.getId(), TagCloud.TYPE_MESSAGE);
     return getTags(tagClouds);
   }
 
   private String getTags(Collection<TagCloud> tagClouds) {
-    Iterator<TagCloud> iter = tagClouds.iterator();
-    StringBuffer sb = new StringBuffer();
-    TagCloud tagCloud;
-    while (iter.hasNext()) {
-      tagCloud = (TagCloud) iter.next();
+    StringBuilder sb = new StringBuilder();
+    for (TagCloud tagCloud : tagClouds) {
       if (sb.length() > 0) {
-        sb.append(" ");
+        sb.append(' ');
       }
       sb.append(tagCloud.getLabel());
     }
@@ -1454,26 +1440,24 @@ public class ForumsBMEJB implements SessionBean {
    */
   private TagCloudBm getTagCloudBm() {
     try {
-      TagCloudBmHome tagCloudBmHome = (TagCloudBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.TAGCLOUDBM_EJBHOME, TagCloudBmHome.class);
+      TagCloudBmHome tagCloudBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.TAGCLOUDBM_EJBHOME,
+          TagCloudBmHome.class);
       TagCloudBm tagCloudBm = tagCloudBmHome.create();
       return tagCloudBm;
     } catch (Exception e) {
-      throw new TagCloudRuntimeException(
-          "KmeliaSessionController.getTagCloudBm()", SilverpeasException.ERROR,
-          "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new TagCloudRuntimeException("KmeliaSessionController.getTagCloudBm()",
+          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   private void deleteNotation(ForumPK forumPK) throws RemoteException {
-    getNotationBm().deleteNotation(
-        new NotationPK(forumPK.getId(), forumPK.getComponentName(),
+    getNotationBm().deleteNotation(new NotationPK(forumPK.getId(), forumPK.getComponentName(),
         Notation.TYPE_FORUM));
   }
 
   private void deleteNotation(MessagePK messagePK) throws RemoteException {
-    getNotationBm().deleteNotation(
-        new NotationPK(messagePK.getId(), messagePK.getComponentName(), Notation.TYPE_MESSAGE));
+    getNotationBm().deleteNotation(new NotationPK(messagePK.getId(), messagePK.getComponentName(),
+        Notation.TYPE_MESSAGE));
   }
 
   /**
@@ -1481,8 +1465,8 @@ public class ForumsBMEJB implements SessionBean {
    */
   private NotationBm getNotationBm() {
     try {
-      NotationBmHome notationBmHome = (NotationBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBmHome.class);
+      NotationBmHome notationBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME,
+          NotationBmHome.class);
       NotationBm notationBm = notationBmHome.create();
       return notationBm;
     } catch (Exception e) {
@@ -1492,20 +1476,7 @@ public class ForumsBMEJB implements SessionBean {
   }
 
   private String getWysiwygContent(String componentId, String messageId) {
-    String text = "";
-    if (WysiwygController.haveGotWysiwyg(componentId, messageId)) {
-      text = WysiwygController.loadFileAndAttachment(componentId, messageId);
-    }
-    return text;
-  }
-
-  private String getWysiwygPath(String componentId, String messageId) {
-    String path = null;
-    String wysiwygContent = WysiwygController.load(componentId, messageId, null);
-    if (StringUtil.isDefined(wysiwygContent)) {
-      path = WysiwygController.getWysiwygPath(componentId, messageId, null);
-    }
-    return path;
+    return WysiwygController.loadFileAndAttachment(componentId, messageId);
   }
 
   private void createWysiwyg(MessagePK messagePK, String text, String userId) {

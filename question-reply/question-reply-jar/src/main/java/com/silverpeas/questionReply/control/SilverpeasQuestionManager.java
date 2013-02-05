@@ -34,8 +34,8 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
@@ -983,7 +983,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   void notifySubscribers(Question question, Reply reply) throws
       QuestionReplyException {
     if (reply.getPublicReply() == 1) {
-      UserDetail sender = reply.readAuthor(controller);
+      UserDetail sender = reply.readAuthor();
       SubscriptionNotifier notifier =
           new SubscriptionNotifier(sender, URLManager.getServerURL(null),
           question, reply);
