@@ -60,3 +60,76 @@ function getNotSelectedPublicationIds() {
 function sendPubId() {
 	//do nothing
 }
+
+function startsWith(haystack, needle){
+	return haystack.substr(0,needle.length)==needle?true:false;
+}
+
+function deletePublications() {
+	var confirm = getString('kmelia.publications.trash.confirm');
+	if (getCurrentNodeId() == "1") {
+		confirm = getString('kmelia.publications.delete.confirm');
+	}
+	if (window.confirm(confirm)) {
+		var componentId = getComponentId();
+		var selectedPublicationIds = getSelectedPublicationIds();
+		var notSelectedPublicationIds = getNotSelectedPublicationIds();
+		var url = getWebContext()+'/KmeliaAJAXServlet';
+		$.get(url, { SelectedIds:selectedPublicationIds,NotSelectedIds:notSelectedPublicationIds,ComponentId:componentId,Action:'DeletePublications'},
+				function(data){
+					if (startsWith(data, "ok")) {
+						// fires event
+						try {
+							var nb = data.substring(3);
+							displayPublications(getCurrentNodeId());
+							if (getCurrentNodeId() == "1") {
+								notySuccess(nb+ getString('kmelia.publications.delete.info'));
+							} else {
+								notySuccess(nb+ getString('kmelia.publications.trash.info'));
+							}
+							publicationsRemovedSuccessfully(nb);
+						} catch (e) {
+							writeInConsole(e);
+						}
+					} else {
+						publicationsRemovedInError(data);
+					}
+				}, 'text');
+	}
+}
+
+function publicationsRemovedInError(data) {
+  	notyError(data);
+}
+
+function copyPublications() {
+	var componentId = getComponentId();
+	var selectedPublicationIds = getSelectedPublicationIds();
+	var notSelectedPublicationIds = getNotSelectedPublicationIds();
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, { SelectedIds:selectedPublicationIds,NotSelectedIds:notSelectedPublicationIds,ComponentId:componentId,Action:'CopyPublications'},
+			function(data){
+				if (data == "ok") {
+					// fires event
+					// do nothing
+				} else {
+					notyError(data);
+				}
+			}, 'text');
+}
+
+function cutPublications() {
+	var componentId = getComponentId();
+	var selectedPublicationIds = getSelectedPublicationIds();
+	var notSelectedPublicationIds = getNotSelectedPublicationIds();
+	var url = getWebContext()+'/KmeliaAJAXServlet';
+	$.get(url, { SelectedIds:selectedPublicationIds,NotSelectedIds:notSelectedPublicationIds,ComponentId:componentId,Action:'CutPublications'},
+			function(data){
+				if (data == "ok") {
+					// fires event
+					// do nothing
+				} else {
+					notyError(data);
+				}
+			}, 'text');
+}
