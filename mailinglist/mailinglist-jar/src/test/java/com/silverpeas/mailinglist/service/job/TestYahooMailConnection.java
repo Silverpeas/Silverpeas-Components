@@ -21,26 +21,32 @@
 package com.silverpeas.mailinglist.service.job;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Properties;
 
 import javax.mail.FetchProfile;
 import javax.mail.Folder;
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.internet.MimeMessage;
 
-import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.silverpeas.mailinglist.service.event.MessageEvent;
+import com.silverpeas.mailinglist.service.event.MessageListener;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Ignore
-public class TestZimbraConnection {
+public class TestYahooMailConnection {
 
   Properties props;
 
@@ -48,7 +54,7 @@ public class TestZimbraConnection {
   public void setUp() throws Exception {
     props = new Properties();
     InputStream in = this.getClass().getResourceAsStream(
-        "/org/silverpeas/mailinglist/service/job/notification_zimbra.properties");
+        "/org/silverpeas/mailinglist/service/job/yahoomail.properties");
     try {
       props.load(in);
     } finally {
@@ -57,11 +63,7 @@ public class TestZimbraConnection {
   }
 
   @Test
-  public void testOpenImapConnection() {
-    URL url = this.getClass().getClassLoader().getResource("truststore.jks");
-    String path = url.getPath();
-    System.setProperty("javax.net.ssl.trustStore", path);
-    System.setProperty("javax.net.ssl.trustStorePassword", "changeit");
+  public void testOpenImapConnection() throws Exception {
     Store mailAccount = null;
     Folder inbox = null;
     Session mailSession = Session.getInstance(System.getProperties());
@@ -80,30 +82,32 @@ public class TestZimbraConnection {
       inbox.open(Folder.READ_WRITE);
 
       // -- Get the message wrappers and process them --
-      Message[] msgs = inbox.getMessages();
+      javax.mail.Message[] msgs = inbox.getMessages();
       FetchProfile profile = new FetchProfile();
       profile.add(FetchProfile.Item.FLAGS);
       inbox.fetch(msgs, profile);
-    } catch (MessagingException mex) {
-      SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
-          "mail.processing.error", mex);
-    } catch (Exception mex) {
-      SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
-          "mail.processing.error", mex);
+      MailProcessor processor = new MailProcessor();
+      MessageListener mailingList = mock(MessageListener.class);
+      when(mailingList.checkSender(anyString())).thenReturn(Boolean.TRUE);
+      when(mailingList.getComponentId()).thenReturn("mailingList38");
+      MessageEvent event = new MessageEvent();
+      for (javax.mail.Message message : msgs) {
+        processor.prepareMessage((MimeMessage) message, mailingList, event);
+      }
+      assertThat(event.getMessages(), is(notNullValue()));
+      assertThat(event.getMessages().size(), is(msgs.length));
+      for (com.silverpeas.mailinglist.service.model.beans.Message message : event.getMessages()) {
+        assertThat(message, is(notNullValue()));
+        assertThat(message.getMessageId(), is(notNullValue()));
+      }
     } finally {
       // -- Close down nicely --
-      try {
-        if (inbox != null) {
-          inbox.close(false);
-        }
-        if (mailAccount != null) {
-          mailAccount.close();
-        }
-      } catch (Exception ex2) {
-        SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
-            "mail.processing.error", ex2);
+      if (inbox != null) {
+        inbox.close(false);
+      }
+      if (mailAccount != null) {
+        mailAccount.close();
       }
     }
-
   }
 }
