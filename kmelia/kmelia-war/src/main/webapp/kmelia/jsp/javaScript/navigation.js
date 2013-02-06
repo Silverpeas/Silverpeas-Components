@@ -206,47 +206,47 @@ function initOperations(id, op) {
 	var menuBarEmpty = true;
 	
 	if (op.emptyTrash) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.emptyTrash"], {url: "javascript:onClick=emptyTrash()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('EmptyBasket'), {url: "javascript:onClick=emptyTrash()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	
 	if (op.admin) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.admin"], {url: getWebContext()+"/RjobStartPagePeas/jsp/SetupComponent?ComponentId="+getComponentId()});
+		menuItem = new YAHOO.widget.MenuItem(getString('GML.operations.setupComponent'), {url: getWebContext()+"/RjobStartPagePeas/jsp/SetupComponent?ComponentId="+getComponentId()});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	
 	if (op.pdc) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.pdc"], {url: "javascript:onClick=openSPWindow('"+getWebContext()+"/RpdcUtilization/jsp/Main?ComponentId="+getComponentId()+"','utilizationPdc1')"});
+		menuItem = new YAHOO.widget.MenuItem(getString('GML.PDCParam'), {url: "javascript:onClick=openSPWindow('"+getWebContext()+"/RpdcUtilization/jsp/Main?ComponentId="+getComponentId()+"','utilizationPdc1')"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
     
     if (op.predefinedPdcPositions) {
-        menuItem = new YAHOO.widget.MenuItem(labels["operation.predefinedPdcPositions"], {url: "javascript:onClick=openPredefinedPdCClassification("+id+")"});
+        menuItem = new YAHOO.widget.MenuItem(getString('GML.PDCPredefinePositions'), {url: "javascript:onClick=openPredefinedPdCClassification("+id+")"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
     }
 	
 	if (op.templates) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.templates"], {url: "ModelUsed"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ModelUsed'), {url: "ModelUsed"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	
 	if (op.exporting) {
 		if (id == "0") {
-			menuItem = new YAHOO.widget.MenuItem(labels["operation.exportComponent"], {url: "javascript:onClick=exportTopic()"});
+			menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportComponent'), {url: "javascript:onClick=exportTopic()"});
 		} else {
-			menuItem = new YAHOO.widget.MenuItem(labels["operation.exportTopic"], {url: "javascript:onClick=exportTopic()"});
+			menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportTopic'), {url: "javascript:onClick=exportTopic()"});
 		}
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	
 	if (op.exportPDF) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.exportPDF"], {url: "javascript:openExportPDFPopup()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportPDF'), {url: "javascript:openExportPDFPopup()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
@@ -258,7 +258,7 @@ function initOperations(id, op) {
 	}
 	
 	if (op.addTopic) {
-		var label = labels["operation.addTopic"];
+		var label = getString('CreerSousTheme');
 		var url = "javascript:onclick=addNodeToCurrentNode()";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -267,47 +267,47 @@ function initOperations(id, op) {
 		menuBarEmpty = false;
 	}
 	if (op.updateTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.updateTopic"], {url: "javascript:onclick=updateCurrentNode()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('ModifierSousTheme'), {url: "javascript:onclick=updateCurrentNode()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.deleteTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.deleteTopic"], {url: "javascript:onclick=deleteCurrentNode()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('SupprimerSousTheme'), {url: "javascript:onclick=deleteCurrentNode()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.sortSubTopics) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.sortTopics"], {url: "javascript:onclick=sortSubTopics()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.SortTopics'), {url: "javascript:onclick=sortSubTopics()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.copyTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.copy"], {url: "javascript:onclick=copyCurrentNode()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('GML.copy'), {url: "javascript:onclick=copyCurrentNode()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.cutTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.cut"], {url: "javascript:onclick=cutCurrentNode()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('GML.cut'), {url: "javascript:onclick=cutCurrentNode()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.hideTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.visible2invisible"], {url: "javascript:onclick=changeCurrentTopicStatus()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('TopicVisible2Invisible'), {url: "javascript:onclick=changeCurrentTopicStatus()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.showTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.invisible2visible"], {url: "javascript:onclick=changeCurrentTopicStatus()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('TopicInvisible2Visible'), {url: "javascript:onclick=changeCurrentTopicStatus()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.wysiwygTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.wysiwygTopic"], {url: "javascript:onclick=updateCurrentTopicWysiwyg()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('TopicWysiwyg'), {url: "javascript:onclick=updateCurrentTopicWysiwyg()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.shareTopic) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.shareTopic"], {url: "javascript:onclick=shareCurrentTopic()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.shareTopic'), {url: "javascript:onclick=shareCurrentTopic()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
@@ -319,7 +319,7 @@ function initOperations(id, op) {
 	}
 	
 	if (op.addPubli) {
-		var label = labels["operation.addPubli"];
+		var label = getString('PubCreer');
 		var url = "NewPublication";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -328,7 +328,7 @@ function initOperations(id, op) {
 		menuBarEmpty = false;
 	}
 	if (op.wizard) {
-		var label = labels["operation.wizard"];
+		var label = getString('kmelia.Wizard');
 		var url = "WizardStart";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -337,7 +337,7 @@ function initOperations(id, op) {
 		menuBarEmpty = false;
 	}
 	if (op.importFile) {
-		var label = labels["operation.importFile"];
+		var label = getString('kmelia.ImportFile');
 		var url = "javascript:onclick=importFile()";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -346,7 +346,7 @@ function initOperations(id, op) {
 		menuBarEmpty = false;
 	}
 	if (op.importFiles) {
-		var label = labels["operation.importFiles"];
+		var label = getString('kmelia.ImportFiles');
 		var url = "javascript:onclick=importFiles()";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -355,17 +355,32 @@ function initOperations(id, op) {
 		menuBarEmpty = false;
 	}
 	if (op.sortPublications) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.sortPublis"], {url: "ToOrderPublications"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.OrderPublications'), {url: "ToOrderPublications"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.updateChain) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.updateChain"], {url: "javascript:onclick=updateChain()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.updateByChain'), {url: "javascript:onclick=updateChain()"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
+	if (op.copyPublications) {
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.copyPublications'), {url: "javascript:onclick=copyPublications()"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
+	if (op.cutPublications) {
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.cutPublications'), {url: "javascript:onclick=cutPublications()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	if (op.paste) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.paste"], {url: "javascript:onclick=pasteFromOperations()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('GML.paste'), {url: "javascript:onclick=pasteFromOperations()"});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
+	if (op.deletePublications) {
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.deletePublications'), {url: "javascript:onclick=deletePublications()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
@@ -377,13 +392,13 @@ function initOperations(id, op) {
 	}
 	
 	if (op.exportSelection) {
-		menuItem = new YAHOO.widget.MenuItem(labels["operation.exportSelection"], {url: "javascript:onclick=exportPublications()"});
+		menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.exportSelection'), {url: "javascript:onclick=exportPublications()"});
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
 	
 	if (op.subscriptions) {
-		var label = labels["operation.subscribe"];
+		var label = getString('SubscriptionsAdd');
 		var url = "javascript:onclick=addSubscription()";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -391,7 +406,7 @@ function initOperations(id, op) {
 		//addCreationItem(url, icons["operation.subscribe"], label);
 	}
 	if (op.favorites) {
-		var label = labels["operation.favorites"];
+		var label = getString('FavoritesAdd1') + ' ' + getString('FavoritesAdd2');
 		var url = "javascript:onclick=addCurrentNodeAsFavorite()";
 		menuItem = new YAHOO.widget.MenuItem(label, {url: url});
 		oMenu.addItem(menuItem, groupIndex);
@@ -406,7 +421,7 @@ function initOperations(id, op) {
   }
   
   if (op.statistics) {
-    menuItem = new YAHOO.widget.MenuItem(labels["operation.statistics"], {url: "javascript:onclick=showStats()"});
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.statistics'), {url: "javascript:onclick=showStats()"});
     oMenu.addItem(menuItem, groupIndex);
     menuEmpty = false;
   }
@@ -481,7 +496,7 @@ function storeTranslations(trans) {
 	if (translations != null && translations.length > 1) {
 		//display delete operation
 		if ($("#deleteTranslation").length == 0){
-			var img = '<img src="' + getWebContext() + '/util/icons/delete.gif" title="'+labels["js.i18n.remove"]+'" alt="'+labels["js.i18n.remove"]+'"/>';
+			var img = '<img src="' + getWebContext() + '/util/icons/delete.gif" title="'+getString('GML.translationRemove')+'" alt="'+getString('GML.translationRemove')+'"/>';
 			$("&nbsp;<a id=\"deleteTranslation\" href=\"javascript:document.getElementById('<%=I18NHelper.HTMLHiddenRemovedTranslationMode%>').value='true';document.topicForm.submit();\">"+img+"</a>").insertAfter(select);
 		}
 	} else {
@@ -528,7 +543,7 @@ function displayTopicInformation(id) {
 					var desc = topic.attr["description"];
 					var date = $.datepicker.formatDate(getDateFormat(), new Date(topic.attr["creationDate"]));;
 					var creator = topic.attr["creator"].fullName;
-					$("#footer").html(labels["topic.info"]+creator+' - '+date+' - <a id="topicPermalink" href="#"><img src="'+icons["permalink"]+'"/></a>');
+					$("#footer").html(getString('kmelia.topic.info')+creator+' - '+date+' - <a id="topicPermalink" href="#"><img src="'+icons["permalink"]+'"/></a>');
 					$("#footer #topicPermalink").attr("href", getWebContext()+"/Topic/"+id+"?ComponentId="+getComponentId());
 					setCurrentTopicName(name);
 					setCurrentTopicDescription(desc);
@@ -552,7 +567,7 @@ function writeInConsole(text) {
 }
 
 function deleteFolder(nodeId, nodeLabel) {
-	if(window.confirm(labels["ConfirmDeleteTopic"]+ " '" + nodeLabel + "' ?")) {
+	if(window.confirm(getString('ConfirmDeleteTopic')+ " '" + nodeLabel + "' ?")) {
 		var componentId = getComponentId();
 		var url = getWebContext()+'/KmeliaAJAXServlet';
 		$.get(url, { Id:nodeId,ComponentId:componentId,Action:'Delete'},
@@ -622,7 +637,7 @@ function topicAdd(topicId, isLinked) {
 		$("#addOrUpdateNode").dialog({
 			modal: true,
 			resizable: false,
-			title: labels["operation.addTopic"],
+			title: getString('CreerSousTheme'),
 			width: 600,
 			buttons: {
 				"OK": function() {
@@ -677,7 +692,7 @@ function topicUpdate(id) {
 		$("#addOrUpdateNode").dialog({
 			modal: true,
 			resizable: false,
-			title: labels["operation.updateTopic"],
+			title: getString('ModifierSousTheme'),
 			width: 600,
 			buttons: {
 				"OK": function() {
@@ -696,7 +711,7 @@ function submitTopic() {
     var errorNb = 0;
     var title = stripInitialWhitespace(document.topicForm.Name.value);
     if (isWhitespace(title)) {
-      errorMsg+="  - '"+labels["js.topicTitle"]+"' "+labels["js.mustBeFilled"]+"\n";
+      errorMsg+="  - '"+getString('TopicTitle')+"' "+getString('GML.MustBeFilled')+"\n";
       errorNb++;
     }
     switch(errorNb) {
@@ -704,12 +719,12 @@ function submitTopic() {
         result = true;
         break;
       case 1 :
-        errorMsg = labels["js.contains"]+" 1 "+labels["js.error"]+" : \n" + errorMsg;
+        errorMsg = getString('GML.ThisFormContains')+" 1 "+getString('GML.error')+" : \n" + errorMsg;
         window.alert(errorMsg);
         result = false;
         break;
       default :
-        errorMsg = labels["js.contains"]+" " + errorNb + " "+labels["js.errors"]+" :\n" + errorMsg;
+        errorMsg = getString('GML.ThisFormContains')+" " + errorNb + " "+getString('GML.errors')+" :\n" + errorMsg;
         window.alert(errorMsg);
         result = false;
         break;
@@ -720,7 +735,7 @@ function submitTopic() {
 }
 
 function emptyTrash() {
-	if(window.confirm(labels["ConfirmFlushTrashBean"]))	{
+	if(window.confirm(getString('ConfirmFlushTrashBean'))) {
 		$.progressMessage();
 		var componentId = getComponentId();
 		var url = getWebContext()+'/KmeliaAJAXServlet';
@@ -851,12 +866,12 @@ function changeStatus(nodeId, currentStatus) {
 		newStatus = "Invisible";
 	}
 
-	var title = labels["operation.visible2invisible"];
+	var title = getString('TopicVisible2Invisible');
 	if (newStatus == 'Invisible') {
-		$("#visibleInvisible-message p").html(labels["js.status.visible2invisible"]);
+		$("#visibleInvisible-message p").html(getString('TopicVisible2InvisibleRecursive'));
 	} else {
-		$("#visibleInvisible-message p").html(labels["js.status.invisible2visible"]);
-		title = labels["operation.invisible2visible"];
+		$("#visibleInvisible-message p").html(getString('TopicInvisible2VisibleRecursive'));
+		title = getString('TopicInvisible2Visible');
 	}
 	
 	$( "#visibleInvisible-message" ).dialog({
@@ -865,17 +880,17 @@ function changeStatus(nodeId, currentStatus) {
 		width: 400,
 		title: title,
 		buttons: [ {
-					text: labels["js.yes"],
+					text: getString('GML.yes'),
 					click: function() {
 						_updateTopicStatus(nodeId, newStatus, '1');
 						$( this ).dialog( "close" ); }
 				}, {
-					text: labels["js.status.onlythisfolder"],
+					text: getString('kmelia.folder.onlythisfolder'),
 					click: function() {
 						_updateTopicStatus(nodeId, newStatus, '0');
 						$( this ).dialog( "close" ); }
 				}, {
-					text: labels["js.cancel"],
+					text: getString('GML.cancel'),
 					click: function() {
 						$( this ).dialog( "close" ); }
 				}]
@@ -910,34 +925,4 @@ function movePublication(id, sourceId, targetId) {
 					publicationMovedInError(id, data);
 				}
 			}, 'text');
-}
-
-function getWidth() {
-	  var myWidth = 0;
-	  if( typeof( window.innerWidth ) == 'number' ) {
-	    //Non-IE
-	    myWidth = window.innerWidth;
-	  } else if( document.documentElement && document.documentElement.clientWidth ) {
-	    //IE 6+ in 'standards compliant mode'
-	    myWidth = document.documentElement.clientWidth;
-	  } else if( document.body && document.body.clientWidth ) {
-	    //IE 4 compatible
-	    myWidth = document.body.clientWidth;
-	  }
-	  return myWidth;
-}
-
-function getHeight() {
-	  var myHeight = 0;
-	  if( typeof( window.innerHeight ) == 'number' ) {
-	    //Non-IE
-	    myHeight = window.innerHeight;
-	  } else if( document.documentElement && document.documentElement.clientHeight) {
-	    //IE 6+ in 'standards compliant mode'
-	    myHeight = document.documentElement.clientHeight;
-	  } else if( document.body && document.body.clientHeight) {
-	    //IE 4 compatible
-	    myHeight = document.body.clientHeight;
-	  }
-	  return (myHeight -20);
 }
