@@ -29,6 +29,10 @@
 	<description>Du texte sur deux colonnes et une image</description>
 	<image>/weblib/xmlForms/model3.gif</image>
 	<visible>true</visible>
+	<applications>
+		<application>kmax</application>
+        <application>kmelia</application>
+    </applications>
 	<dataFileName>model3/data.xml</dataFileName>
 	<viewFileName>model3/view.html</viewFileName>
 	<updateFileName>model3/update.xml</updateFileName>
