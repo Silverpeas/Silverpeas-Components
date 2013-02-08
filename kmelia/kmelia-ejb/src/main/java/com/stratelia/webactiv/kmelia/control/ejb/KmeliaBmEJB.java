@@ -25,6 +25,7 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 
 import static com.silverpeas.util.StringUtil.getBooleanValue;
 import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.util.StringUtil.isInteger;
 import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.aKmeliaPublicationFromCompleteDetail;
 import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.aKmeliaPublicationFromDetail;
 import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.aKmeliaPublicationWithPk;
@@ -119,6 +120,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
@@ -1325,8 +1327,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId(),
                 topic.getRightsDependsOn(), ObjectType.NODE));
       } else {
-        profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId,
-                nodePK.getInstanceId()));
+        profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId()));
       }
     } else {
       profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId()));
@@ -1768,8 +1769,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   /**
-   * Delete a publication If this publication is in the basket or in the DZ, it's deleted from the
-   * database Else it only send to the basket
+   * Delete a publication from the database
    * @param pubPK the id of the publication to delete
    * @see com.stratelia.webactiv.kmelia.model.TopicDetail
    */
@@ -1781,6 +1781,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             "root.MSG_GEN_ENTER_METHOD");
 
     try {
+      // remove form content
+      removeXMLContentOfPublication(pubPK);
       // delete all reading controls associated to this publication
       deleteAllReadingControlsByPublication(pubPK);
       // delete all links
@@ -1866,7 +1868,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   @Override
   public void sendPublicationToBasket(PublicationPK pubPK) {
-    sendPublicationToBasket(pubPK, false);
+    sendPublicationToBasket(pubPK, KmeliaHelper.isKmax(pubPK.getInstanceId()));
   }
 
   /**
@@ -2429,7 +2431,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   @Override
-  public List<KmeliaPublication> getPublicationsToValidate(String componentId) {
+  public List<KmeliaPublication> getPublicationsToValidate(String componentId, String userId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
             "root.MSG_GEN_ENTER_METHOD");
     Collection<PublicationDetail> publications = new ArrayList<PublicationDetail>();
@@ -2437,15 +2439,25 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     try {
       Collection<PublicationDetail> temp =
               getPublicationBm().getPublicationsByStatus(PublicationDetail.TO_VALIDATE, pubPK);
+      boolean targetedValidationEnabled = isTargetedValidationEnabled(componentId);
       // retrieve original publications according to clones
       for (PublicationDetail publi : temp) {
         boolean isClone = PublicationDetail.TO_VALIDATE.equals(publi.getStatus()) && !"-1".equals(publi.getCloneId());
+        PublicationDetail toValidate = publi;
         if (isClone) {
           // publication is a clone, get original one
-          publications.add(getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK())));
+          toValidate = getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK()));
+        }
+        if (targetedValidationEnabled) {
+          // only publications which must be explicitly validated by current user must be returned
+          List<String> validatorIds = getValidatorIds(toValidate);
+          if (validatorIds.contains(userId)) {
+            publications.add(toValidate);
+          }
         } else {
-          // publication is not a clone, return it
-          publications.add(publi);
+          if (isUserCanValidatePublication(toValidate.getPK(), userId)) {
+            publications.add(toValidate);
+          }
         }
       }
     } catch (Exception e) {
@@ -2489,37 +2501,40 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   
   private int getValidationType(String instanceId) {
     String sParam =
-        getOrganizationController().getComponentParameterValue(instanceId, "targetValidation");
+        getOrganizationController().getComponentParameterValue(instanceId, InstanceParameters.validation);
     if (isDefined(sParam)) {
       return Integer.parseInt(sParam);
     } else {
       return KmeliaHelper.VALIDATION_CLASSIC;
     }
   }
+  
+  private boolean isTargetedValidationEnabled(String componentId) {
+    int value = getValidationType(componentId);
+    return value == KmeliaHelper.VALIDATION_TARGET_N || value == KmeliaHelper.VALIDATION_TARGET_1;
+  }
+  
+  private List<String> getValidatorIds(PublicationDetail publi) {
+    List<String> allValidators = new ArrayList<String>();
+    if (isDefined(publi.getTargetValidatorId())) {
+      StringTokenizer tokenizer = new StringTokenizer(publi.getTargetValidatorId(), ",");
+      while (tokenizer.hasMoreTokens()) {
+        allValidators.add(tokenizer.nextToken());
+      }
+    }
+    return allValidators;
+  }
 
   @Override
-  public List<String> getAllValidators(PublicationPK pubPK, int validationType) throws
-          RemoteException {
+  public List<String> getAllValidators(PublicationPK pubPK) throws RemoteException {
     SilverTrace.debug("kmelia", "KmeliaBmEJB.getAllValidators",
-            "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId()
-            + ", validationType = " + validationType);
-    if (validationType == -1) {
-      validationType = getValidationType(pubPK.getInstanceId());
-    }
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.getAllValidators",
-            "root.MSG_GEN_PARAM_VALUE", "validationType = " + validationType);
+            "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId());
 
     // get all users who have to validate
     List<String> allValidators = new ArrayList<String>();
-    if (validationType == KmeliaHelper.VALIDATION_TARGET_N
-            || validationType == KmeliaHelper.VALIDATION_TARGET_1) {
+    if (isTargetedValidationEnabled(pubPK.getInstanceId())) {
       PublicationDetail publi = getPublicationBm().getDetail(pubPK);
-      if (isDefined(publi.getTargetValidatorId())) {
-        StringTokenizer tokenizer = new StringTokenizer(publi.getTargetValidatorId(), ",");
-        while (tokenizer.hasMoreTokens()) {
-          allValidators.add(tokenizer.nextToken());
-        }
-      }
+      allValidators = getValidatorIds(publi);
     }
     if (allValidators.isEmpty()) {
       // It's not a targeted validation or it is but no validators has
@@ -2561,8 +2576,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return allValidators;
   }
 
-  private boolean isValidationComplete(PublicationPK pubPK, List<String> allValidators,
-      int validationType) throws RemoteException {
+  private boolean isValidationComplete(PublicationPK pubPK, List<String> allValidators)
+      throws RemoteException {
     List<ValidationStep> steps = getPublicationBm().getValidationSteps(pubPK);
 
     // get users who have already validate
@@ -2583,23 +2598,29 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   @Override
-  public boolean validatePublication(PublicationPK pubPK, String userId, int validationType,
-          boolean force) {
+  public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
     boolean validationComplete = false;
     try {
       if (force) {
         validationComplete = true;
       } else {
-        switch (validationType) {
-          case KmeliaHelper.VALIDATION_CLASSIC:
-          case KmeliaHelper.VALIDATION_TARGET_1:
-            validationComplete = true;
-            break;
-          case KmeliaHelper.VALIDATION_COLLEGIATE:
-          case KmeliaHelper.VALIDATION_TARGET_N:
+        int validationType = getValidationType(pubPK.getInstanceId());
+        if (validationType == KmeliaHelper.VALIDATION_CLASSIC ||
+            validationType == KmeliaHelper.VALIDATION_TARGET_1) {
+          validationComplete = true;
+        } else {
+          if (validationType == KmeliaHelper.VALIDATION_TARGET_N) {
+            // check that validators are well defined
+            // If not, considering validation as classic one
+            PublicationDetail publi = getPublicationBm().getDetail(pubPK);
+            if (!isDefined(publi.getTargetValidatorId())) {
+              validationComplete = true;
+            }
+          }
+          if (!validationComplete) {
             // get all users who have to validate
-            List<String> allValidators = getAllValidators(pubPK, validationType);
+            List<String> allValidators = getAllValidators(pubPK);
             if (allValidators.size() == 1) {
               // special case : only once user is concerned by validation
               validationComplete = true;
@@ -2611,9 +2632,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                   new ValidationStep(pubPK, userId, PublicationDetail.VALID);
               getPublicationBm().addValidationStep(validation);
               // check if all validators have give their decision
-              validationComplete = isValidationComplete(pubPK, allValidators, validationType);
+              validationComplete = isValidationComplete(pubPK, allValidators);
             }
+          }
         }
+        
       }
 
       if (validationComplete) {
@@ -2742,6 +2765,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       currentPubDetail.setStatus(PublicationDetail.VALID);
       currentPubDetail.setCloneId("-1");
       currentPubDetail.setCloneStatus(null);
+      
+      // merge des fichiers joints
+      AttachmentPK pkFrom = new AttachmentPK(pubPK.getId(), pubPK.getInstanceId());
+      AttachmentPK pkTo = new AttachmentPK(cloneId, tempPK.getInstanceId());
+      HashMap<String, String> attachmentIds = AttachmentController.mergeAttachments(pkFrom, pkTo);
+
+      // merge des fichiers versionnés
 
       // merge du contenu DBModel
       if (tempPubli.getModelDetail() != null) {
@@ -2779,13 +2809,15 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
           if (memInfoId != null && !"0".equals(memInfoId)) {
             // il existait déjà un contenu
-            set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId());
+            set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
+                attachmentIds);
           } else {
             // il n'y avait pas encore de contenu
             publicationTemplateManager.addDynamicPublicationTemplate(tempPK.getInstanceId()
                     + ":" + xmlFormShortName, xmlFormShortName + ".xml");
 
-            set.clone(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId());
+            set.clone(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
+                attachmentIds);
           }
         }
       }
@@ -2798,13 +2830,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                 "useless", pubPK.getInstanceId(), pubPK.getId(), tempPubli.getPublicationDetail().
                 getUpdaterId());
       }
-
-      // merge des fichiers joints
-      AttachmentPK pkFrom = new AttachmentPK(pubPK.getId(), pubPK.getInstanceId());
-      AttachmentPK pkTo = new AttachmentPK(cloneId, tempPK.getInstanceId());
-      AttachmentController.mergeAttachments(pkFrom, pkTo);
-
-      // merge des fichiers versionnés
 
       // delete xml content
       removeXMLContentOfPublication(tempPK);
@@ -3274,7 +3299,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         // removing potential older validation decision
         getPublicationBm().removeValidationSteps(pubDetail.getPK());
       }
-      List<String> validators = getAllValidators(pubDetail.getPK(), validationType);
+      List<String> validators = getAllValidators(pubDetail.getPK());
       String[] users = validators.toArray(new String[validators.size()]);
       // For each publisher create a todo
       addTodo(pubDetail, users);
@@ -3586,15 +3611,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       throw new KmeliaRuntimeException(
               "KmeliaBmEJB.removeXMLContentOfPublication()", ERROR,
               "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
-    }
-  }
-
-  private static boolean isInteger(String id) {
-    try {
-      Integer.parseInt(id);
-      return true;
-    } catch (NumberFormatException e) {
-      return false;
     }
   }
 
@@ -4391,6 +4407,17 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return publicationImport.importPublication(publiParams, formParams,
             language, xmlFormName, discrimatingParameterName, userProfile);
   }
+  
+  public boolean importPublication(String componentId, String topicId, String userId,
+      Map<String, String> publiParams, Map<String, String> formParams, String language,
+      String xmlFormName, String discriminantParameterName, String userProfile,
+      boolean ignoreMissingFormFields) throws RemoteException {
+    PublicationImport publicationImport =
+        new PublicationImport(this, componentId, topicId, null, userId);
+    publicationImport.setIgnoreMissingFormFields(ignoreMissingFormFields);
+    return publicationImport.importPublication(publiParams, formParams, language, xmlFormName,
+        discriminantParameterName, userProfile);
+  }
 
   /**
    * Creates or updates a publication.
@@ -4604,6 +4631,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       PublicationPK clonePK = getPublicationBm().createPublication(clone);
       clonePK.setComponentName(fromComponentId);
       cloneId = clonePK.getId();
+      
+      // clone attachments
+      AttachmentPK pkFrom = new AttachmentPK(fromId, fromComponentId);
+      AttachmentPK pkTo = new AttachmentPK(cloneId, fromComponentId);
+      HashMap<String, String> attachmentIds = AttachmentController.cloneAttachments(pkFrom, pkTo);
 
       // eventually, paste the model content
       if (refPubComplete.getModelDetail() != null && refPubComplete.getInfoDetail() != null) {
@@ -4640,7 +4672,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           RecordSet set = pubTemplate.getRecordSet();
 
           // clone dataRecord
-          set.clone(fromId, fromComponentId, cloneId, fromComponentId);
+          set.clone(fromId, fromComponentId, cloneId, fromComponentId, attachmentIds);
         }
       }
       // paste only links, reverseLinks can't be cloned because it'is a new content not referenced
@@ -4652,11 +4684,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // paste wysiwyg
       WysiwygController.copy(null, fromComponentId, fromId, null, fromComponentId, cloneId, clone.
               getCreatorId());
-
-      // clone attachments
-      AttachmentPK pkFrom = new AttachmentPK(fromId, fromComponentId);
-      AttachmentPK pkTo = new AttachmentPK(cloneId, fromComponentId);
-      AttachmentController.cloneAttachments(pkFrom, pkTo);
 
       // paste versioning documents
       // pasteDocuments(pubPKFrom, clonePK.getId());
@@ -4766,7 +4793,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         temp.getNodePK().setId("tovalidate");
         temp.setName(getMultilang().getString("ToValidateShort"));
         if (isNbItemsDisplayed(instanceId)) {
-          int nbPublisToValidate = getPublicationsToValidate(instanceId).size();
+          int nbPublisToValidate = getPublicationsToValidate(instanceId, userId).size();
           temp.setNbObjects(nbPublisToValidate);
         }
         children.add(temp);
@@ -4912,6 +4939,28 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return new NodePK(NodePK.ROOT_NODE_ID, componentId);
   }
   
+  public boolean isUserCanValidatePublication(PublicationPK pubPK, String userId)
+      throws RemoteException {
+    PublicationDetail publi = getPublicationDetail(pubPK);
+    if (!publi.isValidationRequired()) {
+      // publication is not in a state which allow a validation
+      return false;
+    }
+    List<String> validatorIds = getAllValidators(pubPK);
+    if (!validatorIds.contains(userId)) {
+      // current user is not part of users who are able to validate this publication
+      return false;
+    }
+
+    if (getValidationType(pubPK.getInstanceId()) == KmeliaHelper.VALIDATION_TARGET_N) {
+      ValidationStep validationStep = getPublicationBm().getValidationStepByUser(pubPK, userId);
+      // user has not yet validated publication, so validation is allowed
+      return validationStep == null;
+    }
+
+    return true;
+  }
+  
   public boolean isUserCanValidate(String componentId, String userId) throws RemoteException {
     if (KmeliaHelper.isToolbox(componentId)) {
       return false;
@@ -5025,4 +5074,45 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
     return null;
   }
+  
+  /**
+   * Removes publications according to given ids. Before a publication is removed, user priviledges
+   * are controlled. If node defines the trash, publications are definitively deleted. Otherwise,
+   * publications move into trash.
+   * @param ids the ids of publications to delete
+   * @param nodePK the node where the publications are
+   * @param userId the user who wants to perform deletion
+   * @return the list of publication ids which has been really deleted
+   * @throws RemoteException
+   */
+  public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId)
+      throws RemoteException {
+    List<String> removedIds = new ArrayList<String>();
+    String profile = getProfile(userId, nodePK);
+    for (String id : ids) {
+      PublicationPK pk = new PublicationPK(id, nodePK);
+      if (isUserCanDeletePublication(new PublicationPK(id, nodePK), profile, userId)) {
+        try {
+          if (nodePK.isTrash()) {
+            deletePublication(pk);
+          } else {
+            sendPublicationToBasket(pk);
+          }
+          SilverTrace.spy("kmelia", "KmeliaBmEJB.deletePublications", null, nodePK.getInstanceId(),
+              id, userId, SilverTrace.SPY_ACTION_DELETE);
+          removedIds.add(id);
+        } catch (Exception e) {
+          SilverTrace.error("kmelia", "KmeliaBmEJB.deletePublications()",
+              "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LA_PUBLICATION", "pk = " + pk.toString(), e);
+        }
+      }
+    }
+    return removedIds;
+  }
+  
+  private boolean isUserCanDeletePublication(PublicationPK pubPK, String profile, String userId) throws RemoteException {
+    UserDetail owner = getPublication(pubPK).getCreator();
+    return KmeliaPublicationHelper.isRemovable(pubPK.getInstanceId(), userId, profile, owner);
+  }
+ 
 }

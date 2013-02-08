@@ -193,7 +193,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
       File file = new File(attachment.getPath());
       if (file.exists() && file.isFile()) {
         attachment.setSize(file.length());
-        String hash = CryptMD5.hash(file);
+        String hash = CryptMD5.encrypt(file);
         attachment.setMd5Signature(hash);
         Attachment existingFile = findAlreadyExistingAttachment(hash, file
             .length(), attachment.getFileName(), null);

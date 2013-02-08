@@ -369,8 +369,19 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("Path", path);
         request.setAttribute("Profile", kmelia.getProfile());
         
-        if (!StringUtil.isDefined((String) request.getAttribute("Action"))) {
-          request.setAttribute("Action", "UpdateView");
+        String action = (String) request.getAttribute("Action");
+        if (!StringUtil.isDefined(action)) {
+          action = "UpdateView";
+          request.setAttribute("Action", action);
+        }
+        
+        if ("UpdateView".equals(action)) {
+          request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
+          request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
+        } else {
+          // case of creation
+          request.setAttribute("TaxonomyOK", true);
+          request.setAttribute("ValidatorsOK", true);
         }
                 
         destination = rootDestination + "publicationManager.jsp";
@@ -526,6 +537,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("Publication", kmeliaPublication);
         request.setAttribute("Profile", kmelia.getProfile());
         request.setAttribute("VisiblePublicationId", pubDetail.getPK().getId());
+        request.setAttribute("UserCanValidate", kmelia.isUserCanValidatePublication());
+        request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
+        request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
 
         putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(), kmelia,
                 request);
@@ -593,9 +607,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
           request.setAttribute("Publication", kmeliaPublication);
           request.setAttribute("PubId", id);
+          request.setAttribute("UserCanValidate", kmelia.isUserCanValidatePublication());
           request.setAttribute("ValidationStep", kmelia.getValidationStep());
           request.setAttribute("ValidationType", kmelia.getValidationType());
-
+          
           // check if user is writer with approval right (versioning case)
           request.setAttribute("WriterApproval", kmelia.isWriterApproval(id));
           request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
@@ -608,6 +623,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("IsAlias", "1");
           } else {
             request.setAttribute("Profile", kmelia.getProfile());
+            request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
+            request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
           }
 
           request.setAttribute("Wizard", kmelia.getWizard());
@@ -1398,10 +1415,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = rootDestination + "xmlForm.jsp";
       } else if (function.equals("UpdateXMLForm")) {
-        boolean creation = false;
         if (kmelia.isCloneNeeded()) {
           kmelia.clonePublication();
-          creation = true;
         }
 
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
@@ -1459,7 +1474,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
         context.setObjectId(pubId);
         context.setContentLanguage(kmelia.getCurrentLanguage());
-        context.setCreation(creation);
 
         form.update(items, data, context);
         set.save(data);
@@ -1512,10 +1526,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
       } else if (function.startsWith("Wizard")) {
         destination = processWizard(function, kmelia, request, rootDestination);
-      } else if (function.equals("ViewPdcPositions")) {
-        // Parametres du Wizard
-        setWizardParams(request, kmelia);
-        destination = rootDestination + "pdcPositions.jsp";
       } else if (function.equals("ViewTopicProfiles")) {
         String role = request.getParameter("Role");
         if (!StringUtil.isDefined(role)) {
@@ -2007,8 +2017,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
           // Directory Temp for the uploaded file
           tempFolderPath =
-              FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId())
-                  + GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator +
+              FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId()) +
+                  GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator +
                   tempFolderName;
           if (!new File(tempFolderPath).exists()) {
             FileRepositoryManager.createAbsolutePath(kmeliaScc.getComponentId(),

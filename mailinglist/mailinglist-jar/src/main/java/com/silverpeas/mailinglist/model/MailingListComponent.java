@@ -30,6 +30,7 @@ import com.silverpeas.mailinglist.service.event.MessageListener;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.notification.NotificationHelper;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MailingListComponent implements MessageListener {
@@ -46,10 +47,12 @@ public class MailingListComponent implements MessageListener {
     return list.isOpen() || list.isEmailAuthorized(email);
   }
 
+  @Override
   public String getComponentId() {
     return componentId;
   }
 
+  @Override
   public void onMessage(MessageEvent event) {
     if (event == null || event.getMessages() == null
         || event.getMessages().isEmpty()) {

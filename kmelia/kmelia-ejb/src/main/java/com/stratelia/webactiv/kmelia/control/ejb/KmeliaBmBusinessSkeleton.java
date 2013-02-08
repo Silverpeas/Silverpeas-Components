@@ -416,14 +416,16 @@ public interface KmeliaBmBusinessSkeleton {
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication)
       throws RemoteException;
 
-  public List<KmeliaPublication> getPublicationsToValidate(String componentId)
+  public List<KmeliaPublication> getPublicationsToValidate(String componentId, String userId)
+      throws RemoteException;
+  
+  public boolean isUserCanValidatePublication(PublicationPK pubPK, String userId)
       throws RemoteException;
 
-  public List<String> getAllValidators(PublicationPK pubPK, int validationType)
-      throws RemoteException;
+  public List<String> getAllValidators(PublicationPK pubPK) throws RemoteException;
 
-  public boolean validatePublication(PublicationPK pubPK, String userId,
-      int validationType, boolean force) throws RemoteException;
+  public boolean validatePublication(PublicationPK pubPK, String userId, boolean force)
+      throws RemoteException;
 
   public void unvalidatePublication(PublicationPK pubPK, String userId,
       String refusalMotive, int validationType) throws RemoteException;
@@ -752,6 +754,11 @@ public interface KmeliaBmBusinessSkeleton {
       Map<String, String> formParams,
       String language, String xmlFormName, String discrimatingParameterName,
       String userProfile) throws RemoteException;
+  
+  public boolean importPublication(String componentId, String topicId, String userId,
+      Map<String, String> publiParams, Map<String, String> formParams, String language,
+      String xmlFormName, String discriminantParameterName, String userProfile,
+      boolean ignoreMissingFormFields) throws RemoteException;
 
   public boolean importPublication(String publicationId, String componentId, String topicId,
       String spaceId, String userId, Map<String, String> publiParams,
@@ -824,4 +831,6 @@ public interface KmeliaBmBusinessSkeleton {
   public boolean isUserCanValidate(String componentId, String userId) throws RemoteException;
   
   public String getUserTopicProfile(NodePK pk, String userId) throws RemoteException;
+  
+  public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId) throws RemoteException;
 }

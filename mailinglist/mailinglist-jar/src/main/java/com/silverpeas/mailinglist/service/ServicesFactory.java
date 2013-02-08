@@ -47,6 +47,7 @@ public class ServicesFactory implements ApplicationContextAware {
   private ServicesFactory() {
   }
 
+  @Override
   public void setApplicationContext(ApplicationContext context)
       throws BeansException {
     this.context = context;
@@ -81,5 +82,4 @@ public class ServicesFactory implements ApplicationContextAware {
   public static NotificationFormatter getNotificationFormatter() {
     return (NotificationFormatter) getInstance().context.getBean(NOTIFICATION_FORMATTER);
   }
-
 }

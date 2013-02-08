@@ -127,8 +127,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         + "kmelia" + "_" + componentId);
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
         "SessionGraphicElementFactory");
-    String context =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String context = GeneralPropertiesManager.getString("ApplicationURL");
 
     if (kmeliaSC == null && (toLink || attachmentToLink)) {
       MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
@@ -415,7 +414,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         out.write("<li");
         out.write(" onmouseover=\"showPublicationOperations(this);\" onmouseout=\"hidePublicationOperations(this);\">");
         out.write("<div class=\"firstColumn\">");
-        if (!kmeliaScc.getUserDetail().isAnonymous()) {
+        if (!kmeliaScc.getUserDetail().isAnonymous() && !kmeliaScc.isKmaxMode) {
           String checked = "";
           if (selectedIds != null && selectedIds.contains(pub.getPK().getId())) {
             checked = "checked=\"checked\"";
