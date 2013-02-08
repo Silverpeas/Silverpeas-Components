@@ -188,9 +188,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         } else {
           // on est dans un album, on y retourne
           AlbumDetail currentAlbum = gallerySC.goToAlbum();
-          request.setAttribute("NbPhotosPerPage", new Integer(gallerySC.getNbPhotosPerPage()));
-          request.setAttribute("FirstPhotoIndex",
-              new Integer(gallerySC.getIndexOfFirstItemToDisplay()));
+          request.setAttribute("NbPhotosPerPage", gallerySC.getNbPhotosPerPage());
+          request.setAttribute("FirstPhotoIndex", gallerySC.getIndexOfFirstItemToDisplay());
           request.setAttribute("CurrentAlbum", currentAlbum);
           request.setAttribute("Albums",
               gallerySC.addNbPhotos(currentAlbum.getChildrenAlbumsDetails()));
@@ -300,7 +299,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("Path", gallerySC.getPath());
         request.setAttribute("GetLanguage", gallerySC.getLanguage());
         request.setAttribute("UserName", gallerySC.getUserDetail(userId).getDisplayedName());
-        request.setAttribute("NbComments", new Integer(0));
+        request.setAttribute("NbComments", 0);
         request.setAttribute("IsUsePdc", gallerySC.isUsePdc());
         request.setAttribute("XMLFormName", gallerySC.getXMLFormName());
         request.setAttribute("ShowCommentsTab", gallerySC.areCommentsEnabled());
@@ -310,7 +309,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // récupération du formulaire et affichage
         String xmlFormName = gallerySC.getXMLFormName();
-        String xmlFormShortName = null;
+        String xmlFormShortName;
         Form formUpdate = null;
         DataRecord data = null;
         if (isDefined(xmlFormName)) {
@@ -412,16 +411,16 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         if (photoId == null || photoId.length() == 0 || "null".equals(photoId)) {
           photoId = (String) request.getAttribute("PhotoId");
         }
-        PhotoDetail photo = null;
+        PhotoDetail photo;
         request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
         try {
           photo = gallerySC.getPhoto(photoId);
-          request.setAttribute("Rang", new Integer(gallerySC.getRang()));
-          request.setAttribute("NbPhotos", new Integer(gallerySC.goToAlbum().getPhotos().size()));
+          request.setAttribute("Rang", gallerySC.getRang());
+          request.setAttribute("NbPhotos", gallerySC.goToAlbum().getPhotos().size());
 
           SilverTrace.debug("gallery", "GalleryRequestRouter.getDestination()", "", "rang = "
-              + new Integer(gallerySC.getRang()) + " nb photos = "
-              + new Integer(gallerySC.goToAlbum().getPhotos().size()));
+              + gallerySC.getRang() + " nb photos = "
+              + gallerySC.goToAlbum().getPhotos().size());
 
           request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
           request.setAttribute("IsWatermark", gallerySC.isMakeWatermark());
@@ -429,7 +428,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           boolean linkDownload =
               "admin".equals(flag) || "publisher".equals(flag) || "privilegedUser".equals(flag)
               || ("writer".equals(flag) && photo.getCreatorId().equals(gallerySC.getUserId()));
-          request.setAttribute("ViewLinkDownload", new Boolean(linkDownload));
+          request.setAttribute("ViewLinkDownload", linkDownload);
 
           putPhotoCommonParameters(request, gallerySC, photo, flag);
 
@@ -566,7 +565,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         PhotoDetail photo = gallerySC.getPhoto(photoId);
         putPhotoCommonParameters(request, gallerySC, photo, flag);
 
-        request.setAttribute("SilverObjetId", new Integer(gallerySC.getSilverObjectId(photoId)));
+        request.setAttribute("SilverObjetId", gallerySC.getSilverObjectId(photoId));
 
         destination = rootDest + "pdcPositions.jsp";
       } else if (function.equals("ChoiceSize")) {
@@ -620,7 +619,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           // passage des paramètres pour le formulaire
           String xmlFormName = gallerySC.getXMLFormName();
-          String xmlFormShortName = null;
+          String xmlFormShortName;
           if (isDefined(xmlFormName)) {
             xmlFormShortName =
                 xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
@@ -790,7 +789,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // récupération du formulaire et affichage
         String xmlFormName = gallerySC.getXMLFormName();
-        String xmlFormShortName = null;
+        String xmlFormShortName;
         Form formUpdate = null;
         DataRecord data = null;
 
@@ -822,7 +821,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         boolean select = !gallerySC.getSelect();
         gallerySC.setSelect(select);
 
-        Collection<PhotoDetail> photos = null;
+        Collection<PhotoDetail> photos;
 
         // retour d'ou on viens
         if (!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible()) {
@@ -879,7 +878,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // pour les formulaires
         String xmlFormName = gallerySC.getXMLFormName();
-        String xmlFormShortName = null;
+        String xmlFormShortName;
         if (isDefined(xmlFormName)) {
           xmlFormShortName =
               xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
@@ -954,9 +953,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // passage des paramètres
         request.setAttribute("SearchKeyWord", gallerySC.getSearchKeyWord());
         request.setAttribute("Photos", gallerySC.getSearchResultListPhotos());
-        request.setAttribute("NbPhotosPerPage", new Integer(gallerySC.getNbPhotosPerPage()));
-        request.setAttribute("FirstPhotoIndex",
-            new Integer(gallerySC.getIndexOfFirstItemToDisplay()));
+        request.setAttribute("NbPhotosPerPage", gallerySC.getNbPhotosPerPage());
+        request.setAttribute("FirstPhotoIndex", gallerySC.getIndexOfFirstItemToDisplay());
         request.setAttribute("Tri", gallerySC.getTri());
         request.setAttribute("Taille", gallerySC.getTaille());
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
@@ -967,7 +965,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // mise à jour du tag pour les retours
         gallerySC.setSearchResult(true);
         gallerySC.setViewNotVisible(false);
-        request.setAttribute("ViewVisible", new Boolean(gallerySC.isViewNotVisible()));
+        request.setAttribute("ViewVisible", gallerySC.isViewNotVisible());
 
         // appel jsp
         destination = rootDest + "viewRestrictedPhotos.jsp";
@@ -1027,29 +1025,24 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // Ajout des éléments de recherche IPTC
         List<MetaData> iptcFields = gallerySC.getMetaDataKeys();
         // Parcours des champs XML recherchables
-        Iterator<MetaData> it = iptcFields.iterator();
-        while (it.hasNext()) {
-          MetaData iptcField = it.next();
+        for (final MetaData iptcField : iptcFields) {
           // recuperation valeur dans request
           String property = iptcField.getProperty();
 
           // ajouter à l'objet query
           if (!iptcField.isDate()) {
             String value =
-                FileUploadUtil.getParameter(items, property, null,
-                request.getCharacterEncoding());
+                FileUploadUtil.getParameter(items, property, null, request.getCharacterEncoding());
             if (StringUtil.isDefined(value)) {
               query.addFieldQuery(new FieldDescription("IPTC_" + property, value, null));
             }
           } else {
             // cas particulier des champs de type date
             // recupere les deux champs
-            String dateBeginStr =
-                FileUploadUtil.getParameter(items, property + "_Begin", null,
-                request.getCharacterEncoding());
-            String dateEndStr =
-                FileUploadUtil.getParameter(items, property + "_End", null,
-                request.getCharacterEncoding());
+            String dateBeginStr = FileUploadUtil
+                .getParameter(items, property + "_Begin", null, request.getCharacterEncoding());
+            String dateEndStr = FileUploadUtil
+                .getParameter(items, property + "_End", null, request.getCharacterEncoding());
 
             Date dateBegin = null;
             Date dateEnd = null;
@@ -1063,8 +1056,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             }
 
             if (dateBegin != null || dateEnd != null) {
-              query
-                  .addFieldQuery(new FieldDescription("IPTC_" + property, dateBegin, dateEnd, null));
+              query.addFieldQuery(
+                  new FieldDescription("IPTC_" + property, dateBegin, dateEnd, null));
             }
 
           }
@@ -1075,9 +1068,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         List<Integer> silverObjectIds = null;
 
         // Récupération des couples (axe, valeur)
-        Iterator<FileItem> itItems = items.iterator();
-        while (itItems.hasNext()) {
-          FileItem item = itItems.next();
+        for (final FileItem item : items) {
           if (item.isFormField() && item.getFieldName().startsWith("Axis")) {
             String axisParam = item.getString();
             if (StringUtil.isDefined(axisParam)) {
@@ -1105,7 +1096,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         gallerySC.setSearchResultListPhotos(photos);
 
         if (silverObjectIds != null && silverObjectIds.size() > 0) {
-          Collection<PhotoDetail> result = null;
+          Collection<PhotoDetail> result;
           if (!query.isEmpty()) {
             // Intersection des résultats Lucene et PDC
             result = mixedSearch(gallerySC, photos, silverObjectIds);
@@ -1135,13 +1126,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // mise à jour du tag pour les photos non visibles
         gallerySC.setSearchResult(false);
         gallerySC.setViewNotVisible(true);
-        request.setAttribute("ViewVisible", new Boolean(gallerySC.isViewNotVisible()));
+        request.setAttribute("ViewVisible", gallerySC.isViewNotVisible());
 
         // passage des paramètres
         request.setAttribute("Photos", photos);
-        request.setAttribute("NbPhotosPerPage", new Integer(gallerySC.getNbPhotosPerPage()));
-        request.setAttribute("FirstPhotoIndex",
-            new Integer(gallerySC.getIndexOfFirstItemToDisplay()));
+        request.setAttribute("NbPhotosPerPage", gallerySC.getNbPhotosPerPage());
+        request.setAttribute("FirstPhotoIndex", gallerySC.getIndexOfFirstItemToDisplay());
         request.setAttribute("Tri", gallerySC.getTri());
         request.setAttribute("Taille", gallerySC.getTaille());
         request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
@@ -1243,7 +1233,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         if (function.equals("BasketView")) {
           // voir le panier
           request.setAttribute("Photos", gallerySC.getBasketListPhotos());
-          request.setAttribute("NbPhotosPerPage", new Integer(gallerySC.getNbPhotosPerPage()));
+          request.setAttribute("NbPhotosPerPage", gallerySC.getNbPhotosPerPage());
           // request.setAttribute("FirstPhotoIndex", new
           // Integer(gallerySC.getIndexOfFirstItemToDisplay()));
           request.setAttribute("SelectedIds", gallerySC.getListSelected());
@@ -1292,7 +1282,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         if (function.equals("OrderAdd")) {
           // recherche du formulaire de demande
           String xmlFormName = gallerySC.getOrderForm();
-          String xmlFormShortName = null;
+          String xmlFormShortName;
 
           if (isDefined(xmlFormName)) {
             xmlFormShortName =
@@ -1396,11 +1386,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           // voir la demande
           String orderId = gallerySC.getCurrentOrderId();
           request.setAttribute("Order", gallerySC.getOrder(orderId));
-          request.setAttribute("NbPhotosPerPage", new Integer(gallerySC.getNbPhotosPerPage()));
+          request.setAttribute("NbPhotosPerPage", gallerySC.getNbPhotosPerPage());
           request.setAttribute("Taille", gallerySC.getTaille());
 
-          Form formView = null;
-          DataRecord data = null;
+          Form formView;
+          DataRecord data;
 
           String xmlFormName = gallerySC.getOrderForm();
           if (isDefined(xmlFormName)) {
@@ -1461,13 +1451,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     ContentManager contentManager = new ContentManager();
     // On créait une liste triée d'indexEntry
     SortedSet<Integer> basicSearchList = new TreeSet<Integer>();
-    String instanceId = "";
-    String objectId = "";
-    List<String> docFeature = (List<String>) new ArrayList<String>();
+    String instanceId;
+    String objectId;
+    List<String> docFeature = new ArrayList<String>();
 
-    Iterator<PhotoDetail> itPhotos = photos.iterator();
-    while (itPhotos.hasNext()) {
-      PhotoDetail photo = itPhotos.next();
+    for (final PhotoDetail photo : photos) {
       instanceId = photo.getInstanceId();
       objectId = photo.getId();
       docFeature.add(objectId);
@@ -1491,10 +1479,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     // trouvés
     // mais ces documents sont également dans le tableau résultat de la recherche classique
     // il faut donc créer une liste de photos pour afficher le resultat
-    List<PhotoDetail> result =
-        getPhotosBySilverObjectIds(basicSearchList, contentManager, gallerySC);
-
-    return result;
+    return getPhotosBySilverObjectIds(basicSearchList, contentManager, gallerySC);
   }
 
   private List<PhotoDetail> getPhotosBySilverObjectIds(SortedSet<Integer> silverObjectIds,
@@ -1504,12 +1489,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
     if (silverObjectIds != null) {
       // la liste contient bien des résultats
-      Iterator<Integer> it = silverObjectIds.iterator();
-      PhotoDetail photo = null;
-      String photoId = null;
+      PhotoDetail photo;
+      String photoId;
       // for each silverContentId, we get the corresponding photoId
-      while (it.hasNext()) {
-        int cId = (it.next()).intValue();
+      for (Integer cId : silverObjectIds) {
         try {
           photoId = contentManager.getInternalContentId(cId);
           photo = gallerySC.getPhoto(photoId);
@@ -1529,14 +1512,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
   private Integer getNbOrdersProcess(Collection<Order> orders) {
     int nb = 0;
-    Iterator<Order> it = orders.iterator();
-    while (it.hasNext()) {
-      Order order = it.next();
+    for (final Order order : orders) {
       if (order.getProcessUserId() >= 0) {
         nb = nb + 1;
       }
     }
-    return new Integer(nb);
+    return nb;
   }
 
   private String createPhotoData(List<FileItem> parameters, GallerySessionController gallerySC,
@@ -1596,9 +1577,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
     // mettre à jour les lignes
     List<OrderRow> rows = order.getRows();
-    Iterator<OrderRow> it = rows.iterator();
-    while (it.hasNext()) {
-      OrderRow orderRow = it.next();
+    for (final OrderRow orderRow : rows) {
       int photoId = orderRow.getPhotoId();
       String download = request.getParameter("DownloadType" + photoId);
       orderRow.setDownloadDecision(download);
@@ -1615,22 +1594,17 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
    * @param gallerySC
    * @param photoIds
    * @param encoding
-   * @throws RemoteException
    * @throws Exception
    */
   private void updateSelectedPhoto(HttpServletRequest request, GallerySessionController gallerySC,
-      Collection<String> photoIds, String encoding) throws RemoteException, Exception {
+      Collection<String> photoIds, String encoding) throws Exception {
 
     // tri des paramètres entre ceux de l'entête et ceux propres au formulaire
     final List<FileItem> parameters = new ArrayList<FileItem>();
-    final List<FileItem> paramForm = new ArrayList<FileItem>();
     for (FileItem param : FileUploadUtil.parseRequest(request)) {
       if (param.getFieldName().startsWith("Im$")) {
         // c'est un paramètre de l'entête
         parameters.add(param);
-      } else {
-        // c'est un paramètre du formulaire
-        paramForm.add(param);
       }
     }
 
@@ -1688,8 +1662,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
   private void putXMLDisplayerIntoRequest(PhotoDetail photo, HttpServletRequest request,
       GallerySessionController gallerySC) throws PublicationTemplateException, FormException {
-    Form formView = null;
-    DataRecord data = null;
+    Form formView;
+    DataRecord data;
 
     String photoId = photo.getPhotoPK().getId();
     String xmlFormName = gallerySC.getXMLFormName();
@@ -1802,9 +1776,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     boolean inAlbum = false;
     boolean first = true;
     String firstAlbumId = "0";
-    Iterator<String> it = albumIds.iterator();
-    while (it.hasNext()) {
-      String albumId = it.next();
+    for (final String albumId : albumIds) {
       if (first) {
         firstAlbumId = albumId;
         first = false;
@@ -1821,9 +1793,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   private void putPhotoCommonParameters(HttpServletRequest request,
       GallerySessionController gallerySC, PhotoDetail photo, String profile) throws Exception {
     request.setAttribute("Photo", photo);
-    Integer nbComments = new Integer(0);
+    Integer nbComments = 0;
     try {
-      nbComments = new Integer(gallerySC.getAllComments(photo.getId()).size());
+      nbComments = gallerySC.getAllComments(photo.getId()).size();
     } catch (Exception e) {
       SilverTrace.error("gallery", "GalleryRequestRouter.putPhotoCommonParameters()",
           "root.MSG_GEN_PARAM_VALUE", "photoId=" + gallerySC.getUserId(), e);
@@ -1838,7 +1810,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     boolean allowedToUpdateImage =
         "admin".equals(profile) || "publisher".equals(profile)
         || ("writer".equals(profile) && photo.getCreatorId().equals(gallerySC.getUserId()));
-    request.setAttribute("UpdateImageAllowed", new Boolean(allowedToUpdateImage));
+    request.setAttribute("UpdateImageAllowed", allowedToUpdateImage);
 
     request.setAttribute("ShowCommentsTab", gallerySC.areCommentsEnabled());
   }
@@ -1875,7 +1847,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     List<String> ids = new ArrayList<String>();
     if (col != null) {
       Iterator<PhotoDetail> it = col.iterator();
-      PhotoDetail photo = null;
+      PhotoDetail photo;
       while (it.hasNext()) {
         photo = it.next();
         if (photo != null) {
@@ -1887,7 +1859,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   }
 
   private String returnToAlbum(HttpServletRequest request, GallerySessionController gallerySC) {
-    String destination = "";
+    String destination;
     // retour d'où on vient
     if (!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible()) {
       // retour à l'album en cours

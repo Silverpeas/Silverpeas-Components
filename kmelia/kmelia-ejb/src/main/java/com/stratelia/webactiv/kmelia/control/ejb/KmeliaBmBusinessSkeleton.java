@@ -914,4 +914,6 @@ public interface KmeliaBmBusinessSkeleton {
   public boolean isUserCanValidate(String componentId, String userId) throws RemoteException;
 
   public String getUserTopicProfile(NodePK pk, String userId) throws RemoteException;
+  
+  public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId) throws RemoteException;
 }
