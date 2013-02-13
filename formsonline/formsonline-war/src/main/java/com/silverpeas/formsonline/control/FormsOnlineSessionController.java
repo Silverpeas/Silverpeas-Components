@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.GlobalContext;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -275,8 +276,8 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
     // Retrieve data form (with DataRecord object)
     PublicationTemplate pub =
-        PublicationTemplateManager.getInstance().getPublicationTemplate(getComponentId() + ":"
-            + xmlFormShortName);
+        getPublicationTemplateManager().getPublicationTemplate(
+            getComponentId() + ":" + xmlFormShortName);
     RecordSet set = pub.getRecordSet();
     Form form = pub.getUpdateForm();
     DataRecord data = set.getEmptyRecord();
@@ -476,7 +477,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       String xmlFormShortName =
           xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
       PublicationTemplate pubTemplate =
-          PublicationTemplateManager.getInstance().getPublicationTemplate(getComponentId() + ":"
+          getPublicationTemplateManager().getPublicationTemplate(getComponentId() + ":"
               + xmlFormShortName);
       RecordSet set = pubTemplate.getRecordSet();
       DataRecord data = set.getRecord(formInstanceIds[i]);
@@ -498,5 +499,24 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
         }
       }
     }
+  }
+  
+  /**
+   * Gets an instance of PublicationTemplateManager.
+   * @return an instance of PublicationTemplateManager.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
+  }
+  
+  public List<PublicationTemplate> getTemplates() {
+    List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
+    try {
+      GlobalContext context = new GlobalContext(getSpaceId(), getComponentId());
+      templates = getPublicationTemplateManager().getPublicationTemplates(context);
+    } catch (PublicationTemplateException e) {
+      SilverTrace.error("formManager", "FormsOnlineSessionController.getForms()", "root.CANT_GET_FORMS", e);
+    }
+    return templates;
   }
 }
