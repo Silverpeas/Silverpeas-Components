@@ -29,6 +29,10 @@
 	<description>Un résumé et un développement</description>
 	<image>/weblib/xmlForms/model1.gif</image>
 	<visible>true</visible>
+	<applications>
+		<application>kmax</application>
+        <application>kmelia</application>
+    </applications>
 	<dataFileName>model1/data.xml</dataFileName>
 	<viewFileName>model1/view.xml</viewFileName>
 	<updateFileName>model1/update.xml</updateFileName>

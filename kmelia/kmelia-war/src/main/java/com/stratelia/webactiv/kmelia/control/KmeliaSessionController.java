@@ -169,6 +169,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.util.GlobalContext;
+
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -4460,6 +4462,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
+  }
+  
+  public List<PublicationTemplate> getForms() {
+    List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
+    try {
+      GlobalContext context = new GlobalContext(getSpaceId(), getComponentId());
+      templates = getPublicationTemplateManager().getPublicationTemplates(context);
+    } catch (PublicationTemplateException e) {
+      SilverTrace.error("kmelia", "KmeliaSessionController.getForms()", "root.CANT_GET_FORMS", e);
+    }
+    return templates;
   }
 
   /**
