@@ -56,7 +56,6 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
   @Inject
   @Named("dataSource")
   private DataSource datasource;
-  
   @Inject
   private DataSourceConfiguration config;
 
@@ -79,11 +78,8 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
   protected void registerDatasource() {
     try {
       InitialContext ic = new InitialContext();
-      rebind(ic, config.getJndiName(), datasource);
       ic.rebind(config.getJndiName(), datasource);
-      rebind(ic, JNDINames.DATABASE_DATASOURCE, datasource);
       ic.rebind(JNDINames.DATABASE_DATASOURCE, datasource);
-      rebind(ic, JNDINames.ADMIN_DATASOURCE, datasource);
       ic.rebind(JNDINames.ADMIN_DATASOURCE, datasource);
       registerMockJMS(ic);
     } catch (Exception nex) {
@@ -93,8 +89,8 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
 
   protected void registerMockJMS(InitialContext ic) throws NamingException {
     QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
-    rebind(ic, JNDINames.JMS_FACTORY, refFactory);
-    rebind(ic, JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
+    ic.bind(JNDINames.JMS_FACTORY, refFactory);
+    ic.bind(JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
     QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
     assertThat(qconFactory, is(notNullValue()));
     MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
@@ -170,7 +166,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
       }
     }
     MockObjectFactory.clearAll();
-    SimpleMemoryContextFactory.setUpAsInitialContext();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 
   /**

@@ -52,6 +52,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * Class declaration
@@ -90,7 +91,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     // contrôle que "componentId" est bien une photothèque ayant le droit d'être
     // vu dans un Wysiwyg
     boolean isViewInWysiwyg = "yes"
-        .equalsIgnoreCase(getOrganizationController()
+        .equalsIgnoreCase(getOrganisationController()
         .getComponentParameterValue(componentId, "viewInWysiwyg"));
     if (isViewInWysiwyg) {
       SilverTrace.info("gallery", "GalleryInWysiwygRouter.doPost",
@@ -216,7 +217,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     return galleryBm;
   }
 
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     return new OrganizationController();
   }
 }

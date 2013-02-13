@@ -47,6 +47,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.rmi.RemoteException;
 import java.util.Date;
@@ -60,7 +61,7 @@ import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 public class KmeliaImportExport extends GEDImportExport {
 
   // Variables
-  private static OrganizationController org_Ctrl = new OrganizationController();
+  private static OrganisationController org_Ctrl = new OrganizationController();
 
   /**
    * Constructeur public de la classe
@@ -109,7 +110,7 @@ public class KmeliaImportExport extends GEDImportExport {
       pubDet_temp.setStatusMustBeChecked(false);
       pubDet_temp.setStatus(pubDetailToCreate.getStatus());
     }
-    
+
     pubDet_temp.setUpdateDate(new Date());
     pubDet_temp.setUpdaterId(userDetail.getId());
     getKmeliaBm().updatePublication(pubDet_temp);

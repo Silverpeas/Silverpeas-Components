@@ -59,14 +59,7 @@
   </bean>
 
   <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubCalendarBm" />
-<!--
-   <bean id="mailCheckerInitializer" name="mailCheckerInitializer"
-    class="com.silverpeas.mailinglist.control.MailCheckerInitialize" init-method="registerAll">
-    <property name="messageChecker" ref="messageChecker" />
-    <property name="mailingListService" ref="mailingListService" />
-    <property name="frequency" value="${mail.check.frequency}" />
-  </bean>
-  -->
+
   <bean id="notificationFormatter" name="notificationFormatter"
     class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationFormatter" />
 

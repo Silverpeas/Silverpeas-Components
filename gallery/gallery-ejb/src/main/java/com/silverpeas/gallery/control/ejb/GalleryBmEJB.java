@@ -38,6 +38,7 @@ import java.util.Map;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.util.ProcessList;
 import org.silverpeas.search.SearchEngineFactory;
@@ -497,7 +498,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
 
   private String getSpacesPath(final String componentId) {
     String spacesPath = "";
-    final List<SpaceInst> spaces = getOrganizationController().getSpacePathToComponent(componentId);
+    final List<SpaceInst> spaces = getOrganisationController().getSpacePathToComponent(componentId);
     for (final SpaceInst spaceInst : spaces) {
       spacesPath += spaceInst.getName();
       spacesPath += " > ";
@@ -507,7 +508,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
 
   private String getComponentLabel(final String componentId) {
     final ComponentInstLight component =
-        getOrganizationController().getComponentInstLight(componentId);
+        getOrganisationController().getComponentInstLight(componentId);
     String componentLabel = "";
     if (component != null) {
       componentLabel = component.getLabel();
@@ -515,7 +516,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     return componentLabel;
   }
 
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     return new OrganizationController();
   }
 
@@ -632,7 +633,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
 
       // indexation du contenu du formulaire XML
       final String xmlFormName =
-          getOrganizationController().getComponentParameterValue(photo.getInstanceId(),
+          getOrganisationController().getComponentParameterValue(photo.getInstanceId(),
               "XMLFormName");
       SilverTrace.info("gallery", "GalleryBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
           "xmlFormName = " + xmlFormName);

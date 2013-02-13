@@ -980,24 +980,23 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public UserDetail[] listUsers() {
-    UserDetail[] userDetails = CollectionUtil.sortUserDetailArray(getOrganizationController().
-        getAllUsers(
-            getComponentId()));
+    UserDetail[] userDetails = CollectionUtil.sortUserDetailArray(getOrganisationController().
+        getAllUsers(getComponentId()));
     return (userDetails != null ? userDetails : new UserDetail[0]);
   }
 
   public String getAuthorName(String userId) {
-    UserDetail userDetail = getOrganizationController().getUserDetail(userId);
+    UserDetail userDetail = getOrganisationController().getUserDetail(userId);
     return (userDetail != null ? (userDetail.getFirstName() + " " + userDetail.getLastName())
         .trim() : null);
   }
 
   public UserDetail getAuthor(String userId) {
-    return getOrganizationController().getUserDetail(userId);
+    return getOrganisationController().getUserDetail(userId);
   }
 
   public String getAdminIds() {
-    return NotificationSender.getIdsLineFromUserArray(getOrganizationController().getUsers(
+    return NotificationSender.getIdsLineFromUserArray(getOrganisationController().getUsers(
         getSpaceId(), getComponentId(), "admin"));
   }
 

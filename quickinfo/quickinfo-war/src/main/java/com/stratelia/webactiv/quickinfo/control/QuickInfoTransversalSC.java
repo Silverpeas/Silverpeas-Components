@@ -49,6 +49,7 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * @author squere
@@ -60,7 +61,7 @@ public class QuickInfoTransversalSC {
 
   private ResourceLocator message = null;
   private PublicationBm publicationBm = null;
-  private OrganizationController organizationControl = null;
+  private OrganisationController organizationControl = null;
 
   /** Creates new QuickInfoSessionController */
   public QuickInfoTransversalSC() {
@@ -153,7 +154,7 @@ public class QuickInfoTransversalSC {
     return sortByDateDesc(result);
   }
 
-  public OrganizationController getOrganizationControl() {
+  public OrganisationController getOrganizationControl() {
     if (organizationControl == null) {
       organizationControl = new OrganizationController();
     }

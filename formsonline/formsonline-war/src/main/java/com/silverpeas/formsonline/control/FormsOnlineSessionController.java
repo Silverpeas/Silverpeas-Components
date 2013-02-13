@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.formsonline.control;
 
@@ -82,6 +79,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   /**
    * Standard Session Controller Constructeur
+   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -181,34 +179,34 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
         toArray(new String[0]);
     String[] groupIds =
         (String[]) (dao.getReceiversAsGroups(currentForm.getId(), getComponentId())).
-            toArray(new String[0]);
+        toArray(new String[0]);
 
     return initSelection(sugReceivers, "UpdateReceivers", userIds, groupIds);
   }
 
   public List<UserDetail> getSendersAsUsers() throws FormsOnlineDatabaseException {
     List<String> userIds = dao.getSendersAsUsers(currentForm.getId(), getComponentId());
-    UserDetail[] details =
-        getOrganizationController().getUserDetails(userIds.toArray(new String[0]));
+    UserDetail[] details = getOrganisationController().
+        getUserDetails(userIds.toArray(new String[0]));
     return Arrays.asList(details);
   }
 
   public List<Group> getSendersAsGroups() throws FormsOnlineDatabaseException {
     List<String> groupIds = dao.getSendersAsGroups(currentForm.getId(), getComponentId());
-    Group[] groups = getOrganizationController().getGroups(groupIds.toArray(new String[0]));
+    Group[] groups = getOrganisationController().getGroups(groupIds.toArray(new String[0]));
     return Arrays.asList(groups);
   }
 
   public List<UserDetail> getReceiversAsUsers() throws FormsOnlineDatabaseException {
     List<String> userIds = dao.getReceiversAsUsers(currentForm.getId(), getComponentId());
-    UserDetail[] details =
-        getOrganizationController().getUserDetails(userIds.toArray(new String[0]));
+    UserDetail[] details = getOrganisationController().
+        getUserDetails(userIds.toArray(new String[0]));
     return Arrays.asList(details);
   }
 
   public List<Group> getReceiversAsGroups() throws FormsOnlineDatabaseException {
     List<String> groupIds = dao.getReceiversAsGroups(currentForm.getId(), getComponentId());
-    Group[] groups = getOrganizationController().getGroups(groupIds.toArray(new String[0]));
+    Group[] groups = getOrganisationController().getGroups(groupIds.toArray(new String[0]));
     return Arrays.asList(groups);
   }
 
@@ -238,7 +236,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   public List<FormDetail> getAvailableFormsToSend() throws FormsOnlineDatabaseException {
     String userId = getUserId();
-    String[] userGroupIds = getOrganizationController().getAllGroupIdsOfUser(userId);
+    String[] userGroupIds = getOrganisationController().getAllGroupIdsOfUser(userId);
     return dao.getUserAvailableForms(getComponentId(), userId, userGroupIds);
   }
 
@@ -276,15 +274,15 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     // Retrieve data form (with DataRecord object)
     PublicationTemplate pub =
         PublicationTemplateManager.getInstance().getPublicationTemplate(getComponentId() + ":"
-            + xmlFormShortName);
+        + xmlFormShortName);
     RecordSet set = pub.getRecordSet();
     Form form = pub.getUpdateForm();
     DataRecord data = set.getEmptyRecord();
     data.setId(String.valueOf(instance.getId()));
 
     // Save data form
-    PagesContext context = new PagesContext("newInstanceForm", "0",
-        getLanguage(), false, getComponentId(), getUserId());
+    PagesContext context = new PagesContext("newInstanceForm", "0", getLanguage(), false,
+        getComponentId(), getUserId());
     context.setObjectId(String.valueOf(instance.getId()));
     form.update(items, data, context);
     set.save(data);
@@ -305,6 +303,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   /**
    * notifyReceivers
+   *
    * @throws FormsOnlineDatabaseException
    */
   private void notifyReceivers(int formId, int formInstanceId) throws FormsOnlineDatabaseException {
@@ -345,13 +344,14 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       SilverTrace.error("formManager", "FormManagerSessionController.notifyReceivers()",
           "root.MSG_GEN_PARAM_VALUE", "formInstanceId = " + formInstanceId,
           new FormsOnlineRuntimeException(
-              "com.silverpeas.formsonline.control.FormsOnlineSessionController",
-              SilverpeasRuntimeException.ERROR, ""));
+          "com.silverpeas.formsonline.control.FormsOnlineSessionController",
+          SilverpeasRuntimeException.ERROR, ""));
     }
   }
 
   /**
    * notifySender
+   *
    * @throws FormsOnlineDatabaseException
    */
   private void notifySender(FormInstance formInstance) throws FormsOnlineDatabaseException {
@@ -405,14 +405,14 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       SilverTrace.error("formManager", "FormManagerSessionController.notifySender()",
           "root.MSG_GEN_PARAM_VALUE", "formInstanceId = " + formInstance.getId(),
           new FormsOnlineRuntimeException(
-              "com.silverpeas.formsonline.control.FormsOnlineSessionController",
-              SilverpeasRuntimeException.ERROR, ""));
+          "com.silverpeas.formsonline.control.FormsOnlineSessionController",
+          SilverpeasRuntimeException.ERROR, ""));
     }
   }
 
   public List<String> getAvailableFormIdsAsReceiver() throws FormsOnlineDatabaseException {
     String userId = getUserId();
-    String[] userGroupIds = getOrganizationController().getAllGroupIdsOfUser(userId);
+    String[] userGroupIds = getOrganisationController().getAllGroupIdsOfUser(userId);
     return dao.getAvailableFormIdsAsReceiver(getComponentId(), userId, userGroupIds);
   }
 
@@ -477,7 +477,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
           xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
       PublicationTemplate pubTemplate =
           PublicationTemplateManager.getInstance().getPublicationTemplate(getComponentId() + ":"
-              + xmlFormShortName);
+          + xmlFormShortName);
       RecordSet set = pubTemplate.getRecordSet();
       DataRecord data = set.getRecord(formInstanceIds[i]);
       set.delete(data);

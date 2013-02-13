@@ -23,16 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import static com.stratelia.webactiv.SilverpeasRole.admin;
-import static com.stratelia.webactiv.SilverpeasRole.publisher;
-import static com.stratelia.webactiv.SilverpeasRole.user;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.CLONE;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.DRAFT;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.TO_VALIDATE;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,14 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
@@ -73,7 +57,6 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
@@ -94,6 +77,20 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.viewer.ViewerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+
+import static com.stratelia.webactiv.SilverpeasRole.*;
+import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 
 /**
  * @author ehugonnet
@@ -1296,7 +1293,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   private String displayPublicationFullPath(KmeliaSessionController kmelia, PublicationDetail pub)
       throws IOException {
     // Get space and componentLabel of the publication (can be different from context)
-    OrganizationController orga = kmelia.getOrganizationController();
+    OrganisationController orga = kmelia.getOrganisationController();
     ComponentInstLight compoInstLight = orga.getComponentInstLight(pub.getInstanceId());
     String componentLabel = compoInstLight.getLabel(kmelia.getCurrentLanguage());
     String spaceLabel =

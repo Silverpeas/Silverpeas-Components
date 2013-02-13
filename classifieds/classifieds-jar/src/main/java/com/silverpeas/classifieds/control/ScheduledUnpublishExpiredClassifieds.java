@@ -31,9 +31,9 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -43,13 +43,13 @@ import java.util.Iterator;
 
 @Named
 public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListener {
-  
+
   @Inject
   private Scheduler scheduler;
-  
+
   @Inject
-  private OrganizationController organizationController;
-  
+  private OrganisationController organizationController;
+
   @Inject
   private ClassifiedService classifiedService;
 

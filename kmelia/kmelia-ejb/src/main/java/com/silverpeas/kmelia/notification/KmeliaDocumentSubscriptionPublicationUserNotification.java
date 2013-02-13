@@ -79,7 +79,7 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
     template.setAttribute("attachmentSize", documentVersion.getDisplaySize());
 
     final UserDetail authorDetail =
-        getOrganizationController().getUserDetail(Integer.toString(documentVersion.getAuthorId()));
+        getOrganisationController().getUserDetail(Integer.toString(documentVersion.getAuthorId()));
     template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " " + authorDetail.getLastName());
 
     template.setAttribute("attachmentMajorNumber", documentVersion.getMajorNumber());

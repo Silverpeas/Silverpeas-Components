@@ -22,12 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * webSiteSessionController.java
- *
- * Created on 9 Avril 2001, 11:25
- */
-
 package com.stratelia.webactiv.webSites.control;
 
 /**
@@ -1013,7 +1007,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       List<String> profileNames = new ArrayList<String>();
       profileNames.add("Admin");
       profileNames.add("Publisher");
-      String[] users = getOrganizationController().getUsersIdsByRoleNames(
+      String[] users = getOrganisationController().getUsersIdsByRoleNames(
           getComponentId(), profileNames);
 
       List<UserRecipient> recipients = new ArrayList<UserRecipient>(users.length);

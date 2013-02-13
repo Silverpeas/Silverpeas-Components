@@ -40,6 +40,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.core.admin.OrganisationController;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -90,13 +92,13 @@ public class KmeliaSecurityTest {
 
   /**
    * Test of isAccessAuthorized method, of class KmeliaSecurity.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void testIsAccessAuthorizedForValidPublication() throws Exception {
     String instanceId = "100";
     String adminId = "11";
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.isComponentAvailable(instanceId, "10")).thenReturn(Boolean.FALSE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
@@ -128,7 +130,7 @@ public class KmeliaSecurityTest {
     String publisherId = "13";
     String authorWriterId = "14";
     String notAuthorizedWriterId = "15";
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
       thenReturn(null);
@@ -174,7 +176,7 @@ public class KmeliaSecurityTest {
     String publisherId = "13";
     String authorWriterId = "14";
     String notAuthorizedWriterId = "15";
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     when(controller.isComponentAvailable(eq(instanceId), anyString())).thenReturn(Boolean.TRUE);
     when(controller.getComponentParameterValue(instanceId, KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
       thenReturn(null);
@@ -233,7 +235,7 @@ public class KmeliaSecurityTest {
    */
   @Test
   public void testIsObjectAvailable() {
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     KmeliaSecurity instance = new KmeliaSecurity(controller);
     assertTrue("Object not of type kmelia", instance.isObjectAvailable("100", "10", "1000", "toto"));
   }
@@ -259,7 +261,7 @@ public class KmeliaSecurityTest {
    */
   @Test
   public void testIsRightsOnTopicsEnabled() {
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     when(controller.getComponentParameterValue("100", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).
       thenReturn("yes");
     when(controller.getComponentParameterValue("101", KmeliaSecurity.RIGHTS_ON_TOPIC_PARAM)).

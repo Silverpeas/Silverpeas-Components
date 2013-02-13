@@ -34,9 +34,8 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationController;
+
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
@@ -58,6 +57,9 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+
 @Named("questionManager")
 public class SilverpeasQuestionManager implements QuestionManager {
 
@@ -67,7 +69,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   private SilverpeasBeanDAO<Recipient> recipientDao = null;
   private final QuestionReplyContentManager contentManager = new QuestionReplyContentManager();
   @Inject
-  private OrganizationController controller;
+  private OrganisationController controller;
 
   SilverpeasQuestionManager() {
     try {

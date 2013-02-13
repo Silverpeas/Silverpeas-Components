@@ -38,6 +38,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -139,7 +140,7 @@ public class GalleryDragAndDrop extends HttpServlet {
 
   private void importRepository(final File repository, final String userId, final String componentId,
       final String albumId) throws Exception {
-    OrganizationController orga = new OrganizationController();
+    OrganisationController orga = new OrganizationController();
     boolean watermark =
         "yes".equalsIgnoreCase(orga.getComponentParameterValue(componentId, "watermark"));
     boolean download =

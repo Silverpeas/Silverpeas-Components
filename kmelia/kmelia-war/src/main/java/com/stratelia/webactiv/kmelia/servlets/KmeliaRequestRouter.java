@@ -261,7 +261,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 || "com.stratelia.webactiv.calendar.backbone.TodoDetail".equals(type)
                 || "Attachment".equals(type) || "Document".equals(type)
                 || type.startsWith("Comment"))) {
-          KmeliaSecurity security = new KmeliaSecurity(kmelia.getOrganizationController());
+          KmeliaSecurity security = new KmeliaSecurity(kmelia.getOrganisationController());
           try {
             boolean accessAuthorized =
                     security.isAccessAuthorized(kmelia.getComponentId(), kmelia.getUserId(), id,

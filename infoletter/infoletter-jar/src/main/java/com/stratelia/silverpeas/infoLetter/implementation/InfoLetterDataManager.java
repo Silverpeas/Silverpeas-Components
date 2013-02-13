@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.infoLetter.implementation;
 
@@ -30,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
@@ -38,7 +37,10 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
 import com.stratelia.silverpeas.infoLetter.model.InternalSubscribers;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -54,6 +56,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class InfoLetterDataManager implements InfoLetterDataInterface {
@@ -61,7 +64,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   // Statiques
   private final static String TableExternalEmails = "SC_IL_ExtSus";
   private final static String TableInternalEmails = "SC_IL_IntSus";
-
   // Membres
   private SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
   private SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
@@ -85,7 +87,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   /**
    * Implementation of InfoLetterDataInterface interface
    */
-
   // Creation d'une lettre d'information
   @Override
   public void createInfoLetter(InfoLetter il) {
@@ -149,7 +150,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
           "instanceId = '" + letter.getInstanceId() + "' and letterId = " + letterPK.getId();
       publications =
           new ArrayList<InfoLetterPublication>(infoLetterPublicationDAO.findByWhereClause(letterPK,
-              whereClause));
+          whereClause));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
@@ -241,10 +242,12 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Validation d'une publication
+  @Override
   public void validateInfoLetterPublication(InfoLetterPublication ilp) {
   }
 
   // Recuperation d'une lettre par sa clef
+  @Override
   public InfoLetter getInfoLetter(WAPrimaryKey letterPK) {
     InfoLetter retour = null;
     try {
@@ -258,6 +261,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Recuperation d'une publication par sa clef
+  @Override
   public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK) {
     InfoLetterPublicationPdC retour = null;
     try {
@@ -271,11 +275,10 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Creation de la lettre par defaut a l'instanciation
+  @Override
   public InfoLetter createDefaultLetter(String spaceId, String componentId) {
-    com.stratelia.webactiv.beans.admin.OrganizationController oc =
-        new com.stratelia.webactiv.beans.admin.OrganizationController();
-    com.stratelia.webactiv.beans.admin.ComponentInst ci = oc
-        .getComponentInst(componentId);
+    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
+    ComponentInst ci = oc.getComponentInst(componentId);
     InfoLetter ie = new InfoLetter();
     ie.setInstanceId(componentId);
     ie.setName(ci.getLabel());
@@ -284,20 +287,20 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     return ie;
   }
 
+  @Override
   public int getSilverObjectId(String pubId, String componentId) {
     SilverTrace.info("infoLetter", "InfoLetterDataManager.getSilverObjectId()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId);
     int silverObjectId = -1;
     InfoLetterPublicationPdC infoLetter = null;
     try {
-      silverObjectId = infoLetterContentManager.getSilverObjectId(pubId,
-          componentId);
+      silverObjectId = infoLetterContentManager.getSilverObjectId(pubId, componentId);
       if (silverObjectId == -1) {
         IdPK publiPK = new IdPK();
         publiPK.setId(pubId);
         infoLetter = getInfoLetterPublication(publiPK);
-        silverObjectId = infoLetterContentManager.createSilverContent(null,
-            infoLetter, infoLetter.getCreatorId());
+        silverObjectId = infoLetterContentManager.createSilverContent(null, infoLetter, infoLetter.
+            getCreatorId());
       }
     } catch (Exception e) {
       throw new InfoLetterException("InfoLetterDataManager.getSilverObjectId()",
@@ -631,6 +634,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   /**
    * open connection
+   *
    * @return Connection
    * @throws InfoLetterException
    * @author frageade

@@ -113,7 +113,7 @@ public class GalleryIndexPhotoDataProcess extends AbstractGalleryDataProcess {
 
       // indexation du contenu du formulaire XML
       final String xmlFormName =
-          getOrganizationController().getComponentParameterValue(getPhoto().getInstanceId(),
+          getOrganisationController().getComponentParameterValue(getPhoto().getInstanceId(),
               "XMLFormName");
       SilverTrace.info("gallery", "GalleryIndexPhotoDataProcess.onSuccessful()",
           "root.MSG_GEN_ENTER_METHOD", "xmlFormName = " + xmlFormName);

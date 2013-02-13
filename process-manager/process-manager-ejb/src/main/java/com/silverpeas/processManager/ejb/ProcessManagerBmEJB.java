@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.processManager.ejb;
 
@@ -79,30 +76,28 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 public class ProcessManagerBmEJB implements SessionBean {
 
   private static final long serialVersionUID = -3111458120777031058L;
-
-  /** Default role for creating workflow processes. */
+  /**
+   * Default role for creating workflow processes.
+   */
   public static final String DEFAULT_ROLE = "supervisor";
 
   /**
-   * Create a process instance for a specific workflow component, by a
-   * specific user using one role of thoose defined in a given workflow
-   * definition. The contents of a file is passed in as a single parameter. This
-   * file is uploaded into the process data and stored in the first field of the
-   * file type.
+   * Create a process instance for a specific workflow component, by a specific user using one role
+   * of thoose defined in a given workflow definition. The contents of a file is passed in as a
+   * single parameter. This file is uploaded into the process data and stored in the first field of
+   * the file type.
    *
-   * @param componentId
-   *            the ID of the component which defines the workflow (must be a
-   *            workflow component).
-   * @param userId
-   *            the current user ID.
-   * @param fileName
-   *            the name of the file being pushed during process creation.
-   * @param fileContent
-   *            the full content of the file being pushed during process
-   *            creation (as an array of bytes).
+   * @param componentId the ID of the component which defines the workflow (must be a workflow
+   * component).
+   * @param userId the current user ID.
+   * @param fileName the name of the file being pushed during process creation.
+   * @param fileContent the full content of the file being pushed during process creation (as an
+   * array of bytes).
    * @return the instance ID of the newly started process
    * @throws ProcessManagerException
    */
@@ -117,38 +112,28 @@ public class ProcessManagerBmEJB implements SessionBean {
   }
 
   /**
-   * Create a process instance for a specific workflow component, by a
-   * specific user using one role of thoose defined in a given workflow
-   * definition.
+   * Create a process instance for a specific workflow component, by a specific user using one role
+   * of thoose defined in a given workflow definition.
    * <p>
-   * Some information may be specified that will fill in the creation form of
-   * the new process instance. Such data should be placed into a map structure
-   * of key-value pairs where keys are the name of the intended fields of the
-   * creation form and values are strins (text fields), dates (date fields),
-   * colelctions of strings, collections of dates, or a single
-   * {@link FileContent} object.
+   * Some information may be specified that will fill in the creation form of the new process
+   * instance. Such data should be placed into a map structure of key-value pairs where keys are the
+   * name of the intended fields of the creation form and values are strins (text fields), dates
+   * (date fields), colelctions of strings, collections of dates, or a single {@link FileContent}
+   * object.
    * </p>
-   * <p>
-   * {@link FileContent} are used to pass in as an argument a complete file of
-   * binary data, loaded into memory.
+   * <p> {@link FileContent} are used to pass in as an argument a complete file of binary data,
+   * loaded into memory.
    * </p>
    *
-   * @param componentId
-   *            the ID of the component which defines the workflow (must be a
-   *            workflow component).
-   * @param userId
-   *            the current user ID.
-   * @param userRole
-   *            the role of the user while creating the process instance (this
-   *            role must have been defined in the workflow process
-   *            definition).
-   * @param metadata
-   *            a map of all input metadata, coming with the file and
-   *            describing it. The key is expected to be the name of a field
-   *            in the process form definition (with specification of the type
-   *            name of the field), and the value must be the value to put
-   *            into this field (it may be a collection of value if the field
-   *            is multivaluated, else only the first value is considered).
+   * @param componentId the ID of the component which defines the workflow (must be a workflow
+   * component).
+   * @param userId the current user ID.
+   * @param userRole the role of the user while creating the process instance (this role must have
+   * been defined in the workflow process definition).
+   * @param metadata a map of all input metadata, coming with the file and describing it. The key is
+   * expected to be the name of a field in the process form definition (with specification of the
+   * type name of the field), and the value must be the value to put into this field (it may be a
+   * collection of value if the field is multivaluated, else only the first value is considered).
    * @return the instance ID of the newly started process
    * @throws ProcessManagerException
    */
@@ -167,17 +152,15 @@ public class ProcessManagerBmEJB implements SessionBean {
     try {
       ProcessModel processModel = getProcessModel(componentId);
       XmlForm form = (XmlForm) getCreationForm(processModel);
-      GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(
-          processModel, userRole);
-      PagesContext pagesContext = new PagesContext("creationForm", "0",
-          getLanguage(), true, componentId, userId);
+      GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(processModel, userRole);
+      PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
+          componentId, userId);
 
       // Versioning in use ?
-      OrganizationController controller = new OrganizationController();
-      String paramVersion = controller.getComponentParameterValue(componentId,
-          "versionControl");
-      boolean versioningUsed = (StringUtil.isDefined(paramVersion) && !("no").
-          equals(paramVersion.toLowerCase()));
+      String paramVersion = OrganisationControllerFactory.getOrganisationController().
+          getComponentParameterValue(componentId, "versionControl");
+      boolean versioningUsed = (StringUtil.isDefined(paramVersion) && !("no").equalsIgnoreCase(
+          paramVersion));
       pagesContext.setVersioningUsed(versioningUsed);
 
       // 1 - Populate form data (save file on disk, populate file field)
@@ -240,18 +223,14 @@ public class ProcessManagerBmEJB implements SessionBean {
   }
 
   /**
-   * Retrieve and return the name of the data type, as expected by form
-   * templates in workflow processing, from the Java data type of a given
-   * value object.
+   * Retrieve and return the name of the data type, as expected by form templates in workflow
+   * processing, from the Java data type of a given value object.
    *
-   * @param value
-   *            the value object we want to set into a form field
-   * @return the corresponding data type of value (or values if the argument
-   *         is a data collection), or return <code>null</code> if the value
-   *         is an empty or null value (which means that any type of field may
-   *         match).
-   * @throws ProcessManagerException
-   *             if no matching data type exists for the given value.
+   * @param value the value object we want to set into a form field
+   * @return the corresponding data type of value (or values if the argument is a data collection),
+   * or return <code>null</code> if the value is an empty or null value (which means that any type
+   * of field may match).
+   * @throws ProcessManagerException if no matching data type exists for the given value.
    */
   private String retrieveMatchingFieldTypeName(Object value) throws
       ProcessManagerException {
@@ -283,22 +262,17 @@ public class ProcessManagerBmEJB implements SessionBean {
   }
 
   /**
-   * Find and return the matching field in the current form, knowing its name
-   * and type name. If name is <code>null</code>, then search the first
-   * mandatory field of the right type.
+   * Find and return the matching field in the current form, knowing its name and type name. If name
+   * is
+   * <code>null</code>, then search the first mandatory field of the right type.
    *
-   * @param form
-   *            the form template.
-   * @param data
-   *            the instanciated current form.
-   * @param name
-   *            the searched name or <code>null</code> for looking for the
-   *            first mandatory field of the given type.
-   * @param typeName
-   *            the searched type name.
+   * @param form the form template.
+   * @param data the instanciated current form.
+   * @param name the searched name or <code>null</code> for looking for the first mandatory field of
+   * the given type.
+   * @param typeName the searched type name.
    * @return the found field (never return <code>null</code>).
-   * @throws ProcessManagerException
-   *             if no field exists for the given name and type.
+   * @throws ProcessManagerException if no field exists for the given name and type.
    */
   private Field findMatchingField(XmlForm form, GenericDataRecord data,
       String name, String typeName)
@@ -314,11 +288,9 @@ public class ProcessManagerBmEJB implements SessionBean {
       }
       String fieldName = fieldTemplate.getFieldName();
 
-      if (
-          ((typeName == null) || fieldType.equals(typeName))
+      if (((typeName == null) || fieldType.equals(typeName))
           && (fieldName.equals(name) || ((name == null) && fieldTemplate.
-          isMandatory()))
-          ) {
+          isMandatory()))) {
 
         try {
           return data.getField(fieldName);
@@ -344,13 +316,11 @@ public class ProcessManagerBmEJB implements SessionBean {
   }
 
   /**
-   * Transform and return a gievn value into a string value suitable for a
-   * form field, depending with the given field type name.
+   * Transform and return a gievn value into a string value suitable for a form field, depending
+   * with the given field type name.
    *
-   * @param value
-   *            the value to convert into a string.
-   * @param type
-   *            the field type name.
+   * @param value the value to convert into a string.
+   * @param type the field type name.
    * @return the converetd string value.
    */
   private String getSimpleFieldValueString(Object value, String type) {
@@ -369,18 +339,12 @@ public class ProcessManagerBmEJB implements SessionBean {
   /**
    * Fill a form field in with a given value.
    *
-   * @param field
-   *            the field object to fill in.
-   * @param name
-   *            the name of the field.
-   * @param value
-   *            the value object (to be converted into a string value during
-   *            the execution of this method).
-   * @param type
-   *            the type name of the field.
-   * @throws ProcessManagerException
-   *             if an error occurs while setting the value of the field
-   *             object.
+   * @param field the field object to fill in.
+   * @param name the name of the field.
+   * @param value the value object (to be converted into a string value during the execution of this
+   * method).
+   * @param type the type name of the field.
+   * @throws ProcessManagerException if an error occurs while setting the value of the field object.
    */
   private void populateSimpleField(Field field, String name, Object value,
       String type) throws ProcessManagerException {
@@ -510,8 +474,7 @@ public class ProcessManagerBmEJB implements SessionBean {
   }
 
   /**
-   * Returns the an empty creation record which will be filled in with the
-   * creation form.
+   * Returns the an empty creation record which will be filled in with the creation form.
    */
   private DataRecord getEmptyCreationRecord(ProcessModel processModel,
       String currentRole) throws ProcessManagerException {
@@ -530,16 +493,13 @@ public class ProcessManagerBmEJB implements SessionBean {
   /**
    * Returns the creation task.
    */
-  private Task getCreationTask(ProcessModel processModel, String userId,
-      String currentRole) throws ProcessManagerException {
-
+  private Task getCreationTask(ProcessModel processModel, String userId, String currentRole) throws
+      ProcessManagerException {
     try {
-      OrganizationController controller = new OrganizationController();
-      User user = new UserImpl(controller.getUserDetail(userId));
-      Task creationTask = Workflow.getTaskManager().getCreationTask(user,
-          currentRole, processModel);
+      User user = new UserImpl(OrganisationControllerFactory.getOrganisationController().
+          getUserDetail(userId));
+      Task creationTask = Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
       return creationTask;
-
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerBmEJB",
           "processManager.CREATION_TASK_UNAVAILABLE", e);

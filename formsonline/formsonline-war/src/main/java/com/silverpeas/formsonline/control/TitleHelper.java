@@ -30,10 +30,11 @@ import com.silverpeas.formsonline.model.FormInstance;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class TitleHelper {
-  private static OrganizationController controller = new OrganizationController();
-  
+  private static OrganisationController controller = new OrganizationController();
+
   /**
    * Hide Utility Class Constructor with a private constuctor...
    */
