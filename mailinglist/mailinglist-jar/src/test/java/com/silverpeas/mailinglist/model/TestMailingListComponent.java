@@ -69,46 +69,17 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
        "l'homme canon dans la prochaine émission.Bart";
 
   @After
+  @Override
   public void onTearDown() throws Exception {
     Mailbox.clearAll();
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
     super.onTearDown();
   }
 
   @Before
+  @Override
   public void onSetUp() {
     super.onSetUp();
     Mailbox.clearAll();
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
     ServicesFactory.getInstance().setApplicationContext(applicationContext);
   }
 

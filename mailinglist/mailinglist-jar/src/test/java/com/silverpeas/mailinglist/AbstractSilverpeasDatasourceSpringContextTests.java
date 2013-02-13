@@ -170,7 +170,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
       }
     }
     MockObjectFactory.clearAll();
-    SimpleMemoryContextFactory.setUpAsInitialContext();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 
   /**
