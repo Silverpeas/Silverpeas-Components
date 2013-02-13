@@ -54,6 +54,7 @@ import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import java.rmi.RemoteException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,6 +63,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
@@ -854,12 +857,11 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getAttachments()",
               SilverpeasRuntimeException.ERROR,
               "almanach.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS", e);
+    } finally {
+      closeConnection(con);
     }
   }
 
-  /**
-   * @return
-   */
   private Connection getConnection() {
     try {
       Connection con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
@@ -867,6 +869,16 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getConnection()",
               SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+    }
+  }
+
+  private void closeConnection(Connection con) {
+    try {
+      if (con != null) {
+        con.close();
+      }
+    } catch(SQLException ex) {
+      Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING, ex.getMessage());
     }
   }
 
