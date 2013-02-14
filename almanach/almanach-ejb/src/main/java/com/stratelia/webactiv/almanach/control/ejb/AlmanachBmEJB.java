@@ -873,12 +873,8 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   }
 
   private void closeConnection(Connection con) {
-    try {
-      if (con != null) {
-        con.close();
-      }
-    } catch(SQLException ex) {
-      Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING, ex.getMessage());
+    if (con != null) {
+      DBUtil.close(con);
     }
   }
 
