@@ -43,7 +43,7 @@
 <view:includePlugin name="notifier"/>
 
 <link href="<view:componentUrl componentId=""/>/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css" type="text/css" rel="stylesheet">
-<script src="<view:componentUrl componentId=""/>/gallery/jsp/javaScript/slider/galleria-1.2.8.min.js" type="text/javascript"></script>
+<script src="<view:componentUrl componentId=""/>/gallery/jsp/javaScript/slider/galleria-1.2.9.min.js" type="text/javascript"></script>
 <script src="<view:componentUrl componentId=""/>/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js" type="text/javascript"></script>
 <script src="<view:componentUrl componentId=""/>/gallery/jsp/javaScript/silverpeas-gallery-slider.js" type="text/javascript"></script>
 <script type="text/JavaScript">
