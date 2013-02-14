@@ -354,9 +354,11 @@ public class QuestionReplyRequestRouter extends
             0);
         // Get classification positions
         String positions = request.getParameter("Positions");
-        long id = scc.saveNewFAQ();
-        scc.classifyQuestionReply(id, positions);
-        scc.getQuestion(id);
+        long questionId = scc.saveNewFAQ();
+        String id = Long.toString(questionId);
+        scc.classifyQuestionReply(questionId, positions);
+        scc.getQuestion(questionId);
+        request.setAttribute("QuestionId", id);
         request.setAttribute("contentId", scc.getCurrentQuestionContentId());
         destination = getDestination("Main", scc, request);
       } else if (function.equals("CreateQQuery")) {
