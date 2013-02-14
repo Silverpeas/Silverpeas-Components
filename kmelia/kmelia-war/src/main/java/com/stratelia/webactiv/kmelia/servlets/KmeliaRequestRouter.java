@@ -620,6 +620,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
           if (kmeliaPublication.isAlias()) {
             request.setAttribute("Profile", "user");
+            request.setAttribute("TaxonomyOK", false);
+            request.setAttribute("ValidatorsOK", false);
             request.setAttribute("IsAlias", "1");
           } else {
             request.setAttribute("Profile", kmelia.getProfile());
@@ -636,8 +638,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("NbPublis", 1);
           }
 
-          putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(),
-                  kmelia, request);
+          putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(), kmelia, request);
 
           String fileAlreadyOpened = (String) request.getAttribute("FileAlreadyOpened");
           boolean alreadyOpened = "1".equals(fileAlreadyOpened);
