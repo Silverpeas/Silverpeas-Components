@@ -218,8 +218,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       content = FileUtils.readFileToString(template);
     }
     WysiwygController.createFileAndAttachment(content, WysiwygController.getWysiwygFileName(
-        ilp.getId(), getLanguage()), getComponentId(), DocumentType.wysiwyg.getName(), ilp.getId(),
-        getUserId());
+        ilp.getId()), getComponentId(), DocumentType.wysiwyg.getName(), ilp.getId(),
+        getUserId(), null);
     // Classify content on PdC
     classifyInfoLetterPublication(ilp);
   }

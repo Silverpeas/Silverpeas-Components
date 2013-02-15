@@ -1005,7 +1005,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           destination = requestURI.substring(0, requestURI.indexOf("AddPublication"))
               + "ViewPublication?PubId=" + newPubId;
         }
-      } else if (function.equals("UpdatePublication")) {
+      } else if ("UpdatePublication".equals(function)) {
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
 
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);

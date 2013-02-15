@@ -210,8 +210,8 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
               pubDetail = (PublicationDetail) clipObject
                   .getTransferData(PublicationSelection.PublicationDetailFlavor);
 
-              String description = WysiwygController.load(pubDetail.getPK().getInstanceId(), pubDetail.getPK().getId(), null);
-
+              String description = WysiwygController.load(pubDetail.getPK().getInstanceId(),
+                  pubDetail.getPK().getId(), null);
               quickInfo.add(pubDetail.getName(), description, pubDetail.getBeginDate(),
                   pubDetail.getEndDate(), null);
             }

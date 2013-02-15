@@ -1481,16 +1481,16 @@ public class ForumsBMEJB implements SessionBean {
 
   private void createWysiwyg(MessagePK messagePK, String text, String userId) {
     WysiwygController.createFileAndAttachment(text, messagePK.getComponentName(), messagePK.getId(),
-        userId);
+        userId, null);
   }
 
   private void updateWysiwyg(MessagePK messagePK, String text, String userId) {
     String componentId = messagePK.getComponentName();
     String messageId = messagePK.getId();
     if (WysiwygController.haveGotWysiwyg(componentId, messageId)) {
-      WysiwygController.updateFileAndAttachment(text, componentId, messageId, userId);
+      WysiwygController.updateFileAndAttachment(text, componentId, messageId, userId, null);
     } else {
-      WysiwygController.createFileAndAttachment(text, componentId, messageId, userId);
+      WysiwygController.createFileAndAttachment(text, componentId, messageId, userId, null);
     }
 
   }

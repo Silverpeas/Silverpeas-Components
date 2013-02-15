@@ -187,7 +187,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
             "root.ContentManagerException", e);
       }
       // Add the wysiwyg content
-      WysiwygController.createFileAndAttachment(description, getComponentId(), pubPK.getId(), getUserId());
+      WysiwygController.createFileAndAttachment(description, getComponentId(), pubPK.getId(),
+          getUserId(), null);
 
       classifyQuickInfo(detail, positions);
     } catch (RemoteException e) {
@@ -218,10 +219,11 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
       // Update the Wysiwyg if exists, create one otherwise
       if (detail.getWysiwyg() != null && !"".equals(detail.getWysiwyg())) {
-        WysiwygController.updateFileAndAttachment(description, getComponentId(), id,
-            getUserId());
+        WysiwygController.updateFileAndAttachment(description, getComponentId(), id, getUserId(),
+            null);
       } else {
-        WysiwygController.createFileAndAttachment(description, getComponentId(), id, getUserId());
+        WysiwygController.createFileAndAttachment(description, getComponentId(), id, getUserId(),
+            null);
       }
 
     } catch (RemoteException e) {

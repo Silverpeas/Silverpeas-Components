@@ -20,13 +20,6 @@
  */
 package com.stratelia.silverpeas.infoLetter.implementation;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
@@ -35,7 +28,6 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
 import com.stratelia.silverpeas.infoLetter.model.InternalSubscribers;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -50,6 +42,14 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Class declaration
@@ -531,7 +531,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     try {
       String basicTemplate = "<body></body>";
       WysiwygController.createFileAndAttachment(basicTemplate, componentId,
-          InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), userId);
+          InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), userId, null);
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",

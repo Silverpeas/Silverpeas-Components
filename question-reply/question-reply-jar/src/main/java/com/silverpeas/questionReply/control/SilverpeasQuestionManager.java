@@ -134,7 +134,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
       IdPK pkR = (IdPK) replyDao.add(con, reply);
       WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(), question.
-          getInstanceId(), pkR.getId(), reply.getCreatorId());
+          getInstanceId(), pkR.getId(), reply.getCreatorId(), null);
       long idR = pkR.getIdAsLong();
       if (question.hasNewStatus()) {
         question.waitForAnswer();
@@ -904,7 +904,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       reply.setQuestionId(idQ);
       WAPrimaryKey pkR = replyDao.add(con, reply);
       WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(), question.
-          getInstanceId(), pkR.getId(), reply.getCreatorId());
+          getInstanceId(), pkR.getId(), reply.getCreatorId(), null);
       questionIndexer.createIndex(question, Collections.singletonList(reply));
       Question updatedQuestion = getQuestion(idQ);
       contentManager.createSilverContent(con, updatedQuestion);
@@ -969,10 +969,10 @@ public class SilverpeasQuestionManager implements QuestionManager {
   protected void updateWysiwygContent(Reply reply) throws WysiwygException {
     if (WysiwygController.haveGotWysiwyg(reply.getPK().getInstanceId(), reply.getPK().getId())) {
       WysiwygController.updateFileAndAttachment(reply.readCurrentWysiwygContent(),
-          reply.getPK().getInstanceId(), reply.getPK().getId(), reply.getCreatorId());
+          reply.getPK().getInstanceId(), reply.getPK().getId(), reply.getCreatorId(), null);
     } else {
       WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(),
-          reply.getPK().getInstanceId(), reply.getPK().getId(), reply.getCreatorId());
+          reply.getPK().getInstanceId(), reply.getPK().getId(), reply.getCreatorId(), null);
     }
   }
 

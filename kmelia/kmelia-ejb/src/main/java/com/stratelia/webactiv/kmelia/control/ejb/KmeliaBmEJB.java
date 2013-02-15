@@ -20,20 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import static com.silverpeas.util.StringUtil.isInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
@@ -77,7 +63,6 @@ import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
@@ -133,6 +118,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
@@ -143,12 +129,9 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.Connection;
+import java.util.*;
 
-import javax.ws.rs.HEAD;
-
-import org.silverpeas.importExport.attachment.AttachmentPK;
-import static com.silverpeas.util.StringUtil.getBooleanValue;
-import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.util.StringUtil.*;
 import static com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper.*;
 import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.*;
 import static com.stratelia.webactiv.util.JNDINames.*;
@@ -2740,9 +2723,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       boolean cloneWysiwyg = WysiwygController.haveGotWysiwyg(tempPK.getInstanceId(),
           cloneId);
       if (cloneWysiwyg) {
-        WysiwygController.copy(tempPK.getInstanceId(), cloneId,
-            pubPK.getInstanceId(), pubPK.getId(), tempPubli.getPublicationDetail().
-            getUpdaterId());
+        WysiwygController.copy(tempPK.getInstanceId(), cloneId, pubPK.getInstanceId(),
+            pubPK.getId(), tempPubli.getPublicationDetail().getUpdaterId());
       }
       // delete xml content
       removeXMLContentOfPublication(tempPK);
@@ -3333,8 +3315,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   public String getWysiwyg(PublicationPK pubPK) {
     String wysiwygContent = null;
     try {
-      wysiwygContent = WysiwygController.loadFileAndAttachment(pubPK.
-          getInstanceId(), pubPK.getId());
+      wysiwygContent = WysiwygController.loadFileAndAttachment(pubPK.getInstanceId(), pubPK.getId());
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getAttachments()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_WYSIWYG", e);
@@ -4356,7 +4337,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       clonePK.setComponentName(fromComponentId);
       cloneId = clonePK.getId();
 
-      // clone attachments      
+      // clone attachments
       List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
           .listDocumentsByForeignKey(new ForeignPK(fromId, fromComponentId), null);
       Map<String, String> attachmentIds = new HashMap<String, String>(documents.size());
