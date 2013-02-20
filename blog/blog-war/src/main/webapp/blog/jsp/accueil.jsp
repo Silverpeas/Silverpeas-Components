@@ -44,16 +44,14 @@ String    blogUrl   = (String) request.getAttribute("Url");
 String    rssURL    = (String) request.getAttribute("RSSUrl");
 List    events    = (List) request.getAttribute("Events");
 String    dateCal   = (String) request.getAttribute("DateCalendar");
-boolean   isPdcUsed = ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
-boolean   isDraftVisible  = ((Boolean) request.getAttribute("IsDraftVisible")).booleanValue();
-int nbPostDisplayed   = ((Integer) request.getAttribute("NbPostDisplayed")).intValue();
+boolean   isPdcUsed = (Boolean) request.getAttribute("IsUsePdc");
+boolean   isDraftVisible  = (Boolean) request.getAttribute("IsDraftVisible");
+int nbPostDisplayed   = (Integer) request.getAttribute("NbPostDisplayed");
 WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
 StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
+Date dateCalendar = DateUtil.parse(dateCal);
 
-Date     dateCalendar = new Date(dateCal);
-boolean   isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
-
-if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) { 
+if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) {
   if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) && isPdcUsed) {
     operationPane.addOperation("useless", resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')");
     operationPane.addLine();
@@ -71,7 +69,7 @@ if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRo
   }
 }
   
-if (!isUserGuest) { 
+if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest()) {
   operationPane.addOperation("useless", resource.getString("blog.addSubscription"), "javascript:onClick=addSubscription()");
 }
 %>

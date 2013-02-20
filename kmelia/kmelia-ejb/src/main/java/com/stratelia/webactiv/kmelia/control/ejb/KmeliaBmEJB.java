@@ -25,6 +25,7 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 
 import static com.silverpeas.util.StringUtil.getBooleanValue;
 import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.util.StringUtil.isInteger;
 import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.aKmeliaPublicationFromCompleteDetail;
 import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.aKmeliaPublicationFromDetail;
 import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.aKmeliaPublicationWithPk;
@@ -119,6 +120,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
@@ -1325,8 +1327,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId(),
                 topic.getRightsDependsOn(), ObjectType.NODE));
       } else {
-        profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId,
-                nodePK.getInstanceId()));
+        profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId()));
       }
     } else {
       profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId()));
@@ -1768,8 +1769,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   /**
-   * Delete a publication If this publication is in the basket or in the DZ, it's deleted from the
-   * database Else it only send to the basket
+   * Delete a publication from the database
    * @param pubPK the id of the publication to delete
    * @see com.stratelia.webactiv.kmelia.model.TopicDetail
    */
@@ -1781,6 +1781,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             "root.MSG_GEN_ENTER_METHOD");
 
     try {
+      // remove form content
+      removeXMLContentOfPublication(pubPK);
       // delete all reading controls associated to this publication
       deleteAllReadingControlsByPublication(pubPK);
       // delete all links
@@ -1866,7 +1868,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   @Override
   public void sendPublicationToBasket(PublicationPK pubPK) {
-    sendPublicationToBasket(pubPK, false);
+    sendPublicationToBasket(pubPK, KmeliaHelper.isKmax(pubPK.getInstanceId()));
   }
 
   /**
@@ -2453,7 +2455,9 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             publications.add(toValidate);
           }
         } else {
-          publications.add(toValidate);
+          if (isUserCanValidatePublication(toValidate.getPK(), userId)) {
+            publications.add(toValidate);
+          }
         }
       }
     } catch (Exception e) {
@@ -2761,6 +2765,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       currentPubDetail.setStatus(PublicationDetail.VALID);
       currentPubDetail.setCloneId("-1");
       currentPubDetail.setCloneStatus(null);
+      
+      // merge des fichiers joints
+      AttachmentPK pkFrom = new AttachmentPK(pubPK.getId(), pubPK.getInstanceId());
+      AttachmentPK pkTo = new AttachmentPK(cloneId, tempPK.getInstanceId());
+      HashMap<String, String> attachmentIds = AttachmentController.mergeAttachments(pkFrom, pkTo);
+
+      // merge des fichiers versionnés
 
       // merge du contenu DBModel
       if (tempPubli.getModelDetail() != null) {
@@ -2798,13 +2809,15 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
           if (memInfoId != null && !"0".equals(memInfoId)) {
             // il existait déjà un contenu
-            set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId());
+            set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
+                attachmentIds);
           } else {
             // il n'y avait pas encore de contenu
             publicationTemplateManager.addDynamicPublicationTemplate(tempPK.getInstanceId()
                     + ":" + xmlFormShortName, xmlFormShortName + ".xml");
 
-            set.clone(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId());
+            set.clone(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
+                attachmentIds);
           }
         }
       }
@@ -2817,13 +2830,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                 "useless", pubPK.getInstanceId(), pubPK.getId(), tempPubli.getPublicationDetail().
                 getUpdaterId());
       }
-
-      // merge des fichiers joints
-      AttachmentPK pkFrom = new AttachmentPK(pubPK.getId(), pubPK.getInstanceId());
-      AttachmentPK pkTo = new AttachmentPK(cloneId, tempPK.getInstanceId());
-      AttachmentController.mergeAttachments(pkFrom, pkTo);
-
-      // merge des fichiers versionnés
 
       // delete xml content
       removeXMLContentOfPublication(tempPK);
@@ -3605,15 +3611,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       throw new KmeliaRuntimeException(
               "KmeliaBmEJB.removeXMLContentOfPublication()", ERROR,
               "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
-    }
-  }
-
-  private static boolean isInteger(String id) {
-    try {
-      Integer.parseInt(id);
-      return true;
-    } catch (NumberFormatException e) {
-      return false;
     }
   }
 
@@ -4634,6 +4631,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       PublicationPK clonePK = getPublicationBm().createPublication(clone);
       clonePK.setComponentName(fromComponentId);
       cloneId = clonePK.getId();
+      
+      // clone attachments
+      AttachmentPK pkFrom = new AttachmentPK(fromId, fromComponentId);
+      AttachmentPK pkTo = new AttachmentPK(cloneId, fromComponentId);
+      HashMap<String, String> attachmentIds = AttachmentController.cloneAttachments(pkFrom, pkTo);
 
       // eventually, paste the model content
       if (refPubComplete.getModelDetail() != null && refPubComplete.getInfoDetail() != null) {
@@ -4670,7 +4672,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           RecordSet set = pubTemplate.getRecordSet();
 
           // clone dataRecord
-          set.clone(fromId, fromComponentId, cloneId, fromComponentId);
+          set.clone(fromId, fromComponentId, cloneId, fromComponentId, attachmentIds);
         }
       }
       // paste only links, reverseLinks can't be cloned because it'is a new content not referenced
@@ -4682,11 +4684,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // paste wysiwyg
       WysiwygController.copy(null, fromComponentId, fromId, null, fromComponentId, cloneId, clone.
               getCreatorId());
-
-      // clone attachments
-      AttachmentPK pkFrom = new AttachmentPK(fromId, fromComponentId);
-      AttachmentPK pkTo = new AttachmentPK(cloneId, fromComponentId);
-      AttachmentController.cloneAttachments(pkFrom, pkTo);
 
       // paste versioning documents
       // pasteDocuments(pubPKFrom, clonePK.getId());
@@ -5076,6 +5073,46 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
     }
     return null;
+  }
+  
+  /**
+   * Removes publications according to given ids. Before a publication is removed, user priviledges
+   * are controlled. If node defines the trash, publications are definitively deleted. Otherwise,
+   * publications move into trash.
+   * @param ids the ids of publications to delete
+   * @param nodePK the node where the publications are
+   * @param userId the user who wants to perform deletion
+   * @return the list of publication ids which has been really deleted
+   * @throws RemoteException
+   */
+  public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId)
+      throws RemoteException {
+    List<String> removedIds = new ArrayList<String>();
+    String profile = getProfile(userId, nodePK);
+    for (String id : ids) {
+      PublicationPK pk = new PublicationPK(id, nodePK);
+      if (isUserCanDeletePublication(new PublicationPK(id, nodePK), profile, userId)) {
+        try {
+          if (nodePK.isTrash()) {
+            deletePublication(pk);
+          } else {
+            sendPublicationToBasket(pk);
+          }
+          SilverTrace.spy("kmelia", "KmeliaBmEJB.deletePublications", null, nodePK.getInstanceId(),
+              id, userId, SilverTrace.SPY_ACTION_DELETE);
+          removedIds.add(id);
+        } catch (Exception e) {
+          SilverTrace.error("kmelia", "KmeliaBmEJB.deletePublications()",
+              "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LA_PUBLICATION", "pk = " + pk.toString(), e);
+        }
+      }
+    }
+    return removedIds;
+  }
+  
+  private boolean isUserCanDeletePublication(PublicationPK pubPK, String profile, String userId) throws RemoteException {
+    UserDetail owner = getPublication(pubPK).getCreator();
+    return KmeliaPublicationHelper.isRemovable(pubPK.getInstanceId(), userId, profile, owner);
   }
  
 }

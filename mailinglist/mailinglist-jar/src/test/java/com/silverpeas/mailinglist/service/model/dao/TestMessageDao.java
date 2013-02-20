@@ -20,12 +20,23 @@
  */
 package com.silverpeas.mailinglist.service.model.dao;
 
-import com.silverpeas.mailinglist.service.job.TestMessageChecker;
-import com.silverpeas.mailinglist.service.model.beans.Activity;
-import com.silverpeas.mailinglist.service.model.beans.Attachment;
-import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.silverpeas.mailinglist.service.util.OrderBy;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.inject.Inject;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,23 +46,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.silverpeas.util.Charsets;
+import com.silverpeas.mailinglist.service.job.TestMessageChecker;
+import com.silverpeas.mailinglist.service.model.beans.Activity;
+import com.silverpeas.mailinglist.service.model.beans.Attachment;
+import com.silverpeas.mailinglist.service.model.beans.Message;
+import com.silverpeas.mailinglist.service.util.OrderBy;
+
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 import static org.junit.Assert.*;
+import static java.io.File.separatorChar;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
@@ -62,61 +67,30 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
 
   private static final int ATT_SIZE = 86199;
   private static final OrderBy orderByDate = new OrderBy("sentDate", false);
-  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. " +
-      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
-      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
-      "l'homme canon dans la prochaine émission.\nBart";
+  private static final String textEmailContent =
+      "Bonjour famille Simpson, j'espère que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
+      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
+      + "l'homme canon dans la prochaine émission.\nBart";
   private static final String attachmentPath = getAttachmentPath();
-  private static final String COPY_PATH = System.getProperty("basedir") + File.separatorChar + "target" + File.separatorChar +
-      "test-classes" + File.separatorChar + "com" + File.separatorChar + "silverpeas" +
-      File.separatorChar + "mailinglist" + File.separatorChar + "service" +
-      File.separatorChar + "job" + File.separatorChar + "lemonde.html";
+  private static final String COPY_PATH = System.getProperty("basedir") + separatorChar + "target"
+      + separatorChar + "test-classes" + separatorChar + "com" + separatorChar + "silverpeas"
+      + separatorChar + "mailinglist" + separatorChar + "service" + separatorChar + "job"
+      + separatorChar + "lemonde.html";
   @Inject
   private MessageDao messageDao;
 
   protected String loadHtml() throws IOException {
-    StringWriter buffer = null;
-    BufferedReader reader = null;
+    InputStream in = TestMessageChecker.class.getResourceAsStream("lemonde.html");
     try {
-      buffer = new StringWriter();
-      reader = new BufferedReader(new InputStreamReader(
-          TestMessageChecker.class.getResourceAsStream("lemonde.html")));
-      String line = null;
-      while ((line = reader.readLine()) != null) {
-        buffer.write(line);
-      }
-      return buffer.toString();
+      return IOUtils.toString(in, Charsets.UTF_8);
     } finally {
-      if (reader != null) {
-        reader.close();
-      }
-      if (buffer != null) {
-        buffer.close();
-      }
+      IOUtils.closeQuietly(in);
     }
   }
 
   protected void copyFile(String filePath, String targetPath) throws IOException {
-    FileInputStream in = null;
-    FileOutputStream out = null;
-    try {
-      File file = new File(targetPath);
-      file.getParentFile().mkdirs();
-      in = new FileInputStream(filePath);
-      out = new FileOutputStream(file);
-      byte[] buffer = new byte[8];
-      int c = 0;
-      while ((c = in.read(buffer)) != -1) {
-        out.write(buffer, 0, c);
-      }
-    } finally {
-      if (in != null) {
-        in.close();
-      }
-      if (out != null) {
-        out.close();
-      }
-    }
+    FileUtils.copyFile(new File(filePath), new File(targetPath));
   }
 
   @Test
@@ -142,6 +116,38 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c85", savedMessage.getMessageId());
+    assertEquals(sentDate.getTime(), savedMessage.getSentDate());
+    assertEquals("Simple text message", savedMessage.getTitle());
+    assertEquals(sentDate.get(Calendar.YEAR), savedMessage.getYear());
+    assertEquals(sentDate.get(Calendar.MONTH), savedMessage.getMonth());
+    assertEquals(id, savedMessage.getId());
+    assertEquals(0, savedMessage.getVersion());
+    assertEquals("text/plain", savedMessage.getContentType());
+  }
+  
+  @Test
+  public void testCreateSimpleMessageWithCompleteId() {
+    Calendar sentDate = Calendar.getInstance();
+    Message message = new Message();
+    message.setBody(textEmailContent);
+    message.setComponentId("componentId");
+    message.setModerated(true);
+    message.setSummary(textEmailContent.substring(0, 200));
+    message.setSender("bart.simpson@ilverpeas.com");
+    message.setMessageId("<510A99E9.5060702@silverpeas.com>");
+    message.setSentDate(sentDate.getTime());
+    message.setTitle("Simple text message");
+    message.setContentType("text/plain");
+    String id = messageDao.saveMessage(message);
+    assertNotNull(id);
+    Message savedMessage = messageDao.findMessageById(id);
+    assertNotNull(savedMessage);
+    assertEquals(textEmailContent, savedMessage.getBody());
+    assertEquals("componentId", savedMessage.getComponentId());
+    assertEquals(true, savedMessage.isModerated());
+    assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
+    assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
+    assertEquals("<510A99E9.5060702@silverpeas.com>", savedMessage.getMessageId());
     assertEquals(sentDate.getTime(), savedMessage.getSentDate());
     assertEquals("Simple text message", savedMessage.getTitle());
     assertEquals(sentDate.get(Calendar.YEAR), savedMessage.getYear());
@@ -910,8 +916,8 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
   }
 
   private static String getAttachmentPath() {
-    return getUploadPath() + File.separatorChar + "componentId" +
-        File.separatorChar + "mailId@silverpeas.com" + File.separatorChar;
+    return getUploadPath() + File.separatorChar + "componentId" + File.separatorChar
+        + "mailId@silverpeas.com" + File.separatorChar;
   }
 
   private static String getUploadPath() {

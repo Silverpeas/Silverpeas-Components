@@ -49,6 +49,9 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import java.io.*;
 import javax.inject.Inject;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import static org.mockito.Mockito.*;
@@ -56,6 +59,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import org.silverpeas.util.Charsets;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
@@ -65,37 +70,20 @@ public class TestMessageChecker {
   @Inject
   MessageChecker messageChecker;
   private static int ATT_SIZE = 84954;
-  private static final String attachmentPath = BUILD_PATH + SEPARATOR +
-      "uploads" + SEPARATOR + "componentId" + SEPARATOR + "{0}" + SEPARATOR + "lemonde.html";
+  private static final String attachmentPath = BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR
+      + "componentId" + SEPARATOR + "{0}" + SEPARATOR + "lemonde.html";
   private static final String textEmailContent =
-      "Bonjour famille Simpson, j'espère que vous allez bien. " +
-      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
-      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
-      "l'homme canon dans la prochaine émission.\r\nBart";
-  private static final String htmlEmailSummary = "Politique Recherchez depuis sur Le Monde.fr A " +
-      "la Une Le Desk Vidéos International *Elections américaines Europe Politique " +
-      "*Municipales & Cantonales 2008 Société Carnet Economie Médias Météo Rendez-vou";
+      "Bonjour famille Simpson, j'espère que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
+      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
+      + "l'homme canon dans la prochaine émission.\r\nBart";
+  private static final String htmlEmailSummary = "Politique Recherchez depuis sur Le Monde.fr A "
+      + "la Une Le Desk Vidéos International *Elections américaines Europe Politique "
+      + "*Municipales & Cantonales 2008 Société Carnet Economie Médias Météo Rendez-vou";
 
   protected String loadHtml() throws IOException {
-    StringWriter buffer = null;
-    BufferedReader reader = null;
-    try {
-      buffer = new StringWriter();
-      reader = new BufferedReader(new InputStreamReader(
-          TestMessageChecker.class.getResourceAsStream("lemonde.html"), "UTF-8"));
-      String line;
-      while ((line = reader.readLine()) != null) {
-        buffer.write(line);
-      }
-      return buffer.toString();
-    } finally {
-      if (reader != null) {
-        reader.close();
-      }
-      if (buffer != null) {
-        buffer.close();
-      }
-    }
+    return IOUtils.toString(new InputStreamReader(
+        TestMessageChecker.class.getResourceAsStream("lemonde.html"), Charsets.UTF_8));
   }
 
   @Test
@@ -138,10 +126,10 @@ public class TestMessageChecker {
     listenersByEmail.put("bart.simpson@silverpeas.com", mockListener1);
     listenersByEmail.put("ned.flanders@silverpeas.com", mockListener2);
     List<String> allRecipients = Arrays.asList(new String[]{
-          "lisa.simpson@silverpeas.com", "marge.simpson@silverpeas.com",
-          "homer.simpson@silverpeas.com", "Bart.Simpson@silverpeas.com",
-          "krusty.theklown@silverpeas.com", "ned.flanders@silverpeas.com",
-          "ted.flanders@silverpeas.com"});
+      "lisa.simpson@silverpeas.com", "marge.simpson@silverpeas.com",
+      "homer.simpson@silverpeas.com", "Bart.Simpson@silverpeas.com",
+      "krusty.theklown@silverpeas.com", "ned.flanders@silverpeas.com",
+      "ted.flanders@silverpeas.com"});
     Set<MessageListener> recipients = messageChecker.getRecipientMailingLists(allRecipients,
         listenersByEmail);
     assertNotNull(recipients);

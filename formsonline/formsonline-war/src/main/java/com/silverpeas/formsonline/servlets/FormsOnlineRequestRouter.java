@@ -32,7 +32,6 @@ import com.silverpeas.formsonline.control.FormsOnlineSessionController;
 import com.silverpeas.formsonline.control.TitleHelper;
 import com.silverpeas.formsonline.model.FormDetail;
 import com.silverpeas.formsonline.model.FormInstance;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
@@ -101,13 +100,11 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
       else if (function.equals("CreateForm")) {
         FormDetail form = new FormDetail();
         form.setCreatorId(formsOnlineSC.getUserId());
-        List<PublicationTemplate> templates = getPublicationTemplateManager()
-            .getPublicationTemplates();
 
         formsOnlineSC.setCurrentForm(form);
 
         request.setAttribute("currentForm", form);
-        request.setAttribute("availableTemplates", templates);
+        request.setAttribute("availableTemplates", formsOnlineSC.getTemplates());
 
         destination = "editForm.jsp";
       }
@@ -141,10 +138,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
           return getDestination("Main", formsOnlineSC, request);
         }
 
-        List<PublicationTemplate> templates = getPublicationTemplateManager()
-            .getPublicationTemplates();
         request.setAttribute("currentForm", form);
-        request.setAttribute("availableTemplates", templates);
+        request.setAttribute("availableTemplates", formsOnlineSC.getTemplates());
 
         destination = "editForm.jsp";
       }

@@ -38,6 +38,7 @@ import java.util.List;
 import javax.ejb.RemoveException;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.util.GlobalContext;
 
 import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.DataRecord;
@@ -1764,6 +1765,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     String modelId = getCurrentTopic().getNodeDetail().getModelId();
     return StringUtil.isDefined(modelId) && !"0".equals(modelId);
   }
+<<<<<<< HEAD
 
     /**
      * Crée une nouvelle company
@@ -1949,4 +1951,15 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         }
 
     }
+  
+  public List<PublicationTemplate> getForms() {
+    List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
+    try {
+      GlobalContext context = new GlobalContext(getSpaceId(), getComponentId());
+      templates = getPublicationTemplateManager().getPublicationTemplates(context);
+    } catch (PublicationTemplateException e) {
+      SilverTrace.error("yellowpages", "YellowpagesSessionController.getForms()", "root.CANT_GET_FORMS", e);
+    }
+    return templates;
+  }
 }

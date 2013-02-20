@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,22 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.stratelia.webactiv.kmelia.servlets.ajax.handlers;
 
-package com.silverpeas.mailinglist.service.model.beans;
+import java.rmi.RemoteException;
+import java.util.List;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import javax.servlet.http.HttpServletRequest;
 
-public class AllTests {
+import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxHandler;
 
-  public static Test suite() {
-    TestSuite suite = new TestSuite(
-        "Test for com.silverpeas.mailinglist.service.model.beans");
-    //$JUnit-BEGIN$
-    suite.addTestSuite(TestExternalUser.class);
-    suite.addTestSuite(TestMessage.class);
-    //$JUnit-END$
-    return suite;
+public class DeletePublicationsHandler extends OperationOnPublicationsHandler implements AjaxHandler {
+
+  @Override
+  public String handleRequest(HttpServletRequest request, ComponentSessionController controller) {
+    KmeliaSessionController kmelia = (KmeliaSessionController) controller;
+    processSelectedPublications(request, kmelia);
+    try {
+      List<String> removed = kmelia.deleteSelectedPublications();
+      return "ok-" + removed.size();
+    } catch (RemoteException e) {
+      SilverTrace.error("kmelia", "DeletePublicationsHandler.handleRequest",
+          "root.MSG_GEN_PARAM_VALUE", e);
+      return e.getMessage();
+    }
   }
-
 }

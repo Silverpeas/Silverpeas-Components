@@ -79,6 +79,7 @@ String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute)
 <view:includePlugin name="datepicker" />
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
+<view:includePlugin name="notifier"/>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
 <script type="text/javascript" src="javaScript/searchInTopic.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
@@ -229,53 +230,6 @@ function getToValidateFolderId() {
 <form name="updateChain" action="UpdateChainInit">
 </form>
 <script type="text/javascript">
-var labels = new Object();
-labels["ConfirmDeleteTopic"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("ConfirmDeleteTopic"))%>";
-labels["ConfirmFlushTrashBean"] = "<%=EncodeHelper.javaStringToJsString(kmeliaScc.getString("ConfirmFlushTrashBean"))%>";
-labels["ToValidate"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("ToValidate"))%>";
-labels["topic.info"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.topic.info"))%>";
-
-labels["operation.admin"] = "<%=resources.getString("GML.operations.setupComponent")%>";
-labels["operation.pdc"] = "<%=resources.getString("GML.PDCParam")%>";
-labels["operation.templates"] = "<%=resources.getString("kmelia.ModelUsed")%>";
-labels["operation.exportTopic"] = "<%=resources.getString("kmelia.ExportTopic")%>";
-labels["operation.exportComponent"] = "<%=resources.getString("kmelia.ExportComponent")%>";
-labels["operation.exportPDF"] = "<%=resources.getString("kmelia.ExportPDF")%>";
-labels["operation.addTopic"] = "<%=resources.getString("CreerSousTheme")%>";
-labels["operation.updateTopic"] = "<%=resources.getString("ModifierSousTheme")%>";
-labels["operation.deleteTopic"] = "<%=resources.getString("SupprimerSousTheme")%>";
-labels["operation.sortTopics"] = "<%=resources.getString("kmelia.SortTopics")%>";
-labels["operation.copy"] = "<%=resources.getString("GML.copy")%>";
-labels["operation.cut"] = "<%=resources.getString("GML.cut")%>";
-labels["operation.paste"] = "<%=resources.getString("GML.paste")%>";
-labels["operation.visible2invisible"] = "<%=resources.getString("TopicVisible2Invisible")%>";
-labels["operation.invisible2visible"] = "<%=resources.getString("TopicInvisible2Visible")%>";
-labels["operation.wysiwygTopic"] = "<%=resources.getString("TopicWysiwyg")%>";
-labels["operation.addPubli"] = "<%=resources.getString("PubCreer")%>";
-labels["operation.wizard"] = "<%=resources.getString("kmelia.Wizard")%>";
-labels["operation.importFile"] = "<%=resources.getString("kmelia.ImportFile")%>";
-labels["operation.importFiles"] = "<%=resources.getString("kmelia.ImportFiles")%>";
-labels["operation.sortPublis"] = "<%=resources.getString("kmelia.OrderPublications")%>";
-labels["operation.updateChain"] = "<%=resources.getString("kmelia.updateByChain")%>";
-labels["operation.subscribe"] = "<%=resources.getString("SubscriptionsAdd")%>";
-labels["operation.favorites"] = "<%=resources.getString("FavoritesAdd1")%> <%=resources.getString("FavoritesAdd2")%>";
-labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
-labels["operation.predefinedPdcPositions"] = "<%=resources.getString("GML.PDCPredefinePositions")%>";
-labels["operation.exportSelection"] = "<%=resources.getString("kmelia.operation.exportSelection")%>";
-labels["operation.shareTopic"] = "<%=resources.getString("kmelia.operation.shareTopic")%>";
-labels["operation.statistics"] = "<fmt:message key="kmelia.operation.statistics"/>";
-
-labels["js.topicTitle"] = "<fmt:message key="TopicTitle"/>";
-labels["js.mustBeFilled"] = "<fmt:message key="GML.MustBeFilled"/>";
-labels["js.contains"] = "<fmt:message key="GML.ThisFormContains"/>";
-labels["js.error"] = "<fmt:message key="GML.error"/>";
-labels["js.errors"] = "<fmt:message key="GML.errors"/>";
-
-labels["js.status.visible2invisible"] = "<fmt:message key="TopicVisible2InvisibleRecursive"/>";
-labels["js.status.invisible2visible"] = "<fmt:message key="TopicInvisible2VisibleRecursive"/>";
-
-labels["js.i18n.remove"] = "<fmt:message key="GML.translationRemove"/>";
-
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
 icons["operation.addTopic"] = "<%=resources.getIcon("kmelia.operation.addTopic")%>";
@@ -328,7 +282,7 @@ function displayTopicContent(id) {
 
 			//update breadcrumb
             removeBreadCrumbElements();
-            addBreadCrumbElement("#", labels["ToValidate"]);
+            addBreadCrumbElement("#", "<%=resources.getString("ToValidate")%>");
 		} else {
 			displayPublications(id);
 			displayPath(id);
@@ -351,27 +305,33 @@ function displayTopicContent(id) {
 	
 function displaySubTopics(id) {
 	var sUrl = "<%=m_context%>/services/folders/<%=componentId%>/"+id+"/children?lang="+getTranslation();
-	$.getJSON(sUrl, function(data){
-		$("#subTopics").empty();
-		$("#subTopics").append("<ul>");
-		var basket = "";
-		var tovalidate = "";
-		$.each(data, function(i, folder) {
-				var folderId = folder.attr["id"];
-				if (folderId == "1") {
-					basket = getSubFolder(folder);
-				} else if (folderId == getToValidateFolderId()) {
-					tovalidate = getSubFolder(folder);
-				} else if (folderId != "2") {
-					$("#subTopics ul").append(getSubFolder(folder));
-				}
-		});
-		if (id == "0") {
-			$("#subTopics ul").append(tovalidate);
-			$("#subTopics ul").append(basket);
+	$.ajax(sUrl, {
+		 type: 'GET', 
+		 dataType : 'json',
+		 async : false,
+		 cache : false,
+		 success : function(data){
+			$("#subTopics").empty();
+			$("#subTopics").append("<ul>");
+			var basket = "";
+			var tovalidate = "";
+			$.each(data, function(i, folder) {
+					var folderId = folder.attr["id"];
+					if (folderId == "1") {
+						basket = getSubFolder(folder);
+					} else if (folderId == getToValidateFolderId()) {
+						tovalidate = getSubFolder(folder);
+					} else if (folderId != "2") {
+						$("#subTopics ul").append(getSubFolder(folder));
+					}
+			});
+			if (id == "0") {
+				$("#subTopics ul").append(tovalidate);
+				$("#subTopics ul").append(basket);
+			}
+			$("#subTopics").append("</ul>");
+			$("#subTopics").append("<br clear=\"all\">");
 		}
-		$("#subTopics").append("</ul>");
-		$("#subTopics").append("<br clear=\"all\">");
 	});
 }
 
@@ -400,9 +360,20 @@ function getSubFolder(folder) {
 	str += '</li>';
 	return str;
 }
+
+function getString(key) {
+	return $.i18n.prop(key)
+}
 </script>
 <script type="text/javascript">
 $(document).ready(function() {
+	
+	$.i18n.properties({
+        name: 'kmeliaBundle',
+        path: webContext + '/services/bundles/com/silverpeas/kmelia/multilang/',
+        language: '<%=language%>',
+        mode: 'map'
+    });
 
 	displayTopicContent(<%=id%>);
 
@@ -415,6 +386,10 @@ $(document).ready(function() {
 
 });
 </script>
+</div>
+<div id="visibleInvisible-message" style="display: none;">
+	<p>
+	</p>
 </div>
 <div id="addOrUpdateNode" style="display: none;">
 	<form name="topicForm" action="AddTopic" method="post">
