@@ -1765,7 +1765,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     String modelId = getCurrentTopic().getNodeDetail().getModelId();
     return StringUtil.isDefined(modelId) && !"0".equals(modelId);
   }
-<<<<<<< HEAD
 
     /**
      * Crée une nouvelle company
