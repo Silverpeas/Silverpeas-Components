@@ -154,9 +154,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (StringUtil.isDefined(sort)) {
         kmeliaSC.setSortValue(sort);
       }
-
-      sort = kmeliaSC.getSortValue();
-
       SilverTrace.info("kmelia", "AjaxPublicationsListServlet.doPost", "root.MSG_GEN_PARAM_VALUE",
           "Request parameters = " + req.getQueryString());
 
@@ -283,8 +280,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
     String publicationSrc = resources.getIcon("kmelia.publication");
     ResourceLocator publicationSettings = new ResourceLocator(
-        "com.stratelia.webactiv.util.publication.publicationSettings",
-        kmeliaScc.getLanguage());
+        "org.silverpeas.util.publication.publicationSettings", kmeliaScc.getLanguage());
 
     boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage", true);
 
@@ -298,8 +294,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     PublicationFragmentSettings fragmentSettings = new PublicationFragmentSettings();
     fragmentSettings.displayLinks = URLManager.displayUniversalLinks();
     fragmentSettings.showImportance = kmeliaScc.isFieldImportanceVisible();
-    fragmentSettings.fileStorageShowExtraInfoPub =
-        resources.getSetting("fileStorageShowExtraInfoPub", false);
+    fragmentSettings.fileStorageShowExtraInfoPub = resources.getSetting(
+        "fileStorageShowExtraInfoPub", false);
     fragmentSettings.showTopicPathNameinSearchResult =
         resources.getSetting("showTopicPathNameinSearchResult", true);
     fragmentSettings.showDelegatedNewsInfo = kmeliaScc.isNewsManage() && !user.isInRole(profile);
@@ -390,10 +386,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           pubState = resources.getString("kmelia.Shortcut");
         }
 
-        out.write("<li");
-        out.
-            write(
-            " onmouseover=\"showPublicationOperations(this);\" onmouseout=\"hidePublicationOperations(this);\">");
+        out.write("<li onmouseover=\"showPublicationOperations(this);\"");
+        out.write("onmouseout=\"hidePublicationOperations(this);\">");
         out.write("<div class=\"firstColumn\">");
         if (!kmeliaScc.getUserDetail().isAnonymous() && !kmeliaScc.isKmaxMode) {
           String checked = "";
@@ -436,13 +430,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         displayFragmentOfPublication(specificTemplateUsed, aPub, fragmentSettings, language,
             currentUserId, currentTopicId, kmeliaScc, resources, out);
         out.write("</div>");
-
-        // print publication operations
-        // out.write("<div class=\"unit-operation\">");
-        // out.write("<a href=\"javascript:onclick=removePublication('"+pub.getPK().getId()+"');\">Supprimer</a>");
-        // out.write("</div>");
-
-      } // End while
+      }
       out.write("</ul>");
       if (nbPubs > nbPubsPerPage) {
         out.write("<div id=\"pagination\">");
@@ -452,7 +440,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       displayFilePreviewJavascript(kmeliaScc.getComponentId(), kmeliaScc.isVersionControlled(), out);
       displayFileViewJavascript(kmeliaScc.getComponentId(), kmeliaScc.isVersionControlled(), out);
       out.write(board.printAfter());
-    } // End if
+    }
     else if (showNoPublisMessage
         && (toSearch || kmeliaScc.getNbPublicationsOnRoot() != 0 || !currentTopicId.equals("0"))) {
       String noPublications = kmeliaScc.getString("PubAucune");
@@ -773,7 +761,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("<img src=\"" + vignette_url + "\" alt=\"\"/>&#160;");
     } else {
       vignette_url =
-          FileServerUtils.getUrl(pub.getPK().getSpace(), pub.getPK().
+          FileServerUtils.getUrl(pub.getPK().
           getComponentName(),
           "vignette", pub.getImage(), pub.getImageMimeType(),
           publicationSettings.getString("imagesSubDirectory"));
@@ -986,7 +974,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (!documents.isEmpty()) {
       result.append("<table border=\"0\">");
       for (SimpleDocument document : documents) {
-        String url = document.getAttachmentURL();
+        String url = FileServerUtils.getApplicationContext() + document.getAttachmentURL();
         String title = document.getTitle();
         String info = document.getDescription();
         String icon = FileRepositoryManager.getFileIcon(FilenameUtils.getExtension(document.

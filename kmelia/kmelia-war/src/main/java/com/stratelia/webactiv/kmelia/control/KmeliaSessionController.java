@@ -88,6 +88,8 @@ import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.util.GlobalContext;
+
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -126,6 +128,8 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.RecordSet;
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
@@ -1010,6 +1014,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     // sinon non
     String nodeId = getCurrentFolderId();
     if (NodePK.BIN_NODE_ID.equals(nodeId)) {
+      // la publication sera supprimée définitivement, il faut donc supprimer les fichiers joints
+      try {
+        WysiwygController.deleteWysiwygAttachments(getComponentId(), pubId);
+      } catch (Exception e) {
+        throw new KmeliaRuntimeException("KmeliaSessionController.deletePublication",
+            SilverpeasRuntimeException.ERROR, "root.EX_DELETE_ATTACHMENT_FAILED", e);
+      }
+
+      removeXMLContentOfPublication(getPublicationPK(pubId));
       getKmeliaBm().deletePublication(getPublicationPK(pubId));
     } else {
       getKmeliaBm().sendPublicationToBasket(getPublicationPK(pubId), kmaxMode);
@@ -1031,6 +1044,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       String cloneId = getSessionClone().getDetail().getPK().getId();
       PublicationPK clonePK = getPublicationPK(cloneId);
 
+      removeXMLContentOfPublication(clonePK);
       getKmeliaBm().deletePublication(clonePK);
 
       setSessionClone(null);
@@ -1050,6 +1064,28 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
   
+  private void removeXMLContentOfPublication(PublicationPK pubPK) throws RemoteException {
+    try {
+      PublicationDetail pubDetail = getKmeliaBm().getPublicationDetail(pubPK);
+      String infoId = pubDetail.getInfoId();
+      if (!isInteger(infoId)) {
+        String xmlFormShortName = infoId;
+        PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
+            pubDetail.getPK().getInstanceId() + ":" + xmlFormShortName);
+
+        RecordSet set = pubTemplate.getRecordSet();
+        DataRecord data = set.getRecord(pubDetail.getPK().getId());
+        set.delete(data);
+      }
+    } catch (PublicationTemplateException e) {
+      throw new KmeliaRuntimeException("KmeliaSessionController.removeXMLContentOfPublication()",
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
+    } catch (FormException e) {
+      throw new KmeliaRuntimeException("KmeliaSessionController.removeXMLContentOfPublication()",
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
+    }
+  }
+
   private static boolean isInteger(String id) {
     return StringUtil.isInteger(id);
   }
@@ -1546,11 +1582,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       // le PDC n'est pas utilisé
       return true;
     }
-    if (getSessionPublication() != null) {
-      String pubId = getSessionPublication().getDetail().getPK().getId();
-      return isPublicationClassifiedOnPDC(pubId);
-    }
-    return true;
+    String pubId = getSessionPublication().getDetail().getPK().getId();
+    return isPublicationClassifiedOnPDC(pubId);
   }
 
   public boolean isPublicationValidatorsOK() throws RemoteException {
@@ -1684,14 +1717,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId,
       String attachmentId) throws RemoteException {
-    NotificationMetaData metaData = null;
     NodePK nodePK = null;
     if (!isKmaxMode) {
       nodePK = getCurrentFolderPK();
     }
     SimpleDocumentPK documentPk = new SimpleDocumentPK(attachmentId, getComponentId());
-    metaData = getKmeliaBm().getAlertNotificationMetaData(getPublicationPK(pubId), documentPk,
-        nodePK, getUserDetail().getDisplayedName());
+    NotificationMetaData metaData = getKmeliaBm().getAlertNotificationMetaData(
+        getPublicationPK(pubId), documentPk, nodePK, getUserDetail().getDisplayedName());
     metaData.setSender(getUserId());
     return metaData;
   }
@@ -4108,6 +4140,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
+  }
+  
+  public List<PublicationTemplate> getForms() {
+    List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
+    try {
+      GlobalContext context = new GlobalContext(getSpaceId(), getComponentId());
+      templates = getPublicationTemplateManager().getPublicationTemplates(context);
+    } catch (PublicationTemplateException e) {
+      SilverTrace.error("kmelia", "KmeliaSessionController.getForms()", "root.CANT_GET_FORMS", e);
+    }
+    return templates;
   }
 
   /**

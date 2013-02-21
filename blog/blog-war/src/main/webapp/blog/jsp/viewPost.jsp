@@ -32,11 +32,19 @@
 
 <% 
 // recuperation des parametres
-  PostDetail post = (PostDetail) request.getAttribute("Post");
-  String profile = (String) request.getAttribute("Profile");
-  WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
-  StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
+PostDetail	post		= (PostDetail) request.getAttribute("Post");
+Collection<NodeDetail>	categories	= (Collection) request.getAttribute("Categories");
+Collection<Archive>		archives	= (Collection) request.getAttribute("Archives");
+Collection<LinkDetail>	links		= (Collection) request.getAttribute("Links");
+String 		profile		= (String) request.getAttribute("Profile");
+String		blogUrl		= (String) request.getAttribute("Url");
+String		rssURL		= (String) request.getAttribute("RSSUrl");
+List		events		= (List) request.getAttribute("Events");
+String 		dateCal		= (String) request.getAttribute("DateCalendar");
+WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
+StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 
+  Date 	   dateCalendar	= DateUtil.parse(dateCal);
   String categoryId = "";
   if (post.getCategory() != null) {
     categoryId = post.getCategory().getNodePK().getId();

@@ -131,7 +131,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
                                 }
                                 else
                                 {
-                                  url = FileServerUtils.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+                                  url = FileServerUtils.getUrl(quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
                                 }
                       r += "<tr valign=middle><td align=\"left\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\" valign=top>"+Encode.javaStringToHtmlString(answer.getLabel())+"&nbsp;&nbsp;&nbsp;";
                       r += "<img src=\""+url+"\" border=\"0\" hspace=10 vspace=10 align=absmiddle></td><td>";

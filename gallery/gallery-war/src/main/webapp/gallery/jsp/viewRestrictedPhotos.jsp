@@ -40,7 +40,7 @@
   Collection<String> selectedIds = (Collection) request.getAttribute("SelectedIds");
   boolean isViewNotVisible = ((Boolean) request.getAttribute("ViewVisible")).booleanValue();
   boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
-    
+
   // déclaration des variables :
   int nbAffiche = 0;
   int nbParLigne = 1;
@@ -49,11 +49,11 @@
   boolean viewMetadata = isViewMetadata.booleanValue();
   boolean viewList = isViewList.booleanValue();
   String typeAff = "1";
-    
+
   // initialisation de la pagination
   Pagination pagination = gef.getPagination(photos.size(), nbPhotosPerPage, firstPhotoIndex);
   List<PhotoDetail> affPhotos = photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
-    
+
   // création du chemin :
   String chemin = " ";
   if (isViewNotVisible) {
@@ -67,7 +67,7 @@
       chemin = chemin + " '" + searchKeyWord + "'";
     }
   }
-    
+
   // calcul du nombre de photo par ligne en fonction de la taille
   if (taille.equals("66x50")) {
     nbParLigne = 8;
@@ -99,26 +99,26 @@
 <script language="javascript">
 	var albumWindow = window;
 
-	function choiceGoTo(selectedIndex) 
+	function choiceGoTo(selectedIndex)
 	{
 		// envoi du choix de la taille des vignettes
-		if (selectedIndex != 0 && selectedIndex != 1) 
+		if (selectedIndex != 0 && selectedIndex != 1)
 		{
 			document.ChoiceSelectForm.Choice.value = document.photoForm.ChoiceSize[selectedIndex].value;
 			document.ChoiceSelectForm.submit();
 		}
 	}
-	
-	function sendData() 
+
+	function sendData()
 	{
 		// envoi des photos sélectionnées pour la modif par lot
 		document.photoForm.SelectedIds.value 	= getObjects(true);
 		document.photoForm.NotSelectedIds.value = getObjects(false);
-		
+
 		document.photoForm.submit();
 	}
-	
-	function sendToBasket() 
+
+	function sendToBasket()
 	{
 		// envoi des photos sélectionnées dans le panier
 		document.photoForm.SelectedIds.value 	= getObjects(true);
@@ -126,7 +126,7 @@
 		document.photoForm.action				= "BasketAddPhotos";
 		document.photoForm.submit();
 	}
-	
+
 	function getObjects(selected)
 	{
 		var  items = "";
@@ -138,7 +138,7 @@
 				// il n'y a qu'une checkbox non selectionnée
 				items += boxItems.value+",";
 			} else{
-				// search not checked boxes 
+				// search not checked boxes
 				for (i=0;i<boxItems.length ;i++ ){
 					if (boxItems[i].checked == selected){
 						items += boxItems[i].value+",";
@@ -148,7 +148,7 @@
 		}
 		return items;
 	}
-	
+
 	function doPagination(index)
 	{
 		document.photoForm.SelectedIds.value 	= getObjects(true);
@@ -157,11 +157,11 @@
 		document.photoForm.action				= "PaginationSearch";
 		document.photoForm.submit();
 	}
-	
-	function sortGoTo(selectedIndex) 
+
+	function sortGoTo(selectedIndex)
 	{
 		// envoi du choix du tri
-		if (selectedIndex != 0 && selectedIndex != 1) 
+		if (selectedIndex != 0 && selectedIndex != 1)
 		{
 			document.OrderBySelectForm.Tri.value = document.photoForm.SortBy[selectedIndex].value;
 			document.OrderBySelectForm.submit();
@@ -178,7 +178,7 @@
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
     browseBar.setPath(chemin);
-      
+
     Button returnButton;
     if (isViewNotVisible) {
       returnButton = gef.getFormButton(resource.getString("GML.back"), "Main", false);
@@ -186,7 +186,7 @@
       returnButton = gef.getFormButton(resource.getString("GML.back"), "SearchAdvanced",
           false);
     }
-      
+
     if ("admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)) {
       // possibilité de modifier les photos par lot
       operationPane.addOperation(resource.getIcon("gallery.updateSelectedPhoto"), resource.getString(
@@ -199,13 +199,13 @@
       operationPane.addOperation(resource.getIcon("gallery.addToBasketSelectedPhoto"), resource.
           getString("gallery.addToBasketSelectedPhoto"), "javascript:onClick=sendToBasket();");
     }
-      
+
     out.println(window.printBefore());
     out.println(frame.printBefore());
-      
+
     // afficher les photos
     // -------------------
-    // affichage des photos sous forme de vignettes	
+    // affichage des photos sous forme de vignettes
     if (photos != null) {
 %>
 <br>
@@ -310,29 +310,28 @@
               String type = name.substring(name.lastIndexOf(".") + 1, name.length());
               //name = name.substring(0,name.indexOf(".")) + extension;
               name = photo.getId() + extension;
-              vignette_url = FileServerUtils.getUrl(spaceId,
-                  componentId, name, photo.getImageMimeType(), nomRep);
+              vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(), nomRep);
               if (!ImageType.isPreviewable(name)) {
                 vignette_url = m_context
                     + "/gallery/jsp/icons/notAvailable_"
                     + resource.getLanguage()
                     + extension;
               }
-                
+
               photoColor = "fondPhoto";
               if (!photo.isVisible(today)) {
                 photoColor = "fondPhotoNotVisible";
               }
-                
+
               nbAffiche = nbAffiche + 1;
-                
+
               String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
               if (photo.getDescription() != null
                   && photo.getDescription().length() > 0) {
                 altTitle += " : "
                     + EncodeHelper.javaStringToHtmlString(photo.getDescription());
               }
-                
+
               // on affiche encore sur la même ligne
 		%>
 
@@ -458,7 +457,7 @@
 			</tr>
 			<%
     }
-      
+
       if (viewMetadata) {
         final Collection<String> metaDataKeys = photo.getMetaDataProperties();
         if (metaDataKeys != null && !metaDataKeys.isEmpty()) {
@@ -506,7 +505,7 @@
  									&& selectedIds.contains(idP))
  								usedCheck = "checked";
  %>
-				
+
 			<tr>
 				<td align="left" valign="top" colspan="2"><input
 					type="checkbox" name="SelectPhoto" value="<%=idP%>" <%=usedCheck%>></td>
@@ -560,7 +559,7 @@
 <form name="ChoiceSelectForm" action="ChoiceSize" Method="POST">
 <input type="hidden" name="Choice"> <input type="hidden" name="SearchKeyWord" value="<%=searchKeyWord%>"></form>
 <form name="OrderBySelectForm" action="SortBy" Method="POST">
-<input type="hidden" name="Tri"> 
+<input type="hidden" name="Tri">
 <input type="hidden" name="SearchKeyWord" value="<%=searchKeyWord%>"></form>
 
 </body>

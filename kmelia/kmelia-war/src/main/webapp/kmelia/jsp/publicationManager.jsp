@@ -186,7 +186,7 @@
           vignette_url = pubDetail.getImage() + "&Size=133x100";
         } else {
           vignette_url = FileServerUtils
-              .getUrl("useless", pubDetail.getPK().getComponentName(), "vignette",
+              .getUrl(pubDetail.getPK().getComponentName(), "vignette",
                   pubDetail.getImage(), pubDetail.getImageMimeType(),
                   publicationSettings.getString("imagesSubDirectory"));
         }
@@ -654,7 +654,7 @@
 	        };
 
 	        $("#thumbnailDialog").dialog(dialogOpts);    //end dialog
-	        
+
 	        $("#publication-draftout").dialog({
 	            autoOpen: false,
 	            title: "<%=resources.getString("PubDraftOut")%>",

@@ -76,23 +76,7 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
 
   @Before
   public void onSetUp() {
-    registerDatasource();
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
+    super.onSetUp();
     organizationController.reloadAdminCache();
   }
 

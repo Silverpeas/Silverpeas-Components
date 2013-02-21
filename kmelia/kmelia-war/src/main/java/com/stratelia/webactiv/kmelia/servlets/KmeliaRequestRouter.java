@@ -190,7 +190,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
 
         destination = rootDestination + "repository.jsp";
-      } else if (function.equals("GoToTopic")) {
+      } else if ("GoToTopic".equals(function)) {
         String topicId = (String) request.getAttribute("Id");
         if (!StringUtil.isDefined(topicId)) {
           topicId = request.getParameter("Id");
@@ -198,11 +198,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             topicId = NodePK.ROOT_NODE_ID;
           }
         }
-
         kmelia.setCurrentFolderId(topicId, true);
-
         resetWizard(kmelia);
-
         request.setAttribute("CurrentFolderId", topicId);
         request.setAttribute("DisplayNBPublis", kmelia.displayNbPublis());
         request.setAttribute("DisplaySearch", kmelia.isSearchOnTopicsEnabled());
@@ -346,13 +343,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("Wizard", kmelia.getWizard());
         List<NodeDetail> path = kmelia.getTopicPath(kmelia.getCurrentFolderId());
         request.setAttribute("Path", path);
-        request.setAttribute("Profile", kmelia.getProfile());        
+        request.setAttribute("Profile", kmelia.getProfile());
         String action = (String) request.getAttribute("Action");
         if (!StringUtil.isDefined(action)) {
           action = "UpdateView";
           request.setAttribute("Action", action);
         }
-        
+
         if ("UpdateView".equals(action)) {
           request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
           request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
@@ -597,6 +594,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
           if (kmeliaPublication.isAlias()) {
             request.setAttribute("Profile", "user");
+            request.setAttribute("TaxonomyOK", false);
+            request.setAttribute("ValidatorsOK", false);
             request.setAttribute("IsAlias", "1");
           } else {
             request.setAttribute("Profile", kmelia.getProfile());
@@ -612,10 +611,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           } else {
             request.setAttribute("NbPublis", 1);
           }
-
-          putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(),
-              kmelia, request);
-
+          putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(), kmelia, request);
           String fileAlreadyOpened = (String) request.getAttribute("FileAlreadyOpened");
           boolean alreadyOpened = "1".equals(fileAlreadyOpened);
           String attachmentId = (String) request.getAttribute("AttachmentId");
@@ -1198,15 +1194,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         setWizardParams(request, kmelia);
         destination = rootDestination + "modelsList.jsp";
       } else if (function.equals("ModelUsed")) {
-        try {
-          List<PublicationTemplate> templates =
-              getPublicationTemplateManager().getPublicationTemplates();
-          request.setAttribute("XMLForms", templates);
-        } catch (Exception e) {
-          SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination(ModelUsed)",
-              "root.MSG_GEN_PARAM_VALUE", "", e);
-        }
-
+        request.setAttribute("XMLForms", kmelia.getForms());
         // put dbForms
         Collection<ModelDetail> dbForms = kmelia.getAllModels();
         request.setAttribute("DBForms", dbForms);
@@ -2541,24 +2529,17 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       HttpServletRequest request) throws RemoteException {
     Collection<String> modelUsed = kmelia.getModelUsed();
     Collection<PublicationTemplate> listModelXml = new ArrayList<PublicationTemplate>();
-    List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
-    try {
-      templates = getPublicationTemplateManager().getPublicationTemplates();
-      // recherche de la liste des modèles utilisables
-      PublicationTemplate xmlForm;
-      for (PublicationTemplate template : templates) {
-        xmlForm = template;
-        // recherche si le modèle est dans la liste
-        if (modelUsed.contains(xmlForm.getFileName())) {
-          listModelXml.add(xmlForm);
-        }
+    List<PublicationTemplate> templates = kmelia.getForms();
+    // recherche de la liste des modèles utilisables
+    for (PublicationTemplate template : templates) {
+      PublicationTemplate xmlForm = template;
+      // recherche si le modèle est dans la liste
+      if (modelUsed.contains(xmlForm.getFileName())) {
+        listModelXml.add(xmlForm);
       }
-
-      request.setAttribute("XMLForms", listModelXml);
-    } catch (Exception e) {
-      SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination(ListModels)",
-          "root.MSG_GEN_PARAM_VALUE", "", e);
     }
+
+    request.setAttribute("XMLForms", listModelXml);
 
     // put dbForms
     Collection<ModelDetail> dbForms = kmelia.getAllModels();

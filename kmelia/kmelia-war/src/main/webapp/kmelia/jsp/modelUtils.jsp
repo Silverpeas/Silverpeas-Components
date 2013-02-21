@@ -71,7 +71,7 @@ void displayKmaxViewInfoModel(JspWriter out, ModelDetail model, InfoDetail infos
         InfoImageDetail imageDetail = imageIterator.next();
         String logicalName = imageDetail.getLogicalName();
         if (FileUtil.isImage(logicalName)) {
-            String url = FileServerUtils.getUrl(imageDetail.getPK().getSpace(), imageDetail.getPK().getComponentName(), imageDetail.getLogicalName(), imageDetail.getPhysicalName(), imageDetail.getType(), publicationSettings.getString("imagesSubDirectory"));
+            String url = FileServerUtils.getUrl(imageDetail.getPK().getComponentName(), imageDetail.getLogicalName(), imageDetail.getPhysicalName(), imageDetail.getType(), publicationSettings.getString("imagesSubDirectory"));
             out.println("<IMG BORDER=\"0\" SRC=\""+url+"\">");
         } else
             out.println("<B>"+settings.getString("FileNotImage")+"</B>");
@@ -111,7 +111,7 @@ void displayViewInfoModel(JspWriter out, ModelDetail model, InfoDetail infos, Re
         String physicalName = imageDetail.getPhysicalName();
         String mimeType = imageDetail.getType();
         if (FileUtil.isImage(logicalName)) {
-            String url = FileServerUtils.getUrl(imageDetail.getPK().getSpace(), imageDetail.getPK().getComponentName(), logicalName, physicalName, mimeType, publicationSettings.getString("imagesSubDirectory"));
+            String url = FileServerUtils.getUrl(imageDetail.getPK().getComponentName(), logicalName, physicalName, mimeType, publicationSettings.getString("imagesSubDirectory"));
             out.println("<IMG BORDER=\"0\" SRC=\""+url+"\">");
         } else
             out.println("<B>"+resources.getString("FileNotImage")+"</B>");

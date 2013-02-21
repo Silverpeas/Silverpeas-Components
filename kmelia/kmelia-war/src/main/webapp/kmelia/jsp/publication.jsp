@@ -47,8 +47,8 @@
 <%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
 
 <%
-  ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
-  ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
+  ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", resources.getLanguage());
+  ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", resources.getLanguage());
 
   //Recuperation des parametres
   String profile = (String) request.getAttribute("Profile");

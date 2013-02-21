@@ -595,7 +595,7 @@
               if (name != null) {
                 String type = name.substring(name.lastIndexOf(".") + 1, name.length());
                 name = photo.getId() + extension;
-                vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
+                vignette_url = FileServerUtils.getUrl(componentId, name, photo.
                         getImageMimeType(), nomRep);
                 if (!ImageType.isPreviewable(name)) {
                   vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.

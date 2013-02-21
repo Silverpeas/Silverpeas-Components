@@ -43,11 +43,13 @@ String    profile   = (String) request.getAttribute("Profile");
 String    blogUrl   = (String) request.getAttribute("Url");
 String    rssURL    = (String) request.getAttribute("RSSUrl");
 List    events    = (List) request.getAttribute("Events");
+String    dateCal   = (String) request.getAttribute("DateCalendar");
 boolean   isPdcUsed = (Boolean) request.getAttribute("IsUsePdc");
 boolean   isDraftVisible  = (Boolean) request.getAttribute("IsDraftVisible");
 int nbPostDisplayed   = (Integer) request.getAttribute("NbPostDisplayed");
 WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
 StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
+Date dateCalendar = DateUtil.parse(dateCal);
 
 if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) {
   if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) && isPdcUsed) {

@@ -36,6 +36,12 @@
   <name>Silverpeas Components</name>
 
   <properties>
+    <!-- Default JDBC properties for test, can be overriden by -D arguments -->
+    <test.jdbc.driver>org.postgresql.Driver</test.jdbc.driver>
+    <test.jdbc.url>jdbc:postgresql://localhost:5432/SilverpeasV5</test.jdbc.url>
+    <test.jdbc.user>postgres</test.jdbc.user>
+    <test.jdbc.password>postgres</test.jdbc.password>
+    <!-- Version of Silverpeas-Core on which it depends -->
     <core.version>5.12-SNAPSHOT</core.version>
   </properties>
 

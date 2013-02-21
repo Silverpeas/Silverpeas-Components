@@ -342,7 +342,7 @@ function sendData()
 						if (name != null) {
 							String type = name.substring(name.lastIndexOf(".") + 1, name.length());
 							name = photo.getId() + "_133x100.jpg";
-							vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
+							vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(), nomRep);
 							if (!ImageType.isPreviewable(name)) {
 								vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_133x100.jpg";
 							}

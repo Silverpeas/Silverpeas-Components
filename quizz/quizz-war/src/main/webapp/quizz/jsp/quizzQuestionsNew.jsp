@@ -264,7 +264,7 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 		        }
 		        else
 		        {
-		        	url = FileServerUtils.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+		        	url = FileServerUtils.getUrl(answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 		        }
 		        r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
 	      }
@@ -367,7 +367,7 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 				        }
 				        else
 				        {
-				        	url = FileServerUtils.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+				        	url = FileServerUtils.getUrl(answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 				        }
 				        r += "<td><img src=\""+url+"\" align=\"left\"></td>";
 			      }
@@ -534,7 +534,7 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 				        }
 				        else
 				        {
-				        	url = FileServerUtils.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+				        	url = FileServerUtils.getUrl(quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 				        }
 				        r += "<td width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
 			      }
