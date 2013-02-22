@@ -1006,6 +1006,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
   }
   
+  /**
+   * Counts number of publications recursively in allowed nodes only
+   * @param allowedNodes a Map of all nodes allowed to user
+   * @param tree the whole tree which contains the number of publications in each node independently of rights
+   */
   private void countPublisInNodes(Map<NodePK, NodeDetail> allowedNodes, NodeTree tree) {
     for (NodeDetail node : allowedNodes.values()) {
       NodeTree nodeTree = findNode(node, tree);
@@ -1033,11 +1038,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           current = findNodeTree(pathItem, current.getChildren());
         }
       }
-      SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
-          "node " + current.getKey().getId()+" found");
-      return current;
+      if (current != null) {
+        SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
+            "node " + current.getKey().getId()+" found");
+        return current;
+      }
     }
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
+    SilverTrace.error("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
         "node " + node.getNodePK().getId()+" not found");
     return null;
   }
@@ -1051,14 +1058,22 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return null;
   }
   
+  /**
+   * Counts the number of publications in the node and all its descendants
+   * @param tree the subtree which have tree.currentNode as root
+   * @return the number of publications in this node and all its descendants
+   */
   private int countNbPublis(NodeTree tree) {
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.countNbPublis", "root.MSG_GEN_ENTER_METHOD",
-        "id = " + tree.getKey().getId());
+    if (tree == null) {
+      return 0;
+    }
     int nb = tree.getNbPublications();
     // add nb of each descendant
     for (NodeTree node : tree.getChildren()) {
       nb += countNbPublis(node);
     }
+    SilverTrace.debug("kmelia", "KmeliaBmEJB.countNbPublis", "root.MSG_GEN_EXIT_METHOD",
+        nb + " pubs in node " + tree.getKey().getId());
     return nb;
   }
 
@@ -2446,7 +2461,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         PublicationDetail toValidate = publi;
         if (isClone) {
           // publication is a clone, get original one
-          toValidate = getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK()));
+          try {
+            toValidate = getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK()));
+          } catch (Exception e) {
+            // inconsistency in database ! Original publication does not exist
+            SilverTrace.warn("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
+                "kmelia.ORIGINAL_PUBLICATION_OF_CLONE_NOT_FOUND", "cloneId = " + publi.getId() +
+                    ", originalId=" + publi.getCloneId());
+          }
         }
         if (targetedValidationEnabled) {
           // only publications which must be explicitly validated by current user must be returned
