@@ -40,6 +40,9 @@ import javax.ejb.CreateException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.silverpeas.subscribe.service.ComponentSubscription;
+import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.silverpeas.search.SearchEngineFactory;
 
@@ -58,10 +61,8 @@ import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
-import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -203,7 +204,8 @@ public class DefaultBlogService implements BlogService {
       final String type, final String senderId) {
     // send email alerts
     try {
-      Collection<String> subscriberIds = getSubscribeBm().getSubscribers(fatherPK);
+      Collection<String> subscriberIds = getSubscribeBm()
+          .getUserSubscribers(ComponentSubscriptionResource.from(fatherPK.getInstanceId()));
       OrganizationController orgaController = new OrganizationController();
       if (subscriberIds != null && !subscriberIds.isEmpty()) {
         // get only subscribers who have sufficient rights to read pubDetail
@@ -704,29 +706,18 @@ public class DefaultBlogService implements BlogService {
   }
 
   @Override
-  public void addSubscription(NodePK topicPK, String userId) {
-    SilverTrace.info("blog", "BlogBmEJB.addSubscription()", "root.MSG_GEN_ENTER_METHOD");
-    if (!checkSubscription(topicPK, userId)) {
-      return;
-    }
-    getSubscribeBm().subscribe(new NodeSubscription(userId, topicPK));
-    SilverTrace.info("blog", "BlogBmEJB.addSubscription()", "root.MSG_GEN_EXIT_METHOD");
+  public void addSubscription(final String userId, final String instanceId) {
+    getSubscribeBm().subscribe(new ComponentSubscription(userId, instanceId));
   }
 
-  private boolean checkSubscription(NodePK topicPK, String userId) {
-    try {
-      Collection<? extends Subscription> subscriptions =
-          getSubscribeBm().getUserSubscriptionsByComponent(userId, topicPK.getInstanceId());
-      for (Subscription subscription : subscriptions) {
-        if (topicPK.getId().equals(subscription.getTopic().getId())) {
-          return false;
-        }
-      }
-      return true;
-    } catch (Exception e) {
-      throw new BlogRuntimeException("BlogBmEJB.checkSubscription()",
-          SilverpeasRuntimeException.ERROR, "blog.EX_IMPOSSIBLE_DOBTENIR_LES_ABONNEMENTS", e);
-    }
+  @Override
+  public void removeSubscription(final String userId, final String instanceId) {
+    getSubscribeBm().unsubscribe(new ComponentSubscription(userId, instanceId));
+  }
+
+  @Override
+  public boolean isSubscribed(final String userId, final String instanceId) {
+    return getSubscribeBm().existsSubscription(new ComponentSubscription(userId, instanceId));
   }
 
   private void indexExternalElementsOfPublication(PublicationPK pubPK) {

@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -116,11 +117,12 @@ public class KmeliaSubscriptionPublicationUserNotification extends AbstractKmeli
     final Set<String> subscriberIds = new HashSet<String>();
     if (path != null) {
       for (final NodeDetail descendant : path) {
-        subscriberIds.addAll(getSubscribeBm().getSubscribers(descendant.getNodePK()));
+        subscriberIds.addAll(getSubscribeBm()
+            .getUserSubscribers(NodeSubscriptionResource.from(descendant.getNodePK())));
       }
     }
     final OrganizationController orgaController = getOrganizationController();
-    if (subscriberIds != null && !subscriberIds.isEmpty()) {
+    if (!subscriberIds.isEmpty()) {
       // get only subscribers who have sufficient rights to read pubDetail
       final NodeDetail node = getNodeHeader(nodePK);
       newSubscribers = new ArrayList<String>(subscriberIds.size());

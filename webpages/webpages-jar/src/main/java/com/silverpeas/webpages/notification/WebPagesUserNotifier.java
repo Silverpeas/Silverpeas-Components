@@ -23,13 +23,12 @@
  */
 package com.silverpeas.webpages.notification;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionSubscriber;
+import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -39,12 +38,19 @@ import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * @author Yohann Chastagnier
  */
 public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilder<NodePK> {
 
   private final String userId;
+
+  private Collection<String> userIdsToNotify = new ArrayList<String>();
+  private Collection<String> groupIdsToNotify = new ArrayList<String>();
 
   /**
    * Builds and sends a webpages notification.
@@ -70,20 +76,42 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
     this.userId = userId;
   }
 
+  @Override
+  protected void initialize() {
+    super.initialize();
+
+    // Subscribers
+    for (SubscriptionSubscriber subscriber : SubscriptionServiceFactory.getFactory()
+        .getSubscribeService()
+        .getSubscribers(ComponentSubscriptionResource.from(getResource().getInstanceId()))) {
+      switch (subscriber.getType()) {
+        case USER:
+          userIdsToNotify.add(subscriber.getId());
+          break;
+        case GROUP:
+          groupIdsToNotify.add(subscriber.getId());
+          break;
+      }
+    }
+  }
+
   /*
-   * (non-Javadoc)
-   * @see
-   * com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder#performTemplateData
-   * (java.lang.String, java.lang.Object, com.silverpeas.util.template.SilverpeasTemplate)
-   */
+     * (non-Javadoc)
+     * @see
+     * com.silverpeas.notification.builder
+     * .AbstractTemplateUserNotificationBuilder#performTemplateData
+     * (java.lang.String, java.lang.Object, com.silverpeas.util.template.SilverpeasTemplate)
+     */
   @Override
   protected void performTemplateData(final String language, final NodePK resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language,
-        getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData()
+        .addLanguage(language, getBundle(language).getString(getBundleSubjectKey(), getTitle()),
+            "");
     template.setAttribute("path", "");
-    template.setAttribute("senderName", OrganizationControllerFactory.getFactory()
-        .getOrganizationController().getUserDetail(userId).getDisplayedName());
+    template.setAttribute("senderName",
+        OrganizationControllerFactory.getFactory().getOrganizationController().getUserDetail(userId)
+            .getDisplayedName());
     template.setAttribute("silverpeasURL", getResourceURL(resource));
   }
 
@@ -97,8 +125,9 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
   protected void performNotificationResource(final String language, final NodePK resource,
       final NotificationResourceData notificationResourceData) {
     // The resource name corresponds at the label of the instantiated application
-    notificationResourceData.setResourceName(OrganizationControllerFactory.getFactory()
-        .getOrganizationController().getComponentInstLight(getComponentInstanceId()).getLabel());
+    notificationResourceData.setResourceName(
+        OrganizationControllerFactory.getFactory().getOrganizationController()
+            .getComponentInstLight(getComponentInstanceId()).getLabel());
     notificationResourceData.setResourceId(resource.getId());
     notificationResourceData.setResourceType(getTemplatePath());
     // Exceptionally the resource location is builded at this level
@@ -201,7 +230,11 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
    */
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return SubscriptionServiceFactory.getFactory().getSubscribeService()
-        .getSubscribers(getResource());
+    return userIdsToNotify;
+  }
+
+  @Override
+  protected Collection<String> getGroupIdsToNotify() {
+    return groupIdsToNotify;
   }
 }

@@ -62,6 +62,9 @@ import javax.ejb.SessionContext;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import com.silverpeas.subscribe.SubscriptionResource;
+import com.silverpeas.subscribe.service.NodeSubscriptionResource;
+import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
@@ -686,7 +689,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
 
       // Delete all subscriptions on this topic and on its descendants
-      removeSubscriptionsByTopic(pkToDelete);
+      removeSubscriptionsByTopic(nodesToDelete);
 
       // Delete the topic
       nodeBm.removeNode(pkToDelete);
@@ -1074,12 +1077,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   public Collection<Collection<NodeDetail>> getSubscriptionList(String userId, String componentId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getSubscriptionList()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection<? extends Subscription> list = getSubscribeBm().getUserSubscriptionsByComponent(
-              userId, componentId);
+      Collection<Subscription> list = getSubscribeBm()
+          .getBySubscriberAndComponent(UserSubscriptionSubscriber.from(userId), componentId);
       Collection<Collection<NodeDetail>> detailedList = new ArrayList<Collection<NodeDetail>>();
       // For each favorite, get the path from root to favorite
       for (Subscription subscription : list) {
-        Collection<NodeDetail> path = getNodeBm().getPath((NodePK) subscription.getTopic());
+        Collection<NodeDetail> path =
+            getNodeBm().getPath((NodePK) subscription.getResource().getPK());
         detailedList.add(path);
       }
       SilverTrace.info("kmelia", "KmeliaBmEJB.getSubscriptionList()", "root.MSG_GEN_EXIT_METHOD");
@@ -1112,27 +1116,25 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   /**
    * Subscriptions - remove all subscriptions from topic
-   * @param topicPK the subscription topic Id to remove
+   * @param topicPKsToDelete the subscription topic Ids to remove
    * @since 1.0
    */
-  private void removeSubscriptionsByTopic(NodePK topicPK) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()",
-            "root.MSG_GEN_ENTER_METHOD");
-    NodeDetail nodeDetail = null;
+  private void removeSubscriptionsByTopic(Collection<NodePK> topicPKsToDelete) {
+    SilverTrace
+        .info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      nodeDetail = getNodeBm().getDetail(topicPK);
+      Collection<SubscriptionResource> subscriptionResourcesToDelete =
+          new ArrayList<SubscriptionResource>();
+      for (NodePK topicPK : topicPKsToDelete) {
+        subscriptionResourcesToDelete.add(NodeSubscriptionResource.from(topicPK));
+      }
+      getSubscribeBm().unsubscribe(subscriptionResourcesToDelete);
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()",
-              ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
+      throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()", ERROR,
+          "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
     }
-    try {
-      getSubscribeBm().unsubscribeByPath(topicPK, nodeDetail.getPath());
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()",
-              ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
-    }
-    SilverTrace.info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()",
-            "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace
+        .info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
@@ -1144,9 +1146,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void addSubscription(NodePK topicPK, String userId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.addSubscription()", "root.MSG_GEN_ENTER_METHOD");
-    if (!checkSubscription(topicPK, userId)) {
-      return;
-    }
     getSubscribeBm().subscribe(new NodeSubscription(userId, topicPK));
     SilverTrace.info("kmelia", "KmeliaBmEJB.addSubscription()", "root.MSG_GEN_EXIT_METHOD");
   }
@@ -1159,19 +1158,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    */
   @Override
   public boolean checkSubscription(NodePK topicPK, String userId) {
-    try {
-      Collection<? extends Subscription> subscriptions = getSubscribeBm().
-              getUserSubscriptionsByComponent(userId, topicPK.getInstanceId());
-      for (Subscription subscription : subscriptions) {
-        if (topicPK.getId().equals(subscription.getTopic().getId())) {
-          return false;
-        }
-      }
-      return true;
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.checkSubscription()",
-              ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_ABONNEMENTS", e);
-    }
+    return !getSubscribeBm().existsSubscription(new NodeSubscription(userId, topicPK));
   }
 
   /**************************************************************************************/
