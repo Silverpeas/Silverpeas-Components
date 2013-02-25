@@ -424,6 +424,13 @@ public interface KmeliaBmBusinessSkeleton {
 
   public List<String> getAllValidators(PublicationPK pubPK) throws RemoteException;
 
+  /**
+   * @param pubPK id of the publication to validate. If publication is always visible, clone is processed.
+   * @param userId id of the user who validate
+   * @param force if true, force to validate publication (bypass pending validations)
+   * @return true if the validation process is complete (ie all validators have validate)
+   * @throws RemoteException
+   */
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force)
       throws RemoteException;
 

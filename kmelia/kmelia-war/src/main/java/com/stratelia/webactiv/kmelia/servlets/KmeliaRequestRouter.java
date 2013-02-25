@@ -607,7 +607,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
           request.setAttribute("Publication", kmeliaPublication);
           request.setAttribute("PubId", id);
-          request.setAttribute("UserCanValidate", kmelia.isUserCanValidatePublication());
+          request.setAttribute("UserCanValidate",
+              kmelia.isUserCanValidatePublication() && kmelia.getSessionClone() == null);
           request.setAttribute("ValidationStep", kmelia.getValidationStep());
           request.setAttribute("ValidationType", kmelia.getValidationType());
           
@@ -812,8 +813,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = rootDestination + "validationSteps.jsp";
       } else if (function.equals("ValidatePublication")) {
-        String pubId =
-                kmelia.getSessionPublication().getDetail().getPK().getId();
+        String pubId = kmelia.getSessionPublication().getDetail().getPK().getId();
         SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "function = " + function + " pubId=" + pubId);
 
@@ -821,12 +821,15 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         if (validationComplete) {
           request.setAttribute("Action", "ValidationComplete");
+          destination = getDestination("ViewPublication", kmelia, request);
         } else {
           request.setAttribute("Action", "ValidationInProgress");
+          if (kmelia.getSessionClone() != null) {
+            destination = getDestination("ViewClone", kmelia, request);
+          } else {
+            destination = getDestination("ViewPublication", kmelia, request);
+          }
         }
-
-        request.setAttribute("PubId", pubId);
-        destination = getDestination("ViewPublication", kmelia, request);
       } else if (function.equals("ForceValidatePublication")) {
         String pubId =
                 kmelia.getSessionPublication().getDetail().getPK().getId();
@@ -837,18 +840,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         request.setAttribute("PubId", pubId);
         destination = getDestination("ViewPublication", kmelia, request);
-      } else if (function.equals("WantToRefusePubli")) {
-        PublicationDetail pubDetail =
-                kmelia.getSessionPubliOrClone().getDetail();
-
-        request.setAttribute("PublicationToRefuse", pubDetail);
-
-        destination = rootDestination + "refusalMotive.jsp";
       } else if (function.equals("Unvalidate")) {
         String motive = request.getParameter("Motive");
-
-        String pubId =
-                kmelia.getSessionPublication().getDetail().getPK().getId();
+        String pubId = kmelia.getSessionPublication().getDetail().getPK().getId();
         SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "function = " + function + " pubId=" + pubId);
 
