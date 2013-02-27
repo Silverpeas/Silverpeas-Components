@@ -1287,13 +1287,20 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       KmeliaPublication pub = KmeliaPublication.aKmeliaPublicationFromDetail(publicationDetail);
       if (getSessionPublicationsList() != null) {
         rang = getSessionPublicationsList().indexOf(pub);
+        if (rang != -1 && getSearchContext() != null) {
+          getSessionPublicationsList().get(rang).read = true;
+        }
       }
     }
-    
-    if (getSearchContext() != null) {
-      getSearchContext().markPublicationAsRead(publication);
-    }
+
     return publication;
+  }
+  
+  public int getNbPublis() {
+    if (getSessionPublicationsList() != null) {
+      return getSessionPublicationsList().size();
+    }
+    return 1;
   }
 
   public synchronized CompletePublication getCompletePublication(String pubId)
@@ -1655,7 +1662,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized boolean validatePublication(String publicationId) throws RemoteException {
-    return getKmeliaBm().validatePublication(getPublicationPK(publicationId), getUserId(), false);
+    boolean validationComplete = getKmeliaBm().validatePublication(getPublicationPK(publicationId), getUserId(), false);
+    if (validationComplete) {
+      setSessionClone(null);
+      refreshSessionPubliAndClone();
+    }
+    return validationComplete;
   }
 
   public synchronized boolean forcePublicationValidation(String publicationId)
@@ -2147,9 +2159,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public void setSessionPublicationsList(List<KmeliaPublication> publications) {
+    setSessionPublicationsList(publications, true);
+  }
+  
+  private void setSessionPublicationsList(List<KmeliaPublication> publications, boolean sort) {
     this.sessionPublicationsList = (publications == null ? null
             : new ArrayList<KmeliaPublication>(publications));
-    orderPubs();
+    if (sort) {
+      orderPubs();
+    }
   }
 
   public void setSessionCombination(List<String> combination) {
@@ -4380,8 +4398,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     boolean newSearch = previousSearch == null || !previousSearch.getQuery().equalsIgnoreCase(query);
     if (!newSearch) {
       // process cached results
-      getSearchContext().setCurrentIndex(getIndexOfFirstPubToDisplay());
-      return getSearchContext().getResults();
+      return getSessionPublicationsList();
     }
     
     // Insert this new search inside persistence layer in order to compute statistics
@@ -4465,8 +4482,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
     
     // store "in session" current search context
-    SearchContext searchContext = new SearchContext(query, userPublications);
+    SearchContext searchContext = new SearchContext(query);
     setSearchContext(searchContext);
+    
+    // store results and keep search results order
+    setSessionPublicationsList(userPublications, false);
     
     return userPublications;
   }
@@ -4732,7 +4752,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return getSessionPublicationsList();
   }
 
-  public void setSearchContext(SearchContext searchContext) {
+  private void setSearchContext(SearchContext searchContext) {
     this.searchContext = searchContext;
   }
 

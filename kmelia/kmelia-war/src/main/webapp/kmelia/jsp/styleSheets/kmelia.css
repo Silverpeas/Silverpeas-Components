@@ -73,13 +73,17 @@
 	display: none;
 }
 
-#preview .publiName {
-	font-size: 130%;
-	font-weight: bold;
-	color: #333;
+#preview .publiName,
+#preview-clone .publiName {
+	color: #333333;
+    font-size: 130%;
+    font-weight: bold;
+    margin: 0 0 5px;
+    padding: 0;
 }
 
-#preview #status {
+#preview #status,
+#preview-clone #status {
 	vertical-align:bottom;
 }
 
@@ -93,26 +97,18 @@
 	color:#333;
 }
 
-#preview .publiDesc {
+#preview .publiDesc,
+#preview-clone .publiDesc {
 	font-weight: bold;
 	color:#666666;
 	padding:8px;
 	border-left:6px solid #e4e4e4;
 }
 
-#preview .extraInformation_Refused {
-	background: #EF9595;
-	border: 3px solid red;
-	font-weight: bold;
-	padding: 5px;
-	text-align: center;
-	width: 100%;
-}
-
 #preview #pagination {
 	display: block;
-	float: right;
-	margin:5px 0;
+    float: right;
+    margin: 9px 0 1px;
 }
 #preview .currentPage {
 	opacity:0.6;
@@ -125,6 +121,7 @@
 #preview #backToSearch {    
 	height: 30px;
 	width: 310px;
+	float: right;
 }
 #preview #backToSearch a.button {
 	background-color:#F4F4F4;
@@ -144,11 +141,14 @@
 #preview #backToSearch a.button span{
 	background:transparent url(/silverpeas/util/icons/back.png) 0 0 no-repeat;
 	line-height: 16px;
-	padding: 2px 0px 2px 24px;
+	padding: 0px 0px 0px 24px;
 	font-weight:bold;
+	display: block;
+	text-align: center;
 }
 
-#preview #permalinkInfo img {
+#preview #permalinkInfo img,
+#preview-clone #permalinkInfo img {
 	border: 0px;
 }
 
@@ -489,6 +489,42 @@
 /*** A basculer dans la css global pour utilisation générique */
 .principalContent{
 	margin-right:325px;
+    margin-top: 6px;
+}
+
+.principalContent .inlineMessage,
+.principalContent .inlineMessage-ok,
+.principalContent .inlineMessage-nok {
+    float: none;
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.inlineMessage a.button {
+	background-color:#F4F4F4;
+    background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  	-moz-background-size: 100%;
+    border-radius: 5px;
+  	-moz-border-radius: 5px;
+  	-webkit-border-radius: 5px;
+    border: 1px solid #CCCCCC;
+    color: #4C4C4C;
+    font-size: 100%;
+    line-height: 52px;
+    margin: 0px 30px;
+    padding: 7px 20px;
+}
+
+a.button.validate span {
+     background: url("/silverpeas/util/icons/ok.gif") no-repeat scroll left center transparent;
+     line-height: 16px;
+     padding: 2px 0px 2px 24px;
+}
+
+a.button.refuse span {
+     background: url("/silverpeas/util/icons/wrong.gif") no-repeat scroll left center transparent;
+     line-height: 16px;
+     padding: 2px 0px 2px 24px;
 }
 
 .rightContent{

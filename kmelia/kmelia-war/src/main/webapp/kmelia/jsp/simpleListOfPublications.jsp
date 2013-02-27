@@ -44,6 +44,7 @@ String  translation 	= (String) request.getAttribute("Language");
 boolean	isGuest			= (Boolean) request.getAttribute("IsGuest");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
 boolean updateChain		= (Boolean) request.getAttribute("HaveDescriptor");
+int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
 
 SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
 String query = "";
@@ -151,9 +152,7 @@ var searchInProgress = <%=searchContext != null%>;
 
 $(document).ready(function() {
 	if (searchInProgress) {
-		<% if (searchContext != null) { %>
-			doPagination(<%=searchContext.getCurrentIndex()%>);
-		<% } %>
+		doPagination(<%=currentPageIndex%>);
 	} else {
 		displayPublications("<%=id%>");
 	}

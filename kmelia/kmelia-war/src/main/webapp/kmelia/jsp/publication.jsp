@@ -135,23 +135,33 @@
   //Vrai si le user connecte est le createur de cette publication ou si il est admin
   boolean isOwner = false;
 
-  if (action.equals("ValidationComplete") || action.equals("ValidationInProgress") || action.equals(
-      "Unvalidate") || action.equals("Suspend")) {
+  // display message according to previous action
+  if (action.equals("ValidationComplete") || action.equals("ValidationInProgress") || action.equals("Unvalidate") || action.equals("Suspend")) {
     if (action.equals("ValidationComplete")) {
       screenMessage = "<div class=\"inlineMessage-ok\">" + resources.getString("PubValidate") + "</div>";
     } else if (action.equals("ValidationInProgress")) {
-      screenMessage = "<div class=\"inlineMessage\">" + resources.getString(
-          "kmelia.PublicationValidationInProgress") + "</div>";
+      screenMessage = "<div class=\"inlineMessage\">" + resources.getString("kmelia.PublicationValidationInProgress") + "</div>";
     } else if (action.equals("Unvalidate")) {
       screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
     } else if (action.equals("Suspend")) {
-      screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString(
-          "kmelia.PublicationSuspended") + "</div>";
+      screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("kmelia.PublicationSuspended") + "</div>";
     }
     action = "ViewPublication";
   }
-  if (pubDetail.isRefused()) {
-    screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
+  
+  // display message according to current state of publication
+  if (!StringUtil.isDefined(screenMessage)) {
+    if (pubDetail.isRefused()) {
+	  screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
+	} else if (pubDetail.isValidationRequired()) {
+	  screenMessage = "<div class=\"inlineMessage\">" + resources.getString("kmelia.publication.tovalidate.state");
+	  if (userCanValidate) {
+	    screenMessage += " " + resources.getString("kmelia.publication.tovalidate.action")+"<br/>";
+	    screenMessage += "<a href=\"javascript:onclick=pubValidate()\" class=\"button validate\"><span>"+resources.getString("PubValidate?")+"</span></a>";
+	    screenMessage += "<a href=\"javascript:onclick=pubUnvalidate()\" class=\"button refuse\"><span>"+resources.getString("PubUnvalidate?")+"</span></a>";
+	  }
+	  screenMessage += "</div>";
+	}
   }
 
   if (action.equals("ValidateView")) {
@@ -237,9 +247,30 @@
               }
             }
           });
+        
+        $("#publication-refusal-form").dialog({
+            autoOpen: false,
+            title: "<%=resources.getString("PubUnvalidate?")%>",
+            modal: true,
+            minWidth: 500,
+            resizable : false,
+            buttons: {
+              'OK': function() {
+            	  if (!$.trim($("#refusal-motive").val())) {
+            		  window.alert("'<%=kmeliaScc.getString("RefusalMotive")%>' <%=resources.getString("GML.MustBeFilled")%>");
+            		  return true;
+            	  } else {
+			  		document.refusalForm.submit();
+            	  }
+              },
+              '<%= resources.getString("GML.cancel") %>': function() {
+                  $(this).dialog("close");
+              }
+            }
+          });
+        
       });
 
-      var refusalMotiveWindow = window;
       var publicVersionsWindow = window;
       var suspendMotiveWindow = window;
       var attachmentWindow = window;
@@ -276,15 +307,7 @@
       }
 
       function pubUnvalidate() {
-        document.pubForm.PubId.value = "<%=id%>";
-        url = "WantToRefusePubli?PubId="+<%=id%>;
-        windowName = "refusalMotiveWindow";
-        larg = "550";
-        haut = "350";
-        windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-        if (!refusalMotiveWindow.closed && refusalMotiveWindow.name== "refusalMotiveWindow")
-          refusalMotiveWindow.close();
-        refusalMotiveWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+	    $('#publication-refusal-form').dialog('open');
       }
 
       function pubSuspend() {
@@ -428,8 +451,7 @@
         if (notificationAllowed && !currentUser.isAnonymous()) {
           operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers()");
         }
-        //operationPane.addOperation(exportSrc, resources.getString("kmelia.DownloadPublication"),
-        //    "javaScript:zipPublication()");
+
         if (!toolboxMode && !exportFormats.isEmpty()) {
           operationPane.addOperation(pdfSrc, resources.getString("kmelia.ExportPublication"), "javascript:exportPublication()");
         }
@@ -468,6 +490,7 @@
         }
         if (!toolboxMode && isOwner) {
           if (userCanValidate) {
+            // if clone exists, only the clone can be validated or refused
             operationPane.addLine();
             operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate()");
             operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
@@ -492,25 +515,8 @@
         }
         out.println(frame.printBefore());
 
-        if ("finish".equals(wizard)) {
-%>
-	<div class="inlineMessage">
-		<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-		<%=resources.getString("kmelia.HelpPubli") %>
-	</div><br clear="all"/>
-<%
-        }
-        if (screenMessage != null && screenMessage.length() > 0) {
-          out.println(screenMessage + "<br clear=\"all\"/>");
-        }
-
         InfoDetail infos = pubComplete.getInfoDetail();
         ModelDetail model = pubComplete.getModelDetail();
-        int type = 0;
-        if (kmeliaScc.isVersionControlled()) {
-          type = 1; // Versioning
-        }
-        
         
         /*********************************************************************************************************************/
         /** Affichage des boutons de navigation (next / previous)															**/
@@ -535,17 +541,21 @@
       </div>
       <% } %>
       
-	  <% if (searchScope != SearchContext.NONE) {
-	    	String resultsURL = "GoBackToResults";
+	  <% 
+	    	String backURL = "GoToCurrentTopic";
+	  		String backLabel = resources.getString("kmelia.publication.link.folder");
 	    	if (searchScope == SearchContext.GLOBAL) {
-	    	  resultsURL = m_context+"/RpdcSearch/jsp/LastResults";
+	    	  backURL = m_context+"/RpdcSearch/jsp/LastResults";
+	    	  backLabel = resources.getString("kmelia.publication.link.results");
+	    	} else if (searchScope == SearchContext.LOCAL){
+	    	  backURL = "GoBackToResults";
+	    	  backLabel = resources.getString("kmelia.publication.link.results");
 	    	}
 	  %>
-	    <!-- AFFICHAGE du bouton de retour a la recherche -->
+	    <!-- button to go back to search results or current folder -->
 	  	<div id="backToSearch">
-	  	 <a href="<%=resultsURL%>" class="button"><span><%=resources.getString("kmelia.publication.link.results") %></span></a>
+	  	 <a href="<%=backURL%>" class="button"><span><%=backLabel%></span></a>
 	  	</div>
-	  <% } %>
       
       <div class="rightContent">
       <%
@@ -691,10 +701,20 @@
       <%
            
         /*********************************************************************************************************************/
-        /** Colonne Pricipale																									**/
+        /** Colonne Pricipale																							    **/
         /*********************************************************************************************************************/
     	 out.println("<div class=\"principalContent\">");
-    	 
+      	 if ("finish".equals(wizard)) {
+       %>
+        	<div class="inlineMessage">
+        		<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
+        		<%=resources.getString("kmelia.HelpPubli") %>
+        	</div>
+       <%
+         }
+         if (screenMessage != null && screenMessage.length() > 0) {
+           out.println(screenMessage);
+         }
 				        /*********************************************************************************************************************/
 				        /** Affichage du header de la publication																			**/
 				        /*********************************************************************************************************************/
@@ -808,6 +828,17 @@
       	</ul>
       </div>
       
+      <div id="publication-refusal-form" style="display: none;">
+      	<form name="refusalForm" action="Unvalidate" method="post">
+        <table>
+        	<tr>
+        		<td class="txtlibform" valign="top"><%=kmeliaScc.getString("RefusalMotive")%></td>
+        		<td><textarea name="Motive" id="refusal-motive" rows="10" cols="60"></textarea>&nbsp;<img border="0" src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5"/></td>
+        	</tr>
+        </table>
+        </form>
+      </div>
+      
       <%
         out.flush();
         out.println(frame.printAfter());
@@ -817,10 +848,6 @@
         <input type="hidden" name="Action"/>
         <input type="hidden" name="PubId"/>
         <input type="hidden" name="Profile" value="<%=profile%>"/>
-      </form>
-      <form name="refusalForm" action="<%=routerUrl%>Unvalidate">
-        <input type="hidden" name="PubId" value="<%=id%>"/>
-        <input type="hidden" name="Motive" value=""/>
       </form>
       <form name="defermentForm" action="<%=routerUrl%>SuspendPublication" method="post">
         <input type="hidden" name="PubId" value="<%=id%>"/>

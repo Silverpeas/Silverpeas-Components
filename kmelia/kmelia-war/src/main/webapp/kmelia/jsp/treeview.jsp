@@ -47,6 +47,7 @@ boolean	isGuest			= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
+int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
 
 SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
 String query = "";
@@ -71,8 +72,7 @@ String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.get
 
 String userId = kmeliaScc.getUserId();
 
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
+String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
 
 boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
 boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
@@ -418,9 +418,7 @@ function displayTopicContent(id) {
 		}
 	} else {
 		if (searchInProgress) {
-			<% if (searchContext != null) { %>
-				doPagination(<%=searchContext.getCurrentIndex()%>);
-			<% } %>
+			doPagination(<%=currentPageIndex%>);
 		} else {
 			displayPublications(id);
 		}

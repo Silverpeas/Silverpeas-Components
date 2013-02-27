@@ -43,6 +43,7 @@ String  translation 	= (String) request.getAttribute("Language");
 boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
+int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
 
 SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
 String query = "";
@@ -306,9 +307,7 @@ function displayTopicContent(id) {
 		}
 	} else {
 		if (searchInProgress) {
-			<% if (searchContext != null) { %>
-				doPagination(<%=searchContext.getCurrentIndex()%>);
-			<% } %>
+			doPagination(<%=currentPageIndex%>);
 		} else {
 			displayPublications(id);
 		}
@@ -323,6 +322,8 @@ function displayTopicContent(id) {
 
 	//display topic rich description
 	displayTopicDescription(id);
+	
+	// location.href = location.href + "#pubList";
 }
 	
 function displaySubTopics(id) {
