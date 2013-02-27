@@ -48,6 +48,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.kmelia.KmeliaConstants;
+import com.silverpeas.kmelia.SearchContext;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelper;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelperContext;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
@@ -234,6 +235,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("IsGuest", kmelia.getUserDetail().isAccessGuest());
         request.setAttribute("RightsOnTopicsEnabled", kmelia.isRightsOnTopicsEnabled());
         request.setAttribute("WysiwygDescription", kmelia.getWysiwygOnTopic());
+        request.setAttribute("PageIndex", kmelia.getIndexOfFirstPubToDisplay());
+        
         if (kmelia.isTreeviewUsed()) {
           destination = rootDestination + "treeview.jsp";
         } else if (kmelia.isTreeStructure()) {
@@ -252,11 +255,21 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = rootDestination + "basket.jsp";
       } else if (function.equals("ViewPublicationsToValidate")) {
         destination = rootDestination + "publicationsToValidate.jsp";
+      } else if ("GoBackToResults".equals(function)) {
+        request.setAttribute("SearchContext", kmelia.getSearchContext());
+        destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if (function.startsWith("searchResult")) {
         resetWizard(kmelia);
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
         String fileAlreadyOpened = request.getParameter("FileOpened");
+        String from = request.getParameter("From");
+        if ("Search".equals(from)) {
+          // identify clearly access from global search
+          // because same URL is used from portlet, permalink...
+          request.setAttribute("SearchScope", SearchContext.GLOBAL);
+        }
+        
         if (type != null && ("Publication".equals(type)
                 || "com.stratelia.webactiv.calendar.backbone.TodoDetail".equals(type)
                 || "Attachment".equals(type) || "Document".equals(type)
@@ -565,6 +578,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             processPath(kmelia, null);
           }
         }
+        
+        // view publication from global search ?
+        Integer searchScope = (Integer) request.getAttribute("SearchScope");
+        if (searchScope == null) {
+          if (kmelia.getSearchContext() != null) {
+            request.setAttribute("SearchScope", SearchContext.LOCAL);
+          } else {
+            request.setAttribute("SearchScope", SearchContext.NONE);
+          }
+        }
 
         KmeliaPublication kmeliaPublication = null;
         if (StringUtil.isDefined(id)) {
@@ -633,11 +656,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("Wizard", kmelia.getWizard());
 
           request.setAttribute("Rang", kmelia.getRang());
-          if (kmelia.getSessionPublicationsList() != null) {
-            request.setAttribute("NbPublis", kmelia.getSessionPublicationsList().size());
-          } else {
-            request.setAttribute("NbPublis", 1);
-          }
+          request.setAttribute("NbPublis", kmelia.getNbPublis());
 
           putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(), kmelia, request);
 
@@ -2516,11 +2535,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
       if (StringUtil.isDefined(id)) {
         request.setAttribute("Rang", kmelia.getRang());
-        if (kmelia.getSessionPublicationsList() != null) {
-          request.setAttribute("NbPublis", kmelia.getSessionPublicationsList().size());
-        } else {
-          request.setAttribute("NbPublis", 1);
-        }
+        request.setAttribute("NbPublis", kmelia.getNbPublis());
 
         // request.setAttribute("PathList",kmelia.getPublicationFathers(id));
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());

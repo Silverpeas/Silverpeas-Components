@@ -40,7 +40,6 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -72,6 +71,7 @@ public class KmeliaPublication implements SilverpeasContent {
   private boolean alias = false;
   private final PublicationPK pk;
   private int rank;
+  public boolean read = false;
   
   /**
    * Gets the Kmelia publication with the specified primary key identifying it uniquely.
@@ -170,8 +170,7 @@ public class KmeliaPublication implements SilverpeasContent {
   public String getURL() {
     String defaultURL =
             getOrganizationController().getDomain(getCreator().getDomainId()).getSilverpeasServerURL();
-    ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-    String serverURL = generalSettings.getString("httpServerBase", defaultURL);
+    String serverURL = GeneralPropertiesManager.getString("httpServerBase", defaultURL);
     return serverURL + URLManager.getSimpleURL(URLManager.URL_PUBLI, getPk().getId());
   }
 
