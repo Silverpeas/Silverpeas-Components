@@ -1646,7 +1646,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized boolean validatePublication(String publicationId) throws RemoteException {
-    return getKmeliaBm().validatePublication(getPublicationPK(publicationId), getUserId(), false);
+    boolean validationComplete = getKmeliaBm().validatePublication(getPublicationPK(publicationId), getUserId(), false);
+    if (validationComplete) {
+      setSessionClone(null);
+      refreshSessionPubliAndClone();
+    }
+    return validationComplete;
   }
 
   public synchronized boolean forcePublicationValidation(String publicationId)

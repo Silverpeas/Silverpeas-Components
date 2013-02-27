@@ -1009,6 +1009,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
   }
   
+  /**
+   * Counts number of publications recursively in allowed nodes only
+   * @param allowedNodes a Map of all nodes allowed to user
+   * @param tree the whole tree which contains the number of publications in each node independently of rights
+   */
   private void countPublisInNodes(Map<NodePK, NodeDetail> allowedNodes, NodeTree tree) {
     for (NodeDetail node : allowedNodes.values()) {
       NodeTree nodeTree = findNode(node, tree);
@@ -1036,11 +1041,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           current = findNodeTree(pathItem, current.getChildren());
         }
       }
-      SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
-          "node " + current.getKey().getId()+" found");
-      return current;
+      if (current != null) {
+        SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
+            "node " + current.getKey().getId()+" found");
+        return current;
+      }
     }
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
+    SilverTrace.error("kmelia", "KmeliaBmEJB.findNode", "root.MSG_GEN_EXIT_METHOD",
         "node " + node.getNodePK().getId()+" not found");
     return null;
   }
@@ -1054,14 +1061,22 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return null;
   }
   
+  /**
+   * Counts the number of publications in the node and all its descendants
+   * @param tree the subtree which have tree.currentNode as root
+   * @return the number of publications in this node and all its descendants
+   */
   private int countNbPublis(NodeTree tree) {
-    SilverTrace.debug("kmelia", "KmeliaBmEJB.countNbPublis", "root.MSG_GEN_ENTER_METHOD",
-        "id = " + tree.getKey().getId());
+    if (tree == null) {
+      return 0;
+    }
     int nb = tree.getNbPublications();
     // add nb of each descendant
     for (NodeTree node : tree.getChildren()) {
       nb += countNbPublis(node);
     }
+    SilverTrace.debug("kmelia", "KmeliaBmEJB.countNbPublis", "root.MSG_GEN_EXIT_METHOD",
+        nb + " pubs in node " + tree.getKey().getId());
     return nb;
   }
 
@@ -1402,15 +1417,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     if (pubDetail.isStatusMustBeChecked()) {
       if (!pubDetail.isDraft() && !pubDetail.isClone()) {
-        newStatus = PublicationDetail.TO_VALIDATE;
         NodePK nodePK = new NodePK("unknown", pubDetail.getPK().getInstanceId());
-        if (fathers != null && fathers.size() > 0) {
+        if (fathers != null && !fathers.isEmpty()) {
           nodePK = fathers.get(0);
         }
         String profile = getProfile(pubDetail.getUpdaterId(), nodePK);
-        if ("supervisor".equals(profile) || SilverpeasRole.publisher.isInRole(profile)
-                || SilverpeasRole.admin.isInRole(profile)) {
-          newStatus = PublicationDetail.VALID;
+        if (SilverpeasRole.writer.isInRole(profile)) {
+          newStatus = PublicationDetail.TO_VALIDATE;
         }
         pubDetail.setStatus(newStatus);
       }
@@ -2433,7 +2446,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         PublicationDetail toValidate = publi;
         if (isClone) {
           // publication is a clone, get original one
-          toValidate = getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK()));
+          try {
+            toValidate = getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK()));
+          } catch (Exception e) {
+            // inconsistency in database ! Original publication does not exist
+            SilverTrace.warn("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
+                "kmelia.ORIGINAL_PUBLICATION_OF_CLONE_NOT_FOUND", "cloneId = " + publi.getId() +
+                    ", originalId=" + publi.getCloneId());
+          }
         }
         if (targetedValidationEnabled) {
           // only publications which must be explicitly validated by current user must be returned
@@ -2584,11 +2604,22 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return validationOK;
   }
 
+  /* (non-Javadoc)
+   * @see com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmBusinessSkeleton#validatePublication(com.stratelia.webactiv.util.publication.model.PublicationPK, java.lang.String, boolean)
+   */
   @Override
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.validatePublication()", "root.MSG_GEN_ENTER_METHOD");
     boolean validationComplete = false;
+    
     try {
+      CompletePublication currentPub = getPublicationBm().getCompletePublication(pubPK);
+      PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
+      boolean validationOnClone = currentPubDetail.haveGotClone();
+      PublicationPK validatedPK = pubPK;
+      if (validationOnClone) {
+        validatedPK = currentPubDetail.getClonePK();
+      }
       if (force) {
         validationComplete = true;
       } else {
@@ -2600,39 +2631,41 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           if (validationType == KmeliaHelper.VALIDATION_TARGET_N) {
             // check that validators are well defined
             // If not, considering validation as classic one
-            PublicationDetail publi = getPublicationBm().getDetail(pubPK);
+            PublicationDetail publi = getPublicationBm().getDetail(validatedPK);
             if (!isDefined(publi.getTargetValidatorId())) {
               validationComplete = true;
             }
           }
           if (!validationComplete) {
             // get all users who have to validate
-            List<String> allValidators = getAllValidators(pubPK);
+            List<String> allValidators = getAllValidators(validatedPK);
             if (allValidators.size() == 1) {
               // special case : only once user is concerned by validation
               validationComplete = true;
             } else if (allValidators.size() > 1) {
               // remove todo for this user. His job is done !
-              removeTodoForPublication(pubPK, userId);
+              removeTodoForPublication(validatedPK, userId);
+              if (validationOnClone) {
+                removeTodoForPublication(pubPK, userId);
+              }
               // save his decision
               ValidationStep validation =
-                  new ValidationStep(pubPK, userId, PublicationDetail.VALID);
+                  new ValidationStep(validatedPK, userId, PublicationDetail.VALID);
               getPublicationBm().addValidationStep(validation);
               // check if all validators have give their decision
-              validationComplete = isValidationComplete(pubPK, allValidators);
+              validationComplete = isValidationComplete(validatedPK, allValidators);
             }
           }
         }
-        
       }
 
       if (validationComplete) {
         
         /* remove all todos attached to that publication */
-        removeAllTodosForPublication(pubPK);
-        
-        CompletePublication currentPub = getPublicationBm().getCompletePublication(pubPK);
-        PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
+        removeAllTodosForPublication(validatedPK);
+        if (validationOnClone) {
+          removeAllTodosForPublication(pubPK);
+        }
 
         if (currentPubDetail.haveGotClone()) {
           currentPubDetail = mergeClone(currentPub, userId);

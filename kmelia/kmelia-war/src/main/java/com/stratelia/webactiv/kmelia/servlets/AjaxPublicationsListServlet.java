@@ -765,7 +765,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (kmeliaScc.isVersionControlled(pub.getPK().getInstanceId())) {
         sb.append(displayVersioning(pub, resources, linkAttachment, alias));
       } else {
-        sb.append(displayAttachments(pub, userId, topicId, resources, linkAttachment, alias));
+        sb.append(displayAttachments(pub, userId, topicId, resources, linkAttachment, alias,
+            kmeliaScc.getCurrentLanguage()));
       }
       sb.append("</span>");
     }
@@ -997,7 +998,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   private String displayAttachments(PublicationDetail pubDetail, String userId, String nodeId,
-      ResourcesWrapper resources, boolean linkAttachment, boolean alias) throws IOException {
+      ResourcesWrapper resources, boolean linkAttachment, boolean alias, String language)
+      throws IOException {
     SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayAttachments()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubDetail.getPK().getId());
     StringBuilder result = new StringBuilder();
@@ -1005,20 +1007,24 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     AttachmentPK foreignKey = new AttachmentPK(pubDetail.getPK().getId(),
         pubDetail.getPK().getInstanceId());
 
+    boolean isToolbox = KmeliaHelper.isToolbox(pubDetail.getPK().getInstanceId());
     Collection<AttachmentDetail> attachmentList =
         AttachmentController.searchAttachmentByPKAndContext(foreignKey, "Images");
     if (!attachmentList.isEmpty()) {
       result.append("<table border=\"0\">");
       for (AttachmentDetail attachmentDetail : attachmentList) {
-        String url = attachmentDetail.getAttachmentURLToMemorize(userId, nodeId);
-        String title = attachmentDetail.getTitle();
-        String info = attachmentDetail.getInfo();
-        String icon = attachmentDetail.getAttachmentIcon();
-        String logicalName = attachmentDetail.getLogicalName();
+        String url = URLManager.getApplicationURL() + attachmentDetail.getAttachmentURL(language);
+        if (isToolbox) {
+          url = attachmentDetail.getAttachmentURLToMemorize(userId, nodeId);
+        }
+        String title = attachmentDetail.getTitle(language);
+        String info = attachmentDetail.getInfo(language);
+        String icon = attachmentDetail.getAttachmentIcon(language);
+        String logicalName = attachmentDetail.getLogicalName(language);
         String id = attachmentDetail.getPK().getId();
-        String size = attachmentDetail.getAttachmentFileSize();
-        String downloadTime = attachmentDetail.getAttachmentDownloadEstimation();
-        Date creationDate = attachmentDetail.getCreationDate();
+        String size = attachmentDetail.getAttachmentFileSize(language);
+        String downloadTime = attachmentDetail.getAttachmentDownloadEstimation(language);
+        Date creationDate = attachmentDetail.getCreationDate(language);
         String permalink = null;
         if (!attachmentDetail.isAttachmentLinked()) {
           permalink = URLManager.getSimpleURL(URLManager.URL_FILE, id);
@@ -1030,11 +1036,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
         boolean previewable =
             ViewerFactory.getPreviewService().isPreviewable(
-                new File(attachmentDetail.getAttachmentPath(null)));
+                new File(attachmentDetail.getAttachmentPath(language)));
 
         boolean viewable =
             ViewerFactory.getViewService().isViewable(
-                new File(attachmentDetail.getAttachmentPath(null)));
+                new File(attachmentDetail.getAttachmentPath(language)));
 
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
             creationDate, permalink, resources, linkAttachment, previewable, viewable, id));
