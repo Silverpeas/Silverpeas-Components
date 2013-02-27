@@ -73,7 +73,10 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
+import com.silverpeas.kmelia.SearchContext;
+import com.silverpeas.kmelia.domain.TopicSearch;
 import com.silverpeas.kmelia.export.ExportFileNameProducer;
+import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -272,6 +275,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private List<String> selectedPublicationIds = new ArrayList<String>();
   private boolean customPublicationTemplateUsed = false;
   private String customPublicationTemplateName = null;
+  
+  private SearchContext searchContext = null;
 
   /**
    * Creates new sessionClientController
@@ -1278,11 +1283,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     if (processIndex) {
-      // mise à jour du rang de la publication
+      // getting rank of publication
       KmeliaPublication pub = KmeliaPublication.aKmeliaPublicationFromDetail(publicationDetail);
       if (getSessionPublicationsList() != null) {
         rang = getSessionPublicationsList().indexOf(pub);
       }
+    }
+    
+    if (getSearchContext() != null) {
+      getSearchContext().markPublicationAsRead(publication);
     }
     return publication;
   }
@@ -2183,6 +2192,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (!id.equals(currentFolderId)) {
       indexOfFirstPubToDisplay = 0;
       resetSelectedPublicationIds();
+      setSearchContext(null);
     }
     if (resetSessionPublication) {
       setSessionPublication(null);
@@ -4365,21 +4375,31 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @return List of Kmelia publications
    */
   public synchronized List<KmeliaPublication> search(String query) {
+    
+    SearchContext previousSearch = getSearchContext();
+    boolean newSearch = previousSearch == null || !previousSearch.getQuery().equalsIgnoreCase(query);
+    if (!newSearch) {
+      // process cached results
+      getSearchContext().setCurrentIndex(getIndexOfFirstPubToDisplay());
+      return getSearchContext().getResults();
+    }
+    
+    // Insert this new search inside persistence layer in order to compute statistics
+    TopicSearch newTS = new TopicSearch(getComponentId(), Integer.parseInt(getCurrentFolderId()),
+              Integer.parseInt(getUserId()), getLanguage(), query.toLowerCase(), new Date());
+    KmeliaSearchServiceFactory.getTopicSearchService().createTopicSearch(newTS);
+    
     List<KmeliaPublication> userPublications = new ArrayList<KmeliaPublication>();
     QueryDescription queryDescription = new QueryDescription(query);
-    queryDescription.setSearchingUser(getUserDetail().getId());
+    queryDescription.setSearchingUser(getUserId());
 
-    // Search in all spaces and components (to find alias)
-    String[] spacesIds = getOrganizationController().getAllSpaceIds(getUserDetail().getId());
-    for (String spacesId : spacesIds) {
-      String[] componentsIds =
-              getOrganizationController().getComponentIdsForUser(getUserDetail().getId(),
-                  this.getComponentName());
-      for (String componentsId : componentsIds) {
-        queryDescription.addSpaceComponentPair(spacesId, componentsId);
-      }
+    // Search in all available components (to find alias)
+    String[] componentIds =
+        getOrganizationController().getComponentIdsForUser(getUserId(), getComponentName());
+    for (String componentId : componentIds) {
+      queryDescription.addComponent(componentId);
     }
-
+    
     try {
   
       List<MatchingIndexEntry> results = SearchEngineFactory.getSearchEngine().search(
@@ -4398,9 +4418,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       // Get current topic too
       nodeIDs.add(getCurrentFolderPK());
       Collection<NodePK> nodePKs = getNodeBm().getDescendantPKs(getCurrentFolderPK());
-      for (NodePK nodePK : nodePKs) {
-        nodeIDs.add(nodePK);
-      }
+      nodeIDs.addAll(nodePKs);
 
       List<String> pubIds = new ArrayList<String>();
 
@@ -4445,6 +4463,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       throw new KmeliaRuntimeException("KmeliaSessionController.search",
               SilverpeasRuntimeException.ERROR, "root.EX_SEARCH_ENGINE_FAILED", pe);
     }
+    
+    // store "in session" current search context
+    SearchContext searchContext = new SearchContext(query, userPublications);
+    setSearchContext(searchContext);
+    
     return userPublications;
   }
 
@@ -4707,6 +4730,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     setSessionPublicationsList(publications);
     applyVisibilityFilter();
     return getSessionPublicationsList();
+  }
+
+  public void setSearchContext(SearchContext searchContext) {
+    this.searchContext = searchContext;
+  }
+
+  public SearchContext getSearchContext() {
+    return searchContext;
   }
 
 }

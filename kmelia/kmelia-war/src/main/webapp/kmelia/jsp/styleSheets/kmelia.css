@@ -122,6 +122,32 @@
 	vertical-align:top;
 }
 
+#preview #backToSearch {    
+	height: 30px;
+	width: 310px;
+}
+#preview #backToSearch a.button {
+	background-color:#F4F4F4;
+	background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+		-moz-background-size: 100%;
+	border-radius: 5px;
+		 -moz-border-radius: 5px;
+		 -webkit-border-radius: 5px;
+	border: 1px solid #CCCCCC;
+	color: #4C4C4C;
+	font-size: 100%;
+	padding: 7px 10px;
+	position: absolute;
+	right: 101px;
+	width: 187px;
+}
+#preview #backToSearch a.button span{
+	background:transparent url(/silverpeas/util/icons/back.png) 0 0 no-repeat;
+	line-height: 16px;
+	padding: 2px 0px 2px 24px;
+	font-weight:bold;
+}
+
 #preview #permalinkInfo img {
 	border: 0px;
 }
@@ -183,6 +209,10 @@
 
 #pubList ul li.over-publication {
 	background-color: #ECECEC;
+}
+
+#pubList ul li.read .line1 a {
+	color: #006600;
 }
 
 #pubList .firstColumn {

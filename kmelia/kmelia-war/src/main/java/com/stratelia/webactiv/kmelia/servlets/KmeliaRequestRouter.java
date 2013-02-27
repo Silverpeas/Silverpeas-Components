@@ -48,6 +48,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.kmelia.KmeliaConstants;
+import com.silverpeas.kmelia.SearchContext;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelper;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelperContext;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
@@ -234,6 +235,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("IsGuest", kmelia.getUserDetail().isAccessGuest());
         request.setAttribute("RightsOnTopicsEnabled", kmelia.isRightsOnTopicsEnabled());
         request.setAttribute("WysiwygDescription", kmelia.getWysiwygOnTopic());
+        
         if (kmelia.isTreeviewUsed()) {
           destination = rootDestination + "treeview.jsp";
         } else if (kmelia.isTreeStructure()) {
@@ -252,8 +254,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = rootDestination + "basket.jsp";
       } else if (function.equals("ViewPublicationsToValidate")) {
         destination = rootDestination + "publicationsToValidate.jsp";
+      } else if ("GoBackToResults".equals(function)) {
+        request.setAttribute("SearchContext", kmelia.getSearchContext());
+        destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if (function.startsWith("searchResult")) {
         resetWizard(kmelia);
+        request.setAttribute("SearchScope", SearchContext.GLOBAL);
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
         String fileAlreadyOpened = request.getParameter("FileOpened");
@@ -563,6 +569,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             processPath(kmelia, id);
           } else {
             processPath(kmelia, null);
+          }
+        }
+        
+        // view publication from global search ?
+        Integer searchScope = (Integer) request.getAttribute("SearchScope");
+        if (searchScope == null) {
+          if (kmelia.getSearchContext() != null) {
+            request.setAttribute("SearchScope", SearchContext.LOCAL);
+          } else {
+            request.setAttribute("SearchScope", SearchContext.NONE);
           }
         }
 

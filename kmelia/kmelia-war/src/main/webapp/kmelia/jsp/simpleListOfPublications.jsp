@@ -30,6 +30,7 @@
 
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
+<%@page import="com.silverpeas.kmelia.SearchContext"%>
 
 <%
 String id = "0";
@@ -42,7 +43,13 @@ String 	profile			= (String) request.getAttribute("Profile");
 String  translation 	= (String) request.getAttribute("Language");
 boolean	isGuest			= (Boolean) request.getAttribute("IsGuest");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
-boolean updateChain		= ((Boolean) request.getAttribute("HaveDescriptor")).booleanValue();
+boolean updateChain		= (Boolean) request.getAttribute("HaveDescriptor");
+
+SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
+String query = "";
+if (searchContext != null) {
+  query = searchContext.getQuery();
+}
 
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
@@ -98,7 +105,7 @@ function getComponentId() {
 
 function showDnD() {
 	<%
-	ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
+	ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
 	String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
 	%>
 	showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeNormal_<%=language%>.html','<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
@@ -140,8 +147,16 @@ function pasteFromOperations() {
 			}, 'text');
 }
 
+var searchInProgress = <%=searchContext != null%>;
+
 $(document).ready(function() {
-	displayPublications("<%=id%>");
+	if (searchInProgress) {
+		<% if (searchContext != null) { %>
+			doPagination(<%=searchContext.getCurrentIndex()%>);
+		<% } %>
+	} else {
+		displayPublications("<%=id%>");
+	}
 	displayTopicDescription("0");
 });
 </script>
@@ -219,7 +234,7 @@ $(document).ready(function() {
 						<div id="searchZone">
 						<view:board>
 						<table id="searchLine">
-						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query%>" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
 						</table>
 						</view:board>
 						</div>
@@ -279,7 +294,6 @@ $(document).ready(function() {
 
 <form name="pubForm" action="ViewPublication" method="post">
 	<input type="hidden" name="PubId"/>
-	<input type="hidden" name="CheckPath" value="1"/>
 </form>
 
 <form name="fupload" action="fileUpload.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">

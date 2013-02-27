@@ -29,7 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@page import="com.silverpeas.kmelia.SearchContext"%>
 
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
@@ -43,6 +43,12 @@ String  translation 	= (String) request.getAttribute("Language");
 boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
+
+SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
+String query = "";
+if (searchContext != null) {
+  query = searchContext.getQuery();
+}
 
 String id 		= (String) request.getAttribute("CurrentFolderId");
 
@@ -62,8 +68,7 @@ String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.get
 
 String userId = kmeliaScc.getUserId();
 
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
+String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -98,7 +103,7 @@ function topicGoTo(id) {
 
 function showDnD() {
 	<%
-	ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
+	ResourceLocator uploadSettings = new ResourceLocator("org.silverpeas.util.uploads.uploadSettings", "");
 	String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
 	if (profile.equals("publisher") || profile.equals("writer")) { %>
 		showHideDragDrop('<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeNormal_<%=language%>.html','<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
@@ -157,7 +162,7 @@ function getToValidateFolderId() {
 						<div id="searchZone">
 						<view:board>
 						<table id="searchLine">
-						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query%>" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
 						</table>
 						</view:board>
 						</div>
@@ -245,6 +250,9 @@ params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
 params["i18n"] = <%=I18NHelper.isI18N%>;
 params["nbPublisDisplayed"] = <%=displayNBPublis%>;
 
+var searchInProgress = <%=searchContext != null%>;
+var searchFolderId = "<%=id%>";
+
 function getComponentPermalink() {
 	return "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId)%>";
 }
@@ -267,7 +275,15 @@ function updateUIStatus(nodeId, newStatus) {
 }
 
 function displayTopicContent(id) {
-	clearSearchQuery();
+	if (id != searchFolderId) {
+		// search session is over
+		searchInProgress = false;
+	}
+	
+	if (!searchInProgress) {
+		clearSearchQuery();
+	}
+	
 	setCurrentNodeId(id);
 
 	if (id == getToValidateFolderId() || id == "1") {
@@ -289,7 +305,13 @@ function displayTopicContent(id) {
 			displayOperations(id);
 		}
 	} else {
-		displayPublications(id);
+		if (searchInProgress) {
+			<% if (searchContext != null) { %>
+				doPagination(<%=searchContext.getCurrentIndex()%>);
+			<% } %>
+		} else {
+			displayPublications(id);
+		}
 		displayPath(id);
 		displayOperations(id);
 		$("#searchZone").css({'display':'block'});
