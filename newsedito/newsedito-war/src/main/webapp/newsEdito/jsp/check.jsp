@@ -109,7 +109,7 @@
 
 	if (newsSC == null) {
 	    // No session controller in the request -> security exception
-	    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+	    String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
 	    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 	    return;
 	}
@@ -123,5 +123,5 @@
 	String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("newsEdito", spaceId, componentId);
 
 	//R�cup�ration du contexte
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 %>

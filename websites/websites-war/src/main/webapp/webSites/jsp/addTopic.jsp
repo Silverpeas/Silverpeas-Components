@@ -56,18 +56,18 @@
 
 SilverTrace.info("websites", "JSPaddTopic", "root.MSG_GEN_ENTER_METHOD");
 
-//R�cup�ration des param�tres
+//Recuperation des parametres
 String fatherId = (String) request.getParameter("Id");
 String path = (String) request.getParameter("Path");
 String action = (String) request.getParameter("Action");
 
-//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
+Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
+Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
 
 %>
 
@@ -118,16 +118,16 @@ function isCorrectForm() {
      var description = stripInitialWhitespace(document.topicForm.Description.value);
      if (isWhitespace(title)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
+       errorNb++;
      }
      if (isWhitespace(description)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
+       errorNb++;
      }
      if (! isCorrect(title)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n  <%=resources.getString("Char6")%>\n";
-       errorNb++; 
-     }          
+       errorNb++;
+     }
      switch(errorNb)
      {
         case 0 :
@@ -160,14 +160,14 @@ function isCorrectForm() {
 	//browseBar.setComponentName(scc.getComponentLabel());
 	browseBar.setComponentName(componentLabel);
     browseBar.setPath(resources.getString("FolderCreationTitle"));
-    
+
     //Le cadre
     Frame frame = gef.getFrame();
 
 	//Le board
 	Board board = gef.getBoard();
 
-    //D�but code
+    //Debut code
     out.println(window.printBefore());
     out.println(frame.printBefore());
 	out.print(board.printBefore());
@@ -181,28 +181,28 @@ function isCorrectForm() {
                            out.println(Encode.javaStringToHtmlString(path));
                             %></TD>
     </TR>
-    
+
     <TR>
         <TD class="txtlibform"><%=resources.getString("GML.name")%> : </TD>
             <TD valign="top">
                 <input type="text" name="Name" value="" size="60" maxlength="50">
                 &nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></TD>
         </TR>
-  
-  
+
+
     <TR>
         <TD class="txtlibform"><%=resources.getString("GML.description")%> : </TD>
             <TD valign="top">
                 <input type="text" name="Description" value="" size="60" maxlength="50">
                 &nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></TD>
         </TR>
-        
-        <TR> 
-            <TD colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> 
+
+        <TR>
+            <TD colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">
               : <%=resources.getString("GML.requiredField")%>)</TD>
-      </TR>   
-	</FORM> 
-    </TABLE>  
+      </TR>
+	</FORM>
+    </TABLE>
 <%
    //fin du code
 	out.print(board.printAfter());
@@ -211,15 +211,12 @@ function isCorrectForm() {
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-   
+
     out.println("<br><center>"+buttonPane.print()+"</center><br>");
 
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-
-<!-- CBO : UPDATE -->
-<!--<FORM NAME="topicDetailForm" ACTION="addTopic.jsp" METHOD=POST>-->
 <FORM NAME="topicDetailForm" ACTION="AddTopic" METHOD=POST>
   <input type="hidden" name="Action">
   <input type="hidden" name="Id" value="<%=fatherId%>">
@@ -228,21 +225,11 @@ function isCorrectForm() {
 </FORM>
 </BODY>
 </HTML>
-<% } //End View 
+<% } //End View
 
 else if (action.equals("Add")) {
-
-    //CBO : REMOVE
-	/*String newTopicName = (String) request.getParameter("Name");
-    String newTopicDescription = (String) request.getParameter("Description");
-    SilverTrace.info("websites", "WebSiteBmEJB.addWebSites()", "root.MSG_GEN_PARAM_VALUE",
-                     "name= "+newTopicName+", descrption = "+newTopicDescription);
-    
-    NodeDetail folder = new NodeDetail("X",newTopicName,newTopicDescription,null,null,null,"0","X");
-    NodePK newNodePK = scc.addFolder(folder, "");
-	*/
 %>
- 
+
 	<HTML>
       <HEAD>
       <script language="Javascript">

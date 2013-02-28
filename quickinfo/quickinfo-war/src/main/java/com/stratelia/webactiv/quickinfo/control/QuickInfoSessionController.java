@@ -24,30 +24,13 @@
 
 package com.stratelia.webactiv.quickinfo.control;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.RemoveException;
-import javax.xml.bind.JAXBException;
-
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -62,11 +45,27 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.RemoveException;
+import javax.xml.bind.JAXBException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
  * @author squere
@@ -207,8 +206,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       }
 
       // Add the wysiwyg content
-      WysiwygController.createFileAndAttachment(description, getSpaceId(), getComponentId(),
-          pubPK.getId());
+      WysiwygController.createFileAndAttachment(description, getComponentId(), pubPK.getId(),
+          I18NHelper.defaultLanguage);
 
       classifyQuickInfo(detail, positions);
     } catch (RemoteException e) {
@@ -250,10 +249,11 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
       // Update the Wysiwyg if exists, create one otherwise
       if (detail.getWysiwyg() != null && !"".equals(detail.getWysiwyg())) {
-        WysiwygController.updateFileAndAttachment(description, getSpaceId(), getComponentId(), id,
-            getUserId());
+        WysiwygController.updateFileAndAttachment(description, getComponentId(), id, getUserId(),
+            I18NHelper.defaultLanguage);
       } else {
-        WysiwygController.createFileAndAttachment(description, getSpaceId(), getComponentId(), id);
+        WysiwygController.createFileAndAttachment(description, getComponentId(), id,
+            I18NHelper.defaultLanguage);
       }
 
     } catch (RemoteException e) {
@@ -284,8 +284,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       }
 
       // Delete the Wysiwyg if exists
-      if (WysiwygController.haveGotWysiwyg(getSpaceId(), getComponentId(), id)) {
-        FileFolderManager.deleteFile(WysiwygController.getWysiwygPath(getComponentId(), id));
+      if (WysiwygController.haveGotWysiwyg(getComponentId(), id, I18NHelper.defaultLanguage)) {
+        WysiwygController.deleteFileAndAttachment(getComponentId(), id);
       }
     } catch (RemoteException e) {
       SilverTrace.error("quickinfo", "QuickInfoSessionController.remove('" + id + "')",

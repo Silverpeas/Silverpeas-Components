@@ -21,17 +21,13 @@
 package com.stratelia.webactiv.almanach.control;
 
 import com.silverpeas.calendar.CalendarEvent;
-import static com.silverpeas.export.ExportDescriptor.withWriter;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
 import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.pdc.model.PdcClassification;
-import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
-import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -43,8 +39,12 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
-import com.stratelia.webactiv.almanach.control.ejb.*;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBadParamException;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachNoSuchFindEventException;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import com.stratelia.webactiv.almanach.model.EventPK;
@@ -52,22 +52,39 @@ import com.stratelia.webactiv.almanach.model.PeriodicityException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import static com.stratelia.webactiv.util.DateUtil.parse;
-import com.stratelia.webactiv.util.*;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.FileUtils;
+
+import javax.ejb.RemoveException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
-import java.util.*;
-import javax.ejb.RemoveException;
-import org.apache.commons.io.FileUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.silverpeas.export.ExportDescriptor.withWriter;
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
+import static com.stratelia.webactiv.util.DateUtil.parse;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events. A such
@@ -280,19 +297,20 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws RemoteException if the communication with the remote business object fails.
    * @throws UtilException if an error occurs while getting the WYSIWYG content of the event.
    */
-  public void removeEvent(final String id) throws AlmanachException, RemoteException, UtilException {
+  public void removeEvent(final String id) throws AlmanachException, RemoteException,
+      UtilException, WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.removeEvent()",
             "root.MSG_GEN_ENTER_METHOD");
     EventPK pk = new EventPK(id, getSpaceId(), getComponentId());
     // remove event from DB
+    EventDetail event = getAlmanachBm().getEventDetail(pk);
     getAlmanachBm().removeEvent(pk);
     // remove attachments from filesystem
     AttachmentController.deleteAttachmentByCustomerPK(pk);
     // Delete the Wysiwyg if exists
-    if (WysiwygController.haveGotWysiwyg(getSpaceId(), getComponentId(), id)) {
-      FileFolderManager.deleteFile(WysiwygController.getWysiwygPath(getComponentId(), id));
+    if (WysiwygController.haveGotWysiwyg(getComponentId(), id, event.getLanguage())) {
+      WysiwygController.deleteWysiwygAttachments(getComponentId(), id);
     }
-
     SilverTrace.info("almanach", "AlmanachSessionController.removeEvent()",
             "root.MSG_GEN_EXIT_METHOD");
   }
@@ -303,15 +321,13 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    *
    * @param eventDetail the detail of the event to which the occurrence belongs.
    * @param startDate the start date of the event occurrence.
-   * @param endDate the end date of the event occurrence.
    * @throws ParseException if an error occurs while parsing date infomation.
    * @throws RemoteException if the communication with the remote business object fails.
    * @throws AlmanachException if an error occurs while removing the occurrence of the event.
    */
   public void removeOccurenceEvent(EventDetail eventDetail, String startDate)
           throws ParseException, RemoteException, AlmanachException {
-    SilverTrace.info("almanach",
-            "AlmanachSessionController.removeOccurenceEvent()",
+    SilverTrace.info("almanach", "AlmanachSessionController.removeOccurenceEvent()",
             "root.MSG_GEN_ENTER_METHOD");
 
     PeriodicityException periodicityException = new PeriodicityException();
@@ -374,8 +390,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       }
       // Add the wysiwyg content
       WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
-              getSpaceId(),
-              getComponentId(), eventId);
+              getComponentId(), eventId, getLanguage());
     } catch (RemoteException e) {
       throw new AlmanachRuntimeException(
               "AlmanachSessionController.addEvent()",
@@ -416,14 +431,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       // Update the Wysiwyg if exists, create one otherwise
       if (isDefined(eventDetail.getWysiwyg())) {
         WysiwygController.updateFileAndAttachment(eventDetail.getDescription(getLanguage()),
-                getSpaceId(),
-                getComponentId(),
-                eventDetail.getId(), getUserId());
+                getComponentId(), eventDetail.getId(), getUserId(), getLanguage());
       } else {
         WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
-                getSpaceId(),
-                getComponentId(),
-                eventDetail.getId());
+                getComponentId(), eventDetail.getId(), getLanguage());
       }
     } catch (RemoteException e) {
       throw new AlmanachRuntimeException("AlmanachSessionController.addEvent()",

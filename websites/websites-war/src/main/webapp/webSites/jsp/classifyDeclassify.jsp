@@ -120,33 +120,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
 
-ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
-
-//CBO : REMOVE String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
-
-//Icons
-//CBO : UPDATE
-/*String checkSite=iconsPath+"/util/icons/ok.gif";
-String addSite=iconsPath+"/util/icons/webSites_to_add.gif";
-String declass=iconsPath+"/util/icons/webSites_trash.gif";*/
+ResourceLocator settings = new ResourceLocator("org.silverpeas.webSites.settings.webSiteSettings","fr");
 String checkSite=m_context+"/util/icons/ok.gif";
 String addSite=m_context+"/util/icons/webSites_to_add.gif";
 String declass=m_context+"/util/icons/webSites_trash.gif";
 
-//R�cup�ration des param�tres
-String action = (String) request.getParameter("Action"); //jamais null
-String id = (String) request.getParameter("TopicId");//jamais null
-String linkedPathString = (String) request.getParameter("Path");//jamais null
-//CBO : REMOVE String listeSite = (String) request.getParameter("SiteList");
-
-//CBO : ADD
+//Recuperation des parametres
+String action = request.getParameter("Action"); //jamais null
+String id = request.getParameter("TopicId");//jamais null
+String linkedPathString = request.getParameter("Path");//jamais null
 Collection listeSites = (Collection) request.getAttribute("ListSites");
-
-//CBO : UPDATE
-//FolderDetail webSitesCurrentFolder = null;
 FolderDetail webSitesCurrentFolder = (FolderDetail) request.getAttribute("CurrentFolder");
-
 %>
 
 <!-- classifyDeclassify -->
@@ -159,8 +143,6 @@ out.println(gef.getLookStyleSheet());
 %>
 
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<!-- CBO : UPDATE-->
-<!--<script type="text/javascript" src="<%/*iconsPath*/%>/util/javaScript/animation.js"></script>-->
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script Language="JavaScript">
 
@@ -223,7 +205,7 @@ function publicationGoTo(type, theURL, nom){
 	if (type == "1") {
     	if (nom.indexOf("://")!=-1)
             theURL = nom;
-        else 
+        else
         	theURL = "http://"+ nom;
     }
     else {
@@ -255,7 +237,7 @@ function publicationGoTo(type, theURL, nom){
 	//CBO : REMOVE webSitesCurrentFolder = scc.getSessionTopic();
 	Collection listeSitesPublies = webSitesCurrentFolder.getPublicationDetails();
 	SilverTrace.info("websites", "JSPclassifyDeclassify", "root.MSG_GEN_PARAM_VALUE",
-					 "taille de la liste des sites publi�s  = "+listeSitesPublies.size());
+					 "taille de la liste des sites publiés  = "+listeSitesPublies.size());
 
 	if (listeSitesPublies.size() > 0) {
 		 Iterator k = listeSitesPublies.iterator();
@@ -277,18 +259,14 @@ function publicationGoTo(type, theURL, nom){
 
     // La barre de naviagtion
     BrowseBar browseBar = window.getBrowseBar();
-    //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
-	browseBar.setDomainName(spaceLabel);
-	//CBO : UPDATE
-    //browseBar.setComponentName(scc.getComponentLabel(), "organize.jsp");
-	browseBar.setComponentName(componentLabel, "organize.jsp");
+	  browseBar.setDomainName(spaceLabel);
+    browseBar.setComponentName(componentLabel, "organize.jsp");
     if (linkedPathString.equals(""))
         browseBar.setPath(resources.getString("ClasserDeclasser"));
     else browseBar.setPath(linkedPathString+" - "+resources.getString("ClasserDeclasser"));
 
 
-    //Les op�rations
+    //Les operations
     OperationPane operationPane = window.getOperationPane();
     operationPane.addOperation(addSite, resources.getString("AjouterSites"), "javascript:onClick=classify('"+arraySites.size()+"')");
     operationPane.addLine();
@@ -319,9 +297,7 @@ function publicationGoTo(type, theURL, nom){
 	    String theDescription = site.getDescription();
 		if (theDescription == null)
 			theDescription = "";
-
-		//CBO : UPDATE
-	    //String thePage = site.getPage();
+    
 		String thePage = site.getContent();
 
 	    String type = new Integer(site.getType()).toString();
@@ -331,17 +307,15 @@ function publicationGoTo(type, theURL, nom){
 
 	    if (nom.length() > 40)
 	          nom = nom.substring(0, 40) + "...";
-		
-		//CBO : UPDATE
-		/*arrayLine.addArrayCellLink(nom, "javascript:onClick=publicationGoTo('"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/"+theId+"/' , '"+Encode.javaStringToJsString(thePage)+"')");*/
-		arrayLine.addArrayCellLink(nom, "javascript:onClick=publicationGoTo('"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+theId+"/' , '"+Encode.javaStringToJsString(thePage)+"')");
+
+      arrayLine.addArrayCellLink(nom, "javascript:onClick=publicationGoTo('"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+theId+"/' , '"+Encode.javaStringToJsString(thePage)+"')");
 
 	    if (theDescription.length() > 80)
 	          theDescription = theDescription.substring(0, 80) + "...";
 	    arrayLine.addArrayCellText(theDescription);
 
 		if (theEtat == 1) {
-			//Ajout de l'icones publi�
+			//Ajout de l'icones publie
 			IconPane iconPanePub1 = gef.getIconPane();
 			Icon checkIcon1 = iconPanePub1.addIcon();
 			checkIcon1.setProperties(checkSite,resources.getString("SitePublie"));
@@ -354,7 +328,7 @@ function publicationGoTo(type, theURL, nom){
 		i++;
 	}
 
-    //R�cup�ration du tableau dans le haut du cadre
+    //Recuperation du tableau dans le haut du cadre
     frame.addTop(arrayPane.print());
 
 	//Le board
@@ -380,7 +354,7 @@ function publicationGoTo(type, theURL, nom){
 
 			liste += "<tr>\n";
 			liste += "<td valign=\"top\" width=\"5%\"><input type=\"checkbox\" name=\"declassSite\" value=\""+pubId+"\"></td>\n";
-			
+
 			//CBO : UPDATE
 			/*liste += "<td valign=\"top\"><a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a><br>\n";*/
 			liste += "<td valign=\"top\"><a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a><br>\n";
@@ -392,11 +366,11 @@ function publicationGoTo(type, theURL, nom){
 		board.addBody(liste);
 	}
 
-    //R�cup�ration de la liste des sites dans le cadre
+    //Recuperation de la liste des sites dans le cadre
 	if(listeSitesPublies.size() > 0) {
 		frame.addBottom(board.print());
 	}
-    
+
     //On crache le HTML ;o)
     bodyPart+=frame.print();
     window.addBody(bodyPart);

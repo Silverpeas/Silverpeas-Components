@@ -23,20 +23,6 @@
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.notation.ejb.NotationBmHome;
 import com.silverpeas.notation.ejb.NotationRuntimeException;
@@ -49,28 +35,42 @@ import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.forums.ForumsContentManager;
+import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
+import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
-import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
-import com.stratelia.webactiv.forums.models.MessagePK;
-import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
+import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * Cette classe est le Business Manager qui gere les forums
@@ -1490,9 +1490,9 @@ public class ForumsBMEJB implements SessionBean {
 
   private String getWysiwygContent(String componentId, String messageId) {
     String text = "";
-    if (WysiwygController.haveGotWysiwyg(null, componentId, messageId)) {
+    if (WysiwygController.haveGotWysiwyg(componentId, messageId, I18NHelper.defaultLanguage)) {
       try {
-        text = WysiwygController.loadFileAndAttachment(null, componentId, messageId);
+        text = WysiwygController.load(componentId, messageId,  I18NHelper.defaultLanguage);
       } catch (WysiwygException e) {
         SilverTrace.error("forums", "ForumsBMEJB.getWysiwygContent()", "componentId = " +
             componentId + "messageId = " + messageId);
@@ -1504,9 +1504,9 @@ public class ForumsBMEJB implements SessionBean {
   private String getWysiwygPath(String componentId, String messageId) {
     String path = null;
     try {
-      String wysiwygContent = WysiwygController.load(componentId, messageId, null);
+      String wysiwygContent = WysiwygController.load(componentId, messageId,  I18NHelper.defaultLanguage);
       if (StringUtil.isDefined(wysiwygContent)) {
-        path = WysiwygController.getWysiwygPath(componentId, messageId, null);
+        path = WysiwygController.getWysiwygPath(componentId, messageId,  I18NHelper.defaultLanguage);
       }
     } catch (WysiwygException e) {
       SilverTrace.error("forums", "ForumsBMEJB.getWysiwygContent()",
@@ -1517,26 +1517,25 @@ public class ForumsBMEJB implements SessionBean {
 
   private void createWysiwyg(MessagePK messagePK, String text) {
     try {
-      WysiwygController.createFileAndAttachment(text, messagePK.getSpaceId(),
-          messagePK.getComponentName(), messagePK.getId());
+      WysiwygController.createFileAndAttachment(text,messagePK.getComponentName(),
+          messagePK.getId(), I18NHelper.defaultLanguage);
     } catch (WysiwygException e) {
       SilverTrace.error("forums", "ForumsBMEJB.createWysiwyg()", "spaceId = "
-          + messagePK.getSpaceId() + " ; componentId = "
-          + messagePK.getComponentName() + " ; messageId = "
-          + messagePK.getId());
+          + messagePK.getSpaceId() + " ; componentId = "+ messagePK.getComponentName()
+          + " ; messageId = " + messagePK.getId());
     }
   }
 
   private void updateWysiwyg(MessagePK messagePK, String text, String userId) {
-    String spaceId = messagePK.getSpaceId();
     String componentId = messagePK.getComponentName();
     String messageId = messagePK.getId();
     try {
-      if (WysiwygController.haveGotWysiwyg(spaceId, componentId, messageId)) {
-        WysiwygController.updateFileAndAttachment(text, spaceId, componentId, messageId, userId);
+      if (WysiwygController.haveGotWysiwyg(componentId, messageId,  I18NHelper.defaultLanguage)) {
+        WysiwygController.updateFileAndAttachment(text, componentId, messageId, userId,
+            I18NHelper.defaultLanguage);
       } else {
-        WysiwygController.createFileAndAttachment(text, spaceId, componentId,
-            messageId);
+        WysiwygController.createFileAndAttachment(text, componentId, messageId,
+            I18NHelper.defaultLanguage);
       }
     } catch (WysiwygException e) {
       SilverTrace.error("forums", "ForumsBMEJB.updateWysiwyg()", "spaceId = "

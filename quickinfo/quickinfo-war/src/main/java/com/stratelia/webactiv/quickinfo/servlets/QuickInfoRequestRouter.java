@@ -26,6 +26,7 @@ package com.stratelia.webactiv.quickinfo.servlets;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -210,7 +211,8 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
               pubDetail = (PublicationDetail) clipObject
                   .getTransferData(PublicationSelection.PublicationDetailFlavor);
 
-              String description = WysiwygController.load(pubDetail.getPK().getInstanceId(), pubDetail.getPK().getId(), null);
+              String description = WysiwygController.load(pubDetail.getPK().getInstanceId(),
+                  pubDetail.getPK().getId(), I18NHelper.defaultLanguage);
 
               quickInfo.add(pubDetail.getName(), description, pubDetail.getBeginDate(),
                   pubDetail.getEndDate(), null);

@@ -23,13 +23,7 @@
  */
 package com.stratelia.silverpeas.infoLetter.implementation;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
@@ -51,6 +45,13 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Class declaration
@@ -616,12 +617,11 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // initialisation du template
-  public void initTemplate(String spaceId, String componentId,
-      WAPrimaryKey letterPK) {
+  public void initTemplate(String spaceId, String componentId,  WAPrimaryKey letterPK) {
     try {
       String basicTemplate = "<body></body>";
-      WysiwygController.createFileAndAttachment(basicTemplate, spaceId,
-          componentId, InfoLetterPublication.TEMPLATE_ID + letterPK.getId());
+      WysiwygController.createFileAndAttachment(basicTemplate, componentId,
+          InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), I18NHelper.defaultLanguage);
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
