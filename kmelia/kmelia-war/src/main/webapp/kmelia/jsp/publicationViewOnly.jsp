@@ -41,9 +41,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
  //Icons
 String folderSrc;
 
-void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServletRequest request, HttpServletResponse response) throws KmeliaException {
+void displayViewWysiwyg(String id, String language, String componentId, HttpServletRequest request, HttpServletResponse response) throws KmeliaException {
     try {
-        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+id+"&SpaceId="+spaceId+"&ComponentId="+componentId).include(request, response);
+        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+id+"&Language="+language+"&ComponentId="+componentId).include(request, response);
     } catch (Exception e) {
 	  throw new KmeliaException("JSPpublicationManager.displayViewWysiwyg()",SilverpeasException.ERROR,"root.EX_DISPLAY_WYSIWYG_FAILED", e);
     }
@@ -82,10 +82,10 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
 
     out.println("</TD></TR></table>");
 	out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
-    if (WysiwygController.haveGotWysiwyg(detail.getPK().getSpace(), detail.getPK().getComponentName(), detail.getPK().getId())) {
+    if (WysiwygController.haveGotWysiwygToDisplay(detail.getPK().getComponentName(), detail.getPK().getId(), kmeliaScc.getCurrentLanguage())) {
         out.println("<TR><TD>");
         out.flush();
-        displayViewWysiwyg(detail.getPK().getId(), detail.getPK().getSpace(), detail.getPK().getComponentName(), request, response);
+        displayViewWysiwyg(detail.getPK().getId(),  kmeliaScc.getCurrentLanguage(), detail.getPK().getComponentName(), request, response);
         out.println("</TD>");
         if (! ("bottom".equals(settings.getString("attachmentPosition") ) ) ) {
 	        if (infos != null) {
@@ -208,7 +208,7 @@ out.println(gef.getLookStyleSheet());
 		out.println(frame.printBefore());
 
         displayUserModelAndAttachmentsView(pubComplete, ownerDetail, kmeliaScc, settings, uploadSettings, publicationSettings, m_context, out, request, response, user_id, profile, resources);
-        
+
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>

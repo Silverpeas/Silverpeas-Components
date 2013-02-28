@@ -21,30 +21,30 @@ NodeDetail archiveDetail = null;
 NodeDetail titleDetail = null;
 PublicationDetail pubDetail =null;
 String navigationString ; // detail level
-		
-// label variables 
+
+// label variables
 String consultationTP="Consultation";
 String organisationTP="Organisation";
 String inLineSettingTP="Mise en ligne";
-String deleteArchivesOP = "Effacer les archives sélectionnées" ;
-String deletePublicationsOP = "Effacer les publications sélectionnées";
+String deleteArchivesOP = "Effacer les archives sï¿½lectionnï¿½es" ;
+String deletePublicationsOP = "Effacer les publications sï¿½lectionnï¿½es";
 String onlineAL = "En ligne" ;
 String archivesAP ="Archives";
 String titreAP ="Titres";
-String creationDateAP ="Date de création";
+String creationDateAP ="Date de crï¿½ation";
 String organiseBB = "Organiser";
 String setInLineBB = "Mettre en ligne";
 String ajoutEditionPublicationBB = "Ajout/Edition d'une publication";
 String compilationPdfBB = "Compilation PDF";
-String emptyEditorialME= "Selectionnez le titre puis la publication à ajouter dans l'éditorial";
+String emptyEditorialME= "Selectionnez le titre puis la publication ï¿½ ajouter dans l'ï¿½ditorial";
 String stateRBT = "Etat :";
 String onLineRB = "En ligne";
-String notOnLineRB = "En cours de rédaction";
-String modelRBT = "Modèle éditorial :";
-String model1RB = "modèle 1";
-String model2RB = "modèle 2";
-String choisirImageEditorialBB ="Choisir une image pour l'éditorial";
-String choisirImageEditorialOP ="Choisir une image pour l'éditorial";
+String notOnLineRB = "En cours de rï¿½daction";
+String modelRBT = "Modï¿½le ï¿½ditorial :";
+String model1RB = "modï¿½le 1";
+String model2RB = "modï¿½le 2";
+String choisirImageEditorialBB ="Choisir une image pour l'ï¿½ditorial";
+String choisirImageEditorialOP ="Choisir une image pour l'ï¿½ditorial";
 
 // (les vraies init sont faites plus tard)
 %>
@@ -58,7 +58,7 @@ String choisirImageEditorialOP ="Choisir une image pour l'éditorial";
 
 gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
 
 news = (NewsEditoSessionController) request.getAttribute("newsEdito");
 
@@ -68,7 +68,7 @@ ResourcesWrapper 	resources 		= (ResourcesWrapper)request.getAttribute("resource
 if (news == null)
 {
     // No news session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
@@ -105,7 +105,7 @@ if (settings == null)
 	belpou=settings.getString("belpou");
 	online=settings.getString("online");
 	mandatoryField = settings.getString("mandatoryField");
-	
+
 }
 %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>

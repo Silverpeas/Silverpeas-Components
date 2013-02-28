@@ -23,13 +23,6 @@
  */
 package com.silverpeas.kmelia.ui;
 
-import java.rmi.RemoteException;
-import java.util.Iterator;
-import java.util.Properties;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -56,10 +49,16 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Properties;
+
 /**
  * <pre>
  * This class implements a ResultDisplayer in order to customize search result display. It uses
- * "Named" annotation to inject dependency. 
+ * "Named" annotation to inject dependency.
  * Be careful to not modify this name that uses the following rules : componentName + POSTFIX_BEAN_NAME
  * POSTFIX_BEAN_NAME = ResultDisplayer
  * </pre>
@@ -116,7 +115,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
   }
 
   /**
-   * 
+   *
    * @param searchResult the SearchResultContentVO data from search engine
    * @param silverResult the current GlobalSilverResult object
    * @param pubDetail the current PublicationDetail object
@@ -148,7 +147,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
     // get user language
     String language = getUserPreferences(searchResult.getUserId()).getLanguage();
 
-    if (WysiwygController.haveGotWysiwyg(spaceId, componentId, id)) {
+    if (WysiwygController.haveGotWysiwyg(componentId, id, language)) {
       // WYSIWYG content to add inside template
 
       String content = "";
@@ -181,7 +180,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
         template.setAttribute("wysiwygContent", content);
       }
     } else {
-      // 
+      //
 
       String infoId = pubDetail.getInfoId();
       String pubId = pubDetail.getPK().getId();
@@ -210,7 +209,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
             // }
             xmlContext.setBorderPrinted(false);
             xmlContext.setContentLanguage(language);
-            
+
             String content = xmlForm.toString(xmlContext, data);
             // Add to template only if defined
             if (StringUtil.isDefined(content)) {

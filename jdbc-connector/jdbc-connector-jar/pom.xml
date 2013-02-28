@@ -17,5 +17,10 @@
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>

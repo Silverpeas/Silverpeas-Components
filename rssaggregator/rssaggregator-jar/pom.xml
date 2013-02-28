@@ -6,7 +6,7 @@
     <artifactId>rssaggregator</artifactId>
     <version>5.11.2-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.rssaggregator</groupId>
   <artifactId>rssaggregator-jar</artifactId>
   <packaging>jar</packaging>
@@ -23,7 +23,17 @@
       <artifactId>ws-test-core</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <build>
     <testResources>

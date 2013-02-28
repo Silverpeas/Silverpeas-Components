@@ -36,3 +36,4 @@ wiki/wiki-jar/Test de base/
 /infoletter/infoletter-jar/bin
 /infoletter/infoletter-war/bin
 /infoletter/infoletter-war/src/main/webapp/META-INF
+/target/
