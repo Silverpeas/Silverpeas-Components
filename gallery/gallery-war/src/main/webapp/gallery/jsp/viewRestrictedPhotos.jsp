@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp"%>
 
@@ -306,13 +305,10 @@
               idP = photo.getPhotoPK().getId();
               String nomRep = resource.getSetting("imagesSubDirectory")
                   + idP;
-              String name = photo.getImageName();
-              String type = name.substring(name.lastIndexOf(".") + 1, name.length());
-              //name = name.substring(0,name.indexOf(".")) + extension;
-              name = photo.getId() + extension;
+              String name = photo.getId() + extension;
               vignette_url = FileServerUtils.getUrl(spaceId,
                   componentId, name, photo.getImageMimeType(), nomRep);
-              if (!ImageType.isPreviewable(name)) {
+              if (!photo.isPreviewable()) {
                 vignette_url = m_context
                     + "/gallery/jsp/icons/notAvailable_"
                     + resource.getLanguage()
@@ -327,8 +323,7 @@
               nbAffiche = nbAffiche + 1;
                 
               String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
-              if (photo.getDescription() != null
-                  && photo.getDescription().length() > 0) {
+              if (StringUtil.isDefined(photo.getDescription())) {
                 altTitle += " : "
                     + EncodeHelper.javaStringToHtmlString(photo.getDescription());
               }

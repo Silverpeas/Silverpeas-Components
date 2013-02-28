@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.silverpeas.gallery.ImageType;
 import com.silverpeas.gallery.process.photo.GalleryLoadMetaDataProcess;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
@@ -508,5 +509,9 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
    */
   public static String getResourceType() {
     return TYPE;
+  }
+  
+  public boolean isPreviewable() {
+    return ImageType.isPreviewable(getImageName());
   }
 }
