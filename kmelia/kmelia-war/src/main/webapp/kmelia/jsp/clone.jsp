@@ -402,9 +402,10 @@ $(function() {
 	
 	        out.println("<div id=\"richContent\">");
 	        if (WysiwygController.haveGotWysiwyg(spaceId, componentId, id)) {
-	          out.flush();
-	          getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId=" + id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId + "&axisId=" + kmeliaScc.
-	              getAxisIdGlossary() + "&onlyFirst=" + highlightFirst).include(request, response);
+	          %>
+	          <view:displayWysiwyg objectId="<%=id%>" componentId="<%=componentId %>" language="<%=resource.getLanguage() %>" axisId="<%=kmeliaScc.
+	              getAxisIdGlossary() %>" highlightFirst="<%=highlightFirst %>"/>
+	          <%
 	        } else if (infos != null && model != null) {
 	          displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
 	        } else {

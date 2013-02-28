@@ -296,9 +296,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public String getWysiwyg() throws WysiwygException {
-    String wysiwygContent = WysiwygController.loadFileAndAttachment(getPK().getComponentName(),
-        getPK().getId(), getLanguage());
-    return wysiwygContent;
+    return WysiwygController.load(getPK().getComponentName(), getPK().getId(), getLanguage());
   }
 
   public Collection<AttachmentDetail> getAttachments() {
