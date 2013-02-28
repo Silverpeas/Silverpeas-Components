@@ -279,8 +279,7 @@ $(function() {
 
         displayAllOperations(id, kmeliaScc, gef, "ViewClone", resources, out);
 
-        out.println(frame.printBefore());
-          
+        out.println(frame.printBefore());          
         InfoDetail infos = pubComplete.getInfoDetail();
         ModelDetail model = pubComplete.getModelDetail();
 %>

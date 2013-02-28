@@ -89,14 +89,7 @@ FolderDetail webSitesCurrentFolder = null;
 
 settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings","fr");
 
-//Icons
-//CBO : UPDATE
-/*
-String pxmag = iconsPath + "/util/icons/colorPix/1px.gif";
-String flea = iconsPath + "/util/icons/buletGrey.gif";
-String suggerer=iconsPath+"/util/icons/webSites_to_propose.gif";
-String redFlag = iconsPath+"/util/icons/urgent.gif";
-*/
+
 String pxmag = m_context + "/util/icons/colorPix/1px.gif";
 String flea = m_context + "/util/icons/buletGrey.gif";
 String suggerer=m_context+"/util/icons/create-action/add-bookmark.png";
@@ -108,7 +101,6 @@ String bodyPart="";
 action = (String) request.getParameter("Action");
 id = (String) request.getParameter("Id");
 
-//CBO : ADD
 webSitesCurrentFolder = (FolderDetail) request.getAttribute("CurrentFolder");
 
 // Update space
@@ -196,14 +188,9 @@ function openSPWindow(fonction, windowName){
 	}
 
 	SilverTrace.info("websites", "JSPlisteSite", "root.MSG_GEN_PARAM_VALUE", "action = "+action);
-
-	/* SEARCH */
 	if (action.equals("Search")) {
 
 		SilverTrace.info("websites", "JSPlisteSite", "root.MSG_GEN_PARAM_VALUE", "action = Search");
-
-		//CBO : REMOVE webSitesCurrentFolder = scc.getFolder(id);
-		//CBO : REMOVE scc.setSessionTopic(webSitesCurrentFolder);
 		name = webSitesCurrentFolder.getNodeDetail().getName();
 		Collection pathC = webSitesCurrentFolder.getPath();
 		pathString = navigPath(pathC, false, 3);
@@ -223,22 +210,13 @@ function openSPWindow(fonction, windowName){
       operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId=" + scc.getComponentId() + "','utilizationPdc1')");
       operationPane.addLine();
     }
- 
-    
-		// La barre de naviagtion
 		BrowseBar browseBar = window.getBrowseBar();
-		//CBO : UPDATE
-		//browseBar.setDomainName(scc.getSpaceLabel());
 		browseBar.setDomainName(spaceLabel);
-		//CBO : UPDATE
-		//browseBar.setComponentName(scc.getComponentLabel(), "listSite.jsp");
 		browseBar.setComponentName(componentLabel, "Main");
 		browseBar.setPath(linkedPathString);
 
     //Les onglets
     TabbedPane tabbedPane = gef.getTabbedPane();
-		//CBO : UPDATE
-    //tabbedPane.addTab(resources.getString("Consulter"), "listSite.jsp", true);
 		tabbedPane.addTab(resources.getString("Consulter"), "Main", true);
 		tabbedPane.addTab(resources.getString("Organiser"), "organize.jsp", false);
     tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", false);
@@ -287,7 +265,7 @@ function openSPWindow(fonction, windowName){
 			frame.addTop(navList.print());
 		}
 
-		//Liste des sites du th�me courant
+		//Liste des sites du theme courant
 		String liste = "";
 
 		if (listeSites.size() > 0) {
@@ -328,10 +306,7 @@ function openSPWindow(fonction, windowName){
 					liste+="<td valign=\"top\">&nbsp;</td>\n";
 
 				SiteDetail siteDetail = scc.getWebSite(siteId);
-
-				//CBO : UPDATE
-				/*liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/"+siteId+"/' , '"+EncodeHelper.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";*/
-				liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+EncodeHelper.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";
+			liste += "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('" + siteDetail.getPopup() + "', '"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+EncodeHelper.javaStringToJsString(sitePage)+"')\">"+siteName+"</a></td><td align=left>\n";
 
 				liste += listeIcones;
 				liste += "</td></tr><tr><td class=intfdcolor51>&nbsp;</td><td colspan=2 width=\"100%\" class=intfdcolor51><span class=\"txtnote\">"+siteDescription+"</span></td></tr><tr><td colspan=3><img src=\""+pxmag+"\" height=3 width=200></td>\n";
@@ -354,17 +329,6 @@ function openSPWindow(fonction, windowName){
 <form name="topicDetailForm" action="listSite.jsp" method="post">
   <input type="hidden" name="Action"/>
   <input type="hidden" name="Id" value="<%=id%>" />
-  <!-- CBO : REMOVE -->
-  <!-- 
-  <input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>">
-  <input type="hidden" name="ChildId">
-  <input type="hidden" name="nomSite">
-  <input type="hidden" name="description">
-  <input type="hidden" name="nomPage">
-  <input type="hidden" name="auteur">
-  <input type="hidden" name="date">
-  <input type="hidden" name="ListeIcones">
-  -->
   <input type="hidden" name="SitePage"/>
 </form>
 

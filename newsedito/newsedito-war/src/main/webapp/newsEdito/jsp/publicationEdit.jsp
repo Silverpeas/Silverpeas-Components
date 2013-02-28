@@ -454,7 +454,7 @@ if (action.equals("ReallyAddPublication")) {
 	OperationPane operationPane = window.getOperationPane();
   	if (action.equals("UpdatePublication")) {
 		CompletePublication pubComplete = news.getCompletePublication();
-		if (WysiwygController.haveGotWysiwyg(pubComplete.getPublicationDetail().getPK().getSpace(), pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId())) {
+		if (WysiwygController.haveGotWysiwyg(pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId(), pubComplete.getPublicationDetail().getLanguage())) {
 			operationPane.addOperation(settings.getString("updatePublicationIcon"), news.getString("modifierPubContent"), "javascript:onClick=sendToWysiwyg()" );
 		}
 	}
