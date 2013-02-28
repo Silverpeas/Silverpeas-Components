@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -40,14 +40,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%!
  //Icons
 String folderSrc;
-
-void displayViewWysiwyg(String id, String language, String componentId, HttpServletRequest request, HttpServletResponse response) throws KmeliaException {
-    try {
-        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+id+"&Language="+language+"&ComponentId="+componentId).include(request, response);
-    } catch (Exception e) {
-	  throw new KmeliaException("JSPpublicationManager.displayViewWysiwyg()",SilverpeasException.ERROR,"root.EX_DISPLAY_WYSIWYG_FAILED", e);
-    }
-}
 
 void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDetail owner, KmeliaSessionController kmeliaScc, ResourceLocator settings, ResourceLocator uploadSettings, ResourceLocator publicationSettings, String m_context, JspWriter out, HttpServletRequest request, HttpServletResponse response, String user_id, String profile, ResourcesWrapper resources) throws IOException, KmeliaException {
     InfoDetail infos = pubComplete.getInfoDetail();
@@ -84,8 +76,9 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
 	out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
     if (WysiwygController.haveGotWysiwygToDisplay(detail.getPK().getComponentName(), detail.getPK().getId(), kmeliaScc.getCurrentLanguage())) {
         out.println("<TR><TD>");
-        out.flush();
-        displayViewWysiwyg(detail.getPK().getId(),  kmeliaScc.getCurrentLanguage(), detail.getPK().getComponentName(), request, response);
+%>
+		<view:displayWysiwyg objectId="<%=detail.getPK().getId()%>" componentId="<%=detail.getPK().getComponentName() %>" language="<%=kmeliaScc.getCurrentLanguage() %>" />
+<%
         out.println("</TD>");
         if (! ("bottom".equals(settings.getString("attachmentPosition") ) ) ) {
 	        if (infos != null) {

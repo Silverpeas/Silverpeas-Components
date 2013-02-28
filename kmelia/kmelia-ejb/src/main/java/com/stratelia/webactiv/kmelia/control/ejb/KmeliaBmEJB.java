@@ -3481,8 +3481,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public String getWysiwyg(PublicationPK pubPK, String language) {
     try {
-      return WysiwygController.loadFileAndAttachment(pubPK.getInstanceId(),
-          pubPK.getId(), I18NHelper.checkLanguage(language));
+      return WysiwygController.load(pubPK.getInstanceId(), pubPK.getId(),
+          I18NHelper.checkLanguage(language));
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getAttachments()", ERROR,
               "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_WYSIWYG", e);

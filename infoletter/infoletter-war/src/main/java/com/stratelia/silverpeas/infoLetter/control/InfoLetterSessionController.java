@@ -135,8 +135,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * Initialize UserPanel with the list of Silverpeas subscribers
    */
   public String initUserPanel(WAPrimaryKey letterPK) throws InfoLetterException {
-    String context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String context = GeneralPropertiesManager.getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(),
         context + "/RinfoLetter/" + getComponentId() + "/Main");
@@ -680,7 +679,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public boolean isTemplateExist(InfoLetterPublicationPdC ilp) {
     String template;
     try {
-      template = WysiwygController.loadFileAndAttachment(getComponentId(),
+      template =
+          WysiwygController.load(getComponentId(),
               InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId(), I18NHelper.defaultLanguage);
     } catch (WysiwygException e) {
       throw new InfoLetterException("InfoLetterSessionController.isTemplateExist",

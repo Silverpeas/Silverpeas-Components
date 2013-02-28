@@ -147,10 +147,7 @@ out.println(window.printBefore());
 				</div>
 				<div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
 				<div class="contentTicket">
-		      <%
-		      	out.flush();
-		     		getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+postId+"&ComponentId="+instanceId).include(request, response);
-		     	%>
+				<view:displayWysiwyg objectId="<%=postId%>" componentId="<%=instanceId %>" language="<%=resource.getLanguage() %>" />
 				</div>   
 				<div class="footerTicket">    	
 				   <span class="versCommentaires">

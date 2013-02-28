@@ -103,11 +103,9 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     boolean returnValue = false;
     if (WysiwygController.haveGotWysiwyg(getComponentId(), getComponentId(), I18NHelper.defaultLanguage)) {
       try {
-        String contenuWysiwyg = WysiwygController.loadFileAndAttachment(getComponentId(),
-            getComponentId(),  I18NHelper.defaultLanguage);
-        if ((contenuWysiwyg != null) && (contenuWysiwyg.length() != 0)) {
-          returnValue = true;
-        }
+        String contenuWysiwyg =
+            WysiwygController.load(getComponentId(), getComponentId(), I18NHelper.defaultLanguage);
+        return contenuWysiwyg != null && contenuWysiwyg.length() != 0;
       } catch (WysiwygException ex) {
         SilverTrace.error("webPages",
                 "WebPagesSessionController.haveGotWysiwyg()", "root.", ex);
