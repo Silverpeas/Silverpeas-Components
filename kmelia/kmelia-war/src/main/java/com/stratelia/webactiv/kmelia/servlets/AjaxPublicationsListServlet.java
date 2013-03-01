@@ -53,8 +53,6 @@ import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
-import com.silverpeas.kmelia.domain.TopicSearch;
-import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.EncodeHelper;
@@ -119,9 +117,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     String TopicToLinkId = req.getParameter("TopicToLinkId");
     // check if trying to link attachment
     String attachmentLink = req.getParameter("attachmentLink");
-    boolean attachmentToLink = "1".equals(attachmentLink);
+    boolean attachmentToLink = StringUtil.getBooleanValue(attachmentLink);
 
-    boolean toLink = (StringUtil.isDefined(sToLink) && "1".equals(sToLink));
+    boolean toLink = StringUtil.getBooleanValue(sToLink);
 
     KmeliaSessionController kmeliaSC = (KmeliaSessionController) session.getAttribute("Silverpeas_"
         + "kmelia" + "_" + componentId);
@@ -132,10 +130,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (kmeliaSC == null && (toLink || attachmentToLink)) {
       MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
           MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      ComponentContext componentContext =
-          mainSessionCtrl.createComponentContext(null, componentId);
-      kmeliaSC =
-          new KmeliaSessionController(mainSessionCtrl, componentContext);
+      ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, componentId);
+      kmeliaSC = new KmeliaSessionController(mainSessionCtrl, componentContext);
       session.setAttribute("Silverpeas_kmelia_" + componentId, kmeliaSC);
     }
 
@@ -167,7 +163,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       List<String> selectedIds =
           kmeliaSC.processSelectedPublicationIds(selectedPublicationIds, notSelectedPublicationIds);
 
-      boolean toPortlet = "1".equals(sToPortlet);
+      boolean toPortlet = StringUtil.getBooleanValue(sToPortlet);
       boolean toSearch = StringUtil.isDefined(query);
 
       if (StringUtil.isDefined(index)) {
@@ -210,8 +206,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         publications = kmeliaSC.getSessionPublicationsList();
         role = SilverpeasRole.user.toString();
       } else if (toSearch) {
-        // Insert this new search inside persistence layer in order to compute statistics
-        saveTopicSearch(componentId, nodeId, kmeliaSC, query);
         publications = kmeliaSC.search(query);
       } else {
         publications = kmeliaSC.getSessionPublicationsList();
@@ -258,25 +252,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   /**
-   * Save current topic search inside persistence layer
-   * @param componentId the component identifier
-   * @param nodeId the node identifier
-   * @param kmeliaSC the KmeliaSessionController
-   * @param query the topic search query keywords
-   */
-  private void saveTopicSearch(String componentId, String nodeId, KmeliaSessionController kmeliaSC,
-      String query) {
-    //Check node value
-    if(!StringUtil.isDefined(nodeId)) {
-      nodeId = kmeliaSC.getCurrentFolderId();
-    }
-    TopicSearch newTS =
-        new TopicSearch(componentId, Integer.parseInt(nodeId), Integer.parseInt(kmeliaSC
-            .getUserId()), kmeliaSC.getLanguage(), query.toLowerCase(), new Date());
-    KmeliaSearchServiceFactory.getTopicSearchService().createTopicSearch(newTS);
-  }
-
-  /**
    * @param allPubs
    * @param sortAllowed
    * @param linksAllowed
@@ -303,9 +278,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       throws IOException {
 
     String publicationSrc = resources.getIcon("kmelia.publication");
-    ResourceLocator publicationSettings = new ResourceLocator(
-        "com.stratelia.webactiv.util.publication.publicationSettings",
-        kmeliaScc.getLanguage());
+    ResourceLocator publicationSettings =
+        new ResourceLocator("org.silverpeas.util.publication.publicationSettings",
+            kmeliaScc.getLanguage());
 
     boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage", true);
 
@@ -410,8 +385,18 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
           pubState = resources.getString("kmelia.Shortcut");
         }
+        
+        String cssClass = "";
+        if (toSearch) {
+          if (aPub.read) {
+            cssClass = " class=\"read\"";
+          } else {
+            cssClass = " class=\"unread\"";
+          }
+        }
 
         out.write("<li");
+        out.write(cssClass);
         out.write(" onmouseover=\"showPublicationOperations(this);\" onmouseout=\"hidePublicationOperations(this);\">");
         out.write("<div class=\"firstColumn\">");
         if (!kmeliaScc.getUserDetail().isAnonymous() && !kmeliaScc.isKmaxMode) {

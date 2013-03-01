@@ -75,9 +75,11 @@
 
 #preview .publiName,
 #preview-clone .publiName {
-	font-size: 130%;
-	font-weight: bold;
-	color: #333;
+	color: #333333;
+    font-size: 130%;
+    font-weight: bold;
+    margin: 0 0 5px;
+    padding: 0;
 }
 
 #preview #status,
@@ -105,8 +107,8 @@
 
 #preview #pagination {
 	display: block;
-	float: right;
-	margin:5px 0;
+    float: right;
+    margin: 9px 0 1px;
 }
 #preview .currentPage {
 	opacity:0.6;
@@ -114,6 +116,35 @@
 #preview #pagination img {
 	border:0;
 	vertical-align:top;
+}
+
+#preview #backToSearch {    
+	height: 30px;
+	width: 310px;
+	float: right;
+}
+#preview #backToSearch a.button {
+	background-color:#F4F4F4;
+	background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+		-moz-background-size: 100%;
+	border-radius: 5px;
+		 -moz-border-radius: 5px;
+		 -webkit-border-radius: 5px;
+	border: 1px solid #CCCCCC;
+	color: #4C4C4C;
+	font-size: 100%;
+	padding: 7px 10px;
+	position: absolute;
+	right: 101px;
+	width: 187px;
+}
+#preview #backToSearch a.button span{
+	background:transparent url(/silverpeas/util/icons/back.png) 0 0 no-repeat;
+	line-height: 16px;
+	padding: 0px 0px 0px 24px;
+	font-weight:bold;
+	display: block;
+	text-align: center;
 }
 
 #preview #permalinkInfo img,
@@ -178,6 +209,10 @@
 
 #pubList ul li.over-publication {
 	background-color: #ECECEC;
+}
+
+#pubList ul li.read .line1 a {
+	color: #006600;
 }
 
 #pubList .firstColumn {
@@ -454,6 +489,7 @@
 /*** A basculer dans la css global pour utilisation générique */
 .principalContent{
 	margin-right:325px;
+    margin-top: 6px;
 }
 
 .principalContent .inlineMessage,

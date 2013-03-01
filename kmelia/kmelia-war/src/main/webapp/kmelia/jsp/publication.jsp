@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.kmelia.SearchContext"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -70,6 +71,7 @@
   boolean attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
+  int searchScope = (Integer) request.getAttribute("SearchScope");
   boolean isNewsManage = ((Boolean) request.getAttribute("NewsManage")).booleanValue();
   DelegatedNews delegatedNews = null;
   boolean isBasket = false;
@@ -541,6 +543,23 @@
         <% }%>
       </div>
       <% } %>
+      
+	  <% 
+	    	String backURL = "GoToCurrentTopic";
+	  		String backLabel = resources.getString("kmelia.publication.link.folder");
+	    	if (searchScope == SearchContext.GLOBAL) {
+	    	  backURL = m_context+"/RpdcSearch/jsp/LastResults";
+	    	  backLabel = resources.getString("kmelia.publication.link.results");
+	    	} else if (searchScope == SearchContext.LOCAL){
+	    	  backURL = "GoBackToResults";
+	    	  backLabel = resources.getString("kmelia.publication.link.results");
+	    	}
+	  %>
+	    <!-- button to go back to search results or current folder -->
+	  	<div id="backToSearch">
+	  	 <a href="<%=backURL%>" class="button"><span><%=backLabel%></span></a>
+	  	</div>
+      
       <div class="rightContent">
       <%
 
@@ -765,14 +784,10 @@
 			      %>
 
       <view:comments	userId="<%= user_id%>" componentId="<%= componentId %>"
-      					resourceType="<%= resourceType %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>
-
-      <% }
-
-
-		out.println("</div>");
-       %>
-
+      					resourceType="<%= resourceType %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>      
+      <% } %>	  
+	  </div>
+    
       <div id="publication-export" style="display: none;">
         <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
           <fieldset>

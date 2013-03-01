@@ -23,8 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.kmelia.SearchContext"%>
 <%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
-<%@page import="com.silverpeas.component.kmelia.KmeliaPaste"%>
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -32,8 +32,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarElement"%>
 
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
@@ -49,6 +47,13 @@ boolean	isGuest			= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
+int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
+
+SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
+String query = "";
+if (searchContext != null) {
+  query = searchContext.getQuery();
+}
 
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
@@ -67,8 +72,7 @@ String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.get
 
 String userId = kmeliaScc.getUserId();
 
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
+String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
 
 boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
 boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
@@ -156,6 +160,9 @@ var params = new Object();
 params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
 params["i18n"] = <%=I18NHelper.isI18N%>;
 params["nbPublisDisplayed"] = <%=displayNBPublis%>;
+
+var searchInProgress = <%=searchContext != null%>;
+var searchFolderId = "<%=id%>";
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
@@ -180,7 +187,7 @@ params["nbPublisDisplayed"] = <%=displayNBPublis%>;
 						<div id="searchZone">
 							<view:board>
 								<table id="searchLine">
-									<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
+									<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query %>" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
 								</table>
 							</view:board>
 						</div>
@@ -381,9 +388,16 @@ function updateUIStatus(nodeId, newStatus, recursive) {
 
 function displayTopicContent(id) {
 	
+	if (id != searchFolderId) {
+		// search session is over
+		searchInProgress = false;
+	}
+	
 	setCurrentNodeId(id);
 	
-	clearSearchQuery();
+	if (!searchInProgress) {
+		clearSearchQuery();
+	}
 
 	if (id == getToValidateFolderId() || id == "1") {
 		$("#DnD").css({'display':'none'}); //hide dropzone
@@ -403,7 +417,11 @@ function displayTopicContent(id) {
 			displayPath(id);
 		}
 	} else {
-		displayPublications(id);
+		if (searchInProgress) {
+			doPagination(<%=currentPageIndex%>);
+		} else {
+			displayPublications(id);
+		}
 		displayPath(id);
 		displayOperations(id);
 		$("#searchZone").css({'display':'block'});
