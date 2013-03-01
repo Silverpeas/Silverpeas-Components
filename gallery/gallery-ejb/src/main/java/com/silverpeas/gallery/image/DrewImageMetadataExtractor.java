@@ -236,9 +236,11 @@ public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
   private String getIptcCharset(IptcDirectory iptcDirectory) throws UnsupportedEncodingException {
     if (iptcDirectory != null && iptcDirectory.containsTag(TAG_CODED_CHARACTER_SET)) {
       byte[] data = iptcDirectory.getByteArray(TAG_CODED_CHARACTER_SET);
-      String escapeCode = new String(data, CharEncoding.UTF_8);
-      if ("%G".equals(escapeCode)) {
-        return CharEncoding.UTF_8;
+      if (data != null) {
+        String escapeCode = new String(data, CharEncoding.UTF_8);
+        if ("%G".equals(escapeCode)) {
+          return CharEncoding.UTF_8;
+        }
       }
     }
     return null;
