@@ -24,7 +24,6 @@
 
 --%>
 
-<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
@@ -59,7 +58,6 @@
     name = photo.getImageName();
   }
   String namePreview = photo.getId() + "_" + sizeParam + ".jpg";
-  //String 		namePreview			= photo.getId() + "_preview.jpg";
   String nameVignette = photo.getId() + "_266x150.jpg";
   String preview_url = FileServerUtils.getUrl(null, componentId, namePreview,
       photo.getImageMimeType(), nomRep);
@@ -247,8 +245,7 @@ function goToNotify(url)
 		<!-- AFFICHAGE de la preview de la photo -->
       	<td> 
 			<%
-				String type = name.substring(name.lastIndexOf(".") + 1, name.length());
-				if (!ImageType.isPreviewable(name)) {
+				if (!photo.isPreviewable()) {
 					preview_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_" + sizeParam + ".jpg";
 				}
 				if ( preview_url != null )

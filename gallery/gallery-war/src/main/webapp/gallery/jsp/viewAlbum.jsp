@@ -24,7 +24,6 @@
 
 --%>
 
-<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -591,11 +590,10 @@
                 altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
               }
               if (name != null) {
-                String type = name.substring(name.lastIndexOf(".") + 1, name.length());
                 name = photo.getId() + extension;
                 vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
                         getImageMimeType(), nomRep);
-                if (!ImageType.isPreviewable(name)) {
+                if (!photo.isPreviewable()) {
                   vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
                           getLanguage() + extension;
                 }

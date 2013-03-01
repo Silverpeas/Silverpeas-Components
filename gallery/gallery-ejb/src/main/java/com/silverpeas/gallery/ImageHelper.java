@@ -157,7 +157,7 @@ public class ImageHelper {
       percentSize = 1;
     }
 
-    if (ImageType.isValidExtension(name)) {
+    if (ImageType.isReadable(name)) {
 
       // Getting the size of the image
       final String type = FileRepositoryManager.getFileExtension(name);
@@ -416,7 +416,7 @@ public class ImageHelper {
       final String watermarkOther) throws Exception, NumberFormatException, ImageMetadataException {
     String nameAuthor = "";
     String nameForWatermark = "";
-    if (ImageType.isJpeg(type) && watermark) {
+    if (ImageType.isIPTCCompliant(type) && watermark) {
       final ImageMetadataExtractor extractor =
           new DrewImageMetadataExtractor(photo.getInstanceId());
       final List<MetaData> iptcMetadata = extractor.extractImageIptcMetaData(image.getFile());
