@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.gallery.ImageType"%>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 
@@ -132,11 +132,10 @@ div {
                     String nomRep = resource.getSetting("imagesSubDirectory") + idP;
                     String name = photo.getImageName();
                     if (name != null) {
-                      String type = name.substring(name.lastIndexOf(".") + 1, name.length());
                       name = photo.getId() + "_66x50.jpg";
                       vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
                           getImageMimeType(), nomRep);
-                      if (!ImageType.isPreviewable(name)) {
+                      if (!photo.isPreviewable()) {
                         vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
                             getLanguage() + "_66x50.jpg";
                       }

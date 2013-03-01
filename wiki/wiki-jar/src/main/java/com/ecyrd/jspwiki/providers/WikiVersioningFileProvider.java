@@ -23,6 +23,21 @@
  */
 package com.ecyrd.jspwiki.providers;
 
+import com.ecyrd.jspwiki.*;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.wiki.control.WikiException;
+import com.silverpeas.wiki.control.WikiMultiInstanceManager;
+import com.silverpeas.wiki.control.WikiPageDAO;
+import com.silverpeas.wiki.control.model.PageDetail;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
+import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.UtilException;
+
+import javax.ejb.CreateException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -39,31 +54,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
-
-import javax.ejb.CreateException;
-
-import com.ecyrd.jspwiki.FileUtil;
-import com.ecyrd.jspwiki.InternalWikiException;
-import com.ecyrd.jspwiki.NoRequiredPropertyException;
-import com.ecyrd.jspwiki.QueryItem;
-import com.ecyrd.jspwiki.SearchMatcher;
-import com.ecyrd.jspwiki.SearchResult;
-import com.ecyrd.jspwiki.SearchResultComparator;
-import com.ecyrd.jspwiki.WikiEngine;
-import com.ecyrd.jspwiki.WikiPage;
-import com.ecyrd.jspwiki.WikiProvider;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.wiki.control.WikiException;
-import com.silverpeas.wiki.control.WikiMultiInstanceManager;
-import com.silverpeas.wiki.control.WikiPageDAO;
-import com.silverpeas.wiki.control.model.PageDetail;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * @author Ludovic Bertin
@@ -540,8 +530,7 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
      * Delete versioning information relative to the deleted page
      */
     try {
-      getVersioningBm().deleteDocumentsByForeignPK(
-          new ForeignPK(String.valueOf(pageId)));
+      getVersioningBm().deleteDocumentsByForeignPK(new ForeignPK(String.valueOf(pageId)));
     } catch (Exception e) {
       SilverTrace.error("wiki", "WikiVersioningFileProvider.deletePage()",
           "wiki.EX_DELETE_PAGE_FAILED", e);

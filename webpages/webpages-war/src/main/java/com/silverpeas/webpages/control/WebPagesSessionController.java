@@ -23,11 +23,6 @@
  */
 package com.silverpeas.webpages.control;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -40,6 +35,7 @@ import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.webpages.model.WebPagesException;
 import com.silverpeas.webpages.notification.WebPagesUserNotifier;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -50,9 +46,13 @@ import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import com.stratelia.webactiv.util.node.model.NodePK;
+
+import java.util.Date;
+import java.util.List;
 
 public class WebPagesSessionController extends AbstractComponentSessionController {
 
@@ -101,13 +101,11 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    */
   public boolean haveGotWysiwygNotEmpty() {
     boolean returnValue = false;
-    if (WysiwygController.haveGotWysiwyg(this.getSpaceId(), getComponentId(), getComponentId())) {
+    if (WysiwygController.haveGotWysiwyg(getComponentId(), getComponentId(), I18NHelper.defaultLanguage)) {
       try {
-        String contenuWysiwyg = WysiwygController.loadFileAndAttachment(getSpaceId(),
-                getComponentId(), getComponentId());
-        if ((contenuWysiwyg != null) && (contenuWysiwyg.length() != 0)) {
-          returnValue = true;
-        }
+        String contenuWysiwyg =
+            WysiwygController.load(getComponentId(), getComponentId(), I18NHelper.defaultLanguage);
+        return contenuWysiwyg != null && contenuWysiwyg.length() != 0;
       } catch (WysiwygException ex) {
         SilverTrace.error("webPages",
                 "WebPagesSessionController.haveGotWysiwyg()", "root.", ex);
@@ -276,7 +274,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     // index updated data
     indexForm(set);
   }
-  
+
   private void indexForm(RecordSet recordSet) throws WebPagesException {
     try {
       if (recordSet == null) {

@@ -71,7 +71,7 @@ public interface KmeliaBmBusinessSkeleton {
   public TopicDetail goTo(NodePK nodePK, String userId,
       boolean isTreeStructureUsed, String userProfile,
       boolean isRightsOnTopicsUsed) throws RemoteException;
-  
+
   public List<NodeDetail> getAllowedSubfolders(NodeDetail folder, String userId)
       throws RemoteException;
 
@@ -195,10 +195,10 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public PublicationDetail getPublicationDetail(PublicationPK pubPK)
       throws RemoteException;
-  
+
   public List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile,
       String userId, boolean isTreeStructureUsed, boolean isRightsOnTopicsUsed) throws RemoteException;
-  
+
   public List<KmeliaPublication> getLatestPublications(String instanceId, int nbPublisOnRoot,
       boolean isRightsOnTopicsUsed, String userId) throws RemoteException;
 
@@ -223,7 +223,7 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public String createPublicationIntoTopic(PublicationDetail pubDetail,
       NodePK fatherPK) throws RemoteException;
-  
+
   /**
    * Creates a new publication into the specified topic and with the specified classification on the
    * PdC.
@@ -272,7 +272,7 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public void addPublicationToTopic(PublicationPK pubPK, NodePK fatherPK,
       boolean isACreation) throws RemoteException;
-  
+
   public void addPublicationToTopicWithoutNotifications(PublicationPK pubPK, NodePK fatherPK,
       boolean isACreation) throws RemoteException;
 
@@ -375,7 +375,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   public TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed,
       String userId, boolean isRightsOnTopicsUsed) throws RemoteException;
-  
+
   public NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed,
       String userId, boolean isRightsOnTopicsUsed) throws RemoteException;
 
@@ -394,7 +394,7 @@ public interface KmeliaBmBusinessSkeleton {
   public Collection<KmeliaPublication> getPublications(List<ForeignPK> links,
       String userId,
       boolean isRightsOnTopicsUsed) throws RemoteException;
-  
+
   /**
    * Gets the publications linked with the specified one and for which the specified user is
    * authorized to access.
@@ -406,7 +406,7 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication,
       String userId) throws RemoteException;
-  
+
   /**
    * Gets all the publications linked with the specified one.
    * @param publication the publication from which linked publications are get.
@@ -418,12 +418,19 @@ public interface KmeliaBmBusinessSkeleton {
 
   public List<KmeliaPublication> getPublicationsToValidate(String componentId, String userId)
       throws RemoteException;
-  
+
   public boolean isUserCanValidatePublication(PublicationPK pubPK, String userId)
       throws RemoteException;
 
   public List<String> getAllValidators(PublicationPK pubPK) throws RemoteException;
 
+  /**
+   * @param pubPK id of the publication to validate. If publication is always visible, clone is processed.
+   * @param userId id of the user who validate
+   * @param force if true, force to validate publication (bypass pending validations)
+   * @return true if the validation process is complete (ie all validators have validate)
+   * @throws RemoteException
+   */
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force)
       throws RemoteException;
 
@@ -440,7 +447,7 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK,
       String userProfile) throws RemoteException;
-  
+
   public PublicationDetail draftOutPublicationWithoutNotifications(PublicationPK pubPK, NodePK topicPK,
       String userProfile) throws RemoteException;
 
@@ -453,15 +460,15 @@ public interface KmeliaBmBusinessSkeleton {
    * @since 3.0
    */
   public void draftInPublication(PublicationPK pubPK) throws RemoteException;
-  
+
   public void draftInPublication(PublicationPK pubPK, String userId) throws RemoteException;
-  
+
   public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to, String userId)
       throws RemoteException;
-  
+
   public void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId)
       throws RemoteException;
-  
+
   public void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId)
       throws RemoteException;
 
@@ -489,19 +496,19 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
       NodePK topicPK, String senderName) throws RemoteException;
-  
+
   /**
    * Send an email to alert users of a attachment
    * @param pubId the publication Id
    */
-  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, AttachmentPK attachmentPk, 
+  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, AttachmentPK attachmentPk,
 		  NodePK topicPK, String senderName) throws RemoteException;
-  
+
   /**
    * Send an email to alert users of a document
    * @param pubId the publication Id
    */
-  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, DocumentPK documentPk, 
+  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, DocumentPK documentPk,
 		  NodePK topicPK, String senderName) throws RemoteException;
 
   /**************************************************************************************/
@@ -536,7 +543,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   public Collection<AttachmentDetail> getAttachments(PublicationPK pubPK) throws RemoteException;
 
-  public String getWysiwyg(PublicationPK pubPK) throws RemoteException;
+  public String getWysiwyg(PublicationPK pubPK, String language) throws RemoteException;
 
   public void addModelUsed(String[] models, String instanceId, String nodeId)
       throws RemoteException;
@@ -754,7 +761,7 @@ public interface KmeliaBmBusinessSkeleton {
       Map<String, String> formParams,
       String language, String xmlFormName, String discrimatingParameterName,
       String userProfile) throws RemoteException;
-  
+
   public boolean importPublication(String componentId, String topicId, String userId,
       Map<String, String> publiParams, Map<String, String> formParams, String language,
       String xmlFormName, String discriminantParameterName, String userProfile,
@@ -817,19 +824,19 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public String clonePublication(CompletePublication refPubComplete, PublicationDetail pubDetail,
       String nextStatus) throws RemoteException;
-  
+
   public void removeContentOfPublication(PublicationPK pubPK) throws RemoteException;
-  
+
   public NodeDetail getRoot(String componentId, String userId) throws RemoteException;
-  
+
   public Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId) throws RemoteException;
-  
+
   public NodeDetail getExpandedPathToNode(NodePK pk, String userId) throws RemoteException;
-  
+
   public boolean isUserCanWrite(String componentId, String userId) throws RemoteException;
-  
+
   public boolean isUserCanValidate(String componentId, String userId) throws RemoteException;
-  
+
   public String getUserTopicProfile(NodePK pk, String userId) throws RemoteException;
   
   public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId) throws RemoteException;

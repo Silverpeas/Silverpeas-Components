@@ -6,7 +6,7 @@
     <artifactId>rssaggregator</artifactId>
     <version>5.12-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.rssaggregator</groupId>
   <artifactId>rssaggregator-jar</artifactId>
   <packaging>jar</packaging>

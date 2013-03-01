@@ -23,41 +23,6 @@
  */
 package com.stratelia.silverpeas.infoLetter.control;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.event.TransportEvent;
-import javax.mail.event.TransportListener;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -68,6 +33,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.CSVWriter;
 import com.silverpeas.util.csv.Variant;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
@@ -105,9 +71,33 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilTrappedException;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.event.TransportEvent;
+import javax.mail.event.TransportListener;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
  * Class declaration
@@ -145,8 +135,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * Initialize UserPanel with the list of Silverpeas subscribers
    */
   public String initUserPanel(WAPrimaryKey letterPK) throws InfoLetterException {
-    String context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String context = GeneralPropertiesManager.getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(),
         context + "/RinfoLetter/" + getComponentId() + "/Main");
@@ -269,7 +258,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public void deleteInfoLetterPublication(WAPrimaryKey pk) {
     deleteIndex(getInfoLetterPublication(pk));
     try {
-      WysiwygController.deleteWysiwygAttachments(getSpaceId(), getComponentId(), pk.getId());
+      WysiwygController.deleteWysiwygAttachments(getComponentId(), pk.getId());
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
@@ -412,7 +401,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
         // create and fill the first message part
         MimeBodyPart mbp1 = new MimeBodyPart();
-        String fileName = WysiwygController.getWysiwygFileName(ilp.getPK().getId());
+        String fileName = WysiwygController.getWysiwygFileName(ilp.getPK().getId(), I18NHelper.defaultLanguage);
         String htmlMessagePath =
             com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(
                 getComponentId()) + "Attachment" + java.io.File.separator + "wysiwyg"
@@ -426,7 +415,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           msgText1.append((char) c);
           c = htmlCodeFile.read();
         }
-        
+
         htmlCodeFile.close();
 
         // mbp1.setText(msgText1.toString());
@@ -676,12 +665,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   // copie d'un repertoire wysiwyg vers un autre
   public void copyWYSIWYG(String source, String target) {
     try {
-      if (WysiwygController.loadFileAndAttachment(getSpaceId(), getComponentId(), target) != null) {
-        WysiwygController.deleteWysiwygAttachments(getSpaceId(), getComponentId(), target);
+      if (WysiwygController.haveGotWysiwyg(getComponentId(), target, I18NHelper.defaultLanguage)) {
+        WysiwygController.deleteWysiwygAttachments(getComponentId(), target);
       }
       WysiwygController.copy(getSpaceId(), getComponentId(), source, getSpaceId(),
-          getComponentId(),
-          target, getUserId());
+          getComponentId(), target, getUserId());
     } catch (Exception e) {
       throw new InfoLetterException("InfoLetterSessionController.copyWYSIWYG",
           SilverpeasRuntimeException.ERROR, e.getMessage(), e);
@@ -692,8 +680,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     String template;
     try {
       template =
-          WysiwygController.loadFileAndAttachment("useless", getComponentId(),
-              InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
+          WysiwygController.load(getComponentId(),
+              InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId(), I18NHelper.defaultLanguage);
     } catch (WysiwygException e) {
       throw new InfoLetterException("InfoLetterSessionController.isTemplateExist",
           SilverpeasRuntimeException.ERROR, e.getMessage(), e);
@@ -702,8 +690,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   public String getTemplate(InfoLetterPublicationPdC ilp) {
-    return WysiwygController.getWysiwygPath(getComponentId(), InfoLetterPublication.TEMPLATE_ID
-        + ilp.getLetterId());
+    return WysiwygController.getWysiwygPath(getComponentId(), I18NHelper.defaultLanguage,
+        InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
   }
 
   // Indexation d'une publication

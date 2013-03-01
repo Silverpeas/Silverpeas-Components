@@ -62,10 +62,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 private boolean appartient(IconDetail iconDetail, Collection c) {
   SilverTrace.info("websites", "JSPdescUpload", "root.MSG_GEN_PARAM_VALUE", "appartient");
   boolean ok = false;
-  
+
   String theId = iconDetail.getIconPK().getId();
   SilverTrace.info("websites", "JSPdescUpload", "root.MSG_GEN_PARAM_VALUE", "theId= "+theId);
-  
+
   Iterator i = c.iterator();
   while(i.hasNext() && !ok) {
     String id = (String) i.next();
@@ -83,22 +83,22 @@ private String afficheArbo(ArrayPane arrayPane, String idNode, WebSiteSessionCon
   String resultat;// = arrayPane.print();
   String espace = "";
   int N = nbEsp;
-  
+
   for (int i=0; i<nbEsp; i++) {
     espace += "&nbsp;";
   }
   N += 4;
-  
+
   FolderDetail rootFolder = scc.getFolder(idNode);
-  
+
   ArrayLine arrayLine = arrayPane.addArrayLine();
   arrayLine.addArrayCellText(espace+rootFolder.getNodeDetail().getName());
   arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"topic\" value=\""+rootFolder.getNodeDetail().getNodePK().getId()+"\">");
-  
+
   SilverTrace.info("websites", "JSPdescUpload.afficheArbo()", "root.MSG_GEN_PARAM_VALUE", "name Theme ="+rootFolder.getNodeDetail().getName()+", nbEsp = "+nbEsp);
-  
+
   resultat = arrayPane.print();
-  
+
   Collection<NodeDetail> subThemes = rootFolder.getNodeDetail().getChildrenDetails();
   if (subThemes != null) {
     Iterator<NodeDetail> coll = subThemes.iterator();
@@ -139,13 +139,11 @@ private String afficheArbo(ArrayPane arrayPane, String idNode, WebSiteSessionCon
 
 
 <%
-	//CBO : REMOVE ResourceLocator settings;
 	String nomSite = "";
 	String description = "";
 	String nomPage = "";
 	String auteur = null;
 	String listeIcones = "";
-	//CBO : REMOVE String listeTopics = "";
 	boolean refChecked = false;
 
 	int popup = 1;
@@ -207,19 +205,6 @@ private String afficheArbo(ArrayPane arrayPane, String idNode, WebSiteSessionCon
 
 <script type="text/javascript">
 <%
-//CBO : UPDATE
-/*if (! uploadOk) {
-    out.println("alert(\""+resources.getString("FileToAttachNotCorrect")+"\");");
-
-}
-
-if (! searchOk) {
-    out.println("alert(\""+resources.getString("PrincipalPageNotCorrect")+"\")");
-}
-
-if (! nomSite.equals("") && uploadOk && searchOk) {
-    out.println("location.replace(\"manage.jsp\");");
-}*/
 if (uploadOk != null && uploadOk.equals(Boolean.FALSE)) {
 	out.println("alert(\""+resources.getString("FileToAttachNotCorrect")+"\");");
 }
@@ -362,7 +347,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
       }
     }
     document.descriptionSite.ListeTopics.value = f;
-    <view:pdcPositions setIn="document.descriptionSite.Positions.value"/>;    
+    <view:pdcPositions setIn="document.descriptionSite.Positions.value"/>;
     document.descriptionSite.submit(); /* et on a bien une page html */
   }
 }
@@ -382,12 +367,8 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 <%
   Window window = gef.getWindow();
   BrowseBar browseBar = window.getBrowseBar();
-  //CBO : UPDATE
-	//browseBar.setDomainName(scc.getSpaceLabel());
 	browseBar.setDomainName(spaceLabel);
-  //CBO : UPDATE
-	//browseBar.setComponentName(scc.getComponentLabel(), "manage.jsp?Action=view");
-	browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
+  browseBar.setComponentName(componentLabel, "manage.jsp?Action=view");
   browseBar.setPath(resources.getString("CreationSite"));
 
   //Le cadre
@@ -450,9 +431,9 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
       <label class="txtlibform" for="date"><fmt:message key="GML.date" /> </label>
       <div class="champs"><%=creationDate%></div>
     </div>
-    
+
   </div>
-</fieldset>     
+</fieldset>
 
 <fieldset id="specificationsFieldset" class="skinFieldset">
   <legend><fmt:message key="websites.header.fieldset.specifications" /></legend>
@@ -523,8 +504,8 @@ while (iconIterator.hasNext()) {
 </div>
 
 </form>
-    
-    
+
+
 <%
 	out.print(board.printAfter());
 	out.println(frame.printMiddle());
@@ -535,8 +516,8 @@ while (iconIterator.hasNext()) {
 
 	int size = allIcons.size() - 1;
 
-	validerButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+");", false);
-	annulerButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
+	validerButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK("+nbThemes("0", scc, 0)+", "+size+");", false);
+	annulerButton = gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
 	buttonPane.addButton(validerButton);
 	buttonPane.addButton(annulerButton);
 	buttonPane.setHorizontalPosition();

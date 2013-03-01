@@ -847,6 +847,7 @@ function doPagination(index) {
 								$('#pubList').html(data);
 								activateUserZoom();
 								showPublicationCheckedBoxes();
+								location.href = "#pubList";
 							},"html");
 }
 

@@ -147,12 +147,12 @@ public class FileImport {
     int nbFiles = ZipManager.getNbFiles(fileUploaded);
     String tempFolderName = Long.toString(System.currentTimeMillis()) + '_' + kmeliaScc.getUserId();
     String tempFolderPath = FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId()) +
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("RepositoryTypeTemp") +
+        GeneralPropertiesManager.getString("RepositoryTypeTemp") +
         File.separator + tempFolderName;
     File tempFolder = new File(tempFolderPath);
     if (!tempFolder.exists()) {
       FileRepositoryManager.createAbsolutePath(kmeliaScc.getComponentId(),
-          GeneralPropertiesManager.getGeneralResourceLocator().getString("RepositoryTypeTemp") +
+          GeneralPropertiesManager.getString("RepositoryTypeTemp") +
               File.separator + tempFolderName);
     }
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_PARAM_VALUE",

@@ -341,8 +341,8 @@ function displayAll() {
 				<c:if test="${not empty item.channelImage}">
 				<a href="${item.channelImage.link }" target="_blank"><img class="img-item-rssNews" src="${item.channelImage.location}" border="0" /></a>    
 				</c:if>
-				<span  class="channelName-rssNews"><c:out value="${channelName}"/> </span> 
-				<a href="<c:out value="${item.itemLink}"/>" target="_blank"><c:out value="${item.itemTitle}"/> </a> 
+				<span  class="channelName-rssNews"><c:out value="${channelName}" /> </span> 
+				<a href="<c:out value="${item.itemLink}"/>" target="_blank"><c:out value="${item.itemTitle}" escapeXml="false"/> </a> 
 			</h3>
 			<div class="lastUpdate-item-rssNews"><fmt:formatDate value="${item.itemDate}" pattern="${dateFormatter}"/> </div>
 			<div class="itemDeploy" >

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,23 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.kmelia.servlets.ajax.handlers;
+package com.silverpeas.kmelia;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
-import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
-import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxHandler;
-
-public abstract class OperationOnPublicationsHandler implements AjaxHandler {
-
-  protected void processSelectedPublications(HttpServletRequest request,
-      KmeliaSessionController kmelia) {
-    String selectedIds = request.getParameter("SelectedIds");
-    String notSelectedIds = request.getParameter("NotSelectedIds");
-    kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds);
+public class SearchContext {
+  
+  public static int NONE = 0;
+  public static int GLOBAL = 1;
+  public static int LOCAL = 2;
+  
+  private String query;
+  
+  public SearchContext(String query) {
+    this.query = query;
   }
   
-  @Override
-  public abstract String handleRequest(HttpServletRequest request, ComponentSessionController controller);
+  public String getQuery() {
+    return query;
+  }
+  public void setQuery(String query) {
+    this.query = query;
+  }
+
 }

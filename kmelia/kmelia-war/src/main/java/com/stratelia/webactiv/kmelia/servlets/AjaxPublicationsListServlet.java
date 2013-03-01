@@ -53,8 +53,6 @@ import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
-import com.silverpeas.kmelia.domain.TopicSearch;
-import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.EncodeHelper;
@@ -119,9 +117,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     String TopicToLinkId = req.getParameter("TopicToLinkId");
     // check if trying to link attachment
     String attachmentLink = req.getParameter("attachmentLink");
-    boolean attachmentToLink = "1".equals(attachmentLink);
+    boolean attachmentToLink = StringUtil.getBooleanValue(attachmentLink);
 
-    boolean toLink = (StringUtil.isDefined(sToLink) && "1".equals(sToLink));
+    boolean toLink = StringUtil.getBooleanValue(sToLink);
 
     KmeliaSessionController kmeliaSC = (KmeliaSessionController) session.getAttribute("Silverpeas_"
         + "kmelia" + "_" + componentId);
@@ -132,10 +130,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (kmeliaSC == null && (toLink || attachmentToLink)) {
       MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
           MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-      ComponentContext componentContext =
-          mainSessionCtrl.createComponentContext(null, componentId);
-      kmeliaSC =
-          new KmeliaSessionController(mainSessionCtrl, componentContext);
+      ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, componentId);
+      kmeliaSC = new KmeliaSessionController(mainSessionCtrl, componentContext);
       session.setAttribute("Silverpeas_kmelia_" + componentId, kmeliaSC);
     }
 
@@ -167,7 +163,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       List<String> selectedIds =
           kmeliaSC.processSelectedPublicationIds(selectedPublicationIds, notSelectedPublicationIds);
 
-      boolean toPortlet = "1".equals(sToPortlet);
+      boolean toPortlet = StringUtil.getBooleanValue(sToPortlet);
       boolean toSearch = StringUtil.isDefined(query);
 
       if (StringUtil.isDefined(index)) {
@@ -210,8 +206,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         publications = kmeliaSC.getSessionPublicationsList();
         role = SilverpeasRole.user.toString();
       } else if (toSearch) {
-        // Insert this new search inside persistence layer in order to compute statistics
-        saveTopicSearch(componentId, nodeId, kmeliaSC, query);
         publications = kmeliaSC.search(query);
       } else {
         publications = kmeliaSC.getSessionPublicationsList();
@@ -258,25 +252,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   /**
-   * Save current topic search inside persistence layer
-   * @param componentId the component identifier
-   * @param nodeId the node identifier
-   * @param kmeliaSC the KmeliaSessionController
-   * @param query the topic search query keywords
-   */
-  private void saveTopicSearch(String componentId, String nodeId, KmeliaSessionController kmeliaSC,
-      String query) {
-    //Check node value
-    if(!StringUtil.isDefined(nodeId)) {
-      nodeId = kmeliaSC.getCurrentFolderId();
-    }
-    TopicSearch newTS =
-        new TopicSearch(componentId, Integer.parseInt(nodeId), Integer.parseInt(kmeliaSC
-            .getUserId()), kmeliaSC.getLanguage(), query.toLowerCase(), new Date());
-    KmeliaSearchServiceFactory.getTopicSearchService().createTopicSearch(newTS);
-  }
-
-  /**
    * @param allPubs
    * @param sortAllowed
    * @param linksAllowed
@@ -303,9 +278,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       throws IOException {
 
     String publicationSrc = resources.getIcon("kmelia.publication");
-    ResourceLocator publicationSettings = new ResourceLocator(
-        "com.stratelia.webactiv.util.publication.publicationSettings",
-        kmeliaScc.getLanguage());
+    ResourceLocator publicationSettings =
+        new ResourceLocator("org.silverpeas.util.publication.publicationSettings",
+            kmeliaScc.getLanguage());
 
     boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage", true);
 
@@ -410,8 +385,18 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
           pubState = resources.getString("kmelia.Shortcut");
         }
+        
+        String cssClass = "";
+        if (toSearch) {
+          if (aPub.read) {
+            cssClass = " class=\"read\"";
+          } else {
+            cssClass = " class=\"unread\"";
+          }
+        }
 
         out.write("<li");
+        out.write(cssClass);
         out.write(" onmouseover=\"showPublicationOperations(this);\" onmouseout=\"hidePublicationOperations(this);\">");
         out.write("<div class=\"firstColumn\">");
         if (!kmeliaScc.getUserDetail().isAnonymous() && !kmeliaScc.isKmaxMode) {
@@ -765,7 +750,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (kmeliaScc.isVersionControlled(pub.getPK().getInstanceId())) {
         sb.append(displayVersioning(pub, resources, linkAttachment, alias));
       } else {
-        sb.append(displayAttachments(pub, userId, topicId, resources, linkAttachment, alias));
+        sb.append(displayAttachments(pub, userId, topicId, resources, linkAttachment, alias,
+            kmeliaScc.getCurrentLanguage()));
       }
       sb.append("</span>");
     }
@@ -997,7 +983,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   private String displayAttachments(PublicationDetail pubDetail, String userId, String nodeId,
-      ResourcesWrapper resources, boolean linkAttachment, boolean alias) throws IOException {
+      ResourcesWrapper resources, boolean linkAttachment, boolean alias, String language)
+      throws IOException {
     SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayAttachments()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubDetail.getPK().getId());
     StringBuilder result = new StringBuilder();
@@ -1005,20 +992,24 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     AttachmentPK foreignKey = new AttachmentPK(pubDetail.getPK().getId(),
         pubDetail.getPK().getInstanceId());
 
+    boolean isToolbox = KmeliaHelper.isToolbox(pubDetail.getPK().getInstanceId());
     Collection<AttachmentDetail> attachmentList =
         AttachmentController.searchAttachmentByPKAndContext(foreignKey, "Images");
     if (!attachmentList.isEmpty()) {
       result.append("<table border=\"0\">");
       for (AttachmentDetail attachmentDetail : attachmentList) {
-        String url = attachmentDetail.getAttachmentURLToMemorize(userId, nodeId);
-        String title = attachmentDetail.getTitle();
-        String info = attachmentDetail.getInfo();
-        String icon = attachmentDetail.getAttachmentIcon();
-        String logicalName = attachmentDetail.getLogicalName();
+        String url = URLManager.getApplicationURL() + attachmentDetail.getAttachmentURL(language);
+        if (isToolbox) {
+          url = attachmentDetail.getAttachmentURLToMemorize(userId, nodeId);
+        }
+        String title = attachmentDetail.getTitle(language);
+        String info = attachmentDetail.getInfo(language);
+        String icon = attachmentDetail.getAttachmentIcon(language);
+        String logicalName = attachmentDetail.getLogicalName(language);
         String id = attachmentDetail.getPK().getId();
-        String size = attachmentDetail.getAttachmentFileSize();
-        String downloadTime = attachmentDetail.getAttachmentDownloadEstimation();
-        Date creationDate = attachmentDetail.getCreationDate();
+        String size = attachmentDetail.getAttachmentFileSize(language);
+        String downloadTime = attachmentDetail.getAttachmentDownloadEstimation(language);
+        Date creationDate = attachmentDetail.getCreationDate(language);
         String permalink = null;
         if (!attachmentDetail.isAttachmentLinked()) {
           permalink = URLManager.getSimpleURL(URLManager.URL_FILE, id);
@@ -1030,11 +1021,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
         boolean previewable =
             ViewerFactory.getPreviewService().isPreviewable(
-                new File(attachmentDetail.getAttachmentPath(null)));
+                new File(attachmentDetail.getAttachmentPath(language)));
 
         boolean viewable =
             ViewerFactory.getViewService().isViewable(
-                new File(attachmentDetail.getAttachmentPath(null)));
+                new File(attachmentDetail.getAttachmentPath(language)));
 
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
             creationDate, permalink, resources, linkAttachment, previewable, viewable, id));

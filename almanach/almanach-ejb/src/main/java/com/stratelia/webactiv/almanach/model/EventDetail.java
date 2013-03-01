@@ -23,32 +23,24 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.silverpeas.SilverpeasContent;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.Collection;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-
 import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.almanach.AlmanachContentManager;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
+import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
@@ -58,7 +50,15 @@ import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
 
-import static com.silverpeas.util.StringUtil.*;
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 public class EventDetail extends AbstractI18NBean implements
         SilverContentInterface, Serializable, SilverpeasContent {
@@ -296,15 +296,12 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public String getWysiwyg() throws WysiwygException {
-    String wysiwygContent = null;
-    wysiwygContent = WysiwygController.loadFileAndAttachment(
-            getPK().getSpace(), getPK().getComponentName(), getPK().getId());
-    return wysiwygContent;
+    return WysiwygController.load(getPK().getComponentName(), getPK().getId(), getLanguage());
   }
 
   public Collection<AttachmentDetail> getAttachments() {
     try {
-      AlmanachBm almanachService = ((AlmanachBmHome) EJBUtilitaire.getEJBObjectRef(
+      AlmanachBm almanachService = (EJBUtilitaire.getEJBObjectRef(
               JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();
       return almanachService.getAttachments(getPK());
     } catch (Exception ex) {
@@ -433,7 +430,7 @@ public class EventDetail extends AbstractI18NBean implements
     }
     return this.silverObjectId;
   }
-  
+
   protected void setSilverpeasContentId(String contentId) {
     this.silverObjectId = contentId;
   }

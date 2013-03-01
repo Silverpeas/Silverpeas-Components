@@ -30,15 +30,11 @@
 
 <%
 PublicationDetail 	pubDetail 		= (PublicationDetail) request.getAttribute("CurrentPublicationDetail");
-String				contentLanguage = (String) request.getAttribute("Language"); 
+String contentLanguage = (String) request.getAttribute("CurrentLanguage");
 
 String pubId 	= pubDetail.getPK().getId();
 String pubName 	= pubDetail.getName(contentLanguage);
-String returnURL = "";
-/*if (kmaxMode)
-	returnURL = m_context + kmeliaScc.getComponentUrl() + "KmaxFromWysiwyg?PubId="+pubId;
-else*/
-	returnURL = m_context + kmeliaScc.getComponentUrl() + "FromWysiwyg?PubId="+pubId;
+String returnURL = m_context + kmeliaScc.getComponentUrl() + "FromWysiwyg?PubId="+pubId;
 	
 %>
 <HTML>
