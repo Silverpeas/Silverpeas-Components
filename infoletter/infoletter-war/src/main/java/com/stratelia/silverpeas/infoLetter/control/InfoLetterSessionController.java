@@ -23,46 +23,12 @@
  */
 package com.stratelia.silverpeas.infoLetter.control;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.event.TransportEvent;
-import javax.mail.event.TransportListener;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
@@ -76,7 +42,6 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
-import com.stratelia.silverpeas.infoLetter.model.InternalSubscribers;
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -105,9 +70,39 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilTrappedException;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.event.TransportEvent;
+import javax.mail.event.TransportListener;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
  * Class declaration
@@ -121,7 +116,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   private static final ResourceLocator smtpSettings = new ResourceLocator(
       "org.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
   public final static String EXPORT_CSV_NAME = "_emails.csv";
-  public final static boolean EXPORT_OK = true;
 
   /**
    * Standard Session Controller Constructeur
@@ -144,9 +138,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   /*
    * Initialize UserPanel with the list of Silverpeas subscribers
    */
-  public String initUserPanel(WAPrimaryKey letterPK) throws InfoLetterException {
-    String context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+  public String initUserPanel() throws InfoLetterException {
+    String context = GeneralPropertiesManager.getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(),
         context + "/RinfoLetter/" + getComponentId() + "/Main");
@@ -164,17 +157,16 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     sel.setMultiSelect(true);
     sel.setPopupMode(false);
 
-    InternalSubscribers internalSubs = dataInterface.getInternalSuscribers(letterPK);
-    List<UserDetail> users = internalSubs.getUsers();
-    String[] usersArray = new String[users.size()];
-    for (UserDetail userDetail : users) {
-      usersArray[users.indexOf(userDetail)] = userDetail.getId();
-    }
-    List<Group> groups = internalSubs.getGroups();
-    String[] groupsArray = new String[groups.size()];
-    for (Group group : groups) {
-      groupsArray[groups.indexOf(group)] = group.getId();
-    }
+    // Internal subscribers
+    Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
+        dataInterface.getInternalSuscribers(getComponentId());
+    // Users
+    Collection<String> subscriberIds = subscriberIdsByTypes.get(SubscriberType.USER);
+    String[] usersArray = subscriberIds.toArray(new String[subscriberIds.size()]);
+    // Groups
+    subscriberIds = subscriberIdsByTypes.get(SubscriberType.GROUP);
+    String[] groupsArray = subscriberIds.toArray(new String[subscriberIds.size()]);
+
     sel.setSelectedElements(usersArray);
     sel.setSelectedSets(groupsArray);
     if (usersArray.length == 0 && groupsArray.length == 0) {
@@ -188,25 +180,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   /*
    * Retour du UserPanel
    */
-  public void retourUserPanel(WAPrimaryKey letterPK) {
+  public void retourUserPanel() {
     Selection sel = getSelection();
     UserDetail[] users = SelectionUsersGroups.getUserDetails(sel.getSelectedElements());
     Group[] groups = SelectionUsersGroups.getGroups(sel.getSelectedSets());
-    InternalSubscribers internalSubs =
-        new InternalSubscribers(Arrays.asList(users), Arrays.asList(groups));
-    dataInterface.setInternalSuscribers(letterPK, internalSubs);
-  }
-
-  // Creation d'une lettre d'information
-  public void createInfoLetter(InfoLetter ie) {
-    dataInterface.createInfoLetter(ie);
-    createIndex(ie);
-  }
-
-  // Suppression d'une lettre d'information
-  public void deleteInfoLetter(WAPrimaryKey pk) {
-    deleteIndex(dataInterface.getInfoLetter(pk));
-    dataInterface.deleteInfoLetter(pk);
+    dataInterface.setInternalSuscribers(getComponentId(), users, groups);
   }
 
   // Mise a jour d'une lettre d'information
@@ -284,13 +262,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     dataInterface.updateInfoLetterPublication(ilp);
   }
 
-  // Validation d'une publication
-  public void validateInfoLetterPublication(InfoLetterPublicationPdC ilp) {
-    ilp.setInstanceId(getComponentId());
-    dataInterface.validateInfoLetterPublication(ilp);
-    createIndex(ilp);
-  }
-
   // Recuperation d'une publication par sa clef
   public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK) {
     return dataInterface.getInfoLetterPublication(publiPK);
@@ -300,8 +271,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     ResourceLocator rs =
         new ResourceLocator("org.silverpeas.infoLetter.settings.infoLetterSettings", "");
     Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString(
-        "templatePath"));
+    templateConfiguration
+        .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
     templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString(
         "customersTemplatePath"));
 
@@ -311,16 +282,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   // Notification des abonnes internes
   public void notifySuscribers(InfoLetterPublicationPdC ilp) {
     NotificationSender ns = new NotificationSender(getComponentId());
-    IdPK pk = new IdPK();
-    pk.setId(String.valueOf(ilp.getLetterId()));
     String sSubject = getString("infoLetter.emailSubject") + ilp.getName();
-
-    InternalSubscribers internalSubs = dataInterface.getInternalSuscribers(pk);
-    List<UserDetail> users = internalSubs.getUsers();
-    UserDetail[] usersArray = users.toArray(new UserDetail[users.size()]);
-
-    List<Group> groups = internalSubs.getGroups();
-    Group[] groupsArray = groups.toArray(new Group[groups.size()]);
 
     try {
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
@@ -348,14 +310,18 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             getString("infoLetter.emailSubject")) + ilp.getName(), "");
       }
       notifMetaData.setSender(getUserId());
-      for (UserDetail userDetail : usersArray) {
-        notifMetaData.addUserRecipient(new UserRecipient(userDetail));
-      }
-      for (Group group : groupsArray) {
-        notifMetaData.addGroupRecipient(new GroupRecipient(group));
-      }
       notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
       notifMetaData.setLink(url);
+
+      // Internal subscribers
+      Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
+          dataInterface.getInternalSuscribers(getComponentId());
+      for (String userId : subscriberIdsByTypes.get(SubscriberType.USER)) {
+        notifMetaData.addUserRecipient(new UserRecipient(userId));
+      }
+      for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP)) {
+        notifMetaData.addGroupRecipient(new GroupRecipient(groupId));
+      }
 
       ns.notifyUser(notifMetaData);
 
@@ -375,12 +341,10 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     String smtpUser = getSmtpUser();
     String smtpPwd = getSmtpPwd();
     boolean isSmtpDebug = isSmtpDebug();
-    Transport transport = null;
 
     List<String> emailErrors = new ArrayList<String>();
 
     if (emails.size() > 0) {
-      int i = 0;
 
       // Corps et sujet du message
       //InfoLetter il = dataInterface.getInfoLetter(letterPK);
@@ -456,9 +420,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         String attachmentPath =
             AttachmentController.createPath(getComponentId(), WysiwygController.
                 getImagesFileName(ilp.getPK().getId()));
-        Iterator<AttachmentDetail> imageIter = fichiers.iterator();
-        while (imageIter.hasNext()) {
-          AttachmentDetail ad = imageIter.next();
+        for (final AttachmentDetail ad : fichiers) {
           // create the second message part
           MimeBodyPart mbp2 = new MimeBodyPart();
 
@@ -483,9 +445,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
                 + java.io.File.separator;
 
         if (fichiers.size() > 0) {
-          imageIter = fichiers.iterator();
-          while (imageIter.hasNext()) {
-            AttachmentDetail ad = (AttachmentDetail) imageIter.next();
+          for (final AttachmentDetail ad : fichiers) {
             // create the second message part
             MimeBodyPart mbp2 = new MimeBodyPart();
 
@@ -510,7 +470,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         msg.setSentDate(new Date());
 
         // create a Transport connection (TCP)
-        transport = session.getTransport("smtp");
+        Transport transport = session.getTransport("smtp");
 
         // redefine the TransportListener interface.
         TransportListener transportListener = new TransportListener() {
@@ -520,6 +480,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
            * @param e
            * @see
            */
+          @Override
           public void messageDelivered(TransportEvent e) { // catch all messages delivered to the
             // SMTP server.
           }
@@ -529,6 +490,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
            * @param e
            * @see
            */
+          @Override
           public void messageNotDelivered(TransportEvent e) { // catch all messages NOT delivered to
             // the SMTP server.
           }
@@ -538,6 +500,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
            * @param e
            * @see
            */
+          @Override
           public void messagePartiallyDelivered(TransportEvent e) {
           }
         };
@@ -546,9 +509,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         transport.addTransportListener(transportListener);
 
         InternetAddress[] address = new InternetAddress[1];
-        String email = null;
-        for (i = 0; i < emails.size(); i++) {
-          email = emails.get(i);
+        for (String email : emails) {
           try {
             address[0] = new InternetAddress(email);
             msg.setRecipients(Message.RecipientType.TO, address);
@@ -556,7 +517,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             if (isSmtpAuthentication) {
               SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
                   "root.MSG_GEN_PARAM_VALUE", "host = " + host + " m_Port=" + smtpPort +
-                      " m_User=" + smtpUser);
+                  " m_User=" + smtpUser);
               transport.connect(host, smtpPort, smtpUser, smtpPwd);
               msg.saveChanges();
             } else {
@@ -566,8 +527,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           } catch (Exception ex) {
             SilverTrace.error("infoLetter", "InfoLetterSessionController.notifyExternals()",
                 "root.MSG_GEN_PARAM_VALUE", "Email = " + email, new InfoLetterException(
-                    "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-                    SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
+                "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
+                SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
             emailErrors.add(email);
           } finally {
             if (transport != null) {
@@ -586,7 +547,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             SilverpeasRuntimeException.ERROR, e.getMessage(), e);
       }
     }
-    return (String[]) emailErrors.toArray(new String[0]);
+    return emailErrors.toArray(new String[emailErrors.size()]);
   }
 
   // Notification des abonnes externes
@@ -654,18 +615,18 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   // Abonnement d'un utilisateur
-  public void suscribeUser(WAPrimaryKey letterPK) {
-    dataInterface.toggleSuscriber(getUserId(), letterPK, true);
+  public void suscribeUser() {
+    dataInterface.toggleSuscriber(getUserId(), getComponentId(), true);
   }
 
   // Desabonnement d'un utilisateur
-  public void unsuscribeUser(WAPrimaryKey letterPK) {
-    dataInterface.toggleSuscriber(getUserId(), letterPK, false);
+  public void unsuscribeUser() {
+    dataInterface.toggleSuscriber(getUserId(), getComponentId(), false);
   }
 
   // test d'abonnement d'un utilisateur interne
-  public boolean isSuscriber(WAPrimaryKey letterPK) {
-    return dataInterface.isSuscriber(getUserId(), letterPK);
+  public boolean isSuscriber() {
+    return dataInterface.isUserSuscribed(getUserId(), getComponentId());
   }
 
   // Mise a jour du template a partir d'une publication
@@ -701,16 +662,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     return !"<body></body>".equals(template);
   }
 
-  public String getTemplate(InfoLetterPublicationPdC ilp) {
-    return WysiwygController.getWysiwygPath(getComponentId(), InfoLetterPublication.TEMPLATE_ID
-        + ilp.getLetterId());
-  }
-
   // Indexation d'une publication
   public void createIndex(InfoLetterPublicationPdC ilp) {
-    FullIndexEntry indexEntry = null;
     if (ilp != null) {
-      indexEntry = new FullIndexEntry(getComponentId(), "Publication", ilp.getPK().getId());
+      FullIndexEntry indexEntry =
+          new FullIndexEntry(getComponentId(), "Publication", ilp.getPK().getId());
       indexEntry.setTitle(ilp.getTitle());
       indexEntry.setPreView(ilp.getDescription());
       indexEntry.setCreationDate(ilp.getParutionDate());
@@ -728,9 +684,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   // Indexation d'une lettre
   public void createIndex(InfoLetter il) {
-    FullIndexEntry indexEntry = null;
     if (il != null) {
-      indexEntry = new FullIndexEntry(getComponentId(), "Lettre", il.getPK().getId());
+      FullIndexEntry indexEntry =
+          new FullIndexEntry(getComponentId(), "Lettre", il.getPK().getId());
       indexEntry.setTitle(il.getName());
       indexEntry.setPreView(il.getDescription());
       IndexEngineProxy.addIndexEntry(indexEntry);
@@ -748,7 +704,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     SilverTrace.info("infoLetter", "InfoLetterSessionController.replaceFileServerWithLocal()",
         "root.MSG_GEN_PARAM_VALUE", "wysiwygText avant = " + message);
     String retour = replacePermalinkWithServer(message, server);
-    while (retour.indexOf("/FileServer/") > -1) {
+    while (retour.contains("/FileServer/")) {
       int place = retour.indexOf("/FileServer/");
       String debut = retour.substring(0, place);
       int srcPlace = debut.lastIndexOf("\"");
@@ -769,8 +725,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Replace /silverpeas/xxx by http(s)://server:port/silverpeas/xxx (Only in notifyExternals case)
-   * @param codeHtml
-   * @param serveur: http(s)://server:port
+   * @param message
+   * @param server: http(s)://server:port
    * @return codeHtml
    */
   private String replacePermalinkWithServer(String message, String server) {
@@ -795,7 +751,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    */
   private InfoLetter getCurrentLetter() {
     List<InfoLetter> listLettres = getInfoLetters();
-    return (InfoLetter) listLettres.get(0);
+    return listLettres.get(0);
   }
 
   /**
@@ -829,23 +785,25 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       throw ute;
     }
 
-    StringBuffer listErrors = new StringBuffer("");
+    StringBuilder listErrors = new StringBuilder("");
     String email;
 
     for (int i = 0; i < csvValues.length; i++) {
       // email
       email = csvValues[i][0].getValueString();
       if (email.length() == 0) {// champ obligatoire
-        listErrors.append(getString("GML.ligne") + " = " + Integer.toString(i + 1) + ", ");
-        listErrors.append(getString("GML.colonne") + " = 1, ");
-        listErrors.append(getString("GML.valeur") + " = " + email + ", ");
-        listErrors.append(getString("GML.obligatoire") + "<BR>");
+        listErrors.append(getString("GML.ligne")).append(" = ").append(Integer.toString(i + 1))
+            .append(", ");
+        listErrors.append(getString("GML.colonne")).append(" = 1, ");
+        listErrors.append(getString("GML.valeur")).append(" = ").append(email).append(", ");
+        listErrors.append(getString("GML.obligatoire")).append("<BR>");
       } else if (email.length() > 100) {// verifier 100 char max
-        listErrors.append(getString("GML.ligne") + " = " + Integer.toString(i + 1) + ", ");
-        listErrors.append(getString("GML.colonne") + " = 1, ");
-        listErrors.append(getString("GML.valeur") + " = " + email + ", ");
-        listErrors.append(getString("GML.nbCarMax") + " 100 " + getString("GML.caracteres")
-            + "<BR>");
+        listErrors.append(getString("GML.ligne")).append(" = ").append(Integer.toString(i + 1))
+            .append(", ");
+        listErrors.append(getString("GML.colonne")).append(" = 1, ");
+        listErrors.append(getString("GML.valeur")).append(" = ").append(email).append(", ");
+        listErrors.append(getString("GML.nbCarMax")).append(" 100 ")
+            .append(getString("GML.caracteres")).append("<BR>");
       }
     }
 
@@ -859,9 +817,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
     // pas d'erreur, on importe les emails
     List<String> emails = new ArrayList<String>();
-    for (int i = 0; i < csvValues.length; i++) {
+    for (final Variant[] csvValue : csvValues) {
       // Email
-      email = csvValues[i][0].getValueString();
+      email = csvValue[0].getValueString();
       emails.add(email);
     }
     dataInterface.setExternalsSuscribers(this.getCurrentLetter().getPK(), emails);
@@ -869,12 +827,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Export Csv emails
-   * @throws FileNotFoundException
    * @throws IOException
    * @throws InfoLetterException
    * @return boolean
    */
-  public boolean exportCsvEmails() throws FileNotFoundException, IOException, InfoLetterException {
+  public boolean exportCsvEmails() throws IOException, InfoLetterException {
     boolean exportOk = true;
     FileOutputStream fileOutput =
         new FileOutputStream(FileRepositoryManager.getTemporaryPath() + getCurrentLetter().
@@ -886,9 +843,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       csvWriter.initCSVFormat("org.silverpeas.infoLetter.settings.usersCSVFormat",
           "User", ";");
 
-      String email;
-      for (int i = 0; i < emails.size(); i++) {
-        email = emails.get(i);
+      for (String email : emails) {
         fileOutput.write(email.getBytes());
         fileOutput.write("\n".getBytes());
       }
@@ -914,8 +869,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     roles.add("admin");
     String[] userIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(), roles);
     if (userIds != null) {
-      for (int i = 0; i < userIds.length; i++) {
-        String userId = userIds[i];
+      for (String userId : userIds) {
         String email = getUserDetail(userId).geteMail();
         if (StringUtil.isDefined(email)) {
           emails.add(email);

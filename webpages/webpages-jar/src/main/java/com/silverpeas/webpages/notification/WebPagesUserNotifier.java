@@ -27,8 +27,9 @@ import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuild
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
-import com.silverpeas.subscribe.SubscriptionSubscriber;
+import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.subscribe.util.SubscriptionUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -38,9 +39,9 @@ import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
@@ -49,8 +50,7 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
 
   private final String userId;
 
-  private Collection<String> userIdsToNotify = new ArrayList<String>();
-  private Collection<String> groupIdsToNotify = new ArrayList<String>();
+  private Map<SubscriberType, Collection<String>> subscriberIdsByTypes;
 
   /**
    * Builds and sends a webpages notification.
@@ -81,18 +81,9 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
     super.initialize();
 
     // Subscribers
-    for (SubscriptionSubscriber subscriber : SubscriptionServiceFactory.getFactory()
-        .getSubscribeService()
-        .getSubscribers(ComponentSubscriptionResource.from(getResource().getInstanceId()))) {
-      switch (subscriber.getType()) {
-        case USER:
-          userIdsToNotify.add(subscriber.getId());
-          break;
-        case GROUP:
-          groupIdsToNotify.add(subscriber.getId());
-          break;
-      }
-    }
+    subscriberIdsByTypes = SubscriptionUtil.indexSubscriberIdsByType(
+        SubscriptionServiceFactory.getFactory().getSubscribeService()
+            .getSubscribers(ComponentSubscriptionResource.from(getResource().getInstanceId())));
   }
 
   /*
@@ -230,11 +221,11 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
    */
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return userIdsToNotify;
+    return subscriberIdsByTypes.get(SubscriberType.USER);
   }
 
   @Override
   protected Collection<String> getGroupIdsToNotify() {
-    return groupIdsToNotify;
+    return subscriberIdsByTypes.get(SubscriberType.GROUP);
   }
 }

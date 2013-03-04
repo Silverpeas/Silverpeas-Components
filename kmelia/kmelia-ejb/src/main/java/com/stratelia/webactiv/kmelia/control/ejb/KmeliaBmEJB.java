@@ -23,52 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import static com.silverpeas.util.StringUtil.getBooleanValue;
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.util.StringUtil.isInteger;
-import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.aKmeliaPublicationFromCompleteDetail;
-import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.aKmeliaPublicationFromDetail;
-import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.aKmeliaPublicationWithPk;
-import static com.stratelia.webactiv.util.JNDINames.COORDINATESBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.PDCBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.SILVERPEAS_DATASOURCE;
-import static com.stratelia.webactiv.util.JNDINames.STATISTICBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.VERSIONING_EJBHOME;
-import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.activation.FileTypeMap;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
-import com.silverpeas.subscribe.SubscriptionResource;
-import com.silverpeas.subscribe.service.NodeSubscriptionResource;
-import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
@@ -97,9 +51,12 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.Subscription;
+import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.NodeSubscription;
+import com.silverpeas.subscribe.service.NodeSubscriptionResource;
+import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
@@ -150,7 +107,6 @@ import com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -169,6 +125,28 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+
+import javax.activation.FileTypeMap;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.*;
+
+import static com.silverpeas.util.StringUtil.*;
+import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.*;
+import static com.stratelia.webactiv.util.JNDINames.*;
+import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
 
 /**
  * This is the KMelia EJB-tier controller of the MVC. It is implemented as a session EJB. It
@@ -1143,7 +1121,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       for (NodePK topicPK : topicPKsToDelete) {
         subscriptionResourcesToDelete.add(NodeSubscriptionResource.from(topicPK));
       }
-      getSubscribeBm().unsubscribe(subscriptionResourcesToDelete);
+      getSubscribeBm().unsubscribeByResources(subscriptionResourcesToDelete);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
@@ -1724,7 +1702,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
       int action) {
-    PublicationDetail pubDetail;
+    PublicationDetail pubDetail = null;
     try {
       pubDetail = getPublicationDetail(pubPK);
     } catch (Exception e) {
@@ -1733,9 +1711,17 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // if exception is throw, JMS will attempt to execute it again and again...
       SilverTrace.info("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
+    }
+
+    // The treatment is stopped if publication is not found or if publication doesn't correspond
+    // with parameter of given publication pk. The second condition could happen, for now,
+    // with applications dealing with wysiwyg without using publication for their storage
+    // (infoletter for example).
+    if (pubDetail == null || (StringUtil.isDefined(pubPK.getInstanceId()) &&
+        !pubDetail.getInstanceId().equals(pubPK.getInstanceId()))) {
       return;
     }
-    
+
     if (isDefined(userId)) {
       pubDetail.setUpdaterId(userId);
     }
