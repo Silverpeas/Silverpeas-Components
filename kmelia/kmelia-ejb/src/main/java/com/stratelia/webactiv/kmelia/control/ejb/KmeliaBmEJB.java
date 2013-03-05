@@ -2431,31 +2431,25 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     try {
       Collection<PublicationDetail> temp =
               getPublicationBm().getPublicationsByStatus(PublicationDetail.TO_VALIDATE, pubPK);
-      boolean targetedValidationEnabled = isTargetedValidationEnabled(componentId);
-      // retrieve original publications according to clones
+      // only publications which must be validated by current user must be returned
       for (PublicationDetail publi : temp) {
-        boolean isClone = PublicationDetail.TO_VALIDATE.equals(publi.getStatus()) && !"-1".equals(publi.getCloneId());
-        PublicationDetail toValidate = publi;
+        boolean isClone = publi.isValidationRequired() && !"-1".equals(publi.getCloneId());
         if (isClone) {
-          // publication is a clone, get original one
-          try {
-            toValidate = getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK()));
-          } catch (Exception e) {
-            // inconsistency in database ! Original publication does not exist
-            SilverTrace.warn("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
-                "kmelia.ORIGINAL_PUBLICATION_OF_CLONE_NOT_FOUND", "cloneId = " + publi.getId() +
-                    ", originalId=" + publi.getCloneId());
-          }
-        }
-        if (targetedValidationEnabled) {
-          // only publications which must be explicitly validated by current user must be returned
-          List<String> validatorIds = getValidatorIds(toValidate);
-          if (validatorIds.contains(userId)) {
-            publications.add(toValidate);
+          if (isUserCanValidatePublication(publi.getPK(), userId)) {          
+            // publication to validate is a clone, get original one
+            try {
+              PublicationDetail original = getPublicationDetail(new PublicationPK(publi.getCloneId(), publi.getPK()));
+              publications.add(original);
+            } catch (Exception e) {
+              // inconsistency in database ! Original publication does not exist
+              SilverTrace.warn("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
+                  "kmelia.ORIGINAL_PUBLICATION_OF_CLONE_NOT_FOUND", "cloneId = " + publi.getId() +
+                      ", originalId=" + publi.getCloneId());
+            }
           }
         } else {
-          if (isUserCanValidatePublication(toValidate.getPK(), userId)) {
-            publications.add(toValidate);
+          if (isUserCanValidatePublication(publi.getPK(), userId)) {
+            publications.add(publi);
           }
         }
       }
@@ -2465,7 +2459,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
               "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_PUBLICATIONS_A_VALIDER", e);
     }
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
-            "root.MSG_GEN_EXIT_METHOD");
+        "root.MSG_GEN_EXIT_METHOD");
     return pubDetails2userPubs(publications);
   }
 
