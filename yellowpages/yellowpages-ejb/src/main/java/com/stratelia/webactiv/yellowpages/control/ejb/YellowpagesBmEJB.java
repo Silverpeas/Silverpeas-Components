@@ -23,29 +23,13 @@
  */
 package com.stratelia.webactiv.yellowpages.control.ejb;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.silverpeas.formTemplate.dao.ModelDAO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.contact.control.ContactBm;
 import com.stratelia.webactiv.util.contact.control.ContactBmHome;
 import com.stratelia.webactiv.util.contact.model.CompleteContact;
@@ -55,9 +39,6 @@ import com.stratelia.webactiv.util.contact.model.ContactPK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -67,6 +48,16 @@ import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * This is the Yellowpages EJB-tier controller of the MVC. It is implemented as a session EJB. It
@@ -99,7 +90,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Set the current User ActorDetail
-   * @param ad a the ActorDetail corresponding to the current User
+   * @param user the UserDetail corresponding to the current User
    * @since 1.0
    */
   public void setActor(UserDetail user) {
@@ -466,7 +457,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -495,7 +485,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -519,7 +508,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -540,15 +528,12 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * Add a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
    * @param subTopic the NodeDetail of the new sub topic
-   * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
-   * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -578,15 +563,12 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
    * @param topic the NodeDetail of the updated sub topic
-   * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
-   * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -675,7 +657,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @param topicId the id of the topic to delete
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -743,7 +724,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -913,7 +893,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -961,7 +940,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1001,7 +979,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1045,9 +1022,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.yellowpages.model.TopicDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
-   * @exception javax.RemoveException
    * @since 1.0
    */
   public void deleteContact(String ContactId) {
@@ -1090,7 +1065,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.yellowpages.model.TopicDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1144,7 +1118,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @param fatherId the id of the topic
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1187,7 +1160,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @param fatherId the id of the topic
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1219,7 +1191,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @param modelId the id of the selected model
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1250,7 +1221,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.CompleteContact
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */
@@ -1311,7 +1281,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.CompleteContact
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    */
   public UserCompleteContact getCompleteContactInNode(String ContactId,
@@ -1407,7 +1376,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
    * @exception javax.ejb.FinderException
    * @exception javax.ejb.CreateException
-   * @exception javax.ejb.NamingException
    * @exception java.sql.SQLException
    * @since 1.0
    */

@@ -44,12 +44,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%!
 
-void displayUserView(GraphicElementFactory gef, CompleteContact contactComplete, UserDetail owner, ResourcesWrapper resources, ResourceLocator contactSettings, JspWriter out) throws IOException
+void displayUserView(GraphicElementFactory gef, CompleteContact contactComplete, List<Company> companyList, UserDetail owner, ResourcesWrapper resources, ResourceLocator contactSettings, JspWriter out) throws IOException
 {
 	ContactDetail detail = contactComplete.getContactDetail();
    out.println("<table>");
    out.println("<tr><td class=\"txtlibform\">"+resources.getString("Contact")+" :</td>");
    out.println("<td align=\"left\" class=\"txtnav\">"+EncodeHelper.javaStringToHtmlString(detail.getFirstName())+" "+EncodeHelper.javaStringToHtmlString(detail.getLastName())+"</td>");
+   out.println("</tr>");
+   out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">" + resources.getString("GML.company") + " :</td>");
+   displayCompanyList(out, companyList);
    out.println("</tr>");
    out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.phoneNumber")+" :</td>");
    out.println("<td align=\"left\">"+EncodeHelper.javaStringToHtmlString(detail.getPhone())+"</td>");
@@ -62,6 +65,51 @@ void displayUserView(GraphicElementFactory gef, CompleteContact contactComplete,
    out.println("</tr>");
    out.println("</table>");
 }
+
+    void displayCompanyList(JspWriter out, List<Company> companyList) throws IOException {
+        if (companyList != null && companyList.size() > 0) {
+            for (int i = 0; i < companyList.size(); i++) {
+                Company company = companyList.get(i);
+                if (i == 0) {
+                    // premier element de la liste affiché sur la même ligne que le label
+                    //out.println("<td align='left'>" + EncodeHelper.javaStringToHtmlString(company.getName()) + "</td>");
+                    out.println("<td align='left'><ul><li>" + EncodeHelper.javaStringToHtmlString(company.getName()));
+                } else {
+                    // les autres éléments affichés sur une ligne complète
+                    //out.println("</tr><tr><td/><td align='left'>" + EncodeHelper.javaStringToHtmlString(company.getName()) + "</td>");
+                    out.println("</li><li>" + EncodeHelper.javaStringToHtmlString(company.getName()));
+                }
+            }
+            out.println("</li></ul></td>");
+        }
+    }
+
+    // TODO ajouter la classe company_list dans les CSS
+    void displayCompanyListWithActionButtons(JspWriter out, List<Company> companyList, ContactDetail contactDetail, ResourcesWrapper resources) throws IOException {
+        out.println("<div id='CompanyList' class='company_list'>");
+        if (companyList != null && companyList.size() > 0) {
+
+            for (int i = 0; i < companyList.size(); i++) {
+                Company company = companyList.get(i);
+                out.println(generateCompanyLineHtml(company.getCompanyId(), company.getName(), resources));
+            }
+        }
+        out.println("</div>");
+    }
+
+    // TODO : duplicated with the javascript version... how to factorize this ?
+    String generateCompanyLineHtml(int companyId, String companyName, ResourcesWrapper resources) {
+        StringBuffer result = new StringBuffer("");
+        result.append("<div id='company_").append(companyId).append("'>");
+        result.append("<input type='hidden' id='companyId_").append(companyId).append("' name='companyIdList' value='").append(companyId).append("' />");
+        result.append("<input readonly type='text' value='" + EncodeHelper.javaStringToHtmlString(companyName)).append("' size='50'/>");
+        result.append("<span><a href='javaScript:companyRemoveFromList(").append(companyId).append(")' title='").append(resources.getString("CompanyUnlink")).append("'>");
+        String iconPath = resources.getIcon("yellowpages.delete");
+        result.append("<img border=0 src='").append(iconPath).append("' width=15 height=15>");
+        result.append("</a></span>");
+        result.append("</div>");
+        return result.toString();
+    }
 
 %>
 
@@ -97,6 +145,9 @@ function reallyClose()
   CompleteContact contactComplete = null;
   ContactDetail contactDetail = null;
 
+    String[] companyIdList = null;
+    List<Company> companyList = null;
+
 //Recuperation des parametres
 String action = (String) request.getAttribute("Action"); //Delete || Add || Update ||
 // ViewContactInTopic || View || UpdateView || ViewContact || SaveUser || New || SelectUser
@@ -124,15 +175,20 @@ if (action.equals("Delete") == false) {
 %>
 
 <%@page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="com.silverpeas.yellowpages.model.Company" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <view:includePlugin name="wysiwyg"/>
+<link href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" rel="stylesheet" type="text/css"
+      media="screen"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
 <script language="javascript">
 function contactDeleteConfirm(id) {
     if(window.confirm("<%=yellowpagesScc.getString("ConfirmDeleteContact")%> ?")){
@@ -214,6 +270,54 @@ function selectUser()
 function autoSubmit(){
 	document.enctypeForm.submit();
 }
+
+function companyRemoveFromList(companyId) {
+    $("#company_" + companyId).remove();
+
+}
+;
+
+function createCompanyLineHtml(companyId, companyName) {
+    result = "<div id='company_" + companyId + "'>";
+    result = result + "<input type='hidden' id='companyId_" + companyId + "' name='companyIdList' value='" + companyId + "' />";
+    result = result + "<input readonly type='text' value='" + companyName + "' size='50'/>";
+    result = result + "<span><a href='javaScript:companyRemoveFromList(" + companyId + ")'";
+    result = result + " title='<%= resources.getString("CompanyUnlink")%>'>";
+    result = result + "<img border=0 src='<%=resources.getIcon("yellowpages.delete")%>' width=15 height=15>";
+    result = result + "</a></span></div>";
+    return result;
+}
+;
+
+$(document).ready(function() {
+    $('#CompanyName').autocomplete("<%=m_context%>/CompanyAutocompleteServlet", {
+        minChars: 1,
+        max: 50,
+        autoFill: false,
+        mustMatch: true,
+        matchContains: false,
+        scrollHeight: 220,
+        formatItem: function(rowdata) {
+            var company = rowdata[0].split(":");
+            return company[1];
+        },
+        formatResult: function (rowdata) {
+            var company = rowdata[0].split(":");
+            //$('#CompanyId').val(company[0]);
+            return company[1];
+        }
+    }).result(function(e, rowdata) {
+                var company = rowdata[0].split(":");
+                companyId = company[0];
+                companyName = company[1];
+                if (!$("#company_" + companyId).length > 0) {
+                    // not already in the list
+                    $('#CompanyList').append(createCompanyLineHtml(companyId, companyName));
+                }
+                // empty the search field
+                $('#CompanyName').val("");
+            });
+});
 </script>
 </head>
 <% } // fin action != Delete
@@ -224,7 +328,8 @@ if (action.equals("Add")) {
 	//Ajout du contact
 	firstName = request.getParameter("FirstName");
 	lastName = request.getParameter("LastName");
-	email = request.getParameter("Email");
+    companyIdList = request.getParameterValues("companyIdList");
+    email = request.getParameter("Email");
 	phone = request.getParameter("Phone");
 	fax = request.getParameter("Fax");
 	userId = request.getParameter("UserId");
@@ -239,6 +344,8 @@ if (action.equals("Add")) {
     userContactComplete = yellowpagesScc.getCompleteContact(newContactId);
     yellowpagesScc.setCurrentContact(userContactComplete);
 
+        // Update company info for contact
+        yellowpagesScc.updateCompanyListForContact(companyIdList, newContactId);
 
 	if (yellowpagesScc.useForm())
 	{
@@ -256,6 +363,7 @@ else if (action.equals("Update")) {
       //Mise a jour du contact
       firstName = request.getParameter("FirstName");
       lastName = request.getParameter("LastName");
+      companyIdList = request.getParameterValues("companyIdList");
       email = request.getParameter("Email");
       phone = request.getParameter("Phone");
       fax = request.getParameter("Fax");
@@ -270,6 +378,9 @@ else if (action.equals("Update")) {
       yellowpagesScc.updateContact(contactDetail);
       userContactComplete = yellowpagesScc.getCompleteContact(id);
       yellowpagesScc.setCurrentContact(userContactComplete);
+
+      // Update company info for contact if needed
+      yellowpagesScc.updateCompanyListForContact(companyIdList, id);
 }
 else if (action.equals("ViewContactInTopic"))
 {
@@ -287,8 +398,10 @@ if (action.equals("View") || action.equals("UpdateView") || action.equals("ViewC
       contactComplete = userContactComplete.getContact();
       contactDetail = contactComplete.getContactDetail();
       ownerDetail = userContactComplete.getOwner();
+      // get company list if any
+      companyList = yellowpagesScc.getCompanyListForUserId(id);
 
-      if ((profile.equals("admin")) || ((ownerDetail!=null)&&(yellowpagesScc.getUserId().equals(ownerDetail.getId()))))
+    if ((profile.equals("admin")) || ((ownerDetail!=null)&&(yellowpagesScc.getUserId().equals(ownerDetail.getId()))))
           isOwner = true;
 
       if (isOwner) {
@@ -322,7 +435,7 @@ else if (action.equals("SaveUser")) {
 	  userContactComplete = yellowpagesScc.getCurrentContact();
       contactComplete = userContactComplete.getContact();
       contactDetail = contactComplete.getContactDetail();
-
+      companyList = yellowpagesScc.getCompanyListForUserId(id);
       firstName = contactDetail.getFirstName();
       lastName = contactDetail.getLastName();
       email = contactDetail.getEmail();
@@ -340,6 +453,7 @@ else if (action.equals("SaveUser")) {
 else if (action.equals("New") || action.equals("SelectUser")) {
       firstName = request.getParameter("FirstName");
       lastName = request.getParameter("LastName");
+      companyIdList = request.getParameterValues("companyIdList");
       email = request.getParameter("Email");
       phone = request.getParameter("Phone");
       fax = request.getParameter("Fax");
@@ -454,6 +568,22 @@ else if (action.equals("New") || action.equals("UpdateView")) {
       <td><input type="text" name="Phone" value="<%=EncodeHelper.javaStringToHtmlString(phone)%>" size="20" maxlength="20"/></td></tr>
   <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.faxNumber")%>&nbsp;:</td>
       <td><input type="text" name="Fax" value="<%=EncodeHelper.javaStringToHtmlString(fax)%>" size="20" maxlength="20"/></td></tr>
+  <tr>
+    <td valign="baseline" align=left class="txtlibform"><%=resources.getString("GML.company")%>
+        &nbsp;:
+    </td>
+    <td><input type="text" id="CompanyName" name="CompanyName" value="" size="60"
+               maxlength="100"></td>
+  </tr>
+  <tr>
+    <td/>
+    <td>
+        <%
+            // Liste des companies déjà affectées au contact
+            displayCompanyListWithActionButtons(out, companyList, contactDetail, resources);
+        %>
+    </td>
+  </tr>
   <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("GML.publisher")%>&nbsp;:</td>
       <td><%=creatorName%></td></tr>
   <tr><td valign="baseline" align=left  class="txtlibform"><%=resources.getString("ContactDateCreation")%>&nbsp;:</td>
@@ -500,15 +630,15 @@ else if (action.equals("ViewContact")) {
 		out.println(frame.printBefore());
 		out.println(board.printBefore());
 
-		displayUserView(gef, contactComplete, ownerDetail, resources, contactSettings, out);
+		displayUserView(gef, contactComplete, companyList, ownerDetail, resources, contactSettings, out);
 
 		if (formView != null)
 			formView.display(out, context, data);
 
-		out.println(board.printAfter());
-		out.println(frame.printAfter());
-		out.println(window.printAfter());
-		%>
+    out.println(board.printAfter());
+    out.println(frame.printAfter());
+    out.println(window.printAfter());
+%>
 
 		<form name="contactForm" action="contactManager.jsp" method="post">
 			<input type="hidden" name="Action"/>

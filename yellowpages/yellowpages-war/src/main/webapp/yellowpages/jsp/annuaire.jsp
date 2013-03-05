@@ -74,7 +74,8 @@ private String afficheArbo(String idNodeSelected,
 %>
 <%
   Collection contacts = (Collection) request.getAttribute("Contacts");
-			TopicDetail currentTopic = (TopicDetail) request
+  Collection companies = (Collection) request.getAttribute("Companies");
+            TopicDetail currentTopic = (TopicDetail) request
 					.getAttribute("CurrentTopic");
 			GroupDetail group = (GroupDetail) request.getAttribute("Group");
 			Boolean bPortletMode = (Boolean) request
@@ -106,6 +107,7 @@ private String afficheArbo(String idNodeSelected,
 <script type="text/javascript">
 var printWindow = window;
 var contactWindow = window;
+var companyWindow = window;
 function printList(){
 	printWindow = SP_openWindow("PrintList", "printWindow", '800', '600', 'scrollbars=yes, alwayRaised');
 }
@@ -115,7 +117,9 @@ function closeWindows()
 	if (!printWindow.closed && printWindow.name== "printWindow")
     	printWindow.close(); 
     if (!contactWindow.closed &&  contactWindow.name== "contactWindow")
-    	contactWindow.close(); 
+    	contactWindow.close();
+    if (!companyWindow.closed && companyWindow.name == "companyWindow")
+        companyWindow.close();
 }
 
 function topicGoToSelected() {
@@ -161,6 +165,12 @@ function goToUser(id){
 					? "480"
 					: resources.getSetting("popupHeight")%>;
     contactWindow = SP_openWindow("ViewUserFull?Id="+id, windowName, width, height, windowParams);
+}
+
+function goToCompany(id) {
+    document.companyForm.action = "companyView";
+    document.companyForm.ContactCompanyId.value = id;
+    document.companyForm.submit();
 }
 
 function topicGoTo(id) {
@@ -350,8 +360,9 @@ function exportCSV(){
 			out.println(board.printAfter());
 			out.println("<br/>");
 			DisplayContactsHelper.displayContactsUser(yellowpagesScc, contacts, id, componentLabel, gef, request, session, resources, out);
-
-			out.println(frame.printAfter());
+            out.println("<br/><br/>");
+            DisplayContactsHelper.displayContactsCompany(yellowpagesScc, companies, id, componentLabel, gef, request, session, resources, out);
+            out.println(frame.printAfter());
 			out.println(window.printAfter());
 %>
 </form>
@@ -360,6 +371,9 @@ function exportCSV(){
 	<input type="hidden" name="ContactId"/> 
 	<input type="hidden" name="TopicId"/> 
 	<input type="hidden" name="Path"/>
+</form>
+<form NAME="companyForm" ACTION="" METHOD="POST">
+    <input type="hidden" name="ContactCompanyId">
 </form>
 </body>
 </html>

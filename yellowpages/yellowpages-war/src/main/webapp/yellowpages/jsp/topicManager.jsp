@@ -193,11 +193,25 @@ function contactGoTo(id){
     document.contactForm.submit();
 }
 
+function contactCompanyGoTo(id) {
+    document.companyForm.action = "companyEdit";
+    document.companyForm.ContactCompanyId.value = id;
+    document.companyForm.submit();
+}
+
 function contactDeleteConfirm(id) {
     if(window.confirm("<%=yellowpagesScc.getString("ConfirmDeleteContact")%> ?")){
           document.contactDeleteForm.action = "DeleteContact";
           document.contactDeleteForm.ContactId.value = id;
           document.contactDeleteForm.submit();
+    }
+}
+
+function contactCompanyDeleteConfirm(id) {
+    if (window.confirm("<%=yellowpagesScc.getString("ConfirmDeleteCompany")%> ?")) {
+        document.contactCompanyDeleteForm.action = "DeleteContactCompany";
+        document.contactCompanyDeleteForm.ContactCompanyId.value = id;
+        document.contactCompanyDeleteForm.submit();
     }
 }
 
@@ -263,8 +277,8 @@ if ("Search".equals(action)) {
 		if (!id.equals(TRASHCAN_ID)){
 			operationPane.addOperation(resources.getIcon("yellowpages.modelUsed"), resources.getString("yellowpages.ModelUsed"), "ModelUsed");
 			operationPane.addLine();
-			operationPane.addOperationOfCreation(resources.getIcon("yellowpages.folderAdd"), resources.getString("CreerSousTheme"), "javascript:onClick=topicAdd('"+id+"')");
-			operationPane.addOperationOfCreation(resources.getIcon("yellowpages.groupAdd"), resources.getString("GroupAdd"), "javascript:onClick=addGroup()");
+			operationPane.addOperation(resources.getIcon("yellowpages.folderAdd"), resources.getString("CreerSousTheme"), "javascript:onClick=topicAdd('"+id+"')");
+			operationPane.addOperation(resources.getIcon("yellowpages.groupAdd"), resources.getString("GroupAdd"), "javascript:onClick=addGroup()");
 			operationPane.addLine();
 		}
 		else
@@ -273,10 +287,11 @@ if ("Search".equals(action)) {
 		}
     }
     
-	// Si nous sommes dans la corbeille, alors nous ne pouvons cr�er un contact dedans !!
+	// Si nous sommes dans la corbeille, alors nous ne pouvons creer un contact dedans !!
 	if (!id.equals(TRASHCAN_ID)){
-		operationPane.addOperationOfCreation(resources.getIcon("yellowpages.contactAdd"), yellowpagesScc.getString("ContactCreer"), "javascript:onClick=contactAdd()");
-		operationPane.addOperationOfCreation(resources.getIcon("yellowpages.importCSV"), resources.getString("yellowpages.importCSV"), "javascript:onClick=importCSV('"+id+"')");
+		operationPane.addOperation(resources.getIcon("yellowpages.contactAdd"), yellowpagesScc.getString("ContactCreer"), "javascript:onClick=contactAdd()");
+        operationPane.addOperation(resources.getIcon("yellowpages.companyAdd"), yellowpagesScc.getString("CompanyCreer"), "companyAdd");
+        operationPane.addOperation(resources.getIcon("yellowpages.importCSV"), resources.getString("yellowpages.importCSV"), "javascript:onClick=importCSV('"+id+"')");
 		operationPane.addLine();
 		operationPane.addOperation(resources.getIcon("yellowpages.basket"), yellowpagesScc.getString("ContactBasket"), "javascript:onClick=topicGoTo('1')");
   	}
@@ -285,7 +300,7 @@ if ("Search".equals(action)) {
     TabbedPane tabbedPane = gef.getTabbedPane();
     tabbedPane.addTab(yellowpagesScc.getString("Consultation"),"javascript:consult();",false);
     tabbedPane.addTab(resources.getString("GML.management"),"#",true);
-          
+
     out.println(window.printBefore());
     out.println(tabbedPane.print());
 %>
@@ -306,6 +321,13 @@ if ("Search".equals(action)) {
     	DisplayContactsHelper.displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.contactDelete"), gef, request, session, resources, out);
     else
       	DisplayContactsHelper.displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.delete"), gef, request, session, resources, out);
+
+    out.println("<br/><br/>");
+
+    if (!id.equals(TRASHCAN_ID))
+        DisplayContactsHelper.displayContactsCompanyAdmin(resources.getIcon("yellowpages.group"), yellowpagesScc, profile, currentTopic.getContactCompanyDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.contactDelete"), gef, request, session, resources, out);
+    else
+        DisplayContactsHelper.displayContactsCompanyAdmin(resources.getIcon("yellowpages.group"), yellowpagesScc, profile, currentTopic.getContactCompanyDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.delete"), gef, request, session, resources, out);
 %>
 </view:frame>
 <%
@@ -318,15 +340,26 @@ if ("Search".equals(action)) {
 </form>
 
 <form name="contactForm" action="contactManager.jsp" target="contactWindow" method="post">
-<input type="hidden" name="Action"/>
-<input type="hidden" name="ContactId"/>
+    <input type="hidden" name="Action"/>
+    <input type="hidden" name="ContactId"/>
 </form>
 
+<FORM NAME="companyForm" ACTION="" METHOD="POST">
+    <input type="hidden" name="ContactCompanyId">
+</FORM>
+
 <form name="contactDeleteForm" action="topicManager.jsp" method="post">
-<input type="hidden" name="Action"/>
-<input type="hidden" name="ContactId"/>
-<input type="hidden" name="Id" value="<%=id%>"/>
+    <input type="hidden" name="Action"/>
+    <input type="hidden" name="ContactId"/>
+    <input type="hidden" name="Id" value="<%=id%>"/>
 </form>
+
+<FORM NAME="contactCompanyDeleteForm" ACTION="topicManager.jsp" METHOD="POST">
+    <input type="hidden" name="Action">
+    <input type="hidden" name="ContactCompanyId">
+    <input type="hidden" name="Id" value="<%=id%>">
+</FORM>
+
 <form name="refreshList" action="topicManager"></form>
 
 </body>

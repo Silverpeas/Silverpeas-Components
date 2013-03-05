@@ -35,5 +35,13 @@
     <servlet-name>YellowpagesRequestRouter</servlet-name>
     <url-pattern>/Ryellowpages/*</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>CompanyAutocompleteServlet</servlet-name>
+    <servlet-class>com.silverpeas.yellowpages.servlets.CompanyAutocompleteServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CompanyAutocompleteServlet</servlet-name>
+    <url-pattern>/CompanyAutocompleteServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
 

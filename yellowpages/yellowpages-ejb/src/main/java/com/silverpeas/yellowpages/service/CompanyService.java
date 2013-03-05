@@ -1,0 +1,60 @@
+/**
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.silverpeas.yellowpages.service;
+
+import com.silverpeas.yellowpages.model.Company;
+import com.silverpeas.yellowpages.model.GenericContact;
+import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
+
+import java.util.List;
+
+
+public interface CompanyService {
+
+    public Company createCompany(String instanceId, String name, String email, String phone, String fax, int topicId) throws YellowpagesRuntimeException;
+
+    public Company saveCompany(int id, String name, String email, String phone, String fax) throws YellowpagesRuntimeException;
+
+    public void deleteCompany(int id) throws YellowpagesRuntimeException;
+
+    public Company getCompany(int id);
+
+    public void addContactToCompany(int companyId, int contactId) throws YellowpagesRuntimeException;
+
+    public void removeContactFromCompany(int companyId, int contactId) throws YellowpagesRuntimeException;
+
+    public void deleteGenericContactMatchingContact(int contactId);
+
+    public List<Company> findCompanyListByContactId(int contactId);
+
+    public List<Company> findAllCompanies();
+
+    public List<Company> findCompaniesByPattern(String pattern);
+
+    public List<GenericContact> findContactListByCompanyId(int companyId);
+
+    public List<Company> findAllCompaniesForTopic(int topicId);
+}
+

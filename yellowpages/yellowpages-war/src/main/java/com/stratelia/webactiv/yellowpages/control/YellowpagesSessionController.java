@@ -56,6 +56,10 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.Variant;
+import com.silverpeas.yellowpages.model.Company;
+import com.silverpeas.yellowpages.model.GenericContact;
+import com.silverpeas.yellowpages.service.CompanyService;
+import com.silverpeas.yellowpages.service.ServicesFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -96,23 +100,32 @@ import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
 
 import java.util.Locale;
 
+import javax.ejb.EJBException;
+import javax.ejb.RemoveException;
+import java.io.*;
+import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
+import java.util.*;
+
 public class YellowpagesSessionController extends AbstractComponentSessionController {
 
-  private YellowpagesBm kscEjb = null;
-  private TopicDetail currentTopic = null;
-  private UserCompleteContact currentContact = null;
-  private String path = null;
-  private String owner = "false";
-  private String profile; // admin || publisher || user
-  private List<GroupDetail> groupPath = new ArrayList<GroupDetail>();
-  private boolean portletMode = false;
-  private Collection<ContactFatherDetail> currentContacts = null;
-  private Collection<UserFull> currentFullUsers = null; // liste de UserFull
-  private Collection<UserCompleteContact> currentCompleteUsers = null;
-  private String currentTypeSearch;
-  private String currentSearchCriteria;
-  public static final String GroupReferentielPrefix = "group_";
-  private ResourceLocator domainMultilang;
+    private YellowpagesBm kscEjb = null;
+    private TopicDetail currentTopic = null;
+    private UserCompleteContact currentContact = null;
+    private String path = null;
+    private String owner = "false";
+    private String profile; // admin || publisher || user
+    private List<GroupDetail> groupPath = new ArrayList<GroupDetail>();
+    private boolean portletMode = false;
+    private Collection<ContactFatherDetail> currentContacts = null;
+    private Collection<UserFull> currentFullUsers = null; // liste de UserFull
+    private Collection<UserCompleteContact> currentCompleteUsers = null;
+    private String currentTypeSearch;
+    private String currentSearchCriteria;
+    public static final String GroupReferentielPrefix = "group_";
+    private ResourceLocator domainMultilang;
+    private CompanyService serviceCompany = null;
+    private Collection<Company> currentCompanies = null;
 
   /**
    * Creates new sessionClientController
@@ -134,6 +147,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       ResourceLocator domainProperty = new ResourceLocator(domain.getPropFileName(), "");
       domainMultilang = new ResourceLocator(domainProperty.getString("property.ResourceFile"), "");
     }
+    // Services
+    this.serviceCompany = ServicesFactory.getCompanyService();
   }
 
   private void initEJB() {
@@ -290,22 +305,23 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return kscEjb;
   }
 
-  /**
-   * ***********************************************************************************
-   */
+  /**************************************************************************************/
   /* YELLOWPAGES - Gestion des themes */
   /**
    * @param id
    * @return
-   * @throws java.rmi.RemoteException
-   */
+   * @throws java.rmi.RemoteException************************************************************************************/
   public synchronized TopicDetail getTopic(String id) throws RemoteException {
-    try {
-      return kscEjb.goTo(id);
-    } catch (NoSuchObjectException nsoe) {
-      initEJB();
-      return getTopic(id);
-    }
+      try {
+          TopicDetail topicDetail = kscEjb.goTo(id);
+          // Recuperation de la liste des companies associees au topic
+          int topicId = Integer.valueOf(topicDetail.getNodePK().getId());
+          topicDetail.setContactCompanyDetails(this.serviceCompany.findAllCompaniesForTopic(topicId));
+          return topicDetail;
+      } catch (NoSuchObjectException nsoe) {
+          initEJB();
+          return getTopic(id);
+      }
   }
 
   public GroupDetail getGroup(String groupId) throws RemoteException {
@@ -320,7 +336,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       subGroup = subGroup1;
       subGroupDetail = new GroupDetail(subGroup);
       subGroupDetail.setTotalUsers(
-        getOrganizationController().getAllSubUsersNumber(subGroup.getId()));
+          getOrganizationController().getAllSubUsersNumber(subGroup.getId()));
       groupDetail.addSubGroup(subGroupDetail);
     }
 
@@ -375,10 +391,10 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public synchronized NodePK updateTopicHeader(NodeDetail nd)
-    throws RemoteException {
+      throws RemoteException {
     SilverTrace.info("yellowpages",
-      "YellowpagesSessionController.updateTopicHeader()",
-      "root.MSG_GEN_PARAM_VALUE", "id = " + nd.getNodePK().getId());
+        "YellowpagesSessionController.updateTopicHeader()",
+        "root.MSG_GEN_PARAM_VALUE", "id = " + nd.getNodePK().getId());
     try {
       return kscEjb.updateTopic(nd);
     } catch (NoSuchObjectException nsoe) {
@@ -588,7 +604,12 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         recordSet.delete(data);
       }
 
-      // delete contact
+      int intContactId = Integer.valueOf(contactId);
+
+      // Delete genericContact (if any)
+      this.serviceCompany.deleteGenericContactMatchingContact(intContactId);
+
+        // delete contact
       kscEjb.deleteContact(contactId);
       resetCurrentFullCompleteUsers();
     } catch (NoSuchObjectException nsoe) {
@@ -1175,7 +1196,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         modelUser.setFirstName(query);
 
         UserDetail[] usersFirstName = getOrganizationController().searchUsers(
-          modelUser, true);
+            modelUser, true);
 
         UserDetail[] temp = new UserDetail[users.length + usersFirstName.length];
 
@@ -1336,7 +1357,15 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     this.currentContacts = currentContacts;
   }
 
-  public boolean isPortletMode() {
+  public Collection<Company> getCurrentCompanies() {
+    return currentCompanies;
+  }
+
+  public void setCurrentCompanies(Collection<Company> currentCompanies) {
+    this.currentCompanies = currentCompanies;
+  }
+
+    public boolean isPortletMode() {
     return portletMode;
   }
 
@@ -1428,7 +1457,27 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return arrayHeaders;
   }
 
-  private ResourceLocator getDomainMultilang() {
+  public List<String> getPropertiesCompanies() {
+    List<String> properties = new ArrayList<String>();
+    String columns = getSettings().getString("columnscompany");
+    String[] nameColumns = columns.split(",");
+    for (String nameProperty : nameColumns) {
+      properties.add(nameProperty);
+    }
+    return properties;
+  }
+
+  public List<String> getArrayHeadersCompanies() {
+    List<String> arrayHeaders = new ArrayList<String>();
+    List<String> properties = getPropertiesCompanies();
+    for (String nameProperty : properties) {
+      String nameHeader = getMultilang().getString("yellowpages.column." + nameProperty);
+      arrayHeaders.add(nameHeader);
+    }
+    return arrayHeaders;
+  }
+
+    private ResourceLocator getDomainMultilang() {
     return domainMultilang;
   }
 
@@ -1615,20 +1664,20 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
           }
           // Header columns (lastName, firstName, email, phone, fax)
           contactDetail =
-            new ContactDetail("X", CSVRow[1], CSVRow[0], CSVRow[2], CSVRow[3], CSVRow[4], null,
-            null, null);
+              new ContactDetail("X", CSVRow[1], CSVRow[0], CSVRow[2], CSVRow[3], CSVRow[4], null,
+                  null, null);
 
           try {
             String contactId = createContact(contactDetail);
             // Extra columns from xml form ?
             if (StringUtil.isDefined(modelId)) {
               String xmlFormShortName = modelId.substring(modelId.indexOf("/") + 1, modelId.indexOf(
-                "."));
+                  "."));
 
               // récupération des données du formulaire (via le DataRecord)
-              PublicationTemplate pubTemplate = getPublicationTemplateManager()
-                .getPublicationTemplate(getComponentId() + ":"
-                + xmlFormShortName);
+              PublicationTemplate pubTemplate = getPublicationTemplateManager().
+                  getPublicationTemplate(getComponentId() + ":"
+                      + xmlFormShortName);
               DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
               record.setId(contactId);
 
@@ -1637,7 +1686,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
               int fieldIndex = 0;
               for (int column = csvReader.getM_nbCols(); column < csvReader.getM_nbCols()
-                + csvReader.getM_specificNbCols(); column++) {
+                  + csvReader.getM_specificNbCols(); column++) {
                 String value = formatStringSeparator(CSVRow[column]);
                 if (StringUtil.isDefined(value)) {
                   FieldTemplate fieldTemplate = fieldTemplates[fieldIndex];
@@ -1654,13 +1703,13 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
               // sauvegarde du contact et du model
               createInfoModel(contactId, modelId);
               UserCompleteContact userContactComplete =
-                new UserCompleteContact(null,
-                new CompleteContact(contactDetail, xmlFormShortName));
+                  new UserCompleteContact(null,
+                      new CompleteContact(contactDetail, xmlFormShortName));
               setCurrentContact(userContactComplete);
             }
           } catch (Exception re) {
             SilverTrace.error("yellowpagesSession",
-              "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", re);
+                "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", re);
           }
           if (listErrors.length() > 0) {
             result.put(Boolean.TRUE, listErrors.toString());
@@ -1671,7 +1720,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         }
       } catch (UtilTrappedException ute) {
         SilverTrace.error("yellowpagesSession",
-          "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", ute);
+            "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", ute);
         result.put(Boolean.TRUE, ute.getExtraInfos());
       }
       result.put(Boolean.FALSE, Integer.toString(nbContactsAdded));
@@ -1716,6 +1765,191 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     String modelId = getCurrentTopic().getNodeDetail().getModelId();
     return StringUtil.isDefined(modelId) && !"0".equals(modelId);
   }
+
+    /**
+     * Crée une nouvelle company
+     *
+     * @param name  nom de la company
+     * @param email email de la company
+     * @param phone téléphone de la company
+     * @param fax   fax de la company
+     * @return id de la company créée
+     * @throws YellowpagesRuntimeException si erreur lors de la création de la company
+     */
+    public synchronized int createCompany(String name, String email, String phone, String fax, int topicId) throws YellowpagesRuntimeException {
+        Company company = this.serviceCompany.createCompany(this.getComponentId(), name, email, phone, fax, topicId);
+        return company.getCompanyId();
+    }
+
+    /**
+     * Enregistre une company existante
+     *
+     * @param id    identifiant en DB de la company à enregistrer
+     * @param name  nom de la company
+     * @param email email de la company
+     * @param phone téléphone de la company
+     * @param fax   fax de la company
+     * @return id de la company enrregistrée
+     * @throws YellowpagesRuntimeException si erreur lors de la sauvegarde de la company
+     */
+    public synchronized int saveCompany(int id, String name, String email, String phone, String fax) throws YellowpagesRuntimeException {
+        Company company = this.serviceCompany.saveCompany(id, name, email, phone, fax);
+        return company.getCompanyId();
+    }
+
+    /**
+     * Récupère toutes les companies
+     * @return Liste de company
+     * @throws RemoteException si erreur détectée
+     */
+    public synchronized Collection<Company> getAllCompanies() throws RemoteException {
+        return serviceCompany.findAllCompanies();
+    }
+
+    /**
+     * Récupère seulement les companies du topic
+     * @return Liste de company
+     * @throws RemoteException si erreur détectée
+     */
+    public synchronized Collection<Company> getAllCompanies(String strTopicId) throws RemoteException {
+        int topicId;
+        if (StringUtil.isNotEmpty(strTopicId)) {
+            topicId = Integer.valueOf(strTopicId);
+            return serviceCompany.findAllCompaniesForTopic(topicId);
+        } else
+            return null;
+    }
+
+    /**
+     * Supprime une company de la base
+     * Le contacts qui était liés à cette company ne seront plus lié à personne.
+     *
+     * @param id
+     * @throws YellowpagesRuntimeException Si erreur lors de la suppression
+     */
+    public synchronized void deleteCompany(int id) throws YellowpagesRuntimeException {
+        this.serviceCompany.deleteCompany(id);
+    }
+
+    /**
+     * Récupère un objet company à partir de son id
+     *
+     * @param companyId id à chercher
+     * @return l'objet company trouvé
+     * @throws RemoteException Si erreur lors de la récupération de la company
+     */
+    public synchronized Company getCompany(int companyId) throws RemoteException {
+        return this.serviceCompany.getCompany(companyId);
+    }
+
+    /**
+     * Recherche la liste des companies associées à un Contact
+     *
+     * @param strContactId Id du contact sur lequel chercher
+     * @return la liste des companies qui ont une relation avec ce contact. Renvoie null si non trouvé ou si strContactId n'est pas un entier.
+     */
+    public synchronized List<Company> getCompanyListForUserId(String strContactId) throws RemoteException {
+        int contactId;
+        try {
+            contactId = Integer.parseInt(strContactId);
+
+            List<Company> companyList = this.serviceCompany.findCompanyListByContactId(contactId);
+            if ((companyList == null) || (companyList.isEmpty()) || (companyList.size() == 0)) {
+                return null;
+            } else {
+                return companyList;
+            }
+
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Supprime le lien entre le contact et ses companies
+     *
+     * @param contactId id du contact à nettoyer
+     * @throws YellowpagesRuntimeException si erreur lors de la suppression
+     */
+    @Deprecated
+    public synchronized void cleanCompaniesForContact(String contactId) throws YellowpagesRuntimeException {
+        int id;
+        try {
+            id = Integer.parseInt(contactId);
+            // récupération de la liste des companies associées au contact
+            List<Company> companyList = this.serviceCompany.findCompanyListByContactId(id);
+            for (Company company : companyList) {
+                this.serviceCompany.removeContactFromCompany(company.getCompanyId(), id);
+            }
+        } catch (NumberFormatException e) {
+            // nothing to do
+        }
+    }
+
+    /**
+     * Récupère la liste des contacts associés à une company
+     *
+     * @param companyId
+     * @return
+     * @throws RemoteException
+     */
+    public synchronized List<ContactDetail> getContactDetailListForCompanyId(int companyId) throws RemoteException {
+        List<GenericContact> genericContactList = this.serviceCompany.findContactListByCompanyId(companyId);
+        if (genericContactList == null || genericContactList.isEmpty() || genericContactList.size() == 0) {
+            return null;
+        } else {
+            List<ContactDetail> contactDetailList = new ArrayList<ContactDetail>();
+            for (GenericContact contactDetail : genericContactList) {
+                ContactDetail detail = this.kscEjb.getContactDetail(String.valueOf(contactDetail.getContactId()));
+                if (detail != null) {
+                    contactDetailList.add(detail);
+                }
+            }
+            return contactDetailList;
+        }
+    }
+
+    /**
+     * Met à jour la nouvelle liste des companies pour un contact
+     *
+     * @param companyStrIdList Tableau des ids (String) des companies à ajouter au contact
+     * @param strContactId     contactId (sous forme de String)
+     *                         TODO : bidouille a supprimer dès que JPA fonctionne correctement
+     */
+    public synchronized void updateCompanyListForContact(String[] companyStrIdList, String strContactId) {
+
+        int contactId = Integer.parseInt(strContactId);
+        Map<Integer, Company> newCompanyList = new HashMap<Integer, Company>();
+        if (companyStrIdList != null) {
+            for (int i = 0; i < companyStrIdList.length; i++) {
+                Integer companyId = Integer.parseInt(companyStrIdList[i]);
+                Company company = this.serviceCompany.getCompany(companyId);
+                newCompanyList.put(companyId, company);
+            }
+        }
+
+        // récupération de la liste des companies actuellement associées au contact
+        List<Company> currentCompanyList = this.serviceCompany.findCompanyListByContactId(contactId);
+
+        // Parcours de la liste courante
+        for (Company company : currentCompanyList) {
+            Company c = newCompanyList.get(company.getCompanyId());
+            if (c == null) {
+                // si la company n'est pas dans la nouvelle liste => suppression de la DB (entrées supprimées)
+                this.serviceCompany.removeContactFromCompany(company.getCompanyId(), contactId);
+            } else {
+                // enlever de la nouvelle liste car déjà associée à ce contact en DB
+                newCompanyList.remove(c);
+                // ne rien faire en DB
+            }
+        }
+
+        // S'il reste des companies dans la new list, alors il faut les ajouter en DB (nouvelles entrées)
+        for (Company company : newCompanyList.values()) {
+            this.serviceCompany.addContactToCompany(company.getCompanyId(), contactId);
+        }
+
+    }
   
   public List<PublicationTemplate> getForms() {
     List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();

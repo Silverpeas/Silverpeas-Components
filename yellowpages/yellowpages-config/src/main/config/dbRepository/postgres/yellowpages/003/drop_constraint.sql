@@ -1,0 +1,39 @@
+ALTER TABLE SC_Contact_GroupFather
+DROP CONSTRAINT PK_SC_Contact_GroupFather
+;
+
+ALTER TABLE SC_Contact_GenericContact_Rel
+DROP CONSTRAINT PK_Contact_GenericContact_Rel
+;
+
+ALTER TABLE SC_Contact_GenericContact_Rel
+DROP CONSTRAINT FK_Contact_GenericContact_Rel_FKContact
+;
+
+ALTER TABLE SC_Contact_GenericContact_Rel
+DROP CONSTRAINT FK_Contact_GenericContact_Rel_FKCompany
+;
+
+ALTER TABLE SC_Contact_Company
+DROP CONSTRAINT PK_Contact_Company
+;
+
+ALTER TABLE SC_Contact_GenericContact
+DROP CONSTRAINT PK_Contact_GenericContact
+;
+
+ALTER TABLE SC_Contact_GenericContact
+DROP CONSTRAINT FK_Contact_GenericContact_FKContact
+;
+
+ALTER TABLE SC_Contact_GenericContact
+DROP CONSTRAINT FK_Contact_GenericContact_FKCompany
+;
+
+ALTER TABLE SC_Contact_GenericContact_Topic
+DROP CONSTRAINT PK_SC_Contact_GenericContact_Topic
+;
+
+ALTER TABLE SC_Contact_GenericContact_Topic
+DROP CONSTRAINT FK_Contact_GenericContact_Topic_FKGContact
+;

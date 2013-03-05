@@ -25,6 +25,7 @@ package com.stratelia.webactiv.yellowpages.model;
 
 import java.util.Collection;
 
+import com.silverpeas.yellowpages.model.Company;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
@@ -49,6 +50,9 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /** A NodeDetail collection representing the path from leaf to root */
   private Collection<UserContact> contactDetails;
+
+  /** A collection representing the path from leaf to root */
+  private Collection<Company> contactCompanyDetails;
 
   /**
    * A int collection which contains the number of contact containing under each
@@ -134,6 +138,18 @@ public class TopicDetail extends Object implements java.io.Serializable {
   }
 
   /**
+   * Get a Company collection containing all the Companies in this topic
+   *
+   * @return a Company collection containing all the companies in this topic
+   * @see com.silverpeas.yellowpages.model.Company
+   * @see java.util.Collection
+   * @since 1.0
+   */
+  public Collection<Company> getContactCompanyDetails() {
+    return this.contactCompanyDetails;
+  }
+
+  /**
    * Get a int collection containing the number of contacts of each sub topics
    * 
    * @return a int collection containing the number of contacts of each sub
@@ -176,6 +192,17 @@ public class TopicDetail extends Object implements java.io.Serializable {
    */
   public void setContactDetails(Collection<UserContact> pd) {
     this.contactDetails = pd;
+  }
+
+
+  /**
+   * Set the company for each company containing in this topic
+   *
+   * @param companies
+   *          a Company Collection
+   */
+  public void setContactCompanyDetails(Collection<Company> companies) {
+    this.contactCompanyDetails = companies;
   }
 
   /**
