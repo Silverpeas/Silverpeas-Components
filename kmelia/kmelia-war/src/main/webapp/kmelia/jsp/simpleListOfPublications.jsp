@@ -166,6 +166,9 @@ $(document).ready(function() {
           	if (kmeliaScc.isWysiwygOnTopicsEnabled()) {
 				operationPane.addOperation("useless", kmeliaScc.getString("TopicWysiwyg"), "javascript:onClick=topicWysiwyg('"+id+"')");
 			}
+          if (SilverpeasRole.admin.isInRole(profile)) {
+            operationPane.addOperation("useless", resources.getString("GML.manageSubscriptions"), "ManageSubscriptions");
+          }
           	if (kmeliaScc.isExportComponentAllowed() && kmeliaScc.isExportZipAllowed()) {
 	        	operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportTopic()");
           	}

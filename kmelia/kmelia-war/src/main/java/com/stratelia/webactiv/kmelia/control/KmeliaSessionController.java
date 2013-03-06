@@ -23,43 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_FOR_USER;
-import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_LANGUAGE;
-import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.EXPORT_TOPIC;
-import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.aKmeliaPublicationExporter;
-import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.ejb.EJBObject;
-import javax.ejb.RemoveException;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.search.SearchEngineFactory;
-
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
@@ -82,6 +45,7 @@ import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
@@ -124,16 +88,7 @@ import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.kmelia.FileImport;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
@@ -151,8 +106,6 @@ import com.stratelia.webactiv.kmelia.model.updatechain.FieldParameter;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.model.updatechain.UpdateChainDescriptor;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -168,9 +121,6 @@ import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.util.GlobalContext;
-
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -193,6 +143,31 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.subscription.SubscriptionContext;
+import org.silverpeas.util.GlobalContext;
+
+import javax.ejb.EJBObject;
+import javax.ejb.RemoveException;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 public class KmeliaSessionController extends AbstractComponentSessionController implements
         ExportFileNameProducer {
@@ -2177,7 +2152,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
   
   public NodePK getCurrentFolderPK() {
-    return new NodePK(getCurrentFolderId(), getComponentId());
+    return new NodePK(getCurrentFolderId(), getSpaceId(), getComponentId());
   }
   
   public NodeDetail getCurrentFolder() throws RemoteException {
@@ -4714,4 +4689,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return getSessionPublicationsList();
   }
 
+  public String manageSubscriptions() {
+    SubscriptionContext subscriptionContext = getSubscriptionContext();
+    List<NodeDetail> nodePath = getTopicPath(getCurrentFolderId());
+    nodePath.remove(0);
+    subscriptionContext
+        .initializeFromNode(NodeSubscriptionResource.from(getCurrentFolderPK()), nodePath);
+    return subscriptionContext.getDestinationUrl();
+  }
 }

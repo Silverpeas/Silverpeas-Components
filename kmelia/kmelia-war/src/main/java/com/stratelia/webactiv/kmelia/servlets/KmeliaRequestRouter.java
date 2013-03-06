@@ -997,8 +997,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = "/RimportExportPeas/jsp/ExportPDF";
       } else if (function.equals("NewPublication")) {
         request.setAttribute("Action", "New");
-        
         destination = getDestination("publicationManager", kmelia, request);
+      } else if (function.equals("ManageSubscriptions")) {
+        destination = kmelia.manageSubscriptions();
       } else if (function.equals("AddPublication")) {
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
 
