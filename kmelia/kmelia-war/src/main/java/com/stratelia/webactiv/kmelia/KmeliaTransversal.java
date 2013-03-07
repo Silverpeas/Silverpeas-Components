@@ -43,17 +43,19 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganisationController;
+
 import java.util.Date;
 
 public class KmeliaTransversal implements PublicationHelper {
 
   private String userId = null;
   private PublicationBm publicationBm = null;
-  private OrganizationController organizationControl = null;
+  private OrganisationController organizationControl = null;
 
   public KmeliaTransversal() {
   }
-  
+
   public KmeliaTransversal(String userId) {
     this.userId = userId;
   }
@@ -105,7 +107,7 @@ public class KmeliaTransversal implements PublicationHelper {
     }
     return new ArrayList<PublicationDetail>();
   }
-  
+
   @Override
   public List<PublicationDetail> getUpdatedPublications(String spaceId, int since, int nbReturned) {
     int maxAge = since;
@@ -127,7 +129,7 @@ public class KmeliaTransversal implements PublicationHelper {
 
     List<PublicationPK> publicationPKs = null;
     try {
-      publicationPKs = (List<PublicationPK>) getPublicationBm().getUpdatedPublicationPKsByStatus(        
+      publicationPKs = (List<PublicationPK>) getPublicationBm().getUpdatedPublicationPKsByStatus(
           PublicationDetail.VALID, since, 0, componentIds);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
@@ -143,8 +145,8 @@ public class KmeliaTransversal implements PublicationHelper {
     }
     return new ArrayList<PublicationDetail>();
   }
-  
-  
+
+
   protected List<String> getAvailableComponents(String spaceId) {
     List<String> componentIds = new ArrayList<String>();
     if (!StringUtil.isDefined(spaceId)) {
@@ -223,7 +225,7 @@ public class KmeliaTransversal implements PublicationHelper {
     return filteredPublicationPKs;
   }
 
-  private OrganizationController getOrganizationControl() {
+  private OrganisationController getOrganizationControl() {
     if (organizationControl == null) {
       organizationControl = new OrganizationController();
     }

@@ -35,7 +35,7 @@ import javax.ws.rs.core.Response.Status;
 public abstract class QuestionRelyBaseWebService extends RESTWebService {
 
   SilverpeasRole getUserProfile() {
-    String[] roles = getOrganizationController().getUserProfiles(getUserDetail().getId(),
+    String[] roles = getOrganisationController().getUserProfiles(getUserDetail().getId(),
             getComponentId());
     SilverpeasRole profile = user;
     for (String currentRole : roles) {

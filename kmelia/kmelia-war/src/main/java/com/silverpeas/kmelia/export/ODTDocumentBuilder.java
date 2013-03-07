@@ -65,6 +65,7 @@ import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Section;
 import org.odftoolkit.simple.text.list.ListItem;
 
+import org.silverpeas.core.admin.OrganisationController;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
 import com.silverpeas.converter.HTMLConverter;
@@ -568,7 +569,7 @@ public class ODTDocumentBuilder {
    * Gets the organization controller.
    * @return an instance of OrganizationController.
    */
-  protected OrganizationController getOrganizationService() {
+  protected OrganisationController getOrganizationService() {
     return new OrganizationController();
   }
 }

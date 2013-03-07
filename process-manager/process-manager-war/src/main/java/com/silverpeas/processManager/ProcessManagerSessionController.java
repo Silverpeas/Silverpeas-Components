@@ -319,7 +319,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public DataRecord[] resetCurrentProcessList() throws ProcessManagerException {
     try {
-      String[] groupIds = getOrganizationController().getAllGroupIdsOfUser(getUserId());
+      String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(getUserId());
       ProcessInstance[] processList = Workflow.getProcessInstanceManager().getProcessInstances(
           peasId, currentUser, currentRole, getUserRoles(), groupIds);
       currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
@@ -457,7 +457,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
               if (item != null) {
                 String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
                 if (groupId != null) {
-                  Group group = getOrganizationController().getGroup(groupId);
+                  Group group = getOrganisationController().getGroup(groupId);
                   if (group != null) {
                     role += group.getName();
                   }
@@ -577,7 +577,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           "root.MSG_GEN_PARAM_VALUE", "roles après élagage : " + roles);
     }
 
-    String[] userIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(), roles);
+    String[] userIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles);
     for (int u = 0; u < userIds.length; u++) {
       users.add(userIds[u]);
     }
@@ -592,7 +592,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           if (item != null) {
             try {
               String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
-              UserDetail[] usersOfGroup = getOrganizationController().getAllUsersOfGroup(groupId);
+              UserDetail[] usersOfGroup = getOrganisationController().getAllUsersOfGroup(groupId);
               for (UserDetail userOfGroup : usersOfGroup) {
                 users.add(userOfGroup.getId());
               }

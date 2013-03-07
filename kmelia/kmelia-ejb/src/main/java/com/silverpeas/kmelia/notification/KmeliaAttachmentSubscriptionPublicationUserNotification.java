@@ -74,7 +74,7 @@ public class KmeliaAttachmentSubscriptionPublicationUserNotification extends
     template.setAttribute("attachmentCreationDate", DateUtil.getOutputDate(attachmentDetail.
         getCreationDate(), language));
     template.setAttribute("attachmentSize", attachmentDetail.getAttachmentFileSize(language));
-    final UserDetail authorDetail = getOrganizationController().getUserDetail(
+    final UserDetail authorDetail = getOrganisationController().getUserDetail(
         attachmentDetail.getAuthor());
     template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " " + authorDetail.
         getLastName());

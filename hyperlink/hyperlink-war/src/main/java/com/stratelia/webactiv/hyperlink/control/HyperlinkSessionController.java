@@ -43,12 +43,12 @@ public class HyperlinkSessionController extends AbstractComponentSessionControll
   public HyperlinkSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
     super(mainSessionCtrl, context,
-        "com.silverpeas.hyperlink.multilang.hyperlinkBundle", null,
-        "com.silverpeas.hyperlink.settings.hyperlinkSettings");
+        "org.silverpeas.hyperlink.multilang.hyperlinkBundle", null,
+        "org.silverpeas.hyperlink.settings.hyperlinkSettings");
   }
 
   public UserFull getUserFull() {
-    return getOrganizationController().getUserFull(getUserId());
+    return getOrganisationController().getUserFull(getUserId());
   }
 
   public boolean isClientSSO() {

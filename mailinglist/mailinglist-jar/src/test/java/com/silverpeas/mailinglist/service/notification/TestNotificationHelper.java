@@ -33,7 +33,6 @@ import com.stratelia.webactiv.util.JNDINames;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
@@ -48,12 +47,17 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 import static org.junit.Assert.*;
 
@@ -143,8 +147,7 @@ public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringCo
     Iterator<ExternalUser> iter = list.getExternalSubscribers().iterator();
     while (iter.hasNext()) {
       ExternalUser recipient = iter.next();
-      checkSimpleEmail(recipient.getEmail(),
-          "[Liste de diffusion de test] : Simple Message");
+      checkSimpleEmail(recipient.getEmail(),"[Liste de diffusion de test] : Simple Message");
     }
 
   }
@@ -338,11 +341,17 @@ public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringCo
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
+    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+    InputStream in;
     if (isOracle()) {
-      return new FlatXmlDataSet(TestNotificationHelper.class.getResourceAsStream(
-          "test-notification-helper-oracle-dataset.xml"));
+      in = TestNotificationHelper.class.getResourceAsStream("test-notification-helper-oracle-dataset.xml");
+    } else {
+      in = TestNotificationHelper.class.getResourceAsStream("test-notification-helper-dataset.xml");
     }
-    return new FlatXmlDataSet(TestNotificationHelper.class.getResourceAsStream(
-        "test-notification-helper-dataset.xml"));
+    try {
+      return new ReplacementDataSet(builder.build(in));
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 }

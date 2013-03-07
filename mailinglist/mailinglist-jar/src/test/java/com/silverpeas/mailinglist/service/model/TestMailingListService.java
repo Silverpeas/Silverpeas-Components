@@ -20,76 +20,116 @@
  */
 package com.silverpeas.mailinglist.service.model;
 
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.InternalUserSubscriber;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 
 import java.io.IOException;
-import java.sql.SQLException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.inject.Inject;
+import javax.jms.QueueConnectionFactory;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
+import com.mockrunner.mock.jms.MockQueue;
+import org.apache.commons.io.IOUtils;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
+import org.jvnet.mock_javamail.Mailbox;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.mailinglist.jms.MockObjectFactory;
+
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import static org.junit.Assert.*;
 
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-  "/spring-hibernate.xml", "/spring-datasource.xml"})
-public class TestMailingListService extends AbstractSilverpeasDatasourceSpringContextTests {
+public class TestMailingListService {
 
-  @Inject
   private MailingListService mailingListService;
-  @Inject
-  private OrganizationController organizationController;
+  private static DataSource dataSource;
+  private static ClassPathXmlApplicationContext context;
 
-  @After
-  public void onTearDown() throws Exception {
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-    super.onTearDown();
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+    context = new ClassPathXmlApplicationContext(new String[]{"/spring-checker.xml",
+      "/spring-notification.xml", "/spring-jpa-hibernate.xml", "/spring-embedded-datasource.xml",
+      "/spring-personalization.xml"});
+    dataSource = context.getBean("jpaDataSource", DataSource.class);
+    InitialContext ic = new InitialContext();
+    ic.rebind("jdbc/Silverpeas", dataSource);
+    DBUtil.getInstanceForTest(dataSource.getConnection());
+  }
+
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+    DBUtil.clearTestInstance();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+    context.close();
   }
 
   @Before
-  public void onSetUp() {
-    super.onSetUp();
-    organizationController.reloadAdminCache();
+  public void init() throws Exception {
+    IDatabaseConnection connection = getConnection();
+    DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
+    connection.close();
+    mailingListService = context.getBean(MailingListService.class);
+    AdminReference.getAdminService().reloadCache();
+    registerMockJMS();
+    Mailbox.clearAll();
   }
 
-  @Override
+  @After
+  public void after() throws Exception {
+    IDatabaseConnection connection = getConnection();
+    DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
+    connection.close();
+    MockObjectFactory.clearAll();
+    Mailbox.clearAll();
+  }
+
+  private IDatabaseConnection getConnection() throws Exception {
+    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+    return connection;
+  }
+
+  protected void registerMockJMS() throws Exception {
+    InitialContext ic = new InitialContext();
+    // Construct BasicDataSource reference
+    QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
+    ic.rebind(JNDINames.JMS_FACTORY, refFactory);
+    ic.rebind(JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
+    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
+    assertNotNull(qconFactory);
+    MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
+    queue.clear();
+  }
+
   protected IDataSet getDataSet() throws DataSetException, IOException {
-    if (isOracle()) {
-      return new ReplacementDataSet(
-          new FlatXmlDataSet(
-          TestMailingListService.class.getResourceAsStream(
-          "test-mailinglist-service-oracle-dataset.xml")));
+    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+    InputStream in = TestMailingListService.class.getResourceAsStream(
+        "test-mailinglist-service-dataset.xml");
+    try {
+      return new ReplacementDataSet(builder.build(in));
+    } finally {
+      IOUtils.closeQuietly(in);
     }
-    return new ReplacementDataSet(new FlatXmlDataSet(
-        TestMailingListService.class.getResourceAsStream("test-mailinglist-service-dataset.xml")));
   }
 
   @Test
@@ -390,19 +430,19 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
     assertEquals(3, mailingList.getModerators().size());
     for (InternalUser user : mailingList.getModerators()) {
       assertEquals("http://localhost:8000", user.getDomain());
-      assertTrue("200".equals(user.getId()) || "202".equals(user.getId()) ||
-           "203".equals(user.getId()));
-      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "marge.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "bart.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("200".equals(user.getId()) || "202".equals(user.getId()) || "203".equals(user.
+          getId()));
+      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail())
+          || "marge.simpson@silverpeas.com".equals(user.getEmail())
+          || "bart.simpson@silverpeas.com".equals(user.getEmail()));
     }
     assertNotNull(mailingList.getReaders());
     assertEquals(2, mailingList.getReaders().size());
     for (InternalUser user : mailingList.getReaders()) {
       assertTrue("201".equals(user.getId()) || "204".equals(user.getId()));
       assertEquals("http://localhost:8000", user.getDomain());
-      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "maggie.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail())
+          || "maggie.simpson@silverpeas.com".equals(user.getEmail()));
     }
 
   }
@@ -439,19 +479,19 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
     assertEquals(3, mailingList.getModerators().size());
     for (InternalUser user : mailingList.getModerators()) {
       assertEquals("http://localhost:8000", user.getDomain());
-      assertTrue("200".equals(user.getId()) || "202".equals(user.getId()) ||
-           "203".equals(user.getId()));
-      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "marge.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "bart.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("200".equals(user.getId()) || "202".equals(user.getId()) || "203".equals(user.
+          getId()));
+      assertTrue("homer.simpson@silverpeas.com".equals(user.getEmail())
+          || "marge.simpson@silverpeas.com".equals(user.getEmail())
+          || "bart.simpson@silverpeas.com".equals(user.getEmail()));
     }
     assertNotNull(mailingList.getReaders());
     assertEquals(2, mailingList.getReaders().size());
     for (InternalUser user : mailingList.getReaders()) {
       assertEquals("http://localhost:8000", user.getDomain());
       assertTrue("201".equals(user.getId()) || "204".equals(user.getId()));
-      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail()) ||
-           "maggie.simpson@silverpeas.com".equals(user.getEmail()));
+      assertTrue("lisa.simpson@silverpeas.com".equals(user.getEmail())
+          || "maggie.simpson@silverpeas.com".equals(user.getEmail()));
     }
 
   }

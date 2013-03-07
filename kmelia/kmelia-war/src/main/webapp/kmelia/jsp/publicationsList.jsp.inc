@@ -50,13 +50,13 @@ String getUserName(KmeliaPublication kmeliaPub, KmeliaSessionController kmeliaSc
 		updater = kmeliaScc.getUserDetail(updaterId);
 	if (updater == null)
 		updater = user;
-	
+
 	String userName = "";
 	if (updater != null && (updater.getFirstName().length() > 0 || updater.getLastName().length() > 0))
 		userName = updater.getFirstName() + " " + updater.getLastName();
 	else
 		userName = kmeliaScc.getString("kmelia.UnknownUser");
-	
+
 	return userName;
 }
 
@@ -100,17 +100,17 @@ out.println("<table border=\"0\" width=\"98%\" align=\"center\">");
                 kmeliaPub = (KmeliaPublication) iterator.next();
                 pub = kmeliaPub.getDetail();
                 user = kmeliaPub.getCreator();
-                
+
                 if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId()))
 					shortcut = " ("+resources.getString("kmelia.Shortcut")+")";
 				else
 					shortcut = "";
-                
+
                 out.println("<!-- Publication Body -->");
                 out.println("<td valign=\"top\" width=\"100\">&#149; </td>");
                 out.println("<td valign=\"top\" width=\""+width+"%\">");
                 out.println("<p><b><a href=\"javascript:onClick=publicationGoToFromMain('"+pub.getPK().getId()+"')\">"+Encode.javaStringToHtmlString(pub.getName(language))+"</a>"+shortcut+"</b><br/>");
-                
+
                 if (kmeliaScc.showUserNameInList())
                 	out.println(getUserName(kmeliaPub, kmeliaScc)+" - ");
                 out.println(resources.getOutputDate(pub.getUpdateDate()));
@@ -163,7 +163,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
    	String				language = kmeliaScc.getCurrentLanguage();
 
     Iterator iterator = pubs.iterator();
-	
+
 	out.println("<table border=\"0\" width=\"98%\" align=center>");
 	out.println("<form name=\"seeAlsoForm\" Action=\"DeleteSeeAlso\" method=\"Post\"/>");
 	out.println("<input type=\"hidden\" name=\"PubId\" value=\"\"/>");
@@ -175,7 +175,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
                 out.println("<td width=\"40\"><img src=\""+publicationSrc+"\" border=0></td>");
                 out.println("<td align=\"left\" width=\"100%\"><b>"+publicationLabel+"</b></td>");
             out.println("</tr>");
-          if (iterator.hasNext()) {  
+          if (iterator.hasNext()) {
            	out.println("<tr><td colspan=\"2\">&nbsp;</td></tr>");
             out.println("<!-- Publications Header End -->");
             while (iterator.hasNext()) {
@@ -251,7 +251,7 @@ void displaySearchResults(List<MatchingIndexEntry> pubs, String publicationLabel
                   if (!pub.getObjectId().equals(currentPubId)) {
                       if (pub.getObjectType().equals("Publication")) {
 							String userName = "";
-							user = kmeliaScc.getOrganizationController().getUserDetail(pub.getCreationUser());
+							user = kmeliaScc.getOrganisationController().getUserDetail(pub.getCreationUser());
 							if ((user != null) && ((user.getFirstName().length() > 0) || (user.getLastName().length() > 0)))
 								userName = user.getFirstName() + " " + user.getLastName();
 							else

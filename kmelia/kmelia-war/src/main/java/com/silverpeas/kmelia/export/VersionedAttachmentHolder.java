@@ -1,22 +1,22 @@
 /*
  * Copyright (C) 2000 - 2012 Silverpeas
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -26,10 +26,15 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+
 
 /**
  * Holder of a versioned attachment for the ODTDocumentBuilder.
@@ -48,6 +53,7 @@ class VersionedAttachmentHolder {
   }
 
   /**
+<<<<<<< Updated upstream
    * Is the specified user has the priviledges to access the holded attachment?
    * @param user the user.
    * @return true if the user is authorized to access the holded attachment, false otherwise.
@@ -84,7 +90,7 @@ class VersionedAttachmentHolder {
   }
 
   /**
-   * Gets the name of the creator or of each validators of the specified version of the holded 
+   * Gets the name of the creator or of each validators of the specified version of the holded
    * attachment.
    * If the version isn't well defined (it is a dummy version or the document corresponding to
    * the version is empty), then the creator of the holded attachment iself is returned.
@@ -117,7 +123,7 @@ class VersionedAttachmentHolder {
     }
     return creatorOrValidators.toString();
   }
-  
+
   /**
    * Gets the version number of the specified version of the holded attachment.
    * @param version a version of the holded attachment.
@@ -150,7 +156,7 @@ class VersionedAttachmentHolder {
     return new VersioningUtil();
   }
 
-  private OrganizationController getOrganizationService() {
-    return new OrganizationController();
+  private OrganisationController getOrganizationService() {
+    return OrganisationControllerFactory.getOrganisationController();
   }
 }

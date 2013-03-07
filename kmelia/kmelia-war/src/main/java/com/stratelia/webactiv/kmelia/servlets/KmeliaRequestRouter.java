@@ -146,7 +146,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String rootDestination = "/kmelia/jsp/";
     boolean profileError = false;
     boolean kmaxMode = false;
-    boolean toolboxMode = false;
+    boolean toolboxMode;
     try {
       SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination()",
           "root.MSG_GEN_PARAM_VALUE", "getComponentRootName() = " + kmelia.getComponentRootName());
@@ -194,7 +194,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if (function.equals("GoToDirectory")) {
         String topicId = request.getParameter("Id");
 
-        String path = null;
+        String path;
         if (StringUtil.isDefined(topicId)) {
           NodeDetail topic = kmelia.getNodeHeader(topicId);
           path = topic.getPath();
@@ -267,10 +267,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
         
         if (type != null && ("Publication".equals(type)
-            || "com.stratelia.webactiv.calendar.backbone.TodoDetail".equals(type)
-            || "Attachment".equals(type) || "Document".equals(type)
-            || type.startsWith("Comment"))) {
-          KmeliaSecurity security = new KmeliaSecurity(kmelia.getOrganizationController());
+                || "com.stratelia.webactiv.calendar.backbone.TodoDetail".equals(type)
+                || "Attachment".equals(type) || "Document".equals(type)
+                || type.startsWith("Comment"))) {
+          KmeliaSecurity security = new KmeliaSecurity(kmelia.getOrganisationController());
           try {
             boolean accessAuthorized =
                 security.isAccessAuthorized(kmelia.getComponentId(), kmelia.getUserId(), id,
@@ -292,7 +292,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 } else if (toolboxMode) {
                   // we have to find which page contains the right publication
                   List<KmeliaPublication> publications = kmelia.getSessionPublicationsList();
-                  KmeliaPublication publication = null;
+                  KmeliaPublication publication;
                   int pubIndex = -1;
                   for (int p = 0; p < publications.size() && pubIndex == -1; p++) {
                     publication = publications.get(p);
@@ -585,7 +585,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           }
         }
 
-        KmeliaPublication kmeliaPublication = null;
+        KmeliaPublication kmeliaPublication;
         if (StringUtil.isDefined(id)) {
           kmeliaPublication = kmelia.getPublication(id, true);
           kmelia.setSessionPublication(kmeliaPublication);
@@ -981,7 +981,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String[] pubIds = request.getParameterValues("PubIds");
 
         List<ForeignPK> infoLinks = new ArrayList<ForeignPK>();
-        StringTokenizer tokens = null;
+        StringTokenizer tokens;
         for (String pubId : pubIds) {
           tokens = new StringTokenizer(pubId, "/");
           infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
@@ -1103,7 +1103,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String[] topics = request.getParameterValues("topicChoice");
         String loadedComponentIds = request.getParameter("LoadedComponentIds");
 
-        Alias alias = null;
+        Alias alias;
         List<Alias> aliases = new ArrayList<Alias>();
         for (int i = 0; topics != null && i < topics.length; i++) {
           String topicId = topics[i];
@@ -1409,7 +1409,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         PublicationDetail pubDetail =
             kmelia.getSessionPubliOrClone().getDetail();
 
-        String xmlFormShortName = null;
+        String xmlFormShortName;
 
         // Is it the creation of the content or an update ?
         String infoId = pubDetail.getInfoId();
@@ -1519,7 +1519,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
         request.setAttribute("Profiles", kmelia.getTopicProfiles(id));
         NodeDetail topic = kmelia.getNodeHeader(id);
-        ProfileInst profile = null;
+        ProfileInst profile;
         if (topic.haveInheritedRights()) {
           profile = kmelia.getTopicProfile(role, Integer.toString(topic.getRightsDependsOn()));
 
@@ -1691,7 +1691,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             "root.MSG_GEN_PARAM_VALUE", "axisValuesStr = " + axisValuesStr + " timeCriteria="
             + timeCriteria);
         List<String> combination = kmelia.getCombination(axisValuesStr);
-        List<KmeliaPublication> publications = null;
+        List<KmeliaPublication> publications;
         if (StringUtil.isDefined(timeCriteria) && !"X".equals(timeCriteria)) {
           publications = kmelia.search(combination, Integer.parseInt(timeCriteria));
         } else {
@@ -1726,7 +1726,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String axisValuesStr = request.getParameter("SearchCombination");
         StringTokenizer st = new StringTokenizer(axisValuesStr, ",");
         List<String> combination = new ArrayList<String>();
-        String axisValue = "";
+        String axisValue;
         while (st.hasMoreTokens()) {
           axisValue = st.nextToken();
           // axisValue is xx/xx/xx where xx are nodeId
@@ -1938,21 +1938,21 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       HttpServletRequest request, String routeDestination, boolean isMassiveMode) {
     String destination = "";
     String topicId = "";
-    String importMode = KmeliaSessionController.UNITARY_IMPORT_MODE;
+    String importMode;
     boolean draftMode = false;
-    String logicalName = "";
-    String message = "";
+    String logicalName;
+    String message;
 
-    String tempFolderName = "";
-    String tempFolderPath = "";
+    String tempFolderName;
+    String tempFolderPath;
 
-    String fileType = "";
-    long fileSize = 0;
+    String fileType;
+    long fileSize;
     long processStart = new Date().getTime();
     ResourceLocator attachmentResourceLocator = new ResourceLocator(
         "com.stratelia.webactiv.util.attachment.multilang.attachment",
         kmeliaScc.getLanguage());
-    FileItem fileItem = null;
+    FileItem fileItem;
     int versionType = DocumentVersion.TYPE_DEFAULT_VERSION;
 
     try {
@@ -2039,7 +2039,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             long processDuration = new Date().getTime() - processStart;
 
             // Title for popup report
-            String importModeTitle = "";
+            String importModeTitle;
             if (importMode.equals(KmeliaSessionController.UNITARY_IMPORT_MODE)) {
               importModeTitle = kmeliaScc.getString("kmelia.ImportModeUnitaireTitre");
             } else {
@@ -2115,7 +2115,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   private void processPath(KmeliaSessionController kmeliaSC, String id)
       throws RemoteException {
     if (!kmeliaSC.isKmaxMode) {
-      NodePK pk = null;
+      NodePK pk;
       if (!StringUtil.isDefined(id)) {
         pk = kmeliaSC.getCurrentFolderPK();
       } else {
@@ -2333,7 +2333,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         kmelia.getSessionPubliOrClone().getDetail();
     String pubId = pubDetail.getPK().getId();
 
-    String xmlFormShortName = null;
+    String xmlFormShortName;
     if (!StringUtil.isDefined(xmlFormName)) {
       xmlFormShortName = pubDetail.getInfoId();
       xmlFormName = null;
@@ -2458,7 +2458,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     }
     kmelia.updatePublication(pubDetail);
 
-    Alias alias = null;
+    Alias alias;
     List<Alias> aliases = new ArrayList<Alias>();
     for (int i = 0; topics != null && i < topics.length; i++) {
       String topicId = topics[i];

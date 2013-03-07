@@ -839,7 +839,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     /*
      * cheminDirResultat = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
      */
-    boolean result = false;
+    boolean result;
 
     File directory = new File(chemin);
     /* recupere la liste des fichiers et directory du chemin */
@@ -1006,7 +1006,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       List<String> profileNames = new ArrayList<String>();
       profileNames.add("Admin");
       profileNames.add("Publisher");
-      String[] users = getOrganizationController().getUsersIdsByRoleNames(
+      String[] users = getOrganisationController().getUsersIdsByRoleNames(
           getComponentId(), profileNames);
 
       List<UserRecipient> recipients = new ArrayList<UserRecipient>(users.length);
@@ -1040,6 +1040,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     return silverObjectId;
   }
 
+  @Override
   public void close() {
     try {
       if (webSiteEjb != null) {

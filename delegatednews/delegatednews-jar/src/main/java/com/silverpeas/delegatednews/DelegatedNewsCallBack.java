@@ -24,9 +24,6 @@
  */
 package com.silverpeas.delegatednews;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
@@ -38,11 +35,15 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.silverpeas.core.admin.OrganisationController;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class DelegatedNewsCallBack implements CallBack {
 
   private DelegatedNewsService delegatedNewsService = null;
-  private OrganizationController organizationController = null;
+  private OrganisationController organizationController = null;
 
   public DelegatedNewsCallBack() {
   }
@@ -81,34 +82,34 @@ public class DelegatedNewsCallBack implements CallBack {
         Date today = calendar.getTime();
         Date dateHourBegin = DateUtil.getDate(pubDetail.getBeginDate(), pubDetail.getBeginHour());
         Date dateHourEnd = DateUtil.getDate(pubDetail.getEndDate(), pubDetail.getEndHour());
-     
+
         if (dateHourBegin != null && dateHourBegin.after(today)) {
           pubDetail.setNotYetVisible(true);
         } else if (dateHourEnd != null && dateHourEnd.before(today)) {
           pubDetail.setNoMoreVisible(true);
         }
-        
-        // supprime l'actualité si la publication n'est plus visible (les dates de visibilité ont été modifiées sur la publication) 
+
+        // supprime l'actualité si la publication n'est plus visible (les dates de visibilité ont été modifiées sur la publication)
         if (! pubDetail.isVisible()) {
           getDelegatedNewsService().deleteDelegatedNews(pubId);
-        } 
+        }
         else {
-        
+
           // met à jour l'actualité
           getDelegatedNewsService().updateDelegatedNews(pubId, instanceId,
               DelegatedNews.NEWS_TO_VALIDATE, pubDetail.getUpdaterId(), null, new Date(),
               dateHourBegin, dateHourEnd);
-  
+
           // alerte l'équipe éditoriale
-          String[] tabInstanceId = getOrganizationController().getCompoId("delegatednews");
+          String[] tabInstanceId = getOrganisationController().getCompoId("delegatednews");
           String delegatednewsInstanceId = null;
           for (String element : tabInstanceId) {
             delegatednewsInstanceId = element;
             break;
           }
-  
+
           UserDetail updaterUserDetail =
-              getOrganizationController().getUserDetail(pubDetail.getUpdaterId());
+              getOrganisationController().getUserDetail(pubDetail.getUpdaterId());
           String updaterUserName = "";
           if (updaterUserDetail.getFirstName() != null) {
             updaterUserName = updaterUserDetail.getFirstName() + " ";
@@ -116,7 +117,7 @@ public class DelegatedNewsCallBack implements CallBack {
           if (updaterUserDetail.getLastName() != null) {
             updaterUserName += updaterUserDetail.getLastName();
           }
-  
+
           getDelegatedNewsService().notifyDelegatedNewsToValidate(Integer.toString(pubId),
               pubDetail.getName(DisplayI18NHelper.getDefaultLanguage()), pubDetail.getUpdaterId(),
               updaterUserName, delegatednewsInstanceId);
@@ -151,7 +152,7 @@ public class DelegatedNewsCallBack implements CallBack {
   /**
    * @return
    */
-  public OrganizationController getOrganizationController() {
+  public OrganisationController getOrganisationController() {
     if (this.organizationController == null) {
       this.organizationController = new OrganizationController();
     }

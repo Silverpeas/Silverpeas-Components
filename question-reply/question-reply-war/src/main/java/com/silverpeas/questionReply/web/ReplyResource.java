@@ -128,7 +128,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     Collection<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(reply.
             getPK(), "Images");
     entity.withAttachments(attachments);
-    AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(getOrganizationController()));
+    AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(getOrganisationController()));
     author.setAvatar(getHttpServletRequest().getContextPath() + author.getAvatar());
     return entity;
   }

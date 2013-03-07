@@ -25,12 +25,13 @@
 package com.silverpeas.whitePages.model;
 
 import com.stratelia.webactiv.beans.admin.*;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class WhitePagesCard implements Comparable {
   private long userCardId = 0;
   private String instanceLabel;
   private String instanceId;
-  private static OrganizationController organizationController = new OrganizationController();
+  private static OrganisationController organizationController = new OrganizationController();
 
   public WhitePagesCard() {
   }
