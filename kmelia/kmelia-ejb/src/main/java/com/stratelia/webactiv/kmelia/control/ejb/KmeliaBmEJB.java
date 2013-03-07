@@ -5064,6 +5064,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     String instanceId = pk.getInstanceId();
     List<NodeDetail> nodes = new ArrayList<NodeDetail>(getNodeBm().getPath(pk));
     Collections.reverse(nodes);
+    nodes.remove(0);
     NodeDetail root;
 
     List<NodeDetail> treeview = null;
