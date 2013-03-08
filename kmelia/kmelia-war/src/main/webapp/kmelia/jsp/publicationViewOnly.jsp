@@ -54,9 +54,9 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
     out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
     out.println("<TR><TD align=\"left\">");
 
-	out.println("<span class=txtnav><b>"+Encode.javaStringToHtmlString(detail.getName(kmeliaScc.getCurrentLanguage()))+"</b></span><BR>");
+	out.println("<span class=txtnav><b>"+EncodeHelper.javaStringToHtmlString(detail.getName(kmeliaScc.getCurrentLanguage()))+"</b></span><BR>");
 
-    out.println("<b>"+Encode.javaStringToHtmlString(detail.getDescription(kmeliaScc.getCurrentLanguage()))+"<b><BR><BR>");
+    out.println("<b>"+EncodeHelper.javaStringToHtmlString(detail.getDescription(kmeliaScc.getCurrentLanguage()))+"<b><BR><BR>");
 
 	String userId = detail.getUpdaterId();
 	if (userId == null || userId.length() == 0)
@@ -68,7 +68,7 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
 		if (user != null) {
 			out.println("</td><td valign=top align=right>");
 			out.println(user.getFirstName()+" "+user.getLastName()+"<br><i>"+resources.getOutputDate(detail.getUpdateDate()));
-			out.println("</i><BR>");
+			out.println("</i><br/>");
 		}
 	}
 
@@ -84,7 +84,7 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
 	        if (infos != null) {
 				out.println("<TD width=\"25%\" valign=\"top\" align=\"center\">");
 	            out.println("<A NAME=attachments></a>");
-	            displayUserAttachmentsView(detail, m_context, out, type, user_id, true, resources);
+	            displayUserAttachmentsView(detail, m_context, out,  kmeliaScc.getLanguage(),true, resources);
 				out.println("</TD>");
 	        }
 	    } else {
@@ -92,7 +92,7 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
 		        out.println("</TR><TR>");
 				out.println("<TD valign=\"top\">");
 	            out.println("<A NAME=attachments></a>");
-	            displayUserAttachmentsView(detail, m_context, out, type, user_id, false, resources);
+	            displayUserAttachmentsView(detail, m_context, out,  kmeliaScc.getLanguage(),false, resources);
 				out.println("</TD>");
 	        }
 	    }
@@ -109,15 +109,15 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
 	        if (! ("bottom".equals(settings.getString("attachmentPosition") ) ) ) {
 				out.println("<TD width=\"25%\" valign=\"top\" align=\"center\">");
 				out.println("<A NAME=attachments></a>");
-				displayUserAttachmentsView(detail, m_context, out, type, user_id, true, resources);
+				displayUserAttachmentsView(detail, m_context, out,  kmeliaScc.getLanguage(), true, resources);
 				//displayUserAttachmentsView(detail, m_context, out, type, user_id);
 				out.println("</TD>");
 		    } else {
 		        out.println("</TR><TR>");
 				out.println("<TD valign=\"top\">");
 	            out.println("<A NAME=attachments></a>");
-	            displayUserAttachmentsView(detail, m_context, out, type, user_id, false, resources);
-				//displayUserAttachmentsView(kmeliaScc, detail, m_context, out, type, user_id, false);
+	            displayUserAttachmentsView(detail, m_context, out, kmeliaScc.getLanguage(), false,
+                        resources);
 				out.println("</TD>");
 		    }
             out.println("</TR>");
@@ -136,8 +136,9 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
   String topicId		= "";
   String pubName		= "";
 
-  ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", kmeliaScc.getLanguage());
-  ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
+  ResourceLocator uploadSettings = new
+          ResourceLocator("org.silverpeas.util.uploads.uploadSettings", kmeliaScc.getLanguage());
+  ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", kmeliaScc.getLanguage());
 
   KmeliaPublication kmeliaPublication = null;
   UserDetail ownerDetail = null;
@@ -152,8 +153,8 @@ String path = "";
 String profile = "user";
 String checkPath = "";
 
-String id 			= (String) request.getParameter("Id");
-String currentLang 	= (String) request.getAttribute("Language");
+String id 			=  request.getParameter("Id");
+String currentLang 	=  request.getAttribute("Language");
 
 //Vrai si le user connecte est le createur de cette publication ou si il est admin
 boolean isOwner = false;

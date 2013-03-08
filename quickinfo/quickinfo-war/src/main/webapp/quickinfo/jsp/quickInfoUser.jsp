@@ -29,7 +29,7 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController" %>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController" %>
 <%@ page import="com.silverpeas.util.*" %>
 <%@ page import="com.silverpeas.util.i18n.I18NHelper" %>
 

@@ -28,13 +28,15 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
-import static com.silverpeas.util.StringUtil.*;
+
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.MONTHLY;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.WEEKLY;
 
 /**
- * It defines a window in time of the calendar belonging to a given almanach instance.
- * The type of view can be a weekly or a monthly one and it renders the events between the two dates
- * of the window in time.
+ * It defines a window in time of the calendar belonging to a given almanach instance. The type of
+ * view can be a weekly or a monthly one and it renders the events between the two dates of the
+ * window in time.
  */
 public class AlmanachCalendarView {
 
@@ -47,8 +49,9 @@ public class AlmanachCalendarView {
   private Locale locale = null;
 
   /**
-   * Constructs a new calendar view of the specified almanach.
-   * By default, the week-end days are displayed.
+   * Constructs a new calendar view of the specified almanach. By default, the week-end days are
+   * displayed.
+   *
    * @param almanach the DTO carrying information about the almanach instance this view is about.
    * @param currentDay the current day in this calendar view.
    * @param viewType the type of view the calendar should be rendered.
@@ -62,9 +65,9 @@ public class AlmanachCalendarView {
 
   /**
    * Gets the first day of weeks of the calendar with 1 meaning for sunday, 2 meaning for monday,
-   * and so on.
-   * The first day of weeks depends on the locale; the first day of weeks is monday for french
-   * whereas it is for sunday for US.
+   * and so on. The first day of weeks depends on the locale; the first day of weeks is monday for
+   * french whereas it is for sunday for US.
+   *
    * @return the first day of week.
    */
   public int getFirstDayOfWeek() {
@@ -79,6 +82,7 @@ public class AlmanachCalendarView {
 
   /**
    * Gets the first day of this calendar view.
+   *
    * @return the first day of the window in time.
    */
   public AlmanachDay getFirstDay() {
@@ -104,6 +108,7 @@ public class AlmanachCalendarView {
 
   /**
    * Gets the last day of this calendar view.
+   *
    * @return the last day of the window in time.
    */
   public AlmanachDay getLastDay() {
@@ -140,6 +145,7 @@ public class AlmanachCalendarView {
 
   /**
    * Is the week-end visible?
+   *
    * @return true if the week-end days should be rendered, false otherwise.
    */
   public boolean isWeekendVisible() {
@@ -148,6 +154,7 @@ public class AlmanachCalendarView {
 
   /**
    * Gets the label of this calendar view to render.
+   *
    * @return the calendar view label.
    */
   public String getLabel() {
@@ -156,6 +163,7 @@ public class AlmanachCalendarView {
 
   /**
    * Sets a label to this calendar view.
+   *
    * @param label the label to set.
    */
   public void setLabel(final String label) {
@@ -164,6 +172,7 @@ public class AlmanachCalendarView {
 
   /**
    * Gets the current day in this calendar view.
+   *
    * @return the current day.
    */
   public AlmanachDay getCurrentDay() {
@@ -172,6 +181,7 @@ public class AlmanachCalendarView {
 
   /**
    * Gets a DTO on the almanach instance this calendar view belongs to.
+   *
    * @return the almanach DTO.
    */
   public AlmanachDTO getAlmanach() {
@@ -180,6 +190,7 @@ public class AlmanachCalendarView {
 
   /**
    * Gets all events defined in the window in time this calendar view defines.
+   *
    * @return a list with all DTO on the events planned in this calendar view.
    */
   public List<DisplayableEventOccurrence> getEvents() {
@@ -188,6 +199,7 @@ public class AlmanachCalendarView {
 
   /**
    * Gets the type of view of this calendar view.
+   *
    * @return the type of view.
    */
   public CalendarViewType getViewType() {
@@ -196,6 +208,7 @@ public class AlmanachCalendarView {
 
   /**
    * Sets the events that are defined in this calendar view.
+   *
    * @param events a list of event DTOs.
    */
   public void setEvents(final List<DisplayableEventOccurrence> events) {
@@ -205,6 +218,7 @@ public class AlmanachCalendarView {
 
   /**
    * Gets the JSON representation of the event occurrences.
+   *
    * @return a JSON representation of the list of event occurrences.
    */
   public String getEventsInJSON() {
@@ -214,6 +228,7 @@ public class AlmanachCalendarView {
   /**
    * Sets the locale of this calendar view. According to the locale, some calendar properties will
    * be set (for example, the first day of the week).
+   *
    * @param locale the locale to take into account (fr for the french locale (fr_FR) for example).
    */
   public void setLocale(final String locale) {

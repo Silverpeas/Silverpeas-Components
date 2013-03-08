@@ -99,7 +99,7 @@ function topicGoTo(id) {
 <%
 	Window window = gef.getWindow();
 	Frame frame = gef.getFrame();
-	
+
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
@@ -108,7 +108,7 @@ function topicGoTo(id) {
 	browseBar.setI18N(languages, currentLang);
 
 	out.println(window.printBefore());
-	
+
 	if ("progress".equals(wizard)) {
 		displayWizardOperations(wizardRow, pubId, kmeliaScc, gef, "ViewAttachments", resources, out, kmaxMode);
 	} else {
@@ -118,7 +118,7 @@ function topicGoTo(id) {
 			displayUserOperations(pubId, kmeliaScc, gef, "ViewAttachments", resources, out, kmaxMode);
 		}
 	}
-	
+
 	out.println(frame.printBefore());
 	if ("progress".equals(wizard) || "finish".equals(wizard)) {
 		//  cadre d'aide
@@ -130,19 +130,9 @@ function topicGoTo(id) {
 		<br clear="all"/>
 <%	}
 	out.flush();
-
-	if (kmeliaScc.isVersionControlled()) 
-	{
-		//Versioning links
-		getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/documents.jsp?Id="+URLEncoder.encode(pubId)+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images&IndexIt="+pIndexIt+"&Url="+URLEncoder.encode(url)+"&SL="+URLEncoder.encode(kmeliaScc.getSpaceLabel())+"&NodeId="+kmeliaScc.getCurrentFolderId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CL="+URLEncoder.encode(kmeliaScc.getComponentLabel())+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
-	} 
-	else
-	{
-		//Attachments links
-		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+pubId+"&ComponentId="+componentId+"&Context=Images&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+kmeliaScc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+kmeliaScc.getProfile()+"&Language="+currentLang+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
-	}
+	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+pubId+"&ComponentId="+componentId+"&Context=attachment&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+kmeliaScc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+kmeliaScc.getProfile()+"&Language="+currentLang+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
 	out.flush();
-	
+
 	if ("progress".equals(wizard) || "finish".equals(wizard)) {
 		ButtonPane buttonPane = gef.getButtonPane();
 		buttonPane.addButton(nextButton);

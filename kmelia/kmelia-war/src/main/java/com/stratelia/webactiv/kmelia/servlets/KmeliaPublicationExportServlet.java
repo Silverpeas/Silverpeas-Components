@@ -78,7 +78,7 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
     InputStream in = new FileInputStream(exportFile);
     OutputStream out = response.getOutputStream();
     try {
-      response.setContentLength(Long.valueOf(exportFile.length()).intValue());
+      response.setHeader( "Content-Length", String.valueOf(exportFile.length()));
       response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
       ByteStreams.copy(in, out);
     } finally {
@@ -102,7 +102,7 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
               getName());
       response.setHeader("Content-Disposition", "inline; filename=\"" + documentName + "\"");
       response.setContentType(format.getMimeType());
-      response.setContentLength(Long.valueOf(generatedDocument.length()).intValue());
+      response.setHeader( "Content-Length", String.valueOf(generatedDocument.length()));
       ByteStreams.copy(in, out);
     } finally {
       if (generatedDocument != null) {

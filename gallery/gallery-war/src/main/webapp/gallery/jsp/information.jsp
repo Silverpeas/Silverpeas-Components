@@ -28,23 +28,23 @@
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<% 
+<%
 	// récupération des paramètres :
       PhotoDetail photo = (PhotoDetail) request.getAttribute("Photo");
       String repertoire = (String) request.getAttribute("Repertoire");
       List<NodeDetail> path = (List<NodeDetail> ) request.getAttribute("Path");
       String userName = (String) request.getAttribute("UserName");
-        
+
       boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
-        
+
       Integer nbCom = (Integer) request.getAttribute("NbComments");
       Boolean isUsePdc = (Boolean) request.getAttribute("IsUsePdc");
       boolean showComments = ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
-        
+
       // paramètres pour le formulaire
       Form formUpdate = (Form) request.getAttribute("Form");
       DataRecord data = (DataRecord) request.getAttribute("Data");
-        
+
       // déclaration des variables :
       String photoId = "";
       String title = "";
@@ -67,15 +67,15 @@
       String beginDate = "";
       String endDate = "";
       Collection<String> metaDataKeys = null;
-        
+
       String extensionAlt = "_preview.jpg";
-        
+
       PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false,
           componentId, null);
       context.setBorderPrinted(false);
       context.setCurrentFieldIndex("11");
       context.setIgnoreDefaultValues(true);
-        
+
       if (photo != null) {
         photoId = String.valueOf(photo.getPhotoPK().getId());
         title = photo.getTitle();
@@ -91,7 +91,7 @@
         nomRep = repertoire;
         nameFile = photo.getImageName();
         name = photo.getId() + "_266x150.jpg";
-        vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(),
+        vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(),
             nomRep);
         action = "UpdateInformation";
         creationDate = resource.getOutputDate(photo.getCreationDate());
@@ -108,7 +108,7 @@
         } else {
           endDownloadDate = "";
         }
-          
+
         if (title.equals(nameFile)) {
           title = "";
         }
@@ -130,7 +130,7 @@
           metaDataKeys = photo.getMetaDataProperties();
         }
       }
-        
+
       // déclaration des boutons
       Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
       Button cancelButton;
@@ -139,7 +139,7 @@
       } else {
         cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum", false);
       }
-	
+
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -147,15 +147,15 @@
           <view:looknfeel/>
 		<%
 			if (formUpdate != null)
-				formUpdate.displayScripts(out, context); 
+				formUpdate.displayScripts(out, context);
 		%>
         <view:includePlugin name="datepicker"/>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 		<script type="text/javascript">
-		
+
 		// fonctions de contrôle des zones des formulaires avant validation
-			function sendData() 
+			function sendData()
 			{
 				<% if (formUpdate != null) { %>
 					if (isCorrectForm() && isCorrectLocalForm())
@@ -169,8 +169,8 @@
 		    		}
 		    	<% } %>
 			}
-		
-			function isCorrectLocalForm() 
+
+			function isCorrectLocalForm()
 			{
 		     	var errorMsg = "";
 		     	var errorNb = 0;
@@ -184,17 +184,17 @@
 		     	var langue = "<%=resource.getLanguage()%>";
      			var beginDownloadDateOK = true;
      			var beginDateOK = true;
-		     	
-		     	if (title.length > 255) 
-		     	{ 
+
+		     	if (title.length > 255)
+		     	{
 					errorMsg+="  - '<%=resource.getString("GML.title")%>'  <%=resource.getString("gallery.MsgTaille")%>\n";
 		           	errorNb++;
 		     	}
-		   		if (descr.length > 255) 
+		   		if (descr.length > 255)
 		     	{
 		     		errorMsg+="  - '<%=resource.getString("GML.description")%>'  <%=resource.getString("gallery.MsgTaille")%>\n";
 		           	errorNb++;
-		     	}				
+		     	}
 		     	if (<%=(vignette_url == null)%> && file == "")
 				{
 	           		errorMsg+="  - '<%=resource.getString("gallery.photo")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
@@ -237,9 +237,9 @@
 				   			beginDateOK = false;
 			   			}
 	     			}
-				     if (!isWhitespace(endDate)) 
+				     if (!isWhitespace(endDate))
 				     {
-				    	   if (!isDateOK(endDate, langue)) { 
+				    	   if (!isDateOK(endDate, langue)) {
 				                 errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
 				                 errorNb++;
 				           } else {
@@ -258,7 +258,7 @@
 								}
 							}
 				     }
-			     
+
 		     	// vérifier que le document est bien une image
 		     	if (file != "")
 		     	{
@@ -269,7 +269,7 @@
 	           			errorNb++;
  					}
  				}
-		     	switch(errorNb) 
+		     	switch(errorNb)
 		     	{
 		        	case 0 :
 		            	result = true;
@@ -284,17 +284,17 @@
 		            	window.alert(errorMsg);
 		            	result = false;
 		            	break;
-		     	} 
+		     	}
 		     	return result;
 			}
-	
+
 /***********************************************
 * Image w/ description tooltip- By Dynamic Web Coding (www.dyn-web.com)
 * Copyright 2002-2007 by Sharon Paine
 * Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
 ***********************************************/
 
-/* IMPORTANT: Put script after tooltip div or 
+/* IMPORTANT: Put script after tooltip div or
 	 put tooltip div just before </BODY>. */
 
 var dom = (document.getElementById) ? true : false;
@@ -309,20 +309,20 @@ var origWidth, origHeight;
 if (nodyn) { event = "nope" }
 
 ///////////////////////  CUSTOMIZE HERE   ////////////////////
-// settings for tooltip 
+// settings for tooltip
 // Do you want tip to move when mouse moves over link?
-var tipFollowMouse= false;	
+var tipFollowMouse= false;
 // Be sure to set tipWidth wide enough for widest image
 var tipWidth= 400;
 var offX= 20;	// how far from mouse to show tip
-var offY= 12; 
+var offY= 12;
 var tipFontFamily= "Verdana, arial, helvetica, sans-serif";
 var tipFontSize= "8pt";
 // set default text color and background color for tooltip here
 // individual tooltips can have their own (set in messages arrays)
 // but don't have to
 var tipFontColor= "#000000";
-var tipBgColor= "#DDECFF"; 
+var tipBgColor= "#DDECFF";
 var tipBorderColor= "#000000";
 var tipBorderWidth= 1;
 var tipBorderStyle= "solid";
@@ -330,17 +330,17 @@ var tipPadding= 0;
 
 // tooltip content goes here (image, description, optional bgColor, optional textcolor)
 var messages = new Array();
-// multi-dimensional arrays containing: 
+// multi-dimensional arrays containing:
 // image and text for tooltip
 // optional: bgColor and color to be sent to tooltip
 <%
 if (photo != null) {
     String nameRep = resource.getSetting("imagesSubDirectory") + photo.getId();
-%>		
-messages[0] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId,
+%>
+messages[0] = new Array('<%=FileServerUtils.getUrl( componentId,
     photo.getId() + extensionAlt, photo.getImageMimeType(), nameRep)%>','<%=EncodeHelper.javaStringToJsString(photo.
     getName())%>',"#FFFFFF");
-  
+
 <% } %>
 
 ////////////////////  END OF CUSTOMIZATION AREA  ///////////////////
@@ -364,7 +364,7 @@ var endStr = '</td></tr></table>';
 
 ////////////////////////////////////////////////////////////
 //  initTip	- initialization for tooltip.
-//		Global variables for tooltip. 
+//		Global variables for tooltip.
 //		Set styles
 //		Set up mousemove capture if tipFollowMouse set true.
 ////////////////////////////////////////////////////////////
@@ -393,7 +393,7 @@ window.onload = initTip;
 
 /////////////////////////////////////////////////
 //  doTooltip function
-//			Assembles content for tooltip and writes 
+//			Assembles content for tooltip and writes
 //			it to tipDiv
 /////////////////////////////////////////////////
 var t1,t2;	// for setTimeouts
@@ -428,7 +428,7 @@ function trackMouse(evt) {
 //  positionTip function
 //		If tipFollowMouse set false, so trackMouse function
 //		not being used, get position of mouseover event.
-//		Calculations use mouseover event position, 
+//		Calculations use mouseover event position,
 //		offset amounts and tooltip width to position
 //		tooltip within window.
 /////////////////////////////////////////////////////////////
@@ -445,11 +445,11 @@ function positionTip(evt) {
 	var winWd = (ns5)? window.innerWidth-20+window.pageXOffset: standardbody.clientWidth+standardbody.scrollLeft;
 	var winHt = (ns5)? window.innerHeight-20+window.pageYOffset: standardbody.clientHeight+standardbody.scrollTop;
 	// check mouse position against tip and window dimensions
-	// and position the tooltip 
-	if ((mouseX+offX+tpWd)>winWd) 
+	// and position the tooltip
+	if ((mouseX+offX+tpWd)>winWd)
 		tipcss.left = mouseX-(tpWd+offX)+"px";
 	else tipcss.left = mouseX+offX+"px";
-	if ((mouseY+offY+tpHt)>winHt) 
+	if ((mouseY+offY+tpHt)>winHt)
 		tipcss.top = winHt-(tpHt+offY)+"px";
 	else tipcss.top = mouseY+offY+"px";
 	if (!tipFollowMouse) t1=setTimeout("tipcss.visibility='visible'",100);
@@ -461,7 +461,7 @@ function hideTip() {
 	tipOn = false;
 }
 </script>
-		
+
 </head>
 <body class="yui-skin-sam">
 <%
@@ -469,9 +469,9 @@ function hideTip() {
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
 	displayPath(path, browseBar);
-	
+
 	Board board	= gef.getBoard();
-	
+
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	if (photo != null)
 	{
@@ -483,30 +483,30 @@ function hideTip() {
 		if (isUsePdc.booleanValue())
 			tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId="+photoId, false);
 	}
-	
+
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
     out.println(frame.printBefore());
 %>
 <form name="photoForm" action="<%=action%>" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 <table cellpadding="5" width="100%">
-<tr> 
-	<td valign="top"> 
+<tr>
+	<td valign="top">
 	<%if (photo != null) { %>
 		<%=board.printBefore()%>
 		<%if (vignette_url != null) {
 			if (!photo.isPreviewable()) {
 				vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_266x150.jpg";
 			}
-		%> 
-			
+		%>
+
       		<center>
       		<a href="#" onmouseover="doTooltip(event,0)" onmouseout="hideTip()"><img src="<%=vignette_url%>" border="0"/></a>
       		</center>
-      		
+
       	<%
 				// AFFICHAGE des métadonnées
-				if (metaDataKeys != null && !metaDataKeys.isEmpty()) 
+				if (metaDataKeys != null && !metaDataKeys.isEmpty())
 				{
 					%>
 					<br/>
@@ -539,8 +539,8 @@ function hideTip() {
 		<%=board.printAfter()%>
 		<% } %>
 	</td>
-	<td> 
-		<%=board.printBefore()%>		
+	<td>
+		<%=board.printBefore()%>
 		<table align="left">
 			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("gallery.photo")%> :</td>
@@ -549,7 +549,7 @@ function hideTip() {
 			      		<img src="<%=resource.getIcon("gallery.obligatoire")%>" width="5" height="5" border="0"/>
 		      		<% } %>
 		      	</td>
-			</tr> 			
+			</tr>
 			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.nomFic")%> :</td>
 				<td class="txtlibform"><%=nameFile%></td>
@@ -616,19 +616,19 @@ function hideTip() {
 					<table>
 					<tr align="left">
 						<td>
-							<% 
-								formUpdate.display(out, context, data); 
+							<%
+								formUpdate.display(out, context, data);
 							%>
-						</td>	
+						</td>
 					</tr>
 					</table>
 					<%=board.printAfter()%>
-			<% } %>	
+			<% } %>
 	</td>
 </tr>
-</table>	
+</table>
 </form>
-<% 
+<%
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);

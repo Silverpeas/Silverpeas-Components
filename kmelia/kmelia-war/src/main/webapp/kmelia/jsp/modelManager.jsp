@@ -150,7 +150,7 @@ function closeWindows() {
     		nextButton = (Button) gef.getFormButton(resources.getString("kmelia.End"), "javascript:onClick=sendModelData()", false);
     	else
     		nextButton = (Button) gef.getFormButton(resources.getString("GML.next"), "javascript:onClick=sendModelData()", false);
-    	  
+
 
       out.println(window.printBefore());
 
@@ -163,7 +163,7 @@ function closeWindows() {
 	      else
 	          displayUserOperations(pubId, kmeliaScc, gef, "ModelUpdateView", resources, out, kmaxMode);
   	  }
-      
+
       out.println(frame.printBefore());
       if (("finish".equals(wizard)) || ("progress".equals(wizard)))
   		{
@@ -178,14 +178,14 @@ function closeWindows() {
   		}
       if (imageTrouble)
           out.println("<Font color=\"red\" size=2>"+kmeliaScc.getString("ImageTrouble")+"</font><BR><BR>");
-          
+
       out.println(board.printBefore());
-          
+
 	/***************************************************************************************************************************/
 	/** Affichage du mod�le BdD																								  **/
 	/***************************************************************************************************************************/
 	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
-	
+
 	String 		modelId 	= modelDetail.getId();
   	String 		toParse 	= modelDetail.getHtmlEditor();
   	Collection 	textList 	= null;
@@ -200,7 +200,7 @@ function closeWindows() {
   	}
   	Iterator textIterator 	= textList.iterator();
   	Iterator imageIterator 	= imageList.iterator();
-  	
+
   	int infoTextCount 	= 0;
   	int infoImageCount 	= 0;
   	int posit  			= toParse.indexOf("%WA");
@@ -209,14 +209,14 @@ function closeWindows() {
   	<TABLE CELLPADDING=5><TR><TD valign=top>
   	<FORM Name="modelForm" ACTION="UpdateDBModelContent" METHOD="POST" enctype="multipart/form-data" accept-charset="UTF-8">
 <%
-	while (posit != -1) 
+	while (posit != -1)
 	{
     	if (posit > 0) {
       		out.print(toParse.substring(0, posit));
       		toParse = toParse.substring(posit);
     	}
 
-    	if (toParse.startsWith("%WATXTDATA%")) 
+    	if (toParse.startsWith("%WATXTDATA%"))
     	{
       		if (textIterator.hasNext()) {
         		InfoTextDetail textDetail = (InfoTextDetail)textIterator.next();
@@ -224,23 +224,23 @@ function closeWindows() {
       		}
       		toParse = toParse.substring(11);
     	}
-    	else if (toParse.startsWith("%WATXTVAR%")) 
+    	else if (toParse.startsWith("%WATXTVAR%"))
     	{
       		out.print("WATXTVAR" + String.valueOf(infoTextCount));
       		infoTextCount++;
       		toParse = toParse.substring(10);
     	}
-    	else if (toParse.startsWith("%WAIMGDATA%")) 
+    	else if (toParse.startsWith("%WAIMGDATA%"))
     	{
-      		if (imageIterator.hasNext()) 
+      		if (imageIterator.hasNext())
       		{
         		InfoImageDetail imageDetail = (InfoImageDetail)imageIterator.next();
-        		String url = FileServer.getUrl(spaceId, componentId, imageDetail.getLogicalName(), imageDetail.getPhysicalName(), imageDetail.getType(), publicationSettings.getString("imagesSubDirectory"));
+        		String url = FileServerUtils.getUrl(spaceId, componentId, imageDetail.getLogicalName(), imageDetail.getPhysicalName(), imageDetail.getType(), publicationSettings.getString("imagesSubDirectory"));
         		out.println("<IMG BORDER=\"0\" SRC=\""+url+"\">");
       		}
       		toParse = toParse.substring(11);
     	}
-    	else if (toParse.startsWith("%WAIMGVAR%")) 
+    	else if (toParse.startsWith("%WAIMGVAR%"))
     	{
       		out.print("<INPUT TYPE=\"file\" name=\"" + "WAIMGVAR" + String.valueOf(infoImageCount) + "\">");
       		infoImageCount++;
@@ -259,7 +259,7 @@ function closeWindows() {
 <%
 	out.println(board.printAfter());
     out.println(frame.printMiddle());
-    
+
     ButtonPane buttonPane = gef.getButtonPane();
     if ("progress".equals(wizard))
 	{
@@ -273,7 +273,7 @@ function closeWindows() {
     }
     buttonPane.setHorizontalPosition();
     out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-    
+
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>

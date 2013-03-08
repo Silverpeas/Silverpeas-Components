@@ -25,17 +25,19 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.net.URLEncoder"%>
+<%@ page import="org.silverpeas.util.URLUtils" %>
 
 <%!
 void displayAttachmentEdit(String id, String spaceId, String componentId, String url, HttpServletRequest request, HttpServletResponse response)
 	throws com.stratelia.silverpeas.infoLetter.InfoLetterException {
     try {
-	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id=" 
-		+ id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId + "&Context=Images" + "&Url=" + response.encodeURL(URLEncoder.encode(url))).include(request, response);
+	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="
+		+ id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId + "&Context=attachment" + "&Url=" +
+      URLUtils.encodeQueryNameOrValue(url)).include(request, response);
 
     } catch (Exception e) {
 		throw new com.stratelia.silverpeas.infoLetter.InfoLetterException("viewLetter_JSP.displayViewWysiwyg",
-		com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR, e.getMessage());			
+		com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR, e.getMessage());
     }
 }
 %>
@@ -69,29 +71,29 @@ String parutionTitle = (String) request.getAttribute("parutionTitle");
 String parution = (String) request.getAttribute("parution");
 String url = (String) request.getAttribute("url");
 
-	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));	
+	browseBar.setPath(EncodeHelper.javaStringToHtmlString(parutionTitle));
 
 	out.println(window.printBefore());
- 
+
 	//Instanciation du cadre avec le view generator
   TabbedPane tabbedPane = gef.getTabbedPane();
-  tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);  
+  tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);
   tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:call_wysiwyg();",false);
   tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"javascript:goView();",false);
   tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"#",true);
 
   out.println(tabbedPane.print());
-  out.println(frame.printBefore());	
+  out.println(frame.printBefore());
 %>
 
 <%
 out.flush();
-displayAttachmentEdit(parution, spaceId, componentId, url, request, response);		
+displayAttachmentEdit(parution, spaceId, componentId, url, request, response);
 %>
-<form name="headerParution" action="ParutionHeaders" method="post">			
+<form name="headerParution" action="ParutionHeaders" method="post">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
-<form name="viewParution" action="Preview" method="post">			
+<form name="viewParution" action="Preview" method="post">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
 <form name="toWysiwyg" action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
@@ -99,7 +101,7 @@ displayAttachmentEdit(parution, spaceId, componentId, url, request, response);
     <input type="hidden" name="SpaceName" value="<%= (String) request.getAttribute("SpaceName") %>"/>
     <input type="hidden" name="ComponentId" value="<%= (String) request.getAttribute("ComponentId") %>"/>
     <input type="hidden" name="ComponentName" value="<%= (String) request.getAttribute("ComponentName") %>"/>
-    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"/> 
+    <input type="hidden" name="BrowseInfo" value="<%= (String) request.getAttribute("BrowseInfo") %>"/>
     <input type="hidden" name="ObjectId" value="<%= (String) request.getAttribute("ObjectId") %>"/>
     <input type="hidden" name="Language" value="<%= (String) request.getAttribute("Language") %>"/>
     <input type="hidden" name="ReturnUrl" value="<%= (String) request.getAttribute("ReturnUrl") %>"/>

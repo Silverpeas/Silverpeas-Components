@@ -30,7 +30,7 @@
 
 <%
 PublicationDetail 	pubDetail 		= (PublicationDetail) request.getAttribute("CurrentPublicationDetail");
-String contentLanguage = (String) request.getAttribute("CurrentLanguage");
+String contentLanguage = kmeliaScc.getContentLanguage();
 
 String pubId 	= pubDetail.getPK().getId();
 String pubName 	= pubDetail.getName(contentLanguage);

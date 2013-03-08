@@ -20,25 +20,6 @@
  */
 package com.silverpeas.questionReply.control;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.io.IOUtils;
-
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -49,11 +30,7 @@ import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.control.notification.NotificationData;
 import com.silverpeas.questionReply.control.notification.QuestionNotifier;
 import com.silverpeas.questionReply.control.notification.ReplyNotifier;
-import com.silverpeas.questionReply.model.Category;
-import com.silverpeas.questionReply.model.Question;
-import com.silverpeas.questionReply.model.QuestionDetail;
-import com.silverpeas.questionReply.model.Recipient;
-import com.silverpeas.questionReply.model.Reply;
+import com.silverpeas.questionReply.model.*;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.whitePages.control.CardManager;
@@ -75,13 +52,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -90,8 +61,17 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.apache.commons.io.IOUtils;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import javax.xml.bind.JAXBException;
+import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static com.google.common.base.Charsets.UTF_8;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
 
@@ -967,7 +947,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     StringBuilder sb = new StringBuilder();
     sb.append("<table width=\"100%\">\n");
     Collection<NodeDetail> categories = getAllCategories();
-    QuestionReplyExport exporter = new QuestionReplyExport(resource, file);
+    QuestionReplyExport exporter = new QuestionReplyExport(getUserDetail(), resource, file);
     for (NodeDetail category : categories) {
       String categoryId = java.lang.Integer.toString(category.getId());
       exportCategory(exporter, category, categoryId, sb);

@@ -56,8 +56,7 @@
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@ page import="com.stratelia.webactiv.util.attachment.control.AttachmentController"%>
-<%@ page import="com.stratelia.webactiv.util.attachment.model.AttachmentDetail"%>
+<%@ page import="org.silverpeas.importExport.attachment.AttachmentDetail"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
@@ -87,11 +86,7 @@
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeI18NDetail"%>
 
-<%@ page import="com.stratelia.silverpeas.versioning.util.VersioningUtil"%>
-<%@ page import="com.stratelia.silverpeas.versioning.model.Document"%>
-<%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion"%>
 
-<%@ page import="org.silverpeas.search.searchEngine.searchEngine.control.ejb.* "%>
 <%@ page import="org.silverpeas.search.searchEngine.model.* "%>
 
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
@@ -103,8 +98,8 @@
 <%@ page import="com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper"%>
 
 <%@ page import="com.silverpeas.comment.model.Comment"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.WysiwygException"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
 <%@ page import="com.silverpeas.util.ForeignPK"%>
@@ -140,10 +135,10 @@
 	String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("kmelia", spaceId, componentId);
 
 	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-	
+
 	boolean kmaxMode 	= (componentId != null && componentId.startsWith("kmax"));
 	boolean toolboxMode = (componentId != null && componentId.startsWith("toolbox"));
 	boolean kmeliaMode 	= (componentId != null && componentId.startsWith("kmelia"));
-	
+
 	ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", kmeliaScc.getLanguage());
 %>

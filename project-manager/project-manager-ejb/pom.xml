@@ -25,12 +25,6 @@
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>versioning</artifactId>
-      <version>${core.version}</version>
-      <classifier>client</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>calendar</artifactId>
       <version>${core.version}</version>
       <classifier>client</classifier>
