@@ -234,6 +234,15 @@ if (action.equals("CreateSurvey")) {
 					<input type="checkbox" name="anonymous" value="" <%=anonymousCheck%> <%=anonymousDisabled%>/>
 				</div>
 			</div>
+			<div class="field" id="resultModeArea">
+        <label class="txtlibform" for="resultMode"><%=resources.getString("SurveyCreationResultMode")%></label>
+        <div class="champs">
+          <select id="resultMode" name="resultMode">
+              <option value="1"><%=resources.getString("SurveyCreationResultMode.1")%></option>
+              <option value="2"><%=resources.getString("SurveyCreationResultMode.2")%></option>
+          </select>
+        </div>
+      </div>
 			<input type="hidden" name="Action" value="<%=nextAction%>"/>
 		</div>
 	</fieldset>

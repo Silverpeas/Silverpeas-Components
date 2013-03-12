@@ -632,6 +632,12 @@ function clipboardCopy() {
   <fmt:message key="GML.notify" var="notifyUserMsg" />
   <c:set var="notifyUserAction">javaScript:onClick=goToNotify('ToAlertUser?SurveyId=<%=surveyId%>');</c:set>
   <view:operation altText="${notifyUserMsg}" icon="${alertSrc}" action="${notifyUserAction}" />
+  
+   <c:if test="${profile eq 'admin' or profile eq 'publisher'}">
+    <fmt:message key="GML.export" var="exportMsg" />
+    <c:set var="exportAction">javaScript:onClick=Export('ExportCSV?SurveyId=<%=surveyId%>');</c:set>
+    <view:operation altText="${exportMsg}" icon="${exportSrc}" action="${exportAction}" />
+  </c:if>
 
   <c:if test="${fn:contains(profile,'admin')}">
     <fmt:message key="GML.export" var="exportMsg" />

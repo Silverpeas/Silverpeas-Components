@@ -1202,6 +1202,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       String endDate = request.getParameter("endDate");
       String nbQuestions = request.getParameter("nbQuestions");
       String anonymousString = request.getParameter("anonymous");
+      String resultMode = request.getParameter("resultMode");
 
       // Anonymous mode -> force all the survey to be anonymous
       if (this.isAnonymousModeEnabled()) {
@@ -1225,9 +1226,10 @@ public class SurveySessionController extends AbstractComponentSessionController 
           endDate = null;
         }
       }
+      
       QuestionContainerHeader surveyHeader =
           new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate,
-              false, 0, Integer.parseInt(nbQuestions), anonymous);
+              false, 0, Integer.parseInt(nbQuestions), anonymous, Integer.parseInt(resultMode));
       QuestionContainerDetail surveyDetail = new QuestionContainerDetail();
       surveyDetail.setHeader(surveyHeader);
       // create the positions of the new survey onto the PdC
