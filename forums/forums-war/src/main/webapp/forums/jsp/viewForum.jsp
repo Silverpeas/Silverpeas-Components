@@ -149,8 +149,10 @@
     <c:set var="viewForumPage">/Rforums/<c:out value="${componentId}" />/viewForum.jsp</c:set>
     <view:browseBar>
       <c:forEach items="${requestScope.parents}" var="ancestor">
-        <c:url var="ancestorLink" value="${viewForumPage}"><c:param name="call" value="viewForum"/><c:param name="forumId" value="${ancestor.id}"/></c:url>
-        <view:browseBarElt id="${ancestor.id}" label="${ancestor.name}" link="${ancestorLink}" />
+        <c:if test="${not empty ancestor.id}">
+          <c:url var="ancestorLink" value="${viewForumPage}"><c:param name="call" value="viewForum"/><c:param name="forumId" value="${ancestor.id}"/></c:url>
+          <view:browseBarElt id="${ancestor.id}" label="${ancestor.name}" link="${ancestorLink}" />
+        </c:if>
       </c:forEach>
       <c:url var="forumLink" value="${viewForumPage}"><c:param name="call" value="viewForum"/><c:param name="forumId" value="${param.forumId}"/></c:url>
       <view:browseBarElt id="${currentForum.id}" label="${currentForum.name}" link="${forumLink}" />
