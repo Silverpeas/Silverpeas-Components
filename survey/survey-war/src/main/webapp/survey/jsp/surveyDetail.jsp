@@ -53,48 +53,6 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <c:set var="profile" value="${requestScope['Profile']}"/>
-<%!String displayAlreadyVotes(QuestionContainerDetail survey, SurveySessionController surveyScc,
-      GraphicElementFactory gef, ResourcesWrapper resources) throws SurveyException, ParseException {
-
-    String r = "";
-    String labelButton = resources.getString("Survey.revote");
-    if (surveyScc.isPollingStationMode())
-      labelButton = resources.getString("PollingStation.revote");
-
-    Board board = gef.getBoard();
-    try {
-      if (survey != null) {
-        Collection votes = survey.getCurrentUserVotes();
-        if (votes != null) {
-          if (votes.size() > 0) {
-            Iterator it = votes.iterator();
-            if (it.hasNext()) {
-              QuestionResult vote = (QuestionResult) it.next();
-              r += board.printBefore();
-              r += "<table border=\"0\" width=\"100%\">";
-              r +=
-                  "<tr><td align=center><span class=txtnav>" +
-                      resources.getString("YouHaveAlreadyParticipate") + " " +
-                      resources.getOutputDate(vote.getVoteDate()) + "</span></td></tr>";
-              //DLE
-              if (surveyScc.isParticipationMultipleAllowedForUser())
-                r +=
-                    "<tr><td align=center><a href=\"surveyDetail.jsp?Action=Vote&SurveyId=" +
-                        survey.getHeader().getId() + "\">" + labelButton + "</a></td></tr>";
-              r += "</table>";
-              r += board.printAfter();
-            }
-          }
-        } else
-          r += "";
-      }
-    } catch (Exception e) {
-      throw new SurveyException("SurveyDetail_JSP.displayAlreadyVotes", SurveyException.WARNING,
-          "Survey.EX_NO_VOTES_FOR_SURVEY", e);
-    }
-    return r;
-  }%>
-
 <%
   String action = request.getParameter("Action");
   String surveyId = request.getParameter("SurveyId");
@@ -130,6 +88,7 @@
 %>
 <c:url value="/util/icons/alert.gif" var="alertSrc"></c:url>
 <c:url value="/util/icons/export.gif" var="exportSrc"></c:url>
+<c:url value="/util/icons/publish.gif" var="publishSrc"></c:url>
 <c:url value="/util/icons/copy.gif" var="copySrc"></c:url>
 
 <%
@@ -619,6 +578,14 @@ function clipboardCopy() {
     function clipboardCopy() {
         top.IdleFrame.location.href = '../..<%=surveyScc.getComponentUrl()%>copy?Id=<%=survey.getHeader().getId()%>';
     }
+    
+    function changeScope(mode, participated, surveyId) {
+    	if(mode == 'classic') {
+    		location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=C";
+    	} else if (mode == 'detail') {
+    		location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=D";
+    	}
+    }
 
      	</script>
 </head>
@@ -634,9 +601,9 @@ function clipboardCopy() {
   <view:operation altText="${notifyUserMsg}" icon="${alertSrc}" action="${notifyUserAction}" />
   
    <c:if test="${profile eq 'admin' or profile eq 'publisher'}">
-    <fmt:message key="GML.export" var="exportMsg" />
-    <c:set var="exportAction">javaScript:onClick=Export('ExportCSV?SurveyId=<%=surveyId%>');</c:set>
-    <view:operation altText="${exportMsg}" icon="${exportSrc}" action="${exportAction}" />
+    <fmt:message key="survey.publishResult" var="publishMsg" />
+    <c:set var="publishAction">javaScript:onClick=PublishResult();</c:set>
+    <view:operation altText="${publishMsg}" icon="${publishSrc}" action="${publishAction}" />
   </c:if>
 
   <c:if test="${fn:contains(profile,'admin')}">
@@ -651,15 +618,16 @@ function clipboardCopy() {
 <view:frame>
 <%
 Frame frame = gef.getFrame();
-String alreadyVotes = displayAlreadyVotes(survey, surveyScc, gef, resources);
 String surveyPart =
     displaySurveyResult(choice, survey, gef, m_context, surveyScc, resources, isClosed,
         settings, frame, participated);
 out.println(displayTabs(surveyScc, survey.getHeader().getPK().getId(), gef, action,
     profile, resources, pollingStationMode, participated).print() +
-    frame.printBefore() + "<center>" + alreadyVotes + "</center><BR>" + surveyPart);
+    frame.printBefore());
+out.println(surveyPart);
 
 %>
+
 <view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
 </view:frame>
 </view:window>

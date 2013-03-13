@@ -235,11 +235,11 @@ if (action.equals("CreateSurvey")) {
 				</div>
 			</div>
 			<div class="field" id="resultModeArea">
-        <label class="txtlibform" for="resultMode"><%=resources.getString("SurveyCreationResultMode")%></label>
+        <label class="txtlibform" for="resultMode"><%=resources.getString("survey.creation.resultMode")%></label>
         <div class="champs">
           <select id="resultMode" name="resultMode">
-              <option value="1"><%=resources.getString("SurveyCreationResultMode.1")%></option>
-              <option value="2"><%=resources.getString("SurveyCreationResultMode.2")%></option>
+              <option value="1"><%=resources.getString("survey.creation.resultMode.1")%></option>
+              <option value="2"><%=resources.getString("survey.creation.resultMode.2")%></option>
           </select>
         </div>
       </div>

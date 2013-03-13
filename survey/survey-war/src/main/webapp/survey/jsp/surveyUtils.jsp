@@ -683,6 +683,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
             if (survey != null) {
                 QuestionContainerHeader surveyHeader = survey.getHeader();
                 Collection questions = survey.getQuestions();
+                Collection votes = survey.getCurrentUserVotes();
 
 				//Display the survey header
                 	String surveyId = surveyHeader.getPK().getId();
@@ -704,12 +705,13 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 
                 	//Mode anonyme -> force les enquêtes à être toutes anonymes
                 	if(surveyScc.isAnonymousModeEnabled()) {
-						anonymous = true;
-					}
+                	 anonymous = true;
+                	}
 
 
 				if (!styleView.equals("user"))
 				{
+				  /*
                  	r += "<center>";
                 	r += board.printBefore();
                 	r += "<table cellspacing=\"3\" cellpadding=\"0\" border=\"0\" width=\"100%\">";
@@ -720,7 +722,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                 	r += "<tr><td class=\"textePetitBold\" nowrap>"+resources.getString("SurveyCreationBeginDate")+" :</td><td>"+beginDate+"</td></tr>";
                 	if (StringUtil.isDefined(endDate))
                 		r += "<tr><td class=\"textePetitBold\" nowrap>"+resources.getString("SurveyCreationEndDate")+" :</td><td>"+endDate+"</td></tr>";
-	                if (!anonymous && !styleView.equals("user"))
+	          if (!anonymous && !styleView.equals("user"))
 				  	{
 				  		// l'enquête n'est pas anonyme, proposer le choix d'affichage
 			           	String selectedStr = "";
@@ -733,11 +735,84 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                    r += "<a href=\"surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice="+otherChoice+"\">";
 	                    r += "Afficher la vue "+resources.getString("survey."+choice);
 	                    r +="</a></td></tr>";
-					}
+             }
 	                r += "</table>";
 	                r += board.printAfter();
 	                r += "<br>";
+	                
+	            */
+	            
+	            r += "<div class=\"principalContent\">";
+	            r += " <h2 class=\"eventName\">"+Encode.javaStringToHtmlString(title)+"</h2>";
+	            r += " <div class=\"eventInfo\">";
+	            r += "   <div class=\"surveyDate\">";
+	            r += "     <div class=\"bloc\">";
+	            r += "       <span class=\"eventBeginDate\">"+resources.getString("SurveyCreationDate")+" : ";
+	            r += "       "+creationDate;
+	            r += "       </span>";
+	            r += "       <span class=\"eventBeginDate\">"+resources.getString("SurveyCreationBeginDate"); 
+	            r += "       "+beginDate;
+	            r += "       </span>";
+	            if (StringUtil.isDefined(endDate)) {
+		            r += "      <span class=\"eventEndDate\">"+resources.getString("SurveyCreationEndDate");
+		            r += "      "+endDate;
+		            r += "      </span>";
+	            }
+	            r += "     </div>";
+	            r += "   </div>";
+	            r += "   <div class=\"surveyParticipation\">";
+	            r += "     <div class=\"bloc\">";
+	            r += "       <span>"+resources.getString("survey.participation")+" : "+nbVoters;
+	            if (!surveyScc.isParticipationMultipleUsed()) {
+                r += "/"+nbRegistered;
+              }
+	            if (!anonymous) {
+                // affichage de l'icone des users
+                r += "       <a href=\"javaScript:onClick=viewAllUsers('"+surveyId+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a>";
+              }
+	            r += "       </span>";
+	            if (!surveyScc.isParticipationMultipleUsed()) {
+	              r += "       <span>"+resources.getString("survey.thatToSay");
+                if (isClosed)
+                  r += "       "+(100-participationRate)+"&nbsp;%&nbsp;"+resources.getString("survey.abstentionRate");
+                else
+                  r += "       "+participationRate+"&nbsp;%&nbsp;"+resources.getString("GML.preview.dialog.title.of")+" "+resources.getString("survey.participation");
+                r += "       </span>";
+              }
+	            r += "     </div>";
+	            r += "   </div>";
+	            r += "   <div class=\"surveyUserParticipation\">";
+	            r += "     <div class=\"bloc\">";
+	            String labelButton = resources.getString("Survey.revote");
+	            if (surveyScc.isPollingStationMode()) {
+	             labelButton = resources.getString("PollingStation.revote");
+	            }
+	            if (votes != null) {
+                if (votes.size() > 0) {
+                  it = votes.iterator();
+                  if (it.hasNext()) {
+                    QuestionResult vote = (QuestionResult) it.next();
+                    r += "       <span>"+resources.getString("YouHaveAlreadyParticipate");
+                    r += "       "+resources.getOutputDate(vote.getVoteDate())+"</span>";
+                           
+                    if (surveyScc.isParticipationMultipleAllowedForUser()) {
+                      r += "       <span><a href=\"surveyDetail.jsp?Action=Vote&SurveyId="+
+                              survey.getHeader().getId() + "\">" + labelButton + "</a></span>";
+                    }
+                  }
+                }
+              } 
+	            
+	            r += "     </div>";
+	            r += "   </div>";
+	            r += "   <br clear=\"left\">&nbsp;";
+	            r += " </div>";
+	            if (StringUtil.isDefined(description)) {
+	             r += " <div class=\"surveyDesc\">"+Encode.javaStringToHtmlParagraphe(description)+"</div>";
+	            }
+	            r += "</div>";
 
+	            /*
 	                r += board.printBefore();
 
 	                r += "<table border=\"0\" cellspacing=\"3\" cellpadding=\"0\" width=\"100%\" align=center>";
@@ -779,13 +854,14 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                r += "</table>";
 	                r += board.printAfter();
 	                r += "<BR>";
+	                */
 	            }
 	            else
 	            {
-	            	r += "<center>";
+	                r += "<center>";
                 	r += board.printBefore();
                 	r += "<table border=\"0\" cellspacing=\"5\" cellpadding=\"5\" width=\"100%\">";
-                	r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.participation")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlString(userName)+"</td></tr>";
+                	r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.participationOf")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlString(userName)+"</td></tr>";
 	                if (!userComment.equals("")) {
 	                   r += " <tr><td class=\"textePetitBold\" nowrap valign=\"top\">"+resources.getString("survey.Comment")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlParagraphe(userComment)+"</td></tr>";
 	                }
@@ -793,6 +869,25 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                r += board.printAfter();
 	                r += "<br/>";
 	            }
+				
+			   r += "<div class=\"surveyResult\">";
+			   
+			   if (!anonymous && !styleView.equals("user")) {
+           // l'enquête n'est pas anonyme, proposer le choix d'affichage
+               String selectedStr = "";
+               String otherChoice = "C";
+               if (choice.equals("C")) {
+                otherChoice = "D";
+               }
+               r += "   <div class=\"sousNavBulle\">";
+               r += "    <p>"+resources.getString("survey.results")+" "+resources.getString("survey.choice")+" : ";
+               r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"\" id=\"scope-classic\">"+resources.getString("survey."+choice)+"</a>";
+               r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"active\" id=\"scope-detail\">"+resources.getString("survey."+otherChoice)+"</a>";
+               r += "    </p>";
+               r += "   </div>";
+          }
+			   
+			   
 
                 if (questions != null && questions.size()>0) {
                     r += board.printBefore();
@@ -861,7 +956,9 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                      r += "<br>"+resources.getString("SurveyWithNoQuestions")+"<br><br>";
                  }
                  r += frame.printAfter();
-	        } else {
+                 
+                 r += "</div>";
+	        } else {//survey == null
 	             r += "<center>"+resources.getString("SurveyUnavailable")+"</center>";
 	        }
 	        r += "</center>";

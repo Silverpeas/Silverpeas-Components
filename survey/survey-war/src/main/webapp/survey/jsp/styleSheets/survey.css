@@ -27,7 +27,6 @@ body {
 	margin: 0 0 0 0;
 }
 
-
 .questionResults th, .questionResults td, .questionResults tr {
 	padding:5px;
 	font-size:12px;
@@ -43,14 +42,6 @@ body {
 	background-color:#FFFFFF;
 	border:none;
 	padding:3px;
-	
-}
-
-.questionResults tbody tr td:first-child {
-	
-	/*background-color:#E4E4E4;
-	border-bottom:#CCC 1px solid;
-	margin-right:5px;*/
 }
 
 #survey-result-C .questionResults tbody tr td {
@@ -58,7 +49,6 @@ body {
 	border-top:1px solid #DDDEEE;
 	min-height:33px;
 }
-
 
 .questionResults tbody .questionResults-Oui {
 	background-color:#D5FAC5;
@@ -74,7 +64,6 @@ body {
 	font-size:12px;
 }
 
-
 /* tableau Doodle */
 
 .questionResults th,.questionResults td,.questionResults tr {
@@ -87,12 +76,10 @@ body {
 	width: 150px;
 }
 
-.questionResults .questionResults-top .questionResults-vide,.questionResults tbody .questionResults-vide
-	{
+.questionResults .questionResults-top .questionResults-vide,.questionResults tbody .questionResults-vide	{
 	background-color: #FFFFFF;
 	border: none;
 	padding: 3px;
-	
 	border-top:1px solid #CCCCCC;
 }
 
@@ -220,4 +207,161 @@ fieldset#answers legend {
 
 #creation-page .classification .legende {
 	display: none;
+}
+
+
+/** 3269 **/
+.eventInfo {
+	background-color:#EFEFEF;
+	border:1px solid #CDCDCD;
+	border-radius:15px;
+	padding:15px 0;
+	display:table;
+	width:98%;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+}
+
+
+.sousNavBulle {
+	float:none;
+}
+
+.eventName {
+    color: #333333;
+    font-size: 130%;
+    font-weight: bold;
+}
+
+.eventInfo div {
+	display:table-cell;
+	border-left:2px solid #DCDCDC;
+	min-height:16px;
+	vertical-align:middle;
+	text-align:left;
+	width:33%;
+}
+
+#eventInfoPublication {
+	padding-bottom:11px;
+}
+
+ *+html .eventInfo div {
+	float:left;
+	width:32%;
+}
+* html  .eventInfo div {
+	float:left;
+	width:32%;
+	border:0;
+}
+
+.eventInfo div:first-child {
+	border:0;
+}
+.eventInfo div div.bloc{
+	padding:0 10px 0 37px;
+	color:#333;
+	font-size:110%;
+	display:inline-block;
+	width:auto;
+	text-align:left;
+}
+
+* html  .eventInfo div div.bloc {
+	padding:0 10px 0 27px;
+	width:70%;
+}
+
+.eventInfo div span {
+	display:block;
+}
+.eventInfo div span a {
+	color:#333;
+	font-size:110%;
+	text-decoration:underline;
+}
+
+.surveyParticipation .bloc{
+	 background:transparent url('/silverpeas/util/icons/groupe.gif') 17px center   no-repeat;
+}
+
+.surveyUserParticipation .bloc{
+	 background:transparent url('/silverpeas/util/icons/ok.gif') 17px center   no-repeat;
+}
+
+.surveyDate .bloc{
+	 background:transparent url('/silverpeas/util/icons/calendar_2.gif') 12px  center   no-repeat;
+}
+
+span.priority {
+	background-color:#F6DEDE;
+	border:1px solid #FDBABA;
+	border-radius:5px;
+	color:#F02929;
+	font-size:8px;
+	line-height:9px;
+	letter-spacing:0.11em;
+	display:inline;
+	padding:1px 4px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+}
+
+.surveyDesc {    
+	border-left: 6px solid #E4E4E4;
+    color: #666666;
+    font-weight: 100;
+    padding: 8px;
+	margin:10px 0;
+}
+
+.surveyResult {
+	clear:both;
+}
+
+#publicationResultDialog label {
+		float:left;
+		clear:both;
+		width:120px;
+}
+#publicationResultDialog .champs {
+	float:left;
+	margin-left:20px;
+	width:400px;
+}
+
+#view-publicationResultDialog label {
+	height:100px;
+}
+
+#view-publicationResultDialog .champs {
+	position:relative;
+	padding:5px 0 10px 20px;
+	
+}
+
+#view-publicationResultDialog .champs input{
+	position:absolute;
+	top:3px;
+	left:0;
+}
+
+#syntheseFile-publicationResultDialog label,
+#notification-publicationResultDialog label {
+	height:50px;
+}
+ 
+#syntheseFile-publicationResultDialog input,
+#notification-publicationResultDialog select {
+	width:80%;
+}
+
+.inlineMessage, .inlineMessage-ok, .inlineMessage-nok {
+	float:none;
+	font-weight:bold;
+}
+
+.inlineMessage .linkFile  {
+	color:#0861ad;
+	font-weight:bold;
+	text-decoration:underline;
 }
