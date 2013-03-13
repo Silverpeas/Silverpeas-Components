@@ -162,15 +162,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
         dataInterface.getInternalSuscribers(getComponentId());
     // Users
-    Collection<String> subscriberIds = subscriberIdsByTypes.get(SubscriberType.USER);
-    String[] usersArray = subscriberIds.toArray(new String[subscriberIds.size()]);
+    sel.setSelectedElements(subscriberIdsByTypes.get(SubscriberType.USER));
     // Groups
-    subscriberIds = subscriberIdsByTypes.get(SubscriberType.GROUP);
-    String[] groupsArray = subscriberIds.toArray(new String[subscriberIds.size()]);
+    sel.setSelectedSets(subscriberIdsByTypes.get(SubscriberType.GROUP));
 
-    sel.setSelectedElements(usersArray);
-    sel.setSelectedSets(groupsArray);
-    if (usersArray.length == 0 && groupsArray.length == 0) {
+    if (sel.getSelectedElements().length == 0 && sel.getSelectedSets().length == 0) {
       sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
     } else {
       sel.setFirstPage(Selection.FIRST_PAGE_CART);
