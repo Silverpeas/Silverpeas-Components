@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2012 Silverpeas
+/*
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -31,6 +31,7 @@ import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
@@ -39,6 +40,7 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
@@ -49,6 +51,8 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -60,13 +64,13 @@ import java.util.Map;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   // Statiques
   private final static String TableExternalEmails = "SC_IL_ExtSus";
-
   // Membres
   private SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
   private SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
@@ -90,7 +94,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   /**
    * Implementation of InfoLetterDataInterface interface
    */
-
   // Creation d'une lettre d'information
   @Override
   public void createInfoLetter(InfoLetter il) {
@@ -238,16 +241,14 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   // Creation de la lettre par defaut a l'instanciation
   @Override
-  public InfoLetter createDefaultLetter(String spaceId, String componentId) {
-    com.stratelia.webactiv.beans.admin.OrganizationController oc =
-        new com.stratelia.webactiv.beans.admin.OrganizationController();
-    com.stratelia.webactiv.beans.admin.ComponentInst ci = oc
-        .getComponentInst(componentId);
+  public InfoLetter createDefaultLetter(String componentId) {
+    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
+    ComponentInst ci = oc.getComponentInst(componentId);
     InfoLetter ie = new InfoLetter();
     ie.setInstanceId(componentId);
     ie.setName(ci.getLabel());
     createInfoLetter(ie);
-    initTemplate(spaceId, componentId, ie.getPK());
+    initTemplate(componentId, ie.getPK());
     return ie;
   }
 
@@ -261,8 +262,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
         IdPK publiPK = new IdPK();
         publiPK.setId(pubId);
         InfoLetterPublicationPdC infoLetter = getInfoLetterPublication(publiPK);
-        silverObjectId = infoLetterContentManager.createSilverContent(null,
-            infoLetter, infoLetter.getCreatorId());
+        silverObjectId = infoLetterContentManager.createSilverContent(null, infoLetter, infoLetter.
+            getCreatorId());
       }
       return silverObjectId;
     } catch (Exception e) {
@@ -395,12 +396,11 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   // initialisation du template
   @Override
-  public void initTemplate(String spaceId, String componentId,
-      WAPrimaryKey letterPK) {
+  public void initTemplate(String componentId, WAPrimaryKey letterPK) {
     try {
       String basicTemplate = "<body></body>";
-      WysiwygController.createFileAndAttachment(basicTemplate, spaceId,
-          componentId, InfoLetterPublication.TEMPLATE_ID + letterPK.getId());
+      WysiwygController.createFileAndAttachment(basicTemplate, componentId,
+          InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), I18NHelper.defaultLanguage);
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
@@ -410,6 +410,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   /**
    * open connection
+   *
    * @return Connection
    * @throws InfoLetterException
    * @author frageade

@@ -28,12 +28,13 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class Recipient extends SilverpeasBean {
   private static final long serialVersionUID = 909658183117075174L;
   private long questionId;
   private String userId;
-  private static OrganizationController organizationController = new OrganizationController();
+  private static OrganisationController organizationController = new OrganizationController();
 
   public Recipient() {
   }

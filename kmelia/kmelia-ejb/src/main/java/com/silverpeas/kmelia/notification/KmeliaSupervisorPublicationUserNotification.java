@@ -57,7 +57,7 @@ public class KmeliaSupervisorPublicationUserNotification extends KmeliaSubscript
   protected Collection<String> getUserIdsToNotify() {
     final List<String> roles = Collections.singletonList("supervisor");
     final List<String> supervisors =
-        new ArrayList<String>(Arrays.asList(getOrganizationController().getUsersIdsByRoleNames(
+        new ArrayList<String>(Arrays.asList(getOrganisationController().getUsersIdsByRoleNames(
             getResource().getPK().getInstanceId(), roles)));
     SilverTrace.debug("kmelia", "KmeliaSupervisorPublicationNotification.getUserIdToNotify()",
         "root.MSG_GEN_PARAM_VALUE", supervisors.size() + " users in role supervisor !");

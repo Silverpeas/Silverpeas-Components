@@ -49,7 +49,7 @@ public class InfoLetterInstanciator extends SQLRequest implements ComponentsInst
   public void create(Connection con, String spaceId, String componentId, String userId) throws
       InstanciationException {
     InfoLetterDataInterface dataInterface = ServiceFactory.getInfoLetterData();
-    InfoLetter il = dataInterface.createDefaultLetter(spaceId, componentId);
+    InfoLetter il = dataInterface.createDefaultLetter(componentId);
     FullIndexEntry indexEntry = new FullIndexEntry(componentId, "Lettre", il.getPK().getId());
     indexEntry.setTitle(il.getName());
     IndexEngineProxy.addIndexEntry(indexEntry);

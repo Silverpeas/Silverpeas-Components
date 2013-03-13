@@ -20,7 +20,6 @@
  */
 package com.silverpeas.questionReply.control;
 
-import static com.google.common.base.Charsets.UTF_8;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 import java.io.File;
@@ -32,6 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +39,8 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.IOUtils;
 
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.Charsets;
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -72,7 +74,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
@@ -91,7 +92,7 @@ import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
 
@@ -252,6 +253,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   /**
    * Persist new FAQ inside database and add positions
+   *
    * @param Positions the JSON position request
    * @return question identifier
    * @throws QuestionReplyException
@@ -550,8 +552,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         + "/RquestionReply/" + getComponentId() + "/Main");
     PairObject hostPath1 = new PairObject(getCurrentQuestion().getTitle(),
         "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId="
-            + getCurrentQuestion().getPK().getId());
-    PairObject[] hostPath = { hostPath1 };
+        + getCurrentQuestion().getPK().getId());
+    PairObject[] hostPath = {hostPath1};
 
     gp.resetAll();
 
@@ -597,7 +599,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Récupère la liste des experts du domaine de la question
    */
   public Collection<UserDetail> getCurrentQuestionWriters() throws QuestionReplyException {
-    OrganizationController orga = getOrganizationController();
+    OrganisationController orga = getOrganisationController();
     List<UserDetail> arrayUsers = new ArrayList<UserDetail>();
 
     try {
@@ -678,8 +680,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private void notifyQuestionFromExpert(Question question) throws QuestionReplyException {
     List<String> profils = new ArrayList<String>();
     profils.add(SilverpeasRole.writer.name());
-    String[] usersIds =
-        getOrganizationController().getUsersIdsByRoleNames(getComponentId(), profils);
+    String[] usersIds = getOrganisationController().
+        getUsersIdsByRoleNames(getComponentId(), profils);
     List<UserRecipient> users = new ArrayList<UserRecipient>(usersIds.length);
     for (String userId : usersIds) {
       users.add(new UserRecipient(userId));
@@ -693,8 +695,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   @SuppressWarnings("unchecked")
   private void notifyReply(Reply reply) throws QuestionReplyException {
-    UserDetail user =
-        getOrganizationController().getUserDetail(getCurrentQuestion().getCreatorId());
+    UserDetail user = getOrganisationController().getUserDetail(getCurrentQuestion().getCreatorId());
     ReplyNotifier notifier = new ReplyNotifier(getUserDetail(getUserId()), URLManager.getServerURL(
         null), getCurrentQuestion(), reply, new NotificationData(getString(
         "questionReply.notification") + getComponentLabel(), getSpaceLabel() + " - "
@@ -878,7 +879,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     Writer fileWriter = null;
     try {
       if (fileHTML.createNewFile()) {
-        fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), UTF_8);
+        fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), Charsets.UTF_8);
         fileWriter.write(toHTML(fileHTML, resource));
       }
     } catch (IOException ex) {
@@ -1002,7 +1003,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     String strVersionControlled = this.getComponentParameterValue("versionControl");
     return ((strVersionControlled != null)
         && !("").equals(strVersionControlled) && !("no").equals(
-          strVersionControlled.toLowerCase()));
+        strVersionControlled.toLowerCase()));
   }
 
   private NodeBm getNodeBm() throws QuestionReplyException {
@@ -1020,6 +1021,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   /**
    * Classify the question reply FAQ on the PdC only if the positions parameter is filled
+   *
    * @param questionId the question identifier
    * @param positions the json string positions
    */
@@ -1046,7 +1048,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         String questionIdStr = Long.toString(questionId);
         PdcClassification classification =
             aPdcClassificationOfContent(questionIdStr, questionDetail.getComponentInstanceId())
-                .withPositions(pdcPositions);
+            .withPositions(pdcPositions);
         if (!classification.isEmpty()) {
           PdcClassificationService service =
               PdcServiceFactory.getFactory().getPdcClassificationService();
@@ -1056,5 +1058,4 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
     }
   }
-
 }

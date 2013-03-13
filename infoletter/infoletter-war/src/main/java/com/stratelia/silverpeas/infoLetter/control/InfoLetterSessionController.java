@@ -34,6 +34,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.CSVWriter;
 import com.silverpeas.util.csv.Variant;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
@@ -247,7 +248,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public void deleteInfoLetterPublication(WAPrimaryKey pk) {
     deleteIndex(getInfoLetterPublication(pk));
     try {
-      WysiwygController.deleteWysiwygAttachments(getSpaceId(), getComponentId(), pk.getId());
+      WysiwygController.deleteWysiwygAttachments(getComponentId(), pk.getId());
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
@@ -376,7 +377,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
         // create and fill the first message part
         MimeBodyPart mbp1 = new MimeBodyPart();
-        String fileName = WysiwygController.getWysiwygFileName(ilp.getPK().getId());
+        String fileName =
+            WysiwygController.getWysiwygFileName(ilp.getPK().getId(), I18NHelper.defaultLanguage);
         String htmlMessagePath =
             com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(
                 getComponentId()) + "Attachment" + java.io.File.separator + "wysiwyg"
@@ -390,7 +392,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           msgText1.append((char) c);
           c = htmlCodeFile.read();
         }
-        
+
         htmlCodeFile.close();
 
         // mbp1.setText(msgText1.toString());
@@ -637,11 +639,10 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   // copie d'un repertoire wysiwyg vers un autre
   public void copyWYSIWYG(String source, String target) {
     try {
-      if (WysiwygController.loadFileAndAttachment(getSpaceId(), getComponentId(), target) != null) {
-        WysiwygController.deleteWysiwygAttachments(getSpaceId(), getComponentId(), target);
+      if (WysiwygController.haveGotWysiwyg(getComponentId(), target, I18NHelper.defaultLanguage)) {
+        WysiwygController.deleteWysiwygAttachments(getComponentId(), target);
       }
-      WysiwygController.copy(getSpaceId(), getComponentId(), source, getSpaceId(),
-          getComponentId(),
+      WysiwygController.copy(getSpaceId(), getComponentId(), source, getSpaceId(), getComponentId(),
           target, getUserId());
     } catch (Exception e) {
       throw new InfoLetterException("InfoLetterSessionController.copyWYSIWYG",
@@ -652,14 +653,19 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public boolean isTemplateExist(InfoLetterPublicationPdC ilp) {
     String template;
     try {
-      template =
-          WysiwygController.loadFileAndAttachment("useless", getComponentId(),
-              InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
+      template = WysiwygController
+          .load(getComponentId(), InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId(),
+              I18NHelper.defaultLanguage);
     } catch (WysiwygException e) {
       throw new InfoLetterException("InfoLetterSessionController.isTemplateExist",
           SilverpeasRuntimeException.ERROR, e.getMessage(), e);
     }
     return !"<body></body>".equals(template);
+  }
+
+  public String getTemplate(InfoLetterPublicationPdC ilp) {
+    return WysiwygController.getWysiwygPath(getComponentId(), I18NHelper.defaultLanguage,
+        InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
   }
 
   // Indexation d'une publication
@@ -867,7 +873,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     List<String> emails = new ArrayList<String>();
     List<String> roles = new ArrayList<String>();
     roles.add("admin");
-    String[] userIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(), roles);
+    String[] userIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles);
     if (userIds != null) {
       for (String userId : userIds) {
         String email = getUserDetail(userId).geteMail();

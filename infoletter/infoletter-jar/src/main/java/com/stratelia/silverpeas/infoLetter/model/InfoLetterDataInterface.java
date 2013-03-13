@@ -111,11 +111,11 @@ public interface InfoLetterDataInterface {
 
   /**
    * Create a default Info Letter when instanciated
-   * @param spaceId the space identifier
+   *
    * @param componentId the component identifier
    * @return a default Info Letter
    */
-  public InfoLetter createDefaultLetter(String spaceId, String componentId);
+  public InfoLetter createDefaultLetter(String componentId);
 
   /**
    * @param componentId componentId component instance id
@@ -155,7 +155,7 @@ public interface InfoLetterDataInterface {
   public boolean isUserSuscribed(String userId, String componentId);
 
   // initialisation du template
-  public void initTemplate(String spaceId, String componentId, WAPrimaryKey letterPK);
+  public void initTemplate(String componentId, WAPrimaryKey letterPK);
 
   public int getSilverObjectId(String pubId, String componentId);
 }

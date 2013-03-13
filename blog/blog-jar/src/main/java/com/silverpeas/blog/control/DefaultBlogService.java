@@ -42,7 +42,6 @@ import javax.inject.Named;
 
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
-import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.silverpeas.search.SearchEngineFactory;
 
@@ -66,7 +65,9 @@ import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+
+import org.silverpeas.core.admin.OrganisationController;
+
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
@@ -82,6 +83,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -206,7 +208,7 @@ public class DefaultBlogService implements BlogService {
     try {
       Collection<String> subscriberIds = getSubscribeBm()
           .getUserSubscribers(ComponentSubscriptionResource.from(fatherPK.getInstanceId()));
-      OrganizationController orgaController = new OrganizationController();
+      OrganisationController orgaController = new OrganizationController();
       if (subscriberIds != null && !subscriberIds.isEmpty()) {
         // get only subscribers who have sufficient rights to read pubDetail
         NodeDetail node = getNodeBm().getHeader(fatherPK);

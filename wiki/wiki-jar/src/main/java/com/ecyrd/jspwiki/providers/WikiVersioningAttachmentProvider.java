@@ -23,9 +23,6 @@
  */
 package com.ecyrd.jspwiki.providers;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,10 +54,17 @@ import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider {
 
@@ -78,15 +82,15 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
 
   private WikiPageDAO pageDAO;
 
-  private OrganizationController controller = new OrganizationController();
+  private OrganisationController controller = new OrganizationController();
 
   private VersioningIndexer indexer = new VersioningIndexer();
 
   private VersioningBm getVersioningBm() throws UtilException, RemoteException,
       CreateException {
     if (versioningBm == null) {
-      VersioningBmHome versioningBmHome = (VersioningBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
+      VersioningBmHome versioningBmHome = EJBUtilitaire.getEJBObjectRef(
+          JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
       versioningBm = versioningBmHome.create();
     }
     return versioningBm;

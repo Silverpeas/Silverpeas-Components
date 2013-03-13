@@ -25,14 +25,9 @@
 package com.silverpeas.kmelia.workflowextensions;
 
 import java.awt.Color;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Hashtable;
-import java.util.List;
 
 import au.id.jericho.lib.html.Source;
 
@@ -92,6 +87,14 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.List;
+
+import org.silverpeas.core.admin.OrganisationController;
+
 public class SendInKmelia extends ExternalActionImpl {
   private String targetId = "unknown";
   private String topicId = "unknown";
@@ -103,7 +106,7 @@ public class SendInKmelia extends ExternalActionImpl {
   // Add pdf history before instance attachments
   private boolean addPDFHistoryFirst = true;
   private String pdfHistoryName = null;
-  private OrganizationController orga = null;
+  private OrganisationController orga = null;
   private String userId = null;
   private final String ADMIN_ID = "0";
 
@@ -162,9 +165,8 @@ public class SendInKmelia extends ExternalActionImpl {
     String pubName = getProcessInstance().getTitle(getRole(), getLanguage());
     if (StringUtil.isDefined(pubTitle)) {
       try {
-        pubName =
-            DataRecordUtil.applySubstitution(pubTitle, getProcessInstance().getAllDataRecord(role,
-                "fr"), "fr");
+        pubName = DataRecordUtil.applySubstitution(pubTitle, getProcessInstance().getAllDataRecord(
+            role, "fr"), "fr");
       } catch (WorkflowException e) {
         SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
       }
@@ -172,16 +174,15 @@ public class SendInKmelia extends ExternalActionImpl {
     String desc = "";
     if (StringUtil.isDefined(pubDesc)) {
       try {
-        desc =
-            DataRecordUtil.applySubstitution(pubDesc, getProcessInstance().getAllDataRecord(role,
+        desc = DataRecordUtil.applySubstitution(pubDesc, getProcessInstance().getAllDataRecord(role,
                 "fr"), "fr");
       } catch (WorkflowException e) {
         SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
       }
     }
     userId = getBestUserDetail().getId();
-    PublicationDetail pubDetail =
-        new PublicationDetail(pubPK, pubName, desc, now, now, null, userId, 1, null, null, null);
+    PublicationDetail pubDetail = new PublicationDetail(pubPK, pubName, desc, now, now, null,
+        userId, 1, null, null, null);
 
     if (StringUtil.isDefined(xmlFormName)) {
       pubDetail.setInfoId(xmlFormName);
@@ -266,10 +267,10 @@ public class SendInKmelia extends ExternalActionImpl {
 
     try {
       boolean fromCompoVersion =
-          "yes".equals(getOrganizationController().getComponentParameterValue(
+          "yes".equals(getOrganisationController().getComponentParameterValue(
               fromPK.getInstanceId(), "versionControl"));
       boolean toCompoVersion =
-          "yes".equals(getOrganizationController().getComponentParameterValue(toPK.getInstanceId(),
+          "yes".equals(getOrganisationController().getComponentParameterValue(toPK.getInstanceId(),
               "versionControl"));
 
       if (!fromCompoVersion && !toCompoVersion) {
@@ -330,7 +331,7 @@ public class SendInKmelia extends ExternalActionImpl {
 
       // retrieve all versions of the document
       List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(document.getPk());
-      
+
       // versions are retrieved from last one to first one
       // reverse it...
       Collections.reverse(versions);
@@ -388,7 +389,7 @@ public class SendInKmelia extends ExternalActionImpl {
     workingProfiles.add("writer");
     workingProfiles.add("publisher");
     workingProfiles.add("admin");
-    String[] userIds = getOrganizationController().getUsersIdsByRoleNames(pubPK.getInstanceId(),
+    String[] userIds = getOrganisationController().getUsersIdsByRoleNames(pubPK.getInstanceId(),
         workingProfiles);
     for (int u = 0; u < userIds.length; u++) {
       String userId = userIds[u];
@@ -605,7 +606,7 @@ public class SendInKmelia extends ExternalActionImpl {
       } catch (WorkflowException we) {
         sAction = "##";
       }
-      
+
       String actor = step.getUser().getFullName();
 
       String date = DateUtil.getOutputDateAndHour(step.getActionDate(), getLanguage());
@@ -685,7 +686,7 @@ public class SendInKmelia extends ExternalActionImpl {
             // Field file type
             else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) &&
                 StringUtil.isDefined(field.getValue())) {
-              boolean fromCompoVersion = "yes".equals(getOrganizationController()
+              boolean fromCompoVersion = "yes".equals(getOrganisationController()
                   .getComponentParameterValue(componentId, "versionControl"));
               // Versioning Used
               if (fromCompoVersion) {
@@ -734,7 +735,7 @@ public class SendInKmelia extends ExternalActionImpl {
     }
   }
 
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     if (orga == null) {
       orga = new OrganizationController();
     }
@@ -786,7 +787,7 @@ public class SendInKmelia extends ExternalActionImpl {
     if (getEvent().getUser() != null) {
       userId = getEvent().getUser().getUserId();
     }
-    return getOrganizationController().getUserDetail(userId);
+    return getOrganisationController().getUserDetail(userId);
   }
 
   private void addPdfHistory(PublicationPK pubPK, String userId) {

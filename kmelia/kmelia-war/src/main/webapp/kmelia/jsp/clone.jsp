@@ -279,8 +279,7 @@ $(function() {
 
         displayAllOperations(id, kmeliaScc, gef, "ViewClone", resources, out);
 
-        out.println(frame.printBefore());
-          
+        out.println(frame.printBefore());          
         InfoDetail infos = pubComplete.getInfoDetail();
         ModelDetail model = pubComplete.getModelDetail();
 %>
@@ -402,10 +401,11 @@ $(function() {
 	        /*********************************************************************************************************************/
 	
 	        out.println("<div id=\"richContent\">");
-	        if (WysiwygController.haveGotWysiwyg(spaceId, componentId, id)) {
-	          out.flush();
-	          getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId=" + id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId + "&axisId=" + kmeliaScc.
-	              getAxisIdGlossary() + "&onlyFirst=" + highlightFirst).include(request, response);
+	        if (WysiwygController.haveGotWysiwygToDisplay(componentId, id, resources.getLanguage())) {
+	          %>
+	          <view:displayWysiwyg objectId="<%=id%>" componentId="<%=componentId %>" language="<%=resources.getLanguage() %>" axisId="<%=kmeliaScc.
+	              getAxisIdGlossary() %>" highlightFirst="<%=String.valueOf(highlightFirst) %>"/>
+	          <%
 	        } else if (infos != null && model != null) {
 	          displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
 	        } else {

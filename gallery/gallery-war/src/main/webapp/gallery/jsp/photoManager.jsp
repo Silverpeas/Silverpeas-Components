@@ -24,7 +24,6 @@
 
 --%>
 
-<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -307,8 +306,7 @@
       	</td>
 	</tr>
 	<% if (vignette_url != null) { 
-		String type = nameFile.substring(nameFile.lastIndexOf(".") + 1, nameFile.length());
-		if (!ImageType.isPreviewable(nameFile)) {
+		if (!photo.isPreviewable()) {
 			vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_66x50.jpg";
 		}
 	%> 

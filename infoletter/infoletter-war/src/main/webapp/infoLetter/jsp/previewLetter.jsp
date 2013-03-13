@@ -24,18 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%!
-void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServletRequest request, HttpServletResponse response)
-	throws com.stratelia.silverpeas.infoLetter.InfoLetterException {
-    try {
-        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId=" + 
-		id + "&SpaceId=" + spaceId + "&ComponentId=" + componentId).include(request, response);
-    } catch (Exception e) {
-		throw new com.stratelia.silverpeas.infoLetter.InfoLetterException("viewLetter_JSP.displayViewWysiwyg",
-		com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR, e.getMessage(), e);			
-    }
-}
-%>
+
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -88,11 +77,7 @@ String parution = (String) request.getAttribute("parution");
 	out.println(frame.printBefore());	
 	
 %>
-
-<%
-out.flush();
-displayViewWysiwyg(parution, spaceId, componentId, request, response);		
-%>
+<view:displayWysiwyg objectId="<%=parution%>" componentId="<%=componentId %>" language="<%=resource.getLanguage() %>" />
 <form name="headerParution" action="ParutionHeaders" method="post">			
 	<input type="hidden" name="parution" value="<%= parution %>"/>
   <input type="hidden" name="ReturnUrl" value="Preview"/>

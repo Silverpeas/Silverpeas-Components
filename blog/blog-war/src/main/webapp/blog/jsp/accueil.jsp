@@ -33,7 +33,7 @@
 
 <%@ include file="check.jsp" %>
 
-<% 
+<%
 // recuperation des parametres
 Collection<PostDetail>  posts   = (Collection<PostDetail>) request.getAttribute("Posts");
 Collection<NodeDetail>  categories  = (Collection<NodeDetail>) request.getAttribute("Categories");
@@ -60,7 +60,7 @@ if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRo
   operationPane.addOperationOfCreation(resource.getIcon("blog.addPost"), resource.getString("blog.newPost"), "NewPost");
   if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {
    operationPane.addOperation("useless", resource.getString("blog.viewCategory"), "ViewCategory");
-  
+
    String url = m_context + blogUrl + "Main";
    String lien = m_context + URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
    operationPane.addOperation("useless", resource.getString("blog.viewLinks"), lien);
@@ -69,7 +69,7 @@ if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRo
    operationPane.addLine();
   }
 }
-  
+
 if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest()) {
   if (!isUserSubscribed) {
     operationPane.addOperation("useless", resource.getString("blog.addSubscription"), "javascript:onClick=addSubscription()");
@@ -78,7 +78,7 @@ if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest()) {
   }
 }
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -129,10 +129,10 @@ function getExtension(filename) {
 function areFilesCorrect(wallPaper, styleSheet) {
   var errorMsg = "";
   var errorNb = 0;
-    
+
   if (!isWhitespace(wallPaper)) {
     var extension = getExtension(wallPaper);
-    
+
     if (extension == null) {
       errorMsg += " - '<%=resource.getString("blog.wallPaper")%>' <%=resource.getString("blog.wallPaperExtension")%>\n";
       errorNb++;
@@ -144,10 +144,10 @@ function areFilesCorrect(wallPaper, styleSheet) {
       }
     }
   }
-  
+
   if (!isWhitespace(styleSheet)) {
     var extension = getExtension(styleSheet);
-      
+
     if (extension == null) {
       errorMsg += " - '<%=resource.getString("blog.styleSheet")%>' <%=resource.getString("blog.styleSheetExtension")%>\n";
       errorNb++;
@@ -159,7 +159,7 @@ function areFilesCorrect(wallPaper, styleSheet) {
       }
     }
   }
-  
+
   switch(errorNb) {
     case 0 :
       result = true;
@@ -218,7 +218,7 @@ function hideStyleSheetFile() {
   }
 </style>
 <% } %>
-  
+
 <% if(styleSheet != null) { %>
 <style type="text/css">
   <%=styleSheet.getContent()%>
@@ -238,9 +238,9 @@ function hideStyleSheetFile() {
       <div id="postsList">
         <%
           Iterator it = (Iterator) posts.iterator();
-          
+
           java.util.Calendar cal = GregorianCalendar.getInstance();
-          while (nbPostDisplayed > 0 && it.hasNext()) 
+          while (nbPostDisplayed > 0 && it.hasNext())
           {
           PostDetail post = (PostDetail) it.next();
           String categoryId = "";
@@ -248,7 +248,7 @@ function hideStyleSheetFile() {
             categoryId = post.getCategory().getNodePK().getId();
           String postId = post.getPublication().getPK().getId();
           String link = post.getPermalink();
-          
+
           //Debut d'un ticket
           String blocClass = "post";
           String status = "";
@@ -257,7 +257,7 @@ function hideStyleSheetFile() {
           status = resource.getString("GML.saveDraft");
           }
           boolean visible = true;
-          if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT) 
+          if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)
             && !post.getPublication().getCreatorId().equals(userId)) {
            // le billet en mode brouillon n'est pas visible si ce n'est pas le createur
            visible = false;
@@ -269,7 +269,7 @@ function hideStyleSheetFile() {
 
           if (visible) {
           %>
-          
+
           <div id="post<%=postId%>" class="<%=blocClass%>">
           <div class="titreTicket">
             <a href="<%="ViewPost?PostId=" + postId%>"><%=post.getPublication().getName()%></a> <span class="status">(<%=status%>)</span>
@@ -283,15 +283,12 @@ function hideStyleSheetFile() {
            %>
            <div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
            <div class="contentTicket">
-           <%
-             out.flush();
-             getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+postId+"&ComponentId="+instanceId).include(request, response);
-           %>
+           <view:displayWysiwyg objectId="<%=postId%>" componentId="<%=instanceId %>" language="<%=resource.getLanguage() %>" />
            </div>
 
            <div class="footerTicket">
            <span class="versCommentaires">
-            <a href="<%="ViewPost?PostId=" + postId%>#commentaires" class="versCommentaires">&gt;&gt; <%=resource.getString("blog.comments")%> (<%=post.getNbComments()%>) </a> 
+            <a href="<%="ViewPost?PostId=" + postId%>#commentaires" class="versCommentaires">&gt;&gt; <%=resource.getString("blog.comments")%> (<%=post.getNbComments()%>) </a>
            </span>
 
             <% if (!categoryId.equals("")) {  %>
@@ -300,14 +297,14 @@ function hideStyleSheetFile() {
             <a href="<%="PostByCategory?CategoryId="+categoryId%>" class="versTopic">&gt;&gt; <%=post.getCategory().getName()%> </a>
             </span>
             <% } %>
-            
-            <span class="creatorTicket"> 
+
+            <span class="creatorTicket">
             <span class="sep">&nbsp;|&nbsp;</span>
             <% // date de cr�ation et de modification %>
             <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
-            <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) 
+            <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId()))
                {
-              UserDetail updater = m_MainSessionCtrl.getOrganizationController().getUserDetail(post.getPublication().getUpdaterId());
+              UserDetail updater = m_MainSessionCtrl.getOrganisationController().getUserDetail(post.getPublication().getUpdaterId());
               String updaterName = "Unknown";
               if (updater != null)
               updaterName = updater.getDisplayedName();
@@ -323,30 +320,30 @@ function hideStyleSheetFile() {
           nbPostDisplayed --;
           }
          }
-        %>  
+        %>
       </div>
-      
+
       <div id="footer">
         <%
         out.flush();
         getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+instanceId+"&ComponentId="+instanceId).include(request, response);
-        %>      
+        %>
       </div>
-      
-      <!-- Dialog to edit files to customize --> 
+
+      <!-- Dialog to edit files to customize -->
       <div id="customizationDialog" title="<%=resource.getString("blog.customize")%>">
         <form name="customizationFiles" action="Customize" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
-          <table>         
+          <table>
             <tr id="WallPaper">
               <td class="txtlibform"><%=resource.getString("blog.wallPaper")%></td>
               <td>
               <% if(wallPaper != null) { %>
                <div id="WallPaperFile">
-                 <a href="<%=wallPaper.getUrl()%>" target="_blank"><%=wallPaper.getName()%></a> 
-                 <%=wallPaper.getSize()%> 
-                 <a href="javascript:onclick=hideWallPaperFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"/></a> 
+                 <a href="<%=wallPaper.getUrl()%>" target="_blank"><%=wallPaper.getName()%></a>
+                 <%=wallPaper.getSize()%>
+                 <a href="javascript:onclick=hideWallPaperFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"/></a>
                  <br/>
-               </div> 
+               </div>
               <% } %>
                <input type="file" name="wallPaper" id="WallPaperNewFile" size="40"/> <i>(.gif/.jpg/.png)</i>
                <input type="hidden" name="removeWallPaperFile" value="no"/>
@@ -357,9 +354,9 @@ function hideStyleSheetFile() {
               <td>
               <% if (styleSheet != null) { %>
                <div id="StyleSheetFile">
-                 <a href="<%=styleSheet.getUrl()%>" target="_blank"><%=styleSheet.getName()%></a> 
-                 <%=styleSheet.getSize()%> 
-                 <a href="javascript:onclick=hideStyleSheetFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"/></a> 
+                 <a href="<%=styleSheet.getUrl()%>" target="_blank"><%=styleSheet.getName()%></a>
+                 <%=styleSheet.getSize()%>
+                 <a href="javascript:onclick=hideStyleSheetFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"/></a>
                  <br/>
                </div>
               <% } %>
@@ -378,6 +375,6 @@ function hideStyleSheetFile() {
 
 <%
 out.println(window.printAfter());
-%>  
+%>
 </body>
 </html>

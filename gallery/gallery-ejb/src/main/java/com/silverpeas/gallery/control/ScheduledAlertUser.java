@@ -48,6 +48,7 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class ScheduledAlertUser implements SchedulerEventListener {
 
@@ -82,7 +83,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
               "root.MSG_GEN_PARAM_VALUE", "Photos=" + photos.toString());
 
-      OrganizationController orga = new OrganizationController();
+      OrganisationController orga = new OrganizationController();
 
       // pour chaque photo, construction d'une ligne ...
       String currentInstanceId = null;
@@ -156,7 +157,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
     if (admins == null || admins.length == 0) {
       return;
     }
-    
+
     // 1. création du message
 
     // french notifications

@@ -27,7 +27,7 @@
 <%@ include file="check.jsp" %>
 
 <% 
-// récupération des paramètres
+// rï¿½cupï¿½ration des paramï¿½tres
 Collection	posts		= (Collection) request.getAttribute("Posts");
 %>
 
@@ -75,13 +75,6 @@ function goToCategory(id) {
 					<!--Debut d'un ticket-->
 				    <div class="post">
 				       		<a href="javascript:onClick=goToPost('<%=postId%>')" class="titreTicket"><%=post.getPublication().getName()%></a>
-							<!-- 
-								<%
-									out.flush();
-									getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+postId+"&ComponentId="+instanceId).include(request, response);
-								%>
-							-->
-								
 							<div class="footerTicket">
 								
 														

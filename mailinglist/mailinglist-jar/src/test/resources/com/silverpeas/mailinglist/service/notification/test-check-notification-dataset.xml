@@ -147,5 +147,8 @@
   <st_userrole_user_rel userroleid="312" userid="201" />
   <!-- lisa reader -->
   <st_userrole_user_rel userroleid="322" userid="202" />
+  
+  
+  <st_notifchannel id="1" name="SMTP" description="For test purpose only" couldBeAdded="Y" fromAvailable="E" subjectAvailable="Y" />
 
 </dataset>

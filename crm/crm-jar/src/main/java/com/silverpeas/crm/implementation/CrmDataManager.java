@@ -19,6 +19,7 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * Class declaration
@@ -171,7 +172,7 @@ public class CrmDataManager implements CrmDataInterface {
 
   // Creation de la lettre par defaut a l'instanciation
   public Crm createDefaultCrm(String spaceId, String componentId) {
-    com.stratelia.webactiv.beans.admin.OrganizationController oc =
+    OrganisationController oc =
         new com.stratelia.webactiv.beans.admin.OrganizationController();
     com.stratelia.webactiv.beans.admin.ComponentInst ci = oc.getComponentInst(componentId);
     Crm crm = new Crm();

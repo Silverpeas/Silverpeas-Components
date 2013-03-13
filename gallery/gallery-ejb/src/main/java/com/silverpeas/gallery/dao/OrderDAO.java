@@ -26,6 +26,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,13 +42,13 @@ import java.util.Locale;
 
 public class OrderDAO {
 
-  private OrganizationController orga;
+  private OrganisationController orga;
 
   public OrderDAO() {
     this(new OrganizationController());
   }
 
-  OrderDAO(OrganizationController orga) {
+  OrderDAO(OrganisationController orga) {
     this.orga = orga;
   }
 
@@ -234,7 +235,7 @@ public class OrderDAO {
         order.setProcessUserId(processUserId);
 
         order.setInstanceId(instanceId);
-        OrganizationController orga = new OrganizationController();
+        OrganisationController orga = new OrganizationController();
         order.setUserName(
                 orga.getUserDetail(Integer.toString(order.getUserId())).getDisplayedName());
         // récupérer les lignes
@@ -372,7 +373,7 @@ public class OrderDAO {
         }
         order.setProcessUserId(processUserId);
 
-        OrganizationController orga = new OrganizationController();
+        OrganisationController orga = new OrganizationController();
         order.setUserName(orga.getUserDetail(
                 Integer.toString(order.getUserId())).getDisplayedName());
 

@@ -161,7 +161,7 @@ public class StatisticRequestHandler {
       KmeliaSessionController kmelia) {
 
     String m_context =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+        GeneralPropertiesManager.getString("ApplicationURL");
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(kmelia.getString("kmelia.SelectValidator"), "");
 

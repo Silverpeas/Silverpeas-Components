@@ -28,6 +28,7 @@ import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import java.util.Date;
 
+import org.silverpeas.core.admin.OrganisationController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
@@ -121,11 +122,11 @@ public class Reply extends SilverpeasBean {
   }
 
   public String readCreatorName() {
-    OrganizationController organizationController = new OrganizationController();
+    OrganisationController organizationController = new OrganizationController();
     return readCreatorName(organizationController);
   }
 
-  public String readCreatorName(OrganizationController organizationController) {
+  public String readCreatorName(OrganisationController organizationController) {
     String creatorName = null;
     UserDetail userDetail = readAuthor(organizationController);
     if (userDetail != null) {
@@ -134,7 +135,7 @@ public class Reply extends SilverpeasBean {
     return creatorName;
   }
 
-  public UserDetail readAuthor(OrganizationController organizationController) {
+  public UserDetail readAuthor(OrganisationController organizationController) {
     return organizationController.getUserDetail(String.valueOf(getCreatorId()));
   }
 

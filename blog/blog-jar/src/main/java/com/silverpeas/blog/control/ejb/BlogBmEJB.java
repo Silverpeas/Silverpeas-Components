@@ -35,6 +35,7 @@ import java.util.Locale;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import org.silverpeas.core.admin.OrganisationController;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import org.silverpeas.search.SearchEngineFactory;
@@ -132,7 +133,7 @@ public class BlogBmEJB implements SessionBean {
     try {
       Collection<String> subscriberIds =
           getSubscribeBm().getUserSubscribers(NodeSubscriptionResource.from(fatherPK));
-      OrganizationController orgaController = new OrganizationController();
+      OrganisationController orgaController = new OrganizationController();
       if (subscriberIds != null && !subscriberIds.isEmpty()) {
         // get only subscribers who have sufficient rights to read pubDetail
         NodeDetail node = getNodeBm().getHeader(fatherPK);
@@ -268,7 +269,7 @@ public class BlogBmEJB implements SessionBean {
     return getPost(pub, new OrganizationController());
   }
 
-  private PostDetail getPost(PublicationDetail pub, OrganizationController orga) {
+  private PostDetail getPost(PublicationDetail pub, OrganisationController orga) {
     try {
       Collection<NodePK> allCat = getPublicationBm().getAllFatherPK(pub.getPK());
       // la collection des catégories contient en fait une seule catégorie, la récupérer
@@ -312,7 +313,7 @@ public class BlogBmEJB implements SessionBean {
       Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
       Collection<PublicationDetail> publications =
           getPublicationBm().getAllPublications(pubPK);
-      OrganizationController orgaController = new OrganizationController();
+      OrganisationController orgaController = new OrganizationController();
       for (String pubId : lastEvents) {
         for (PublicationDetail pub : publications) {
           if (pub.getPK().getId().equals(pubId)) {
@@ -429,7 +430,7 @@ public class BlogBmEJB implements SessionBean {
       // getPublicationBm().getDetailBetweenDate(beginDate, endDate, instanceId);
       Collection<PublicationDetail> publications =
           getPublicationBm().getPublicationsByStatus("Valid", pubPK);
-      OrganizationController orgaController = new OrganizationController();
+      OrganisationController orgaController = new OrganizationController();
       for (String pubId : lastEvents) {
         // pour chaque publication, créer le post correspondant
         SilverTrace.info("blog", "BlogBmEJB.getPostsByArchive()", "root.MSG_GEN_PARAM_VALUE",

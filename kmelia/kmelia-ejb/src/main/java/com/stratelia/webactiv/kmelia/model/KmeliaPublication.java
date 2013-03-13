@@ -40,7 +40,6 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -50,6 +49,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -65,14 +65,15 @@ import java.util.List;
 public class KmeliaPublication implements SilverpeasContent {
 
   private static final long serialVersionUID = 4861635754389280165L;
-  private static final OrganizationController organisationService = new OrganizationController();
+  private static final OrganisationController organisationService = new OrganizationController();
   private PublicationDetail detail;
   private CompletePublication completeDetail;
   private boolean versioned = false;
   private boolean alias = false;
   private final PublicationPK pk;
   private int rank;
-  
+  public boolean read = false;
+
   /**
    * Gets the Kmelia publication with the specified primary key identifying it uniquely.
    * If no such publication exists with the specified key, then the runtime exception
@@ -85,7 +86,7 @@ public class KmeliaPublication implements SilverpeasContent {
     publication.getDetail();
     return publication;
   }
-  
+
   /**
    * Gets the Kmelia publication from the specified publication detail.
    * @param detail the detail about the publication to get.
@@ -94,13 +95,13 @@ public class KmeliaPublication implements SilverpeasContent {
   public static KmeliaPublication aKmeliaPublicationFromDetail(final PublicationDetail detail) {
     return aKmeliaPublicationFromDetail(detail, 0);
   }
-  
+
   public static KmeliaPublication aKmeliaPublicationFromDetail(final PublicationDetail detail, int rank) {
     KmeliaPublication publication = new KmeliaPublication(detail.getPK(), rank);
     publication.setPublicationDetail(detail);
     return publication;
   }
-  
+
   /**
    * Gets the Kmelia publication from the specified complete publication detail.
    * @param detail the complete detail about the publication to get.
@@ -111,7 +112,7 @@ public class KmeliaPublication implements SilverpeasContent {
     publication.setPublicationCompleteDetail(detail);
     return publication;
   }
-  
+
   /**
    * Sets this publication as versionned.
    * @return itself.
@@ -120,7 +121,7 @@ public class KmeliaPublication implements SilverpeasContent {
     this.versioned = true;
     return this;
   }
-  
+
   /**
    * Sets this Kmelia publication as an alias one.
    * @return itself.
@@ -128,8 +129,8 @@ public class KmeliaPublication implements SilverpeasContent {
   public KmeliaPublication asAlias() {
     this.alias = true;
     return this;
-  } 
-  
+  }
+
   /**
    * Is this publication an alias of an existing Kmelia publication?
    * @return true if this publication is an alias, false otherwise.
@@ -137,7 +138,7 @@ public class KmeliaPublication implements SilverpeasContent {
   public boolean isAlias() {
     return this.alias;
   }
-  
+
   /**
    * Is this publication versionned?
    * @return true if this publication is versionned, false otherwise.
@@ -153,7 +154,7 @@ public class KmeliaPublication implements SilverpeasContent {
   public PublicationPK getPk() {
     return pk;
   }
-  
+
   /**
    * Gets the unique identifier of this publication.
    * @return the unique identifier of this publication.
@@ -162,16 +163,15 @@ public class KmeliaPublication implements SilverpeasContent {
   public String getId() {
     return pk.getId();
   }
-  
+
   /**
    * Gets the complete URL at which this publication is located.
    * @return the publication URL.
    */
   public String getURL() {
     String defaultURL =
-            getOrganizationController().getDomain(getCreator().getDomainId()).getSilverpeasServerURL();
-    ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-    String serverURL = generalSettings.getString("httpServerBase", defaultURL);
+        getOrganisationController().getDomain(getCreator().getDomainId()).getSilverpeasServerURL();
+    String serverURL = GeneralPropertiesManager.getString("httpServerBase", defaultURL);
     return serverURL + URLManager.getSimpleURL(URLManager.URL_PUBLI, getPk().getId());
   }
 
@@ -214,7 +214,7 @@ public class KmeliaPublication implements SilverpeasContent {
   @Override
   public UserDetail getCreator() {
     String creatorId = getDetail().getCreatorId();
-    return getOrganizationController().getUserDetail(creatorId);
+    return getOrganisationController().getUserDetail(creatorId);
   }
 
   /**
@@ -225,12 +225,12 @@ public class KmeliaPublication implements SilverpeasContent {
    * @return the detail about the last modifier of this publication.
    */
   public UserDetail getLastModifier() {
-    UserDetail lastModifier = null;
+    UserDetail lastModifier;
     String modifierId = getDetail().getUpdaterId();
     if (modifierId == null) {
       lastModifier = getCreator();
     } else {
-      lastModifier = getOrganizationController().getUserDetail(modifierId);
+      lastModifier = getOrganisationController().getUserDetail(modifierId);
     }
     return lastModifier;
   }
@@ -263,7 +263,7 @@ public class KmeliaPublication implements SilverpeasContent {
               "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_FICHIERSJOINTS", ex);
     }
   }
-  
+
   /**
    * Gets the versioned attachments that belongs to this publication.
    * If this publication isn't versioned, this method is then not supported. In that case, please
@@ -297,7 +297,7 @@ public class KmeliaPublication implements SilverpeasContent {
               "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_POSTIONSPDC", ex);
     }
   }
-  
+
   public int getNbAccess() {
     try {
       return getStatisticService().getCount(new ForeignPK(pk), 1, "Publication");
@@ -329,7 +329,7 @@ public class KmeliaPublication implements SilverpeasContent {
     hash = 67 * hash + (this.pk != null ? this.pk.hashCode() : 0);
     return hash;
   }
-  
+
   private KmeliaPublication(PublicationPK id) {
     this.pk = id;
   }
@@ -338,11 +338,11 @@ public class KmeliaPublication implements SilverpeasContent {
     this.pk = id;
     this.rank = rank;
   }
-  
+
   private void setPublicationDetail(final PublicationDetail detail) {
     this.detail = detail;
   }
-  
+
   private void setPublicationCompleteDetail(final CompletePublication detail) {
     setPublicationDetail(detail.getPublicationDetail());
     this.completeDetail = detail;
@@ -361,7 +361,7 @@ public class KmeliaPublication implements SilverpeasContent {
     }
     return KmeliaBm;
   }
-  
+
   private StatisticBm getStatisticService() {
     StatisticBm statisticBm = null;
     try {
@@ -378,12 +378,12 @@ public class KmeliaPublication implements SilverpeasContent {
   private CommentService getCommentService() {
     return CommentServiceFactory.getFactory().getCommentService();
   }
-  
+
   private VersioningUtil getVersioningService() {
     return new VersioningUtil();
   }
 
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     return organisationService;
   }
 
