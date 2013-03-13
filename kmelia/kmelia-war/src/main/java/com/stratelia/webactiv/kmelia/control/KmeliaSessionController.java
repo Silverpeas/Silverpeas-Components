@@ -1769,7 +1769,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           listDocumentsByForeignKeyAndType(pubPKFrom, DocumentType.attachment, getLanguage());
       for (SimpleDocument origin : origins) {
         SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
-            origin, new ForeignPK(pubId, componentId));
+            origin, new ForeignPK(pubId, getComponentId()));
         fileIds.put(origin.getId(), copyPk.getId());
       }
     } else if (fromCompoVersion && !isVersionControlled()) {

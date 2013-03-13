@@ -20,16 +20,30 @@
  */
 package com.silverpeas.mailinglist.service.notification;
 
-import com.mockrunner.mock.jms.MockQueue;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.jms.TextMessage;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
+
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.util.JNDINames;
+
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
@@ -41,20 +55,6 @@ import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.inject.Inject;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.TextMessage;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 @ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
@@ -62,42 +62,25 @@ import static org.junit.Assert.*;
 public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringContextTests {
 
   private static final String textEmailContent =
-      "Bonjour famille Simpson, j'espère que vous allez bien. " +
-      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
-      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer " +
-      "l'homme canon dans la prochaine émission.Bart";
-  
+      "Bonjour famille Simpson, j'espère que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
+      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
+      + "l'homme canon dans la prochaine émission.Bart";
   @Inject
   private SimpleNotificationHelper notificationHelper;
 
-
-  protected void registerMockJMS() throws Exception {
-    InitialContext ic = new InitialContext();
-    // Construct BasicDataSource reference
-    QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
-    rebind(ic, JNDINames.JMS_FACTORY, refFactory);
-    rebind(ic, JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
-    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(
-        JNDINames.JMS_FACTORY);
-    assertNotNull(qconFactory);
-    MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
-    queue.clear();
-  }
-
   @Test
   public void testNotifyInternals() throws Exception {
-    registerMockJMS();
     Message message = ServicesFactory.getMessageService().getMessage("700");
     assertNotNull(message);
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "100");
+    MailingList list = ServicesFactory.getMailingListService().findMailingList("100");
     assertNotNull(list);
     assertNotNull(list.getModerators());
     assertEquals(3, list.getModerators().size());
     assertNotNull(list.getReaders());
     assertEquals(2, list.getReaders().size());
     List<String> userIds = Arrays.asList(new String[]{"200", "201", "202", "203",
-          "204"});
+      "204"});
     notificationHelper.notifyInternals(message, list, userIds, null, false);
     List<TextMessage> messages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertNotNull(messages);
@@ -111,17 +94,15 @@ public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringCo
       String recipient = data.getTargetReceipt();
       assertNotNull(recipient);
       assertTrue("Erreur destinataire " + recipient,
-          "homer.simpson@silverpeas.com".equals(recipient) ||
-          "marge.simpson@silverpeas.com".equals(recipient) ||
-          "lisa.simpson@silverpeas.com".equals(recipient) ||
-          "maggie.simpson@silverpeas.com".equals(recipient) ||
-          "bart.simpson@silverpeas.com".equals(recipient));
+          "homer.simpson@silverpeas.com".equals(recipient) || "marge.simpson@silverpeas.com".equals(
+          recipient) || "lisa.simpson@silverpeas.com".equals(recipient)
+          || "maggie.simpson@silverpeas.com".equals(recipient) || "bart.simpson@silverpeas.com"
+          .equals(recipient));
       assertEquals(message.getSummary(), data.getMessage());
       String url = (String) data.getTargetParam().get("URL");
       assertNotNull(url);
-      assertEquals(
-          "http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&" +
-          "goto=%2FRmailinglist%2F100%2Fmessage%2F700", url);
+      assertEquals("http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
+          + "goto=%2FRmailinglist%2F100%2Fmessage%2F700", url);
       String source = (String) data.getTargetParam().get("SOURCE");
       assertNotNull(source);
       assertEquals("thesimpsons@silverpeas.com", source);
@@ -134,8 +115,7 @@ public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringCo
     Message message = ServicesFactory.getMessageService().getMessage("700");
     message.setContentType("text/plain; charset=\"UTF-8\"");
     assertNotNull(message);
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "100");
+    MailingList list = ServicesFactory.getMailingListService().findMailingList("100");
     assertNotNull(list);
     assertNotNull(list.getExternalSubscribers());
     assertEquals(12, list.getExternalSubscribers().size());
@@ -143,8 +123,7 @@ public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringCo
     Iterator<ExternalUser> iter = list.getExternalSubscribers().iterator();
     while (iter.hasNext()) {
       ExternalUser recipient = iter.next();
-      checkSimpleEmail(recipient.getEmail(),
-          "[Liste de diffusion de test] : Simple Message");
+      checkSimpleEmail(recipient.getEmail(), "[Liste de diffusion de test] : Simple Message");
     }
 
   }
@@ -324,15 +303,15 @@ public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringCo
     Collection<String> userIds = notificationHelper.getModeratorsIds(list);
     assertEquals(3, userIds.size());
     for (String userId : userIds) {
-      assertTrue("Erreur userid " + userId, "200".equals(userId) ||
-          "202".equals(userId) || "203".equals(userId));
+      assertTrue("Erreur userid " + userId, "200".equals(userId) || "202".equals(userId) || "203"
+          .equals(userId));
     }
     list.setModerated(false);
     userIds = notificationHelper.getModeratorsIds(list);
     assertEquals(3, userIds.size());
     for (String userId : userIds) {
-      assertTrue("Erreur userid " + userId, "200".equals(userId) ||
-          "202".equals(userId) || "203".equals(userId));
+      assertTrue("Erreur userid " + userId, "200".equals(userId) || "202".equals(userId) || "203"
+          .equals(userId));
     }
   }
 

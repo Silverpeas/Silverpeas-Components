@@ -20,17 +20,33 @@
  */
 package com.silverpeas.mailinglist.service.notification;
 
-import com.mockrunner.mock.jms.MockQueue;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.TextMessage;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.naming.InitialContext;
+
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
+
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.JNDINames;
+
+import com.mockrunner.mock.jms.MockQueue;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
@@ -40,19 +56,6 @@ import org.junit.runner.RunWith;
 import org.jvnet.mock_javamail.Mailbox;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import javax.inject.Inject;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.TextMessage;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-checker.xml", "/spring-advanced-notification.xml",
@@ -68,6 +71,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
   private AdvancedNotificationHelper notificationHelper;
 
   @Before
+  @Override
   public void setUp() throws Exception {
     super.setUp();
     AdminReference.getAdminService().reloadCache();
@@ -93,10 +97,9 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
 
   protected void registerMockJMS() throws Exception {
     InitialContext ic = new InitialContext();
-    // Construct BasicDataSource reference
     QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
-    rebind(ic, JNDINames.JMS_FACTORY, refFactory);
-    rebind(ic, JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
+    ic.rebind(JNDINames.JMS_FACTORY, refFactory);
+    ic.rebind(JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
     QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
     assertNotNull(qconFactory);
     MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);

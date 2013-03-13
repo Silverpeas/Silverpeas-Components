@@ -20,26 +20,31 @@
  */
 package com.silverpeas.mailinglist.model;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
+
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import org.jvnet.mock_javamail.Mailbox;
-
-import java.io.IOException;
-import java.sql.SQLException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.jvnet.mock_javamail.Mailbox;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import static org.junit.Assert.*;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
   "/spring-hibernate.xml", "/spring-datasource.xml"})
 public class TestCheckSender extends AbstractSilverpeasDatasourceSpringContextTests {
