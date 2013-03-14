@@ -280,70 +280,14 @@ $(function() {
         displayAllOperations(id, kmeliaScc, gef, "ViewClone", resources, out);
         out.println(frame.printBefore());
 
-        if (screenMessage != null && screenMessage.length()>0) {
-          out.println("<center>"+screenMessage+"</center>");
-        }
-
-          InfoDetail infos = pubComplete.getInfoDetail();
-          ModelDetail model = pubComplete.getModelDetail();
-
-	    int type 	= 0;
-	    if (kmeliaScc.isVersionControlled()) {
-	        type = 1; // Versioning
-	    }
-
-        /*********************************************************************************************************************/
-		/** Affichage du header de la publication																			**/
-		/*********************************************************************************************************************/
-    	out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
-    	out.println("<TR><TD align=\"left\">");
-
-    	out.println("<span class=\"txtnav\"><b>"+EncodeHelper.convertHTMLEntities(pubDetail.getName())+"</b></span>");
-          if (!"user".equals(profile)) {
-            if (pubDetail.isValidationRequired()) {
-                                out.println("<img src=\""+outDraftSrc+"\" alt=\""+resources.getString("PubStateToValidate")+"\" align=\"absmiddle\">");
-			} else if (pubDetail.isDraft()) {
-                                out.println("<img src=\""+inDraftSrc+"\" alt=\""+resources.getString("PubStateDraft")+"\" align=\"absmiddle\">");
-			} else if (pubDetail.isValid()) {
-                                out.println("<img src=\""+validateSrc+"\" alt=\""+resources.getString("PublicationValidated")+"\" align=\"absmiddle\">");
-			} else if (pubDetail.isRefused()) {
-                                out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\">");
-			}
-		}
-
-		out.println("<br><b>"+EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper.convertHTMLEntities(pubDetail.getDescription()))+"<b><BR><BR>");
-
-		out.println("</TD></TR></table>");
+        InfoDetail infos = pubComplete.getInfoDetail();
+        ModelDetail model = pubComplete.getModelDetail();
 %>
-	<view:areaOfOperationOfCreation/>
+	<div class="rightContent">
 <%
 		/*********************************************************************************************************************/
-		/** Affichage du contenu de la publication																			**/
+		/** Colonne de droite																							    **/
 		/*********************************************************************************************************************/
-		out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
-		out.println("<TR><TD valign=\"top\">");
-    	if (WysiwygController.haveGotWysiwyg(componentId, id)) {
-        	out.flush();
-        	getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+id+"&SpaceId="+spaceId+"&ComponentId="+componentId).include(request, response);
-    	} else if (infos != null && model != null) {
-       	    displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
-    	} else {
-            Form xmlForm = (Form) request.getAttribute("XMLForm");
-            DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
-            String currentLang = (String) request.getAttribute("Language");
-            if (xmlForm != null) {
-              PagesContext xmlContext = new PagesContext("myForm", "0", resources.getLanguage(),
-                  false, componentId, kmeliaScc.getUserId());
-              xmlContext.setObjectId(id);
-              xmlContext.setNodeId(kmeliaScc.getCurrentFolderId());
-              xmlContext.setBorderPrinted(false);
-              xmlContext.setContentLanguage(currentLang);
-
-              xmlForm.display(out, xmlContext, xmlData);
-            }
-          }
-    	out.println("</TD>");
-
     	if (attachmentsEnabled) {
 	    	/*********************************************************************************************************************/
 			/** Affichage des fichiers joints																					**/
@@ -358,24 +302,14 @@ $(function() {
 			try {
 				out.flush();
 				if (kmeliaScc.isVersionControlled()) {
-					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+visiblePubId+"&ComponentId="+componentId+"&Context=attachment&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo).include(request, response);
+					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+id+"&ComponentId="+componentId+"&Context=attachment&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo).include(request, response);
 				} else {
 					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+id+"&ComponentId="+componentId+"&Context=attachment&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&Profile="+profile).include(request, response);
 				}
 			} catch (Exception e) {
 				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
 			}
-			out.println("</td>");
     	}
-	    out.println("</TR>");
-		out.println("</TABLE>");
-
-    	out.println("<center>");
-    	out.print("<span class=\"txtBaseline\">");
-    	if (kmeliaScc.isAuthorUsed() && pubDetail.getAuthor() != null && !pubDetail.getAuthor().equals("")) {
-			out.print("<br/>");
-			out.print(resources.getString("GML.author")+" : "+pubDetail.getAuthor());
-		}
       
         /*********************************************************************************************************************/
         /** Affichage des Info de publication																		**/
