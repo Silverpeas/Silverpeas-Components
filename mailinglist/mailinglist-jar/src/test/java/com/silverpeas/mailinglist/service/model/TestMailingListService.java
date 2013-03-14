@@ -20,29 +20,34 @@
  */
 package com.silverpeas.mailinglist.service.model;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
+
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.InternalUserSubscriber;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
+
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+
+import org.apache.commons.io.IOUtils;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+
 import static org.junit.Assert.*;
 
 @ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
@@ -55,6 +60,7 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
   private OrganizationController organizationController;
 
   @After
+  @Override
   public void onTearDown() throws Exception {
     IDatabaseConnection connection = null;
     try {
@@ -65,9 +71,9 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
     } finally {
       if (connection != null) {
         try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
+          connection.close();
+        } catch (SQLException ex) {
+          ex.printStackTrace();
         }
       }
     }
@@ -82,14 +88,22 @@ public class TestMailingListService extends AbstractSilverpeasDatasourceSpringCo
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
-    if (isOracle()) {
-      return new ReplacementDataSet(
-          new FlatXmlDataSet(
-          TestMailingListService.class.getResourceAsStream(
-          "test-mailinglist-service-oracle-dataset.xml")));
+    InputStream in = null;
+    try {
+      if (isOracle()) {
+        in = TestMailingListService.class.getResourceAsStream(
+            "test-mailinglist-service-oracle-dataset.xml");
+      } else {
+        in = TestMailingListService.class
+            .getResourceAsStream("test-mailinglist-service-dataset.xml");
+      }
+      return new FlatXmlDataSetBuilder().build(in);
+    } catch (DataSetException ex) {
+      ex.printStackTrace();
+      throw ex;
+    } finally {
+      IOUtils.closeQuietly(in);
     }
-    return new ReplacementDataSet(new FlatXmlDataSet(
-        TestMailingListService.class.getResourceAsStream("test-mailinglist-service-dataset.xml")));
   }
 
   @Test

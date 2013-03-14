@@ -1,28 +1,32 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.notification;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.jms.TextMessage;
 
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
@@ -30,9 +34,12 @@ import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
+
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.util.JNDINames;
+
+import org.apache.commons.io.IOUtils;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
@@ -44,16 +51,10 @@ import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.inject.Inject;
-import javax.jms.TextMessage;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 @ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-        "/spring-hibernate.xml", "/spring-datasource.xml", "/spring-personalization.xml"})
+  "/spring-hibernate.xml", "/spring-datasource.xml", "/spring-personalization.xml"})
 public class TestCheckNotification extends AbstractSilverpeasDatasourceSpringContextTests {
 
   @Inject
@@ -128,20 +129,18 @@ public class TestCheckNotification extends AbstractSilverpeasDatasourceSpringCon
       assertEquals("SMTP", channel);
       String recipient = data.getTargetReceipt();
       assertNotNull(recipient);
-      assertTrue("Erreur destinataire " + recipient,
-          "lisa.simpson@silverpeas.com".equals(recipient));
+      assertTrue("Erreur destinataire " + recipient, "lisa.simpson@silverpeas.com".equals(recipient));
       assertEquals(message.getSummary(), data.getMessage());
       String url = (String) data.getTargetParam().get("URL");
       assertNotNull(url);
       assertEquals(
           "http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
-              + "goto=%2FRmailinglist%2F102%2Fmessage%2F702", url);
+          + "goto=%2FRmailinglist%2F102%2Fmessage%2F702", url);
       String source = (String) data.getTargetParam().get("SOURCE");
       assertNotNull(source);
       assertEquals("thesimpsons@silverpeas.com", source);
     }
   }
-
 
   @After
   public void onTearDown() throws Exception {
@@ -155,9 +154,9 @@ public class TestCheckNotification extends AbstractSilverpeasDatasourceSpringCon
     } finally {
       if (connection != null) {
         try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
+          connection.close();
+        } catch (SQLException ex) {
+          ex.printStackTrace();
         }
       }
     }
@@ -178,9 +177,9 @@ public class TestCheckNotification extends AbstractSilverpeasDatasourceSpringCon
     } finally {
       if (connection != null) {
         try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
+          connection.close();
+        } catch (SQLException ex) {
+          ex.printStackTrace();
         }
       }
     }
@@ -188,7 +187,15 @@ public class TestCheckNotification extends AbstractSilverpeasDatasourceSpringCon
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
-    return new FlatXmlDataSetBuilder().build(TestCheckNotification.class
-        .getResourceAsStream("test-check-notification-dataset.xml"));
+    InputStream in = TestCheckNotification.class.getResourceAsStream(
+        "test-check-notification-dataset.xml");
+    try {
+      return new FlatXmlDataSetBuilder().build(in);
+    } catch (DataSetException ex) {
+      ex.printStackTrace();
+      throw ex;
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 }

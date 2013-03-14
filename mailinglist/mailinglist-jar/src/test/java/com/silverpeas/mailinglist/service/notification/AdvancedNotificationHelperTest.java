@@ -57,16 +57,19 @@ import org.jvnet.mock_javamail.Mailbox;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-checker.xml", "/spring-advanced-notification.xml",
   "/spring-hibernate.xml", "/spring-datasource.xml", "/spring-personalization.xml"})
 public class AdvancedNotificationHelperTest extends AbstractTestDao {
 
-  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. " +
-      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
-      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer " +
-      "l'homme canon dans la prochaine émission.Bart";
-  
+  private static final String textEmailContent =
+      "Bonjour famille Simpson, j'espère que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
+      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
+      + "l'homme canon dans la prochaine émission.Bart";
   @Inject
   private AdvancedNotificationHelper notificationHelper;
 
@@ -101,7 +104,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     ic.rebind(JNDINames.JMS_FACTORY, refFactory);
     ic.rebind(JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
     QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
-    assertNotNull(qconFactory);
+    assertThat(qconFactory, is(notNullValue()));
     MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
     queue.clear();
   }
@@ -109,45 +112,41 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
   @Test
   public void testNotifyInternals() throws Exception {
     Message message = ServicesFactory.getMessageService().getMessage("700");
-    assertNotNull(message);
+    assertThat(message, is(notNullValue()));
     MailingList list = ServicesFactory.getMailingListService().findMailingList("100");
-    assertNotNull(list);
-    assertNotNull(list.getModerators());
-    assertEquals(3, list.getModerators().size());
-    assertNotNull(list.getReaders());
-    assertEquals(2, list.getReaders().size());
+    assertThat(list, is(notNullValue()));
+    assertThat(list.getModerators(), is(notNullValue()));
+    assertThat(list.getModerators().size(), is(3));
+    assertThat(list.getReaders(), is(notNullValue()));
+    assertThat(list.getReaders().size(), is(2));
     List<String> userIds = Arrays.asList(new String[]{"200", "201", "202", "203", "204"});
     notificationHelper.notifyInternals(message, list, userIds, null, false);
     List<TextMessage> messages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
-    assertNotNull(messages);
-    assertEquals(5, messages.size());
-    for (TextMessage alert :
-        messages) {
-      assertNotNull(alert.getText());
+    assertThat(messages, is(notNullValue()));
+    assertThat(messages.size(), is(5));
+    for (TextMessage alert : messages) {
+      assertThat(alert.getText(), is(notNullValue()));
       NotificationData data = NotificationServerUtil.convertXMLToNotificationData(alert.getText());
-      assertNotNull(data);
+      assertThat(data, is(notNullValue()));
       String channel = data.getTargetChannel();
-      assertEquals("SMTP", channel);
+      assertThat(channel, is("SMTP"));
       String recipient = data.getTargetReceipt();
-      assertNotNull(recipient);
-      assertTrue("Erreur destinataire " + recipient,
-          "homer.simpson@silverpeas.com".equals(recipient) ||
-          "marge.simpson@silverpeas.com".equals(recipient) ||
-          "lisa.simpson@silverpeas.com".equals(recipient) ||
-          "maggie.simpson@silverpeas.com".equals(recipient) ||
-          "bart.simpson@silverpeas.com".equals(recipient));
-      String notificationMessage = "<html><head/><body>p><b>Message [" +
-          message.getTitle() + "] :</b></p><p>" + message.getSummary() +
-          " ...<br/><a href=\"/Rmailinglist/100/message/700\">Cliquer ici</a></p></body></html>";
-      assertEquals(notificationMessage, data.getMessage());
+      assertThat(recipient, is(notNullValue()));
+      assertThat("Erreur destinataire " + recipient, recipient, isOneOf(
+          "homer.simpson@silverpeas.com", "marge.simpson@silverpeas.com",
+          "lisa.simpson@silverpeas.com", "maggie.simpson@silverpeas.com",
+          "bart.simpson@silverpeas.com"));
+      String notificationMessage = "<html><head/><body>p><b>Message [" + message.getTitle()
+          + "] :</b></p><p>" + message.getSummary() + " ...<br/><a href=\"/Rmailinglist/100/"
+          + "message/700\">Cliquer ici</a></p></body></html>";
+      assertThat(data.getMessage(), is(notificationMessage));
       String url = (String) data.getTargetParam().get("URL");
-      assertNotNull(url);
-      assertEquals(
-          "http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&" +
-          "goto=%2FRmailinglist%2F100%2Fmessage%2F700", url);
+      assertThat(url, is(notNullValue()));
+      assertThat(url, is("http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
+          + "goto=%2FRmailinglist%2F100%2Fmessage%2F700"));
       String source = (String) data.getTargetParam().get("SOURCE");
-      assertNotNull(source);
-      assertEquals("thesimpsons@silverpeas.com", source);
+      assertThat(source, is(notNullValue()));
+      assertThat(source, is("thesimpsons@silverpeas.com"));
     }
 
   }
@@ -156,26 +155,23 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
   public void testNotifyExternals() throws Exception {
     Message message = ServicesFactory.getMessageService().getMessage("700");
     message.setContentType("text/plain; charset=\"UTF-8\"");
-    assertNotNull(message);
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "100");
-    assertNotNull(list);
-    assertNotNull(list.getExternalSubscribers());
-    assertEquals(12, list.getExternalSubscribers().size());
+    assertThat(message, is(notNullValue()));
+    MailingList list = ServicesFactory.getMailingListService().findMailingList("100");
+    assertThat(list, is(notNullValue()));
+    assertThat(list.getExternalSubscribers(), is(notNullValue()));
+    assertThat(list.getExternalSubscribers().size(), is(12));
     notificationHelper.notifyExternals(message, list);
     Iterator<ExternalUser> iter = list.getExternalSubscribers().iterator();
     while (iter.hasNext()) {
       ExternalUser recipient = iter.next();
-      checkSimpleEmail(recipient.getEmail(),
-          "[Liste de diffusion de test] : Simple Message");
+      checkSimpleEmail(recipient.getEmail(), "[Liste de diffusion de test] : Simple Message");
     }
 
   }
 
   public void testSimpleSendMail() throws Exception {
     MimeMessage mail = new MimeMessage(notificationHelper.getSession());
-    InternetAddress theSimpsons = new InternetAddress(
-        "thesimpsons@silverpeas.com");
+    InternetAddress theSimpsons = new InternetAddress("thesimpsons@silverpeas.com");
     mail.addFrom(new InternetAddress[]{theSimpsons});
     mail.setSubject("Simple text Email test");
     mail.setText(textEmailContent);
@@ -191,8 +187,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
   @Test
   public void testMultiSendMail() throws Exception {
     MimeMessage mail = new MimeMessage(notificationHelper.getSession());
-    InternetAddress theSimpsons = new InternetAddress(
-        "thesimpsons@silverpeas.com");
+    InternetAddress theSimpsons = new InternetAddress("thesimpsons@silverpeas.com");
     mail.addFrom(new InternetAddress[]{theSimpsons});
     mail.setSubject("Simple text Email test");
     mail.setText(textEmailContent);
@@ -245,7 +240,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     user.setComponentId("100");
     user.setEmail("patty.bouvier@silverpeas.com");
     externalUsers.add(user);
-    assertEquals(12, externalUsers.size());
+    assertThat(externalUsers.size(), is(12));
     notificationHelper.sendMail(mail, externalUsers);
     Iterator<ExternalUser> iter = externalUsers.iterator();
     while (iter.hasNext()) {
@@ -254,29 +249,28 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  protected void checkSimpleEmail(String address, String subject)
-      throws Exception {
-    List inbox = Mailbox.get(address);
-    assertNotNull(inbox);
-    assertEquals("No message for " + address, 1, inbox.size());
+  protected void checkSimpleEmail(String address, String subject) throws Exception {
+    Mailbox inbox = Mailbox.get(address);
+    assertThat(inbox, is(notNullValue()));
+    assertThat("No message for " + address, inbox.size(), is(1));
     MimeMessage alert = (MimeMessage) inbox.iterator().next();
-    assertNotNull(alert);
-    assertEquals(subject, alert.getSubject());
-    assertEquals(textEmailContent, alert.getContent());
+    assertThat(alert, is(notNullValue()));
+    assertThat(alert.getSubject(), is(subject));
+    assertThat((String) alert.getContent(), is(textEmailContent));
   }
 
   public void testSpringLoading() {
-    assertNotNull(notificationHelper);
-    assertNotNull(notificationHelper.getSmtpConfig());
-    assertEquals("localhost", notificationHelper.getSmtpConfig().getServer());
-    assertEquals("bsimpson", notificationHelper.getSmtpConfig().getUsername());
-    assertEquals("bart", notificationHelper.getSmtpConfig().getPassword());
-    assertEquals(25, notificationHelper.getSmtpConfig().getPort());
-    assertFalse(notificationHelper.getSmtpConfig().isAuthenticate());
+    assertThat(notificationHelper, is(notNullValue()));
+    assertThat(notificationHelper.getSmtpConfig(), is(notNullValue()));
+    assertThat(notificationHelper.getSmtpConfig().getServer(), is("localhost"));
+    assertThat(notificationHelper.getSmtpConfig().getUsername(), is("bsimpson"));
+    assertThat(notificationHelper.getSmtpConfig().getPassword(), is("bart"));
+    assertThat(notificationHelper.getSmtpConfig().getPort(), is(25));
+    assertThat(notificationHelper.getSmtpConfig().isAuthenticate(), is(false));
   }
 
   @After
+  @Override
   public void tearDown() throws Exception {
     InitialContext ic = new InitialContext();
     MockObjectFactory.clearAll();
@@ -290,9 +284,9 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     } finally {
       if (connection != null) {
         try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
+          connection.close();
+        } catch (SQLException ex) {
+          ex.printStackTrace();
         }
       }
     }
@@ -301,42 +295,34 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
 
   @Test
   public void testGetUsersIds() {
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "100");
+    MailingList list = ServicesFactory.getMailingListService().findMailingList("100");
     list.setModerated(false);
     Collection<String> userIds = notificationHelper.getUsersIds(list);
-    assertEquals(2, userIds.size());
-    for (String userId :
-        userIds) {
-      assertTrue("201".equals(userId) || "204".equals(userId));
+    assertThat(userIds.size(), is(2));
+    for (String userId : userIds) {
+      assertThat(userId, isOneOf("201", "204"));
     }
     list.setModerated(true);
     userIds = notificationHelper.getUsersIds(list);
-    assertEquals(2, userIds.size());
-    for (String userId :
-        userIds) {
-      assertTrue("201".equals(userId) || "204".equals(userId));
+    assertThat(userIds.size(), is(2));
+    for (String userId : userIds) {
+      assertThat(userId, isOneOf("201", "204"));
     }
   }
 
   @Test
   public void testGetModeratorsIds() {
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "100");
+    MailingList list = ServicesFactory.getMailingListService().findMailingList("100");
     Collection<String> userIds = notificationHelper.getModeratorsIds(list);
-    assertEquals(3, userIds.size());
-    for (String userId :
-        userIds) {
-      assertTrue("Erreur userid " + userId, "200".equals(userId) ||
-          "202".equals(userId) || "203".equals(userId));
+    assertThat(userIds.size(), is(3));
+    for (String userId : userIds) {
+      assertThat("Erreur userid " + userId, userId, isOneOf("200", "202", "203"));
     }
     list.setModerated(false);
     userIds = notificationHelper.getModeratorsIds(list);
-    assertEquals(3, userIds.size());
-    for (String userId :
-        userIds) {
-      assertTrue("Erreur userid " + userId, "200".equals(userId) ||
-          "202".equals(userId) || "203".equals(userId));
+    assertThat(userIds.size(), is(3));
+    for (String userId : userIds) {
+      assertThat("Erreur userid " + userId, userId, isOneOf("200", "202", "203"));
     }
   }
 
