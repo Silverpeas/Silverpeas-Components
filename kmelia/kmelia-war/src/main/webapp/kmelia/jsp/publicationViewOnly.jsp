@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
@@ -33,7 +34,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="modelUtils.jsp" %>
-<%@ include file="attachmentUtils.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
 
 
@@ -84,7 +84,8 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
 	        if (infos != null) {
 				out.println("<TD width=\"25%\" valign=\"top\" align=\"center\">");
 	            out.println("<A NAME=attachments></a>");
-	            displayUserAttachmentsView(detail, m_context, out,  kmeliaScc.getLanguage(),true, resources);
+	            KmeliaDisplayHelper.displayUserAttachmentsView(detail, m_context, out, kmeliaScc
+                    .getLanguage(), true, resources);
 				out.println("</TD>");
 	        }
 	    } else {
@@ -92,7 +93,8 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
 		        out.println("</TR><TR>");
 				out.println("<TD valign=\"top\">");
 	            out.println("<A NAME=attachments></a>");
-	            displayUserAttachmentsView(detail, m_context, out,  kmeliaScc.getLanguage(),false, resources);
+	            KmeliaDisplayHelper.displayUserAttachmentsView(detail, m_context, out, kmeliaScc
+                    .getLanguage(), false, resources);
 				out.println("</TD>");
 	        }
 	    }
@@ -102,22 +104,19 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
             out.println("<TR><TD align=\"center\">");
             if (model != null) {
             	displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
-                //displayViewInfoModel(out, model, infos, settings, publicationSettings, m_context, kmeliaScc);
             }
             out.println("</TD>");
 
 	        if (! ("bottom".equals(settings.getString("attachmentPosition") ) ) ) {
 				out.println("<TD width=\"25%\" valign=\"top\" align=\"center\">");
 				out.println("<A NAME=attachments></a>");
-				displayUserAttachmentsView(detail, m_context, out,  kmeliaScc.getLanguage(), true, resources);
-				//displayUserAttachmentsView(detail, m_context, out, type, user_id);
+				KmeliaDisplayHelper.displayUserAttachmentsView(detail, m_context, out,  kmeliaScc.getLanguage(), true, resources);
 				out.println("</TD>");
 		    } else {
 		        out.println("</TR><TR>");
 				out.println("<TD valign=\"top\">");
 	            out.println("<A NAME=attachments></a>");
-	            displayUserAttachmentsView(detail, m_context, out, kmeliaScc.getLanguage(), false,
-                        resources);
+	            KmeliaDisplayHelper.displayUserAttachmentsView(detail, m_context, out, kmeliaScc.getLanguage(), false, resources);
 				out.println("</TD>");
 		    }
             out.println("</TR>");
@@ -126,7 +125,7 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
     out.println("</TABLE>");
 }
 
-// Fin des d�clarations
+// Fin des declarations
 %>
 
 <%

@@ -25,9 +25,8 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="checkKmelia.jsp" %>
-<%@ include file="attachmentUtils.jsp" %>
-<%@ include file="tabManager.jsp.inc"%>
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@include file="checkKmelia.jsp" %>
 
 <%
 PublicationDetail 	pubDetail 	= (PublicationDetail) request.getAttribute("CurrentPublicationDetail");
@@ -110,12 +109,15 @@ function topicGoTo(id) {
 	out.println(window.printBefore());
 
 	if ("progress".equals(wizard)) {
-		displayWizardOperations(wizardRow, pubId, kmeliaScc, gef, "ViewAttachments", resources, out, kmaxMode);
+		KmeliaDisplayHelper.displayWizardOperations(wizardRow, pubId, kmeliaScc, gef,
+          "ViewAttachments", resources, out, kmaxMode);
 	} else {
 		if (isOwner) {
-			displayAllOperations(pubId, kmeliaScc, gef, "ViewAttachments", resources, out, kmaxMode);
+			KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ViewAttachments",
+            resources, out, kmaxMode);
 		} else {
-			displayUserOperations(pubId, kmeliaScc, gef, "ViewAttachments", resources, out, kmaxMode);
+			KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ViewAttachments",
+            resources, out, kmaxMode);
 		}
 	}
 

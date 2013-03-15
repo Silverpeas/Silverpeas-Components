@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.kmelia.SearchContext"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -36,10 +35,10 @@
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="modelUtils.jsp" %>
-<%@ include file="attachmentUtils.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
-<%@ include file="tabManager.jsp.inc" %>
 
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="com.silverpeas.kmelia.SearchContext"%>
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="com.silverpeas.form.*"%>
 <%@page import="org.silverpeas.importExport.versioning.DocumentPK"%>
@@ -509,9 +508,11 @@
         out.println(window.printBefore());
         action = "View";
         if (isOwner) {
-          displayAllOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
+          KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out,
+                kmaxMode);
         } else {
-          displayUserOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
+          KmeliaDisplayHelper.displayUserOperations(id, kmeliaScc, gef, action, resources, out,
+                kmaxMode);
         }
         out.println(frame.printBefore());
 

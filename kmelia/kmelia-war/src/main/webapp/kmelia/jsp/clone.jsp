@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -33,12 +34,12 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ include file="checkKmelia.jsp" %>
-<%@ include file="modelUtils.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
+<%@include file="checkKmelia.jsp" %>
+<%@include file="modelUtils.jsp" %>
 
-<%@ page import="com.silverpeas.publicationTemplate.*"%>
-<%@ page import="com.silverpeas.form.*"%>
+<%@page import="com.silverpeas.publicationTemplate.*"%>
+<%@page import="com.silverpeas.form.*"%>
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 
 <%
   	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
@@ -277,7 +278,7 @@ $(function() {
         }
         out.println(window.printBefore());
 
-        displayAllOperations(id, kmeliaScc, gef, "ViewClone", resources, out);
+        KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, "ViewClone", resources, out);
         out.println(frame.printBefore());
 
         InfoDetail infos = pubComplete.getInfoDetail();
