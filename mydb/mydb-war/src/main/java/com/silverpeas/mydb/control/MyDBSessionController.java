@@ -45,6 +45,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.silverpeas.mydb.control.DriverManager;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -106,8 +108,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   public MyDBSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.mydb.multilang.myDBBundle",
-        "com.silverpeas.mydb.settings.myDBIcons");
+        "org.silverpeas.mydb.multilang.myDBBundle",
+        "org.silverpeas.mydb.settings.myDBIcons");
     resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(),
         getLanguage());
     driverManager = new DriverManager();

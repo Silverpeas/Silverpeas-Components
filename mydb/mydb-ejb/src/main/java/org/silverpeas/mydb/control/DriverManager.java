@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.mydb.control;
+package org.silverpeas.mydb.control;
 
 import java.io.InputStream;
 import java.sql.Driver;
