@@ -1568,7 +1568,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // update parent
       getPublicationBm().removeAllFather(pub.getPK());
       getPublicationBm().addFather(pub.getPK(), to);
-
       processPublicationAfterMove(pub, to, userId);
     }
   }
@@ -1576,8 +1575,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId)
       throws RemoteException {
-    getPublicationBm().movePublication(pub.getPK(), to, false); // Change instanceId and unindex header+content
-
+    getPublicationBm().movePublication(pub.getPK(), to, false);
     processPublicationAfterMove(pub, to, userId);
   }
 
@@ -1598,7 +1596,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     if (statusChanged) {
       // creates todos for publishers
       createTodosForPublication(pub, false);
-
       // index or unindex external elements
       if (KmeliaHelper.isIndexable(pub)) {
         indexExternalElementsOfPublication(pub);
@@ -1606,7 +1603,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         unIndexExternalElementsOfPublication(pub.getPK());
       }
     }
-
     // send notifications like a creation
     sendSubscriptionsNotification(pub, false);
   }

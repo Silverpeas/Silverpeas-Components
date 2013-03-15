@@ -3332,102 +3332,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       String fromAbsolutePath) throws RemoteException, ThumbnailException,
       PublicationTemplateException, PdcException, IOException {
     boolean indexIt = false;
-
     // move Vignette on disk
     int[] thumbnailSize = getThumbnailWidthAndHeight();
-
-    String vignette = ThumbnailController.getImage(fromComponentId,
-        Integer.parseInt(fromId),
-        ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE,
-        thumbnailSize[0],
+    String vignette = ThumbnailController.getImage(fromComponentId, Integer.parseInt(fromId),
+        ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE, thumbnailSize[0],
         thumbnailSize[1]);
     if (StringUtil.isDefined(vignette)) {
-      String from = fromAbsolutePath + thumbnailsSubDirectory + File.separator + vignette;
-
-      try {
-        FileRepositoryManager.createAbsolutePath(getComponentId(), thumbnailsSubDirectory);
-      } catch (Exception e) {
-        SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
-            "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
-      }
-      String to = toAbsolutePath + thumbnailsSubDirectory + File.separator + vignette;
-
-      File fromVignette = new File(from);
-      File toVignette = new File(to);
-
-      boolean moveOK = fromVignette.renameTo(toVignette);
-
-      SilverTrace.info("kmelia", "KmeliaSessionController.pastePublication()",
-          "root.MSG_GEN_PARAM_VALUE", "vignette move = " + moveOK);
+      moveThumbnail(fromAbsolutePath, thumbnailsSubDirectory, vignette, toAbsolutePath);
     }
-
-    // move attachments first (wysiwyg, wysiwyg images, formXML files and images, attachments)
-    try {
-      // Change instanceId and move files
-      List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.form, getLanguage());
-      documents.addAll(AttachmentServiceFactory.getAttachmentService().
-          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.image, getLanguage()));
-      documents.addAll(AttachmentServiceFactory.getAttachmentService().
-          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.wysiwyg, getLanguage()));
-      for (SimpleDocument doc : documents) {
-        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toForeignPK);
-      }
-    } catch (org.silverpeas.attachment.AttachmentException e) {
-      SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
-          "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
-    }
-
-    try {
-      // change images path in wysiwyg
-      WysiwygController.wysiwygPlaceHaveChanged(fromComponentId, publi.getPK().getId(),
-          getComponentId(), publi.getPK().getId());
-    } catch (WysiwygException e) {
-      SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
-          "root.MSG_GEN_PARAM_VALUE", e);
-    }
-
-    boolean fromCompoVersion = StringUtil.getBooleanValue(getOrganizationController().
-        getComponentParameterValue(fromComponentId, "versionControl"));
-
-    if (fromCompoVersion && isVersionControlled()) {
-      List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
-          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, getLanguage());
-      for (SimpleDocument doc : docs) {
-        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toForeignPK);
-      }
-    } else if (fromCompoVersion && !isVersionControlled()) {
-      // versioning --> attachments
-      // Last public versions becomes the new attachment
-      pasteDocumentsAsAttachments(fromPubPK, publi.getPK().getId());
-
-      if (indexIt) {
-        AttachmentServiceFactory.getAttachmentService().indexAllDocuments(toForeignPK, null, null);
-      }
-      List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
-          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, getLanguage());
-      // remove files
-      for (SimpleDocument doc : docs) {
-        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
-      }
-    } else if (!fromCompoVersion && isVersionControlled()) {
-      // Be careful, attachments have already moved !
-      pasteAttachmentsAsDocuments(toPubPK, publi.getPK().getId());
-
-      if (indexIt) {
-        AttachmentServiceFactory.getAttachmentService().indexAllDocuments(toForeignPK, null, null);
-      }
-
-      // remove only files
-      List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
-          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, getLanguage());
-      // remove files
-      for (SimpleDocument doc : docs) {
-        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
-      }
-    } else {
-      // already made by moveAttachments
-    }
+    movePublicationContent(fromForeignPK, toForeignPK, fromComponentId, publi);
+    movePublicationDocuments(fromComponentId, fromForeignPK, toForeignPK, fromPubPK, publi, indexIt,
+        toPubPK);
 
     // eventually, paste the model content
     if (completePub.getModelDetail() != null && completePub.getInfoDetail() != null) {
@@ -4421,5 +4336,90 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public SearchContext getSearchContext() {
     return searchContext;
+  }
+
+  private void moveThumbnail(String fromAbsolutePath, String thumbnailsSubDirectory, String vignette,
+      String toAbsolutePath) {
+    String from = fromAbsolutePath + thumbnailsSubDirectory + File.separator + vignette;
+    try {
+      FileRepositoryManager.createAbsolutePath(getComponentId(), thumbnailsSubDirectory);
+    } catch (Exception e) {
+      SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
+          "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
+    }
+    String to = toAbsolutePath + thumbnailsSubDirectory + File.separator + vignette;
+    File fromVignette = new File(from);
+    File toVignette = new File(to);
+    boolean moveOK = fromVignette.renameTo(toVignette);
+    SilverTrace.info("kmelia", "KmeliaSessionController.pastePublication()",
+        "root.MSG_GEN_PARAM_VALUE", "vignette move = " + moveOK);
+  }
+
+  private void movePublicationContent(ForeignPK fromForeignPK, ForeignPK toForeignPK,
+      String fromComponentId, PublicationDetail publi) {
+    try {
+      // Change instanceId and move files
+      List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.form, getLanguage());
+      documents.addAll(AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.image, getLanguage()));
+      documents.addAll(AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.wysiwyg, getLanguage()));
+      for (SimpleDocument doc : documents) {
+        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toForeignPK);
+      }
+    } catch (org.silverpeas.attachment.AttachmentException e) {
+      SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
+          "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
+    }
+    try {
+      // change images path in wysiwyg
+      WysiwygController.wysiwygPlaceHaveChanged(fromComponentId, publi.getPK().getId(),
+          getComponentId(), publi.getPK().getId());
+    } catch (WysiwygException e) {
+      SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
+          "root.MSG_GEN_PARAM_VALUE", e);
+    }
+  }
+
+  private void movePublicationDocuments(String fromComponentId, ForeignPK fromForeignPK,
+      ForeignPK toForeignPK, PublicationPK fromPubPK, PublicationDetail publi, boolean indexIt,
+      PublicationPK toPubPK) throws IOException {
+    boolean fromCompoVersion = StringUtil.getBooleanValue(getOrganizationController().
+        getComponentParameterValue(fromComponentId, "versionControl"));
+
+    List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, getLanguage());
+
+    if (fromCompoVersion && isVersionControlled()) {
+      for (SimpleDocument doc : docs) {
+        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toForeignPK);
+      }
+    } else if (fromCompoVersion && !isVersionControlled()) {
+      // versioning --> attachments
+      // Last public versions becomes the new attachment
+      pasteDocumentsAsAttachments(fromPubPK, publi.getPK().getId());
+      if (indexIt) {
+        AttachmentServiceFactory.getAttachmentService().indexAllDocuments(toForeignPK, null, null);
+      }
+      // remove files
+      for (SimpleDocument doc : docs) {
+        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+      }
+    } else if (!fromCompoVersion && isVersionControlled()) {
+      // Be careful, attachments have already moved !
+      pasteAttachmentsAsDocuments(toPubPK, publi.getPK().getId());
+      if (indexIt) {
+        AttachmentServiceFactory.getAttachmentService().indexAllDocuments(toForeignPK, null, null);
+      }
+      // remove files
+      for (SimpleDocument doc : docs) {
+        AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+      }
+    } else {
+      for (SimpleDocument doc : docs) {
+        AttachmentServiceFactory.getAttachmentService().moveDocument(doc, toForeignPK);
+      }
+    }
   }
 }
