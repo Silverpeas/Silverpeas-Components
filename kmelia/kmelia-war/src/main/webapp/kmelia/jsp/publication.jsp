@@ -509,11 +509,11 @@
         action = "View";
         if (isOwner) {
           KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out,
-                kmaxMode);
-        } else {
-          KmeliaDisplayHelper.displayUserOperations(id, kmeliaScc, gef, action, resources, out,
-                kmaxMode);
-        }
+                  kmaxMode);
+            } else {
+              KmeliaDisplayHelper.displayUserOperations(id, kmeliaScc, gef, action, resources, out,
+                  kmaxMode);
+            }
         out.println(frame.printBefore());
 
         InfoDetail infos = pubComplete.getInfoDetail();
@@ -739,9 +739,7 @@
 
 				        out.println("</h2>");
 
-				        String description = EncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language));
-				        description = EncodeHelper.javaStringToHtmlParagraphe(description);
-
+				        String description = EncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription(language));
 				        if (StringUtil.isDefined(description)) {
 				        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
 				        }
