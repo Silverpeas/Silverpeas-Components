@@ -420,9 +420,11 @@ function openSPWindow(fonction, windowName){
   browseBar.setDomainName(surveyScc.getSpaceLabel());
   browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp");
 
-  if (profile.equals("admin") || profile.equals("publisher")) {
+  if (SilverpeasRole.admin.toString().equals(profile) || 
+    SilverpeasRole.publisher.toString().equals(profile)) {
     OperationPane operationPane = window.getOperationPane();
-    if (profile.equals("admin") && surveyScc.isPdcUsed()) {
+    if (SilverpeasRole.admin.toString().equals(profile) &&
+        surveyScc.isPdcUsed()) {
       operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDC"),
           "javascript:openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" +
           surveyScc.getComponentId() + "','utilizationPdc1')");
@@ -462,7 +464,8 @@ function openSPWindow(fonction, windowName){
 <center><table cellpadding="0" cellspacing="0" border="0" width="98%"><tr><td>
 <%
   ArrayPane arrayPane = null;
-  if (profile.equals("admin") || profile.equals("publisher")) {
+  if (SilverpeasRole.admin.toString().equals(profile) || 
+        SilverpeasRole.publisher.toString().equals(profile)) {
     arrayPane =
         buildSurveyArrayToAdmin(gef, surveyScc, view, surveys, resources, request, session, pollingStationMode);
   } else {

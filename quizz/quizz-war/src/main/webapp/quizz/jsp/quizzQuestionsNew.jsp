@@ -940,7 +940,7 @@ if (action.equals("SubmitQuizz")) {
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(quizzScc.getSpaceLabel());
     browseBar.setComponentName(quizzScc.getComponentLabel());
-    browseBar.setExtraInformation(resources.getString("GML.preview"));
+    browseBar.setExtraInformation(resources.getString("quizz.preview"));
 
     out.println(window.printBefore());
     Frame frame = gef.getFrame();

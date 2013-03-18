@@ -37,6 +37,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.survey.control.SurveySessionController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -53,20 +54,21 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
    * @return string representation of current user flag
    */
   public String getFlag(String[] profiles) {
-    String flag = "user";
-    for (int i = 0; i < profiles.length; i++) {
-      if (profiles[i].equals("publisher")) {
-        flag = profiles[i];
-      } else if (profiles[i].equals("userMultiple")) {
-        if (!flag.equals("publisher")) {
-          flag = profiles[i];
+    String flag = SilverpeasRole.user.toString();
+    for (String profile : profiles) {
+      if (SilverpeasRole.publisher.isInRole(profile)) {
+        flag = profile;
+      } else if (profile.equals("userMultiple")) {
+        if (!flag.equals(SilverpeasRole.publisher.toString())) {
+          flag = profile;
         }
       }
       // if admin, return it, we won't find a better profile
-      if (profiles[i].equals("admin")) {
-        return profiles[i];
+      if (SilverpeasRole.admin.isInRole(profile)) {
+        return profile;
       }
     }
+    
     return flag;
   }
 
@@ -126,7 +128,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       // the flag is the best user's profile
       destination = rootDest + "surveyList.jsp?Profile=" + flag;
     } else if (function.startsWith("SurveyCreation") || function.startsWith("surveyCreator")) {
-      if (flag.equals("admin") || flag.equals("publisher")) {
+      if (flag.equals(SilverpeasRole.admin.toString()) || flag.equals(SilverpeasRole.publisher.toString())) {
         surveySC.sendNewSurveyAction(request);
         destination = rootDest + "surveyCreator.jsp";
       } else {

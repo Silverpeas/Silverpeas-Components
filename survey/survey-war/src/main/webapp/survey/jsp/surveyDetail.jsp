@@ -244,7 +244,7 @@
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(surveyScc.getSpaceLabel());
     browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp?Action=View");
-    browseBar.setExtraInformation(resources.getString("GML.preview"));
+    browseBar.setExtraInformation(resources.getString("survey.preview"));
 
     String surveyPart =
         displaySurveyPreview(survey, gef, m_context, surveyScc, resources, settings);
@@ -600,17 +600,28 @@ function clipboardCopy() {
   <c:set var="notifyUserAction">javaScript:onClick=goToNotify('ToAlertUser?SurveyId=<%=surveyId%>');</c:set>
   <view:operation altText="${notifyUserMsg}" icon="${alertSrc}" action="${notifyUserAction}" />
   
-   <c:if test="${profile eq 'admin' or profile eq 'publisher'}">
+  <%
+  if ((SilverpeasRole.admin.toString().equals(profile) || 
+      SilverpeasRole.publisher.toString().equals(profile)) &&
+      survey.getHeader().getCreatorId().equals(surveyScc.getUserId()) &&
+      survey.getHeader().getResultMode() == QuestionContainerHeader.DELAYED_RESULTS) {
+  %>
     <fmt:message key="survey.publishResult" var="publishMsg" />
     <c:set var="publishAction">javaScript:onClick=PublishResult();</c:set>
     <view:operation altText="${publishMsg}" icon="${publishSrc}" action="${publishAction}" />
-  </c:if>
+  <%
+  }
+  %>
 
-  <c:if test="${fn:contains(profile,'admin')}">
+  <%
+  if (SilverpeasRole.admin.toString().equals(profile)) {
+  %>
     <fmt:message key="GML.export" var="exportMsg" />
     <c:set var="exportAction">javaScript:onClick=Export('ExportCSV?SurveyId=<%=surveyId%>');</c:set>
     <view:operation altText="${exportMsg}" icon="${exportSrc}" action="${exportAction}" />
-  </c:if>
+  <%
+  }
+  %>
   <fmt:message key="GML.copy" var="copyMsg" />
   <view:operation altText="${copyMsg}" icon="${copySrc}" action="javaScript:onClick=clipboardCopy();" />
 </view:operationPane>

@@ -1,4 +1,5 @@
 <%@ page import="java.text.ParseException"%>
+<%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
 
 <%!
 
@@ -18,7 +19,8 @@ ResourcesWrapper resources, boolean pollingStationMode, boolean participated) {
 
 	tabbedPane.addTab(label, "surveyDetail.jsp?Action=ViewCurrentQuestions&Participated="+participated+"&SurveyId="+surveyId, tabValid, true);
 
-  if ("admin".equals(profile) && !participated) {
+  if (SilverpeasRole.admin.toString().equals(profile) &&
+      !participated) {
       tabbedPane.addTab(resources.getString("survey.results"), "surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId, action.equals("ViewResult"), true);
   }
 
@@ -782,34 +784,33 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	            r += "     </div>";
 	            r += "   </div>";
 	            r += "   <div class=\"surveyUserParticipation\">";
-	            r += "     <div class=\"bloc\">";
-	            String labelButton = resources.getString("Survey.revote");
-	            if (surveyScc.isPollingStationMode()) {
-	             labelButton = resources.getString("PollingStation.revote");
-	            }
+	            
 	            if (votes != null) {
                 if (votes.size() > 0) {
                   it = votes.iterator();
                   if (it.hasNext()) {
                     QuestionResult vote = (QuestionResult) it.next();
+                    r += "     <div class=\"bloc\">";
                     r += "       <span>"+resources.getString("YouHaveAlreadyParticipate");
                     r += "       "+resources.getOutputDate(vote.getVoteDate())+"</span>";
                            
                     if (surveyScc.isParticipationMultipleAllowedForUser()) {
+                      String labelButton = resources.getString("Survey.revote");
+                      if (surveyScc.isPollingStationMode()) {
+                       labelButton = resources.getString("PollingStation.revote");
+                      }
                       r += "       <span><a href=\"surveyDetail.jsp?Action=Vote&SurveyId="+
                               survey.getHeader().getId() + "\">" + labelButton + "</a></span>";
                     }
+                    r += "     </div>";
                   }
                 }
               } 
 	            
-	            r += "     </div>";
 	            r += "   </div>";
 	            r += "   <br clear=\"left\">&nbsp;";
 	            r += " </div>";
-	            if (StringUtil.isDefined(description)) {
-	             r += " <div class=\"surveyDesc\">"+Encode.javaStringToHtmlParagraphe(description)+"</div>";
-	            }
+	            r += " <div class=\"surveyDesc\">"+Encode.javaStringToHtmlParagraphe(description)+"</div>";
 	            r += "</div>";
 
 	            /*
@@ -874,15 +875,18 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 			   
 			   if (!anonymous && !styleView.equals("user")) {
            // l'enquête n'est pas anonyme, proposer le choix d'affichage
-               String selectedStr = "";
-               String otherChoice = "C";
-               if (choice.equals("C")) {
-                otherChoice = "D";
-               }
                r += "   <div class=\"sousNavBulle\">";
                r += "    <p>"+resources.getString("survey.results")+" "+resources.getString("survey.choice")+" : ";
-               r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"\" id=\"scope-classic\">"+resources.getString("survey."+choice)+"</a>";
-               r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"active\" id=\"scope-detail\">"+resources.getString("survey."+otherChoice)+"</a>";
+               String active = "";
+               if (choice.equals("C")) {
+                 active = "active";
+               }
+               r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-classic\">"+resources.getString("survey.C")+"</a>";
+               active = "";
+               if (choice.equals("D")) {
+                 active = "active";
+               }
+               r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-detail\">"+resources.getString("survey.D")+"</a>";
                r += "    </p>";
                r += "   </div>";
           }

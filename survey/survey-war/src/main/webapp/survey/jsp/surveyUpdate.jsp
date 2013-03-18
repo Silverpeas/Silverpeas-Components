@@ -73,6 +73,8 @@ if(surveyScc.isAnonymousModeEnabled()) {
 
 boolean anonymous = StringUtil.isDefined(anonymousString) && "true".equalsIgnoreCase(anonymousString);
 
+String resultMode = request.getParameter("resultMode");
+
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 //Icons
@@ -92,7 +94,7 @@ if ("SendSurveyHeader".equals(action)) {
           else
             endDate = null;
       }
-      QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate, false, 0, new Integer(nbQuestions).intValue(), anonymous);
+      QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate, false, 0, new Integer(nbQuestions).intValue(), anonymous, Integer.parseInt(resultMode));
       surveyScc.updateSurveyHeader(surveyHeader, surveyId);
       action = "UpdateSurveyHeader";
       request.setAttribute("UpdateSucceed", "true");
