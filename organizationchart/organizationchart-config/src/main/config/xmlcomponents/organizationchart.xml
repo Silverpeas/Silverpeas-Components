@@ -29,8 +29,8 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>organizationchart</name>
   <label>
-    <message lang="fr">Organigramme</message>
-    <message lang="en">Organization chart</message>
+    <message lang="fr">Organigramme LDAP</message>
+    <message lang="en">LDAP-based organization chart</message>
   </label>
   <description>
     <message lang="fr">Cette application permet l'affichage d'un organigramme à partir d'un annuaire LDAP.</message>
@@ -41,7 +41,7 @@
     <message lang="en">06 Connectors</message>
     <message lang="de">06 Verbinder</message>
   </suite>
-  <visible>false</visible>
+  <visible>true</visible>
   <portlet>false</portlet>
   <instanceClassName>com.silverpeas.components.organizationchart.OrganizationChartInstanciator</instanceClassName>
   <profiles>

@@ -29,7 +29,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 public class ServicesFactory implements ApplicationContextAware {
-  public static final String ORGANIZATION_CHART_SERVICE = "organizationChartService";
+  public static final String LDAP_ORGANIZATION_CHART_SERVICE = "organizationChartLDAPService";
+  public static final String GROUP_ORGANIZATION_CHART_SERVICE = "organizationChartGroupService";
 
   private ApplicationContext context;
   private static ServicesFactory instance;
@@ -51,8 +52,14 @@ public class ServicesFactory implements ApplicationContextAware {
     return ServicesFactory.instance;
   }
 
+  public static OrganizationChartService getOrganizationChartService(OrganizationChartLDAPConfiguration config) {
+    OrganizationChartService service = (OrganizationChartService) getInstance().context.getBean(LDAP_ORGANIZATION_CHART_SERVICE);
+    service.configure(config);
+    return service;
+  }
+  
   public static OrganizationChartService getOrganizationChartService(OrganizationChartConfiguration config) {
-    OrganizationChartService service = (OrganizationChartService) getInstance().context.getBean(ORGANIZATION_CHART_SERVICE);
+    OrganizationChartService service = (OrganizationChartService) getInstance().context.getBean(GROUP_ORGANIZATION_CHART_SERVICE);
     service.configure(config);
     return service;
   }

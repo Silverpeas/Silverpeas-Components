@@ -66,7 +66,10 @@ public class OrganizationChartProcessor {
     String login = request.getParameter("login");
 
     if (login != null) {
-      String userId = organizationchartSC.getUserIdFromLogin(login);
+      String userId = login;
+      if (organizationchartSC.isLDAP()) {
+        userId = organizationchartSC.getUserIdFromLogin(login);
+      }
 
       if (userId != null) {
         return "/Rprofil/jsp/Main?userId=" + userId;

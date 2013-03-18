@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2012 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+  <name>orgchartGroup</name>
+  <label>
+    <message lang="fr">Organigramme Groupe</message>
+    <message lang="en">Group-based organization chart</message>
+  </label>
+  <description>
+    <message lang="fr">Cette application permet l'affichage d'un organigramme basé sur les groupes d'utilisateurs.</message>
+    <message lang="en">This application display an organization chart based on a groups structure.</message>
+  </description>
+  <suite>
+    <message lang="fr">06 Connecteurs</message>
+    <message lang="en">06 Connectors</message>
+    <message lang="de">06 Verbinder</message>
+  </suite>
+  <visible>true</visible>
+  <portlet>false</portlet>
+  <instanceClassName>com.silverpeas.components.organizationchart.OrganizationChartInstanciator</instanceClassName>
+  <profiles>
+    <profile name="user">
+      <label>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
+      </label>
+      <help>
+        <message lang="fr">Les lecteurs consultent l'organigramme, naviguent au sein des groupes et visualisent les personnes qui y sont rattachés.</message>
+        <message lang="en">Readers consult the chart, navigate within groups and visualize the people who are linked to it.</message>
+      </help>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>ldapRoot</name>
+      <label>
+        <message lang="fr">Groupe racine</message>
+        <message lang="en">Root group</message>
+      </label>
+      <order>7</order>
+      <mandatory>true</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>30</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Identifiant du groupe racine</message>
+        <message lang="en">Id root group</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>ldapAttTitle</name>
+      <label>
+        <message lang="fr">Titre</message>
+        <message lang="en">Title</message>
+      </label>
+      <order>12</order>
+      <mandatory>false</mandatory>
+      <value>title</value>
+      <type>text</type>
+      <size>30</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Nom de l'attribut désignant le titre de l'utilisateur</message>
+        <message lang="en">Name of the attribute for the title of users</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>unitsChartCentralLabel</name>
+      <label>
+        <message lang="fr">Rôle(s) du service principal (vue services)</message>
+        <message lang="en">Role(s) of the main organization unit</message>
+      </label>
+      <order>14</order>
+      <mandatory>false</mandatory>
+      <value>Role(s) principal(ux)</value>
+      <type>text</type>
+      <size>30</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher avec le service principal</message>
+        <message lang="en">Attribute containing the role(s) of the main organization unit positions</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>unitsChartRightLabel</name>
+      <label>
+        <message lang="fr">Rôle(s) du bloc droit (vue services)</message>
+        <message lang="en">Role(s) of the right block (units view)</message>
+      </label>
+      <order>15</order>
+      <mandatory>false</mandatory>
+      <value>Assistantes=Assistante</value>
+      <type>text</type>
+      <size>30</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la case droite</message>
+        <message lang="en">Attribute name for the function to be placed in the right cell</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>unitsChartLeftLabel</name>
+      <label>
+        <message lang="fr">Rôle(s) du bloc gauche (vue services)</message>
+        <message lang="en">Role(s) of the left block</message>
+      </label>      
+      <order>16</order>
+      <mandatory>false</mandatory>
+      <value>Role(s) gauche</value>
+      <type>text</type>
+      <size>30</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la case gauche</message>
+        <message lang="en">Attribute name for the function to be placed in the left cell</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>personnsChartCentralLabel</name>
+      <label>
+        <message lang="fr">Rôle(s) du service principal (vue détaillée)</message>
+        <message lang="en">Role(s) of the main organization unit (detailed view)</message>
+      </label>
+      <order>18</order>
+      <mandatory>false</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>30</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher avec le service principal</message>
+        <message lang="en">Attribute name of the main unit positions</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>personnsChartCategoriesLabel</name>
+      <label>
+        <message lang="fr">Catégorie(s) d'un service (vue détaillée)</message>
+        <message lang="en">Categorie(s) of a unit (detailed view)</message>
+      </label>      
+      <order>19</order>
+      <mandatory>false</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>30</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Attribut désignant les catégories d'un service</message>
+        <message lang="en">Attribute name of the main sub-functions in a unit</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>unitsChartOthersInfosKeys</name>
+      <label>
+        <message lang="fr">Champ(s) à afficher (vue services)</message>
+        <message lang="en">Fields to display (units view)</message>
+      </label>
+      <order>20</order>
+      <mandatory>false</mandatory>
+      <value>Téléphone=phone</value>
+      <type>text</type>
+      <size>30</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Attribut(s) désignant le(s) champ(s) à afficher</message>
+        <message lang="en">Attribute(s) of field to display</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>personnsChartOthersInfosKeys</name>
+      <label>
+        <message lang="fr">Champ(s) à afficher (vue détaillée)</message>
+        <message lang="en">Field(s) to display (detailed view)</message>
+      </label>
+      <order>21</order>
+      <mandatory>false</mandatory>
+      <value>Téléphone=phone</value>
+      <type>text</type>
+      <size>30</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Attribut désignant le(s) champ(s) ldap d'informations à afficher</message>
+        <message lang="en">Attribute(s) of field to display</message>
+      </help>
+    </parameter>
+  </parameters>
+</WAComponent>
