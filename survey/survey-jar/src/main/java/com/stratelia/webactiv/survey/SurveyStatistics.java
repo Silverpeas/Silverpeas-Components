@@ -107,13 +107,10 @@ public class SurveyStatistics implements ComponentStatisticsInterface {
    * @throws RemoteException
    * @see
    */
-
-  public Collection getOpenedSurveys(String spaceId, String componentId)
+  public Collection<QuestionContainerHeader> getOpenedSurveys(String spaceId, String componentId)
       throws RemoteException {
-    Collection<QuestionContainerHeader> result =
-        getQuestionContainerBm().getOpenedQuestionContainers(
+    return getQuestionContainerBm().getOpenedQuestionContainers(
             new QuestionContainerPK(null, spaceId, componentId));
-    return result;
   }
 
   public Collection<QuestionContainerHeader> getClosedSurveys(String spaceId, String componentId)

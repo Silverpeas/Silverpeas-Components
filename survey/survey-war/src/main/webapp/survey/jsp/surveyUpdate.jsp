@@ -74,6 +74,7 @@ if(surveyScc.isAnonymousModeEnabled()) {
 boolean anonymous = StringUtil.isDefined(anonymousString) && "true".equalsIgnoreCase(anonymousString);
 
 String resultMode = request.getParameter("resultMode");
+String resultView = request.getParameter("resultView");
 
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
@@ -94,39 +95,48 @@ if ("SendSurveyHeader".equals(action)) {
           else
             endDate = null;
       }
-      QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate, false, 0, new Integer(nbQuestions).intValue(), anonymous, Integer.parseInt(resultMode));
+      int resultModeInt = Integer.parseInt(resultMode);
+      int resultViewInt = Integer.parseInt(resultView);
+      if(resultModeInt == QuestionContainerHeader.IMMEDIATE_RESULTS) {
+        resultViewInt = QuestionContainerHeader.TWICE_DISPLAY_RESULTS;
+      } else if (resultModeInt == QuestionContainerHeader.DELAYED_RESULTS) {
+        resultViewInt = QuestionContainerHeader.NOTHING_DISPLAY_RESULTS;
+      }
+      QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate, false, 0, new Integer(nbQuestions).intValue(), anonymous, resultModeInt, resultViewInt);
       surveyScc.updateSurveyHeader(surveyHeader, surveyId);
       action = "UpdateSurveyHeader";
       request.setAttribute("UpdateSucceed", "true");
 }
 if ("UpdateSurveyHeader".equals(action))
 {
-          survey = surveyScc.getSurvey(surveyId);
-          QuestionContainerHeader surveyHeader = survey.getHeader();
-          title = Encode.javaStringToHtmlString(surveyHeader.getTitle());
-          description = Encode.javaStringToHtmlString(surveyHeader.getDescription());
-          creationDate = resources.getOutputDate(surveyHeader.getCreationDate());
-          beginDate = "";
-          if (surveyHeader.getBeginDate() != null)
-              beginDate = resources.getInputDate(surveyHeader.getBeginDate());
-          endDate = "";
-          if (surveyHeader.getEndDate() != null)
-              endDate = resources.getInputDate(surveyHeader.getEndDate());
-          if (!surveyScc.isPollingStationMode()) {
-          	nbQuestions = new Integer(surveyHeader.getNbQuestionsPerPage()).toString();
-          }
-          anonymous = surveyHeader.isAnonymous();
+         survey = surveyScc.getSurvey(surveyId);
+         QuestionContainerHeader surveyHeader = survey.getHeader();
+         title = Encode.javaStringToHtmlString(surveyHeader.getTitle());
+         description = Encode.javaStringToHtmlString(surveyHeader.getDescription());
+         creationDate = resources.getOutputDate(surveyHeader.getCreationDate());
+         beginDate = "";
+         if (surveyHeader.getBeginDate() != null)
+             beginDate = resources.getInputDate(surveyHeader.getBeginDate());
+         endDate = "";
+         if (surveyHeader.getEndDate() != null)
+             endDate = resources.getInputDate(surveyHeader.getEndDate());
+         if (!surveyScc.isPollingStationMode()) {
+         	nbQuestions = new Integer(surveyHeader.getNbQuestionsPerPage()).toString();
+         }
+         anonymous = surveyHeader.isAnonymous();
 
           //Mode anonyme -> force les enquetes a etre toutes anonymes
-		  if(surveyScc.isAnonymousModeEnabled()) {
-			anonymous = true;
-		  }
+          if(surveyScc.isAnonymousModeEnabled()) {
+            anonymous = true;
+            }
 
           anonymousString = "0";
           if (anonymous) {
           	anonymousString = "1";
-		  }
+          }
 
+          resultMode = Integer.toString(surveyHeader.getResultMode());
+          resultView = Integer.toString(surveyHeader.getResultView());
 %>
 <html>
 <head>
@@ -315,9 +325,31 @@ function isCorrectForm() {
     	  		<input type="hidden" name="anonymousString" value="<%=anonymousString%>"/>
 			</div>
 		</div>
+		<div class="field" id="resultModeArea">
+        <label class="txtlibform" for="resultMode"><%=resources.getString("survey.creation.resultMode")%></label>
+        <div class="champs">
+          <select id="resultMode" name="resultMode">
+            <%
+            String selectedStr = "";
+            if (Integer.parseInt(resultMode) == QuestionContainerHeader.IMMEDIATE_RESULTS) {
+              selectedStr = "selected";
+            }
+            %>
+              <option <%=selectedStr%> value="<%=QuestionContainerHeader.IMMEDIATE_RESULTS%>"><%=resources.getString("survey.creation.resultMode.1")%></option>
+            <%
+            selectedStr = "";
+            if (Integer.parseInt(resultMode) == QuestionContainerHeader.DELAYED_RESULTS) {
+              selectedStr = "selected";
+            }
+            %>
+              <option <%=selectedStr%> value="<%=QuestionContainerHeader.DELAYED_RESULTS%>"><%=resources.getString("survey.creation.resultMode.2")%></option>
+          </select>
+        </div>
+    </div>
 		<input type="hidden" name="Action" value="SendSurveyHeader"/>
-        <input type="hidden" name="NextAction"/>
-        <input type="hidden" name="SurveyId" value="<%=surveyId%>"/>
+    <input type="hidden" name="NextAction"/>
+    <input type="hidden" name="SurveyId" value="<%=surveyId%>"/>
+    <input type="hidden" name="resultView" value="<%=resultView%>"/>
 	</div>
 </fieldset>
 

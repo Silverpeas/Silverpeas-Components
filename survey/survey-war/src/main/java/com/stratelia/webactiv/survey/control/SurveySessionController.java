@@ -1203,6 +1203,13 @@ public class SurveySessionController extends AbstractComponentSessionController 
       String nbQuestions = request.getParameter("nbQuestions");
       String anonymousString = request.getParameter("anonymous");
       String resultMode = request.getParameter("resultMode");
+      int resultModeInt = Integer.parseInt(resultMode);
+      int resultView = QuestionContainerHeader.TWICE_DISPLAY_RESULTS;
+      if(resultModeInt == QuestionContainerHeader.IMMEDIATE_RESULTS) {
+        resultView = QuestionContainerHeader.TWICE_DISPLAY_RESULTS;
+      } else if (resultModeInt == QuestionContainerHeader.DELAYED_RESULTS) {
+        resultView = QuestionContainerHeader.NOTHING_DISPLAY_RESULTS;
+      }
 
       // Anonymous mode -> force all the survey to be anonymous
       if (this.isAnonymousModeEnabled()) {
@@ -1229,7 +1236,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       
       QuestionContainerHeader surveyHeader =
           new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate,
-              false, 0, Integer.parseInt(nbQuestions), anonymous, Integer.parseInt(resultMode));
+              false, 0, Integer.parseInt(nbQuestions), anonymous, resultModeInt, resultView);
       QuestionContainerDetail surveyDetail = new QuestionContainerDetail();
       surveyDetail.setHeader(surveyHeader);
       // create the positions of the new survey onto the PdC
@@ -1249,7 +1256,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       try {
         surveyClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (JAXBException e) {
-        SilverTrace.error("Survey", "SurveySessionController.sendNewSurveyAction",
+        SilverTrace.error("Survey", "SurveySessionController.sendNewSurveyPositionsFromJSON",
             "PdcClassificationEntity error", "Problem to read JSON", e);
       }
       if (surveyClassification != null && !surveyClassification.isUndefined()) {

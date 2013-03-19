@@ -238,8 +238,8 @@ if (action.equals("CreateSurvey")) {
         <label class="txtlibform" for="resultMode"><%=resources.getString("survey.creation.resultMode")%></label>
         <div class="champs">
           <select id="resultMode" name="resultMode">
-              <option value="1"><%=resources.getString("survey.creation.resultMode.1")%></option>
-              <option value="2"><%=resources.getString("survey.creation.resultMode.2")%></option>
+              <option value="<%=QuestionContainerHeader.IMMEDIATE_RESULTS%>"><%=resources.getString("survey.creation.resultMode.1")%></option>
+              <option value="<%=QuestionContainerHeader.DELAYED_RESULTS%>"><%=resources.getString("survey.creation.resultMode.2")%></option>
           </select>
         </div>
       </div>

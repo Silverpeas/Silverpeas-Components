@@ -143,7 +143,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%     
     Frame frame = gef.getFrame();
 
-    String surveyPart = displaySurveyResult(userName, userId, "user", resultsByUser, "C", survey, gef, m_context, surveyScc, resources, false, settings, frame);
+    String surveyPart = displaySurveyResult(userName, userId, "user", resultsByUser, "D", survey, gef, m_context, surveyScc, resources, false, settings, frame);
     String action = "ViewResult";
     out.println(frame.printBefore()+surveyPart);
 %>

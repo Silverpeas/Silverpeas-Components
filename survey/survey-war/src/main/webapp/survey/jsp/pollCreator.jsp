@@ -605,7 +605,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
           if (anonymous.equals("1")) {
             anonymousB = true;
           }
-          QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, creationDate, beginDate, endDate, false, 0, 1, anonymousB, QuestionContainerHeader.IMMEDIATE_RESULTS);
+          QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, creationDate, beginDate, endDate, false, 0, 1, anonymousB, QuestionContainerHeader.IMMEDIATE_RESULTS, QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
           Question questionObject = new Question(null, null, question, "", "", null, style, 0);
           List<Question> questions = new ArrayList<Question>();
           questionObject.setAnswers(answers);
