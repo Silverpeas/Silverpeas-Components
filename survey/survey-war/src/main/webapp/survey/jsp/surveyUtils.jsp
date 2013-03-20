@@ -1,3 +1,4 @@
+<%@page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader"%>
 <%@ page import="java.text.ParseException"%>
 <%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
 
@@ -19,7 +20,8 @@ ResourcesWrapper resources, boolean pollingStationMode, boolean participated) {
 
 	tabbedPane.addTab(label, "surveyDetail.jsp?Action=ViewCurrentQuestions&Participated="+participated+"&SurveyId="+surveyId, tabValid, true);
 
-  if (SilverpeasRole.admin.toString().equals(profile) &&
+  if ((SilverpeasRole.admin.toString().equals(profile) ||
+      SilverpeasRole.publisher.toString().equals(profile)) &&
       !participated) {
       tabbedPane.addTab(resources.getString("survey.results"), "surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId, action.equals("ViewResult"), true);
   }
@@ -651,22 +653,23 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 
 String displaySurveyResult(String choice, QuestionContainerDetail survey, GraphicElementFactory gef, String m_context,
   SurveySessionController surveyScc, ResourcesWrapper resources, boolean isClosed,
-  ResourceLocator settings, Frame frame, boolean participated) throws SurveyException, ParseException {
+  ResourceLocator settings, Frame frame, boolean participated, String profile) throws SurveyException, ParseException {
 		return displaySurveyResult("unknown", "unknown", "all", null, choice, survey, gef, m_context, surveyScc, resources, isClosed,
-		settings, frame, participated);
+		settings, frame, participated, profile);
 }
 
 String displaySurveyResult(String userName, String userId, String styleView, Collection resultsByUser, String choice,
   QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc,
-  ResourcesWrapper resources, boolean isClosed, ResourceLocator settings, Frame frame) throws SurveyException, ParseException {
+  ResourcesWrapper resources, boolean isClosed, ResourceLocator settings, Frame frame, String profile) throws SurveyException, ParseException {
 	   return  displaySurveyResult(userName, userId, styleView, resultsByUser, choice, survey, gef, m_context, surveyScc,
-      resources, isClosed, settings, frame, true);
+      resources, isClosed, settings, frame, true, profile);
 
 }
 
 String displaySurveyResult(String userName, String userId, String styleView, Collection resultsByUser, String choice,
   QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc,
-  ResourcesWrapper resources, boolean isClosed, ResourceLocator settings, Frame frame, boolean participated) throws SurveyException, ParseException {
+  ResourcesWrapper resources, boolean isClosed, ResourceLocator settings, Frame frame, 
+  boolean participated, String profile) throws SurveyException, ParseException {
   Board board = gef.getBoard();
   String r = "";
 
@@ -801,9 +804,11 @@ String displaySurveyResult(String userName, String userId, String styleView, Col
         r += "<br/>";
       }
 				
-      if (resultMode == QuestionContainerHeader.IMMEDIATE_RESULTS ||
-          (resultMode == QuestionContainerHeader.DELAYED_RESULTS &&
-          resultView != QuestionContainerHeader.NOTHING_DISPLAY_RESULTS)) {
+      if ((SilverpeasRole.admin.toString().equals(profile) ||
+          SilverpeasRole.publisher.toString().equals(profile)) ||
+          resultMode == QuestionContainerHeader.IMMEDIATE_RESULTS ||
+           (resultMode == QuestionContainerHeader.DELAYED_RESULTS &&
+           resultView != QuestionContainerHeader.NOTHING_DISPLAY_RESULTS)) {
         
         r += "<div class=\"surveyResult\">";
 			   
@@ -811,16 +816,24 @@ String displaySurveyResult(String userName, String userId, String styleView, Col
 				  // l'enquete n'est pas anonyme, proposer le choix d'affichage
 	        r += "   <div class=\"sousNavBulle\">";
 	        r += "    <p>"+resources.getString("survey.results")+" "+resources.getString("survey.choice")+" : ";
-	        String active = "";
-	        if (choice.equals("C")) {
-	          active = "active";
+	        if(resultView == QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS) {
+	          choice = "C";
+	          r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"active\" id=\"scope-classic\">"+resources.getString("survey.C")+"</a>";
+	        } else if(resultView == QuestionContainerHeader.DETAILED_DISPLAY_RESULTS) {
+	          choice = "D";
+	          r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"active\" id=\"scope-detail\">"+resources.getString("survey.D")+"</a>";
+	        } else if(resultView == QuestionContainerHeader.TWICE_DISPLAY_RESULTS) {
+	          String active = "";
+	          if (choice.equals("C")) {
+	            active = "active";
+	          }
+	          r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-classic\">"+resources.getString("survey.C")+"</a>";
+	          active = "";
+	          if (choice.equals("D")) {
+	           active = "active";
+	          }
+	          r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-detail\">"+resources.getString("survey.D")+"</a>";
 	        }
-	        r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-classic\">"+resources.getString("survey.C")+"</a>";
-	        active = "";
-	        if (choice.equals("D")) {
-	          active = "active";
-	        }
-	        r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-detail\">"+resources.getString("survey.D")+"</a>";
 	        r += "    </p>";
 	        r += "   </div>";
 	      }

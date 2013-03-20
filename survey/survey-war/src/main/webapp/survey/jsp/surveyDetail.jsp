@@ -234,7 +234,8 @@
     surveyScc.removeSessionSurveyUnderConstruction();
   } else if (action.equals("PreviewSurvey")) {
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 </head>
@@ -254,7 +255,8 @@
   }
   if (action.equals("ViewSurvey")) {
     %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 </head>
@@ -286,7 +288,8 @@
 
   else if (action.equals("ViewComments")) {
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <view:looknfeel />
@@ -311,7 +314,8 @@
 
   else if (action.equals("ViewCurrentQuestions")) {
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <view:looknfeel />
@@ -484,8 +488,6 @@ function clipboardCopy() {
         "javaScript:onClick=clipboardCopy()");
   
     out.println(surveyPart);
-    //window.addBody(surveyPart);
-    //out.println(window.print());
 %>
 <view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
 </view:window>
@@ -493,12 +495,15 @@ function clipboardCopy() {
   } else if (action.equals("ViewResult")) {
     String iconsPath =
         GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    int resultView = survey.getHeader().getResultView();
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <view:looknfeel />
+<view:includePlugin name="popup"/>
 <script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 
@@ -586,6 +591,29 @@ function clipboardCopy() {
     		location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=D";
     	}
     }
+    
+    function showDialog(title) {
+	 	  $("#publicationResultDialog").popup({
+	      title: title,
+	      callback: function() {
+	        if (isCorrectForm()) {
+	          sendData();
+	        }
+	        return isCorrect;
+	      }
+	    });
+    }
+    
+    function PublishResult(title) {
+    	  /*var name = $("#categ-"+id+" .categ-title").text();
+    	  var desc = $("#categ-"+id+" .categ-desc").text();
+    	  
+    	  $("#categoryManager #CategoryId").val(id);
+    	  $("#categoryManager #Name").val(name);
+    	  $("#categoryManager #Description").val(desc);*/
+    	  
+    	  showDialog(title)
+    }
 
      	</script>
 </head>
@@ -601,20 +629,20 @@ function clipboardCopy() {
   <view:operation altText="${notifyUserMsg}" icon="${alertSrc}" action="${notifyUserAction}" />
   
   <%
-  if ((SilverpeasRole.admin.toString().equals(profile) || 
-      SilverpeasRole.publisher.toString().equals(profile)) &&
-      survey.getHeader().getCreatorId().equals(surveyScc.getUserId()) &&
-      survey.getHeader().getResultMode() == QuestionContainerHeader.DELAYED_RESULTS) {
+  if (survey.getHeader().getResultMode() == QuestionContainerHeader.DELAYED_RESULTS &&
+      (SilverpeasRole.admin.toString().equals(profile) || 
+      SilverpeasRole.publisher.toString().equals(profile))) {
   %>
     <fmt:message key="survey.publishResult" var="publishMsg" />
-    <c:set var="publishAction">javaScript:onClick=PublishResult();</c:set>
+    <c:set var="publishAction">javaScript:onClick=PublishResult('${publishMsg}');</c:set>
     <view:operation altText="${publishMsg}" icon="${publishSrc}" action="${publishAction}" />
   <%
   }
   %>
 
   <%
-  if (SilverpeasRole.admin.toString().equals(profile)) {
+  if (SilverpeasRole.admin.toString().equals(profile) ||
+      SilverpeasRole.publisher.toString().equals(profile)) {
   %>
     <fmt:message key="GML.export" var="exportMsg" />
     <c:set var="exportAction">javaScript:onClick=Export('ExportCSV?SurveyId=<%=surveyId%>');</c:set>
@@ -624,6 +652,7 @@ function clipboardCopy() {
   %>
   <fmt:message key="GML.copy" var="copyMsg" />
   <view:operation altText="${copyMsg}" icon="${copySrc}" action="javaScript:onClick=clipboardCopy();" />
+  
 </view:operationPane>
 <view:window>
 <view:frame>
@@ -631,7 +660,7 @@ function clipboardCopy() {
 Frame frame = gef.getFrame();
 String surveyPart =
     displaySurveyResult(choice, survey, gef, m_context, surveyScc, resources, isClosed,
-        settings, frame, participated);
+        settings, frame, participated, profile);
 out.println(displayTabs(surveyScc, survey.getHeader().getPK().getId(), gef, action,
     profile, resources, pollingStationMode, participated).print() +
     frame.printBefore());
@@ -642,11 +671,54 @@ out.println(surveyPart);
 <view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
 </view:frame>
 </view:window>
+
+<div id="publicationResultDialog" style="display: none;">
+  <form name="publishResultForm" action="PublishResult" method="post">
+  <div id="view-publicationResultDialog">
+    <fmt:message key="survey.resultView" var="resultViewMsg" />
+    <fmt:message key="survey.C" var="classicMsg" />
+    <fmt:message key="survey.D" var="detailedMsg" />
+    <fmt:message key="survey.resultView.C" var="classicDescMsg" />
+    <fmt:message key="survey.resultView.D" var="detailedDescMsg" />
+    <fmt:message key="survey.synthesisFile" var="synthesisFileMsg" />
+    <fmt:message key="survey.notifications" var="notificationMsg" />
+    <fmt:message key="survey.noNotification" var="noNotificationMsg" />
+    <fmt:message key="survey.notificationParticipants" var="notificationParticipantsMsg" />
+    <label for="view">${resultViewMsg}</label>
+    <%
+    String checked = "";
+    if(QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS == resultView || 
+        QuestionContainerHeader.TWICE_DISPLAY_RESULTS == resultView) {
+      checked = "checked=\"checked\"";
+    }
+    %>
+    <span class="champs"><input name="checkedView" type="checkbox" value="C" <%=checked%>/><b>${classicMsg}</b><br />${classicDescMsg}</span>
+    <% 
+    checked = "";
+    if(QuestionContainerHeader.DETAILED_DISPLAY_RESULTS == resultView || 
+        QuestionContainerHeader.TWICE_DISPLAY_RESULTS == resultView) {
+      checked = "checked=\"checked\"";
+    }
+    %>
+    <span class="champs"><input name="checkedView" type="checkbox" value="D" <%=checked%>/><b>${detailedMsg}</b><br />${detailedDescMsg}</span>
+  </div>
+  <div id="syntheseFile-publicationResultDialog">
+    <label for="syntheseFile">${synthesisFileMsg}</label>
+    <span class="champs"><input name="syntheseFile" type="file" /></span>
+  </div>
+  <div id="notification-publicationResultDialog"> 
+  <label for="notification">${notificationMsg}</label>
+  <span class="champs"><select name="notification"><option>${noNotificationMsg}</option><option>${notificationParticipantsMsg}</option></select></span>
+  </div>
+  </form>
+</div>
+
 <%
 
   } else if (action.equals("SubmitAndUpdateSurvey")) {
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <script language="Javascript">
 function Replace() {

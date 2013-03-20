@@ -121,8 +121,6 @@ $(document).ready(function(){
 <%
   List<Question> questionsV = surveyScc.getSessionQuestions();
   surveyId = surveyScc.getSessionSurveyId();
-
-  Window window = gef.getWindow();
 %>
 <%-- //TODO add the operation Pane only if there is no question (depends on vote or survey) --%>
 <view:operationPane>
@@ -147,8 +145,6 @@ if (surveyScc.isPollingStationMode()) {
 }
 tabbedPane.addTab(surveyTabPanelLabel, "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, "UpdateQuestions".equals(action), false);
 out.println(tabbedPane.print());
-
-//out.println(displayQuestionsUpdateView(surveyScc, questionsV, gef, m_context, settings, resources));
 
 String questionUpSrc = "icons/arrowUp.gif";
 String questionDownSrc = "icons/arrowDown.gif";
