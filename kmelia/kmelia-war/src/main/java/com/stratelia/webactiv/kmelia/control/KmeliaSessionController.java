@@ -23,6 +23,46 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.importExport.versioning.VersioningImportExport;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.subscription.SubscriptionContext;
+import org.silverpeas.util.GlobalContext;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -61,10 +101,12 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -119,12 +161,10 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeSelection;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
@@ -136,38 +176,12 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.importExport.versioning.VersioningImportExport;
-import org.silverpeas.search.SearchEngineFactory;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.subscription.SubscriptionContext;
-import org.silverpeas.util.GlobalContext;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.*;
 
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -185,8 +199,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   private static final String[] AVAILABLE_EXPORT_FORMATS = {"zip", "pdf", "odt", "doc"};
 
-  /* EJBs used by sessionController */
-  private ThumbnailService thumbnailService = null;
+  /* EJBs used by sessionController */  private ThumbnailService thumbnailService = null;
   private CommentService commentService = null;
   private PdcBm pdcBm = null;
   private StatisticBm statisticBm = null;
@@ -328,15 +341,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public StatisticBm getStatisticBm() {
     if (statisticBm == null) {
       try {
-        StatisticBmHome statisticHome = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-            StatisticBmHome.class);
-        statisticBm = statisticHome.create();
+        statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
+            StatisticBm.class);
       } catch (Exception e) {
         throw new StatisticRuntimeException("KmeliaSessionController.getStatisticBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
-
     return statisticBm;
   }
 
@@ -639,7 +650,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       try {
         KmeliaPublication publication =
             KmeliaPublication
-                .aKmeliaPublicationWithPk(new PublicationPK(fromPubId, getComponentId()));
+            .aKmeliaPublicationWithPk(new PublicationPK(fromPubId, getComponentId()));
         if (isVersionControlled()) {
           publication.versioned();
         }
@@ -2237,30 +2248,21 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.getNodeBm()",
           SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
     }
-    return nodeBm;
   }
 
   public PublicationBm getPublicationBm() {
-    PublicationBm pubBm = null;
     try {
-      PublicationBmHome pubBmHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-          PublicationBmHome.class);
-      pubBm = pubBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.getPublicationBm()",
           SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
     }
-    return pubBm;
   }
 
   public ThumbnailService getThumbnailService() {
@@ -2932,16 +2934,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return getKmeliaBm().isUserCanWrite(getComponentId(), getUserId());
   }
 
-  public void copyPublication(String pubId) throws RemoteException {
+  public void copyPublication(String pubId) throws ClipboardException, RemoteException {
     CompletePublication pub = getCompletePublication(pubId);
     PublicationSelection pubSelect = new PublicationSelection(pub);
     SilverTrace.info("kmelia", "KmeliaSessionController.copyPublication()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+        "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count="
+        + getClipboardCount());
     addClipboardSelection(pubSelect);
   }
 
-  private void copyPublications(List<String> pubIds) throws RemoteException {
+  private void copyPublications(List<String> pubIds) throws ClipboardException, RemoteException {
     for (String pubId : pubIds) {
       if (StringUtil.isDefined(pubId)) {
         copyPublication(pubId);
@@ -2949,11 +2951,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public void copySelectedPublications() throws RemoteException {
+  public void copySelectedPublications() throws ClipboardException, RemoteException {
     copyPublications(getSelectedPublicationIds());
   }
 
-  public void cutPublication(String pubId) throws RemoteException {
+  public void cutPublication(String pubId) throws ClipboardException, RemoteException {
     CompletePublication pub = getCompletePublication(pubId);
     PublicationSelection pubSelect = new PublicationSelection(pub);
     pubSelect.setCutted(true);
@@ -2964,7 +2966,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     addClipboardSelection(pubSelect);
   }
 
-  private void cutPublications(List<String> pubIds) throws RemoteException {
+  private void cutPublications(List<String> pubIds) throws ClipboardException, RemoteException {
     for (String pubId : pubIds) {
       if (StringUtil.isDefined(pubId)) {
         cutPublication(pubId);
@@ -2972,11 +2974,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public void cutSelectedPublications() throws RemoteException {
+  public void cutSelectedPublications() throws ClipboardException, RemoteException {
     cutPublications(getSelectedPublicationIds());
   }
 
-  public void copyTopic(String id) throws RemoteException {
+  public void copyTopic(String id) throws ClipboardException, RemoteException {
     NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
 
     SilverTrace.info("kmelia", "KmeliaSessionController.copyTopic()", "root.MSG_GEN_PARAM_VALUE",
@@ -2984,7 +2986,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     addClipboardSelection(nodeSelect);
   }
 
-  public void cutTopic(String id) throws RemoteException {
+  public void cutTopic(String id) throws ClipboardException, RemoteException {
     NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
     nodeSelect.setCutted(true);
     SilverTrace.info("kmelia", "KmeliaSessionController.cutTopic()", "root.MSG_GEN_PARAM_VALUE",
@@ -2992,16 +2994,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     addClipboardSelection(nodeSelect);
   }
 
-  public List<Object> paste() throws RemoteException {
+  public List<Object> paste() throws ClipboardException, RemoteException {
     return paste(getCurrentFolderId());
   }
 
-  public List<Object> paste(String nodeId) throws RemoteException {
+  public List<Object> paste(String nodeId) throws ClipboardException, RemoteException {
     resetSelectedPublicationIds();
     return paste(getNodeHeader(nodeId));
   }
 
-  private List<Object> paste(NodeDetail folder) throws RemoteException {
+  private List<Object> paste(NodeDetail folder) throws ClipboardException, RemoteException {
     List<Object> pastedItems = new ArrayList<Object>();
     try {
       SilverTrace.info("kmelia", "KmeliaRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
@@ -3236,7 +3238,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                 + xmlFormShortName, xmlFormShortName + ".xml");
 
             // Paste images
-
             List< SimpleDocument> images = AttachmentServiceFactory.getAttachmentService()
                 .listDocumentsByForeignKeyAndType(fromPubPK, DocumentType.form, getLanguage());
             for (SimpleDocument image : images) {
@@ -3893,7 +3894,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = null;
-    OrganisationController orgaController = OrganisationControllerFactory.getOrganisationController();
+    OrganisationController orgaController = OrganisationControllerFactory.
+        getOrganisationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (String compoId : compoIds) {
       if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoId,

@@ -27,8 +27,8 @@ import java.rmi.RemoteException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
@@ -42,7 +42,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 public class MovePublicationHandler implements AjaxHandler {
 
   @Override
-  public String handleRequest(HttpServletRequest request, ComponentSessionController controller) {
+  public String handleRequest(HttpServletRequest request, KmeliaSessionController controller) {
     String id = request.getParameter("Id");
     String sourceId = request.getParameter("SourceNodeId");
     String targetId = request.getParameter("TargetNodeId");
@@ -65,7 +65,7 @@ public class MovePublicationHandler implements AjaxHandler {
       return kscEjbHome.create();
     } catch (Exception e) {
       throw new KmeliaRuntimeException("MovePublicationHandler.getKmeliaBm()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
   

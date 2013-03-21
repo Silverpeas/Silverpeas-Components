@@ -20,8 +20,6 @@
  */
 package com.stratelia.webactiv.quizz.control;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
 import java.io.File;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
@@ -42,13 +40,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.JAXBException;
 
+import org.silverpeas.core.admin.OrganisationController;
+
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -72,12 +74,9 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerSele
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.util.score.control.ScoreBm;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
-import org.silverpeas.core.admin.OrganisationController;
 
-/**
- * @author dle&sco
- * @version
- */
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
 public class QuizzSessionController extends AbstractComponentSessionController {
 
   private QuestionContainerBm questionContainerBm = null;
@@ -693,14 +692,10 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   }
 
   public boolean isPdcUsed() {
-    String value = getComponentParameterValue("usePdc");
-    if (value != null) {
-      return "yes".equals(value.toLowerCase());
-    }
-    return false;
+    return "yes".equalsIgnoreCase(getComponentParameterValue("usePdc"));
   }
 
-  public void copySurvey(String quizzId) throws RemoteException, QuizzException {
+  public void copySurvey(String quizzId) throws ClipboardException, QuizzException {
     QuestionContainerDetail quizz = getQuizzDetail(quizzId);
     QuestionContainerSelection questionContainerSelect = new QuestionContainerSelection(quizz);
     getClipboardObjects().add((ClipboardSelection) questionContainerSelect);
@@ -708,14 +703,12 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   public void paste() throws Exception {
     Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
-    Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
-    while (clipObjectIterator.hasNext()) {
-      ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator.next();
+    for (ClipboardSelection clipObject : clipObjects) {
       if (clipObject != null) {
-        if (clipObject
-            .isDataFlavorSupported(QuestionContainerSelection.QuestionContainerDetailFlavor)) {
-          QuestionContainerDetail quizz = (QuestionContainerDetail) clipObject
-              .getTransferData(QuestionContainerSelection.QuestionContainerDetailFlavor);
+        if (clipObject.isDataFlavorSupported(
+            QuestionContainerSelection.QuestionContainerDetailFlavor)) {
+          QuestionContainerDetail quizz = (QuestionContainerDetail) clipObject.getTransferData(
+              QuestionContainerSelection.QuestionContainerDetailFlavor);
           pasteQuizz(quizz);
         }
       }

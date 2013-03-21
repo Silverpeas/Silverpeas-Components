@@ -25,8 +25,9 @@ package com.stratelia.webactiv.kmelia.servlets.ajax;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+
 
 public interface AjaxHandler {
-  public String handleRequest(HttpServletRequest request, ComponentSessionController controller);
+  public String handleRequest(HttpServletRequest request, KmeliaSessionController controller);
 }

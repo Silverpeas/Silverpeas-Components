@@ -40,7 +40,6 @@ import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
-import com.google.common.base.Splitter;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -68,7 +67,9 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -96,6 +97,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeSelection;
+
+import com.google.common.base.Splitter;
 
 public final class GallerySessionController extends AbstractComponentSessionController {
   // déclaration des variables
@@ -941,19 +944,19 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         equals(userId)));
   }
 
-  public void copySelectedPhoto(Collection<String> photoIds) throws RemoteException {
+  public void copySelectedPhoto(Collection<String> photoIds) throws ClipboardException, RemoteException {
     for (String photoId : photoIds) {
       copyImage(photoId);
     }
   }
 
-  public void cutSelectedPhoto(Collection<String> photoIds) throws RemoteException {
+  public void cutSelectedPhoto(Collection<String> photoIds) throws ClipboardException, RemoteException {
     for (String photoId : photoIds) {
       cutImage(photoId);
     }
   }
 
-  public void copyImage(String photoId) throws RemoteException {
+  public void copyImage(String photoId) throws ClipboardException, RemoteException {
     PhotoDetail photo = getPhoto(photoId);
     PhotoSelection photoSelect = new PhotoSelection(photo);
     SilverTrace.info("gallery", "GallerySessionController.copyImage()", "root.MSG_GEN_PARAM_VALUE",
@@ -961,7 +964,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     addClipboardSelection(photoSelect);
   }
 
-  public void cutImage(String photoId) throws RemoteException {
+  public void cutImage(String photoId) throws ClipboardException, RemoteException {
     PhotoDetail photo = getPhoto(photoId);
     PhotoSelection photoSelect = new PhotoSelection(photo);
     photoSelect.setCutted(true);
@@ -971,10 +974,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     addClipboardSelection(photoSelect);
   }
 
-  public void copyAlbum(String albumId) throws RemoteException {
+  public void copyAlbum(String albumId) throws ClipboardException {
     AlbumDetail album = getAlbum(albumId);
     NodeSelection nodeSelect = new NodeSelection(album);
-
     SilverTrace.info("gallery", "GallerySessionController.copyAlbum()", "root.MSG_GEN_PARAM_VALUE",
         "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
     SilverTrace.info("gallery", "GallerySessionController.copyAlbum()", "root.MSG_GEN_PARAM_VALUE",
@@ -982,7 +984,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     addClipboardSelection(nodeSelect);
   }
 
-  public void cutAlbum(String albumId) throws RemoteException {
+  public void cutAlbum(String albumId) throws ClipboardException {
     NodeSelection nodeSelect = new NodeSelection(getAlbum(albumId));
     nodeSelect.setCutted(true);
 
@@ -991,10 +993,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     addClipboardSelection(nodeSelect);
   }
 
-  public void paste() throws RemoteException {
+  public void paste() throws ClipboardException {
     try {
       GalleryPasteDelegate delegate = new GalleryPasteDelegate(currentAlbum);
-
       SilverTrace.info("gallery", "GalleryRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
           "clipboard = " + getClipboardName() + " count=" + getClipboardCount());
 
