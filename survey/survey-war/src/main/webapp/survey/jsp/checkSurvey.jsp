@@ -49,8 +49,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.survey.control.SurveySessionController "%>
 <%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
 
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
-
 <%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
 <%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
 

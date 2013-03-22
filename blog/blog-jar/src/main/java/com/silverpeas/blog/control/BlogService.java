@@ -42,7 +42,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 public interface BlogService extends SilverpeasComponentService<PostDetail> {
 
   public String createPost(final PostDetail post);
-  
+
   public String createPost(final PostDetail post, PdcClassification classification);
 
   public void updatePost(final PostDetail post);

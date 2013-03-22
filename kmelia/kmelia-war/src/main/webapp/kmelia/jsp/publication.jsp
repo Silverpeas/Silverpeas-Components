@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="com.silverpeas.kmelia.SearchContext"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -36,13 +35,13 @@
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="modelUtils.jsp" %>
-<%@ include file="attachmentUtils.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
-<%@ include file="tabManager.jsp.inc" %>
 
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="com.silverpeas.kmelia.SearchContext"%>
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="com.silverpeas.form.*"%>
-<%@page import="com.stratelia.silverpeas.versioning.model.DocumentPK"%>
+<%@page import="org.silverpeas.importExport.versioning.DocumentPK"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
 <%@page import="org.silverpeas.component.kmelia.KmeliaPublicationHelper"%>
@@ -210,8 +209,8 @@
   <head>
     <view:looknfeel/>
     <title></title>
-    <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/pubHighlight.css"/>
-    <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/kmelia-print.css" media="print"/>
+    <link type="text/css" rel="stylesheet" href='<c:url value="/kmelia/jsp/styleSheets/pubHighlight.css" />'/>
+    <link type="text/css" rel="stylesheet" href='<c:url value="/kmelia/jsp/styleSheets/kmelia-print.css" />' media="print"/>
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
@@ -509,10 +508,12 @@
         out.println(window.printBefore());
         action = "View";
         if (isOwner) {
-          displayAllOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
-        } else {
-          displayUserOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
-        }
+          KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out,
+                  kmaxMode);
+            } else {
+              KmeliaDisplayHelper.displayUserOperations(id, kmeliaScc, gef, action, resources, out,
+                  kmaxMode);
+            }
         out.println(frame.printBefore());
 
         InfoDetail infos = pubComplete.getInfoDetail();
@@ -594,19 +595,17 @@
 			                attProfile = "user";
 			              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
-			                  "/versioningPeas/jsp/displayDocuments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
+			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
 			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
-			                  "&Profile=" + attProfile + "&NodeId=" + kmeliaScc.getCurrentFolderId() + "&TopicRightsEnabled=" + kmeliaScc.
-			                  isRightsOnTopicsEnabled() + "&VersionningFileRightsMode=" + kmeliaScc.
-			                  getVersionningFileRightsMode() + "&CallbackUrl=" + URLManager.getURL(
-			                  "useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
+			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
+			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
 			                  include(request, response);
 			            } else {
 				              if (!attachmentsUpdatable) {
 				                attProfile = "user";
 				              }
 			              getServletConfig().getServletContext().getRequestDispatcher(
-			                  "/attachment/jsp/displayAttachments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=Images&AttachmentPosition=" + resources.
+			                  "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=" + alias + "&Context=attachment&AttachmentPosition=" + resources.
 			                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
 			                  "&Language=" + language + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
 			                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
@@ -638,13 +637,13 @@
 								  		<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 							  		</div>
 							  	 <% }%>
-
-								 <div id="creationInfo" class="paragraphe">
-								 	<%=resources.getString("PubDateCreation")%> <br/>
-								 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getCreator().getId()%>"/>
-								 	<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getCreator().getAvatar() %>" alt="" class="defaultAvatar"/></div>
-							 	</div>
-
+								<c:if test="${view:isDefined(requestScope['Publication'].creator) && view:isDefined(requestScope['Publication'].creator.id)}">
+                    <div id="creationInfo" class="paragraphe">
+                     <%=resources.getString("PubDateCreation")%> <br/>
+                     <b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="${requestScope['Publication'].creator.id}"/>
+                     <div class="profilPhoto"><img src='<c:url value="${requestScope['Publication'].creator.avatar}" />' alt="" class="defaultAvatar"/></div>
+                   </div>
+                </c:if>
 							  	  <%
 						          // Displaying all validator's name and final validation date
 						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) { %>
@@ -740,9 +739,7 @@
 
 				        out.println("</h2>");
 
-				        String description = EncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language));
-				        description = EncodeHelper.javaStringToHtmlParagraphe(description);
-
+				        String description = EncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription(language));
 				        if (StringUtil.isDefined(description)) {
 				        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
 				        }
@@ -757,6 +754,7 @@
                 <%
                   } else if (infos != null && model != null) {
                   displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
+
 				        } else {
 				          Form xmlForm = (Form) request.getAttribute("XMLForm");
 				          DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
@@ -782,7 +780,6 @@
 
                         if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {
 			      %>
-
       <view:comments	userId="<%= user_id%>" componentId="<%= componentId %>"
       					resourceType="<%= resourceType %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>      
       <% } %>	  
@@ -834,7 +831,6 @@
         </table>
         </form>
       </div>
-
       <%
         out.flush();
         out.println(frame.printAfter());

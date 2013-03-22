@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.infoLetter.servlets;
 
@@ -42,10 +39,10 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSessionController> {
@@ -54,11 +51,13 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
    * @see
    */
+  @Override
   public InfoLetterSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new InfoLetterSessionController(mainSessionCtrl, componentContext);
@@ -68,69 +67,65 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "infoLetter";
   }
 
   /**
    * Method declaration
+   *
    * @param infoLetterSC
    * @param request
    * @see
    */
-  private void setGlobalInfo(InfoLetterSessionController infoLetterSC,
-      HttpServletRequest request) {
+  private void setGlobalInfo(InfoLetterSessionController infoLetterSC, HttpServletRequest request) {
     String language = infoLetterSC.getLanguage();
-
     // the flag is the best user's profile
     String flag = getFlag(infoLetterSC.getUserRoles());
-
     if (flag.equals("admin")) {
       request.setAttribute("userIsAdmin", "true");
     } else {
       request.setAttribute("userIsAdmin", "false");
     }
-
     if (infoLetterSC.isPdcUsed()) {
       request.setAttribute("isPdcUsed", "yes");
     } else {
       request.setAttribute("isPdcUsed", "no");
     }
     request.setAttribute("language", language);
-    request.setAttribute("browseContext", new String[] { infoLetterSC.getSpaceLabel(),
-        infoLetterSC.getComponentLabel(), infoLetterSC.getSpaceId(), infoLetterSC.getComponentId(),
-        infoLetterSC.getComponentUrl() });
+    request.setAttribute("browseContext", new String[]{infoLetterSC.getSpaceLabel(),
+      infoLetterSC.getComponentLabel(), infoLetterSC.getSpaceId(), infoLetterSC.getComponentId(),
+      infoLetterSC.getComponentUrl()});
   }
 
   /**
    * Method declaration
+   *
    * @param infoLetterSC
    * @return
    * @see
    */
   private InfoLetter getCurrentLetter(InfoLetterSessionController infoLetterSC) {
     List<InfoLetter> listLettres = infoLetterSC.getInfoLetters();
-
-    return (InfoLetter) listLettres.get(0);
+    return listLettres.get(0);
   }
 
   /**
    * Method declaration
+   *
    * @param infoLetterSC
    * @param request
    * @return
    * @see
    */
-  private String setMainContext(InfoLetterSessionController infoLetterSC,
-      HttpServletRequest request) {
+  private String setMainContext(InfoLetterSessionController infoLetterSC, HttpServletRequest request) {
     String destination = "listLetterUser.jsp";
-
     // the flag is the best user's profile
     String flag = getFlag(infoLetterSC.getUserRoles());
-
     InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-    List<InfoLetterPublication> listParutions =
-        infoLetterSC.getInfoLetterPublications(defaultLetter.getPK());
+    List<InfoLetterPublication> listParutions = infoLetterSC.getInfoLetterPublications(defaultLetter
+        .getPK());
     String letterName = defaultLetter.getName();
     boolean showHeader = true;
 
@@ -138,21 +133,17 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
       letterName = "";
     }
     String letterDescription = defaultLetter.getDescription();
-
     if (letterDescription == null) {
       letterDescription = "";
     }
     String letterFrequence = defaultLetter.getPeriode();
-
     if (letterFrequence == null) {
       letterFrequence = "";
     }
-
-    if ((infoLetterSC.getSettings().getString("showHeader") != null)
-        && (infoLetterSC.getSettings().getString("showHeader").equals("false"))) {
+    if (StringUtil.isDefined(infoLetterSC.getSettings().getString("showHeader")) && StringUtil
+        .getBooleanValue(infoLetterSC.getSettings().getString("showHeader"))) {
       showHeader = false;
     }
-
     request.setAttribute("letterName", letterName);
     request.setAttribute("letterDescription", letterDescription);
     request.setAttribute("letterFrequence", letterFrequence);
@@ -160,23 +151,14 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
     request.setAttribute("showHeader", Boolean.valueOf(showHeader));
     request.setAttribute("userIsSuscriber",
         String.valueOf(infoLetterSC.isSuscriber(defaultLetter.getPK())));
-    InfoLetterPublication pub;
-    String parution;
-    IdPK publiPK;
-    InfoLetterPublicationPdC ilp;
-    boolean isTemplateExist;
-    if (listParutions.isEmpty()) {
-      ilp = null;
-      isTemplateExist = false;
-    } else {
-      pub = listParutions.get(0);
-      parution = pub.getPK().getId();
-      publiPK = new IdPK();
-      publiPK.setId(parution);
-      ilp = infoLetterSC.getInfoLetterPublication(publiPK);
+    boolean isTemplateExist = !listParutions.isEmpty();
+    if (!listParutions.isEmpty()) {
+      InfoLetterPublication pub = listParutions.get(0);
+      IdPK publiPK = new IdPK(pub.getPK().getId());
+      InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
       isTemplateExist = infoLetterSC.isTemplateExist(ilp);
     }
-    request.setAttribute("IsTemplateExist", Boolean.valueOf(isTemplateExist));
+    request.setAttribute("IsTemplateExist", isTemplateExist);
     if ("publisher".equals(flag) || "admin".equals(flag)) {
       destination = "listLetterAdmin.jsp";
     }
@@ -186,6 +168,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param infoLetterSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
@@ -198,7 +181,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
 
     SilverTrace.info("infoLetter", "infoLetterRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + infoLetterSC.getUserId()
-            + " Function=" + function);
+        + " Function=" + function);
 
     // the flag is the best user's profile
     String flag = getFlag(infoLetterSC.getUserRoles());
@@ -210,10 +193,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         destination = setMainContext(infoLetterSC, request);
       } else if ("View".equals(function)) {
         String parution = param(request, "parution");
-
-        if (!"".equals(parution)) {
+        if (StringUtil.isDefined(parution)) {
           IdPK publiPK = new IdPK();
-
           publiPK.setId(parution);
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
 
@@ -228,7 +209,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         List<InfoLetterPublication> listParutions =
             infoLetterSC.getInfoLetterPublications(defaultLetter.getPK());
         String letterName = defaultLetter.getName();
-
         if (letterName == null) {
           letterName = "";
         }
@@ -238,7 +218,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           letterDescription = "";
         }
         String letterFrequence = defaultLetter.getPeriode();
-
         if (letterFrequence == null) {
           letterFrequence = "";
         }
@@ -246,29 +225,20 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("letterDescription", letterDescription);
         request.setAttribute("letterFrequence", letterFrequence);
         request.setAttribute("listParutions", listParutions);
-        request.setAttribute("userIsSuscriber", String.valueOf(infoLetterSC
-            .isSuscriber(defaultLetter.getPK())));
-
-        // System.out.println("portlet flag="+flag);
-
+        request.setAttribute("userIsSuscriber", String.valueOf(infoLetterSC.isSuscriber(
+            defaultLetter.getPK())));
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = "portletListLetterAdmin.jsp?Profile=" + flag;
         } else {
           destination = "portletListLetterUser.jsp?Profile=" + flag;
 
         }
-        // System.out.println("destination=="+destination);
       } else if (function.startsWith("Preview")) {
         String parution = param(request, "parution");
-
-        if (!"".equals(parution)) {
+        if (StringUtil.isDefined(parution)) {
           IdPK publiPK = new IdPK();
-
           publiPK.setId(parution);
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-          String urlContext =
-              GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
           request.setAttribute("parution", parution);
           request.setAttribute("parutionTitle", ilp.getTitle());
           request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
@@ -278,7 +248,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           request.setAttribute("BrowseInfo", "Editeur de parution");
           request.setAttribute("ObjectId", parution);
           request.setAttribute("Language", infoLetterSC.getLanguage());
-          request.setAttribute("ReturnUrl", urlContext + "/RinfoLetter/"
+          request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
               + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
           destination = "previewLetter.jsp";
         } else {
@@ -286,14 +256,11 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         }
       } else if (function.startsWith("FilesEdit")) {
         String parution = param(request, "parution");
-
         if (parution.length() <= 0) {
           String theId = param(request, "Id");
           parution = theId;
         }
         if (!"".equals(parution)) {
-          String urlContext =
-              GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
           String url = "/RinfoLetter/" + infoLetterSC.getComponentId() + "/FilesEdit";
 
           IdPK publiPK = new IdPK();
@@ -311,22 +278,14 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           request.setAttribute("BrowseInfo", "Editeur de parution");
           request.setAttribute("ObjectId", parution);
           request.setAttribute("Language", infoLetterSC.getLanguage());
-          // NEWD DLE
-          // request.setAttribute("ReturnUrl", m_context + "/RinfoLetter/" +
-          // infoLetterSC.getSpaceId() + "_" + infoLetterSC.getComponentId() +
-          // "/ParutionHeaders?parution=" + parution);
-          request.setAttribute("ReturnUrl", urlContext + "/RinfoLetter/"
+          request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
               + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
-          // NEWF DLE
           destination = "attachedFiles.jsp";
         } else {
           destination = setMainContext(infoLetterSC, request);
         }
       } else if (function.startsWith("Edit")) {
         String parution = param(request, "parution");
-        String urlContext =
-            GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
         request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
         request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
         request.setAttribute("ComponentId", infoLetterSC.getComponentId());
@@ -334,7 +293,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("BrowseInfo", "Editeur de parution");
         request.setAttribute("ObjectId", parution);
         request.setAttribute("Language", infoLetterSC.getLanguage());
-        request.setAttribute("ReturnUrl", urlContext + "/RinfoLetter/"
+        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
             + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
         destination = "editLetter.jsp";
       } else if (function.startsWith("ParutionHeaders")) {
@@ -344,20 +303,14 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
 
         if (!"".equals(parution)) {
           IdPK publiPK = new IdPK();
-
           publiPK.setId(parution);
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-
           title = ilp.getTitle();
           description = ilp.getDescription();
         }
         request.setAttribute("parution", parution);
         request.setAttribute("title", title);
         request.setAttribute("description", description);
-
-        String urlContext =
-            GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
         request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
         request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
         request.setAttribute("ComponentId", infoLetterSC.getComponentId());
@@ -365,7 +318,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("BrowseInfo", "Editeur de parution");
         request.setAttribute("ObjectId", parution);
         request.setAttribute("Language", infoLetterSC.getLanguage());
-        request.setAttribute("ReturnUrl", urlContext + "/RinfoLetter/"
+        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
             + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
 
         destination = "headerLetter.jsp";
@@ -374,7 +327,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         String title = "";
         String description = "";
 
-        if (!"".equals(parution)) {
+        if (StringUtil.isDefined(parution)) {
           IdPK publiPK = new IdPK();
 
           publiPK.setId(parution);
@@ -389,10 +342,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("parution", parution);
         request.setAttribute("title", title);
         request.setAttribute("description", description);
-
-        String urlContext = GeneralPropertiesManager.getGeneralResourceLocator()
-            .getString("ApplicationURL");
-
         request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
         request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
         request.setAttribute("ComponentId", infoLetterSC.getComponentId());
@@ -400,14 +349,14 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("BrowseInfo", "Editeur de parution");
         request.setAttribute("ObjectId", parution);
         request.setAttribute("Language", infoLetterSC.getLanguage());
-        request.setAttribute("ReturnUrl", urlContext + "/RinfoLetter/"
+        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
             + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
 
         destination = "headerLetter.jsp";
       } else if (function.startsWith("ValidateParution")) {
         String parution = param(request, "parution");
         String[] emailErrors = new String[0];
-        if (!"".equals(parution)) {
+        if (StringUtil.isDefined(parution)) {
           IdPK publiPK = new IdPK();
 
           publiPK.setId(parution);
@@ -418,9 +367,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           infoLetterSC.updateInfoLetterPublication(ilp);
           infoLetterSC.createIndex(ilp);
           infoLetterSC.notifySuscribers(ilp);
-          String server =
-              request.getRequestURL().substring(0,
-                  request.getRequestURL().toString().indexOf(URLManager.getApplicationURL()));
+          String server = request.getRequestURL().substring(0,
+              request.getRequestURL().toString().indexOf(URLManager.getApplicationURL()));
           emailErrors = infoLetterSC.notifyExternals(ilp, server);
         }
         request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
@@ -434,9 +382,9 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         String title = param(request, "title");
         String description = param(request, "description");
         List<InfoLetter> listLettres = infoLetterSC.getInfoLetters();
-        InfoLetter defaultLetter = (InfoLetter) listLettres.get(0);
+        InfoLetter defaultLetter = listLettres.get(0);
 
-        if (parution.equals("")) {
+        if (parution.isEmpty()) {
           InfoLetterPublicationPdC ilp = new InfoLetterPublicationPdC();
           ilp.setTitle(title);
           ilp.setDescription(description);
@@ -461,10 +409,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("parution", parution);
         request.setAttribute("title", title);
         request.setAttribute("description", description);
-
-        String urlContext =
-            GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
         request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
         request.setAttribute("SpaceName", infoLetterSC.getSpaceLabel());
         request.setAttribute("ComponentId", infoLetterSC.getComponentId());
@@ -472,19 +416,16 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("BrowseInfo", "Editeur de parution");
         request.setAttribute("ObjectId", parution);
         request.setAttribute("Language", infoLetterSC.getLanguage());
-        request.setAttribute("ReturnUrl", urlContext + "/RinfoLetter/"
+        request.setAttribute("ReturnUrl", URLManager.getApplicationURL() + "/RinfoLetter/"
             + infoLetterSC.getComponentId() + "/ParutionHeaders?parution=" + parution);
 
         destination = "headerLetter.jsp";
       } else if (function.startsWith("DeletePublications")) {
         String[] publis = request.getParameterValues("publis");
-
         if (publis != null) {
           int i = 0;
-
           for (i = 0; i < publis.length; i++) {
             IdPK publiPK = new IdPK();
-
             publiPK.setId(publis[i]);
             infoLetterSC.deleteInfoLetterPublication(publiPK);
           }
@@ -594,13 +535,10 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           if (id == null) {
             id = "";
           }
-          if (!id.equals("")) {
+          if (!id.isEmpty()) {
             IdPK publiPK = new IdPK();
-
             publiPK.setId(id);
-            InfoLetterPublicationPdC ilp = infoLetterSC
-                .getInfoLetterPublication(publiPK);
-
+            InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
             request.setAttribute("parution", id);
             request.setAttribute("parutionTitle", ilp.getTitle());
             destination = "viewLetter.jsp";
@@ -610,9 +548,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         }
       } else if (function.startsWith("ImportEmailsCsv")) {
         FileItem fileItem = FileUploadUtil.getFile(request);
-
         infoLetterSC.importCsvEmails(fileItem);
-
         destination = "importEmailsCsv.jsp?Result=OK";
       } else if (function.startsWith("ExportEmailsCsv")) {
         boolean exportOk = infoLetterSC.exportCsvEmails();
@@ -630,9 +566,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           publiPK.setId(parution);
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
 
-          String server =
-              request.getRequestURL().substring(0,
-                  request.getRequestURL().toString().indexOf(URLManager.getApplicationURL()));
+          String server = request.getRequestURL().substring(0, request.getRequestURL().toString()
+              .indexOf(URLManager.getApplicationURL()));
           emailErrors = infoLetterSC.notifyManagers(ilp, server);
         }
         request.setAttribute("SpaceId", infoLetterSC.getSpaceId());
@@ -640,8 +575,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("ComponentId", infoLetterSC.getComponentId());
         request.setAttribute("ComponentName", infoLetterSC.getComponentLabel());
         request.setAttribute("EmailErrors", emailErrors);
-        request.setAttribute("ReturnUrl", request.getParameter("ReturnUrl") + "?parution=" +
-            parution);
+        request.setAttribute("ReturnUrl", request.getParameter("ReturnUrl") + "?parution="
+            + parution);
 
         destination = "infoLetterSended.jsp";
       } else {
@@ -661,9 +596,9 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   }
 
   /* getFlag */
-
   /**
    * Method declaration
+   *
    * @param profiles
    * @return
    * @see
@@ -683,9 +618,9 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   }
 
   /* recuperation de parametre non nul */
-
   /**
    * Method declaration
+   *
    * @param request
    * @param name
    * @return
@@ -699,5 +634,4 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
     }
     return retour;
   }
-
 }

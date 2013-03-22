@@ -20,7 +20,6 @@
  */
 package com.silverpeas.gallery.servlets;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -30,12 +29,6 @@ import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.silverpeas.search.indexEngine.model.FieldDescription;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -43,17 +36,13 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.RecordTemplate;
+
 import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.gallery.ParameterNames;
 import com.silverpeas.gallery.control.GallerySessionController;
 import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
-import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.gallery.model.MetaData;
-import com.silverpeas.gallery.model.Order;
-import com.silverpeas.gallery.model.OrderRow;
-import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.*;
 import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
@@ -75,6 +64,15 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
+import javax.servlet.http.HttpServletRequest;
+import java.rmi.RemoteException;
+
+import com.silverpeas.form.RecordTemplate;
 
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
 

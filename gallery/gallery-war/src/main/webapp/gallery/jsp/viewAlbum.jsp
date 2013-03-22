@@ -593,7 +593,7 @@
               }
               if (name != null) {
                 name = photo.getId() + extension;
-                vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
+                vignette_url = FileServerUtils.getUrl(componentId, name, photo.
                         getImageMimeType(), nomRep);
                 if (!photo.isPreviewable()) {
                   vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.

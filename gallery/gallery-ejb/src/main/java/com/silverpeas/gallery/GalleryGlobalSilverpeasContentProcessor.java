@@ -53,7 +53,7 @@ public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilver
     String instanceId = sci.getInstanceId();
     String directory = galleryDirectory + sci.getId();
     PhotoDetail photo = (PhotoDetail) sci;
-    gsc.setThumbnailURL(FileServerUtils.getUrl(null, instanceId, photo.getImageName(), photo
+    gsc.setThumbnailURL(FileServerUtils.getUrl(instanceId, photo.getImageName(), photo
         .getImageMimeType(), directory));
     Size size = new Size(60, 45);
     try {

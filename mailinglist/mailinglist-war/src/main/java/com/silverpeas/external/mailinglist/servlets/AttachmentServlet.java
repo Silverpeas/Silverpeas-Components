@@ -24,20 +24,19 @@
 
 package com.silverpeas.external.mailinglist.servlets;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Iterator;
+import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.model.beans.Attachment;
+import com.silverpeas.mailinglist.service.model.beans.Message;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.silverpeas.mailinglist.service.ServicesFactory;
-import com.silverpeas.mailinglist.service.model.beans.Attachment;
-import com.silverpeas.mailinglist.service.model.beans.Message;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
 
 public class AttachmentServlet extends HttpServlet implements MailingListRoutage {
 
@@ -72,7 +71,7 @@ public class AttachmentServlet extends HttpServlet implements MailingListRoutage
       response.setContentType(file.getContentType());
       response.setHeader("Content-Disposition", "inline; filename=" + file.getFileName());
       int length = (new Long(file.getSize())).intValue();
-      response.setContentLength(length);
+      response.setHeader( "Content-Length", String.valueOf( length ));
       OutputStream out = response.getOutputStream();
       InputStream in = null;
       try {

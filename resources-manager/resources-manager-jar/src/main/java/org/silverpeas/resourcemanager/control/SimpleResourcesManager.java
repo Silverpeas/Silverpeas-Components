@@ -27,7 +27,6 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -40,6 +39,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import javax.inject.Inject;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.ReservedResource;
@@ -279,7 +281,11 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   @Override
   public void deleteReservation(String id, String componentId) {
     deleteIndex(id, "Reservation", componentId);
-    AttachmentController.deleteAttachmentByCustomerPK(new ForeignPK(id, componentId));
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
+        .listDocumentsByForeignKey(new ForeignPK(id, componentId), null);
+    for (SimpleDocument document : documents) {
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
+    }
     reservationService.deleteReservation(Integer.parseInt(id));
   }
 
