@@ -24,8 +24,6 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.util.StringUtil.isInteger;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -34,12 +32,23 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.control.CalendarViewType;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;
-import com.stratelia.webactiv.util.*;
-import java.net.URLEncoder;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.upload.FileUploadManager;
+import org.silverpeas.upload.UploadedFile;
+
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
+import java.util.Collection;
+
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.util.StringUtil.isInteger;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 
 public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessionController> {
 
@@ -200,6 +209,21 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
                   "sessionTimeout");
         }
       } else if (function.equals("ReallyAddEvent")) {
+
+        // TODO : just an example to demonstrate how to retrieve uploaded files with
+        // silverpeas-fileUpload.js jQuery plugin.
+        Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request);
+        for (UploadedFile uploadedFile : uploadedFiles) {
+          SilverTrace.info("almanach", "AlmanachRequestRouter.getDestination()", "",
+              "UploadedFileId: " + uploadedFile.getFileUploadId() +
+                  " - FileName: " + uploadedFile.getFile().getName() +
+                  " - Title: " + uploadedFile.getTitle() +
+                  " - Description: " + uploadedFile.getDescription());
+
+          // At the end, indicate that the file has been processed to clean the temporary repository
+          uploadedFile.markAsProcessed();
+        }
+
         EventDetail event = new EventDetail();
 
         String title = request.getParameter("Title");
