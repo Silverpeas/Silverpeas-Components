@@ -23,19 +23,19 @@
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
-import com.stratelia.webactiv.forums.models.ForumDetail;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.EJBObject;
+import javax.ejb.Local;
 
-import com.stratelia.webactiv.forums.models.ForumPK;
-import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.forums.models.Forum;
+import com.stratelia.webactiv.forums.models.ForumDetail;
+import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.Message;
+import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
@@ -44,7 +44,8 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  * @author frageade
  * @since September 2000
  */
-public interface ForumsBM extends EJBObject {
+@Local
+public interface ForumsBM  {
 
   public Forum getForum(ForumPK forumPK) throws RemoteException;
 

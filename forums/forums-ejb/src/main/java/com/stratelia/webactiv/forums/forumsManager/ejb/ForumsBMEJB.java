@@ -29,9 +29,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -41,13 +42,9 @@ import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.notation.ejb.NotationBm;
-import com.silverpeas.notation.ejb.NotationBmHome;
-import com.silverpeas.notation.ejb.NotationRuntimeException;
 import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationPK;
 import com.silverpeas.tagcloud.ejb.TagCloudBm;
-import com.silverpeas.tagcloud.ejb.TagCloudBmHome;
-import com.silverpeas.tagcloud.ejb.TagCloudRuntimeException;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
@@ -63,12 +60,9 @@ import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
@@ -78,7 +72,12 @@ import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
  * Cette classe est le Business Manager qui gere les forums
  *
  */
-public class ForumsBMEJB implements SessionBean {
+@Stateless (name="Forums" , description = "Stateless session EJB to manage forums.")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class ForumsBMEJB implements ForumsBM {
+  @EJB private NodeBm nodeBm;
+  @EJB private TagCloudBm tagCloudBm;
+  @EJB private NotationBm notationBm;
 
   private static final long serialVersionUID = -6809840977338911593L;
   private final ForumsContentManager forumsContentManager = new ForumsContentManager();
@@ -308,6 +307,7 @@ public class ForumsBMEJB implements SessionBean {
    * @author frageade
    * @since 3 Octobre 2000
    */
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void deleteForum(ForumPK forumPK) {
     List<String> sonsIds = getForumSonsIds(forumPK);
     for (String sonsId : sonsIds) {
@@ -782,6 +782,7 @@ public class ForumsBMEJB implements SessionBean {
    * @author frageade
    * @since 04 Octobre 2000
    */
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void deleteMessage(MessagePK messagePK) {
     Connection con = openConnection();
     Vector<String> v = new Vector<String>();
@@ -912,6 +913,7 @@ public class ForumsBMEJB implements SessionBean {
    * @param forumPK
    * @see
    */
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void moveMessage(MessagePK messagePK, ForumPK forumPK) {
     Connection con = openConnection();
     Vector<String> v = new Vector<String>();
@@ -924,7 +926,7 @@ public class ForumsBMEJB implements SessionBean {
     } finally {
       DBUtil.close(con);
     }
-    if (v.size() > 0) {
+    if (!v.isEmpty()) {
       for (String messageId : v) {
         moveMessage(new MessagePK(messagePK.getComponentName(), messageId), forumPK);
       }
@@ -1140,54 +1142,6 @@ public class ForumsBMEJB implements SessionBean {
         .getComponentName(), "Forum", forumPK.getId()));
   }
 
-  // Implementation des methodes de l'interface SessionBean
-  /**
-   * Method declaration
-   *
-   * @see
-   */
-  @Override
-  public void ejbActivate() {
-  }
-
-  /**
-   * Method declaration
-   *
-   * @see
-   */
-  @Override
-  public void ejbPassivate() {
-  }
-
-  /**
-   * Method declaration
-   *
-   * @see
-   */
-  @Override
-  public void ejbRemove() {
-  }
-
-  /**
-   * Method declaration
-   *
-   * @param sc
-   * @see
-   */
-  @Override
-  public void setSessionContext(SessionContext sc) {
-  }
-
-  // Implementation de l'interface Home
-  /**
-   * Method declaration
-   *
-   * @throws CreateException
-   * @see
-   */
-  public void ejbCreate() throws CreateException {
-  }
-
   /**
    * Ouverture de la connection vers la source de donnees
    *
@@ -1227,7 +1181,7 @@ public class ForumsBMEJB implements SessionBean {
 
   public String createCategory(NodeDetail category) {
     try {
-      NodePK nodePK = getNodeBm().createNode(category, new NodeDetail());
+      NodePK nodePK = nodeBm.createNode(category, new NodeDetail());
       return nodePK.getId();
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.createCategory()",
@@ -1239,7 +1193,7 @@ public class ForumsBMEJB implements SessionBean {
     try {
       SilverTrace.error("forums", "ForumsBMEJB.updateCategory", "",
           "category = " + category.getName());
-      getNodeBm().setDetail(category);
+      nodeBm.setDetail(category);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.updateCategory()",
           SilverpeasRuntimeException.ERROR, "forums.MSG_CATEGORY_NOT_UPDATE", e);
@@ -1263,7 +1217,7 @@ public class ForumsBMEJB implements SessionBean {
 
       // suppression de la catégorie
       NodePK nodePk = new NodePK(categoryId, instanceId);
-      getNodeBm().removeNode(nodePk);
+      nodeBm.removeNode(nodePk);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.deleteCategory()",
           SilverpeasRuntimeException.ERROR, "forums.MSG_CATEGORY_NOT_DELETE", e);
@@ -1272,7 +1226,7 @@ public class ForumsBMEJB implements SessionBean {
 
   public NodeDetail getCategory(NodePK pk) {
     try {
-      return getNodeBm().getDetail(pk);
+      return nodeBm.getDetail(pk);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getCategory()",
           SilverpeasRuntimeException.ERROR, "forums.MSG_CATEGORY_NOT_EXIST", e);
@@ -1281,25 +1235,12 @@ public class ForumsBMEJB implements SessionBean {
 
   public Collection<NodeDetail> getAllCategories(String instanceId) {
     try {
-      return getNodeBm().getChildrenDetails(new NodePK("0", instanceId));
+      return nodeBm.getChildrenDetails(new NodePK("0", instanceId));
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getAllCategories()",
           SilverpeasRuntimeException.ERROR, "forums.MSG_CATEGORIES_NOT_EXIST",
           e);
     }
-  }
-
-  private NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
-    try {
-      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
-          NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
-    } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return nodeBm;
   }
 
   public Collection<Message> getLastThreads(ForumPK forumPK, int count) {
@@ -1366,7 +1307,6 @@ public class ForumsBMEJB implements SessionBean {
 
   private void createTagCloud(TagCloud tagCloud, String keywords) throws RemoteException {
     if (keywords != null) {
-      TagCloudBm tagCloudBm = getTagCloudBm();
       String[] words = StringUtil.split(keywords, ' ');
       List<String> tagList = new ArrayList<String>(words.length);
       for (String tag : words) {
@@ -1388,12 +1328,12 @@ public class ForumsBMEJB implements SessionBean {
    * @throws RemoteException
    */
   private void deleteTagCloud(ForumPK forumPK) throws RemoteException {
-    getTagCloudBm().deleteTagCloud(new TagCloudPK(forumPK.getId(), forumPK.getComponentName()),
+    tagCloudBm.deleteTagCloud(new TagCloudPK(forumPK.getId(), forumPK.getComponentName()),
         TagCloud.TYPE_FORUM);
   }
 
   private void deleteTagCloud(MessagePK messagePK) throws RemoteException {
-    getTagCloudBm().deleteTagCloud(new TagCloudPK(messagePK.getId(), messagePK.getComponentName()),
+    tagCloudBm.deleteTagCloud(new TagCloudPK(messagePK.getId(), messagePK.getComponentName()),
         TagCloud.TYPE_MESSAGE);
   }
 
@@ -1416,13 +1356,13 @@ public class ForumsBMEJB implements SessionBean {
   }
 
   public String getForumTags(ForumPK forumPK) throws RemoteException {
-    Collection<TagCloud> tagClouds = getTagCloudBm().getTagCloudsByElement(
+    Collection<TagCloud> tagClouds = tagCloudBm.getTagCloudsByElement(
         forumPK.getComponentName(), forumPK.getId(), TagCloud.TYPE_FORUM);
     return getTags(tagClouds);
   }
 
   public String getMessageTags(MessagePK messagePK) throws RemoteException {
-    Collection<TagCloud> tagClouds = getTagCloudBm().getTagCloudsByElement(
+    Collection<TagCloud> tagClouds = tagCloudBm.getTagCloudsByElement(
         messagePK.getComponentName(), messagePK.getId(), TagCloud.TYPE_MESSAGE);
     return getTags(tagClouds);
   }
@@ -1438,44 +1378,15 @@ public class ForumsBMEJB implements SessionBean {
     return sb.toString();
   }
 
-  /**
-   * @return The bean managing tagclouds.
-   */
-  private TagCloudBm getTagCloudBm() {
-    try {
-      TagCloudBmHome tagCloudBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.TAGCLOUDBM_EJBHOME,
-          TagCloudBmHome.class);
-      TagCloudBm tagCloudBm = tagCloudBmHome.create();
-      return tagCloudBm;
-    } catch (Exception e) {
-      throw new TagCloudRuntimeException("KmeliaSessionController.getTagCloudBm()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-  }
 
   private void deleteNotation(ForumPK forumPK) throws RemoteException {
-    getNotationBm().deleteNotation(new NotationPK(forumPK.getId(), forumPK.getComponentName(),
+    notationBm.deleteNotation(new NotationPK(forumPK.getId(), forumPK.getComponentName(),
         Notation.TYPE_FORUM));
   }
 
   private void deleteNotation(MessagePK messagePK) throws RemoteException {
-    getNotationBm().deleteNotation(new NotationPK(messagePK.getId(), messagePK.getComponentName(),
+    notationBm.deleteNotation(new NotationPK(messagePK.getId(), messagePK.getComponentName(),
         Notation.TYPE_MESSAGE));
-  }
-
-  /**
-   * @return The bean managing tagclouds.
-   */
-  private NotationBm getNotationBm() {
-    try {
-      NotationBmHome notationBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME,
-          NotationBmHome.class);
-      NotationBm notationBm = notationBmHome.create();
-      return notationBm;
-    } catch (Exception e) {
-      throw new NotationRuntimeException("KmeliaSessionController.getNotationBm()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
   }
 
   private String getWysiwygContent(String componentId, String messageId) {

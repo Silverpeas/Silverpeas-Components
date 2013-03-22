@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.RemoteException;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -41,6 +42,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+=======
+import java.util.*;
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -50,8 +54,11 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.component.kmelia.InstanceParameters;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+<<<<<<< HEAD
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+=======
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.versioning.VersioningImportExport;
 import org.silverpeas.search.SearchEngineFactory;
@@ -341,8 +348,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public StatisticBm getStatisticBm() {
     if (statisticBm == null) {
       try {
+<<<<<<< HEAD
         statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
             StatisticBm.class);
+=======
+        StatisticBmHome statisticHome = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
+            StatisticBmHome.class);
+        statisticBm = statisticHome.create();
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
       } catch (Exception e) {
         throw new StatisticRuntimeException("KmeliaSessionController.getStatisticBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -1057,6 +1070,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     // sinon non
     String nodeId = getCurrentFolderId();
     if (NodePK.BIN_NODE_ID.equals(nodeId)) {
+      // la publication sera supprimée définitivement, il faut donc supprimer les fichiers joints
+      try {
+        WysiwygController.deleteWysiwygAttachments(getComponentId(), pubId);
+      } catch (Exception e) {
+        throw new KmeliaRuntimeException("KmeliaSessionController.deletePublication",
+            SilverpeasRuntimeException.ERROR, "root.EX_DELETE_ATTACHMENT_FAILED", e);
+      }
+
+      removeXMLContentOfPublication(getPublicationPK(pubId));
       getKmeliaBm().deletePublication(getPublicationPK(pubId));
     } else {
       getKmeliaBm().sendPublicationToBasket(getPublicationPK(pubId), kmaxMode);
@@ -3238,6 +3260,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                 + xmlFormShortName, xmlFormShortName + ".xml");
 
             // Paste images
+<<<<<<< HEAD
+=======
+
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
             List< SimpleDocument> images = AttachmentServiceFactory.getAttachmentService()
                 .listDocumentsByForeignKeyAndType(fromPubPK, DocumentType.form, getLanguage());
             for (SimpleDocument image : images) {
@@ -3894,8 +3920,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = null;
+<<<<<<< HEAD
     OrganisationController orgaController = OrganisationControllerFactory.
         getOrganisationController();
+=======
+    OrganizationController orgaController = new OrganizationController();
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
     String[] compoIds = orgaController.getCompoId("gallery");
     for (String compoId : compoIds) {
       if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoId,
@@ -4444,6 +4474,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       }
     }
   }
+<<<<<<< HEAD
 
   public String manageSubscriptions() {
     SubscriptionContext subscriptionContext = getSubscriptionContext();
@@ -4453,4 +4484,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         .initializeFromNode(NodeSubscriptionResource.from(getCurrentFolderPK()), nodePath);
     return subscriptionContext.getDestinationUrl();
   }
+=======
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 }

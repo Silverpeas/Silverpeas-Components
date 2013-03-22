@@ -1,35 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.forums.control;
-
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static com.stratelia.webactiv.SilverpeasRole.admin;
-import static com.stratelia.webactiv.SilverpeasRole.reader;
-import static com.stratelia.webactiv.SilverpeasRole.user;
-import static com.stratelia.webactiv.forums.models.Message.STATUS_FOR_VALIDATION;
-import static com.stratelia.webactiv.forums.models.Message.STATUS_REFUSED;
-import static com.stratelia.webactiv.forums.models.Message.STATUS_VALIDATE;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -42,13 +31,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.EJBException;
-import javax.ejb.RemoveException;
 import javax.xml.bind.JAXBException;
 
 import org.silverpeas.upload.UploadedFile;
 
 import com.silverpeas.notation.ejb.NotationBm;
-import com.silverpeas.notation.ejb.NotationBmHome;
 import com.silverpeas.notation.ejb.NotationRuntimeException;
 import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationDetail;
@@ -61,6 +48,7 @@ import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -74,7 +62,6 @@ import com.stratelia.webactiv.beans.admin.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.forums.forumsException.ForumsException;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
-import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBMHome;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
@@ -89,15 +76,18 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static com.stratelia.webactiv.SilverpeasRole.*;
+import static com.stratelia.webactiv.forums.models.Message.*;
 
 /**
  * Cette classe gere la session de l'acteur durant sa navigation dans les forums
+ *
  * @author frageade
  * @since September 2000
  */
@@ -105,13 +95,21 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public static final String MAIL_TYPE = "default";
   public static final String STAT_TYPE = "ForumMessage";
-  /** Le Business Manager */
+  /**
+   * Le Business Manager
+   */
   private ForumsBM forumsBM;
-  /** ids des forums deployes */
+  /**
+   * ids des forums deployes
+   */
   private List<Integer> deployedForums;
-  /** ids des messages deployes */
+  /**
+   * ids des messages deployes
+   */
   private List<Integer> deployedMessages;
-  /** utilise pour notifier les utilisateurs */
+  /**
+   * utilise pour notifier les utilisateurs
+   */
   private NotificationSender notifSender = null;
   public String typeMessages = "Messages";
   public String typeSubjects = "Subjects";
@@ -128,7 +126,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   // Constructeur
   public ForumsSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "com.stratelia.webactiv.forums.multilang.forumsBundle",
-        "com.stratelia.webactiv.forums.settings.forumsIcons");
+        "org.silverpeas.forums.settings.forumsIcons");
     deployedMessages = new ArrayList<Integer>();
     deployedForums = new ArrayList<Integer>();
   }
@@ -259,6 +257,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Create a new forum and persist it inside datasource
+   *
    * @param forumName forum name
    * @param forumDescription forum description
    * @param forumCreator creator user identifier
@@ -283,7 +282,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       }
       int forumId =
           getForumsBM().createForum(forumPK, truncateTextField(forumName), truncateTextArea(
-              forumDescription), forumCreator, forumParent, currentCategoryId, keywords);
+          forumDescription), forumCreator, forumParent, currentCategoryId, keywords);
 
       // Classify content here
       classifyContent(forumPK);
@@ -295,6 +294,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Met a jour les informations sur un forum dans la datasource
+   *
    * @param forumId l'ID du forum dans la datasource
    * @param forumName forum name
    * @param forumDescription forum description
@@ -321,6 +321,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Supprime un forum et tous ses sous-forums a partir de son ID
+   *
    * @param forumId l'ID du forum dans la datasource
    * @author frageade
    * @since 3 Octobre 2000
@@ -335,6 +336,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Indexe un forum a partir de son ID
+   *
    * @param forumId l'ID du forum dans la datasource
    * @author frageade
    * @since 23 Aout 2001
@@ -350,6 +352,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   // Methodes messages
   /**
    * Liste les messages d'un forum
+   *
    * @param forumId id du forum
    * @return Vector la liste des messages
    * @author frageade
@@ -403,6 +406,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Récupère le dernier message d'un forum
+   *
    * @param forumId id du forum
    * @return String les champs du dernier message
    * @author sfariello
@@ -424,9 +428,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         UserDetail user = getUserDetail(message.getAuthor());
         SilverTrace.debug("forums", "ForumsSessioncontroller.getLastMessage()",
             "root.MSG_GEN_ENTER_METHOD", "message = " + message.toString());
-        return new Object[] { String.valueOf(message.getId()),
-              message.getDate(),
-              (user != null ? user.getDisplayedName() : "Unknown") };
+        return new Object[]{String.valueOf(message.getId()),
+          message.getDate(),
+          (user != null ? user.getDisplayedName() : "Unknown")};
       }
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage(), re);
@@ -436,6 +440,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Nombre de sujets d'un forum
+   *
    * @param forumId id du forum
    * @return int le nombre de sujets
    * @author sfariello
@@ -451,6 +456,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Nombre de messages d'un forum
+   *
    * @param forumId id du forum
    * @return int le nombre de messages
    * @author sfariello
@@ -482,6 +488,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Recupere les infos d'un message
+   *
    * @param messageId id du message
    * @return Vector la liste des champs du message
    * @author frageade
@@ -513,6 +520,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Cree un nouveau message dans la datasource
+   *
    * @param title titre du message
    * @param author id de l'auteur du message
    * @param forumId id du forum
@@ -559,7 +567,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       SilverTrace.warn("forums", "ForumsSessionController.createMessage()",
           "forums.MSG_NOTIFY_USERS_FAILED", null, e);
     }
-    
+
     // Attach uploaded files
     if (com.silverpeas.util.CollectionUtil.isNotEmpty(uploadedFiles)) {
       for (UploadedFile uploadedFile : uploadedFiles) {
@@ -568,7 +576,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
             getUserDetail(), I18NHelper.defaultLanguage, false);
       }
     }
-    
+
     return messageId;
   }
 
@@ -766,6 +774,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Indexe un message a partir de son ID
+   *
    * @param messageId l'ID du message dans la datasource
    * @author frageade
    * @since 23 Aout 2001
@@ -780,6 +789,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Supprime un message et tous ses sous-messages a partir de son ID
+   *
    * @param messageId l'ID du message dans la datasource
    * @author frageade
    * @since 04 Octobre 2000
@@ -1045,19 +1055,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
   }
 
-  @Override
-  public void close() {
-    try {
-      if (getForumsBM() != null) {
-        getForumsBM().remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("forums", "ForumsSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("forums", "ForumsSessionController.close", "", e);
-    }
-  }
-
   public Collection<NodeDetail> getAllCategories() {
     try {
       return getForumsBM().getAllCategories(getComponentId());
@@ -1159,36 +1156,19 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public NotationDetail getForumNotation(int forumId) {
-    try {
-      NotationDetail notation = getNotationBm().getNotation(getForumNotationPk(forumId));
-      return notation;
-    } catch (RemoteException re) {
-      throw new EJBException(re.getMessage(), re);
-    }
+    return getNotationBm().getNotation(getForumNotationPk(forumId));
   }
 
   public NotationDetail getMessageNotation(int messageId) {
-    try {
-      return getNotationBm().getNotation(getMessageNotationPk(messageId));
-    } catch (RemoteException re) {
-      throw new EJBException(re.getMessage(), re);
-    }
+    return getNotationBm().getNotation(getMessageNotationPk(messageId));
   }
 
   public void updateForumNotation(int forumId, int note) {
-    try {
-      getNotationBm().updateNotation(getForumNotationPk(forumId), note);
-    } catch (RemoteException re) {
-      throw new EJBException(re.getMessage(), re);
-    }
+    getNotationBm().updateNotation(getForumNotationPk(forumId), note);
   }
 
   public void updateMessageNotation(int messageId, int note) {
-    try {
-      getNotationBm().updateNotation(getMessageNotationPk(messageId), note);
-    } catch (RemoteException re) {
-      throw new EJBException(re.getMessage(), re);
-    }
+    getNotationBm().updateNotation(getMessageNotationPk(messageId), note);
   }
 
   public void validateMessage(int messageId) {
@@ -1227,8 +1207,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
+        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
         SilverTrace.error("forum", "ForumSessionController.getPublicationBm()",
             "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
@@ -1241,12 +1221,10 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   protected StatisticBm getStatisticBm() {
     if (statisticBm == null) {
       try {
-        StatisticBmHome statisticHome = (StatisticBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
-        statisticBm = statisticHome.create();
+        statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, 
+            StatisticBm.class);
       } catch (Exception e) {
-        throw new StatisticRuntimeException(
-            "KmeliaSessionController.getStatisticBm()",
+        throw new StatisticRuntimeException("KmeliaSessionController.getStatisticBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
@@ -1257,12 +1235,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   protected NotationBm getNotationBm() {
     if (notationBm == null) {
       try {
-        NotationBmHome notationHome = (NotationBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.NOTATIONBM_EJBHOME, NotationBmHome.class);
-        notationBm = notationHome.create();
+        notationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
       } catch (Exception e) {
-        throw new NotationRuntimeException(
-            "KmeliaSessionController.getNotationBm()",
+        throw new NotationRuntimeException("KmeliaSessionController.getNotationBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
@@ -1272,9 +1247,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   protected ForumsBM getForumsBM() {
     if (forumsBM == null) {
       try {
-        ForumsBMHome forumsBMHome = (ForumsBMHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.FORUMSBM_EJBHOME, ForumsBMHome.class);
-        forumsBM = forumsBMHome.create();
+        forumsBM = EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
       } catch (Exception e) {
         throw new EJBException(e.getMessage(), e);
       }
@@ -1325,6 +1298,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   /**
    * this method clasify content only when new forum is created. Check if a position has been
    * defined in header formulary then persist it
+   *
    * @param forumDetail the current ForumDetail
    */
   private void classifyContent(ForumPK forumPK) {
@@ -1336,8 +1310,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         forumDetail = getForumsBM().getForumDetail(forumPK);
         String forumId = forumDetail.getPK().getId();
         PdcClassification classification =
-              aPdcClassificationOfContent(forumId, forumDetail.getInstanceId()).withPositions(
-                  this.getPositions());
+            aPdcClassificationOfContent(forumId, forumDetail.getInstanceId()).withPositions(
+            this.getPositions());
         if (!classification.isEmpty()) {
           PdcClassificationService service =
               PdcServiceFactory.getFactory().getPdcClassificationService();
@@ -1358,7 +1332,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         surveyClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (JAXBException e) {
         SilverTrace.error("Forum", "ForumActionHelper.actionManagement",
-                  "PdcClassificationEntity error", "Problem to read JSON", e);
+            "PdcClassificationEntity error", "Problem to read JSON", e);
       }
       if (surveyClassification != null && !surveyClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = surveyClassification.getPdcPositions();

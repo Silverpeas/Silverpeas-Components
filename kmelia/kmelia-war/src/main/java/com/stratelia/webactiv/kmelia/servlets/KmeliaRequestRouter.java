@@ -23,6 +23,25 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.silverpeas.importExport.versioning.DocumentVersion;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -40,13 +59,10 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.ZipManager;
+import com.silverpeas.util.*;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -64,12 +80,7 @@ import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.servlets.handlers.StatisticRequestHandler;
-import com.stratelia.webactiv.util.ClientBrowserUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.WAAttributeValuePair;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -80,6 +91,7 @@ import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+<<<<<<< HEAD
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
@@ -102,6 +114,14 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+=======
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.xml.sax.SAXException;
+
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
   private static final long serialVersionUID = 1L;

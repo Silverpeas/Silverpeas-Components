@@ -23,15 +23,16 @@
  */
 package com.stratelia.webactiv.forums.instanciator;
 
-import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
-import com.silverpeas.admin.components.InstanciationException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import org.silverpeas.attachment.SimpleDocumentInstanciator;
+
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 

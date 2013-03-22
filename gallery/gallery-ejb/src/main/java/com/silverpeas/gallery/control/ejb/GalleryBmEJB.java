@@ -20,6 +20,8 @@
  */
 package com.silverpeas.gallery.control.ejb;
 
+
+
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.GalleryContentManager;
@@ -56,12 +58,10 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.util.ProcessList;
 import org.silverpeas.search.SearchEngineFactory;
@@ -164,8 +164,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   private NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      final NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
+      nodeBm = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getNodeBM()",
           SilverpeasRuntimeException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
@@ -835,9 +834,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public PublicationBm getPublicationBm() {
     PublicationBm publicationBm = null;
     try {
-      final PublicationBmHome publicationBmHome =
-          EJBUtilitaire.getEJBObjectRef(PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-      publicationBm = publicationBmHome.create();
+      publicationBm =EJBUtilitaire.getEJBObjectRef(PUBLICATIONBM_EJBHOME, PublicationBm.class);
     } catch (final Exception e) {
       throw new CommentRuntimeException("GallerySessionController.getPublicationBm()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

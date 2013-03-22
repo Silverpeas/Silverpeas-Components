@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
@@ -29,8 +30,10 @@ import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.CollectionUtil;
-import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+
+import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -61,7 +64,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.upload.UploadedFile;
@@ -83,6 +85,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+
 
 import static com.silverpeas.export.ExportDescriptor.withWriter;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -399,7 +404,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       // Add the wysiwyg content
       WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
           eventPK, getUserId(), getLanguage());
-
       // Attach uploaded files
       if (CollectionUtil.isNotEmpty(uploadedFiles)) {
         for (UploadedFile uploadedFile : uploadedFiles) {

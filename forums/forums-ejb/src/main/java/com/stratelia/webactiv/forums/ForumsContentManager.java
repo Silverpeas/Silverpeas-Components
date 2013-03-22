@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.webactiv.forums;
 
@@ -40,11 +38,10 @@ import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.forums.models.ForumDetail;
-import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
-import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBMHome;
+import com.stratelia.webactiv.forums.models.ForumDetail;
+import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -226,10 +223,7 @@ public class ForumsContentManager implements ContentInterface {
   private ForumsBM getForumsBM() {
     if (forumsBM == null) {
       try {
-        ForumsBMHome forumsBMHome = (ForumsBMHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBMHome.class);
-
-        forumsBM = forumsBMHome.create();
+        forumsBM = EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
       } catch (Exception e) {
         throw new ForumsRuntimeException("ForumsContentManager.getForumsBM()",
             SilverpeasRuntimeException.ERROR, "forums.EX_IMPOSSIBLE_DE_FABRIQUER_FORUMSBM_HOME", e);

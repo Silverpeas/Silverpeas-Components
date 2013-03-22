@@ -20,6 +20,33 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
+<<<<<<< HEAD
+=======
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.*;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
@@ -61,6 +88,7 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -111,6 +139,7 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import org.apache.commons.io.FilenameUtils;
+<<<<<<< HEAD
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -133,6 +162,8 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.*;
+=======
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 
 import static com.silverpeas.util.StringUtil.*;
 import static com.stratelia.webactiv.util.JNDINames.*;
@@ -1068,8 +1099,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   public Collection<Collection<NodeDetail>> getSubscriptionList(String userId, String componentId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getSubscriptionList()", "root.MSG_GEN_ENTER_METHOD");
     try {
+<<<<<<< HEAD
       Collection<Subscription> list = getSubscribeBm()
           .getBySubscriberAndComponent(UserSubscriptionSubscriber.from(userId), componentId);
+=======
+      Collection<? extends Subscription> list = getSubscribeBm().getUserSubscriptionsByComponent(
+          userId, componentId);
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
       Collection<Collection<NodeDetail>> detailedList = new ArrayList<Collection<NodeDetail>>();
       // For each favorite, get the path from root to favorite
       for (Subscription subscription : list) {
@@ -1108,6 +1144,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   /**
    * Subscriptions - remove all subscriptions from topic
+<<<<<<< HEAD
    * @param topicPKsToDelete the subscription topic Ids to remove
    * @since 1.0
    */
@@ -1127,6 +1164,30 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
     SilverTrace
         .info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()", "root.MSG_GEN_EXIT_METHOD");
+=======
+   *
+   * @param topicPK the subscription topic Id to remove
+   * @since 1.0
+   */
+  private void removeSubscriptionsByTopic(NodePK topicPK) {
+    SilverTrace.info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()",
+        "root.MSG_GEN_ENTER_METHOD");
+    NodeDetail nodeDetail = null;
+    try {
+      nodeDetail = getNodeBm().getDetail(topicPK);
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()",
+          ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
+    }
+    try {
+      getSubscribeBm().unsubscribeByPath(topicPK, nodeDetail.getPath());
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()",
+          ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
+    }
+    SilverTrace.info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()",
+        "root.MSG_GEN_EXIT_METHOD");
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
   }
 
   /**
@@ -1151,7 +1212,23 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    */
   @Override
   public boolean checkSubscription(NodePK topicPK, String userId) {
+<<<<<<< HEAD
     return !getSubscribeBm().existsSubscription(new NodeSubscription(userId, topicPK));
+=======
+    try {
+      Collection<? extends Subscription> subscriptions = getSubscribeBm().
+          getUserSubscriptionsByComponent(userId, topicPK.getInstanceId());
+      for (Subscription subscription : subscriptions) {
+        if (topicPK.getId().equals(subscription.getTopic().getId())) {
+          return false;
+        }
+      }
+      return true;
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.checkSubscription()",
+          ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_ABONNEMENTS", e);
+    }
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
   }
 
   /**
@@ -1597,6 +1674,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
       int action) {
+<<<<<<< HEAD
     // check if related contribution is managed by kmelia
     if (pubPK != null && StringUtil.isDefined(pubPK.getInstanceId()) &&
         (pubPK.getInstanceId().startsWith("kmelia") || 
@@ -1625,6 +1703,28 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       if (isDefined(userId)) {
         pubDetail.setUpdaterId(userId);
       }
+=======
+    PublicationDetail pubDetail;
+    try {
+      pubDetail = getPublicationDetail(pubPK);
+    } catch (Exception e) {
+      // publication no longer exists
+      // do not throw exception because this method is called by JMS layer
+      // if exception is throw, JMS will attempt to execute it again and again...
+      SilverTrace.info("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
+          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
+      return;
+    }
+    if (isDefined(userId)) {
+      pubDetail.setUpdaterId(userId);
+    }
+
+    // check if related publication is managed by kmelia
+    // test due to really hazardous abusive notifications
+    if (pubDetail.getPK().getInstanceId().startsWith("kmelia")
+        || pubDetail.getPK().getInstanceId().startsWith("toolbox")
+        || pubDetail.getPK().getInstanceId().startsWith("kmax")) {
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 
       // update publication header to store last modifier and update date
       if (!isDefined(userId)) {
@@ -1638,7 +1738,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         } else {
           SilverTrace.warn("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
               "kmelia.PROBLEM_DETECTED", "user " + userId
+<<<<<<< HEAD
                   + " is not allowed to update publication " + pubDetail.getPK().toString());
+=======
+              + " is not allowed to update publication " + pubDetail.getPK().toString());
+>>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
         }
       }
       // index all attached files to taking into account visibility period
