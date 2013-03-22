@@ -24,8 +24,6 @@
 
 package com.silverpeas.mailinglist.service.notification;
 
-import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -33,323 +31,319 @@ import java.util.List;
 import javax.ejb.EJBHome;
 import javax.ejb.EJBObject;
 import javax.ejb.Handle;
-import javax.ejb.RemoveException;
 
-import com.stratelia.webactiv.calendar.control.CalendarBm;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.Category;
 import com.stratelia.webactiv.calendar.model.HolidayDetail;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
+import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 
-public class StubCalendarBm implements CalendarBm {
+public class StubSilverpeasCalendarBm implements SilverpeasCalendar {
 
-  public void addHolidayDate(HolidayDetail holiday) throws RemoteException {
+  public void addHolidayDate(HolidayDetail holiday)  {
     // TODO Auto-generated method stub
 
   }
 
-  public void addHolidayDates(List holidayDates) throws RemoteException {
+  public void addHolidayDates(List holidayDates)  {
     // TODO Auto-generated method stub
 
   }
 
-  public String addJournal(JournalHeader journal) throws RemoteException
+  public String addJournal(JournalHeader journal) 
   {
     // TODO Auto-generated method stub
     return null;
   }
 
   public void addJournalAttendee(String journalId, Attendee attendee)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
 
   }
 
   public void addJournalCategory(String journalId, String categoryId)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
 
   }
 
-  public String addToDo(ToDoHeader todo) throws RemoteException
+  public String addToDo(ToDoHeader todo) 
       {
     return "" + todo.hashCode();
   }
 
   public void addToDoAttendee(String todoId, Attendee attendee)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
 
   }
 
   public Collection countMonthSchedulablesForUser(String month, String userId,
-      String categoryId, String participation) throws RemoteException {
+      String categoryId, String participation)  {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getAllCategories() throws RemoteException {
+  public Collection getAllCategories()  {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Category getCategory(String categoryId) throws RemoteException {
+  public Category getCategory(String categoryId)  {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getClosedToDos(String organizerId) throws RemoteException {
+  public Collection getClosedToDos(String organizerId)  {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getDaySchedulablesForUser(String day, String userId,
-      String categoryId, String participation) throws RemoteException {
+      String categoryId, String participation)  {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getExternalJournalHeadersForUser(String userId)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getExternalJournalHeadersForUserAfterDate(String userId,
-      Date startDate) throws RemoteException {
+      Date startDate)  {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getExternalTodos(String spaceId, String componentId,
-      String externalId) throws RemoteException {
+      String externalId)  {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public List getHolidayDates(String userId) throws RemoteException {
+  public List getHolidayDates(String userId)  {
     // TODO Auto-generated method stub
     return null;
   }
 
   public List getHolidayDates(String userId, Date beginDate, Date endDate)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getJournalAttendees(String journalId)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getJournalCategories(String journalId)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
     return null;
   }
 
   public JournalHeader getJournalHeader(String journalId)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getJournalHeadersForUserAfterDate(String userId,
-      Date startDate, int nbReturned) throws RemoteException {
+      Date startDate, int nbReturned)  {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getNextDaySchedulablesForUser(String day, String userId,
-      String categoryId, String participation) throws RemoteException {
+      String categoryId, String participation)  {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getNotCompletedToDosForUser(String userId)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getOrganizerToDos(String organizerId)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getPeriodSchedulablesForUser(String begin, String end,
       String userId, String categoryId, String participation)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
     return null;
   }
 
   public Collection getTentativeSchedulablesForUser(String userId)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getToDoAttendees(String todoId) throws RemoteException {
+  public Collection getToDoAttendees(String todoId)  {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public ToDoHeader getToDoHeader(String todoId) throws RemoteException {
+  public ToDoHeader getToDoHeader(String todoId)  {
     // TODO Auto-generated method stub
     return null;
   }
 
   public boolean hasTentativeSchedulablesForUser(String userId)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
     return false;
   }
 
-  public void indexAllJournal() throws RemoteException {
+  public void indexAllJournal()  {
     // TODO Auto-generated method stub
 
   }
 
-  public void indexAllTodo() throws RemoteException {
+  public void indexAllTodo()  {
     // TODO Auto-generated method stub
 
   }
 
-  public boolean isHolidayDate(HolidayDetail date) throws RemoteException {
+  public boolean isHolidayDate(HolidayDetail date)  {
     // TODO Auto-generated method stub
     return false;
   }
 
-  public void removeHolidayDate(HolidayDetail holiday) throws RemoteException {
+  public void removeHolidayDate(HolidayDetail holiday)  {
     // TODO Auto-generated method stub
 
   }
 
-  public void removeHolidayDates(List holidayDates) throws RemoteException {
+  public void removeHolidayDates(List holidayDates)  {
     // TODO Auto-generated method stub
 
   }
 
-  public void removeJournal(String journalId) throws RemoteException {
+  public void removeJournal(String journalId)  {
     // TODO Auto-generated method stub
 
   }
 
   public void removeJournalAttendee(String journalId, Attendee attendee)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
 
   }
 
   public void removeJournalCategory(String journalId, String categoryId)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
 
   }
 
-  public void removeToDo(String id) throws RemoteException {
+  public void removeToDo(String id)  {
     // TODO Auto-generated method stub
 
   }
 
   public void removeToDoAttendee(String todoId, Attendee attendee)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
 
   }
 
-  public void removeToDoByInstanceId(String instanceId) throws RemoteException {
+  public void removeToDoByInstanceId(String instanceId)  {
     // TODO Auto-generated method stub
 
   }
 
   public void setJournalAttendees(String journalId, String[] userIds)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
 
   }
 
   public void setJournalCategories(String journalId, String[] categoryIds)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
 
   }
 
   public void setJournalParticipationStatus(String journalId, String userId,
-      String participation) throws RemoteException {
+      String participation)  {
     // TODO Auto-generated method stub
 
   }
 
   public void setToDoAttendees(String todoId, String[] userIds)
-      throws RemoteException {
+       {
     // TODO Auto-generated method stub
 
   }
 
-  public void updateJournal(JournalHeader journal) throws RemoteException
+  public void updateJournal(JournalHeader journal) 
   {
     // TODO Auto-generated method stub
 
   }
 
-  public void updateToDo(ToDoHeader todo) throws RemoteException
+  public void updateToDo(ToDoHeader todo) 
   {
     // TODO Auto-generated method stub
 
   }
 
-  public EJBHome getEJBHome() throws RemoteException {
+  public EJBHome getEJBHome()  {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Handle getHandle() throws RemoteException {
+  public Handle getHandle()  {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Object getPrimaryKey() throws RemoteException {
+  public Object getPrimaryKey()  {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public boolean isIdentical(EJBObject arg0) throws RemoteException {
+  public boolean isIdentical(EJBObject arg0)  {
     // TODO Auto-generated method stub
     return false;
   }
 
-  public void remove() throws RemoteException, RemoveException {
-    // TODO Auto-generated method stub
-
-  }
 
   @Override
   public List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
-      Date begin, Date end) throws RemoteException {
+      Date begin, Date end)  {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
   public List<SocialInformationEvent> getNextEventsForMyContacts(String day, String myId,
-      List<String> myContactsIds, Date begin, Date end) throws RemoteException {
+      List<String> myContactsIds, Date begin, Date end)  {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
   public List<SocialInformationEvent> getLastEventsForMyContacts(String day, String myId,
-      List<String> myContactsIds, Date begin, Date end) throws RemoteException {
+      List<String> myContactsIds, Date begin, Date end)  {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
   public List<SocialInformationEvent> getMyLastEvents(String day, String myId, Date begin,
-      Date end) throws RemoteException {
+      Date end)  {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

@@ -59,7 +59,7 @@
     <property name="secure" value="${SMTPSecure}" />
   </bean>
 
-  <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubCalendarBm" />
+  <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubSilverpeasCalendarBm" />
 <!--
    <bean id="mailCheckerInitializer" name="mailCheckerInitializer"
     class="com.silverpeas.mailinglist.control.MailCheckerInitialize" init-method="registerAll">

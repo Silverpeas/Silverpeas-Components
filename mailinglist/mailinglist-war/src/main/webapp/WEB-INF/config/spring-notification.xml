@@ -26,8 +26,8 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:jee="http://www.springframework.org/schema/jee"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
@@ -59,19 +59,15 @@
     <property name="authenticate" value="${SMTPAuthentication}" />
     <property name="secure" value="${SMTPSecure}" />
   </bean>
-
-  <bean id="calendarBm" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
-    <property name="jndiName" value="${CALENDARBM_EJBHOME}" />
-    <property name="businessInterface" value="com.stratelia.webactiv.calendar.control.CalendarBm" />
-    <property name="cacheHome" value="true" />
-    <property name="lookupHomeOnStartup" value="true" />
-    <property name="resourceRef" value="false" />
-    <property name="homeInterface" value="com.stratelia.webactiv.calendar.control.CalendarBmHome" />
-    <property name="refreshHomeOnConnectFailure" value="true" />
+  
+  <bean id="calendarBm" class="org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean">
+    <property name="jndiName" value="${CALENDARBM_EJBHOME}"/>
+    <property name="businessInterface" value="com.stratelia.webactiv.calendar.control.SilverpeasCalendar"/>
   </bean>
 
+
   <bean id="mailCheckerInitializer" name="mailCheckerInitializer"
-    class="com.silverpeas.mailinglist.control.MailCheckerInitialize" init-method="registerAll">
+        class="com.silverpeas.mailinglist.control.MailCheckerInitialize" init-method="registerAll">
     <property name="messageChecker" ref="messageChecker" />
     <property name="mailingListService" ref="mailingListService" />
     <property name="frequency" value="${mail.check.frequency}" />
@@ -79,10 +75,10 @@
 
 
   <bean id="notificationFormatter" name="notificationFormatter"
-    class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationFormatter" />
+        class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationFormatter" />
 
   <bean id="notificationSender" name="notificationSender"
-    class="com.stratelia.silverpeas.notificationManager.NotificationSender">
+        class="com.stratelia.silverpeas.notificationManager.NotificationSender">
     <constructor-arg value="fr" type="java.lang.String" />
   </bean>
 
