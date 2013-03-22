@@ -64,7 +64,6 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
     return datasource;
   }
 
-
   public void setDataSource(DataSource datasource) {
     this.datasource = datasource;
   }

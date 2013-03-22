@@ -22,19 +22,20 @@ package com.silverpeas.mailinglist.service.notification;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.inject.Inject;
+import javax.jms.QueueConnectionFactory;
 import javax.jms.TextMessage;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
 
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
@@ -43,34 +44,70 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 
+import com.mockrunner.mock.jms.MockQueue;
 import org.apache.commons.io.IOUtils;
+import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-  "/spring-hibernate.xml", "/spring-datasource.xml", "/spring-personalization.xml"})
-public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringContextTests {
+public class TestNotificationHelper {
 
   private static final String textEmailContent =
       "Bonjour famille Simpson, j'espère que vous allez bien. "
       + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
       + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
       + "l'homme canon dans la prochaine émission.Bart";
-  @Inject
-  private SimpleNotificationHelper notificationHelper;
+  private static SimpleNotificationHelper notificationHelper;
+  private static DataSource dataSource;
+  private static ClassPathXmlApplicationContext context;
+
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+    context = new ClassPathXmlApplicationContext(new String[]{"/spring-checker.xml",
+      "/spring-notification.xml", "/spring-hibernate.xml", "/spring-datasource.xml",
+      "/spring-personalization.xml"});
+    dataSource = context.getBean("jpaDataSource", DataSource.class);
+    notificationHelper = context.getBean("notificationHelper", SimpleNotificationHelper.class);
+    InitialContext ic = new InitialContext();
+    ic.rebind("jdbc/Silverpeas", dataSource);
+    DBUtil.getInstanceForTest(dataSource.getConnection());
+  }
+
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+    DBUtil.clearTestInstance();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+    context.close();
+  }
+
+  protected void registerMockJMS() throws Exception {
+    InitialContext ic = new InitialContext();
+    QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
+    ic.rebind(JNDINames.JMS_FACTORY, refFactory);
+    ic.rebind(JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
+    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
+    assertThat(qconFactory, is(notNullValue()));
+    MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
+    queue.clear();
+  }
 
   @Test
   public void testNotifyInternals() throws Exception {
@@ -82,8 +119,7 @@ public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringCo
     assertThat(list.getModerators().size(), is(3));
     assertThat(list.getReaders(), is(notNullValue()));
     assertThat(list.getReaders().size(), is(2));
-    List<String> userIds = Arrays.asList(new String[]{"200", "201", "202", "203",
-      "204"});
+    List<String> userIds = Arrays.asList(new String[]{"200", "201", "202", "203", "204"});
     notificationHelper.notifyInternals(message, list, userIds, null, false);
     List<TextMessage> messages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertThat(messages, is(notNullValue()));
@@ -237,48 +273,33 @@ public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringCo
   }
 
   @After
-  @Override
-  public void onTearDown() throws Exception {
+  public void clearMailBox() throws Exception {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
-      connection = getConnection();
+      connection = new DatabaseConnection(dataSource.getConnection());
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
     } finally {
       if (connection != null) {
-        try {
-          connection.close();
-        } catch (SQLException ex) {
-          ex.printStackTrace();
-        }
+        connection.close();
       }
     }
-    super.onTearDown();
   }
 
   @Before
-  @Override
-  public void onSetUp() {
-    super.onSetUp();
+  public void setupMailbox() throws Exception {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
-      connection = getConnection();
+      connection = new DatabaseConnection(dataSource.getConnection());
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
       DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
     } finally {
       if (connection != null) {
-        try {
-          connection.close();
-        } catch (SQLException ex) {
-          ex.printStackTrace();
-        }
+        connection.close();
       }
     }
+    registerMockJMS();
   }
 
   @Test
@@ -314,21 +335,12 @@ public class TestNotificationHelper extends AbstractSilverpeasDatasourceSpringCo
     }
   }
 
-  @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
-    InputStream in = null;
+    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+    InputStream in = TestNotificationHelper.class.getResourceAsStream(
+        "test-notification-helper-dataset.xml");
     try {
-      if (isOracle()) {
-        in = TestNotificationHelper.class.getResourceAsStream(
-            "test-notification-helper-oracle-dataset.xml");
-      } else {
-        in = TestNotificationHelper.class
-            .getResourceAsStream("test-notification-helper-dataset.xml");
-      }
-      return new FlatXmlDataSetBuilder().build(in);
-    } catch (DataSetException ex) {
-      ex.printStackTrace();
-      throw ex;
+      return new ReplacementDataSet(builder.build(in));
     } finally {
       IOUtils.closeQuietly(in);
     }
