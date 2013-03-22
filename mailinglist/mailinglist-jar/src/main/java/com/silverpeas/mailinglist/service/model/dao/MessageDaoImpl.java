@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.model.dao;
 
 import com.silverpeas.mailinglist.service.model.beans.Activity;
@@ -30,17 +26,30 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
-public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
+public class MessageDaoImpl implements MessageDao {
 
+  private SessionFactory sessionFactory;
+
+  public void setSessionFactory(SessionFactory sessionFactory) {
+    this.sessionFactory = sessionFactory;
+  }
+
+  public Session getSession() {
+    return this.sessionFactory.getCurrentSession();
+  }
+
+  @Override
   public String saveMessage(Message message) {
     Message existingMessage = findMessageByMailId(message.getMessageId(),
         message.getComponentId());
@@ -58,10 +67,12 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     return existingMessage.getId();
   }
 
+  @Override
   public void updateMessage(Message message) {
     getSession().update(message);
   }
 
+  @Override
   public void deleteMessage(Message message) {
     if (message.getAttachments() != null && !message.getAttachments().isEmpty()) {
       for (Attachment attachment : message.getAttachments()) {
@@ -71,6 +82,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     getSession().delete(message);
   }
 
+  @Override
   public Message findMessageById(final String id) {
     Criteria criteria = getSession().createCriteria(Message.class);
     criteria.add(Restrictions.eq("id", id));
@@ -84,6 +96,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     return (Message) criteria.uniqueResult();
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public List<Message> listAllMessagesOfMailingList(final String componentId,
       final int page, final int elementsPerPage, final OrderBy orderBy) {
@@ -96,6 +109,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     return criteria.list();
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public List<Message> listDisplayableMessagesOfMailingList(String componentId,
       final int month, final int year, final int page,
@@ -116,6 +130,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     return criteria.list();
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public List<Message> listUnmoderatedMessagesOfMailingList(String componentId,
       int page, int elementsPerPage, OrderBy orderBy) {
@@ -129,6 +144,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     return criteria.list();
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public List<Message> listActivityMessages(String componentId, int size, OrderBy orderBy) {
     Criteria criteria = getSession().createCriteria(Message.class);
@@ -139,6 +155,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     return criteria.list();
   }
 
+  @Override
   public int listTotalNumberOfMessages(String componentId) {
     Criteria criteria = getSession().createCriteria(Message.class);
     criteria.add(Restrictions.eq("componentId", componentId));
@@ -146,6 +163,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     return ((Long) criteria.uniqueResult()).intValue();
   }
 
+  @Override
   public int listTotalNumberOfDisplayableMessages(String componentId) {
     Criteria criteria = getSession().createCriteria(Message.class);
     criteria.add(Restrictions.eq("componentId", componentId));
@@ -154,6 +172,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     return ((Long) criteria.uniqueResult()).intValue();
   }
 
+  @Override
   public int listTotalNumberOfUnmoderatedMessages(String componentId) {
     Criteria criteria = getSession().createCriteria(Message.class);
     criteria.add(Restrictions.eq("componentId", componentId));
@@ -162,6 +181,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     return ((Long) criteria.uniqueResult()).intValue();
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public List<Activity> listActivity(String componentId) {
     Criteria criteria = getSession().createCriteria(Message.class);
@@ -204,7 +224,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
         }
       }
     } catch (UtilException e) {
-      e.printStackTrace();
+      Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING, e.getMessage());
     }
   }
 
@@ -236,5 +256,4 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     }
     return null;
   }
-
 }

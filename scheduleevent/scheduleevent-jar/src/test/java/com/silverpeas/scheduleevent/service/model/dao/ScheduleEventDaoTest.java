@@ -27,7 +27,6 @@ import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
-import static com.silverpeas.scheduleevent.service.model.dao.ScheduledEventMatcher.isEqualTo;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,20 +39,24 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import static com.silverpeas.scheduleevent.service.model.dao.ScheduledEventMatcher.isEqualTo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-scheduleevent.xml",
   "/spring-scheduleevent-embbed-datasource.xml"})
 @TransactionConfiguration(defaultRollback = true, transactionManager = "txManager")
-public class ScheduleEventDaoTest {
+public class ScheduleEventDaoTest extends AbstractTransactionalJUnit4SpringContextTests {
 
   @Inject
   private ScheduleEventDao scheduleEventDao;
@@ -66,8 +69,8 @@ public class ScheduleEventDaoTest {
   @Before
   public void generalSetUp() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-            ScheduleEventDaoTest.class.getClassLoader().getResourceAsStream(
-            "com/silverpeas/scheduleevent/service/model/dao/scheduleevent-dataset.xml")));
+        ScheduleEventDaoTest.class.getClassLoader().getResourceAsStream(
+        "com/silverpeas/scheduleevent/service/model/dao/scheduleevent-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
@@ -86,7 +89,7 @@ public class ScheduleEventDaoTest {
     ScheduleEvent theEvent = events.iterator().next();
     assertThat(theEvent, isEqualTo(theScheduledEvent()));
   }
-  
+
   @Test
   public void listScheduleEventsForAnUnexistingContributor() {
     String contributorId = "100";
@@ -163,7 +166,7 @@ public class ScheduleEventDaoTest {
       throw new RuntimeException(ex);
     }
   }
-  
+
   private Set<Response> theResponses(final ScheduleEvent event) {
     Set<Response> responses = new HashSet<Response>(2);
     Response response = new Response();
@@ -172,15 +175,14 @@ public class ScheduleEventDaoTest {
     response.setUserId(0);
     response.setScheduleEvent(event);
     responses.add(response);
-    
+
     response = new Response();
     response.setId("ff808081369cf58901369cf90b410009");
     response.setOptionId("ff808081369cf58901369cf88a3d0001");
     response.setUserId(2);
     response.setScheduleEvent(event);
     responses.add(response);
-    
+
     return responses;
   }
-  
 }

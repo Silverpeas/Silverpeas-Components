@@ -26,44 +26,44 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:aop="http://www.springframework.org/schema/aop"
-  xmlns:tx="http://www.springframework.org/schema/tx"
-  xsi:schemaLocation="
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 
   <bean id="messageService"
-    class="com.silverpeas.mailinglist.service.model.MessageServiceImpl">
+        class="com.silverpeas.mailinglist.service.model.MessageServiceImpl">
     <property name="messageDao">
       <ref bean="messageDao" />
     </property>
     <property name="elementsPerPage" value="20" />
   </bean>
 
-   <bean id="mailingListDao"
-    class="com.silverpeas.mailinglist.service.model.dao.MailingListDaoImpl">
+  <bean id="mailingListDao"
+         class="com.silverpeas.mailinglist.service.model.dao.MailingListDaoImpl">
     <property name="sessionFactory">
       <ref bean="sessionFactory" />
     </property>
   </bean>
 
   <bean id="messageDao"
-    class="com.silverpeas.mailinglist.service.model.dao.MessageDaoImpl">
+        class="com.silverpeas.mailinglist.service.model.dao.MessageDaoImpl">
     <property name="sessionFactory">
       <ref bean="sessionFactory" />
     </property>
   </bean>
 
   <bean id="txManager"
-    class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        class="org.springframework.orm.hibernate4.HibernateTransactionManager">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
   <bean id="sessionFactory"
-    class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
     <property name="mappingResources">
       <list>
         <value>Message.hbm.xml</value>
@@ -94,11 +94,11 @@
   -->
 
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-    destroy-method="close">
+        destroy-method="close">
     <property name="driverClassName"
-      value="net.sourceforge.jtds.jdbc.Driver" />
+              value="net.sourceforge.jtds.jdbc.Driver" />
     <property name="url"
-      value="jdbc:jtds:sqlserver://silver-fs:1433/SilverpeasV407" />
+              value="jdbc:jtds:sqlserver://silver-fs:1433/SilverpeasV407" />
     <property name="username" value="sa" />
     <property name="password" value="sa" />
     <property name="maxActive" value="4" />
@@ -110,14 +110,14 @@
 
   <aop:config>
     <aop:pointcut id="serviceOperation"
-      expression="execution(* *..*ServiceImpl.*(..))" />
+                  expression="execution(* *..*ServiceImpl.*(..))" />
     <aop:advisor pointcut-ref="serviceOperation" advice-ref="txAdvice" />
 
   </aop:config>
 
   <aop:config>
     <aop:pointcut id="daoOperation"
-      expression="execution(* *..*DaoImpl.*(..))" />
+                  expression="execution(* *..*DaoImpl.*(..))" />
     <aop:advisor pointcut-ref="daoOperation" advice-ref="txDaoAdvice" />
   </aop:config>
 

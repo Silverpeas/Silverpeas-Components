@@ -26,20 +26,20 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:aop="http://www.springframework.org/schema/aop"
-  xmlns:tx="http://www.springframework.org/schema/tx"
-  xsi:schemaLocation="
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
   <bean id="servicesFactory" name="servicesFactory"
-    class="com.silverpeas.mailinglist.service.ServicesFactory"
-    factory-method="getInstance" />
+        class="com.silverpeas.mailinglist.service.ServicesFactory"
+        factory-method="getInstance" />
 
   <bean id="mailingListService" name="mailingListService"
-    class="com.silverpeas.mailinglist.service.model.MailingListServiceImpl">
+        class="com.silverpeas.mailinglist.service.model.MailingListServiceImpl">
     <property name="mailingListDao">
       <ref bean="mailingListDao" />
     </property>
@@ -49,36 +49,36 @@
   </bean>
 
   <bean id="messageService" name="messageService"
-    class="com.silverpeas.mailinglist.service.model.MessageServiceImpl">
+        class="com.silverpeas.mailinglist.service.model.MessageServiceImpl">
     <property name="messageDao" ref="messageDao" />
     <property name="elementsPerPage" value="10" />
     <property name="calendarBm" ref="calendarBm" />
   </bean>
 
   <bean id="mailingListDao" name="mailingListDao"
-    class="com.silverpeas.mailinglist.service.model.dao.MailingListDaoImpl">
+        class="com.silverpeas.mailinglist.service.model.dao.MailingListDaoImpl">
     <property name="sessionFactory">
       <ref bean="sessionFactory" />
     </property>
   </bean>
 
   <bean id="messageDao"
-    class="com.silverpeas.mailinglist.service.model.dao.MessageDaoImpl">
+        class="com.silverpeas.mailinglist.service.model.dao.MessageDaoImpl">
     <property name="sessionFactory">
       <ref bean="sessionFactory" />
     </property>
   </bean>
 
   <bean id="organizationController" name="organizationController"
-    class="com.stratelia.webactiv.beans.admin.OrganizationController" />
+        class="com.stratelia.webactiv.beans.admin.OrganizationController" />
 
   <bean id="txManager" name="txManager"
-    class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        class="org.springframework.orm.hibernate4.HibernateTransactionManager">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
   <bean id="sessionFactory" name="sessionFactory"
-    class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
     <property name="mappingResources">
       <list>
         <value>Message.hbm.xml</value>
@@ -105,7 +105,7 @@
 
   <aop:config>
     <aop:pointcut id="serviceOperation"
-      expression="execution(* *..*ServiceImpl.*(..))" />
+                  expression="execution(* *..*ServiceImpl.*(..))" />
     <aop:advisor pointcut-ref="serviceOperation" advice-ref="txAdvice" />
 
   </aop:config>
