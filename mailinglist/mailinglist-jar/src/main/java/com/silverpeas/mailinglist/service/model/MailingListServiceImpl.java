@@ -30,9 +30,9 @@ import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.dao.MailingListDao;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public class MailingListServiceImpl implements MailingListService {
 
   public static final String COMPONENT_NAME = "mailinglist";
   private MailingListDao mailingListDao;
-  private OrganizationController controller;
+  private OrganisationController controller;
 
   public MailingListDao getMailingListDao() {
     return mailingListDao;
@@ -56,11 +56,11 @@ public class MailingListServiceImpl implements MailingListService {
     this.mailingListDao = mailingListDao;
   }
 
-  public OrganizationController getOrganizationController() {
+  public OrganisationController getOrganisationController() {
     return controller;
   }
 
-  public void setOrganizationController(OrganizationController controller) {
+  public void setOrganizationController(OrganisationController controller) {
     this.controller = controller;
   }
 

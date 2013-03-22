@@ -43,6 +43,7 @@ import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBmHome;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
 import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * Class declaration
@@ -120,12 +121,12 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
       return c;
     }
 
-    OrganizationController myOrga = new OrganizationController();
+    OrganisationController myOrga = new OrganizationController();
 
     if (topicId.startsWith("group_")) {
       int nbUsers = myOrga.getAllSubUsersNumber(topicId.substring("group_".length()));
       for (int n = 0; n < nbUsers; n++) {
-        ContactDetail detail = new ContactDetail("useless", "useless", "useless", "useless", 
+        ContactDetail detail = new ContactDetail("useless", "useless", "useless", "useless",
                 "useless", "useless", "useless", new Date(), "0");
         UserContact contact = new UserContact();
         contact.setContact(detail);
@@ -144,7 +145,7 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
         }
       } catch (Exception ex) {
         topic = null;
-        SilverTrace.info("silverstatistics", "YellowpagesStatistics.getContacts()", 
+        SilverTrace.info("silverstatistics", "YellowpagesStatistics.getContacts()",
                 "root.MSG_GEN_PARAM_VALUE", ex);
       }
       // treatment of the nodes of current topic
@@ -164,7 +165,7 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
   private NodeBm getNodeBm() {
     if (currentNodeBm == null) {
       try {
-        NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, 
+        NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
                 NodeBmHome.class);
         currentNodeBm = nodeBmHome.create();
       } catch (Exception re) {

@@ -184,7 +184,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       } else if (function.equals("ViewUserFull")) {
         String id = request.getParameter("Id");
 
-        UserFull user = scc.getOrganizationController().getUserFull(id);
+        UserFull user = scc.getOrganisationController().getUserFull(id);
 
         request.setAttribute("UserFull", user);
         destination = "/yellowpages/jsp/userFull.jsp";

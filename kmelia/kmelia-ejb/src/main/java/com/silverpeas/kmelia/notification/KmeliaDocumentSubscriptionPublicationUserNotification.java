@@ -81,8 +81,7 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
     if(!StringUtil.isDefined(author)) {
       author = document.getCreatedBy();
     }
-    final UserDetail authorDetail =
-        getOrganizationController().getUserDetail(author);
+    final UserDetail authorDetail = getOrganisationController().getUserDetail(author);
     template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " " + authorDetail.getLastName());
 
     template.setAttribute("attachmentMajorNumber", document.getMajorVersion());

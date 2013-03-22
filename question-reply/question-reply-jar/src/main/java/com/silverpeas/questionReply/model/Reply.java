@@ -21,6 +21,8 @@
 package com.silverpeas.questionReply.model;
 
 import com.silverpeas.util.i18n.I18NHelper;
+
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
@@ -31,7 +33,6 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 
 public class Reply extends SilverpeasBean {
 
@@ -129,7 +130,7 @@ public class Reply extends SilverpeasBean {
   }
 
   public UserDetail readAuthor() {
-    return OrganizationControllerFactory.getOrganizationController().getUserDetail(String.valueOf(
+    return OrganisationControllerFactory.getOrganisationController().getUserDetail(String.valueOf(
         getCreatorId()));
   }
 

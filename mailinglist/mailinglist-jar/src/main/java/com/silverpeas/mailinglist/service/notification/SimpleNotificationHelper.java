@@ -58,11 +58,11 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.calendar.control.CalendarBm;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * Utility class to send notifications.
@@ -77,7 +77,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
   private SmtpConfiguration smtpConfig;
   private boolean externalThread = true;
   private CalendarBm calendarBm;
-  private OrganizationController controller;
+  private OrganisationController controller;
 
   public void notifyModerators(Message message, MailingList list)
           throws NotificationManagerException {
@@ -258,11 +258,11 @@ public class SimpleNotificationHelper implements NotificationHelper {
     return result;
   }
 
-  public OrganizationController getController() {
+  public OrganisationController getController() {
     return controller;
   }
 
-  public void setController(OrganizationController controller) {
+  public void setController(OrganisationController controller) {
     this.controller = controller;
   }
 

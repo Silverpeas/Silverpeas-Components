@@ -274,7 +274,7 @@ void displaySearchResults(List<MatchingIndexEntry> pubs, String publicationLabel
                   if (!pub.getObjectId().equals(currentPubId)) {
                       if (pub.getObjectType().equals("Publication")) {
 							String userName = "";
-							user = kmeliaScc.getOrganizationController().getUserDetail(pub.getCreationUser());
+							user = kmeliaScc.getOrganisationController().getUserDetail(pub.getCreationUser());
 							if ((user != null) && ((user.getFirstName().length() > 0) || (user.getLastName().length() > 0)))
 								userName = user.getFirstName() + " " + user.getLastName();
 							else

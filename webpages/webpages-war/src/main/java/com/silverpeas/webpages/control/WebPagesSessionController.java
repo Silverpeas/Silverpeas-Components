@@ -286,8 +286,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       indexEntry.setCreationDate(new Date());
       indexEntry.setCreationUser(getUserId());
       indexEntry.setTitle(getComponentLabel());
-      ComponentInstLight component =
-              getOrganizationController().getComponentInstLight(getComponentId());
+      ComponentInstLight component = getOrganisationController().getComponentInstLight(getComponentId());
       if (component != null) {
         indexEntry.setPreView(component.getDescription());
       }

@@ -109,7 +109,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * methods for Users
    */
   public UserDetail getUserDetail(String userId) {
-    return getOrganizationController().getUserDetail(userId);
+    return getOrganisationController().getUserDetail(userId);
   }
 
   // Metier

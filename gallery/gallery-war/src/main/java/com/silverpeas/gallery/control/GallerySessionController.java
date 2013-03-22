@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
@@ -83,7 +84,6 @@ import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -782,7 +782,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // demande de photo
     // 1. création du message
 
-    OrganizationController orga = getOrganizationController();
+    OrganisationController orga = getOrganisationController();
     UserDetail[] admins = orga.getUsers("useless", getComponentId(), "admin");
     String user = getUserDetail().getDisplayedName();
 
@@ -1053,7 +1053,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // de l'utilisateur
     // 1. création du message
 
-    OrganizationController orga = getOrganizationController();
+    OrganisationController orga = getOrganisationController();
     UserDetail[] admins = orga.getUsers("useless", getComponentId(), "admin");
     String user = getUserDetail().getDisplayedName();
 
@@ -1094,14 +1094,13 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // demande
     // 1. création du message
     Order order = getOrder(orderId);
-    String user =
-        getOrganizationController().getUserDetail(Integer.toString(order.getProcessUserId()))
+    String user = getOrganisationController().getUserDetail(Integer.toString(order.getProcessUserId()))
             .getDisplayedName();
 
-    ResourceLocator message = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle",
+    ResourceLocator message = new ResourceLocator("org.silverpeas.gallery.multilang.galleryBundle",
         "fr");
     ResourceLocator message_en = new ResourceLocator(
-        "com.silverpeas.gallery.multilang.galleryBundle", "en");
+        "org.silverpeas.gallery.multilang.galleryBundle", "en");
 
     StringBuffer messageBody = new StringBuffer();
     StringBuffer messageBody_en = new StringBuffer();

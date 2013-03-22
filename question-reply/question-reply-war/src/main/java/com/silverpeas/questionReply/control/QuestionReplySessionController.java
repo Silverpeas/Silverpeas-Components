@@ -20,6 +20,27 @@
  */
 package com.silverpeas.questionReply.control;
 
+import static com.google.common.base.Charsets.UTF_8;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import javax.xml.bind.JAXBException;
+
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.admin.OrganisationController;
+
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -30,7 +51,11 @@ import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.control.notification.NotificationData;
 import com.silverpeas.questionReply.control.notification.QuestionNotifier;
 import com.silverpeas.questionReply.control.notification.ReplyNotifier;
-import com.silverpeas.questionReply.model.*;
+import com.silverpeas.questionReply.model.Category;
+import com.silverpeas.questionReply.model.Question;
+import com.silverpeas.questionReply.model.QuestionDetail;
+import com.silverpeas.questionReply.model.Recipient;
+import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.whitePages.control.CardManager;
@@ -49,10 +74,15 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.util.*;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -61,16 +91,6 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import org.apache.commons.io.IOUtils;
-
-import javax.xml.bind.JAXBException;
-import java.io.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static com.google.common.base.Charsets.UTF_8;
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
@@ -577,7 +597,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Récupère la liste des experts du domaine de la question
    */
   public Collection<UserDetail> getCurrentQuestionWriters() throws QuestionReplyException {
-    OrganizationController orga = getOrganizationController();
+    OrganisationController orga = getOrganisationController();
     List<UserDetail> arrayUsers = new ArrayList<UserDetail>();
 
     try {
@@ -659,7 +679,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     List<String> profils = new ArrayList<String>();
     profils.add(SilverpeasRole.writer.name());
     String[] usersIds =
-        getOrganizationController().getUsersIdsByRoleNames(getComponentId(), profils);
+        getOrganisationController().getUsersIdsByRoleNames(getComponentId(), profils);
     List<UserRecipient> users = new ArrayList<UserRecipient>(usersIds.length);
     for (String userId : usersIds) {
       users.add(new UserRecipient(userId));
@@ -671,10 +691,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @param reply
    * @throws QuestionReplyException
    */
-  @SuppressWarnings("unchecked")
   private void notifyReply(Reply reply) throws QuestionReplyException {
     UserDetail user =
-        getOrganizationController().getUserDetail(getCurrentQuestion().getCreatorId());
+        getOrganisationController().getUserDetail(getCurrentQuestion().getCreatorId());
     ReplyNotifier notifier = new ReplyNotifier(getUserDetail(getUserId()), URLManager.getServerURL(
         null), getCurrentQuestion(), reply, new NotificationData(getString(
         "questionReply.notification") + getComponentLabel(), getSpaceLabel() + " - "

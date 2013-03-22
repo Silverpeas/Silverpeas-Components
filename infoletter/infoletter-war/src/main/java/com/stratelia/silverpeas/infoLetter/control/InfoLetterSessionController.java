@@ -853,7 +853,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     List<String> emails = new ArrayList<String>();
     List<String> roles = new ArrayList<String>();
     roles.add("admin");
-    String[] userIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(), roles);
+    String[] userIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles);
     if (userIds != null) {
       for (int i = 0; i < userIds.length; i++) {
         String userId = userIds[i];

@@ -36,6 +36,7 @@ import com.silverpeas.profile.web.UserProfileEntity;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * The delegated news entity is a delegated news object that is exposed in the web as an entity (web entity).
@@ -88,7 +89,7 @@ public class DelegatedNewsEntity implements Exposable {
   public int getPubId() {
     return this.pubId;
   }
-  
+
   /**
    * Gets the title of the delegated news.
    * @return the pubTitle.
@@ -112,7 +113,7 @@ public class DelegatedNewsEntity implements Exposable {
   public String getStatus() {
     return this.status;
   }
-  
+
   /**
    * Gets the id of the contributor.
    * @return the contributor id.
@@ -120,7 +121,7 @@ public class DelegatedNewsEntity implements Exposable {
   public UserProfileEntity getContributor() {
     return this.contributor;
   }
-  
+
   /**
    * Gets the id of the validator.
    * @return the contributor id.
@@ -144,7 +145,7 @@ public class DelegatedNewsEntity implements Exposable {
   public Date getBeginDate() {
     return beginDate;
   }
-  
+
   /**
    * Gets the end date of visibility of the delegated news.
    * @return the end date.
@@ -152,7 +153,7 @@ public class DelegatedNewsEntity implements Exposable {
   public Date getEndDate() {
     return endDate;
   }
-  
+
   /**
    * Gets the order of the delegated news.
    * @return the order of the delegated news.
@@ -166,7 +167,7 @@ public class DelegatedNewsEntity implements Exposable {
     this.pubId = delegatednews.getPubId();
     this.instanceId = delegatednews.getInstanceId();
     this.status = delegatednews.getStatus();
-    OrganizationController organizationController = new OrganizationController();
+    OrganisationController organizationController = new OrganizationController();
     UserDetail user = organizationController.getUserDetail(delegatednews.getContributorId());
     this.contributor =  UserProfileEntity.fromUser(user);
     if(delegatednews.getValidatorId() != null) {
@@ -219,18 +220,18 @@ public class DelegatedNewsEntity implements Exposable {
 
   protected DelegatedNewsEntity() {
   }
-  
+
   /**
    * Gets the delegated news business objet that this entity represents.
    * @return a delegated news instance.
    */
   public DelegatedNews toDelegatedNews() {
     DelegatedNews delegatedNews =
-        new DelegatedNews(this.pubId, this.instanceId, this.contributor.getId(), 
+        new DelegatedNews(this.pubId, this.instanceId, this.contributor.getId(),
             this.validationDate, this.beginDate, this.endDate);
     return delegatedNews;
   }
-  
+
   /**
    * Creates a new delegated news entity from the specified delegated news.
    * @param delegatedNews the delegated news to entitify.

@@ -42,6 +42,7 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 
@@ -67,16 +69,16 @@ public class KmeliaSecurity implements ComponentSecurity {
   public static final String RIGHTS_ON_TOPIC_PARAM = "rightsOnTopics";
   private PublicationBm publicationBm;
   private NodeBm nodeBm;
-  private OrganizationController controller = null;
+  private OrganisationController controller = null;
   private Map<String, Boolean> cache = Collections.synchronizedMap(new HashMap<String, Boolean>());
   private volatile boolean cacheEnabled = false;
   private ResourceLocator kmeliaSettings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "fr");
 
   public KmeliaSecurity() {
-    this.controller = new OrganizationController();
+    this.controller = OrganisationControllerFactory.getOrganisationController();
   }
 
-  public KmeliaSecurity(OrganizationController controller) {
+  public KmeliaSecurity(OrganisationController controller) {
     this.controller = controller;
   }
 
@@ -98,20 +100,20 @@ public class KmeliaSecurity implements ComponentSecurity {
       cache.put(objectId + objectType + componentId, available);
     }
   }
-  
+
   private Boolean readFromCache(String objectId, String objectType, String componentId) {
     if (cacheEnabled) {
       return cache.get(objectId + objectType + componentId);
     }
     return null;
   }
-  
+
   private void writeInCache(String componentId, boolean available) {
     if (cacheEnabled) {
       cache.put(componentId, available);
     }
   }
-  
+
   private Boolean readFromCache(String componentId) {
     if (cacheEnabled) {
       return cache.get(componentId);
@@ -227,7 +229,7 @@ public class KmeliaSecurity implements ComponentSecurity {
       // Availabily already processed
       return fromCache;
     }
-    
+
     boolean available = controller.isComponentAvailable(componentId, userId);
     writeInCache(componentId, available);
     return available;

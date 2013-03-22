@@ -25,6 +25,8 @@ package com.silverpeas.gallery.process;
 
 import java.util.Date;
 
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.process.management.AbstractDataProcess;
 import org.silverpeas.process.session.ProcessSession;
 
@@ -39,8 +41,6 @@ import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -54,7 +54,7 @@ public abstract class AbstractGalleryDataProcess extends
     AbstractDataProcess<GalleryProcessExecutionContext> {
   private final PhotoDetail photo;
   private GalleryContentManager galleryContentManager;
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
 
   /**
    * Default constructor
@@ -151,7 +151,7 @@ public abstract class AbstractGalleryDataProcess extends
    */
   protected String getXMLFormName(final GalleryProcessExecutionContext context) {
     String formName =
-        getOrganizationController().getComponentParameterValue(context.getComponentInstanceId(),
+        getOrganisationController().getComponentParameterValue(context.getComponentInstanceId(),
             "XMLFormName");
     // contrôle du formulaire et retour du nom si convenable
     if (StringUtil.isDefined(formName)) {
@@ -226,10 +226,9 @@ public abstract class AbstractGalleryDataProcess extends
    * Access to the shared OrganizationController
    * @return
    */
-  protected OrganizationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     if (organizationController == null) {
-      organizationController =
-          OrganizationControllerFactory.getFactory().getOrganizationController();
+      organizationController = OrganisationControllerFactory.getOrganisationController();
     }
     return organizationController;
   }
