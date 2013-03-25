@@ -38,6 +38,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import static org.junit.Assert.*;
 import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
 
@@ -46,12 +48,13 @@ import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
  * The tests are on the JSON encoding of the DTO.
  */
 public class DisplayableEventOccurrenceTest {
-
+private static ApplicationContext context;
   public DisplayableEventOccurrenceTest() {
   }
 
   @BeforeClass
   public static void setUpClass() throws Exception {
+    context = new ClassPathXmlApplicationContext("spring-almanach.xml");
   }
 
   @AfterClass

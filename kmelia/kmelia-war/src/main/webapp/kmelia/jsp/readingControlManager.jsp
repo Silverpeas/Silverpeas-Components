@@ -25,8 +25,8 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%
 PublicationDetail 	publication 		= (PublicationDetail) request.getAttribute("Publication");
@@ -76,9 +76,11 @@ function closeWindows() {
 	out.println(window.printBefore());
 	  
 	if (isOwner) {
-		displayAllOperations(pubId, kmeliaScc, gef, "ViewReadingControl", resources, out, kmaxMode);
+		KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ViewReadingControl",
+          resources, out, kmaxMode);
 	} else {
-	    displayUserOperations(pubId, kmeliaScc, gef, "ViewReadingControl", resources, out, kmaxMode);
+	  KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ViewReadingControl",
+          resources, out, kmaxMode);
 	}
 	  
 	out.println(frame.printBefore());

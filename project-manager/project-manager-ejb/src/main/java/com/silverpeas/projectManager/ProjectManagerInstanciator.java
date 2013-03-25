@@ -25,15 +25,14 @@ package com.silverpeas.projectManager;
 
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-
 import com.silverpeas.comment.CommentInstanciator;
-import com.silverpeas.versioning.VersioningInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
+import org.silverpeas.attachment.SimpleDocumentInstanciator;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 /**
  * @author neysseric
@@ -65,10 +64,7 @@ public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
     SilverTrace.info("projectManager", "ProjectManagerInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
         + componentId + ", userId =" + userId);
-    AttachmentInstanciator attachments = new AttachmentInstanciator();
-    attachments.delete(con, spaceId, componentId, userId);
-    VersioningInstanciator version = new VersioningInstanciator();
-    version.delete(con, spaceId, componentId, userId);
+    new SimpleDocumentInstanciator().delete(componentId);
     CommentInstanciator comment = new CommentInstanciator();
     comment.delete(con, spaceId, componentId, userId);
     TodoBackboneAccess tbba = new TodoBackboneAccess();

@@ -23,23 +23,27 @@
  */
 package com.silverpeas.questionReply.control;
 
-import com.google.common.collect.Lists;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.*;
-import org.mockito.Mockito;
-import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.questionReply.model.Question;
-import com.silverpeas.questionReply.model.QuestionMatcher;
-import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.questionReply.model.ReplyMatcher;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.webactiv.persistence.IdPK;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import com.silverpeas.components.model.AbstractTestDao;
+import com.silverpeas.questionReply.model.Question;
+import com.silverpeas.questionReply.model.QuestionMatcher;
+import com.silverpeas.questionReply.model.Reply;
+import com.silverpeas.questionReply.model.ReplyMatcher;
+
+import com.stratelia.silverpeas.contentManager.ContentManager;
+import com.stratelia.webactiv.persistence.IdPK;
+
+import com.google.common.collect.Lists;
+import org.mockito.Mockito;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  *

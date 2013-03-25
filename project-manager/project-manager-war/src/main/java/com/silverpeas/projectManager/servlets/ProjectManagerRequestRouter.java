@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.projectManager.servlets;
 
@@ -57,6 +54,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
+   *
    * @return
    */
   @Override
@@ -73,18 +71,20 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main")
    * @param projectManagerSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ProjectManagerSessionController projectManagerSC, HttpServletRequest request) {
+  public String getDestination(String function, ProjectManagerSessionController projectManagerSC,
+      HttpServletRequest request) {
     String destination = "";
     String rootDestination = "/projectManager/jsp/";
-    SilverTrace.info(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + projectManagerSC.getUserId() + " Function=" +
-            function);
+    SilverTrace.
+        info(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "User=" + projectManagerSC.getUserId() + " Function=" + function);
 
     try {
       if (function.startsWith("Main")) {
@@ -124,7 +124,8 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         if (projectManagerSC.getRole().equals("admin")) {
           destination = rootDestination + "projectDefinition.jsp";
         } else {
-          request.setAttribute("Attachments", projectManagerSC.getAttachments(project.getId()));
+          request.setAttribute("Attachments", projectManagerSC.getAttachments(String.
+              valueOf(project.getId())));
           destination = rootDestination + "projectView.jsp";
         }
       } else if (function.equals("CreateProject")) {
@@ -295,7 +296,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
           if (userDetails != null) {
             SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "userDetails[0].getId():"
-                    + userDetails[0].getId().toString());
+                + userDetails[0].getId().toString());
             UserDetail userDetail = userDetails[0];
 
             request.setAttribute("ResponsableFullName", projectManagerSC
@@ -336,8 +337,8 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
           Collection<TaskResourceDetail> resources = new ArrayList<TaskResourceDetail>();
           for (int i = 0; i < userDetails.length; i++) {
             SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "userDetails[" + i + "].getId():" +
-                    userDetails[i].getId());
+                "root.MSG_GEN_PARAM_VALUE", "userDetails[" + i + "].getId():" + userDetails[i].
+                getId());
             UserDetail userDetail = userDetails[i];
             TaskResourceDetail resourceDetail = new TaskResourceDetail();
             resourceDetail.setUserId(userDetail.getId());
@@ -346,14 +347,14 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
             if (currentResources != null) {
               SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
                   "root.MSG_GEN_PARAM_VALUE", "currentResource = "
-                      + currentResources.size());
+                  + currentResources.size());
               boolean trouve = false;
               Iterator<TaskResourceDetail> it = currentResources.iterator();
               while (it.hasNext() && !trouve) {
                 TaskResourceDetail res = it.next();
                 SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
-                    "root.MSG_GEN_PARAM_VALUE", "currentResource userId:" + res.getUserId() +
-                        " / " + res.getUserName());
+                    "root.MSG_GEN_PARAM_VALUE", "currentResource userId:" + res.getUserId() + " / "
+                    + res.getUserName());
                 // si la resource existe déjà, on conserve la charge
                 if (res.getUserId().equals(userDetail.getId())) {
                   resourceDetail.setCharge(res.getCharge());
@@ -421,7 +422,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
 
         Date curDate = projectManagerSC.getMostRelevantDate(startDate);
         request.setAttribute("StartDate", curDate);
-        
+
         // Prepare date navigation
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(curDate);
@@ -552,8 +553,8 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
     TaskDetail task = projectManagerSC.getCurrentTask();
     SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.updateActionCourante()",
         "root.MSG_GEN_PARAM_VALUE", "Consomme = " + request.getParameter("Consomme") + " Raf = "
-            + request.getParameter("Raf") + " statut =  " + request.getParameter("Statut")
-            + " all resources = " + request.getParameter("allResources"));
+        + request.getParameter("Raf") + " statut =  " + request.getParameter("Statut")
+        + " all resources = " + request.getParameter("allResources"));
     if ("admin".equals(projectManagerSC.getRole())) {
       task.setResponsableId(Integer.parseInt(request.getParameter("ResponsableId")));
       task.setNom(request.getParameter("Nom"));
@@ -682,8 +683,8 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
   private Boolean isOrganiteurOrResponsable(ProjectManagerSessionController projectManagerSC,
       TaskDetail task) {
     String role = projectManagerSC.getRole();
-    return Boolean.valueOf("admin".equals(role) ||
-        ("responsable".equals(role) && Integer.parseInt(projectManagerSC.getUserId()) == task
-            .getResponsableId()));
+    return Boolean.valueOf("admin".equals(role) || ("responsable".equals(role) && Integer.
+        parseInt(projectManagerSC.getUserId()) == task
+        .getResponsableId()));
   }
 }

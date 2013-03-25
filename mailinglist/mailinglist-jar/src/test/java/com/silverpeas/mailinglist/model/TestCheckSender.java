@@ -20,107 +20,85 @@
  */
 package com.silverpeas.mailinglist.model;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
+
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import org.jvnet.mock_javamail.Mailbox;
-
-import java.io.IOException;
-import java.sql.SQLException;
-
-import javax.jms.QueueConnectionFactory;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
-import com.mockrunner.mock.jms.MockQueue;
-import org.dbunit.database.DatabaseConnection;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.runner.RunWith;
+import org.jvnet.mock_javamail.Mailbox;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.mailinglist.jms.MockObjectFactory;
-import com.silverpeas.mailinglist.service.model.MailingListService;
-
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
 import static org.junit.Assert.*;
 
-public class TestCheckSender  {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
+  "/spring-hibernate.xml", "/spring-datasource.xml"})
+public class TestCheckSender extends AbstractSilverpeasDatasourceSpringContextTests {
 
   private static final String ArchivageNotModeratedOpen_ID = "101";
   private static final String ArchivageNotModeratedClosed_ID = "102";
-  
-  private static DataSource dataSource;
-  private static ClassPathXmlApplicationContext context;
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-    SimpleMemoryContextFactory.setUpAsInitialContext();
-    context = new ClassPathXmlApplicationContext(new String[]{"/spring-checker.xml",
-      "/spring-notification.xml", "/spring-jpa-hibernate.xml", "/spring-embedded-datasource.xml",
-      "/spring-personalization.xml"});
-    dataSource = context.getBean("jpaDataSource", DataSource.class);
-    InitialContext ic = new InitialContext();
-    ic.rebind("jdbc/Silverpeas", dataSource);
-    DBUtil.getInstanceForTest(dataSource.getConnection());
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-    DBUtil.clearTestInstance();
-    SimpleMemoryContextFactory.tearDownAsInitialContext();
-    context.close();
+  @After
+  @Override
+  public void onTearDown() throws Exception {
+    super.onTearDown();
+    Mailbox.clearAll();
+    IDatabaseConnection connection = null;
+    try {
+      connection = getConnection();
+      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    } finally {
+      if (connection != null) {
+        try {
+          connection.getConnection().close();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    super.onTearDown();
   }
 
   @Before
-  public void init() throws Exception {
-    IDatabaseConnection connection = getConnection();
-    DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    connection.close();
-    AdminReference.getAdminService().reloadCache();
-    registerMockJMS();
+  @Override
+  public void onSetUp() {
+    super.onSetUp();
     Mailbox.clearAll();
+    IDatabaseConnection connection = null;
+    try {
+      connection = getConnection();
+      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
+      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    } finally {
+      if (connection != null) {
+        try {
+          connection.getConnection().close();
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+    }
   }
 
-  @After
-  public void after() throws Exception {
-    IDatabaseConnection connection = getConnection();
-    DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    connection.close();
-    MockObjectFactory.clearAll();
-    Mailbox.clearAll();
-  }
-
-  private IDatabaseConnection getConnection() throws Exception {
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    return connection;
-  }
-
-  protected void registerMockJMS() throws Exception {
-    InitialContext ic = new InitialContext();
-    // Construct BasicDataSource reference
-    QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
-    ic.rebind(JNDINames.JMS_FACTORY, refFactory);
-    ic.rebind(JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
-    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
-    assertNotNull(qconFactory);
-    MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
-    queue.clear();
-  }
-
+  @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
     FlatXmlDataSet dataSet = new FlatXmlDataSetBuilder().build(TestCheckSender.class.
         getResourceAsStream("test-check-sender-dataset.xml"));;

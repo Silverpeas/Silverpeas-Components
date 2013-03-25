@@ -26,11 +26,10 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%
 PublicationDetail 	pubDetail 		= (PublicationDetail) request.getAttribute("CurrentPublicationDetail");
-String contentLanguage = (String) request.getAttribute("CurrentLanguage");
+String contentLanguage = kmeliaScc.getContentLanguage();
 
 String pubId 	= pubDetail.getPK().getId();
 String pubName 	= pubDetail.getName(contentLanguage);
@@ -65,7 +64,8 @@ function closeWindows() {
 <% if (kmaxMode) { %>
 	<input type="hidden" name="BrowseInfo" value="<%= Encode.javaStringToHtmlString(pubName)%>">
 <% } else { %>
-	<input type="hidden" name="BrowseInfo" value="<%=kmeliaScc.getSessionPathString()+" > " + Encode.javaStringToHtmlString(pubName)%>">
+<input type="hidden" name="BrowseInfo" value="<%=kmeliaScc.getSessionPathString() + " > " + EncodeHelper
+      .javaStringToHtmlString(pubName)%>">
 <% } %>
     <input type="hidden" name="ObjectId" value="<%=pubId%>">
     <input type="hidden" name="Language" value="<%=resources.getLanguage()%>">

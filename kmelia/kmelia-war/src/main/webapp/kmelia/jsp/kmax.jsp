@@ -104,7 +104,7 @@ function search() {
         }
     }
     if (nbSelectedAxis != 1) {
-		window.alert("Vous devez s�lectionnez au moins un axe !");
+		window.alert("Vous devez sélectionnez au moins un axe !");
     } else {
 		document.managerForm.TimeCriteria.value = timeCriteria;
 		document.managerForm.SearchCombination.value = z;

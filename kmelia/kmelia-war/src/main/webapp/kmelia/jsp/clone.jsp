@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -33,12 +34,12 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ include file="checkKmelia.jsp" %>
-<%@ include file="modelUtils.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
+<%@include file="checkKmelia.jsp" %>
+<%@include file="modelUtils.jsp" %>
 
-<%@ page import="com.silverpeas.publicationTemplate.*"%>
-<%@ page import="com.silverpeas.form.*"%>
+<%@page import="com.silverpeas.publicationTemplate.*"%>
+<%@page import="com.silverpeas.form.*"%>
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 
 <%
   	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
@@ -277,19 +278,19 @@ $(function() {
         }
         out.println(window.printBefore());
 
-        displayAllOperations(id, kmeliaScc, gef, "ViewClone", resources, out);
+        KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, "ViewClone", resources, out);
+        out.println(frame.printBefore());
 
-        out.println(frame.printBefore());          
         InfoDetail infos = pubComplete.getInfoDetail();
         ModelDetail model = pubComplete.getModelDetail();
 %>
-<div class="rightContent">
-      <%
-        /*********************************************************************************************************************/
-        /** Colonne de droite																							    **/
-        /*********************************************************************************************************************/
-		if (attachmentsEnabled) {
-			/*********************************************************************************************************************/
+	<div class="rightContent">
+<%
+		/*********************************************************************************************************************/
+		/** Colonne de droite																							    **/
+		/*********************************************************************************************************************/
+    	if (attachmentsEnabled) {
+	    	/*********************************************************************************************************************/
 			/** Affichage des fichiers joints																					**/
 			/*********************************************************************************************************************/
 			boolean showTitle = resources.getSetting("showTitle", true);
@@ -300,35 +301,29 @@ $(function() {
 			          
 		    out.println("<a name=\"attachments\"></a>");
 			try {
-	            out.flush();
-	            String pIndexIt = "0";
-	            String attProfile = kmeliaScc.getProfile();
-	            if (kmeliaScc.isVersionControlled(componentId)) {
-	              if (!isOwner) {
-	                attProfile = "user";
-	              }
-	              getServletConfig().getServletContext().getRequestDispatcher(
-	                  "/versioningPeas/jsp/displayDocuments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=false" + "&Context=Images&AttachmentPosition=" + resources.
-	                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo +
-	                  "&Profile=" + attProfile + "&NodeId=" + kmeliaScc.getCurrentFolderId() + "&TopicRightsEnabled=" + kmeliaScc.
-	                  isRightsOnTopicsEnabled() + "&VersionningFileRightsMode=" + kmeliaScc.
-	                  getVersionningFileRightsMode() + "&CallbackUrl=" + URLManager.getURL(
-	                  "useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
-	                  include(request, response);
-	            } else {
-	              getServletConfig().getServletContext().getRequestDispatcher(
-	                  "/attachment/jsp/displayAttachments.jsp?Id=" + id + "&ComponentId=" + componentId + "&Alias=false" + "&Context=Images&AttachmentPosition=" + resources.
-	                  getSetting("attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo + 
-	                  "&Language=" + "&Profile=" + attProfile + "&CallbackUrl=" + URLManager.
-	                  getURL("useless", componentId) + "ViewPublication&IndexIt=" + pIndexIt + "&ShowMenuNotif=" + true).
-	                  include(request, response);
-	            }
-	          } catch (Exception e) {
-	            throw new KmeliaException(
-	                "JSPpublicationManager.displayUserModelAndAttachmentsView()",
-	                SilverpeasException.ERROR, "root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
-	          }
-		}
+				out.flush();
+				if (kmeliaScc.isVersionControlled()) {
+					getServletConfig().getServletContext().getRequestDispatcher(
+                "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId
+                + "&Context=attachment&Language=" + resources.getLanguage()
+                    + "&AttachmentPosition="
+                + resources.getSetting("attachmentPosition") + "&ShowIcon=" + showIcon
+                + "&ShowTitle=" + showTitle + "&ShowFileSize=" + showFileSize
+                + "&ShowDownloadEstimation=" + showDownloadEstimation + "&ShowInfo=" + showInfo)
+                .include(request, response);
+				} else {
+					getServletConfig().getServletContext().getRequestDispatcher(
+                "/attachment/jsp/displayAttachedFiles.jsp?Id=" + id + "&ComponentId=" + componentId
+                + "&Context=attachment&AttachmentPosition=" + resources.getSetting(
+                "attachmentPosition") + "&ShowIcon=" + showIcon + "&ShowTitle=" + showTitle
+                      + "&ShowFileSize=" + showFileSize + "&ShowDownloadEstimation="
+                      + showDownloadEstimation + "&ShowInfo=" + showInfo + "&Profile=" + profile)
+                      .include(request, response);
+				}
+			} catch (Exception e) {
+				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
+			}
+    	}
       
         /*********************************************************************************************************************/
         /** Affichage des Info de publication																		**/
@@ -389,9 +384,7 @@ $(function() {
 
 	        out.println("</h2>"); 
 
-	        String description = EncodeHelper.javaStringToHtmlString(pubDetail.getDescription());
-	        description = EncodeHelper.javaStringToHtmlParagraphe(description);
-	
+	        String description = EncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription());	
 	        if (StringUtil.isDefined(description)) {
 	        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
 	        }

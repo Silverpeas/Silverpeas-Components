@@ -26,7 +26,6 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%
 Collection 			dbForms		= (Collection) request.getAttribute("DBForms");
@@ -35,7 +34,7 @@ Collection			modelUsed	= (Collection) request.getAttribute("ModelUsed");
 
 String linkedPathString = kmeliaScc.getSessionPath();
 
-// d�claration des boutons
+// declaration des boutons
 Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
 Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
 

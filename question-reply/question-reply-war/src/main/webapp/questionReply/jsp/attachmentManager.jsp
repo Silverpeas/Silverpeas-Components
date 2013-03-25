@@ -35,7 +35,7 @@
 <%
 Reply 	reply 		= (Reply) request.getAttribute("CurrentReply");
 String	currentLang = (String) request.getAttribute("Language");
-	
+
 String replyId = reply.getPK().getId();
 String	pIndexIt	= "1";
 String url = scc.getComponentUrl()+"ViewAttachments";
@@ -58,35 +58,23 @@ out.println(gef.getLookStyleSheet());
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel);
 	browseBar.setExtraInformation(resource.getString("questionReply.reponse"));
-	
+
 	tabbedPane.addTab(resource.getString("GML.head"), "UpdateRQuery", false);
 	tabbedPane.addTab(resource.getString("GML.attachments"), "#", true, false);
-	
+
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
 	out.flush();
-	
-	try
-	{
-		if (scc.isVersionControlled()) 
-		{
-			//Versioning links
-			getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/documents.jsp?Id="+URLEncoder.encode(replyId)+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId, "UTF-8")+"&Context=Images&IndexIt="+pIndexIt+"&Url="+URLEncoder.encode(url, "UTF-8")+"&SL="+URLEncoder.encode(scc.getSpaceLabel(), "UTF-8")+"&CL="+URLEncoder.encode(scc.getComponentLabel(), "UTF-8")).include(request, response);
-		} 
-		else
-		{
-			//Attachments links
-			getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+replyId+"&ComponentId="+componentId+"&Context=Images&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+scc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+scc.getUserProfil()+"&Language="+currentLang).include(request, response);
-		}
-	}
-	catch (Exception e)
-	{
-		
+
+	try {
+     //Attachments links
+			getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+replyId+"&ComponentId="+componentId+"&Context=attachment&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+scc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+scc.getUserProfil()+"&Language="+currentLang).include(request, response);
+	} catch (Exception e) {
 	}
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
-	
+
 %>
 </body>
 </html>
