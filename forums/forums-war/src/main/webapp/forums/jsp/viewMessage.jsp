@@ -185,15 +185,7 @@
     boolean forumActive = false;
 
     int[] forumNotes = new int[0];
-
-    if (message == null)
-    {
-%>
-<script type="text/javascript">window.location.href = "Main";</script><%
-
-    }
-    else
-    {
+    if(message != null) {
         int reqForum = (forumId != -1 ? forumId : 0);
         int folderId = message.getForumId();
         boolean isModerator = fsc.isModerator(userId, folderId);
@@ -230,10 +222,15 @@
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/viewMessage.js"></script>
     <script type="text/javascript">
-        function init()
-        {
-            parentMessageId = <%=currentMessageId%>;
-        }
+      var wysiwygEditorInstance = null;
+
+      <% if (message == null) { %>
+      window.location.href = "Main";
+      <% } %>
+
+      function init() {
+        parentMessageId = <%=currentMessageId%>;
+      }
 
         function validateMessage()
         {
@@ -264,7 +261,9 @@
         }
 
         function initCKeditor() {
-           	<view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>
+          if (wysiwygEditorInstance == null) {
+            wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forums"/>;
+          }
         }
 
         function callResizeFrame()
@@ -553,10 +552,10 @@
                                             <td colspan="2"></td>
                                         </tr>
                                         <input type="hidden" name="forumId" value="<%=message.getForumId()%>"/>
-                                        <input type="hidden" name="parentId" value="<%=messageId%>"/>
+                                        <input type="hidden" name="parentId" value=""/>
                                         <tr>
                                             <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("messageTitle")%> :&nbsp;</span></td>
-                                            <td valign="top"><input type="text" name="messageTitle" value="Re : <%=EncodeHelper.javaStringToHtmlString(message.getTitle())%>" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
+                                            <td valign="top"><input type="text" name="messageTitle" value="" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
                                         </tr>
                                         <tr>
                                             <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("messageText")%> :&nbsp;</span></td>
@@ -609,33 +608,29 @@
         out.println(window.printAfter());
     }
 %>
-    <script type="text/javascript">init();scrollMessageList(<%=messageId%>);</script><%
-
-    if (displayAllMessages && scrollToMessage)
-    {
-%>
-    <script type="text/javascript">scrollMessage(<%=messageId%>);</script><%
-
-    }
-
-    if (!isReader && forumNotes.length > 0)
-    {
-%>
-    <form name="notationForm" action="viewMessage" method="post">
-        <input name="call" type="hidden" value="viewForum"/>
-        <input name="action" type="hidden" value="15"/>
-        <input name="forumId" type="hidden" value="<%=forumId%>"/>
-        <input name="params" type="hidden" value="<%=currentMessageId%>"/>
-        <input name="note" type="hidden" value=""/>
-    </form>
-    <script type="text/javascript">
-        readOnly = <%=isReader%>;
-        currentNote = <%=forumNotes[0]%>;
-        userNote = <%=forumNotes[1]%>;
-        loadNotation();
-    </script><%
-
-    }
-%>
+<% if (!isReader && forumNotes.length > 0) { %>
+<form name="notationForm" action="viewMessage" method="post">
+  <input name="call" type="hidden" value="viewForum"/>
+  <input name="action" type="hidden" value="15"/>
+  <input name="forumId" type="hidden" value="<%=forumId%>"/>
+  <input name="params" type="hidden" value="<%=currentMessageId%>"/>
+  <input name="note" type="hidden" value=""/>
+</form>
+<script type="text/javascript">
+  readOnly = <%=isReader%>;
+  currentNote = <%=forumNotes[0]%>;
+  userNote = <%=forumNotes[1]%>;
+  loadNotation();
+</script>
+<% } %>
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+    init();
+    scrollMessageList(<%=messageId%>);
+    <% if (displayAllMessages && scrollToMessage) {%>
+    scrollMessage(<%=messageId%>);
+    <% } %>
+  });
+</script>
 </body>
 </html>

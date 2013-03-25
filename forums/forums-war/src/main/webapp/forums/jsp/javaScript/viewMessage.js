@@ -1,117 +1,78 @@
 var currentMessageId = -1;
 var parentMessageId = -1;
 
-function replyMessage(messageId)
-{
-	currentMessageId = messageId;
-    var divList = document.getElementsByTagName("DIV");
-    var div;
-    var divId;
-    var i;
-    var refDivId = "msgContent" + messageId;
-    for (i = 0; i < divList.length; i++)
-    {
-    	div = divList[i];
-    	divId = div.id;
-        if (divId != null && divId.length > 10 && divId.substring(0, 10) == "msgContent"
-            && divId != refDivId)
-        {
-            div.style.display = "none";
-        }
-    }
-    var responseTable = document.getElementById("responseTable");
-    if (responseTable != null)
-    {
-    	responseTable.style.display = "block";
-    	initCKeditor();
-    }
-    var backButton = document.getElementById("backButton");
-    if (backButton != null)
-    {
-    	backButton.style.display = "none";
-    }
-    scrollMessageList(messageId);
-    callResizeFrame();
+function replyMessage(messageId) {
+  currentMessageId = messageId;
+  $('div[id^="msgContent"]').hide();
+  var $msgContent = $('#msgContent' + messageId).show();
+  $('input[name="parentId"]').val(messageId);
+  $('input[name="messageTitle"]').val('Re : ' + $msgContent.find('.txtnav').html());
+  var $responseTable = $('#responseTable').show();
+  if ($responseTable.length > 0) {
+    initCKeditor();
+  }
+  $('#backButton').hide();
+  scrollMessageList(messageId);
+  document.location.href = "#msg" + messageId;
+  callResizeFrame();
 }
 
-function cancelMessage()
-{
-    var messageId = currentMessageId;
-	currentMessageId = -1;
-    var divList = document.getElementsByTagName("DIV");
-    var div;
-    var divId;
-    var i;
-    for (i = 0; i < divList.length; i++)
-    {
-        div = divList[i];
-        divId = div.id;
-        if (divId != null && divId.length > 10 && divId.substring(0, 10) == "msgContent")
-        {
-            div.style.display = "block";
-        }
-    }
-    var responseTable = document.getElementById("responseTable");
-    if (responseTable != null)
-    {
-    	resetText();
-        responseTable.style.display = "none";
-    }
-    var backButton = document.getElementById("backButton");
-    if (backButton != null)
-    {
-        backButton.style.display = "block";
-    }
-    scrollMessage(messageId);
-    callResizeFrame();
+function cancelMessage() {
+  var messageId = currentMessageId;
+  currentMessageId = -1;
+  $('div[id^="msgContent"]').show();
+  var $responseTable = $('#responseTable').hide();
+  if ($responseTable.length > 0) {
+    resetText();
+  }
+  $('#backButton').show();
+  scrollMessage(messageId);
+  callResizeFrame();
 }
 
-function scrollMessageList(messageId)
-{
-	document.getElementById("msgLine" + parentMessageId).className = (messageId == parentMessageId ? "msgLine" : "");
-    var msgDiv = document.getElementById("msgDiv");
-    if (msgDiv != null)
-    {
-    	var msgTable = document.getElementById("msgTable");
-        if (msgDiv.offsetHeight > msgTable.scrollHeight)
-        {
-        	msgDiv.style.height = msgTable.scrollHeight;
-        }
+function scrollMessageList(messageId, noMsgDivScroll) {
 
-        var i;
-        var row;
-        var searchedId = "msgLine" + messageId;
-        if (msgDiv.scrollHeight > msgDiv.offsetHeight)
-        {
-            for (i = 0; i < msgTable.rows.length; i++)
-            {
-                row = msgTable.rows[i];
-                if (row.id == searchedId)
-                {
-                	msgDiv.scrollTop = row.offsetTop;
-                }
-            }
-        }
-        for (i = 0; i < msgTable.rows.length; i++)
-        {
-            row = msgTable.rows[i];
-            row.className = (row.id == searchedId ? "msgLine" : "");
-        }
-    }
+  // CSS
+  $('[id^="msgLine"]').removeClass('msgLine');
+  var msgContents = $('[id^="msgContent"]');
+  msgContents.removeClass('msgContent');
+  $('#msgLine' + parentMessageId).addClass('msgLine');
+  var $msgLine = $('#msgLine' + messageId).addClass('msgLine');
+  var $msgContent = $('#msgContent' + messageId);
+  if (msgContents.length > 1) {
+    $msgContent.addClass('msgContent');
+  }
+
+  // Focus
+  if (!noMsgDivScroll) {
+    scrollToItem($msgLine, $('#msgDiv')[0]);
+  }
+  scrollToItem($msgContent, document.body);
 }
 
-
-function scrollMessage(messageId)
-{
-    if (currentMessageId != -1)
-    {
-    	cancelMessage();
-    }
-	document.location.href = "#msg" + messageId;
-	scrollMessageList(messageId);
+function scrollToItem($item, referenceItem) {
+  if ($(referenceItem).find($item).length > 0) {
+    var $referenceHeightItem = $(referenceItem == document.body ? window : referenceItem);
+    var referenceHeight = $referenceHeightItem.height();
+    var top = $item.offset().top -
+        (referenceItem == document.body ? 0 : $(referenceItem).offset().top);
+    var displayedTop = referenceItem.scrollTop;
+    var displayedEnd = displayedTop + referenceHeight;
+    $(referenceItem).animate({
+      scrollTop : top - Math.ceil(referenceHeight / 2)
+    });
+  }
 }
 
-function scrollTop()
-{
-	document.location.href = "#topPage";
+function scrollMessage(messageId) {
+  if (currentMessageId != -1) {
+    cancelMessage();
+  }
+  scrollMessageList(messageId, true);
+}
+
+function scrollTop() {
+  $('body').animate({
+    scrollTop : 0
+  });
 }
