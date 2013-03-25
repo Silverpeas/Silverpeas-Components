@@ -168,7 +168,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           kmeliaSC.processSelectedPublicationIds(selectedPublicationIds, notSelectedPublicationIds);
 
       boolean toPortlet = "1".equals(sToPortlet);
-      boolean toSearch = StringUtil.isDefined(query);
+      boolean searchInProgress = StringUtil.isDefined(query);
 
       if (StringUtil.isDefined(index)) {
         kmeliaSC.setIndexOfFirstPubToDisplay(index);
@@ -209,7 +209,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         sortAllowed = false;
         publications = kmeliaSC.getSessionPublicationsList();
         role = SilverpeasRole.user.toString();
-      } else if (toSearch) {
+      } else if (searchInProgress) {
         // Insert this new search inside persistence layer in order to compute statistics
         saveTopicSearch(componentId, nodeId, kmeliaSC, query);
         publications = kmeliaSC.search(query);
@@ -221,7 +221,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         sortAllowed = false;
         linksAllowed = false;
         seeAlso = false;
-        toSearch = false;
+        searchInProgress = false;
       }
 
       if (KmeliaHelper.isToolbox(componentId)) {
@@ -244,14 +244,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         writer.write("</table>");
         writer.write(board.printAfter());
       } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) &&
-          kmeliaSC.getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure()) {
-        List<KmeliaPublication> publicationsToDisplay = kmeliaSC.getLatestPublications();
-        displayLastPublications(publicationsToDisplay, kmeliaSC, resources, gef, writer);
+          kmeliaSC.getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() &&
+          !searchInProgress) {
+        displayLastPublications(kmeliaSC, resources, gef, writer);
       } else {
         if (publications != null) {
-          displayPublications(publications, sortAllowed, linksAllowed, seeAlso,
-              toSearch, kmeliaSC, role, gef, context, resources, selectedIds, pubIdToHighlight,
-              writer, attachmentToLink);
+          displayPublications(publications, sortAllowed, linksAllowed, seeAlso, searchInProgress,
+              kmeliaSC, role, gef, context, resources, selectedIds, pubIdToHighlight, writer,
+              attachmentToLink);
         }
       }
     }
@@ -1196,10 +1196,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   }
 
-  private void displayLastPublications(List<KmeliaPublication> pubs,
-      KmeliaSessionController kmeliaScc, ResourcesWrapper resources, GraphicElementFactory gef,
-      Writer writer) throws IOException {
+  private void displayLastPublications(KmeliaSessionController kmeliaScc,
+      ResourcesWrapper resources, GraphicElementFactory gef, Writer writer) throws IOException {
 
+    List<KmeliaPublication> pubs = kmeliaScc.getLatestPublications();
     boolean displayLinks = URLManager.displayUniversalLinks();
     PublicationDetail pub;
     KmeliaPublication kmeliaPub;
