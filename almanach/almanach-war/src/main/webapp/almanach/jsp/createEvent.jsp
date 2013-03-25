@@ -473,7 +473,7 @@ $(document).ready(function() {
             </fieldset>
           </div>
           <div class="cell" style="width: 50%">
-            <view:fileUpload fieldset="true" jqueryFormSelector="form[name='eventForm']" nbFileLimit="5" />
+            <view:fileUpload fieldset="true" jqueryFormSelector="form[name='eventForm']" />
           </div>
         </div>
 		

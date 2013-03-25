@@ -405,7 +405,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         for (UploadedFile uploadedFile : uploadedFiles) {
 
           // Register attachment
-          uploadedFile.registerSimpleDocument(eventId, getComponentId(), getUserDetail(),
+          uploadedFile.registerAttachment(eventId, getComponentId(), getUserDetail(),
               I18NHelper.defaultLanguage, false);
         }
       }
