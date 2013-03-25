@@ -745,7 +745,13 @@ String displaySurveyResult(String userName, String userId, String styleView, Col
         if (!surveyScc.isParticipationMultipleUsed()) {
           r += "/"+nbRegistered;
         }
-        if (!anonymous) {
+        if (!anonymous &&
+            ((SilverpeasRole.admin.toString().equals(profile) ||
+            SilverpeasRole.publisher.toString().equals(profile)) ||
+            (resultMode == QuestionContainerHeader.IMMEDIATE_RESULTS ||
+            (resultMode == QuestionContainerHeader.DELAYED_RESULTS &&
+            (resultView == QuestionContainerHeader.DETAILED_DISPLAY_RESULTS || 
+            resultView == QuestionContainerHeader.TWICE_DISPLAY_RESULTS))))) {
           // affichage de l'icone des users
           r += "       <a href=\"javaScript:onClick=viewAllUsers('"+surveyId+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a>";
         }
@@ -803,7 +809,6 @@ String displaySurveyResult(String userName, String userId, String styleView, Col
         r += board.printAfter();
         r += "<br/>";
       }
-				
       if ((SilverpeasRole.admin.toString().equals(profile) ||
           SilverpeasRole.publisher.toString().equals(profile)) ||
           resultMode == QuestionContainerHeader.IMMEDIATE_RESULTS ||
@@ -816,23 +821,29 @@ String displaySurveyResult(String userName, String userId, String styleView, Col
 				  // l'enquete n'est pas anonyme, proposer le choix d'affichage
 	        r += "   <div class=\"sousNavBulle\">";
 	        r += "    <p>"+resources.getString("survey.results")+" "+resources.getString("survey.choice")+" : ";
-	        if(resultView == QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS) {
+	        if((SilverpeasRole.admin.toString().equals(profile) ||
+              SilverpeasRole.publisher.toString().equals(profile)) ||
+              resultView == QuestionContainerHeader.TWICE_DISPLAY_RESULTS) {
+            String active = "";
+            if (choice.equals("C")) {
+              active = "active";
+            }
+            r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-classic\">"+resources.getString("survey.C")+"</a>";
+            active = "";
+            if (choice.equals("D")) {
+             active = "active";
+            }
+            r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-detail\">"+resources.getString("survey.D")+"</a>";
+          } else if((SilverpeasRole.admin.toString().equals(profile) ||
+	            SilverpeasRole.publisher.toString().equals(profile)) ||
+	            resultView == QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS) {
 	          choice = "C";
 	          r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"active\" id=\"scope-classic\">"+resources.getString("survey.C")+"</a>";
-	        } else if(resultView == QuestionContainerHeader.DETAILED_DISPLAY_RESULTS) {
+	        } else if((SilverpeasRole.admin.toString().equals(profile) ||
+	            SilverpeasRole.publisher.toString().equals(profile)) ||
+	            resultView == QuestionContainerHeader.DETAILED_DISPLAY_RESULTS) {
 	          choice = "D";
 	          r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"active\" id=\"scope-detail\">"+resources.getString("survey.D")+"</a>";
-	        } else if(resultView == QuestionContainerHeader.TWICE_DISPLAY_RESULTS) {
-	          String active = "";
-	          if (choice.equals("C")) {
-	            active = "active";
-	          }
-	          r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-classic\">"+resources.getString("survey.C")+"</a>";
-	          active = "";
-	          if (choice.equals("D")) {
-	           active = "active";
-	          }
-	          r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-detail\">"+resources.getString("survey.D")+"</a>";
 	        }
 	        r += "    </p>";
 	        r += "   </div>";

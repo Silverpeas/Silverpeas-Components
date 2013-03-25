@@ -42,6 +42,7 @@ import com.stratelia.webactiv.survey.control.SurveySessionController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 
 public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionController> {
 
@@ -158,16 +159,16 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       request.setAttribute("Users", users);
       destination = rootDest + "answerResult.jsp";
     } else if (function.equals("ViewAllUsers")) {
-      String surveyId = request.getParameter("SurveyId");
+      QuestionContainerDetail survey = surveySC.getSessionSurvey();
       Collection<String> users = new ArrayList<String>();
       try {
-        users = surveySC.getUsersBySurvey(surveyId);
+        users = surveySC.getUsersBySurvey(survey.getId());
       } catch (Exception e) {
         SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_USERPANEL_FAILED", "function = " + function, e);
       }
       request.setAttribute("Users", users);
-      request.setAttribute("SurveyId", surveyId);
+      request.setAttribute("Survey", survey);
       destination = rootDest + "answerResult.jsp";
     } else if (function.equals("UserResult")) {
       String userId = request.getParameter("UserId");

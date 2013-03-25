@@ -593,7 +593,7 @@ function clipboardCopy() {
     }
     
     function showDialog(title) {
-	 	  $("#publicationResultDialog").popup({
+	 	  $("#publishResultDialog").popup({
 	      title: title,
 	      callback: function() {
 	        if (isCorrectForm()) {
@@ -672,9 +672,9 @@ out.println(surveyPart);
 </view:frame>
 </view:window>
 
-<div id="publicationResultDialog" style="display: none;">
+<div id="publishResultDialog" style="display: none;">
   <form name="publishResultForm" action="PublishResult" method="post">
-  <div id="view-publicationResultDialog">
+  <div id="view-publishResultDialog">
     <fmt:message key="survey.resultView" var="resultViewMsg" />
     <fmt:message key="survey.C" var="classicMsg" />
     <fmt:message key="survey.D" var="detailedMsg" />
@@ -684,7 +684,7 @@ out.println(surveyPart);
     <fmt:message key="survey.notifications" var="notificationMsg" />
     <fmt:message key="survey.noNotification" var="noNotificationMsg" />
     <fmt:message key="survey.notificationParticipants" var="notificationParticipantsMsg" />
-    <label for="view">${resultViewMsg}</label>
+    <label class="label-ui-dialog" for="view">${resultViewMsg}</label>
     <%
     String checked = "";
     if(QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS == resultView || 
@@ -692,7 +692,7 @@ out.println(surveyPart);
       checked = "checked=\"checked\"";
     }
     %>
-    <span class="champs"><input name="checkedView" type="checkbox" value="C" <%=checked%>/><b>${classicMsg}</b><br />${classicDescMsg}</span>
+    <span class="champs-ui-dialog"><input name="checkedView" type="checkbox" value="C" <%=checked%>/><b>${classicMsg}</b><br />${classicDescMsg}</span>
     <% 
     checked = "";
     if(QuestionContainerHeader.DETAILED_DISPLAY_RESULTS == resultView || 
@@ -700,15 +700,15 @@ out.println(surveyPart);
       checked = "checked=\"checked\"";
     }
     %>
-    <span class="champs"><input name="checkedView" type="checkbox" value="D" <%=checked%>/><b>${detailedMsg}</b><br />${detailedDescMsg}</span>
+    <span class="champs-ui-dialog"><input name="checkedView" type="checkbox" value="D" <%=checked%>/><b>${detailedMsg}</b><br />${detailedDescMsg}</span>
   </div>
-  <div id="syntheseFile-publicationResultDialog">
-    <label for="syntheseFile">${synthesisFileMsg}</label>
-    <span class="champs"><input name="syntheseFile" type="file" /></span>
+  <div id="synthesisFile-publishResultDialog">
+    <label class="label-ui-dialog" for="synthesisFile">${synthesisFileMsg}</label>
+    <span class="champs-ui-dialog"><input name="synthesisFile" type="file" /></span>
   </div>
-  <div id="notification-publicationResultDialog"> 
-  <label for="notification">${notificationMsg}</label>
-  <span class="champs"><select name="notification"><option>${noNotificationMsg}</option><option>${notificationParticipantsMsg}</option></select></span>
+  <div id="notification-publishResultDialog"> 
+  <label class="label-ui-dialog" for="notification">${notificationMsg}</label>
+  <span class="champs-ui-dialog"><select name="notification"><option>${noNotificationMsg}</option><option>${notificationParticipantsMsg}</option></select></span>
   </div>
   </form>
 </div>
