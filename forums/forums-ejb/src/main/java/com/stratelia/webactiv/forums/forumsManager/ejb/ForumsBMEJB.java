@@ -682,8 +682,7 @@ public class ForumsBMEJB implements ForumsBM {
     Connection con = openConnection();
     try {
       Message message = ForumsDAO.getMessage(con, messagePK);
-      message.setText(getWysiwygContent(messagePK.getInstanceId(), messagePK
-          .getId()));
+      message.setText(getWysiwygContent(messagePK.getInstanceId(), messagePK.getId()));
       return message;
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getMessage()",
@@ -693,6 +692,7 @@ public class ForumsBMEJB implements ForumsBM {
     }
   }
 
+  @Override
   public String getMessageTitle(int messageId) {
     Connection con = openConnection();
     try {
@@ -705,6 +705,7 @@ public class ForumsBMEJB implements ForumsBM {
     }
   }
 
+  @Override
   public int getMessageParentId(int messageId) {
     Connection con = openConnection();
     try {
@@ -1305,16 +1306,16 @@ public class ForumsBMEJB implements ForumsBM {
     createTagCloud(tagCloud, keywords);
   }
 
-  private void createTagCloud(TagCloud tagCloud, String keywords) throws RemoteException {
+  private void createTagCloud(TagCloud tags, String keywords) throws RemoteException {
     if (keywords != null) {
       String[] words = StringUtil.split(keywords, ' ');
       List<String> tagList = new ArrayList<String>(words.length);
       for (String tag : words) {
         String tagKey = TagCloudUtil.getTag(tag);
         if (!tagList.contains(tagKey)) {
-          tagCloud.setTag(tagKey);
-          tagCloud.setLabel(tag.toLowerCase());
-          tagCloudBm.createTagCloud(tagCloud);
+          tags.setTag(tagKey);
+          tags.setLabel(tag.toLowerCase());
+          tagCloudBm.createTagCloud(tags);
           tagList.add(tagKey);
         }
       }
@@ -1355,12 +1356,14 @@ public class ForumsBMEJB implements ForumsBM {
     createTagCloud(messagePK, keywords);
   }
 
+  @Override
   public String getForumTags(ForumPK forumPK) throws RemoteException {
     Collection<TagCloud> tagClouds = tagCloudBm.getTagCloudsByElement(
         forumPK.getComponentName(), forumPK.getId(), TagCloud.TYPE_FORUM);
     return getTags(tagClouds);
   }
 
+  @Override
   public String getMessageTags(MessagePK messagePK) throws RemoteException {
     Collection<TagCloud> tagClouds = tagCloudBm.getTagCloudsByElement(
         messagePK.getComponentName(), messagePK.getId(), TagCloud.TYPE_MESSAGE);
@@ -1369,15 +1372,14 @@ public class ForumsBMEJB implements ForumsBM {
 
   private String getTags(Collection<TagCloud> tagClouds) {
     StringBuilder sb = new StringBuilder();
-    for (TagCloud tagCloud : tagClouds) {
+    for (TagCloud tag : tagClouds) {
       if (sb.length() > 0) {
         sb.append(' ');
       }
-      sb.append(tagCloud.getLabel());
+      sb.append(tag.getLabel());
     }
     return sb.toString();
   }
-
 
   private void deleteNotation(ForumPK forumPK) throws RemoteException {
     notationBm.deleteNotation(new NotationPK(forumPK.getId(), forumPK.getComponentName(),

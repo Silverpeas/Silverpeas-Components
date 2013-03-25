@@ -1107,7 +1107,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   @Override
   public ResourceLocator getSettings() {
     if (settings == null) {
-      settings = new ResourceLocator("com.stratelia.webactiv.forums.settings.forumsSettings", "");
+      settings = new ResourceLocator("org.silverpeas.forums.settings.forumsSettings", "");
     }
     return settings;
   }
@@ -1237,7 +1237,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       try {
         notationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
       } catch (Exception e) {
-        throw new NotationRuntimeException("KmeliaSessionController.getNotationBm()",
+        throw new NotationRuntimeException("ForumsSessionController.getNotationBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
@@ -1356,5 +1356,4 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private void setPositions(List<PdcPosition> positions) {
     this.positions = positions;
   }
-
 }

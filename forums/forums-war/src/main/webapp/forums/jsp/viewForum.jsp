@@ -59,8 +59,7 @@
         "org.silverpeas.forums.multilang.forumsBundle", fsc.getLanguage());
     if (fsc == null) {
         // No forums session controller in the request -> security exception
-        String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator()
-            .getString("sessionTimeout");
+        String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
         getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout)
             .forward(request, response);
         return;
