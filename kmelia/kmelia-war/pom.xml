@@ -94,13 +94,6 @@
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>versioning</artifactId>
-      <version>${core.version}</version>
-      <classifier>client</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>comment</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
@@ -169,7 +162,7 @@
       <artifactId>test-core</artifactId>
       <version>${core.version}</version>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
   </dependencies>
 
 </project>

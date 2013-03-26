@@ -84,7 +84,7 @@ public class DataWarningQueryResult extends Object {
 
   public void addError(Exception ex, String sqlQuery) {
     StringBuilder sb = new StringBuilder();
-    Exception nested;
+    Throwable nested;
     hasError = true;
     errEx = ex;
     errQuery = sqlQuery;

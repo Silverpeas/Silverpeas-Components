@@ -233,7 +233,7 @@ function doSetInLine(){
 <%
 	// wysiwyg
 	displayPublication(out, news, pubComplete,true, settings);
-	if (WysiwygController.haveGotWysiwyg(pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId(), pubComplete.getPublicationDetail().getLanguage()))
+	if (WysiwygController.haveGotWysiwygToDisplay(pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId(), pubComplete.getPublicationDetail().getLanguage()))
 	{
 		out.flush();
 		displayViewWysiwyg(news.getPublicationId(), pubComplete.getPublicationDetail().getLanguage(), news.getComponentId(), request, response);

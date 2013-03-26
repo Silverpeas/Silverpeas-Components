@@ -31,6 +31,7 @@ import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.infoLetter.InfoLetterContentManager;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
@@ -39,9 +40,9 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
@@ -51,8 +52,7 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -79,10 +79,10 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   // Constructeur
   public InfoLetterDataManager() {
     try {
-      infoLetterDAO = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.infoLetter.model.InfoLetter");
-      infoLetterPublicationDAO = SilverpeasBeanDAOFactory
-          .getDAO("com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication");
+      infoLetterDAO = SilverpeasBeanDAOFactory.getDAO(
+          "com.stratelia.silverpeas.infoLetter.model.InfoLetter");
+      infoLetterPublicationDAO = SilverpeasBeanDAOFactory.getDAO(
+          "com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication");
       infoLetterContentManager = new InfoLetterContentManager();
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
@@ -98,7 +98,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   @Override
   public void createInfoLetter(InfoLetter il) {
     try {
-
       WAPrimaryKey pk = infoLetterDAO.add(il);
       il.setPK(pk);
     } catch (PersistenceException pe) {
@@ -126,14 +125,13 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     String whereClause = "instanceId = '" + instanceId + "'";
     List<InfoLetter> infoLetters;
     try {
-      infoLetters =
-          new ArrayList<InfoLetter>(infoLetterDAO.findByWhereClause(new IdPK(), whereClause));
+      return new ArrayList<InfoLetter>(infoLetterDAO.findByWhereClause(new IdPK(),
+          whereClause));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
-    return infoLetters;
   }
 
   // Recuperation de la liste des publications
@@ -143,17 +141,15 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     List<InfoLetterPublication> publications;
     try {
       InfoLetter letter = getInfoLetter(letterPK);
-      String whereClause =
-          "instanceId = '" + letter.getInstanceId() + "' and letterId = " + letterPK.getId();
-      publications =
-          new ArrayList<InfoLetterPublication>(infoLetterPublicationDAO.findByWhereClause(letterPK,
-              whereClause));
+      String whereClause = "instanceId = '" + letter.getInstanceId() + "' AND letterId = "
+          + letterPK.getId();
+      return new ArrayList<InfoLetterPublication>(infoLetterPublicationDAO.findByWhereClause(
+          letterPK, whereClause));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
           SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
     }
-    return publications;
   }
 
   // Creation d'une publication
@@ -242,13 +238,13 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   // Creation de la lettre par defaut a l'instanciation
   @Override
   public InfoLetter createDefaultLetter(String componentId) {
-    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
+    OrganizationController oc = new OrganizationController();
     ComponentInst ci = oc.getComponentInst(componentId);
     InfoLetter ie = new InfoLetter();
     ie.setInstanceId(componentId);
     ie.setName(ci.getLabel());
     createInfoLetter(ie);
-    initTemplate(componentId, ie.getPK());
+    initTemplate(componentId, ie.getPK(), "0");
     return ie;
   }
 
@@ -262,8 +258,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
         IdPK publiPK = new IdPK();
         publiPK.setId(pubId);
         InfoLetterPublicationPdC infoLetter = getInfoLetterPublication(publiPK);
-        silverObjectId = infoLetterContentManager.createSilverContent(null, infoLetter, infoLetter.
-            getCreatorId());
+        silverObjectId = infoLetterContentManager.createSilverContent(null, infoLetter,
+            infoLetter.getCreatorId());
       }
       return silverObjectId;
     } catch (Exception e) {
@@ -342,7 +338,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Sauvegarde de la liste des emails externes
-  @Override
   public void setExternalsSuscribers(WAPrimaryKey letterPK, Collection<String> emails) {
     Connection con = openConnection();
     Statement stmt = null;
@@ -396,11 +391,12 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   // initialisation du template
   @Override
-  public void initTemplate(String componentId, WAPrimaryKey letterPK) {
+  public void initTemplate(String componentId, WAPrimaryKey letterPK, String userId) {
     try {
       String basicTemplate = "<body></body>";
-      WysiwygController.createFileAndAttachment(basicTemplate, componentId,
-          InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), I18NHelper.defaultLanguage);
+      WysiwygController.createFileAndAttachment(basicTemplate,
+          new ForeignPK(InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), componentId), userId,
+          I18NHelper.defaultLanguage);
     } catch (Exception e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",

@@ -26,21 +26,18 @@ package com.stratelia.webactiv.almanach.control;
 import java.util.Collection;
 
 import com.silverpeas.calendar.DateTime;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventOccurrence;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.silverpeas.attachment.model.SimpleDocument;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
  * An occurrence of an event in the time and that can be rendered in a calendar view.
- * 
+ *
  * A DisplayableEventOccurrence instance decorates an event occurrence by adding to it rendering
  * information so that the occurrence can be displayed into a calendar view.
  */
@@ -120,17 +117,8 @@ public class DisplayableEventOccurrence extends EventOccurrence {
     EventDetail event = getEventDetail();
     String startDate = getStartDateTimeInISO();
     String endDate = getEndDateTimeInISO();
-    String description = null;
-    try {
-      description = event.getWysiwyg();
-    } catch (WysiwygException ex) {
-      Logger.getLogger(DisplayableEventOccurrence.class.getName()).log(Level.SEVERE, null, ex);
-    } finally {
-      if (!isDefined(description)) {
-        description = event.getDescription();
-      }
-    }
-    Collection<AttachmentDetail> attachments = event.getAttachments();
+    String description  = event.getWysiwyg();
+    Collection<SimpleDocument> attachments = event.getAttachments();
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("id", event.getId());
     jsonObject.put("instanceId", event.getInstanceId());

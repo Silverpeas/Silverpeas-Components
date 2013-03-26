@@ -25,7 +25,7 @@
 
 -->
 <ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>KmeliaJar</display-name>
@@ -66,13 +66,6 @@
         <home>com.stratelia.webactiv.util.favorit.control.FavoritBmHome</home>
         <remote>com.stratelia.webactiv.util.favorit.control.FavoritBm</remote>
         <ejb-link>FavoritBm</ejb-link>
-      </ejb-ref>
-      <ejb-ref>
-        <ejb-ref-name>Versioning</ejb-ref-name>
-        <ejb-ref-type>Session</ejb-ref-type>
-        <home>com.stratelia.silverpeas.versioning.ejb.VersioningBmHome</home>
-        <remote>com.stratelia.silverpeas.versioning.ejb.VersioningBm</remote>
-        <ejb-link>Versioning</ejb-link>
       </ejb-ref>
       <resource-ref>
         <res-ref-name>jdbc/Silverpeas</res-ref-name>
@@ -134,7 +127,7 @@
       <method>
         <ejb-name>KmeliaBm</ejb-name>
         <method-intf>Remote</method-intf>
-        <method-name>createPublicationIntoTopicWithoutNotifications</method-name>
+        <method-name>createPublicationIntoTopic</method-name>
         <method-params>
           <method-param>com.stratelia.webactiv.util.publication.model.PublicationDetail</method-param>
           <method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>

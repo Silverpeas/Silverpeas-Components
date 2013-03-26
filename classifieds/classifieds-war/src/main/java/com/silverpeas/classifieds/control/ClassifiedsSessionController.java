@@ -47,8 +47,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -547,11 +546,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public String getWysiwygHeader() {
     if (isWysiwygHeaderEnabled()) {
-      try {
         return WysiwygController.load(getComponentId(), "Node_0", getLanguage());
-      } catch (WysiwygException e) {
-        return "";
-      }
     }
     return "";
   }

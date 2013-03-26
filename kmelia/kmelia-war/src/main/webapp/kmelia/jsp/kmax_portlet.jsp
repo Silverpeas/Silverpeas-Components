@@ -52,7 +52,6 @@
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="publicationsList.jsp.inc" %>
 <%@ include file="kmax_axisReport.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%!
   //Icons
@@ -64,7 +63,7 @@
 <% 
 String rootId = "0";
 
-//R�cup�ration des param�tres
+//Recuperation des parametres
 String translation = (String) request.getAttribute("Translation");
 if (translation == null)
 	translation = kmeliaScc.getLanguage();

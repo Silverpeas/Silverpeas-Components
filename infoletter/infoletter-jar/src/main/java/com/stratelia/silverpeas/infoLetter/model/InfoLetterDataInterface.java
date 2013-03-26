@@ -155,7 +155,7 @@ public interface InfoLetterDataInterface {
   public boolean isUserSuscribed(String userId, String componentId);
 
   // initialisation du template
-  public void initTemplate(String componentId, WAPrimaryKey letterPK);
+  public void initTemplate(String componentId, WAPrimaryKey letterPK, String userId);
 
   public int getSilverObjectId(String pubId, String componentId);
 }

@@ -334,7 +334,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                      	}
 	                      	else
 	                      	{
-	                      		url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), imageUrl, imageUrl, "image/gif", settings.getString("imagesSubDirectory"));
+	                      		url = FileServerUtils.getUrl(answer.getPK().getComponentName(), imageUrl, imageUrl, "image/gif", settings.getString("imagesSubDirectory"));
 	                      	}
 	                        r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+nbQuestionInPage+"\" value=\""+inputValue+"\" "+selectedStr+"></td><td align=\"left\" width=\"100%\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
 	                        r += "<img src=\""+url+"\" border=\"0\"></td><td>";
@@ -467,7 +467,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 						                      	}
 						                      	else
 						                      	{
-	                                            	url = FileServer.getUrl(surveyScc.getSpaceId(), surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+	                                            	url = FileServerUtils.getUrl(surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 	                                            }
 	                                            r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\"></td><td align=\"left\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
 	                                            r += "<img src=\""+url+"\" border=\"0\"></td><td>";
@@ -478,7 +478,6 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           }
                           i++;
                           r += "</table>";
-                          //r += "</td></tr></table>";
                           r += board.printAfter();
                           if (itQ.hasNext())
                               r += "<BR>";
@@ -613,13 +612,13 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 					                      	}
 					                      	else
 					                      	{
-	                                            url = FileServer.getUrl(surveyScc.getSpaceId(), surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+	                                            url = FileServerUtils.getUrl(surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 	                                        }
 	                                        r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
 	                                        r += "<img src=\""+url+"\" border=\"0\"></td><td>";
                                     	}
                                 	}
-                            	} // {while}
+                            	}
                             }
                       }
                       i++;
@@ -627,7 +626,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                       r += board.printAfter();
                       if (j<questions.size()-1)
                             r += "<BR>";
-                } // {for}
+                }
                 r += "</form>";
             }
             else
@@ -989,7 +988,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                      	}
 	                      	else
 	                      	{
-                    		  	url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+                    		  	url = FileServerUtils.getUrl(answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
                     		}
                             r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
                             r += "<img src=\""+url+"\" border=\"0\"></td><td width=\"60%\">";
@@ -1149,7 +1148,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                      	}
 	                      	else
 	                      	{
-                    		  	url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+                    		  	url = FileServerUtils.getUrl(answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
                     		}
                             r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
                             r += "<img src=\""+url+"\" border=\"0\" width=\"60%\"></td><td>";

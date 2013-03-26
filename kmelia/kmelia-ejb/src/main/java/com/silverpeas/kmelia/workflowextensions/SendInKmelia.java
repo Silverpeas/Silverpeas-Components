@@ -1,53 +1,39 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.kmelia.workflowextensions;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-
 import au.id.jericho.lib.html.Source;
-
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.DataRecordUtil;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
+import com.silverpeas.form.*;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.ExplorerField;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.kmelia.control.KmeliaServiceFactory;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -62,14 +48,6 @@ import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.external.impl.ExternalActionImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
-import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.Worker;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
@@ -77,25 +55,28 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
+import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-
-import org.silverpeas.core.admin.OrganisationController;
+import java.util.Map;
 
 public class SendInKmelia extends ExternalActionImpl {
+
   private String targetId = "unknown";
   private String topicId = "unknown";
   private String pubTitle = "unknown";
@@ -106,12 +87,11 @@ public class SendInKmelia extends ExternalActionImpl {
   // Add pdf history before instance attachments
   private boolean addPDFHistoryFirst = true;
   private String pdfHistoryName = null;
-  private OrganisationController orga = null;
+  private OrganizationController orga = null;
   private String userId = null;
   private final String ADMIN_ID = "0";
 
   public SendInKmelia() {
-
   }
 
   @Override
@@ -165,8 +145,9 @@ public class SendInKmelia extends ExternalActionImpl {
     String pubName = getProcessInstance().getTitle(getRole(), getLanguage());
     if (StringUtil.isDefined(pubTitle)) {
       try {
-        pubName = DataRecordUtil.applySubstitution(pubTitle, getProcessInstance().getAllDataRecord(
-            role, "fr"), "fr");
+        pubName =
+            DataRecordUtil.applySubstitution(pubTitle, getProcessInstance().getAllDataRecord(role,
+            "fr"), "fr");
       } catch (WorkflowException e) {
         SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
       }
@@ -174,15 +155,16 @@ public class SendInKmelia extends ExternalActionImpl {
     String desc = "";
     if (StringUtil.isDefined(pubDesc)) {
       try {
-        desc = DataRecordUtil.applySubstitution(pubDesc, getProcessInstance().getAllDataRecord(role,
-                "fr"), "fr");
+        desc =
+            DataRecordUtil.applySubstitution(pubDesc, getProcessInstance().getAllDataRecord(role,
+            "fr"), "fr");
       } catch (WorkflowException e) {
         SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
       }
     }
     userId = getBestUserDetail().getId();
-    PublicationDetail pubDetail = new PublicationDetail(pubPK, pubName, desc, now, now, null,
-        userId, 1, null, null, null);
+    PublicationDetail pubDetail =
+        new PublicationDetail(pubPK, pubName, desc, now, now, null, userId, 1, null, null, null);
 
     if (StringUtil.isDefined(xmlFormName)) {
       pubDetail.setInfoId(xmlFormName);
@@ -262,21 +244,24 @@ public class SendInKmelia extends ExternalActionImpl {
 
   }
 
-  public Hashtable<String, String> pasteFiles(ForeignPK fromPK, ForeignPK toPK) {
-    Hashtable<String, String> fileIds = new Hashtable<String, String>();
-
+  public Map<String, String> pasteFiles(ForeignPK fromPK, ForeignPK toPK) {
+    Map<String, String> fileIds = new HashMap<String, String>();
     try {
-      boolean fromCompoVersion =
-          "yes".equals(getOrganisationController().getComponentParameterValue(
-              fromPK.getInstanceId(), "versionControl"));
-      boolean toCompoVersion =
-          "yes".equals(getOrganisationController().getComponentParameterValue(toPK.getInstanceId(),
-              "versionControl"));
+      boolean fromCompoVersion = StringUtil.getBooleanValue(getOrganizationController().
+          getComponentParameterValue(fromPK.getInstanceId(), "versionControl"));
+      boolean toCompoVersion = StringUtil.getBooleanValue(getOrganizationController().
+          getComponentParameterValue(toPK.getInstanceId(), "versionControl"));
 
       if (!fromCompoVersion && !toCompoVersion) {
         // attachments --> attachments
         // paste attachments
-        fileIds = AttachmentController.copyAttachmentByCustomerPKAndContext(fromPK, toPK, "Images");
+        List<SimpleDocument> origins = AttachmentServiceFactory.getAttachmentService().
+            listDocumentsByForeignKeyAndType(fromPK, DocumentType.attachment, getLanguage());
+        for (SimpleDocument origin : origins) {
+          SimpleDocumentPK copyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
+              origin, toPK);
+          fileIds.put(origin.getId(), copyPk.getId());
+        }
       } else if (fromCompoVersion && !toCompoVersion) {
         // versioning --> attachments
         // Last public versions becomes the new attachment
@@ -290,267 +275,47 @@ public class SendInKmelia extends ExternalActionImpl {
         // paste versioning documents
         pasteDocuments(fromPK, toPK);
       }
-    } catch (Exception e) {
+    } catch (AttachmentException e) {
       SilverTrace.error("workflowEngine", "SendInKmelia.pasteFiles", "CANNOT_PASTE_FILES", e);
     }
 
     return fileIds;
   }
 
-  /******************************************************************************************/
+  /**
+   * ***************************************************************************************
+   */
   /* KMELIA - Copier/coller des documents versionnï¿½s */
-
   /**
    * **************************************************************************************
    */
-  public void pasteDocuments(ForeignPK fromPK, ForeignPK pubPK) throws RemoteException {
+  public void pasteDocuments(ForeignPK fromPK, ForeignPK pubPK) {
     SilverTrace.info("workflowEngine", "SendInKmelia.pasteDocuments()",
         "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + fromPK.toString() + ", pubPK = " + pubPK);
-
-    // paste versioning documents attached to publication
-    List<Document> documents = getVersioningBm().getDocuments(new ForeignPK(fromPK));
-
-    SilverTrace.info("workflowEngine", "SendInKmelia.pasteDocuments()", "root.MSG_GEN_PARAM_VALUE",
-        documents.size() + " to paste");
-
-    if (documents.size() == 0) {
-      return;
-    }
-
-    VersioningUtil versioningUtil = new VersioningUtil();
-    String pathFrom = null; // where the original files are
-    String pathTo = null; // where the copied files will be
-
-    // change the list of workers
-    ArrayList<Worker> workers = getWorkers(pubPK);
-
-    // paste each document
-    for (Document document : documents) {
-      SilverTrace.info("workflowEngine", "SendInKmelia.pasteDocuments()",
-          "root.MSG_GEN_PARAM_VALUE", "document name = " + document.getName());
-
-      // retrieve all versions of the document
-      List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(document.getPk());
-
-      // versions are retrieved from last one to first one
-      // reverse it...
-      Collections.reverse(versions);
-
-      // retrieve first version of the document
-      DocumentVersion version = versions.get(0);
-
-      if (pathFrom == null) {
-        pathFrom =
-            versioningUtil.createPath(document.getPk().getSpaceId(), document.getPk()
-                .getInstanceId(), null);
-      }
-
-      // change some data to paste
-      document.setPk(new DocumentPK(-1, "useless", pubPK.getInstanceId()));
-      document.setForeignKey(pubPK);
-      document.setStatus(Document.STATUS_CHECKINED);
-      document.setLastCheckOutDate(new Date());
-      document.setWorkList(workers);
-
-      if (pathTo == null) {
-        pathTo = versioningUtil.createPath("useless", pubPK.getInstanceId(), null);
-      }
-
-      String newVersionFile = null;
-      if (version != null) {
-        // paste file on fileserver
-        newVersionFile = pasteVersionFile(version.getPhysicalName(), pathFrom, pathTo);
-        version.setPhysicalName(newVersionFile);
-      }
-
-      // create the document with its first version
-      DocumentPK documentPK = getVersioningBm().createDocument(document, version);
-      document.setPk(documentPK);
-
-      for (int v = 1; v < versions.size(); v++) {
-        version = versions.get(v);
-        version.setDocumentPK(documentPK);
-        SilverTrace.info("workflowEngine", "SendInKmelia.pasteDocuments()",
-            "root.MSG_GEN_PARAM_VALUE", "paste version = " + version.getLogicalName());
-
-        // paste file on fileserver
-        newVersionFile = pasteVersionFile(version.getPhysicalName(), pathFrom, pathTo);
-        version.setPhysicalName(newVersionFile);
-
-        // paste data
-        getVersioningBm().addVersion(version);
-      }
+    List<SimpleDocument> originals = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKey(fromPK, getLanguage());
+    for (SimpleDocument origin : originals) {
+      AttachmentServiceFactory.getAttachmentService().copyDocument(origin, pubPK);
     }
   }
 
-  private ArrayList<Worker> getWorkers(ForeignPK pubPK) {
-    ArrayList<Worker> workers = new ArrayList<Worker>();
-    List<String> workingProfiles = new ArrayList<String>();
-    workingProfiles.add("writer");
-    workingProfiles.add("publisher");
-    workingProfiles.add("admin");
-    String[] userIds = getOrganisationController().getUsersIdsByRoleNames(pubPK.getInstanceId(),
-        workingProfiles);
-    for (int u = 0; u < userIds.length; u++) {
-      String userId = userIds[u];
-      Worker worker =
-          new Worker(Integer.parseInt(userId), -1, u, false, true, pubPK.getInstanceId(),
-              "U", false, true, 0);
-      workers.add(worker);
-    }
-
-    return workers;
-  }
-
-  public void pasteDocumentsAsAttachments(ForeignPK fromPK, ForeignPK toPK) throws RemoteException {
+  public void pasteDocumentsAsAttachments(ForeignPK fromPK, ForeignPK toPK) {
     SilverTrace.info("workflowEngine", "SendInKmelia.pasteDocumentsAsAttachments()",
-        "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + fromPK.toString() + ", toPK = " +
-            toPK.toString());
-
-    // paste versioning documents attached to publication
-    List<Document> documents = getVersioningBm().getDocuments(new ForeignPK(fromPK));
-
-    SilverTrace.info("workflowEngine", "SendInKmelia.pasteDocumentsAsAttachments()",
-        "root.MSG_GEN_PARAM_VALUE", documents.size() + " documents to paste");
-
-    if (documents.size() == 0) {
-      return;
-    }
-
-    VersioningUtil versioningUtil = new VersioningUtil();
-    String pathFrom = null; // where the original files are
-    String pathTo = null; // where the copied files will be
-
-    // paste each document
-
-    for (Document document : documents) {
-      SilverTrace.info("workflowEngine", "SendInKmelia.pasteDocumentsAsAttachments()",
-          "root.MSG_GEN_PARAM_VALUE", "document name = " + document.getName());
-
-      // retrieve last public versions of the document
-      DocumentVersion version = getVersioningBm().getLastPublicDocumentVersion(document.getPk());
-
-      if (pathFrom == null) {
-        pathFrom = versioningUtil.createPath(document.getPk().getSpaceId(), document.getPk()
-            .getInstanceId(), null);
-      }
-
-      if (pathTo == null) {
-        pathTo = AttachmentController.createPath(toPK.getInstanceId(), "Images");
-      }
-
-      String newVersionFile = null;
-      if (version != null) {
-        // paste file on fileserver
-        newVersionFile = pasteVersionFile(version.getPhysicalName(), pathFrom, pathTo);
-
-        if (newVersionFile != null) {
-          // create the attachment in DB
-          // Do not index it cause made by the updatePublication call later
-          AttachmentDetail attachment =
-              new AttachmentDetail(new AttachmentPK("unknown", toPK.getInstanceId()),
-                  newVersionFile, version.getLogicalName(), "", version.getMimeType(), version
-                      .getSize(), "Images", new Date(), toPK, document.getName(), document
-                      .getDescription(), 0);
-          AttachmentController.createAttachment(attachment, false);
-        }
-      }
+        "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + fromPK.toString() + ", toPK = " + toPK.
+        toString());
+    List<SimpleDocument> originals = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKey(fromPK, getLanguage());
+    for (SimpleDocument origin : originals) {
+      AttachmentServiceFactory.getAttachmentService().copyDocument(origin.getLastPublicVersion(),
+          toPK);
     }
   }
 
-  public void pasteAttachmentsAsDocuments(ForeignPK fromPK, ForeignPK toPK) throws RemoteException {
+  public void pasteAttachmentsAsDocuments(ForeignPK fromPK, ForeignPK toPK) {
     SilverTrace.info("workflowEngine", "SendInKmelia.pasteAttachmentsAsDocuments()",
         "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + fromPK.toString() + ", toPK = " + toPK);
-
-    List<AttachmentDetail> attachments =
-        AttachmentController.searchAttachmentByPKAndContext(fromPK, "Images");
-
-    SilverTrace.info("workflowEngine", "SendInKmelia.pasteAttachmentsAsDocuments()",
-        "root.MSG_GEN_PARAM_VALUE", attachments.size() + " attachments to paste");
-
-    if (attachments.size() == 0) {
-      return;
-    }
-
-    ArrayList<Worker> workers = getWorkers(toPK);
-
-    VersioningUtil versioningUtil = new VersioningUtil();
-    String pathFrom = null; // where the original files are
-    String pathTo = null; // where the copied files will be
-
-    // paste each attachment
-    for (AttachmentDetail attachment : attachments) {
-
-      SilverTrace.info("workflowEngine", "SendInKmelia.pasteAttachmentsAsDocuments()",
-          "root.MSG_GEN_PARAM_VALUE", "attachment name = " + attachment.getLogicalName());
-
-      if (pathTo == null) {
-        pathTo = versioningUtil.createPath("useless", toPK.getInstanceId(), null);
-      }
-
-      if (pathFrom == null) {
-        pathFrom = AttachmentController.createPath(fromPK.getInstanceId(), "Images");
-      }
-
-      // paste file on fileserver
-      String newPhysicalName = pasteVersionFile(attachment.getPhysicalName(), pathFrom, pathTo);
-
-      if (newPhysicalName != null) {
-        // Document creation
-        Document document = new Document(new DocumentPK(-1, "useless", toPK.getInstanceId()), toPK,
-            attachment.getLogicalName(), attachment.getInfo(), 0, Integer.parseInt(userId),
-            new Date(),
-            "", toPK.getInstanceId(), workers, new ArrayList(), 0, 0);
-
-        // Version creation
-        DocumentVersion version =
-            new DocumentVersion(null, null, 1, 0, Integer.parseInt(userId),
-                new Date(), "", DocumentVersion.TYPE_PUBLIC_VERSION,
-                DocumentVersion.STATUS_VALIDATION_NOT_REQ, newPhysicalName,
-                attachment.getLogicalName(),
-                attachment.getType(), Long.valueOf(attachment.getSize()).intValue(),
-                toPK.getInstanceId());
-
-        getVersioningBm().createDocument(document, version);
-      }
-    }
-  }
-
-  private String pasteVersionFile(String fileNameFrom, String from, String to) {
-    SilverTrace.info("workflowEngine", "SendInKmelia.pasteVersionFile()",
-        "root.MSG_GEN_ENTER_METHOD", "version = " + fileNameFrom);
-
-    if (!fileNameFrom.equals("dummy")) {
-      // we have to rename pasted file (in case the copy/paste append in the same instance)
-      String type = FileRepositoryManager.getFileExtension(fileNameFrom);
-      String fileNameTo = Long.toString(System.currentTimeMillis()) + "." + type;
-
-      try {
-        // paste file associated to the first version
-        FileRepositoryManager.copyFile(from + fileNameFrom, to + fileNameTo);
-      } catch (Exception e) {
-        SilverTrace.error("workflowEngine", "SendInKmelia.pasteVersionFile()",
-            "root.EX_FILE_NOT_FOUND", from + fileNameFrom);
-        return null;
-        // throw new
-        // KmeliaRuntimeException("SendInKmelia.pasteVersionFile()",SilverpeasRuntimeException.ERROR,
-        // "root.EX_FILE_NOT_FOUND", e);
-      }
-      return fileNameTo;
-    } else {
-      return fileNameFrom;
-    }
-  }
-
-  private VersioningBm getVersioningBm() {
-    try {
-      VersioningBmHome vscEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
-              VersioningBmHome.class);
-      return vscEjbHome.create();
-    } catch (Exception e) {
-      throw new VersioningRuntimeException("SendInKmelia.getVersioningBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    KmeliaServiceFactory.getFactory().getKmeliaService().pasteAttachmentsAsDocuments(fromPK, toPK,
+        getLanguage());
   }
 
   private byte[] generatePDF(ProcessInstance instance) {
@@ -649,17 +414,12 @@ public class SendInKmelia extends ExternalActionImpl {
       XmlForm xmlForm = (XmlForm) form;
       if (xmlForm != null && step.getActionRecord() != null) {
         DataRecord data = step.getActionRecord();
-        VersioningUtil versioningUtil = new VersioningUtil();
 
         // Force simpletext displayers because itext cannot display HTML Form fields (select,
         // radio...)
-        float[] colsWidth = { 25, 75 };
+        float[] colsWidth = {25, 75};
         PdfPTable tableContent = new PdfPTable(colsWidth);
         tableContent.setWidthPercentage(100);
-
-        PdfPCell cell = null;
-        Field field;
-        String fieldLabel;
         String fieldValue = "";
         Font fontLabel = new Font(Font.HELVETICA, 10, Font.BOLD);
         Font fontValue = new Font(Font.HELVETICA, 10, Font.NORMAL);
@@ -668,8 +428,8 @@ public class SendInKmelia extends ExternalActionImpl {
           try {
             GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) fieldTemplate1;
 
-            fieldLabel = fieldTemplate.getLabel("fr");
-            field = data.getField(fieldTemplate.getFieldName());
+            String fieldLabel = fieldTemplate.getLabel("fr");
+            Field field = data.getField(fieldTemplate.getFieldName());
             String componentId = step.getProcessInstance().getProcessModel().getModelId();
 
             // wysiwyg field
@@ -682,37 +442,24 @@ public class SendInKmelia extends ExternalActionImpl {
               if (source != null) {
                 fieldValue = source.getTextExtractor().toString();
               }
-            }
-            // Field file type
-            else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) &&
-                StringUtil.isDefined(field.getValue())) {
-              boolean fromCompoVersion = "yes".equals(getOrganisationController()
-                  .getComponentParameterValue(componentId, "versionControl"));
-              // Versioning Used
-              if (fromCompoVersion) {
-                Document doc = versioningUtil.getDocument(new DocumentPK(Integer.parseInt(field.getValue())));
-                if (doc != null) {
-                  fieldValue = doc.getName();
-                }
-              } else {
-                AttachmentDetail attDetail = AttachmentController
-                    .searchAttachmentByPK(new AttachmentPK(field.getValue(), componentId));
-                if (attDetail != null) {
-                  fieldValue = attDetail.getLogicalName(getLanguage());
-                }
+            } // Field file type
+            else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) && StringUtil.
+                isDefined(field.getValue())) {
+              SimpleDocument doc = AttachmentServiceFactory.getAttachmentService().
+                  searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
+              if (doc != null) {
+                fieldValue = doc.getFilename();
               }
-            }
-            // Field date type
-            else if (fieldTemplate.getTypeName().equals("date")) {
+            } // Field date type
+            else if ("date".equals(fieldTemplate.getTypeName())) {
               fieldValue = DateUtil.getOutputDate(field.getValue(), "fr");
-            }
-            // Others fields type
+            } // Others fields type
             else {
               fieldTemplate.setDisplayerName("simpletext");
               fieldValue = field.getValue(getLanguage());
             }
 
-            cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
+            PdfPCell cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
             cell.setBorderWidth(0);
             cell.setPaddingBottom(5);
             tableContent.addCell(cell);
@@ -726,16 +473,14 @@ public class SendInKmelia extends ExternalActionImpl {
                 "CANT_DISPLAY_DATA_OF_STEP", e);
           }
         }
-
         document.add(tableContent);
       }
     } catch (Exception e) {
-      SilverTrace
-          .error("workflowEngine", "SendInKmelia.generatePDFStep()", "root.MSG_GEN_ERROR", e);
+      SilverTrace.error("workflowEngine", "SendInKmelia.generatePDFStep()", "root.MSG_GEN_ERROR", e);
     }
   }
 
-  private OrganisationController getOrganisationController() {
+  private OrganizationController getOrganizationController() {
     if (orga == null) {
       orga = new OrganizationController();
     }
@@ -769,7 +514,7 @@ public class SendInKmelia extends ExternalActionImpl {
   private KmeliaBm getKmeliaBm() {
     try {
       KmeliaBmHome kscEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME,
-              KmeliaBmHome.class);
+          KmeliaBmHome.class);
       return kscEjbHome.create();
     } catch (Exception e) {
       throw new KmeliaRuntimeException("SendInKmelia.getKmeliaBm()",
@@ -779,15 +524,16 @@ public class SendInKmelia extends ExternalActionImpl {
 
   /**
    * Get actor if exist, admin otherwise
+   *
    * @return UserDetail
    */
   private UserDetail getBestUserDetail() {
-    String userId = ADMIN_ID;
+    String currentUserId = ADMIN_ID;
     // For a manual action (event)
     if (getEvent().getUser() != null) {
-      userId = getEvent().getUser().getUserId();
+      currentUserId = getEvent().getUser().getUserId();
     }
-    return getOrganisationController().getUserDetail(userId);
+    return getOrganizationController().getUserDetail(currentUserId);
   }
 
   private void addPdfHistory(PublicationPK pubPK, String userId) {
@@ -806,5 +552,4 @@ public class SendInKmelia extends ExternalActionImpl {
     }
 
   }
-
 }

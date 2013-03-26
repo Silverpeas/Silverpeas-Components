@@ -20,12 +20,15 @@
  */
 package com.stratelia.webactiv.almanach.servlets;
 
+import java.net.URLEncoder;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.util.StringUtil.isInteger;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -34,12 +37,14 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.control.CalendarViewType;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;
+
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.util.StringUtil.isInteger;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
+
 import com.stratelia.webactiv.util.*;
-import java.net.URLEncoder;
-import javax.servlet.http.HttpServletRequest;
 
 public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessionController> {
 
@@ -196,8 +201,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         if (flag.equals("publisher") || flag.equals("admin")) {
           destination = "/almanach/jsp/createEvent.jsp";
         } else {
-          destination = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                  "sessionTimeout");
+          destination = GeneralPropertiesManager.getString("sessionTimeout");
         }
       } else if (function.equals("ReallyAddEvent")) {
         EventDetail event = new EventDetail();
@@ -316,8 +320,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         if (flag.equals("publisher") || flag.equals("admin")) {
           destination = "/almanach/jsp/editEvent.jsp";
         } else {
-          destination = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                  "sessionTimeout");
+          destination = GeneralPropertiesManager.getString("sessionTimeout");
         }
       } else if (function.equals("ReallyUpdateEvent")) {
         String action = request.getParameter("Action");// ReallyUpdateOccurence

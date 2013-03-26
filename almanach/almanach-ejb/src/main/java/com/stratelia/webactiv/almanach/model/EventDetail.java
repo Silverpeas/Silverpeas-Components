@@ -28,8 +28,6 @@ import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.almanach.AlmanachContentManager;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
@@ -39,7 +37,6 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.TimeZone;
@@ -49,6 +46,8 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -65,7 +64,7 @@ public class EventDetail extends AbstractI18NBean implements
 
   private static final long serialVersionUID = 9077018265272108291L;
   public static ResourceLocator almanachSettings =
-          new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
+          new ResourceLocator("org.silverpeas.almanach.settings.almanachSettings", "");
   private static final String TYPE = "Event";
   private String _name = null;
   private EventPK _pk = null;
@@ -295,11 +294,11 @@ public class EventDetail extends AbstractI18NBean implements
     return null;
   }
 
-  public String getWysiwyg() throws WysiwygException {
+  public String getWysiwyg() {
     return WysiwygController.load(getPK().getComponentName(), getPK().getId(), getLanguage());
   }
 
-  public Collection<AttachmentDetail> getAttachments() {
+  public Collection<SimpleDocument> getAttachments() {
     try {
       AlmanachBm almanachService = (EJBUtilitaire.getEJBObjectRef(
               JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();

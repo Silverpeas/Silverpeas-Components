@@ -23,10 +23,16 @@
  */
 package com.silverpeas.component.kmelia;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+
 import com.silverpeas.admin.components.ComponentPasteInterface;
 import com.silverpeas.admin.components.PasteDetail;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
@@ -39,11 +45,6 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 
 public class KmeliaPaste implements ComponentPasteInterface {
 
@@ -129,8 +130,8 @@ public class KmeliaPaste implements ComponentPasteInterface {
     }
 
     // paste wysiwyg attached to node
-    WysiwygController.copy(null, nodeToPastePK.getInstanceId(), "Node_" + nodeToPastePK.getId(),
-        null, toComponentId, "Node_" + nodePK.getId(), userId);
+    WysiwygController.copy(nodeToPastePK.getInstanceId(), "Node_" + nodeToPastePK.getId(),
+        toComponentId, "Node_" + nodePK.getId(), userId);
     // paste subtopics
     node = getNodeBm().getHeader(nodePK);
     Collection<NodeDetail> subtopics = getNodeBm().getDetail(nodeToPastePK).getChildrenDetails();
