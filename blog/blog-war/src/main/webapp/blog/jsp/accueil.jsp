@@ -39,6 +39,7 @@ Collection<PostDetail>  posts   = (Collection<PostDetail>) request.getAttribute(
 Collection<NodeDetail>  categories  = (Collection<NodeDetail>) request.getAttribute("Categories");
 Collection<Archive>   archives  = (Collection<Archive>) request.getAttribute("Archives");
 Collection<LinkDetail>  links   = (Collection<LinkDetail>) request.getAttribute("Links");
+boolean  isUserSubscribed   = (Boolean) request.getAttribute("IsUserSubscribed");
 String    profile   = (String) request.getAttribute("Profile");
 String    blogUrl   = (String) request.getAttribute("Url");
 String    rssURL    = (String) request.getAttribute("RSSUrl");
@@ -70,7 +71,11 @@ if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRo
 }
 
 if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest()) {
-  operationPane.addOperation("useless", resource.getString("blog.addSubscription"), "javascript:onClick=addSubscription()");
+  if (!isUserSubscribed) {
+    operationPane.addOperation("useless", resource.getString("blog.addSubscription"), "javascript:onClick=addSubscription()");
+  } else {
+    operationPane.addOperation("useless", resource.getString("blog.removeSubscription"), "javascript:onClick=removeSubscription()");
+  }
 }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -98,6 +103,12 @@ function sendData() {
 function addSubscription() {
   window.alert("<%=resource.getString("blog.addSubscriptionOk")%>");
   window.document.subscriptionForm.action = "AddSubscription";
+  window.document.subscriptionForm.submit();
+}
+
+function removeSubscription() {
+  window.alert("<%=resource.getString("blog.removeSubscriptionOk")%>");
+  window.document.subscriptionForm.action = "RemoveSubscription";
   window.document.subscriptionForm.submit();
 }
 
