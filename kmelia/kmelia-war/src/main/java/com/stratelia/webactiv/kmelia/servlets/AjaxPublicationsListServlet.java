@@ -20,13 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-import static com.stratelia.webactiv.SilverpeasRole.admin;
-import static com.stratelia.webactiv.SilverpeasRole.publisher;
-import static com.stratelia.webactiv.SilverpeasRole.user;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.CLONE;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.DRAFT;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.TO_VALIDATE;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -44,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
@@ -53,6 +45,8 @@ import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.kmelia.KmeliaConstants;
+import com.silverpeas.kmelia.domain.TopicSearch;
+import com.silverpeas.kmelia.search.KmeliaSearchServiceFactory;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.EncodeHelper;
@@ -61,6 +55,7 @@ import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -84,6 +79,11 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
+
+import org.apache.commons.io.FilenameUtils;
+
+import static com.stratelia.webactiv.SilverpeasRole.*;
+import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 
 /**
  * @author ehugonnet
@@ -154,9 +154,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       String notSelectedPublicationIds = req.getParameter("NotSelectedPubIds");
       List<String> selectedIds =
           kmeliaSC.processSelectedPublicationIds(selectedPublicationIds, notSelectedPublicationIds);
-
       boolean toPortlet = StringUtil.getBooleanValue(sToPortlet);
-      boolean toSearch = StringUtil.isDefined(query);
+      boolean searchInProgress = StringUtil.isDefined(query);
 
       if (StringUtil.isDefined(index)) {
         kmeliaSC.setIndexOfFirstPubToDisplay(index);
@@ -194,7 +193,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         sortAllowed = false;
         publications = kmeliaSC.getSessionPublicationsList();
         role = SilverpeasRole.user.toString();
-      } else if (toSearch) {
+      } else if (searchInProgress) {
+        // Insert this new search inside persistence layer in order to compute statistics
+        saveTopicSearch(componentId, nodeId, kmeliaSC, query);
         publications = kmeliaSC.search(query);
       } else {
         publications = kmeliaSC.getSessionPublicationsList();
@@ -204,7 +205,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         sortAllowed = false;
         linksAllowed = false;
         seeAlso = false;
-        toSearch = false;
+        searchInProgress = false;
       }
 
       if (KmeliaHelper.isToolbox(componentId)) {
@@ -226,18 +227,37 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         writer.write("</tr>");
         writer.write("</table>");
         writer.write(board.printAfter());
-      } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) && kmeliaSC.
-          getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure()) {
-        List<KmeliaPublication> publicationsToDisplay = kmeliaSC.getLatestPublications();
-        displayLastPublications(publicationsToDisplay, kmeliaSC, resources, gef, writer);
+      } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) &&
+          kmeliaSC.getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() &&
+          !searchInProgress) {
+        displayLastPublications(kmeliaSC, resources, gef, writer);
       } else {
         if (publications != null) {
-          displayPublications(publications, sortAllowed, linksAllowed, seeAlso,
-              toSearch, kmeliaSC, role, gef, context, resources, selectedIds, pubIdToHighlight,
-              writer, attachmentToLink);
+          displayPublications(publications, sortAllowed, linksAllowed, seeAlso, searchInProgress,
+              kmeliaSC, role, gef, context, resources, selectedIds, pubIdToHighlight, writer,
+              attachmentToLink);
         }
       }
     }
+  }
+
+  /**
+   * Save current topic search inside persistence layer
+   * @param componentId the component identifier
+   * @param nodeId the node identifier
+   * @param kmeliaSC the KmeliaSessionController
+   * @param query the topic search query keywords
+   */
+  private void saveTopicSearch(String componentId, String nodeId, KmeliaSessionController kmeliaSC,
+      String query) {
+    //Check node value
+    if(!StringUtil.isDefined(nodeId)) {
+      nodeId = kmeliaSC.getCurrentFolderId();
+    }
+    TopicSearch newTS =
+        new TopicSearch(componentId, Integer.parseInt(nodeId), Integer.parseInt(kmeliaSC
+            .getUserId()), kmeliaSC.getLanguage(), query.toLowerCase(), new Date());
+    KmeliaSearchServiceFactory.getTopicSearchService().createTopicSearch(newTS);
   }
 
   /**
@@ -1143,10 +1163,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   }
 
-  private void displayLastPublications(List<KmeliaPublication> pubs,
-      KmeliaSessionController kmeliaScc, ResourcesWrapper resources, GraphicElementFactory gef,
-      Writer writer) throws IOException {
+  private void displayLastPublications(KmeliaSessionController kmeliaScc,
+      ResourcesWrapper resources, GraphicElementFactory gef, Writer writer) throws IOException {
 
+    List<KmeliaPublication> pubs = kmeliaScc.getLatestPublications();
     boolean displayLinks = URLManager.displayUniversalLinks();
     PublicationDetail pub;
     KmeliaPublication kmeliaPub;
