@@ -105,7 +105,6 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
 
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-    String anonymousAllowed = "";
     String anonymousCheck = "";
     String anonymous = FileUploadUtil.getOldParameter(items, "AnonymousAllowed");
 
@@ -361,7 +360,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
           } else {
             //nb min answers = 2
             if (nbAnswers <= 1) {
-              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("MustContainsNumberGreaterThan2")%>\n";
+              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("MustContainsNumberGreaterThan")%> 1\n";
               errorNb++;
             }
           }
@@ -436,11 +435,11 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
             validateButton = gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
             suggestionCheck = "";
             if (! "0".equals(suggestion)) {
-              suggestionCheck = "checked";
+              suggestionCheck = "checked=\"checked\"";
             }
             anonymousCheck = "";
             if (! "0".equals(anonymous)) {
-              anonymousCheck = "checked";
+              anonymousCheck = "checked=\"checked\"";
             }
             nextAction = "SendNewPoll";
           }
@@ -503,7 +502,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
 				<div class="field" id="suggestionAllowedArea">
 					<label class="txtlibform"><%=resources.getString("SuggestionAllowed")%></label>
 					<div class="champs">
-						<input type="checkbox" name="suggestion" value="" <%=suggestionCheck%> <%=disabledValue%>/>
+						<input type="checkbox" name="suggestion" <%=suggestionCheck%> <%=disabledValue%>/>
 					</div>
 				</div>
 				<div class="field" id="anonymousArea">
@@ -517,7 +516,7 @@ void displayAnswer(int i, String style, ResourcesWrapper resources, List<Compone
 					%>
 					<label class="txtlibform"><%=resources.getString("survey.pollAnonymous")%></label>
 					<div class="champs">
-						<input type="checkbox" name="anonymous" value="" <%=anonymousCheck%> <%=disabledValue%> <%=anonymousDisabled%>/>
+						<input type="checkbox" name="anonymous" <%=anonymousCheck%> <%=disabledValue%> <%=anonymousDisabled%>/>
 					</div>
 				</div>
 				<input type="hidden" name="Action" value="<%=nextAction%>"/>

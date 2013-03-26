@@ -68,10 +68,10 @@ String anonymousString = request.getParameter("anonymous");
 
 //Anonymous mode -> force all the survey to be anonymous
 if(surveyScc.isAnonymousModeEnabled()) {
-	anonymousString = "true";
+	anonymousString = "on";
 }
 
-boolean anonymous = StringUtil.isDefined(anonymousString) && "true".equalsIgnoreCase(anonymousString);
+boolean anonymous = StringUtil.isDefined(anonymousString) && "on".equalsIgnoreCase(anonymousString);
 
 String resultMode = request.getParameter("resultMode");
 String resultView = request.getParameter("resultView");
@@ -128,11 +128,6 @@ if ("UpdateSurveyHeader".equals(action))
           //Mode anonyme -> force les enquetes a etre toutes anonymes
           if(surveyScc.isAnonymousModeEnabled()) {
             anonymous = true;
-            }
-
-          anonymousString = "0";
-          if (anonymous) {
-          	anonymousString = "1";
           }
 
           resultMode = Integer.toString(surveyHeader.getResultMode());
@@ -149,7 +144,7 @@ if ("UpdateSurveyHeader".equals(action))
 <script type="text/javascript">
 function sendData() {
     if (isCorrectForm()) {
-		document.surveyForm.anonymous.disabled = false;
+    	  document.surveyForm.anonymous.disabled = false;
         document.surveyForm.submit();
     }
 }
@@ -316,13 +311,13 @@ function isCorrectForm() {
 	  		      	anonymousCheck = "checked=\"checked\"";
 	  		  	}
 		        if(surveyScc.isAnonymousModeEnabled()) {
+		          anonymousCheck = "checked=\"checked\"";
 		          anonymousDisabled = "disabled=\"disabled\"";
 		        }
 			%>
 			<label class="txtlibform"><%=anonymousLabel%></label>
 			<div class="champs">
-				<input type="checkbox" name="anonymous" value="true" <%=anonymousCheck%> <%=anonymousDisabled%>/>
-    	  		<input type="hidden" name="anonymousString" value="<%=anonymousString%>"/>
+				<input type="checkbox" name="anonymous" <%=anonymousCheck%> <%=anonymousDisabled%>/>
 			</div>
 		</div>
 		<div class="field" id="resultModeArea">

@@ -449,19 +449,19 @@ public class SurveySessionController extends AbstractComponentSessionController 
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.deleteVotes(qcPK);
     } catch (Exception e) {
-      throw new SurveyException("SurveySessionController.deleteSurvey", SurveyException.WARNING,
+      throw new SurveyException("SurveySessionController.deleteVotes", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_DELETE_SURVEY", "id = " + surveyId, e);
     }
   }
 
   public void deleteResponse(String surveyId) throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionController.deleteQuestions",
+    SilverTrace.info("Survey", "SurveySessionController.deleteResponse",
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.deleteQuestionContainer(qcPK);
     } catch (Exception e) {
-      throw new SurveyException("SurveySessionController.deleteSurvey", SurveyException.WARNING,
+      throw new SurveyException("SurveySessionController.deleteResponse", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_DELETE_SURVEY", "id = " + surveyId, e);
     }
   }
@@ -990,8 +990,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
         this.updateQuestions(qV, surveyId);
         request.setAttribute("UpdateSucceed", Boolean.TRUE);
       } catch (SurveyException e) {
-        SilverTrace.error(this.getComponentName(), SurveyRequestRouter.class.getName(),
-            "update question error", e);
+        SilverTrace.error("Survey", "SurveySessionController.questionsUpdateBusinessModel",
+            "Survey.EX_PROBLEM_TO_UPDATE_QUESTION", e);
         request.setAttribute("UpdateSucceed", Boolean.FALSE);
       }
       action = "UpdateQuestions";
@@ -1009,8 +1009,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
         // Cast Collection to List
         questionsV = new ArrayList<Question>(questions);
       } catch (SurveyException e) {
-        SilverTrace.error("survey", SurveyRequestRouter.class.getName(),
-            "getDestination error when retrieving a survey", e);
+        SilverTrace.error("survey", "SurveySessionController.questionsUpdateBusinessModel",
+            "Survey.EX_PROBLEM_TO_OPEN_SURVEY", e);
       }
       this.setSessionQuestions(questionsV);
       this.setSessionSurveyId(surveyId);
@@ -1124,14 +1124,14 @@ public class SurveySessionController extends AbstractComponentSessionController 
         }
       }
     } catch (UtilException e) {
-      SilverTrace.error("Survey", SurveyRequestRouter.class.getName(),
-          "getDestination error with updateQuestion branch", e);
+      SilverTrace.error("Survey", "SurveySessionController.manageQuestionBusiness",
+          "root.EX_IGNORED", e);
     } catch (UnsupportedEncodingException e) {
-      SilverTrace.error("Survey", SurveyRequestRouter.class.getName(),
-          "getDestination error with updateQuestion branch", e);
+      SilverTrace.error("Survey", "SurveySessionController.manageQuestionBusiness",
+          "root.EX_IGNORED", e);
     } catch (IOException e) {
-      SilverTrace.error("Survey", SurveyRequestRouter.class.getName(),
-          "getDestination error with updateQuestion branch", e);
+      SilverTrace.error("Survey", "SurveySessionController.manageQuestionBusiness",
+          "root.EX_IGNORED", e);
     }
 
     if ("SendUpdateQuestion".equals(action) || "SendNewQuestion".equals(action)) {
@@ -1213,16 +1213,16 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
       // Anonymous mode -> force all the survey to be anonymous
       if (this.isAnonymousModeEnabled()) {
-        anonymousString = "true";
+        anonymousString = "on";
       }
       boolean anonymous =
-          StringUtil.isDefined(anonymousString) && "true".equalsIgnoreCase(anonymousString);
+          StringUtil.isDefined(anonymousString) && "on".equalsIgnoreCase(anonymousString);
       if (StringUtil.isDefined(beginDate)) {
         try {
           beginDate = DateUtil.date2SQLDate(beginDate, this.getLanguage());
         } catch (ParseException e) {
           SilverTrace.error("Survey", "SurveySessionControler.sendNewSurveyAction",
-              "Create new survey problem", "impossible to parse begin date", e);
+              "root.EX_CANT_PARSE_DATE", "impossible to parse begin date, beginDate="+beginDate, e);
           beginDate = null;
         }
       }
@@ -1257,7 +1257,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         surveyClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (JAXBException e) {
         SilverTrace.error("Survey", "SurveySessionController.sendNewSurveyPositionsFromJSON",
-            "PdcClassificationEntity error", "Problem to read JSON", e);
+            "root.EX_IGNORED", "Problem to read JSON, positions="+positions, e);
       }
       if (surveyClassification != null && !surveyClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = surveyClassification.getPdcPositions();

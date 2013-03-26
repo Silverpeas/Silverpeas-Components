@@ -61,10 +61,10 @@ String anonymousString = request.getParameter("anonymous");
 
 //Anonymous mode -> force anonymous mode for each survey
 if(surveyScc.isAnonymousModeEnabled()) {
-	anonymousString = "true";
+	anonymousString = "on";
 }
 
-boolean anonymous = StringUtil.isDefined(anonymousString) && "true".equalsIgnoreCase(anonymousString);
+boolean anonymous = StringUtil.isDefined(anonymousString) && "on".equalsIgnoreCase(anonymousString);
 
 //Mise a jour de l'espace
 if (action == null) {
@@ -94,7 +94,6 @@ function isCorrectForm() {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.surveyForm.title.value);
-     var description = document.surveyForm.description.value;
      var nbQuestions = document.surveyForm.nbQuestions.value;
      var beginDate = document.surveyForm.beginDate.value;
      var endDate = document.surveyForm.endDate.value;
@@ -224,14 +223,17 @@ if (action.equals("CreateSurvey")) {
 			        //Mode anonyme -> force les votes à être tous anonymes
 			        String anonymousDisabled = "";
 			        String anonymousCheck = "";
+				      if (anonymous) {
+				        anonymousCheck = "checked=\"checked\"";
+              }
 			        if(surveyScc.isAnonymousModeEnabled()) {
-			          anonymousCheck = "checked=\"checked\"";
-			          anonymousDisabled = "disabled=\"disabled\"";
+			         anonymousCheck = "checked=\"checked\"";
+			         anonymousDisabled = "disabled=\"disabled\"";
 			        }
 				%>
 				<label class="txtlibform" for="anonymous"><%=resources.getString("survey.surveyAnonymous")%></label>
 				<div class="champs">
-					<input type="checkbox" name="anonymous" value="" <%=anonymousCheck%> <%=anonymousDisabled%>/>
+					<input type="checkbox" name="anonymous" <%=anonymousCheck%> <%=anonymousDisabled%>/>
 				</div>
 			</div>
 			<div class="field" id="resultModeArea">

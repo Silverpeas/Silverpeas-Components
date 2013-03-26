@@ -592,6 +592,32 @@ function clipboardCopy() {
     	}
     }
     
+    function isCorrectForm() {
+    	  var errorMsg = "";
+    	  var errorNb = 0;
+    	                                      
+    	    switch(errorNb) {
+    	        case 0 :
+    	            result = true;
+    	            break;
+    	        case 1 :
+    	            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+    	            window.alert(errorMsg);
+    	            result = false;
+    	            break;
+    	        default :
+    	            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+    	            window.alert(errorMsg);
+    	            result = false;
+    	            break;
+    	     } 
+    	    return result;
+    	}
+
+    	function sendData() {
+    	  document.publishResultForm.submit();
+    	}
+    
     function showDialog(title) {
 	 	  $("#publishResultDialog").popup({
 	      title: title,
@@ -618,9 +644,6 @@ function clipboardCopy() {
      	</script>
 </head>
 <body id="survey-result-<%=choice%>">
-<%
-  survey = surveyScc.getSurvey(surveyId);
-%>
 <view:browseBar extraInformations="<%=survey.getHeader().getTitle()%>" componentId="<%=surveyScc.getComponentId()%>">
 </view:browseBar>
 <view:operationPane>
@@ -708,7 +731,12 @@ out.println(surveyPart);
   </div>
   <div id="notification-publishResultDialog"> 
   <label class="label-ui-dialog" for="notification">${notificationMsg}</label>
-  <span class="champs-ui-dialog"><select name="notification"><option>${noNotificationMsg}</option><option>${notificationParticipantsMsg}</option></select></span>
+  <span class="champs-ui-dialog">
+    <select name="notification">
+      <option value="0">${noNotificationMsg}</option>
+      <option value="1">${notificationParticipantsMsg}</option>
+    </select>
+  </span>
   </div>
   </form>
 </div>
