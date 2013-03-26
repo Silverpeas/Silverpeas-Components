@@ -38,18 +38,21 @@ import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
-import com.silverpeas.subscribe.service.NodeSubscription;
+import com.silverpeas.subscribe.service.ComponentSubscription;
+import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.util.*;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -63,10 +66,13 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+import edu.emory.mathcs.backport.java.util.Collections;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -76,7 +82,13 @@ import javax.inject.Named;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Default implementation of the services provided by the Blog component. It is managed by the
@@ -189,8 +201,9 @@ public class DefaultBlogService implements BlogService {
       final String type, final String senderId) {
     // send email alerts
     try {
-      Collection<String> subscriberIds = getSubscribeBm().getSubscribers(fatherPK);
-      OrganizationController orgaController = new OrganizationController();
+      Collection<String> subscriberIds = getSubscribeBm()
+          .getUserSubscribers(ComponentSubscriptionResource.from(fatherPK.getInstanceId()));
+      OrganisationController orgaController = new OrganizationController();
       if (subscriberIds != null && !subscriberIds.isEmpty()) {
         // get only subscribers who have sufficient rights to read pubDetail
         NodeDetail node = getNodeBm().getHeader(fatherPK);
@@ -312,7 +325,7 @@ public class DefaultBlogService implements BlogService {
 
   private void closeConnection(Connection con) {
     DBUtil.close(con);
-    }
+  }
 
   private PostDetail getPost(PublicationDetail publication) {
     try {
@@ -512,10 +525,7 @@ public class DefaultBlogService implements BlogService {
       // création des billets à partir des résultats
       // rechercher la liste des posts trié par date
       Collection<String> allEvents = PostDAO.getAllEvents(con, instanceId);
-      Iterator<String> it = allEvents.iterator();
-      while (it.hasNext()) {
-        String pubId = it.next();
-
+      for (String pubId : allEvents) {
         for (MatchingIndexEntry matchIndex : result) {
           String objectType = matchIndex.getObjectType();
           String objectId = matchIndex.getObjectId();
@@ -541,7 +551,7 @@ public class DefaultBlogService implements BlogService {
   @Override
   public String createCategory(Category category) {
     try {
-      NodePK nodePK = getNodeBm().createNode((NodeDetail) category, new NodeDetail());
+      NodePK nodePK = getNodeBm().createNode(category, new NodeDetail());
       return nodePK.getId();
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.createCategory()",
@@ -611,12 +621,10 @@ public class DefaultBlogService implements BlogService {
       // rechercher tous les posts par date d'évènements
       Collection<Date> lastEvents = PostDAO.getAllDateEvents(con, instanceId);
 
-      Iterator<Date> it = lastEvents.iterator();
-      while (it.hasNext()) {
-        Date dateEvent = it.next();
+      for (final Date dateEvent : lastEvents) {
         calendar.setTime(dateEvent);
         // pour chaque date regarder si l'archive existe
-        archive = createArchive(calendar, instanceId);
+        archive = createArchive(calendar);
         if (!archives.contains(archive)) {
           archives.add(archive);
         }
@@ -630,7 +638,7 @@ public class DefaultBlogService implements BlogService {
     }
   }
 
-  private Archive createArchive(Calendar calendar, String instanceId) {
+  private Archive createArchive(Calendar calendar) {
     Date beginDate = getMonthFirstDay(calendar);
     Date endDate = getMonthLastDay(calendar);
     // regarder s'il y a des évenements sur cette période
@@ -649,7 +657,7 @@ public class DefaultBlogService implements BlogService {
   }
 
   private void indexPublications(PublicationPK pubPK) {
-    Collection<PublicationDetail> pubs = null;
+    Collection<PublicationDetail> pubs;
     try {
       pubs = getPublicationBm().getAllPublications(pubPK);
     } catch (Exception e) {
@@ -695,29 +703,18 @@ public class DefaultBlogService implements BlogService {
   }
 
   @Override
-  public void addSubscription(NodePK topicPK, String userId) {
-    SilverTrace.info("blog", "BlogBmEJB.addSubscription()", "root.MSG_GEN_ENTER_METHOD");
-    if (!checkSubscription(topicPK, userId)) {
-      return;
-    }
-    getSubscribeBm().subscribe(new NodeSubscription(userId, topicPK));
-    SilverTrace.info("blog", "BlogBmEJB.addSubscription()", "root.MSG_GEN_EXIT_METHOD");
+  public void addSubscription(final String userId, final String instanceId) {
+    getSubscribeBm().subscribe(new ComponentSubscription(userId, instanceId));
   }
 
-  private boolean checkSubscription(NodePK topicPK, String userId) {
-    try {
-      Collection<? extends Subscription> subscriptions =
-          getSubscribeBm().getUserSubscriptionsByComponent(userId, topicPK.getInstanceId());
-      for (Subscription subscription : subscriptions) {
-        if (topicPK.getId().equals(subscription.getTopic().getId())) {
-          return false;
-        }
-      }
-      return true;
-    } catch (Exception e) {
-      throw new BlogRuntimeException("BlogBmEJB.checkSubscription()",
-          SilverpeasRuntimeException.ERROR, "blog.EX_IMPOSSIBLE_DOBTENIR_LES_ABONNEMENTS", e);
-    }
+  @Override
+  public void removeSubscription(final String userId, final String instanceId) {
+    getSubscribeBm().unsubscribe(new ComponentSubscription(userId, instanceId));
+  }
+
+  @Override
+  public boolean isSubscribed(final String userId, final String instanceId) {
+    return getSubscribeBm().existsSubscription(new ComponentSubscription(userId, instanceId));
   }
 
   private void indexExternalElementsOfPublication(PublicationPK pubPK) {
@@ -804,7 +801,7 @@ public class DefaultBlogService implements BlogService {
   }
 
   private PublicationBm getPublicationBm() {
-    PublicationBm publicationBm = null;
+    PublicationBm publicationBm;
     try {
       PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
@@ -820,7 +817,7 @@ public class DefaultBlogService implements BlogService {
   }
 
   private NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
+    NodeBm nodeBm;
     try {
       NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
           NodeBmHome.class);
