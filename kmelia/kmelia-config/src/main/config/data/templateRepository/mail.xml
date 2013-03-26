@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<publicationTemplate>
+    <name>Mail</name>
+    <description></description>
+    <visible>true</visible>
+	<applications>
+        <application>kmelia</application>
+    </applications>
+    <viewFileName>mail/view.xml</viewFileName>
+    <viewTypeFile></viewTypeFile>
+    <updateFileName>mail/update.xml</updateFileName>
+    <updateTypeFile></updateTypeFile>
+    <dataFileName>mail/data.xml</dataFileName>
+    <searchResultFileName>mail/searchresult.xml</searchResultFileName>
+</publicationTemplate>
