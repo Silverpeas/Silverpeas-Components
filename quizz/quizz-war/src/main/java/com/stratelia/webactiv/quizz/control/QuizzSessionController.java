@@ -21,8 +21,6 @@
 package com.stratelia.webactiv.quizz.control;
 
 import java.io.File;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,10 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
 import javax.ejb.EJBException;
-import javax.ejb.RemoveException;
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.JAXBException;
@@ -66,7 +61,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.answer.model.Answer;
 import com.stratelia.webactiv.util.question.model.Question;
 import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm;
-import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBmHome;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
@@ -122,9 +116,8 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   private void setQuestionContainerBm() {
     if (questionContainerBm == null) {
       try {
-        QuestionContainerBmHome questionContainerBmHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBmHome.class);
-        this.questionContainerBm = questionContainerBmHome.create();
+        this.questionContainerBm = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBm.class);
       } catch (Exception e) {
         throw new EJBException(e.getMessage(), e);
       }
@@ -812,23 +805,11 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   }
 
   public void close() {
-    try {
-      if (questionContainerBm != null) {
-        questionContainerBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
+    if (questionContainerBm != null) {
+      questionContainerBm = null;
     }
-    try {
-      if (scoreBm != null) {
-        scoreBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
+    if (scoreBm != null) {
+      scoreBm = null;
     }
   }
 
