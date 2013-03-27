@@ -122,7 +122,7 @@ public class SurveyContentManager implements ContentInterface {
       try {
         contentManager = new ContentManager();
       } catch (Exception e) {
-        SilverTrace.fatal("survey", "SurveyContentManager.getContentManager()",
+        SilverTrace.fatal("Survey", "SurveyContentManager.getContentManager()",
             "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }
     }
@@ -137,7 +137,7 @@ public class SurveyContentManager implements ContentInterface {
             QuestionContainerBmHome.class);
         currentQuestionContainerBm = questionContainerBmHome.create();
       } catch (Exception e) {
-        SilverTrace.fatal("survey",
+        SilverTrace.fatal("Survey",
             "SurveyContentManager.getQuestionContainerBm()",
             "root.EX_UNKNOWN_CONTENT_MANAGER", e);
       }

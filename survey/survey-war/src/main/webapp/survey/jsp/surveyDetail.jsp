@@ -71,9 +71,16 @@
   boolean isParticipationMultipleUsed = surveyScc.isParticipationMultipleUsed();
   boolean isParticipationMultipleAllowedForUser =
       surveyScc.isParticipationMultipleAllowedForUser();
-
+  
+  String destinationPath = "surveyDetail.jsp?Action=ViewCurrentQuestions&Participated="+participated+"&SurveyId="+surveyId;
+  if ((SilverpeasRole.admin.toString().equals(profile) ||
+      SilverpeasRole.publisher.toString().equals(profile)) &&
+      !participated) {
+      destinationPath = "surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId;
+  }
+  
   ResourceLocator settings =
-      new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", surveyScc
+      new ResourceLocator("org.silverpeas.survey.surveySettings", surveyScc
           .getLanguage());
   String m_context =
       GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
@@ -688,7 +695,6 @@ out.println(displayTabs(surveyScc, survey.getHeader().getPK().getId(), gef, acti
     profile, resources, pollingStationMode, participated).print() +
     frame.printBefore());
 out.println(surveyPart);
-
 %>
 
 <view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
@@ -697,6 +703,7 @@ out.println(surveyPart);
 
 <div id="publishResultDialog" style="display: none;">
   <form name="publishResultForm" action="PublishResult" method="post">
+  <input type="hidden" name="destination" value="<%=destinationPath%>" />
   <div id="view-publishResultDialog">
     <fmt:message key="survey.resultView" var="resultViewMsg" />
     <fmt:message key="survey.C" var="classicMsg" />

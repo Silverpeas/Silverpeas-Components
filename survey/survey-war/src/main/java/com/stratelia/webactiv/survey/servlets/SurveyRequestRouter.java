@@ -257,6 +257,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       // récupération des paramètres
       String[] tabResultView = request.getParameterValues("checkedView");
       String notification = request.getParameter("notification");
+      String destinationUser = request.getParameter("destination");
       
       QuestionContainerDetail survey = surveySC.getSessionSurvey();
       String surveyId = survey.getId();
@@ -281,11 +282,17 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       }
       
       if("1".equals(notification)) {
-        //notifier tous les participants
+        //notifier tous les utilisateurs
+        try {
+          surveySC.initAlertResultUser(survey);
+        } catch (Exception e) {
+          SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
+              "root.EX_NOTIFY_USERS_FAILED", "function = " + function, e);
+        }
       }
       
       request.setAttribute("Profile", flag);
-      destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" + surveyId;
+      destination = rootDest + destinationUser;
     } else {
       request.setAttribute("Profile", flag);
       destination = rootDest + function;

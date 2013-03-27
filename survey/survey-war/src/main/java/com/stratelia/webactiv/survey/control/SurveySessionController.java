@@ -62,6 +62,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -75,7 +76,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.survey.SurveyException;
-import com.stratelia.webactiv.survey.servlets.SurveyRequestRouter;
+import com.stratelia.webactiv.survey.notification.SurveyUserNotification;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -127,8 +128,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public SurveySessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.stratelia.webactiv.survey.multilang.surveyBundle", null,
-        "com.stratelia.webactiv.survey.surveySettings");
+        "org.silverpeas.survey.multilang.surveyBundle", null,
+        "org.silverpeas.survey.surveySettings");
     setQuestionContainerBm();
     setQuestionResultBm();
 
@@ -620,7 +621,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       QuestionContainerPK qcPK = new QuestionContainerPK(objectId, getSpaceId(), getComponentId());
       silverObjectId = questionContainerBm.getSilverObjectId(qcPK);
     } catch (Exception e) {
-      SilverTrace.error("survey", "SurveySessionClientController.getSilverObjectId()",
+      SilverTrace.error("Survey", "SurveySessionClientController.getSilverObjectId()",
           "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
     }
     return silverObjectId;
@@ -716,9 +717,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
         questionContainerBm.remove();
       }
     } catch (RemoteException e) {
-      SilverTrace.error("surveySession", "SurveySessionController.close", "", e);
+      SilverTrace.error("Survey", "SurveySessionController.close", "", e);
     } catch (RemoveException e) {
-      SilverTrace.error("surveySession", "SurveySessionController.close", "", e);
+      SilverTrace.error("Survey", "SurveySessionController.close", "", e);
     }
   }
 
@@ -758,7 +759,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     String htmlPath = getQuestionContainerBm().getHTMLQuestionPath(questionDetail);
 
     // Get default resource bundle
-    String resource = "com.stratelia.webactiv.survey.multilang.surveyBundle";
+    String resource = "org.silverpeas.survey.multilang.surveyBundle";
     ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
 
     Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
@@ -1009,7 +1010,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         // Cast Collection to List
         questionsV = new ArrayList<Question>(questions);
       } catch (SurveyException e) {
-        SilverTrace.error("survey", "SurveySessionController.questionsUpdateBusinessModel",
+        SilverTrace.error("Survey", "SurveySessionController.questionsUpdateBusinessModel",
             "Survey.EX_PROBLEM_TO_OPEN_SURVEY", e);
       }
       this.setSessionQuestions(questionsV);
@@ -1267,5 +1268,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
       this.setNewSurveyPositions(null);
     }
   }
-
+  
+//pour la notification des résultats
+ public void initAlertResultUser(QuestionContainerDetail surveyDetail) throws RemoteException {
+   UserDetail[] participants = getOrganisationController().getAllUsers(getComponentId());
+   String htmlPath = getQuestionContainerBm().getHTMLQuestionPath(surveyDetail);
+   UserNotificationHelper.buildAndSend(new SurveyUserNotification(getComponentId(), surveyDetail, htmlPath, getUserDetail(), participants));
+ }
 }

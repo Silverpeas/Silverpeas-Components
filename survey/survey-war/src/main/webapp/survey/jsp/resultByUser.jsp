@@ -43,13 +43,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   String userName         = (String) request.getAttribute("UserName");
   String userId         = (String) request.getAttribute("UserId");
   
-  ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", surveyScc.getLanguage());
+  ResourceLocator settings = new ResourceLocator("org.silverpeas.survey.surveySettings", surveyScc.getLanguage());
   String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
   String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title></title>
 <style>

@@ -1,4 +1,4 @@
-<b>$userName$</b> informs you that a new survey has been added
+<b>$userName$</b> informs you that the results of a survey are available
 
 Name : $surveyName$
 $if(surveyDesc)$Description : $surveyDesc$ $endif$
