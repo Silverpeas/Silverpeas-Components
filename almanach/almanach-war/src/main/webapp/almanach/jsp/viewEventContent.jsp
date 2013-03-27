@@ -159,7 +159,6 @@ $(document).ready(function(){
     	TabbedPane tabbedPane = graphicFactory.getTabbedPane();
 		tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+startDateString, true);
 		tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+startDateString, false);
-		tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+startDateString, false);
 		out.println(tabbedPane.print());
     }
 
@@ -168,10 +167,14 @@ $(document).ready(function(){
 
 <div class="rightContent">
 	<!--  Attachments -->
-	<%
-  		out.flush();
-  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+event.getId()+"&ComponentId="+instanceId+"&Context=attachment").include(request, response);
-  	%>
+  <%
+    out.flush();
+    String profile = (!"user".equals(user)) ? "admin" : "user";
+    getServletConfig().getServletContext().getRequestDispatcher(
+        "/attachment/jsp/displayAttachedFiles.jsp?Id=" + event.getId() + "&Profile=" + profile +
+            "&ComponentId=" + instanceId + "&Context=attachment&addFileMenu=true")
+        .include(request, response);
+  %>
   	<!-- Periodicity -->
 	<% if(event.isPeriodic()) { %>
 	<div id="eventPeriodicity" class="bgDegradeGris">
