@@ -20,59 +20,69 @@
  */
 package com.silverpeas.mailinglist.service.model.dao;
 
+import com.silverpeas.annotation.Repository;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import java.util.List;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import org.springframework.transaction.annotation.Transactional;
 
+@Repository("mailingListDao")
+@Transactional
 public class MailingListDaoImpl implements MailingListDao {
 
-  private SessionFactory sessionFactory;
+  @PersistenceContext
+  private EntityManager entityManager;
 
-  public void setSessionFactory(SessionFactory sessionFactory) {
-    this.sessionFactory = sessionFactory;
-  }
-
-  public Session getSession() {
-    return this.sessionFactory.getCurrentSession();
+  private EntityManager getEntityManager() {
+    return this.entityManager;
   }
 
   @Override
   public String createMailingList(MailingList mailingList) {
-    String id = (String) getSession().save(mailingList);
-    mailingList.setId(id);
-    return id;
+    getEntityManager().persist(mailingList);
+    return mailingList.getId();
   }
 
   @Override
   public void deleteMailingList(MailingList mailingList) {
-    getSession().delete(mailingList);
+    EntityManager theEntityManager = getEntityManager();
+    MailingList attachedMailingList = theEntityManager.merge(mailingList);
+    theEntityManager.remove(attachedMailingList);
   }
 
   @Override
   public MailingList findByComponentId(String componentId) {
-    Criteria criteria = getSession().createCriteria(MailingList.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    return (MailingList) criteria.uniqueResult();
+    TypedQuery<MailingList> query = getEntityManager().createNamedQuery("findByComponentId",
+        MailingList.class);
+    query.setParameter("componentId", componentId);
+    MailingList result = null;
+    try {
+      result = query.getSingleResult();
+    } catch (NoResultException ex) {
+      Logger.getLogger(getClass().getSimpleName()).log(Level.FINER, ex.getMessage());
+    }
+    return result;
   }
 
   @Override
   public MailingList findById(String id) {
-    Criteria criteria = getSession().createCriteria(MailingList.class);
-    criteria.add(Restrictions.eq("id", id));
-    return (MailingList) criteria.uniqueResult();
+    return getEntityManager().find(MailingList.class, id);
   }
 
   @Override
   public List<MailingList> listMailingLists() {
-    Criteria criteria = getSession().createCriteria(MailingList.class);
-    return criteria.list();
+    TypedQuery<MailingList> query = getEntityManager().
+        createNamedQuery("findAll", MailingList.class);
+    return query.getResultList();
   }
 
   @Override
   public void updateMailingList(MailingList mailingList) {
-    getSession().update(mailingList);
+    getEntityManager().merge(mailingList);
   }
 }

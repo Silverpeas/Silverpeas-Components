@@ -20,63 +20,67 @@
  */
 package com.silverpeas.mailinglist.service.model.beans;
 
-public class Activity implements Comparable<Activity> {
+import java.io.Serializable;
+import java.util.UUID;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Version;
 
-  private int month;
-  private int year;
-  private long nbMessages;
+@MappedSuperclass
+public abstract class IdentifiableObject implements Serializable {
 
-  public Activity(long nbMessages, int year, int month) {
-    this.month = month;
-    this.year = year;
-    this.nbMessages = nbMessages;
+  @Id
+  protected String id = UUID.randomUUID().toString();
+  @Version
+  protected int version;
+
+  public int getVersion() {
+    return version;
   }
 
-  public int getMonth() {
-    return month;
+  protected void setVersion(int version) {
+    this.version = version;
   }
 
-  public int getYear() {
-    return year;
+  public String getId() {
+    return id;
   }
 
-  public long getNbMessages() {
-    return nbMessages;
-  }
-
-  @Override
-  public int compareTo(Activity other) {
-    if (other == null) {
-      return -1;
-    }
-    if (this.equals(other)) {
-      return 0;
-    }
-    if (year == other.getYear()) {
-      return month - other.getMonth();
-    }
-    return year - other.getYear();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == null) {
-      return false;
-    }
-    if (o.getClass() != this.getClass()) {
-      return false;
-    }
-    Activity other = (Activity) o;
-    return (year == other.getYear() && month == other.getMonth() && nbMessages == other
-        .getNbMessages());
+  protected void setId(String id) {
+    this.id = id;
   }
 
   @Override
   public int hashCode() {
-    int hash = 3;
-    hash = 79 * hash + this.month;
-    hash = 79 * hash + this.year;
-    hash = 79 * hash + (int) (this.nbMessages ^ (this.nbMessages >>> 32));
-    return hash;
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + version;
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final IdentifiableObject other = (IdentifiableObject) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    if (version != other.version) {
+      return false;
+    }
+    return true;
   }
 }

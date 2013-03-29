@@ -20,72 +20,80 @@
  */
 package com.silverpeas.mailinglist.service.job;
 
+import com.silverpeas.mailinglist.service.event.MessageEvent;
+import com.silverpeas.mailinglist.service.event.MessageListener;
+import com.silverpeas.mailinglist.service.model.beans.Attachment;
+import com.silverpeas.mailinglist.service.model.beans.Message;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
+import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-
-
-import com.silverpeas.mailinglist.service.event.MessageEvent;
-import com.silverpeas.mailinglist.service.event.MessageListener;
-import com.silverpeas.mailinglist.service.model.beans.Attachment;
-import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import static com.silverpeas.util.PathTestUtil.*;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import org.junit.After;
-import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.mockito.Mockito.*;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-  "/spring-hibernate.xml", "/spring-datasource.xml"})
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import static com.silverpeas.util.PathTestUtil.BUILD_PATH;
+import static com.silverpeas.util.PathTestUtil.SEPARATOR;
+
 public class TestMailProcessor {
 
   private static int ATT_SIZE = 84954;
-  @Inject
   private MailProcessor processor;
-  @Inject
-  @Named("mailSession")
   private Session session;
   private static final String attachmentPath = BUILD_PATH + SEPARATOR
-          + "uploads" + SEPARATOR + "componentId" + SEPARATOR
-          + "mailId@silverpeas.com" + SEPARATOR + "lemonde.html";
+      + "uploads" + SEPARATOR + "componentId" + SEPARATOR
+      + "mailId@silverpeas.com" + SEPARATOR + "lemonde.html";
   private static final String textEmailContent =
-          "Bonjour famille Simpson, j'espère que vous allez bien. "
-          + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-          + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
-          + "l'homme canon dans la prochaine émission.\nBart";
+      "Bonjour famille Simpson, j'espère que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
+      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
+      + "l'homme canon dans la prochaine émission.\nBart";
   private static final String htmlEmailSummary = "Politique Recherchez depuis sur Le Monde.fr A "
-          + "la Une Le Desk Vidéos International *Elections américaines Europe Politique "
-          + "*Municipales & Cantonales 2008 Société Carnet Economie Médias Météo Rendez-vou";
+      + "la Une Le Desk Vidéos International *Elections américaines Europe Politique "
+      + "*Municipales & Cantonales 2008 Société Carnet Economie Médias Météo Rendez-vou";
+  private static ConfigurableApplicationContext context;
+
+  @BeforeClass
+  public static void bootstrapTestsContext() {
+    context = new ClassPathXmlApplicationContext("/spring-checker.xml", "/spring-notification.xml",
+        "/spring-mailinglist-services.xml", "/spring-mailinglist-dao.xml",
+        "/spring-mailinglist-embbed-datasource.xml");
+  }
+
+  @AfterClass
+  public static void shutdownTestsContext() {
+    context.close();
+  }
+
+  @Before
+  public void setUpTest() throws Exception {
+    processor = context.getBean(MailProcessor.class);
+    session = context.getBean("mailSession", Session.class);
+  }
 
   @After
-  public void onTearDown() {
-    try {
-      FileFolderManager.deleteFolder(BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR + "componentId",
-              false);
-    } catch (UtilException e) {
-      e.printStackTrace();
-    }
+  public void tearDownTest() throws Exception {
+    FileFolderManager.deleteFolder(BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR + "componentId",
+        false);
   }
 
   protected String loadHtml() throws IOException {
@@ -94,8 +102,8 @@ public class TestMailProcessor {
     try {
       buffer = new StringWriter();
       reader = new BufferedReader(new InputStreamReader(
-              TestMessageChecker.class.getResourceAsStream("lemonde.html"), "UTF-8"));
-      String line = null;
+          TestMessageChecker.class.getResourceAsStream("lemonde.html"), "UTF-8"));
+      String line;
       while ((line = reader.readLine()) != null) {
         buffer.write(line);
       }
@@ -113,7 +121,7 @@ public class TestMailProcessor {
   @Test
   public void testProcessMailPartWithAttachment() throws IOException, MessagingException {
     MimeBodyPart part = new MimeBodyPart(
-            TestMessageChecker.class.getResourceAsStream("lemonde.html"));
+        TestMessageChecker.class.getResourceAsStream("lemonde.html"));
     part.setDisposition(Part.ATTACHMENT);
     part.setFileName("lemonde.html");
     part.setHeader("Content-Type", "text/html; charset=UTF-8");
@@ -164,7 +172,7 @@ public class TestMailProcessor {
   @Test
   public void testProcessMailPartWithInlineAttachment() throws MessagingException, IOException {
     MimeBodyPart part = new MimeBodyPart(
-            TestMessageChecker.class.getResourceAsStream("lemonde.html"));
+        TestMessageChecker.class.getResourceAsStream("lemonde.html"));
     part.setFileName("lemonde.html");
     part.setDisposition(Part.INLINE);
     Message message = new Message();
@@ -217,10 +225,10 @@ public class TestMailProcessor {
   @Test
   public void testReplaceSpecialChars() {
     String specialString = "Bart Simpson -<23_B blue Street> 73882 Springfield."
-            + "'\\Tel:33#0476898967%Youhou/";
+        + "'\\Tel:33#0476898967%Youhou/";
     String cleanString = processor.replaceSpecialChars(specialString);
     assertEquals("Bart_Simpson___23_B_blue_Street__73882_Springfield."
-            + "__Tel_33_0476898967_Youhou_", cleanString);
+        + "__Tel_33_0476898967_Youhou_", cleanString);
     cleanString = processor.replaceSpecialChars(null);
     assertNotNull(cleanString);
     assertEquals("", cleanString);
@@ -229,10 +237,10 @@ public class TestMailProcessor {
   @Test
   public void testSaveAttachment() throws IOException, MessagingException {
     MimeBodyPart part = new MimeBodyPart(
-            TestMessageChecker.class.getResourceAsStream("lemonde.html"));
+        TestMessageChecker.class.getResourceAsStream("lemonde.html"));
     part.setFileName("lemonde.html");
     String path = processor.saveAttachment(part, "componentId",
-            "mailId@silverpeas.com");
+        "mailId@silverpeas.com");
     assertNotNull(path);
     assertEquals(path, attachmentPath);
     File partFile = new File(path);
@@ -320,7 +328,7 @@ public class TestMailProcessor {
     body.setHeader("Content-Type", "text/html");
     multipart.addBodyPart(body);
     MimeBodyPart attachment = new MimeBodyPart(TestMessageChecker.class.getResourceAsStream(
-            "lemonde.html"));
+        "lemonde.html"));
     attachment.setDisposition(Part.INLINE);
     attachment.setFileName("lemonde.html");
     multipart.addBodyPart(attachment);
@@ -343,8 +351,8 @@ public class TestMailProcessor {
     Attachment attach = message.getAttachments().iterator().next();
     assertNotNull(attach.getPath());
     assertEquals(attach.getPath(), BUILD_PATH + SEPARATOR
-            + "uploads" + SEPARATOR + "componentId" + SEPARATOR + mailId + SEPARATOR
-            + "lemonde.html");
+        + "uploads" + SEPARATOR + "componentId" + SEPARATOR + mailId + SEPARATOR
+        + "lemonde.html");
     File partFile = new File(attach.getPath());
     assertTrue(partFile.exists());
     assertTrue(partFile.isFile());
@@ -380,7 +388,7 @@ public class TestMailProcessor {
 
   @Test
   public void testPrepareUnauthorizedMessageWithTextEmail()
-          throws MessagingException, IOException {
+      throws MessagingException, IOException {
     MessageListener mailingList = mock(MessageListener.class);
     when(mailingList.getComponentId()).thenReturn("componentId");
     when(mailingList.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.FALSE);

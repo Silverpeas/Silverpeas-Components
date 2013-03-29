@@ -20,25 +20,20 @@
  */
 package com.silverpeas.mailinglist.model;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.jms.TextMessage;
-import javax.mail.internet.MimeMessage;
-
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import com.silverpeas.mailinglist.AbstractMailingListTest;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.event.MessageEvent;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
-
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.util.JNDINames;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import javax.jms.TextMessage;
+import javax.mail.internet.MimeMessage;
 import org.apache.commons.io.IOUtils;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
@@ -46,58 +41,37 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.jvnet.mock_javamail.Mailbox;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-  "/spring-hibernate.xml", "/spring-datasource.xml", "/spring-personalization.xml"})
-public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpringContextTests {
+public class TestMailingListComponent extends AbstractMailingListTest {
 
-  @Inject
-  private ApplicationContext applicationContext;
   private MailingListComponent component = new MailingListComponent("100");
-  private static final String textEmailContent = 
+  private static final String textEmailContent =
       "Bonjour famille Simpson, j'espère que vous allez bien. "
       + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
       + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
       + "l'homme canon dans la prochaine émission.Bart";
 
   @After
-  @Override
   public void onTearDown() throws Exception {
     Mailbox.clearAll();
-    super.onTearDown();
   }
 
   @Before
-  @Override
   public void onSetUp() {
-    super.onSetUp();
     Mailbox.clearAll();
-    ServicesFactory.getInstance().setApplicationContext(applicationContext);
   }
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
     InputStream in = null;
     try {
-      if (isOracle()) {
-        in = TestMailingListComponent.class.getResourceAsStream("test-component-oracle-dataset.xml");
-      } else {
-        in = TestMailingListComponent.class.getResourceAsStream("test-component-dataset.xml");
-      }
+      in = TestMailingListComponent.class.getResourceAsStream("test-component-dataset.xml");
       return new FlatXmlDataSetBuilder().build(in);
-    } catch (DataSetException ex) {
-      ex.printStackTrace();
-      throw ex;
-    }finally {
+    } finally {
       IOUtils.closeQuietly(in);
     }
   }
@@ -128,7 +102,7 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
 
   @Test
   public void testOnMessage() throws Exception {
-    Message message = ServicesFactory.getMessageService().getMessage("700");
+    Message message = ServicesFactory.getFactory().getMessageService().getMessage("700");
     message.setContentType("text/plain; charset=\"UTF-8\"");
     MessageEvent event = new MessageEvent();
     event.addMessage(message);
@@ -168,6 +142,8 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
     checkNoMessage("herschel.krustofski@silverpeas.com");
     checkNoMessage("selma.bouvier@silverpeas.com");
     checkNoMessage("patty.bouvier@silverpeas.com");
+
+    message = ServicesFactory.getFactory().getMessageService().getMessage(message.getId());
     message.setModerated(true);
     event = new MessageEvent();
     event.addMessage(message);
@@ -213,7 +189,7 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
   @Test
   public void testOnMessageNotModeratedNotify() throws Exception {
     MailingListComponent componentNotModerated = new MailingListComponent("101");
-    MailingList list = ServicesFactory.getMailingListService().findMailingList("101");
+    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList("101");
     assertNotNull(list);
     assertNotNull(list.getModerators());
     assertEquals(3, list.getModerators().size());
@@ -221,7 +197,7 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
     assertEquals(2, list.getReaders().size());
     assertFalse(list.isModerated());
     assertTrue(list.isNotify());
-    Message message = ServicesFactory.getMessageService().getMessage("701");
+    Message message = ServicesFactory.getFactory().getMessageService().getMessage("701");
     assertEquals(textEmailContent, message.getBody());
     message.setContentType("text/plain; charset=\"UTF-8\"");
     MessageEvent event = new MessageEvent();
@@ -296,5 +272,12 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
     assertEquals(subject, alert.getSubject());
     assertEquals("text/plain; charset=\"UTF-8\"", alert.getContentType());
     assertEquals(textEmailContent, (String) alert.getContent());
+  }
+
+  @Override
+  protected String[] getContextConfigurations() {
+    return new String[]{"/spring-checker.xml", "/spring-notification.xml",
+      "/spring-mailinglist-services-factory.xml", "/spring-mailinglist-personalization-dao.xml",
+      "/spring-mailinglist-embbed-datasource.xml"};
   }
 }

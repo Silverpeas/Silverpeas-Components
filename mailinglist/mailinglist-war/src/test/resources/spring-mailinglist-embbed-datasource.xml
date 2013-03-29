@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -25,19 +25,15 @@
 
 -->
 
-<!DOCTYPE hibernate-mapping PUBLIC
-	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<hibernate-mapping package="com.silverpeas.mailinglist.service.model.beans">
-  <class name="Attachment" table="sc_mailinglist_attachment">
-    <id name="id" column="id" type="string">
-      <generator class="uuid" />
-    </id>
-    <version name="version" type="integer" />
-    <property name="size" column="attachmentSize" type="long" />
-    <property name="path" column="attachmentPath" type="string" />
-    <property name="fileName" column="fileName" type="string" />
-    <property name="contentType" column="contentType" type="string" />
-    <property name="md5Signature" column="md5Signature" type="string" />
-  </class>
-</hibernate-mapping>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+  <jdbc:embedded-database id="jpaDataSource" type="H2" >
+    <jdbc:script location="classpath:/create-database.sql" />
+  </jdbc:embedded-database>
+
+</beans>

@@ -20,33 +20,33 @@
  */
 package com.silverpeas.mailinglist.service.model.dao;
 
+import com.silverpeas.annotation.Repository;
 import com.silverpeas.mailinglist.service.model.beans.Activity;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.stratelia.webactiv.util.exception.UtilException;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import org.springframework.transaction.annotation.Transactional;
 
+@Repository("messageDao")
+@Transactional
 public class MessageDaoImpl implements MessageDao {
 
-  private SessionFactory sessionFactory;
+  @PersistenceContext
+  private EntityManager entityManager;
 
-  public void setSessionFactory(SessionFactory sessionFactory) {
-    this.sessionFactory = sessionFactory;
-  }
-
-  public Session getSession() {
-    return this.sessionFactory.getCurrentSession();
+  private EntityManager getEntityManager() {
+    return this.entityManager;
   }
 
   @Override
@@ -60,152 +60,137 @@ public class MessageDaoImpl implements MessageDao {
           saveAttachmentFile(attachment);
         }
       }
-      String id = (String) getSession().save(message);
-      message.setId(id);
-      return id;
+      getEntityManager().persist(message);
+      return message.getId();
     }
     return existingMessage.getId();
   }
 
   @Override
   public void updateMessage(Message message) {
-    getSession().update(message);
+    getEntityManager().merge(message);
   }
 
   @Override
   public void deleteMessage(Message message) {
+    EntityManager theEntityManager = getEntityManager();
+    Message reattachedMessage = theEntityManager.merge(message);
     if (message.getAttachments() != null && !message.getAttachments().isEmpty()) {
       for (Attachment attachment : message.getAttachments()) {
         deleteAttachmentFile(attachment);
       }
     }
-    getSession().delete(message);
+    theEntityManager.remove(reattachedMessage);
   }
 
   @Override
   public Message findMessageById(final String id) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("id", id));
-    return (Message) criteria.uniqueResult();
+    return getEntityManager().find(Message.class, id);
   }
 
   public Message findMessageByMailId(final String messageId, String componentId) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.naturalId().set("componentId", componentId).set(
-        "messageId", messageId));
-    return (Message) criteria.uniqueResult();
+    TypedQuery<Message> query = getEntityManager().createNamedQuery("findMessage", Message.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("messageId", messageId);
+    Message result = null;
+    try {
+      result = query.getSingleResult();
+    } catch (NoResultException ex) {
+      Logger.getLogger(MessageDao.class.getSimpleName()).log(Level.FINER, ex.getMessage());
+    }
+    return result;
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<Message> listAllMessagesOfMailingList(final String componentId,
       final int page, final int elementsPerPage, final OrderBy orderBy) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.addOrder(orderBy.getOrder());
-    int firstResult = page * elementsPerPage;
-    criteria.setFirstResult(firstResult);
-    criteria.setMaxResults(elementsPerPage);
-    return criteria.list();
+    TypedQuery<Message> query = getEntityManager().createQuery(
+        "from Message where componentId = :componentId " + orderBy.getOrderExpression(),
+        Message.class);
+    query.setParameter("componentId", componentId);
+    query.setFirstResult(page * elementsPerPage);
+    query.setMaxResults(elementsPerPage);
+    return query.getResultList();
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<Message> listDisplayableMessagesOfMailingList(String componentId,
       final int month, final int year, final int page,
       final int elementsPerPage, final OrderBy orderBy) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.TRUE));
+    String queryText = "from Message where componentId = :componentId and moderated = :moderated";
     if (month >= 0) {
-      criteria.add(Restrictions.eq("month", month));
+      queryText += " and month = " + month;
     }
     if (year >= 0) {
-      criteria.add(Restrictions.eq("year", year));
+      queryText += " and year = " + year;
     }
-    criteria.addOrder(orderBy.getOrder());
-    int firstResult = page * elementsPerPage;
-    criteria.setFirstResult(firstResult);
-    criteria.setMaxResults(elementsPerPage);
-    return criteria.list();
+    queryText += " " + orderBy.getOrderExpression();
+
+    TypedQuery<Message> query = getEntityManager().createQuery(queryText, Message.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", true);
+    query.setFirstResult(page * elementsPerPage);
+    query.setMaxResults(elementsPerPage);
+    return query.getResultList();
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<Message> listUnmoderatedMessagesOfMailingList(String componentId,
       int page, int elementsPerPage, OrderBy orderBy) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.FALSE));
-    criteria.addOrder(orderBy.getOrder());
-    int firstResult = page * elementsPerPage;
-    criteria.setFirstResult(firstResult);
-    criteria.setMaxResults(elementsPerPage);
-    return criteria.list();
+    TypedQuery<Message> query = getEntityManager().createQuery(
+        "from Message where componentId = :componentId and moderated = :moderated " + orderBy.
+        getOrderExpression(), Message.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", false);
+    query.setFirstResult(page * elementsPerPage);
+    query.setMaxResults(elementsPerPage);
+    return query.getResultList();
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<Message> listActivityMessages(String componentId, int size, OrderBy orderBy) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.TRUE));
-    criteria.addOrder(orderBy.getOrder());
-    criteria.setMaxResults(size);
-    return criteria.list();
+    TypedQuery<Message> query = getEntityManager().createQuery(
+        "from Message where componentId = :componentId and moderated = :moderated " + orderBy.
+        getOrderExpression(), Message.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", true);
+    query.setMaxResults(size);
+    return query.getResultList();
   }
 
   @Override
-  public int listTotalNumberOfMessages(String componentId) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.setProjection(Projections.rowCount());
-    return ((Long) criteria.uniqueResult()).intValue();
+  public long listTotalNumberOfMessages(String componentId) {
+    TypedQuery<Long> query = getEntityManager().
+        createNamedQuery("countOfMessages", Long.class);
+    query.setParameter("componentId", componentId);
+    return query.getSingleResult();
   }
 
   @Override
-  public int listTotalNumberOfDisplayableMessages(String componentId) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.TRUE));
-    criteria.setProjection(Projections.rowCount());
-    return ((Long) criteria.uniqueResult()).intValue();
+  public long listTotalNumberOfDisplayableMessages(String componentId) {
+    TypedQuery<Long> query = getEntityManager().createNamedQuery(
+        "countOfMessagesByModeration", Long.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", true);
+    return query.getSingleResult();
   }
 
   @Override
-  public int listTotalNumberOfUnmoderatedMessages(String componentId) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.FALSE));
-    criteria.setProjection(Projections.rowCount());
-    return ((Long) criteria.uniqueResult()).intValue();
+  public long listTotalNumberOfUnmoderatedMessages(String componentId) {
+    TypedQuery<Long> query = getEntityManager().createNamedQuery(
+        "countOfMessagesByModeration", Long.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", false);
+    return query.getSingleResult();
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<Activity> listActivity(String componentId) {
-    Criteria criteria = getSession().createCriteria(Message.class);
-    criteria.add(Restrictions.eq("componentId", componentId));
-    criteria.add(Restrictions.eq("moderated", Boolean.TRUE));
-    criteria.setProjection(Projections.projectionList().add(
-        Projections.rowCount(), "nb").add(Projections.groupProperty("year"),
-        "year").add(Projections.groupProperty("month"), "month"));
-    List result = criteria.list();
-    List<Activity> activities;
-    if (result != null && !result.isEmpty()) {
-      activities = new ArrayList<Activity>(result.size());
-      for (Object aResult : result) {
-        Object[] line = (Object[]) aResult;
-        Activity activity = new Activity();
-        activity.setNbMessages(((Long) line[0]).intValue());
-        activity.setYear((Integer) line[1]);
-        activity.setMonth((Integer) line[2]);
-        activities.add(activity);
-      }
-    } else {
-      activities = new ArrayList<Activity>();
-    }
-    return activities;
+    TypedQuery<Activity> query = getEntityManager().createNamedQuery("findActivitiesFromMessages",
+        Activity.class);
+    query.setParameter("componentId", componentId);
+    query.setParameter("moderated", true);
+    return query.getResultList();
   }
 
   protected void saveAttachmentFile(Attachment attachment) {
@@ -240,20 +225,25 @@ public class MessageDaoImpl implements MessageDao {
     }
   }
 
-  @SuppressWarnings("unchecked")
   protected Attachment findAlreadyExistingAttachment(final String md5Hash,
       final long size, final String fileName, final String attachmentId) {
-    Criteria criteria = getSession().createCriteria(Attachment.class);
-    criteria.add(Restrictions.eq("md5Signature", md5Hash));
-    criteria.add(Restrictions.eq("size", size));
-    criteria.add(Restrictions.eq("fileName", fileName));
-    if (attachmentId != null) {
-      criteria.add(Restrictions.not(Restrictions.eq("id", attachmentId)));
+    TypedQuery<Attachment> query;
+    if (StringUtil.isDefined(attachmentId)) {
+      query = getEntityManager().
+          createNamedQuery("findSomeAttachmentsExcludingOne", Attachment.class);
+      query.setParameter("id", attachmentId);
+    } else {
+      query = getEntityManager().createNamedQuery("findSomeAttachments", Attachment.class);
     }
-    List<Attachment> result = criteria.list();
-    if (result != null && !result.isEmpty()) {
-      return result.iterator().next();
+    query.setParameter("md5", md5Hash);
+    query.setParameter("size", size);
+    query.setParameter("fileName", fileName);
+
+    List<Attachment> attachments = query.getResultList();
+    Attachment result = null;
+    if (!attachments.isEmpty()) {
+      result = attachments.get(0);
     }
-    return null;
+    return result;
   }
 }

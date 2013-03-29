@@ -28,20 +28,30 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
   <context:annotation-config/>
-  <context:component-scan base-package="com.silverpeas.mailinglist.service.model"/>
 
-  <bean id="messageService" name="messageService"
-        class="com.silverpeas.mailinglist.service.model.MessageServiceImpl">
-    <property name="elementsPerPage" value="10" />
-  </bean>
+  <context:component-scan base-package="com.silverpeas.mailinglist.service.model.dao"/>
+  <context:component-scan base-package="com.silverpeas.personalization.dao"/>
+  <context:component-scan base-package="com.silverpeas.personalization.service"/>
 
-  <bean id="servicesFactory" name="servicesFactory"
-        class="com.silverpeas.mailinglist.service.ServicesFactory"
-        factory-method="getFactory" />
+  <bean name="personalizationServiceFactory"
+        class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
 
+  <jpa:repositories base-package="com.silverpeas.personalization" transaction-manager-ref="jpaTransactionManager"/>
+
+  <import resource="/spring-jpa.xml"/>
+  <import resource="spring-silverpeas.xml"/>
+
+  <util:list id="entities">
+    <value>com.silverpeas.mailinglist.service.model.beans</value>
+    <value>com.silverpeas.personalization</value>
+  </util:list>
 </beans>

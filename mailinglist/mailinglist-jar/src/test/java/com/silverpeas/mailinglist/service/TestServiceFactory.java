@@ -20,17 +20,17 @@
  */
 package com.silverpeas.mailinglist.service;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import com.silverpeas.mailinglist.service.job.MessageChecker;
 import com.silverpeas.mailinglist.service.model.MailingListService;
 import com.silverpeas.mailinglist.service.model.MessageService;
-
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 public class TestServiceFactory {
 
@@ -39,7 +39,8 @@ public class TestServiceFactory {
   @BeforeClass
   public static void loadSpringContext() {
     context = new ClassPathXmlApplicationContext(new String[]{"/spring-checker.xml",
-      "/spring-notification.xml", "/spring-hibernate.xml", "/spring-datasource.xml"});
+      "/spring-notification.xml", "/spring-mailinglist-services.xml", "/spring-mailinglist-dao.xml",
+      "/spring-mailinglist-embbed-datasource.xml"});
   }
 
   @AfterClass
@@ -49,19 +50,19 @@ public class TestServiceFactory {
 
   @Test
   public void testGetMessageService() {
-    MessageService service = ServicesFactory.getMessageService();
+    MessageService service = ServicesFactory.getFactory().getMessageService();
     assertThat(service, is(notNullValue()));
   }
 
   @Test
   public void testGetMailingListService() {
-    MailingListService service = ServicesFactory.getMailingListService();
+    MailingListService service = ServicesFactory.getFactory().getMailingListService();
     assertThat(service, is(notNullValue()));
   }
 
   @Test
   public void testGetMessageChecker() {
-    MessageChecker checker = ServicesFactory.getMessageChecker();
+    MessageChecker checker = ServicesFactory.getFactory().getMessageChecker();
     assertThat(checker, is(notNullValue()));
   }
 }

@@ -20,92 +20,46 @@
  */
 package com.silverpeas.mailinglist.service.notification;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.jms.QueueConnectionFactory;
-import javax.jms.TextMessage;
-import org.jvnet.mock_javamail.Mailbox;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
 import com.mockrunner.mock.jms.MockQueue;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.mailinglist.AbstractMailingListTest;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
-
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import java.io.IOException;
+import java.util.List;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.TextMessage;
+import javax.naming.InitialContext;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.jvnet.mock_javamail.Mailbox;
 
 import static org.junit.Assert.*;
 
-public class TestCheckNotification {
+public class TestCheckNotification extends AbstractMailingListTest {
 
-  private SimpleNotificationHelper notificationHelper;
-  private static DataSource dataSource;
-  private static ClassPathXmlApplicationContext context;
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-    SimpleMemoryContextFactory.setUpAsInitialContext();
-    context = new ClassPathXmlApplicationContext(new String[]{"/spring-checker.xml",
-      "/spring-notification.xml", "/spring-jpa-hibernate.xml", "/spring-embedded-datasource.xml",
-      "/spring-personalization.xml"});
-    dataSource = context.getBean("jpaDataSource", DataSource.class);
-    InitialContext ic = new InitialContext();
-    ic.rebind("jdbc/Silverpeas", dataSource);
-    DBUtil.getInstanceForTest(dataSource.getConnection());
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-    DBUtil.clearTestInstance();
-    SimpleMemoryContextFactory.tearDownAsInitialContext();
-    context.close();
-  }
+  private NotificationHelper notificationHelper;
 
   @Before
   public void init() throws Exception {
-    IDatabaseConnection connection = getConnection();
-    DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    connection.close();
-    notificationHelper = context.getBean(SimpleNotificationHelper.class);
     AdminReference.getAdminService().reloadCache();
-    registerMockJMS();
     Mailbox.clearAll();
+    notificationHelper = getManagedService(NotificationHelper.class);
   }
 
   @After
   public void after() throws Exception {
-    IDatabaseConnection connection = getConnection();
-    DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    connection.close();
-    MockObjectFactory.clearAll();
     Mailbox.clearAll();
-  }
-
-  private IDatabaseConnection getConnection() throws Exception {
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    return connection;
   }
 
   protected void registerMockJMS() throws Exception {
@@ -122,8 +76,9 @@ public class TestCheckNotification {
 
   @Test
   public void testNotifyArchivageNotModeratedOpen() throws Exception {
-    MailingList list = ServicesFactory.getMailingListService().findMailingList("101");
-    Message message = ServicesFactory.getMessageService().getMessage("701");
+    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingList list = servicesFactory.getMailingListService().findMailingList("101");
+    Message message = servicesFactory.getMessageService().getMessage("701");
     assertNotNull(message);
     assertNotNull(list);
     assertFalse(list.isModerated());
@@ -153,8 +108,9 @@ public class TestCheckNotification {
 
   @Test
   public void testNotifyArchivageModeratedOpen() throws Exception {
-    MailingList list = ServicesFactory.getMailingListService().findMailingList("102");
-    Message message = ServicesFactory.getMessageService().getMessage("702");
+    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    MailingList list = servicesFactory.getMailingListService().findMailingList("102");
+    Message message = servicesFactory.getMessageService().getMessage("702");
     assertNotNull(message);
     assertNotNull(list);
     assertTrue(list.isModerated());
@@ -203,8 +159,16 @@ public class TestCheckNotification {
     }
   }
 
+  @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
     return new FlatXmlDataSetBuilder().build(TestCheckNotification.class.getResourceAsStream(
         "test-check-notification-dataset.xml"));
+  }
+
+  @Override
+  protected String[] getContextConfigurations() {
+    return new String[]{"/spring-checker.xml", "/spring-notification.xml",
+      "/spring-mailinglist-services-factory.xml", "/spring-mailinglist-personalization-dao.xml",
+      "/spring-mailinglist-embbed-datasource.xml"};
   }
 }

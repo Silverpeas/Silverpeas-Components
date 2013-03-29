@@ -20,60 +20,62 @@
  */
 package com.silverpeas.mailinglist;
 
+import com.mockrunner.mock.jms.MockQueue;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.mailinglist.jms.MockObjectFactory;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import java.sql.SQLException;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.jms.QueueConnectionFactory;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.mailinglist.jms.MockObjectFactory;
-
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-
-import com.mockrunner.mock.jms.MockQueue;
+import org.dbunit.DataSourceDatabaseTester;
 import org.dbunit.DatabaseUnitException;
+import org.dbunit.IDatabaseTester;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.OrganisationController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-public abstract class AbstractSilverpeasDatasourceSpringContextTests {
+public abstract class AbstractMailingListTest {
 
-  Logger logger = LoggerFactory.getLogger(AbstractSilverpeasDatasourceSpringContextTests.class);
-  @Inject
-  @Named("dataSource")
-  private DataSource datasource;
+  protected Logger logger = LoggerFactory.getLogger(AbstractMailingListTest.class);
+  private ConfigurableApplicationContext context;
+  private IDatabaseTester databaseTester;
+
+  protected abstract String[] getContextConfigurations();
+
+  protected abstract IDataSet getDataSet() throws Exception;
 
   public DataSource getDataSource() {
-    return datasource;
+    return context.getBean(DataSource.class);
   }
 
-  public void setDataSource(DataSource datasource) {
-    this.datasource = datasource;
+  public <T> T getManagedService(Class<T> beanType) {
+    return context.getBean(beanType);
+  }
+
+  public OrganisationController getOrganisationController() {
+    return context.getBean(OrganisationController.class);
   }
 
   protected void registerDatasource() {
     try {
       InitialContext ic = new InitialContext();
-      ic.rebind("jdbc/Silverpeas", datasource);
-      ic.rebind(JNDINames.DATABASE_DATASOURCE, datasource);
-      ic.rebind(JNDINames.ADMIN_DATASOURCE, datasource);
+      ic.rebind("jdbc/Silverpeas", getDataSource());
+      ic.rebind(JNDINames.DATABASE_DATASOURCE, getDataSource());
+      ic.rebind(JNDINames.ADMIN_DATASOURCE, getDataSource());
       registerMockJMS(ic);
     } catch (Exception nex) {
       logger.error("Can't register datasource", nex);
@@ -90,65 +92,28 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
     queue.clear();
   }
 
-  public boolean isOracle() {
-    return false;
-  }
-
   protected IDatabaseConnection getConnection() throws SQLException, DatabaseUnitException {
-    if (isOracle()) {
-      IDatabaseConnection connection = new DatabaseConnection(datasource.getConnection());
-      connection.getConfig().setProperty("http://www.dbunit.org/features/qualifiedTableNames", true);
-      connection.getConfig().setProperty("http://www.dbunit.org/properties/datatypeFactory",
-          new org.dbunit.ext.oracle.OracleDataTypeFactory());
-      return connection;
-    } else {
-      return new DatabaseConnection(datasource.getConnection());
-    }
+    return new DatabaseConnection(getDataSource().getConnection());
   }
-
-  protected abstract IDataSet getDataSet() throws Exception;
 
   @Before
-  public void onSetUp() {
+  public void setUpTestContext() throws Exception {
     SimpleMemoryContextFactory.setUpAsInitialContext();
+    context = new ClassPathXmlApplicationContext(getContextConfigurations());
     DBUtil.clearTestInstance();
     registerDatasource();
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      logger.error("Can't load configuration", ex);
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          logger.error("Can't load configuration", e);
-        }
-      }
-    }
+
+    databaseTester = new DataSourceDatabaseTester(getDataSource());
+    databaseTester.setDataSet(getDataSet());
+    databaseTester.onSetup();
   }
 
   @After
-  public void onTearDown() throws Exception {
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      logger.error("Can't load configuration", ex);
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          logger.error("Can't load configuration", e);
-        }
-      }
-    }
+  public void tearDownTestContext() throws Exception {
+    databaseTester.onTearDown();
     MockObjectFactory.clearAll();
-    SimpleMemoryContextFactory.tearDownAsInitialContext();
     DBUtil.clearTestInstance();
+    context.close();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 }
