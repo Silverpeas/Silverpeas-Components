@@ -24,17 +24,3 @@ CREATE TABLE SC_IL_ExtSus
 	email			varchar (1000)	NOT NULL ,
 	instanceId		varchar (50)	NOT NULL
 );
-
-CREATE TABLE SC_IL_IntSus
-(
-	letter			int		NOT NULL ,
-	userId			varchar (255)	NOT NULL ,
-	instanceId		varchar (50)	NOT NULL
-);
-
-CREATE TABLE SC_IL_Pubs
-(
-	letter			int		NOT NULL ,
-	userId			varchar (255)	NOT NULL ,
-	instanceId		varchar (50)	NOT NULL
-);

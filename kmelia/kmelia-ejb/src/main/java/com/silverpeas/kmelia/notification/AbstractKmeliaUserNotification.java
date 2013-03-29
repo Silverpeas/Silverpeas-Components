@@ -46,6 +46,7 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * @author Yohann Chastagnier
@@ -70,7 +71,7 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
     return "kmelia";
   }
 
-  protected OrganizationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     // Must return a new instance each time.
     // This is to resolve Serializable problems
     return new OrganizationController();
@@ -133,7 +134,7 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
 
   private String getSpacesPath(final String componentId, final String language) {
     String spacesPath = "";
-    final List<SpaceInst> spaces = getOrganizationController().getSpacePathToComponent(
+    final List<SpaceInst> spaces = getOrganisationController().getSpacePathToComponent(
         componentId);
     final Iterator<SpaceInst> iSpaces = spaces.iterator();
     SpaceInst spaceInst = null;
@@ -146,7 +147,7 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
   }
 
   private String getComponentLabel(final String componentId, final String language) {
-    final ComponentInstLight component = getOrganizationController().getComponentInstLight(componentId);
+    final ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
     String componentLabel = "";
     if (component != null) {
       componentLabel = component.getLabel(language);

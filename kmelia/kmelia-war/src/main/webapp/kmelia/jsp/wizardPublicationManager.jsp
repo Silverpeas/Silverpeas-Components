@@ -33,7 +33,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -181,24 +180,20 @@ function init() {
 </script>
 </head>
 <body class="publicationManager" onload="init()">
-<% 
-        Window window = gef.getWindow();
-        Frame frame = gef.getFrame();
-        Board board = gef.getBoard();
-        
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(kmeliaScc.getSpaceLabel());
-        browseBar.setComponentName(kmeliaScc.getComponentLabel(), "javascript:onClick=topicGoTo('0')");
-        browseBar.setPath(linkedPathString);
-		browseBar.setExtraInformation(pubName);
-        
-        out.println(window.printBefore());
-        
-        displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources, out, kmaxMode);
-        
-        out.println(frame.printBefore());
-        
-%>
+  <%
+    Window window = gef.getWindow();
+    Frame frame = gef.getFrame();
+    Board board = gef.getBoard();
+    BrowseBar browseBar = window.getBrowseBar();
+    browseBar.setDomainName(kmeliaScc.getSpaceLabel());
+    browseBar.setComponentName(kmeliaScc.getComponentLabel(), "javascript:onClick=topicGoTo('0')");
+    browseBar.setPath(linkedPathString);
+    browseBar.setExtraInformation(pubName);
+    out.println(window.printBefore());
+    KmeliaDisplayHelper.displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources,
+        out, kmaxMode);
+    out.println(frame.printBefore());
+  %>
 	<!-- cadre d'aide -->
 	<div class="inlineMessage">
 		<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>

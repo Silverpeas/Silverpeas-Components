@@ -32,13 +32,14 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * @author dlesimple
  */
 public class WebPagesCallBack implements CallBack {
 
-  private OrganizationController oc;
+  private OrganisationController oc;
 
   public WebPagesCallBack() {
   }

@@ -21,9 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
----*/
-
 package com.silverpeas.silvercrawler.servlets;
 
 import java.io.BufferedInputStream;
@@ -59,7 +56,7 @@ public class SilverCrawlerFileServer extends HttpServlet {
 
   public static String getUrl(String logicalName, String physicalName,
       String mimeType, String userId, String componentId) {
-    return FileServerUtils.getUrl(logicalName, physicalName, mimeType, userId,
+    return FileServerUtils.getUrl(physicalName, mimeType, userId,
         componentId);
   }
 
@@ -107,7 +104,7 @@ public class SilverCrawlerFileServer extends HttpServlet {
           + GeneralPropertiesManager.getString("sessionTimeout"));
     }
 
-    String rootPath = mainSessionCtrl.getOrganizationController()
+    String rootPath = mainSessionCtrl.getOrganisationController()
         .getComponentParameterValue(componentId, "directory");
     String separator = rootPath.substring(0, 1);
     if (rootPath.endsWith(separator))
@@ -147,7 +144,7 @@ public class SilverCrawlerFileServer extends HttpServlet {
 
   private boolean isUserAllowed(MainSessionController controller,
       String componentId) {
-    return controller.getOrganizationController().isComponentAvailable(
+    return controller.getOrganisationController().isComponentAvailable(
         componentId, controller.getUserId());
   }
 

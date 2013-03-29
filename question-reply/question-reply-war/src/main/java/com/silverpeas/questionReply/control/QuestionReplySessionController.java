@@ -32,12 +32,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.pdc.PdcServiceFactory;
@@ -72,7 +74,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
@@ -91,7 +92,6 @@ import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
 
@@ -597,7 +597,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Récupère la liste des experts du domaine de la question
    */
   public Collection<UserDetail> getCurrentQuestionWriters() throws QuestionReplyException {
-    OrganizationController orga = getOrganizationController();
+    OrganisationController orga = getOrganisationController();
     List<UserDetail> arrayUsers = new ArrayList<UserDetail>();
 
     try {
@@ -679,7 +679,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     List<String> profils = new ArrayList<String>();
     profils.add(SilverpeasRole.writer.name());
     String[] usersIds =
-        getOrganizationController().getUsersIdsByRoleNames(getComponentId(), profils);
+        getOrganisationController().getUsersIdsByRoleNames(getComponentId(), profils);
     List<UserRecipient> users = new ArrayList<UserRecipient>(usersIds.length);
     for (String userId : usersIds) {
       users.add(new UserRecipient(userId));
@@ -691,10 +691,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @param reply
    * @throws QuestionReplyException
    */
-  @SuppressWarnings("unchecked")
   private void notifyReply(Reply reply) throws QuestionReplyException {
     UserDetail user =
-        getOrganizationController().getUserDetail(getCurrentQuestion().getCreatorId());
+        getOrganisationController().getUserDetail(getCurrentQuestion().getCreatorId());
     ReplyNotifier notifier = new ReplyNotifier(getUserDetail(getUserId()), URLManager.getServerURL(
         null), getCurrentQuestion(), reply, new NotificationData(getString(
         "questionReply.notification") + getComponentLabel(), getSpaceLabel() + " - "
@@ -967,7 +966,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     StringBuilder sb = new StringBuilder();
     sb.append("<table width=\"100%\">\n");
     Collection<NodeDetail> categories = getAllCategories();
-    QuestionReplyExport exporter = new QuestionReplyExport(resource, file);
+    QuestionReplyExport exporter = new QuestionReplyExport(getUserDetail(), resource, file);
     for (NodeDetail category : categories) {
       String categoryId = java.lang.Integer.toString(category.getId());
       exportCategory(exporter, category, categoryId, sb);

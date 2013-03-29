@@ -474,7 +474,6 @@ $(document).ready(function(){
 
 	tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+startDateString, false);
 	tabbedPane.addTab(almanach.getString("entete"), "editEvent.jsp?Id="+id+"&Date="+startDateString, true);
-	tabbedPane.addTab(resources.getString("GML.attachments"), "editAttFiles.jsp?Id="+id+"&Date="+startDateString, false);
 
 	out.println(tabbedPane.print());
 	out.println(frame.printBefore());

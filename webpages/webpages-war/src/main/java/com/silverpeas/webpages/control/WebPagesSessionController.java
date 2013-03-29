@@ -28,6 +28,7 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
+
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -42,8 +43,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -100,18 +100,12 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    * @return vrai s'il existe un fichier wysiwyg pour l'instance de composant
    */
   public boolean haveGotWysiwygNotEmpty() {
-    boolean returnValue = false;
     if (WysiwygController.haveGotWysiwyg(getComponentId(), getComponentId(), I18NHelper.defaultLanguage)) {
-      try {
-        String contenuWysiwyg =
-            WysiwygController.load(getComponentId(), getComponentId(), I18NHelper.defaultLanguage);
-        return contenuWysiwyg != null && contenuWysiwyg.length() != 0;
-      } catch (WysiwygException ex) {
-        SilverTrace.error("webPages",
-                "WebPagesSessionController.haveGotWysiwyg()", "root.", ex);
-      }
+        String contenuWysiwyg = WysiwygController.load(
+            getComponentId(), getComponentId(), I18NHelper.defaultLanguage);
+        return StringUtil.isDefined(contenuWysiwyg);
     }
-    return returnValue;
+    return false;
   }
 
   public void index() throws WebPagesException {
@@ -140,7 +134,8 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   public boolean isSubscriber() {
     SilverTrace.info("webPages", "WebPagesSessionController.isSubscriber()",
             "root.MSG_GEN_ENTER_METHOD");
-    return getSubscribeBm().isSubscribedToComponent(getUserId(), getComponentId());
+    return getSubscribeBm()
+        .existsSubscription(new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   private NodePK getNodePK() {
@@ -292,8 +287,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       indexEntry.setCreationDate(new Date());
       indexEntry.setCreationUser(getUserId());
       indexEntry.setTitle(getComponentLabel());
-      ComponentInstLight component =
-              getOrganizationController().getComponentInstLight(getComponentId());
+      ComponentInstLight component = getOrganisationController().getComponentInstLight(getComponentId());
       if (component != null) {
         indexEntry.setPreView(component.getDescription());
       }

@@ -21,13 +21,7 @@
 package com.silverpeas.silvercrawler.control;
 
 import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.silvercrawler.model.FileDetail;
-import com.silverpeas.silvercrawler.model.FileFolder;
-import com.silverpeas.silvercrawler.model.SilverCrawlerFileUploadException;
-import com.silverpeas.silvercrawler.model.SilverCrawlerFolderCreationException;
-import com.silverpeas.silvercrawler.model.SilverCrawlerFolderRenameException;
-import com.silverpeas.silvercrawler.model.SilverCrawlerForbiddenActionException;
-import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
+import com.silverpeas.silvercrawler.model.*;
 import com.silverpeas.silvercrawler.statistic.HistoryByUser;
 import com.silverpeas.silvercrawler.statistic.HistoryDetail;
 import com.silverpeas.silvercrawler.statistic.Statistic;
@@ -42,30 +36,23 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.search.indexEngine.model.RepositoryIndexer;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class SilverCrawlerSessionController extends AbstractComponentSessionController {
 
@@ -709,8 +696,6 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     String oldPath = getFullPath(folderName);
     File oldFile = new File(oldPath);
     oldFile.renameTo(newFile);
-
-
   }
 
   private boolean containsWeirdCharacters(String newName) {
@@ -769,15 +754,8 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
   public void saveFile(FileItem fileItem, boolean replaceFile)
     throws SilverCrawlerFileUploadException {
-    String name = fileItem.getName();
-    if (name != null) {
-
-      // extract file name
-      if (!FileUtil.isWindows()) {
-        name = name.replace('\\', File.separatorChar);
-      }
-      name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
-
+    String name = FileUtil.getFilename(fileItem.getName());
+    if (StringUtil.isDefined(name)) {
       // compute full path
       String fullPath = getFullPath(name);
       File newFile = new File(fullPath);

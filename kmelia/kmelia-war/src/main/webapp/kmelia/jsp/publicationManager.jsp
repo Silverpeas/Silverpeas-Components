@@ -24,16 +24,21 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
-<%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+
+<%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
+<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
+<%@page import="com.stratelia.webactiv.util.FileServerUtils" %>
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@page import="org.silverpeas.util.URLUtils"%>
 
 <%@include file="checkKmelia.jsp" %>
 <%@include file="publicationsList.jsp.inc" %>
 <%@include file="topicReport.jsp.inc" %>
-<%@include file="tabManager.jsp.inc" %>
+
 
 <%!  //Icons
   String folderSrc;
@@ -100,7 +105,7 @@
     String language = kmeliaScc.getCurrentLanguage();
 
     String vignette_url = null;
-   
+
     String profile = (String) request.getAttribute("Profile");
     String action = (String) request.getAttribute("Action");
     String id = (String) request.getAttribute("PubId");
@@ -110,12 +115,12 @@
     boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   	boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
 
-    String resultThumbnail = (String)request.getParameter("resultThumbnail");
+    String resultThumbnail =  request.getParameter("resultThumbnail");
     boolean errorThumbnail = false;
 	if(resultThumbnail != null && !"ok".equals(resultThumbnail)){
 		errorThumbnail = true;
 	}
-    
+
     SilverTrace.info("kmelia", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION pubManager = " + action);
 
     //Icons
@@ -156,7 +161,7 @@
     boolean isFieldVersionVisible = kmeliaScc.isFieldVersionVisible();
     boolean isNotificationAllowed = kmeliaScc.isNotificationAllowed();
     boolean isThumbnailMandatory = kmeliaScc.isThumbnailMandatory();
-    
+
     boolean isAutomaticDraftOutEnabled = StringUtil.isDefined(resources.getSetting("cronAutomaticDraftOut"));
 
     String linkedPathString = displayPath(path, true, 3, language) + name;
@@ -183,7 +188,10 @@
         if (pubDetail.getImage().startsWith("/")) {
           vignette_url = pubDetail.getImage() + "&Size=133x100";
         } else {
-          vignette_url = FileServer.getUrl("useless", pubDetail.getPK().getComponentName(), "vignette", pubDetail.getImage(), pubDetail.getImageMimeType(), publicationSettings.getString("imagesSubDirectory"));
+          vignette_url = FileServerUtils
+              .getUrl(pubDetail.getPK().getComponentName(), "vignette",
+                  pubDetail.getImage(), pubDetail.getImageMimeType(),
+                  publicationSettings.getString("imagesSubDirectory"));
         }
       }
       ownerDetail = kmeliaPublication.getCreator();
@@ -282,20 +290,20 @@
 
       tempId = pubDetail.getCloneId();
       infoId = pubDetail.getInfoId();
-      
+
       if (pubDetail.getDraftOutDate() != null) {
         draftOutDate = resources.getInputDate(pubDetail.getDraftOutDate());
       }
-      
+
       nextAction = "UpdatePublication";
 
-    } else if (action.equals("New")) {
+    } else if ("New".equals(action)) {
       creationDate = resources.getOutputDate(new Date());
       beginDate = resources.getInputDate(new Date());
       tempId = "-1";
 
       nextAction = "AddPublication";
-} 
+}
 
     validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');", false);
 
@@ -304,22 +312,21 @@
     ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
     //Example: http://myserver
     String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
-        
+
     //some thumbnail stuff to move in router
     String objectId = "";
 	if(pubDetail != null) {
 		objectId =  pubDetail.getPK().getId();
 	}
-		
+
 	String backUrl = httpServerBase + URLManager.getApplicationURL() + "/Rkmelia/" + componentId + "/publicationManager.jsp?Action=UpdateView&PubId=" + objectId;
-		
-	String standardParamaters = "&ComponentId=" + componentId +  
-		                        "&ObjectId=" + objectId +
-		                        "&BackUrl=" + URLEncoder.encode(backUrl) +
-	                            "&ObjectType=" + ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
-		
+
+	String standardParamaters = "&ComponentId=" + componentId + "&ObjectId=" + objectId
+        + "&BackUrl=" + URLUtils.encodePathParamValue(backUrl) + "&ObjectType="
+        + ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
+
 	int[] thumbnailSize = kmeliaScc.getThumbnailWidthAndHeight();
-	
+
 	//definition size of thumbnail selector
 	String thumbnailWidth = "";
 	String thumbnailHeight = "";
@@ -454,12 +461,15 @@
         var errorMsg = "";
         var errorNb = 0;
         var title = stripInitialWhitespace(document.pubForm.Name.value);
-
+        var beginDate = document.pubForm.BeginDate.value;
+        var endDate = document.pubForm.EndDate.value;
+        var beginHour = document.pubForm.BeginHour.value;
+        var endHour = document.pubForm.EndHour.value;
         if (isWhitespace(title)) {
           errorMsg+=" - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
           errorNb++;
         }
-         
+
       <% if (isFieldDescriptionVisible) {%>
         var description = document.pubForm.Description;
       <% if (isFieldDescriptionMandatory) {%>
@@ -473,7 +483,7 @@
               errorNb++;
             }
       <% }%>
-     
+
       <% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {%>
           var validatorId = stripInitialWhitespace(document.pubForm.ValideurId.value);
           if (isWhitespace(validatorId)) {
@@ -481,53 +491,80 @@
             errorNb++;
           }
       <% }%>
-
-
-        var beginDate = {dateId : 'beginDate', hourId : 'beginHour'};
-        var endDate = {dateId : 'endDate', hourId : 'endHour'};
-        var dateErrors = isPeriodEndingInFuture(beginDate, endDate);
-        $(dateErrors).each(function(index, error) {
-          errorMsg += " - " + error.message + "\n";
-          errorNb++;
-        });
-
-        if (<%=isThumbnailMandatory%>) {
-          if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == 'null') {
-            errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-            errorNb++;
-          }
-          if($('#thumbnail').attr("src") == 'null'){
-            var logicalName = $('#thumbnailFile').val();
-            var type = logicalName.substring(logicalName.lastIndexOf(".") + 1, logicalName.length);
-            if (type != 'gif' && type != 'jpg' && type != 'jpeg' && type != 'png') {
-               errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
+             if (!isWhitespace(beginDate)) {
+            	if (!isDateOK(beginDate, '<%=kmeliaScc.getLanguage()%>')) {
+	                 errorMsg+=" - '<%=resources.getString("PubDateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+    	             errorNb++;
+        	         beginDateOK = false;
+               	}
+             }
+             if (!checkHour(beginHour))
+             {
+               errorMsg+=" - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
                errorNb++;
-            }
-          }
-        }
+             }
+             if (!isWhitespace(endDate)) {
+            	 if (!isDateOK(endDate, '<%=kmeliaScc.getLanguage()%>')) {
+                	errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+                 	errorNb++;
+               	} else {
+                	if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
+              			if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=kmeliaScc.getLanguage()%>')) {
+                    		errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
+                    		errorNb++;
+                  		}
+                	} else {
+                  		if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
+                			if (!isFuture(endDate, '<%=kmeliaScc.getLanguage()%>')) {
+                      			errorMsg+=" - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
+                      			errorNb++;
+                    		}
+                  		}
+                	}
+               }
+             }
+             if (!checkHour(endHour))
+             {
+               errorMsg+=" - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
+               errorNb++;
+             }
+             if (<%=isThumbnailMandatory%>) {
+                 if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == 'null') {
+                	 errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+                     errorNb++;
+                 }
+				 if($('#thumbnail').attr("src") == 'null'){
+					var logicalName = $('#thumbnailFile').val();
+					var type = logicalName.substring(logicalName.lastIndexOf(".") + 1, logicalName.length);
+                 	if (type != 'gif' && type != 'jpg' && type != 'jpeg' && type != 'png') {
+                 		errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
+                        errorNb++;
+                    }
+                 }
 
-        <% if(!kmaxMode && "New".equals(action)) { %>
-          <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
-        <% } %>
+             }
 
-        var result;
-        switch(errorNb) {
-          case 0 :
-            result = true;
-            break;
-          case 1 :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-          default :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        }
-        return result;
-      }
+             <% if(!kmaxMode && "New".equals(action)) { %>
+             	<view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
+             <% } %>
+
+             switch(errorNb) {
+               case 0 :
+                 result = true;
+             break;
+               case 1 :
+                 errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+                 window.alert(errorMsg);
+                 result = false;
+             break    ;
+               default :
+                 errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+                 window.alert(errorMsg);
+                 result = false;
+                 break;
+               }
+               return result;
+             }
 
       <%
         if (pubDetail != null) {
@@ -617,9 +654,9 @@
 	                autoOpen: false,
 	                height: "auto"
 	        };
-	
+
 	        $("#thumbnailDialog").dialog(dialogOpts);    //end dialog
-	        
+
 	        $("#publication-draftout").dialog({
 	            autoOpen: false,
 	            title: "<%=resources.getString("PubDraftOut")%>",
@@ -652,7 +689,7 @@
         function closeThumbnailDialog() {
         	$("#thumbnailDialog").dialog("close");
         }
-                
+
     </script>
   </head>
   <body id="<%=componentId%>" class="publicationManager" onunload="closeWindows()">
@@ -708,16 +745,13 @@
               operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javaScript:pubDraftIn()");
             }
           }
-          
-
         }
-
         out.println(window.printBefore());
-
         if (isOwner) {
-          displayAllOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
+          KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out,
+                kmaxMode);
         } else {
-          displayOnNewOperations(kmeliaScc, gef, action, out);
+          KmeliaDisplayHelper.displayOnNewOperations(kmeliaScc, gef, action, out);
         }
 
         out.println(frame.printBefore());
@@ -739,7 +773,7 @@
   	<input type="hidden" name="Status" value="<%=status%>"/>
   	<input type="hidden" name="TempId" value="<%=tempId%>"/>
   	<input type="hidden" name="InfoId" value="<%=infoId%>"/>
-      
+
     <fieldset id="pubInfo" class="skinFieldset">
 			<legend><%=resources.getString("kmelia.header.fieldset.main") %></legend>
 			<div class="fields">
@@ -767,7 +801,7 @@
 					</div>
 				</div>
 				<% } %>
-				
+
 				<% if (I18NHelper.isI18N) { %>
 				<div class="field" id="languageArea">
 					<label for="language" class="txtlibform"><%=resources.getString("GML.language")%></label>
@@ -776,14 +810,14 @@
 					</div>
 				</div>
 				<% } %>
-						
+
 				<div class="field" id="pubNameArea">
 					<label for="pubName" class="txtlibform"><%=resources.getString("PubTitre")%></label>
 					<div class="champs">
 						<input type="text" name="Name" id="pubName" value="<%=EncodeHelper.javaStringToHtmlString(name)%>" size="68" maxlength="150" />&nbsp;<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
 					</div>
 				</div>
-				
+
 				<% if (isFieldDescriptionVisible) {%>
 				<div class="field" id="descriptionArea">
 					<label for="pubDesc" class="txtlibform"><%=resources.getString("PubDescription")%></label>
@@ -795,7 +829,7 @@
 					</div>
 				</div>
 				<% } %>
-			
+
 				<% if (isFieldKeywordsVisible) {%>
 				<div class="field" id="keywordsArea">
 					<label for="pubKeys" class="txtlibform"><%=resources.getString("PubMotsCles")%></label>
@@ -812,7 +846,7 @@
 					</div>
 				</div>
 				<% } %>
-			
+
 				<% if (isFieldVersionVisible) { %>
 				<div class="field" id="versionArea">
 					<label for="version" class="txtlibform"><%=resources.getString("PubVersion")%></label>
@@ -821,7 +855,7 @@
 					</div>
 				</div>
 				<% } %>
-				
+
 				<% if (isFieldImportanceVisible) { %>
 				<div class="field" id="importanceArea">
 					<label for="importance" class="txtlibform"><%=resources.getString("PubImportance")%></label>
@@ -845,7 +879,7 @@
 				<% } else {%>
       				<input type="hidden" name="Importance" value="1" />
       			<% } %>
-      			
+
       			<% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {
 			           String selectUserLab = resources.getString("kmelia.SelectValidator");
 			           String link = "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');\">";
@@ -867,7 +901,7 @@
 					</div>
 				</div>
 				<% } %>
-			    
+
 			    <% if (kmeliaPublication != null) { %>
 				<div class="field" id="creationArea">
 					<label class="txtlibform"><%=resources.getString("kmelia.header.contributors") %></label>
@@ -885,10 +919,10 @@
 					</div>
 				</div>
 				<% } %>
-			
+
 			</div>
 		</fieldset>
-		
+
 		<div class="table">
 		<div class="cell">
 			<fieldset id="pubDates" class="skinFieldset">
@@ -922,7 +956,7 @@
 			</fieldset>
 		</div>
 		<% if (kmeliaMode && settings.getBoolean("isVignetteVisible", true)) {%>
-		<div class="cell">	
+		<div class="cell">
 			<fieldset id="pubThumb" class="skinFieldset">
 				<legend><%=resources.getString("Thumbnail")%></legend>
 				<div class="fields">
@@ -940,7 +974,7 @@
 								<% } %>
 							</div>
 						</div>
-					
+
 						<div id="thumbnailInputs">
 							<img src="<%=resources.getIcon("kmelia.changeThumbnail") %>" alt="<%=resources.getString("ThumbnailUpdateFile") %>" title="<%=resources.getString("ThumbnailUpdateFile") %>"/> <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
 				          	<%
@@ -949,7 +983,7 @@
 				             if (galleries != null) {
 				               //zone pour le lien vers l'image
 				               out.println("<span class=\"txtsublibform\"> ou </span><input type=\"hidden\" id=\"valueImageGallery\" name=\"valueImageGallery\"/>");
-				
+
 				               out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this);this.selectedIndex=0;\"> ");
 				               out.println(" <option selected>" + resources.getString("kmelia.galleries") + "</option> ");
 				               for (int k = 0; k < galleries.size(); k++) {
@@ -971,12 +1005,12 @@
 					</div>
 				</div>
 			</fieldset>
-		
+
 		</div>
 		<% } %>
-		
+
 	</div>
-	
+
     <% if (!kmaxMode) {
         if ("New".equals(action)) { %>
           	<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getCurrentFolderId() %>"/>
@@ -989,11 +1023,11 @@
     	<% } %>
     <%  }
       } %>
-	
+
 	<div class="legend">
 		<img src="<%=mandatorySrc%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%>
 	</div>
-    
+
   </form>
   </div>
   <%

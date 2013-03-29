@@ -30,6 +30,7 @@ import com.silverpeas.form.*;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.form.*;
 import com.silverpeas.form.record.*;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class UserTemplate implements RecordTemplate {
   private static ResourceLocator label = null;
@@ -148,7 +149,7 @@ public class UserTemplate implements RecordTemplate {
    * Returns the UserRecord
    */
   public UserRecord getRecord(String idUser) {
-    OrganizationController organisation = new OrganizationController();
+    OrganisationController organisation = new OrganizationController();
     UserDetail userDetail = organisation.getUserFull(idUser);
     return new UserRecord(userDetail);
   }

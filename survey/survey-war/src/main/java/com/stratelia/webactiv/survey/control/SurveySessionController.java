@@ -73,7 +73,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.survey.SurveyException;
 import com.stratelia.webactiv.survey.servlets.SurveyRequestRouter;
@@ -95,6 +94,7 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerSele
 import com.stratelia.webactiv.util.questionResult.control.QuestionResultBm;
 import com.stratelia.webactiv.util.questionResult.control.QuestionResultBmHome;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * This class contains business layer of survey component
@@ -205,7 +205,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     List<String> userMultipleRole = new ArrayList<String>();
     userMultipleRole.add("userMultiple");
     // if we have people on userMultiple role, multiple participation is used
-    if (getOrganizationController().getUsersIdsByRoleNames(getComponentId(), userMultipleRole).length > 0) {
+    if (getOrganisationController().getUsersIdsByRoleNames(getComponentId(), userMultipleRole).length > 0) {
       participationMultipleUsed = true;
     }
     return participationMultipleUsed;
@@ -256,8 +256,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
     UserDetail user = getUserDetail();
     if (user.isAnonymous()) {
-      if (getComponentId() != null
-          && getOrganizationController().isComponentAvailable(getComponentId(), user.getId())) {
+      if (getComponentId() != null && getOrganisationController().isComponentAvailable(
+          getComponentId(), user.getId())) {
         userIsAnonymous = true;
       }
     }
@@ -600,16 +600,16 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   @Override
   public UserDetail getUserDetail(String userId) {
-    return getOrganizationController().getUserDetail(userId);
+    return getOrganisationController().getUserDetail(userId);
   }
 
   private int getNbRegistered() {
-    ComponentInst component = getOrganizationController().getComponentInst(getComponentId());
+    ComponentInst component = getOrganisationController().getComponentInst(getComponentId());
     if (component.isPublic()) {
-      String[] allUserIds = getOrganizationController().getAllUsersIds();
+      String[] allUserIds = getOrganisationController().getAllUsersIds();
       return allUserIds.length;
     } else {
-      UserDetail[] registered = getOrganizationController().getAllUsers(getComponentId());
+      UserDetail[] registered = getOrganisationController().getAllUsers(getComponentId());
       return registered.length;
     }
   }
@@ -814,7 +814,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   public List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = null;
-    OrganizationController orgaController = getOrganizationController();
+    OrganisationController orgaController = getOrganisationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (int c = 0; c < compoIds.length; c++) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoIds[c],
@@ -1042,7 +1042,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     String view = "";
 
     String surveyImageDirectory =
-        FileServerUtils.getUrl(this.getSpaceId(), this.getComponentId(), "REPLACE_FILE_NAME",
+        FileServerUtils.getUrl(this.getComponentId(), "REPLACE_FILE_NAME",
             "REPLACE_FILE_NAME", "image/gif", getSettings().getString("imagesSubDirectory"));
 
     request.setAttribute("ImageDirectory", surveyImageDirectory);
