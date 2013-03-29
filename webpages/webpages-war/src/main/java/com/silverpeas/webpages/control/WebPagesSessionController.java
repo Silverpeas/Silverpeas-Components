@@ -134,7 +134,8 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   public boolean isSubscriber() {
     SilverTrace.info("webPages", "WebPagesSessionController.isSubscriber()",
             "root.MSG_GEN_ENTER_METHOD");
-    return getSubscribeBm().isSubscribedToComponent(getUserId(), getComponentId());
+    return getSubscribeBm()
+        .existsSubscription(new ComponentSubscription(getUserId(), getComponentId()));
   }
 
   private NodePK getNodePK() {

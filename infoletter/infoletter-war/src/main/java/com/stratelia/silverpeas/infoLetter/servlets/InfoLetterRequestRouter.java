@@ -20,12 +20,6 @@
  */
 package com.stratelia.silverpeas.infoLetter.servlets;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController;
@@ -39,6 +33,10 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Class declaration
@@ -148,9 +146,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
     request.setAttribute("letterDescription", letterDescription);
     request.setAttribute("letterFrequence", letterFrequence);
     request.setAttribute("listParutions", listParutions);
-    request.setAttribute("showHeader", Boolean.valueOf(showHeader));
-    request.setAttribute("userIsSuscriber",
-        String.valueOf(infoLetterSC.isSuscriber(defaultLetter.getPK())));
+    request.setAttribute("showHeader", showHeader);
+    request.setAttribute("userIsSuscriber", String.valueOf(infoLetterSC.isSuscriber()));
     boolean isTemplateExist = !listParutions.isEmpty();
     if (!listParutions.isEmpty()) {
       InfoLetterPublication pub = listParutions.get(0);
@@ -177,7 +174,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   @Override
   public String getDestination(String function,
       InfoLetterSessionController infoLetterSC, HttpServletRequest request) {
-    String destination = "";
+    String destination;
 
     SilverTrace.info("infoLetter", "infoLetterRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + infoLetterSC.getUserId()
@@ -225,8 +222,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("letterDescription", letterDescription);
         request.setAttribute("letterFrequence", letterFrequence);
         request.setAttribute("listParutions", listParutions);
-        request.setAttribute("userIsSuscriber", String.valueOf(infoLetterSC.isSuscriber(
-            defaultLetter.getPK())));
+        request.setAttribute("userIsSuscriber", String.valueOf(infoLetterSC.isSuscriber()));
+
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = "portletListLetterAdmin.jsp?Profile=" + flag;
         } else {
@@ -235,6 +232,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         }
       } else if (function.startsWith("Preview")) {
         String parution = param(request, "parution");
+
         if (StringUtil.isDefined(parution)) {
           IdPK publiPK = new IdPK();
           publiPK.setId(parution);
@@ -257,10 +255,9 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
       } else if (function.startsWith("FilesEdit")) {
         String parution = param(request, "parution");
         if (parution.length() <= 0) {
-          String theId = param(request, "Id");
-          parution = theId;
+          parution = param(request, "Id");
         }
-        if (!"".equals(parution)) {
+        if (StringUtil.isDefined(parution)) {
           String url = "/RinfoLetter/" + infoLetterSC.getComponentId() + "/FilesEdit";
 
           IdPK publiPK = new IdPK();
@@ -423,10 +420,9 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
       } else if (function.startsWith("DeletePublications")) {
         String[] publis = request.getParameterValues("publis");
         if (publis != null) {
-          int i = 0;
-          for (i = 0; i < publis.length; i++) {
+          for (final String publi : publis) {
             IdPK publiPK = new IdPK();
-            publiPK.setId(publis[i]);
+            publiPK.setId(publi);
             infoLetterSC.deleteInfoLetterPublication(publiPK);
           }
         }
@@ -471,16 +467,10 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("listEmails", listEmails);
         destination = "emailsManager.jsp";
       } else if (function.startsWith("SuscribeMe")) {
-        InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-
-        infoLetterSC.suscribeUser(defaultLetter.getPK());
-
+        infoLetterSC.suscribeUser();
         destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("UnsuscribeMe")) {
-        InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-
-        infoLetterSC.unsuscribeUser(defaultLetter.getPK());
-
+        infoLetterSC.unsuscribeUser();
         destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("DeleteEmails")) {
         String[] emails = request.getParameterValues("mails");
@@ -513,13 +503,9 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute("listEmails", listEmails);
         destination = "emailsManager.jsp";
       } else if (function.startsWith("Suscribers")) {
-        InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-
-        destination = infoLetterSC.initUserPanel(defaultLetter.getPK());
+        destination = infoLetterSC.initUserPanel();
       } else if (function.startsWith("RetourPanel")) {
-        InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-
-        infoLetterSC.retourUserPanel(defaultLetter.getPK());
+        infoLetterSC.retourUserPanel();
         destination = setMainContext(infoLetterSC, request);
       } else if (function.equals("ViewTemplate")) {
         request.setAttribute("InfoLetter", getCurrentLetter(infoLetterSC));
@@ -606,12 +592,12 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   private String getFlag(String[] profiles) {
     String flag = "user";
 
-    for (int i = 0; i < profiles.length; i++) {
+    for (final String profile : profiles) {
       // if publisher, return it, we won't find a better profile
-      if (profiles[i].equals("admin")) {
-        return profiles[i];
-      } else if (!profiles[i].equals("user")) {
-        flag = profiles[i];
+      if (profile.equals("admin")) {
+        return profile;
+      } else if (!profile.equals("user")) {
+        flag = profile;
       }
     }
     return flag;

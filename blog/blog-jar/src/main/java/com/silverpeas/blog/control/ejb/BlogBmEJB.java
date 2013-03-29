@@ -36,6 +36,8 @@ import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
 import org.silverpeas.core.admin.OrganisationController;
+import com.silverpeas.subscribe.service.ComponentSubscription;
+import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import org.silverpeas.search.SearchEngineFactory;
 
 import com.silverpeas.blog.BlogContentManager;
@@ -129,7 +131,8 @@ public class BlogBmEJB implements SessionBean {
       final String type, final String senderId) {
     // send email alerts
     try {
-      Collection<String> subscriberIds = getSubscribeBm().getSubscribers(fatherPK);
+      Collection<String> subscriberIds =
+          getSubscribeBm().getUserSubscribers(NodeSubscriptionResource.from(fatherPK));
       OrganisationController orgaController = new OrganizationController();
       if (subscriberIds != null && !subscriberIds.isEmpty()) {
         // get only subscribers who have sufficient rights to read pubDetail
@@ -648,29 +651,10 @@ public class BlogBmEJB implements SessionBean {
     }
   }
 
-  public void addSubscription(NodePK topicPK, String userId) {
+  public void addSubscription(String userId, String instanceId) {
     SilverTrace.info("blog", "BlogBmEJB.addSubscription()", "root.MSG_GEN_ENTER_METHOD");
-    if (!checkSubscription(topicPK, userId)) {
-      return;
-    }
-    getSubscribeBm().subscribe(new NodeSubscription(userId, topicPK));
+    getSubscribeBm().subscribe(new ComponentSubscription(userId, instanceId));
     SilverTrace.info("blog", "BlogBmEJB.addSubscription()", "root.MSG_GEN_EXIT_METHOD");
-  }
-
-  public boolean checkSubscription(NodePK topicPK, String userId) {
-    try {
-      Collection<? extends Subscription> subscriptions = getSubscribeBm()
-          .getUserSubscriptionsByComponent(userId, topicPK.getInstanceId());
-      for (Subscription subscription : subscriptions) {
-        if (topicPK.getId().equals(subscription.getTopic().getId())) {
-          return false;
-        }
-      }
-      return true;
-    } catch (Exception e) {
-      throw new BlogRuntimeException("BlogBmEJB.checkSubscription()",
-          SilverpeasRuntimeException.ERROR, "blog.EX_IMPOSSIBLE_DOBTENIR_LES_ABONNEMENTS", e);
-    }
   }
 
   private void indexExternalElementsOfPublication(PublicationPK pubPK) {

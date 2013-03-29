@@ -20,30 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.*;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
@@ -71,9 +47,12 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.subscribe.Subscription;
+import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.NodeSubscription;
+import com.silverpeas.subscribe.service.NodeSubscriptionResource;
+import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
@@ -82,7 +61,6 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -132,8 +110,29 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
-
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.component.kmelia.InstanceParameters;
+import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.*;
 
 import static com.silverpeas.util.StringUtil.*;
 import static com.stratelia.webactiv.util.JNDINames.*;
@@ -661,7 +660,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
 
       // Delete all subscriptions on this topic and on its descendants
-      removeSubscriptionsByTopic(pkToDelete);
+      removeSubscriptionsByTopic(nodesToDelete);
 
       // Delete the topic
       nodeBm.removeNode(pkToDelete);
@@ -1069,12 +1068,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   public Collection<Collection<NodeDetail>> getSubscriptionList(String userId, String componentId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getSubscriptionList()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection<? extends Subscription> list = getSubscribeBm().getUserSubscriptionsByComponent(
-          userId, componentId);
+      Collection<Subscription> list = getSubscribeBm()
+          .getBySubscriberAndComponent(UserSubscriptionSubscriber.from(userId), componentId);
       Collection<Collection<NodeDetail>> detailedList = new ArrayList<Collection<NodeDetail>>();
       // For each favorite, get the path from root to favorite
       for (Subscription subscription : list) {
-        Collection<NodeDetail> path = getNodeBm().getPath((NodePK) subscription.getTopic());
+        Collection<NodeDetail> path =
+            getNodeBm().getPath((NodePK) subscription.getResource().getPK());
         detailedList.add(path);
       }
       SilverTrace.info("kmelia", "KmeliaBmEJB.getSubscriptionList()", "root.MSG_GEN_EXIT_METHOD");
@@ -1108,28 +1108,25 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   /**
    * Subscriptions - remove all subscriptions from topic
-   *
-   * @param topicPK the subscription topic Id to remove
+   * @param topicPKsToDelete the subscription topic Ids to remove
    * @since 1.0
    */
-  private void removeSubscriptionsByTopic(NodePK topicPK) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()",
-        "root.MSG_GEN_ENTER_METHOD");
-    NodeDetail nodeDetail = null;
+  private void removeSubscriptionsByTopic(Collection<NodePK> topicPKsToDelete) {
+    SilverTrace
+        .info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      nodeDetail = getNodeBm().getDetail(topicPK);
+      Collection<SubscriptionResource> subscriptionResourcesToDelete =
+          new ArrayList<SubscriptionResource>();
+      for (NodePK topicPK : topicPKsToDelete) {
+        subscriptionResourcesToDelete.add(NodeSubscriptionResource.from(topicPK));
+      }
+      getSubscribeBm().unsubscribeByResources(subscriptionResourcesToDelete);
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()",
-          ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
+      throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()", ERROR,
+          "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
     }
-    try {
-      getSubscribeBm().unsubscribeByPath(topicPK, nodeDetail.getPath());
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()",
-          ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
-    }
-    SilverTrace.info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace
+        .info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
@@ -1142,9 +1139,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void addSubscription(NodePK topicPK, String userId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.addSubscription()", "root.MSG_GEN_ENTER_METHOD");
-    if (!checkSubscription(topicPK, userId)) {
-      return;
-    }
     getSubscribeBm().subscribe(new NodeSubscription(userId, topicPK));
     SilverTrace.info("kmelia", "KmeliaBmEJB.addSubscription()", "root.MSG_GEN_EXIT_METHOD");
   }
@@ -1157,19 +1151,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    */
   @Override
   public boolean checkSubscription(NodePK topicPK, String userId) {
-    try {
-      Collection<? extends Subscription> subscriptions = getSubscribeBm().
-          getUserSubscriptionsByComponent(userId, topicPK.getInstanceId());
-      for (Subscription subscription : subscriptions) {
-        if (topicPK.getId().equals(subscription.getTopic().getId())) {
-          return false;
-        }
-      }
-      return true;
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.checkSubscription()",
-          ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_ABONNEMENTS", e);
-    }
+    return !getSubscribeBm().existsSubscription(new NodeSubscription(userId, topicPK));
   }
 
   /**
@@ -1615,7 +1597,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
       int action) {
-    PublicationDetail pubDetail;
+    PublicationDetail pubDetail = null;
     try {
       pubDetail = getPublicationDetail(pubPK);
     } catch (Exception e) {
@@ -1624,6 +1606,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // if exception is throw, JMS will attempt to execute it again and again...
       SilverTrace.info("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
+    }
+
+    // The treatment is stopped if publication is not found or if publication doesn't correspond
+    // with parameter of given publication pk. The second condition could happen, for now,
+    // with applications dealing with wysiwyg without using publication for their storage
+    // (infoletter for example).
+    if (pubDetail == null || (StringUtil.isDefined(pubPK.getInstanceId()) &&
+        !pubDetail.getInstanceId().equals(pubPK.getInstanceId()))) {
       return;
     }
     if (isDefined(userId)) {

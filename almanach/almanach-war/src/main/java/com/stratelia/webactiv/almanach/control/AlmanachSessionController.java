@@ -20,27 +20,6 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.RemoveException;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
@@ -49,8 +28,9 @@ import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.StringUtil;
-
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -81,8 +61,28 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.upload.UploadedFile;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
+import javax.ejb.RemoveException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.silverpeas.export.ExportDescriptor.withWriter;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -352,25 +352,28 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * Adds the specified event into the underlying almanach.
    *
    * @param eventDetail the detail of the event to add.
+   * @param uploadedFiles the files uploaded in the aim to be attached to the event.
    * @throws AlmanachBadParamException if the event detail isn't well defined.
    * @throws AlmanachException if an error occurs while adding the event.
    * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
    */
-  public EventPK addEvent(EventDetail eventDetail) throws AlmanachBadParamException,
-      AlmanachException, WysiwygException {
-    return addEvent(eventDetail, PdcClassificationEntity.undefinedClassification());
+  public EventPK addEvent(EventDetail eventDetail, Collection<UploadedFile> uploadedFiles)
+      throws AlmanachBadParamException, AlmanachException, WysiwygException {
+    return addEvent(eventDetail, uploadedFiles, PdcClassificationEntity.undefinedClassification());
   }
 
   /**
    * Adds the specified event into the underlying almanach.
    *
    * @param eventDetail the detail of the event to add.
+   * @param uploadedFiles the files uploaded in the aim to be attached to the event.
    * @throws AlmanachBadParamException if the event detail isn't well defined.
    * @throws AlmanachException if an error occurs while adding the event.
    * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
    */
-  public EventPK addEvent(EventDetail eventDetail, PdcClassificationEntity classification) throws
-      AlmanachBadParamException, AlmanachException, WysiwygException {
+  public EventPK addEvent(EventDetail eventDetail, Collection<UploadedFile> uploadedFiles,
+      PdcClassificationEntity classification)
+      throws AlmanachBadParamException, AlmanachException, WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.addEvent()",
         "root.MSG_GEN_ENTER_METHOD");
     EventPK eventPK = new EventPK("", "useless", getComponentId());
@@ -396,6 +399,16 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       // Add the wysiwyg content
       WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
           eventPK, getUserId(), getLanguage());
+
+      // Attach uploaded files
+      if (CollectionUtil.isNotEmpty(uploadedFiles)) {
+        for (UploadedFile uploadedFile : uploadedFiles) {
+
+          // Register attachment
+          uploadedFile.registerAttachment(eventId, getComponentId(), getUserDetail(),
+              I18NHelper.defaultLanguage, false);
+        }
+      }
     } catch (RemoteException e) {
       throw new AlmanachRuntimeException("AlmanachSessionController.addEvent()",
           SilverpeasRuntimeException.ERROR, "almanach.EXE_ADD_EVENT_FAIL", e);
@@ -859,7 +872,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     removeOccurenceEvent(event, dateDebutIteration);
     // Ajoute un nouvel événement indépendant
     event.setPeriodicity(null);
-    addEvent(event);
+    addEvent(event, null);
     SilverTrace.info("almanach", "AlmanachSessionController.updateEventOccurence()",
         "root.MSG_GEN_EXIT_METHOD");
   }

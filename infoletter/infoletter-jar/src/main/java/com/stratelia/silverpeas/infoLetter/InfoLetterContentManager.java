@@ -97,7 +97,6 @@ public class InfoLetterContentManager implements ContentInterface {
    * update the visibility attributes of the content. Here, the type of content is a
    * PublicationDetail
    * @param ilPub the content
-   * @param silverObjectId the unique identifier of the content
    */
   public void updateSilverContentVisibility(InfoLetterPublicationPdC ilPub)
       throws ContentManagerException {
