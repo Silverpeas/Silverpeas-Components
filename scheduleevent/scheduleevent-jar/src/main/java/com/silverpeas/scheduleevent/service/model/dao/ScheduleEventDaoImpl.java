@@ -20,6 +20,7 @@
  */
 package com.silverpeas.scheduleevent.service.model.dao;
 
+import com.silverpeas.annotation.Repository;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.scheduleevent.constant.ScheduleEventConstant;
@@ -28,45 +29,41 @@ import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import org.springframework.transaction.annotation.Transactional;
 
+@Repository("scheduleEventDao")
+@Transactional
 public class ScheduleEventDaoImpl implements ScheduleEventDao {
 
-  private SessionFactory sessionFactory;
+  @PersistenceContext
+  private EntityManager theEntityManager;
 
-  public void setSessionFactory(SessionFactory sessionFactory) {
-    this.sessionFactory = sessionFactory;
-  }
-
-  public Session getSession() {
-    return this.sessionFactory.getCurrentSession();
+  private EntityManager getEntityManager() {
+    return theEntityManager;
   }
 
   @Override
   public String createScheduleEvent(ScheduleEvent scheduleEvent) {
-    String id = (String) getSession().save(scheduleEvent);
-    scheduleEvent.setId(id);
-    return id;
+    getEntityManager().persist(scheduleEvent);
+    return scheduleEvent.getId();
   }
 
   @Override
   public void deleteScheduleEvent(ScheduleEvent scheduleEvent) {
+    EntityManager entityManager = getEntityManager();
+    ScheduleEvent attachedEvent = entityManager.merge(scheduleEvent);
 
-    // purge all the response
-    Set<Response> responses = scheduleEvent.getResponses();
-
-    Response[] responsesArray = responses.toArray(new Response[responses.size()]);
-    for (int i = 0; i < responsesArray.length; i++) {
-      Response resp = responsesArray[i];
-      responses.remove(resp);
-      getSession().delete(resp);
-      getSession().flush();
+    for (Iterator<Response> iterator = attachedEvent.getResponses().iterator(); iterator.hasNext();) {
+      Response response = iterator.next();
+      iterator.remove();
+      entityManager.remove(response);
     }
-    getSession().delete(scheduleEvent);
+    entityManager.remove(attachedEvent);
 
     // delete related schedule event comments
     CommentServiceFactory
@@ -77,73 +74,55 @@ public class ScheduleEventDaoImpl implements ScheduleEventDao {
   }
 
   @Override
-  public ScheduleEvent getScheduleEventComplete(String scheduleEventId) {
-    Criteria criteria = getSession().createCriteria(ScheduleEvent.class);
-    criteria.add(Restrictions.eq("id", scheduleEventId));
-    return (ScheduleEvent) criteria.uniqueResult();
+  public ScheduleEvent getScheduleEvent(String scheduleEventId) {
+    return getEntityManager().find(ScheduleEvent.class, scheduleEventId);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Set<ScheduleEvent> listScheduleEventsByCreatorId(String userId) {
-    Criteria criteria = getSession().createCriteria(ScheduleEvent.class);
-    criteria.add(Restrictions.eq("author", Integer.parseInt(userId)));
-    Set<ScheduleEvent> returnSet = new HashSet<ScheduleEvent>();
-
-    returnSet.addAll(criteria.list());
-    return returnSet;
+    TypedQuery<ScheduleEvent> query = getEntityManager().createNamedQuery("findByAuthor",
+        ScheduleEvent.class);
+    query.setParameter("authorId", Integer.valueOf(userId));
+    List<ScheduleEvent> events = query.getResultList();
+    return new HashSet<ScheduleEvent>(events);
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public Set<ScheduleEvent> listScheduleEventsByContributorId(String userId) {
-    Criteria criteria = getSession().createCriteria(Contributor.class);
-    criteria.add(Restrictions.eq("userId", Integer.parseInt(userId)));
-    Set<Contributor> returnSet = new HashSet<Contributor>();
-
-    returnSet.addAll(criteria.list());
-
-    Set<ScheduleEvent> scheduleEvents = new HashSet<ScheduleEvent>();
-    if (returnSet
-        != null && returnSet.size()
-        > 0) {
-      Iterator<Contributor> iterRes = returnSet.iterator();
-      while (iterRes.hasNext()) {
-        Contributor resp = iterRes.next();
-        scheduleEvents.add(getScheduleEventComplete(resp.getScheduleEvent().getId()));
-      }
-    }
-    return scheduleEvents;
+    TypedQuery<ScheduleEvent> query = getEntityManager().createNamedQuery("findByContributor",
+        ScheduleEvent.class);
+    query.setParameter("contributorId", Integer.valueOf(userId));
+    List<ScheduleEvent> events = query.getResultList();
+    return new HashSet<ScheduleEvent>(events);
   }
 
   @Override
   public void updateScheduleEvent(ScheduleEvent scheduleEvent) {
-    getSession().update(scheduleEvent);
+    getEntityManager().merge(scheduleEvent);
   }
 
   @Override
   public void purgeResponseScheduleEvent(ScheduleEvent scheduleEvent, int userId) {
-    Set<Response> responses = scheduleEvent.getResponses();
-    // remove old values if exists
-    Iterator<Response> iterRes = responses.iterator();
-    while (iterRes.hasNext()) {
-      Response resp = iterRes.next();
-      if (resp.getUserId() == userId) {
-        getSession().delete(resp);
-        getSession().flush();
+    ScheduleEvent attachedEvent = getEntityManager().merge(scheduleEvent);
+    for (Iterator<Response> iterator = attachedEvent.getResponses().iterator(); iterator.hasNext();) {
+      Response response = iterator.next();
+      if (response.getUserId() == userId) {
+        iterator.remove();
+        getEntityManager().remove(response);
       }
     }
   }
 
   @Override
   public Contributor getContributor(String contributorId) {
-    Criteria criteria = getSession().createCriteria(Contributor.class);
-    criteria.add(Restrictions.eq("id", contributorId));
-    return (Contributor) criteria.uniqueResult();
+    return getEntityManager().find(Contributor.class, contributorId);
   }
 
   @Override
   public void deleteContributor(Contributor contributor) {
-    getSession().delete(contributor);
+    EntityManager entityManager = getEntityManager();
+    Contributor attachedContributor = entityManager.merge(contributor);
+    entityManager.remove(attachedContributor);
   }
 }

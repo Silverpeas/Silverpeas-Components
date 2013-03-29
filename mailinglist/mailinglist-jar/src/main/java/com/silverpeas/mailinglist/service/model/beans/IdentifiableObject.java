@@ -24,15 +24,21 @@ import java.io.Serializable;
 import java.util.UUID;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
 import javax.persistence.Version;
 
 @MappedSuperclass
 public abstract class IdentifiableObject implements Serializable {
 
   @Id
-  protected String id = UUID.randomUUID().toString();
+  protected String id;
   @Version
   protected int version;
+
+  @PrePersist
+  protected void setUpId() {
+    id = UUID.randomUUID().toString();
+  }
 
   public int getVersion() {
     return version;

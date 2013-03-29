@@ -73,7 +73,7 @@ public class MessageServiceImpl implements MessageService {
       return null;
     }
     String id = message.getId();
-    if (messageDao.findMessageById(message.getId()) == null) {
+    if (id == null) {
       id = messageDao.saveMessage(message);
       MessageIndexer.indexMessage(message);
     } else {

@@ -20,24 +20,27 @@
  */
 package com.silverpeas.scheduleevent.service.model.dao;
 
+import com.silverpeas.annotation.Repository;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import org.springframework.transaction.annotation.Transactional;
 
+@Repository("responseDao")
+@Transactional
 public class ResponseDaoImpl implements ResponseDao {
 
-  private SessionFactory sessionFactory;
+  @PersistenceContext
+  private EntityManager theEntityManager;
 
-  public void setSessionFactory(SessionFactory sessionFactory) {
-    this.sessionFactory = sessionFactory;
-  }
-
-  public Session getSession() {
-    return this.sessionFactory.getCurrentSession();
+  private EntityManager getEntityManager() {
+    return theEntityManager;
   }
 
   @Override
   public void deleteResponse(Response response) {
-    getSession().delete(response);
+    EntityManager entityManager = getEntityManager();
+    Response attachedResponse = theEntityManager.merge(response);
+    theEntityManager.remove(attachedResponse);
   }
 }

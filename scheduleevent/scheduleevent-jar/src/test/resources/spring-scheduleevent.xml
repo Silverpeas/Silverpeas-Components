@@ -27,38 +27,27 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-  <bean id="scheduleEventDao" name="scheduleEventDao"
-        class="com.silverpeas.scheduleevent.service.model.dao.ScheduleEventDaoImpl">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
+  <context:annotation-config/>
 
-  <bean id="responseDao" name="responseDao"
-        class="com.silverpeas.scheduleevent.service.model.dao.ResponseDaoImpl">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
+  <context:component-scan base-package="com.silverpeas.scheduleevent.service"/>
+  <context:component-scan base-package="com.silverpeas.scheduleevent.test.stub"/>
 
-  <bean id="txManager" name="txManager"
-        class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
+  <bean id="scheduleeventServiceFactory" class="com.silverpeas.scheduleevent.service.ServicesFactory"
+        factory-method="getFactory"/>
 
-  <bean id="sessionFactory" name="sessionFactory"
-        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-    <property name="mappingResources">
-      <list>
-        <value>Contributor.hbm.xml</value>
-        <value>DateOption.hbm.xml</value>
-        <value>Response.hbm.xml</value>
-        <value>ScheduleEvent.hbm.xml</value>
-      </list>
-    </property>
-    <property name="dataSource"  ref="dataSource"/>
-  </bean>
+  <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
+        factory-method="getFactory"/>
+
+  <import resource="spring-jpa.xml"/>
+
+  <util:list id="entities">
+    <value>com.silverpeas.scheduleevent.service.model.beans</value>
+  </util:list>
 </beans>
