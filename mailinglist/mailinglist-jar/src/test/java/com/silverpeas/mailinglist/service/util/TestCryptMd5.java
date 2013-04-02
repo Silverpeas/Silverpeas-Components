@@ -26,7 +26,7 @@ import java.net.URL;
 import org.junit.Test;
 
 import com.silverpeas.mailinglist.service.job.TestMessageChecker;
-import com.silverpeas.util.cryptage.CryptMD5;
+import org.silverpeas.util.crypto.CryptMD5;
 
 import com.stratelia.webactiv.util.exception.UtilException;
 
