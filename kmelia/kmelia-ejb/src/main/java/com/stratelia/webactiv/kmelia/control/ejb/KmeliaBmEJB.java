@@ -20,14 +20,22 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-<<<<<<< HEAD
-=======
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.Connection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
@@ -46,7 +54,6 @@ import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.form.DataRecord;
@@ -116,16 +123,13 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.coordinates.control.CoordinatesBm;
-import com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
@@ -137,33 +141,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
-import org.apache.commons.io.FilenameUtils;
-<<<<<<< HEAD
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.component.kmelia.InstanceParameters;
-import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.*;
-=======
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
+import org.apache.commons.io.FilenameUtils;
 
 import static com.silverpeas.util.StringUtil.*;
 import static com.stratelia.webactiv.util.JNDINames.*;
@@ -242,29 +221,22 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   @Override
   public NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getNodeBm()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
     }
-    return nodeBm;
   }
 
   @Override
   public PublicationBm getPublicationBm() {
-    PublicationBm publicationBm = null;
     try {
-      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(PUBLICATIONBM_EJBHOME,
-          PublicationBmHome.class);
-      publicationBm = publicationBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(PUBLICATIONBM_EJBHOME,PublicationBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationBm()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME", e);
     }
-    return publicationBm;
   }
 
   public SubscriptionService getSubscribeBm() {
@@ -272,16 +244,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   public StatisticBm getStatisticBm() {
-    StatisticBm statisticBm = null;
     try {
-      StatisticBmHome statisticBmHome = EJBUtilitaire.getEJBObjectRef(STATISTICBM_EJBHOME,
-          StatisticBmHome.class);
-      statisticBm = statisticBmHome.create();
+     return EJBUtilitaire.getEJBObjectRef(STATISTICBM_EJBHOME, StatisticBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getStatisticBm()", ERROR,
           "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_STATISTICBM_HOME", e);
     }
-    return statisticBm;
   }
 
   @Override
@@ -303,16 +271,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    * @return
    */
   public CoordinatesBm getCoordinatesBm() {
-    CoordinatesBm currentCoordinatesBm = null;
     try {
-      CoordinatesBmHome coordinatesBmHome = EJBUtilitaire.getEJBObjectRef(COORDINATESBM_EJBHOME,
-          CoordinatesBmHome.class);
-      currentCoordinatesBm = coordinatesBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(COORDINATESBM_EJBHOME, CoordinatesBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getCoordinatesBm()", ERROR,
           "kmax.EX_IMPOSSIBLE_DE_FABRIQUER_COORDINATESBM_HOME", e);
     }
-    return currentCoordinatesBm;
   }
 
   /**
@@ -983,7 +947,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         countPublisInNodes(allowedNodes, root);
       }
       return allowedTree;
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getTreeview()",
           ERROR, "kmelia.EX_IMPOSSIBLE_DAVOIR_LA_LISTE_DES_PUBLICATIONS", e);
     }
@@ -1099,13 +1063,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   public Collection<Collection<NodeDetail>> getSubscriptionList(String userId, String componentId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getSubscriptionList()", "root.MSG_GEN_ENTER_METHOD");
     try {
-<<<<<<< HEAD
       Collection<Subscription> list = getSubscribeBm()
           .getBySubscriberAndComponent(UserSubscriptionSubscriber.from(userId), componentId);
-=======
-      Collection<? extends Subscription> list = getSubscribeBm().getUserSubscriptionsByComponent(
-          userId, componentId);
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
       Collection<Collection<NodeDetail>> detailedList = new ArrayList<Collection<NodeDetail>>();
       // For each favorite, get the path from root to favorite
       for (Subscription subscription : list) {
@@ -1144,7 +1103,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   /**
    * Subscriptions - remove all subscriptions from topic
-<<<<<<< HEAD
+   *
    * @param topicPKsToDelete the subscription topic Ids to remove
    * @since 1.0
    */
@@ -1164,30 +1123,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
     SilverTrace
         .info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()", "root.MSG_GEN_EXIT_METHOD");
-=======
-   *
-   * @param topicPK the subscription topic Id to remove
-   * @since 1.0
-   */
-  private void removeSubscriptionsByTopic(NodePK topicPK) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()",
-        "root.MSG_GEN_ENTER_METHOD");
-    NodeDetail nodeDetail = null;
-    try {
-      nodeDetail = getNodeBm().getDetail(topicPK);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()",
-          ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
-    }
-    try {
-      getSubscribeBm().unsubscribeByPath(topicPK, nodeDetail.getPath());
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.removeSubscriptionsByTopic()",
-          ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LES_ABONNEMENTS", e);
-    }
-    SilverTrace.info("kmelia", "KmeliaBmEJB.removeSubscriptionsByTopic()",
-        "root.MSG_GEN_EXIT_METHOD");
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
   }
 
   /**
@@ -1212,23 +1147,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    */
   @Override
   public boolean checkSubscription(NodePK topicPK, String userId) {
-<<<<<<< HEAD
     return !getSubscribeBm().existsSubscription(new NodeSubscription(userId, topicPK));
-=======
-    try {
-      Collection<? extends Subscription> subscriptions = getSubscribeBm().
-          getUserSubscriptionsByComponent(userId, topicPK.getInstanceId());
-      for (Subscription subscription : subscriptions) {
-        if (topicPK.getId().equals(subscription.getTopic().getId())) {
-          return false;
-        }
-      }
-      return true;
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.checkSubscription()",
-          ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_ABONNEMENTS", e);
-    }
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
   }
 
   /**
@@ -1674,12 +1593,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
       int action) {
-<<<<<<< HEAD
     // check if related contribution is managed by kmelia
-    if (pubPK != null && StringUtil.isDefined(pubPK.getInstanceId()) &&
-        (pubPK.getInstanceId().startsWith("kmelia") || 
-         pubPK.getInstanceId().startsWith("toolbox") || 
-         pubPK.getInstanceId().startsWith("kmax"))) {
+    if (pubPK != null && StringUtil.isDefined(pubPK.getInstanceId()) && (pubPK.getInstanceId().
+        startsWith("kmelia") || pubPK.getInstanceId().startsWith("toolbox")
+        || pubPK.getInstanceId().startsWith("kmax"))) {
 
       PublicationDetail pubDetail = null;
       try {
@@ -1696,35 +1613,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // with parameter of given publication pk. The second condition could happen, for now,
       // with applications dealing with wysiwyg without using publication for their storage
       // (infoletter for example).
-      if (pubDetail == null || (StringUtil.isDefined(pubPK.getInstanceId()) &&
-          !pubDetail.getInstanceId().equals(pubPK.getInstanceId()))) {
+      if (pubDetail == null || (StringUtil.isDefined(pubPK.getInstanceId()) && !pubDetail.
+          getInstanceId().equals(pubPK.getInstanceId()))) {
         return;
       }
       if (isDefined(userId)) {
         pubDetail.setUpdaterId(userId);
       }
-=======
-    PublicationDetail pubDetail;
-    try {
-      pubDetail = getPublicationDetail(pubPK);
-    } catch (Exception e) {
-      // publication no longer exists
-      // do not throw exception because this method is called by JMS layer
-      // if exception is throw, JMS will attempt to execute it again and again...
-      SilverTrace.info("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
-      return;
-    }
-    if (isDefined(userId)) {
-      pubDetail.setUpdaterId(userId);
-    }
-
-    // check if related publication is managed by kmelia
-    // test due to really hazardous abusive notifications
-    if (pubDetail.getPK().getInstanceId().startsWith("kmelia")
-        || pubDetail.getPK().getInstanceId().startsWith("toolbox")
-        || pubDetail.getPK().getInstanceId().startsWith("kmax")) {
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 
       // update publication header to store last modifier and update date
       if (!isDefined(userId)) {
@@ -1737,12 +1632,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT, false);
         } else {
           SilverTrace.warn("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
-              "kmelia.PROBLEM_DETECTED", "user " + userId
-<<<<<<< HEAD
-                  + " is not allowed to update publication " + pubDetail.getPK().toString());
-=======
-              + " is not allowed to update publication " + pubDetail.getPK().toString());
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
+              "kmelia.PROBLEM_DETECTED", "user " + userId + " is not allowed to update publication "
+              + pubDetail.getPK());
         }
       }
       // index all attached files to taking into account visibility period
@@ -2814,7 +2705,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           String xmlFormShortName = infoId;
 
           // get xmlContent to paste
-
           PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.
               getInstance();
           PublicationTemplate pubTemplate = publicationTemplateManager.
@@ -3990,7 +3880,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           ERROR,
           "kmax.EX_IMPOSSIBLE_DOBTENIR_LES_INFORMATIONS_DE_LA_PUBLICATION", e);
     }
-    KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationFromCompleteDetail(completePublication);
+    KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationFromCompleteDetail(
+        completePublication);
     SilverTrace.info("kmax", "KmeliaBmEjb.getKmaxCompletePublication()",
         "root.MSG_GEN_EXIT_METHOD");
     return publication;
@@ -4094,7 +3985,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   @Override
-  public void deleteCoordinates(CoordinatePK coordinatePK, ArrayList<?> coordinates) {
+  public void deleteCoordinates(CoordinatePK coordinatePK, List<String> coordinates) {
     try {
       getCoordinatesBm().deleteCoordinates(coordinatePK, coordinates);
     } catch (Exception e) {
@@ -4117,7 +4008,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // remove coordinate
       List<String> coordinateIds = new ArrayList<String>();
       coordinateIds.add(combinationId);
-      getCoordinatesBm().deleteCoordinates(coordinatePK, (ArrayList<?>) coordinateIds);
+      getCoordinatesBm().deleteCoordinates(coordinatePK, coordinateIds);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEjb.deletePublicationFromCombination()", ERROR,
           "kmax.EX_IMPOSSIBLE_DE_SUPPRIMER_LA_COMBINAISON_DE_LA_PUBLICATION", e);
@@ -4499,7 +4390,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // paste wysiwyg
       WysiwygController.copy(fromComponentId, fromId, fromComponentId, cloneId, clone.
           getCreatorId());
-
 
       // affectation de l'id du clone à la publication de référence
       refPub.setCloneId(cloneId);
@@ -4938,7 +4828,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           I18NHelper.checkLanguage(language));
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getAttachments()", ERROR,
-              "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_WYSIWYG", e);
+          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_WYSIWYG", e);
     }
   }
 }

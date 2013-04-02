@@ -1221,14 +1221,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   protected StatisticBm getStatisticBm() {
     if (statisticBm == null) {
       try {
-        statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, 
-            StatisticBm.class);
+        statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
       } catch (Exception e) {
         throw new StatisticRuntimeException("KmeliaSessionController.getStatisticBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
-
     return statisticBm;
   }
 

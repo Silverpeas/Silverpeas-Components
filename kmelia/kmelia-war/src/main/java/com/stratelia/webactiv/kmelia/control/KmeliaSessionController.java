@@ -349,6 +349,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (statisticBm == null) {
       try {
 <<<<<<< HEAD
+<<<<<<< HEAD
         statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
             StatisticBm.class);
 =======
@@ -356,6 +357,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             StatisticBmHome.class);
         statisticBm = statisticHome.create();
 >>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
+=======
+        statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, 
+            StatisticBm.class);
+>>>>>>> f26ff57... jboss7 : Cleaning some old EJb 2.1 code
       } catch (Exception e) {
         throw new StatisticRuntimeException("KmeliaSessionController.getStatisticBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

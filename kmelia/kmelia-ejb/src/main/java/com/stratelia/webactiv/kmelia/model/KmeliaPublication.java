@@ -50,7 +50,6 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /**
@@ -68,6 +67,7 @@ public class KmeliaPublication implements SilverpeasContent {
   private final PublicationPK pk;
   private int rank;
   public boolean read = false;
+
   /**
    * Gets the Kmelia publication with the specified primary key identifying it uniquely. If no such
    * publication exists with the specified key, then the runtime exception
@@ -254,7 +254,6 @@ public class KmeliaPublication implements SilverpeasContent {
         PublicationDetail.getResourceType(), pk));
   }
 
-
   /**
    * Gets the positions in the PDC of this publication.
    *
@@ -274,7 +273,7 @@ public class KmeliaPublication implements SilverpeasContent {
   public int getNbAccess() {
     try {
       return getStatisticService().getCount(new ForeignPK(pk), 1, "Publication");
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaPublication.getNbAccess", "kmelia.CANT_GET_NB_ACCESS",
           "pubId = " + pk.getId(), e);
     }
@@ -338,9 +337,7 @@ public class KmeliaPublication implements SilverpeasContent {
   private StatisticBm getStatisticService() {
     StatisticBm statisticBm = null;
     try {
-      StatisticBmHome statisticHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
-      statisticBm = statisticHome.create();
+      statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
     } catch (Exception e) {
       throw new StatisticRuntimeException("KmeliaPublication.getStatisticService()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
