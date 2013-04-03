@@ -56,7 +56,7 @@ public class SilverCrawlerFileServer extends HttpServlet {
 
   public static String getUrl(String logicalName, String physicalName,
       String mimeType, String userId, String componentId) {
-    return FileServerUtils.getUrl(logicalName, physicalName, mimeType, userId,
+    return FileServerUtils.getUrl(physicalName, mimeType, userId,
         componentId);
   }
 

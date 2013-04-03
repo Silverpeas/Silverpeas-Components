@@ -1,27 +1,33 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.kmelia.ui;
+
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Properties;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -32,7 +38,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.search.AbstractResultDisplayer;
-import com.silverpeas.search.ResultDisplayer;
 import com.silverpeas.search.SearchResultContentVO;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
@@ -40,20 +45,13 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
+
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.rmi.RemoteException;
-import java.util.Iterator;
-import java.util.Properties;
 
 /**
  * <pre>
@@ -64,7 +62,7 @@ import java.util.Properties;
  * </pre>
  */
 @Named("kmeliaResultDisplayer")
-public class ResultSearchRenderer extends AbstractResultDisplayer implements ResultDisplayer {
+public class ResultSearchRenderer extends AbstractResultDisplayer {
 
   private static final Properties templateConfig = new Properties();
   private static final String TEMPLATE_FILENAME = "publication_result_template";
@@ -74,13 +72,12 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
    */
   static {
     ResourceLocator settings =
-        new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
+        new ResourceLocator("org.silverpeas.kmelia.settings.kmeliaSettings", "");
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings
         .getString("templatePath"));
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, settings
         .getString("customersTemplatePath"));
   }
-
   /**
    * Attribute loaded with dependency injection (Spring)
    */
@@ -107,9 +104,8 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
 
     if (pubDetail != null) {
       setSpecificAttributes(searchResult, silverResult, pubDetail, template);
-      result =
-          template.applyFileTemplate(TEMPLATE_FILENAME + '_' +
-              DisplayI18NHelper.getDefaultLanguage());
+      result = template.applyFileTemplate(TEMPLATE_FILENAME + '_' + DisplayI18NHelper.
+          getDefaultLanguage());
     }
     return result;
   }
@@ -140,32 +136,25 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
     if (StringUtil.isDefined(pubDetail.getContent())) {
       template.setAttribute("pubContent", pubDetail.getContent());
     }
-
     String componentId = silverResult.getInstanceId();
     String id = silverResult.getId();
     // get user language
     String language = getUserPreferences(searchResult.getUserId()).getLanguage();
-
     if (WysiwygController.haveGotWysiwyg(componentId, id, language)) {
+
       // WYSIWYG content to add inside template
 
-      String content = "";
-      try {
-        content = WysiwygController.load(componentId, id, language);
+      String content = WysiwygController.load(componentId, id, language);
 
-        // if content not found in specified language, check other ones
-        if (!StringUtil.isDefined(content)) {
-          Iterator<String> languages = I18NHelper.getLanguages();
-          if (languages != null) {
-            while (languages.hasNext() && !StringUtil.isDefined(content)) {
-              language = languages.next();
-              content = WysiwygController.load(componentId, id, language);
-            }
+      // if content not found in specified language, check other ones
+      if (!StringUtil.isDefined(content)) {
+        Iterator<String> languages = I18NHelper.getLanguages();
+        if (languages != null) {
+          while (languages.hasNext() && !StringUtil.isDefined(content)) {
+            language = languages.next();
+            content = WysiwygController.load(componentId, id, language);
           }
         }
-      } catch (WysiwygException e) {
-        SilverTrace.error("kmelia", ResultSearchRenderer.class.getName() + ".getResultContent()",
-            "Impossible to load WYSIWYG content", e);
       }
       // dynamic value functionnality : check if active and try to replace the keys by their
       // values
@@ -186,8 +175,8 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
       if (!StringUtil.isInteger(infoId)) {
         try {
           PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
-                  .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + infoId);
+              (PublicationTemplateImpl) PublicationTemplateManager.getInstance().
+              getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + infoId);
 
           // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
           Form xmlForm = pubTemplate.getSearchResultForm();
@@ -203,9 +192,6 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
             PagesContext xmlContext = new PagesContext("myForm", "0", language,
                 false, componentId, searchResult.getUserId());
             xmlContext.setObjectId(id);
-            // if (kmeliaMode) {
-            // xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
-            // }
             xmlContext.setBorderPrinted(false);
             xmlContext.setContentLanguage(language);
 
@@ -216,11 +202,11 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
             }
           }
         } catch (PublicationTemplateException e) {
-          SilverTrace.error("kmelia", ResultSearchRenderer.class.getName() +
-              ".getResultContent()", "Impossible to load Publication Template", e);
+          SilverTrace.error("kmelia", ResultSearchRenderer.class.getName() + ".getResultContent()",
+              "Impossible to load Publication Template", e);
         } catch (FormException e) {
-          SilverTrace.error("kmelia", ResultSearchRenderer.class.getName() +
-              ".getResultContent()", "Impossible to load publication form", e);
+          SilverTrace.error("kmelia", ResultSearchRenderer.class.getName() + ".getResultContent()",
+              "Impossible to load publication form", e);
         }
       }
     }
@@ -246,5 +232,4 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
   public void setPublicationBm(PublicationBm publicationBm) {
     this.publicationBm = publicationBm;
   }
-
 }

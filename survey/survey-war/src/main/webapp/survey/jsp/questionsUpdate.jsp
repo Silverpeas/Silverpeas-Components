@@ -99,7 +99,7 @@ function deleteQuestion(questionId) {
 $(document).ready(function(){
   // Your code here
   $( "#dialog:ui-dialog" ).dialog("destroy");
-  
+
   $( "#modalDialogContentDivId" ).dialog({
     resizable: false,
     height:140,
@@ -136,7 +136,7 @@ $(document).ready(function(){
 </view:browseBar>
 
 <view:window>
-<%          
+<%
 
 TabbedPane tabbedPane = gef.getTabbedPane();
 tabbedPane.addTab(resources.getString("GML.head"), "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId="+surveyId, "UpdateSurveyHeader".equals(action), true);
@@ -168,7 +168,7 @@ try
     </div><br clear="all"/>
   </c:when>
 </c:choose>
-    
+
     <center>
     <%
     if (questionsV != null && questionsV.size() > 0)
@@ -266,7 +266,7 @@ try
         	                      	}
         	                      	else
         	                      	{
-                                        url = FileServerUtils.getUrl(surveyScc.getSpaceId(), surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+                                        url = FileServerUtils.getUrl(surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
                                     }
                                     out.println("<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"<br>");
                                     out.println("<img src=\""+url+"\" border=\"0\"></td><td>");
@@ -298,7 +298,7 @@ try
 } catch( Exception e){
     throw new SurveyException("SurveyUtils_JSP.displayQuestionsUpdateView",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_UPDATEVIEW",e);
 }
-          
+
 %>
     <!-- questionCreatorBis.jsp -->
     <form name="questionForm" action="manageQuestions.jsp" method="post" enctype="multipart/form-data">

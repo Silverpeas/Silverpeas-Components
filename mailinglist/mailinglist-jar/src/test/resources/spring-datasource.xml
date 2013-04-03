@@ -57,14 +57,4 @@
     <property name="removeAbandonedTimeout" value="5000" />
   </bean>
 
-
-  <bean id="dataSourceConfiguration" name="dataSourceConfiguration"
-        class="com.silverpeas.mailinglist.DataSourceConfiguration">
-    <property name="driver" value="${jdbc.driver}" />
-    <property name="url" value="${jdbc.url}" />
-    <property name="username" value="${jdbc.username}" />
-    <property name="password" value="${jdbc.password}" />
-    <property name="jndiName" value="jdbc/Silverpeas" />
-  </bean>
-
 </beans>

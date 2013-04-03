@@ -38,7 +38,7 @@
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}"/>
+<fmt:setLocale value="${requestScope.Language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
@@ -59,6 +59,8 @@
 <view:looknfeel/>
 <view:includePlugin name="datepicker"/>
 <view:includePlugin name="wysiwyg"/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="notifier"/>
 <link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
 <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
 <script type="text/javascript">
@@ -71,7 +73,7 @@ function reallyAdd() {
   
   	<view:pdcPositions setIn="document.eventForm.Positions.value"/>
   	document.eventForm.action = "ReallyAddEvent";
-  	document.eventForm.submit();
+  	$(document.eventForm).submit();
 }
 
 function isCorrectForm() {
@@ -338,7 +340,7 @@ $(document).ready(function() {
 				<div class="field" id="eventStartDateArea">
 					<label for="eventStartDate" class="txtlibform"><fmt:message key='GML.dateBegin'/></label>
 					<div class="champs">
-						<input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<c:out value='${day[0]}'/>" onchange="javascript:updateDates();"/>
+						<input id="eventStartDate" type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<c:out value='${day[0]}'/>" onchange="javascript:updateDates();"/>
 						<span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
 						<span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
 						<input class="inputHour" type="text" name="StartHour" size="5" maxlength="5" value="<c:out value='${day[1]}'/>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img  alt="obligatoire" src="icons/cube-rouge.gif" width="5" height="5"/>
@@ -377,88 +379,103 @@ $(document).ready(function() {
 				</div>		
 			</div>
 		</fieldset>
-		
-		<fieldset id="eventPeriodicity" class="skinFieldset">
+        <div class="table">
+          <div class="cell">
+            <fieldset id="eventPeriodicity" class="skinFieldset">
 
-			<legend><fmt:message key='periodicity'/></legend>
-			<div class="fields">
-				<div class="field" id="eventTypePeriodicityArea">
-					<label for="eventTypePeriodicity" class="txtlibform"><fmt:message key='periodicity'/></label>
-					<div class="champs">
-						<select id="eventTypePeriodicity" name="Unity" size="1" onchange="changeUnity();">
-							<option value="0"><fmt:message key='noPeriodicity'/></option>
-                			<option value="1"><fmt:message key='allDays'/></option>
-                			<option value="2"><fmt:message key='allWeeks'/></option>
-                			<option value="3"><fmt:message key='allMonths'/></option>
-                			<option value="4"><fmt:message key='allYears'/></option>
-						</select>
-					</div>
-				</div>
-				
-				<div class="field" id="eventFrequencyArea">
-					<label for="eventFrequency" class="txtlibform"><fmt:message key='frequency'/></label>
-					<div class="champs">
-						<input type="text" id="eventFrequency" name="Frequency" size="5" maxlength="5" value="1"/> <span id="eventTypePeriodicitySelected"> <fmt:message key='almanach.header.periodicity.frequency.months'/></span>
-					</div>
-					
-				</div>
-				
-				<div class="field" id="eventFrequencyWeekArea">
-					<label class="txtlibform"><fmt:message key='almanach.header.periodicity.week.on'/></label>
-					<div class="champs">
-						<input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek2" value="2" disabled="disabled"/><fmt:message key='GML.jour2'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek3" value="3" disabled="disabled"/><fmt:message key='GML.jour3'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek4" value="4" disabled="disabled"/><fmt:message key='GML.jour4'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek5" value="5" disabled="disabled"/><fmt:message key='GML.jour5'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek6" value="6" disabled="disabled"/><fmt:message key='GML.jour6'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek7" value="7" disabled="disabled"/><fmt:message key='GML.jour7'/>
-			            <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek1" value="1" disabled="disabled"/><fmt:message key='GML.jour1'/>
-					</div>
-				</div>
-				
-				<div class="field" id="eventPeriodicityChoiceThisMonthArea">
-					<label class="txtlibform"><fmt:message key='almanach.header.periodicity.rule'/></label>
-					<div class="champs">
-						<input id="eventPeriodicityChoiceMonth" type="radio" class="radio" name="ChoiceMonth" value="MonthDate" disabled="disabled" checked="checked" onclick="changeChoiceMonth();"/><fmt:message key='choiceDateMonth'/>&nbsp;
-					</div>
-				</div>
-				
-				<div class="field" id="eventPeriodicityChoiceMonthArea">
-					<div class="champs">
-						<input type="radio" class="radio" name="ChoiceMonth" value="MonthDay" disabled="disabled" onclick="changeChoiceMonth();"/><fmt:message key='choiceDayMonth'/>&nbsp;:&nbsp;
-						<select name="MonthNumWeek" size="1" disabled="disabled">
-							<option value="1"><fmt:message key='first'/></option>
-			                <option value="2"><fmt:message key='second'/></option>
-			                <option value="3"><fmt:message key='third'/></option>
-			                <option value="4"><fmt:message key='fourth'/></option>
-			                <option value="-1"><fmt:message key='fifth'/></option>
-						</select>
-						
-						<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="2" disabled="disabled" checked="checked"/><fmt:message key='GML.jour2'/>
-		              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="3" disabled="disabled"/><fmt:message key='GML.jour3'/>
-						<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="4" disabled="disabled"/><fmt:message key='GML.jour4'/>
-		              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="5" disabled="disabled"/><fmt:message key='GML.jour5'/>
-		              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="6" disabled="disabled"/><fmt:message key='GML.jour6'/>
-		              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="7" disabled="disabled"/><fmt:message key='GML.jour7'/>
-		              	<input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="1" disabled="disabled"/><fmt:message key='GML.jour1'/>
-					</div>
-				</div>
-				
-				<div class="field eventPeriodicityDateArea" id="eventPeriodicityStartDateArea">
-					<label for="eventPeriodicityStartDate" class="txtlibform"> <fmt:message key='beginDatePeriodicity'/> </label>
-					<div class="champs">
-						<input type="text" id="eventPeriodicityStartDate" class="dateToPick" name="PeriodicityStartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" readonly="readonly" value="<c:out value='${day[0]}'/>" /> (<fmt:message key='GML.dateFormatExemple'/>)
-					</div>
-				</div>
-				
-				<div class="field eventPeriodicityDateArea" id="eventPeriodicityUntilDateArea">
-					<label for="eventPeriodicityUntil" class="txtlibform"><fmt:message key='endDatePeriodicity'/></label>
-					<div class="champs">
-						<input type="text" id="eventPeriodicityUntil" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<c:out value='${maxDateLength}'/>"/><span class="txtnote"> (<fmt:message key='GML.dateFormatExemple'/>)</span>
-					</div>
-				</div>
-			</div>
-		</fieldset>
+              <legend><fmt:message key='periodicity'/></legend>
+              <div class="fields">
+                <div class="field" id="eventTypePeriodicityArea">
+                  <label for="eventTypePeriodicity" class="txtlibform"><fmt:message key='periodicity'/></label>
+
+                  <div class="champs">
+                    <select id="eventTypePeriodicity" name="Unity" size="1" onchange="changeUnity();">
+                      <option value="0"><fmt:message key='noPeriodicity'/></option>
+                      <option value="1"><fmt:message key='allDays'/></option>
+                      <option value="2"><fmt:message key='allWeeks'/></option>
+                      <option value="3"><fmt:message key='allMonths'/></option>
+                      <option value="4"><fmt:message key='allYears'/></option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="field" id="eventFrequencyArea">
+                  <label for="eventFrequency" class="txtlibform"><fmt:message key='frequency'/></label>
+
+                  <div class="champs">
+                    <input type="text" id="eventFrequency" name="Frequency" size="5" maxlength="5" value="1"/>
+                    <span id="eventTypePeriodicitySelected"> <fmt:message key='almanach.header.periodicity.frequency.months'/></span>
+                  </div>
+
+                </div>
+
+                <div class="field" id="eventFrequencyWeekArea">
+                  <label class="txtlibform"><fmt:message key='almanach.header.periodicity.week.on'/></label>
+
+                  <div class="champs">
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek2" value="2" disabled="disabled"/><fmt:message key='GML.jour2'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek3" value="3" disabled="disabled"/><fmt:message key='GML.jour3'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek4" value="4" disabled="disabled"/><fmt:message key='GML.jour4'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek5" value="5" disabled="disabled"/><fmt:message key='GML.jour5'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek6" value="6" disabled="disabled"/><fmt:message key='GML.jour6'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek7" value="7" disabled="disabled"/><fmt:message key='GML.jour7'/>
+                    <input type="checkbox" class="checkbox WeekDayWeek" name="WeekDayWeek1" value="1" disabled="disabled"/><fmt:message key='GML.jour1'/>
+                  </div>
+                </div>
+
+                <div class="field" id="eventPeriodicityChoiceThisMonthArea">
+                  <label class="txtlibform"><fmt:message key='almanach.header.periodicity.rule'/></label>
+
+                  <div class="champs">
+                    <input id="eventPeriodicityChoiceMonth" type="radio" class="radio" name="ChoiceMonth" value="MonthDate" disabled="disabled" checked="checked" onclick="changeChoiceMonth();"/><fmt:message key='choiceDateMonth'/>&nbsp;
+                  </div>
+                </div>
+
+                <div class="field" id="eventPeriodicityChoiceMonthArea">
+                  <div class="champs">
+                    <input type="radio" class="radio" name="ChoiceMonth" value="MonthDay" disabled="disabled" onclick="changeChoiceMonth();"/><fmt:message key='choiceDayMonth'/>&nbsp;:&nbsp;
+                    <select name="MonthNumWeek" size="1" disabled="disabled">
+                      <option value="1"><fmt:message key='first'/></option>
+                      <option value="2"><fmt:message key='second'/></option>
+                      <option value="3"><fmt:message key='third'/></option>
+                      <option value="4"><fmt:message key='fourth'/></option>
+                      <option value="-1"><fmt:message key='fifth'/></option>
+                    </select>
+
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="2" disabled="disabled" checked="checked"/><fmt:message key='GML.jour2'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="3" disabled="disabled"/><fmt:message key='GML.jour3'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="4" disabled="disabled"/><fmt:message key='GML.jour4'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="5" disabled="disabled"/><fmt:message key='GML.jour5'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="6" disabled="disabled"/><fmt:message key='GML.jour6'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="7" disabled="disabled"/><fmt:message key='GML.jour7'/>
+                    <input type="radio" class="radio MonthDayWeek" name="MonthDayWeek" value="1" disabled="disabled"/><fmt:message key='GML.jour1'/>
+                  </div>
+                </div>
+
+                <div class="field eventPeriodicityDateArea" id="eventPeriodicityStartDateArea">
+                  <label for="eventPeriodicityStartDate" class="txtlibform">
+                    <fmt:message key='beginDatePeriodicity'/> </label>
+
+                  <div class="champs">
+                    <input type="text" id="eventPeriodicityStartDate" class="dateToPick" name="PeriodicityStartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" readonly="readonly" value="<c:out value='${day[0]}'/>"/>
+                    (<fmt:message key='GML.dateFormatExemple'/>)
+                  </div>
+                </div>
+
+                <div class="field eventPeriodicityDateArea" id="eventPeriodicityUntilDateArea">
+                  <label for="eventPeriodicityUntil" class="txtlibform"><fmt:message key='endDatePeriodicity'/></label>
+
+                  <div class="champs">
+                    <input type="text" id="eventPeriodicityUntil" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<c:out value='${maxDateLength}'/>"/><span class="txtnote"> (<fmt:message key='GML.dateFormatExemple'/>)</span>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="cell" style="width: 50%">
+            <view:fileUpload fieldset="true" jqueryFormSelector="form[name='eventForm']" />
+          </div>
+        </div>
 		
 		<view:pdcNewContentClassification componentId="${instanceId}"/>
 		

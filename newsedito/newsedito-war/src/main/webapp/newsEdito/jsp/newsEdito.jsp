@@ -47,10 +47,10 @@
 
 <%
 	String sURI 			= request.getRequestURI();
-	String sRequestURL 		= HttpUtils.getRequestURL(request).toString();
+	String sRequestURL 		= request.getRequestURL().toString();
 	String m_sAbsolute 		= sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
 
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 	String nameTitle = "";
 	String description = "";
 	String url = "";
@@ -333,7 +333,7 @@ function addFavorite(m_sAbsolute,m_context,name,description,url)
 		{
 			CompletePublication pubComplete = news.getCompletePublication();
 			displayPublication(out, news, pubComplete, settings) ;
-			if (WysiwygController.haveGotWysiwyg(pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId(), pubComplete.getPublicationDetail().getLanguage())) {
+			if (WysiwygController.haveGotWysiwygToDisplay(pubComplete.getPublicationDetail().getPK().getComponentName(), pubComplete.getPublicationDetail().getPK().getId(), pubComplete.getPublicationDetail().getLanguage())) {
 				out.flush();
 				displayViewWysiwyg(news.getPublicationId(), pubComplete.getPublicationDetail().getLanguage(), news.getComponentId(), request, response);
 			}
