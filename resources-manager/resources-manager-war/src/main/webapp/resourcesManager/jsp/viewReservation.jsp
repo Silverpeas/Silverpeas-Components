@@ -24,19 +24,16 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
-<%@ page import="org.silverpeas.resourcemanager.model.ResourceStatus" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
 //Recuperation des details de l'ulisateur
 List<Resource> listResourcesofReservation = (List<Resource>)request.getAttribute("listResourcesofReservation");
-String reservationId = (String)request.getAttribute("reservationId");
+Long reservationId = (Long)request.getAttribute("reservationId");
 Reservation maReservation = (Reservation)request.getAttribute("reservation");
 String objectView = (String) request.getAttribute("objectView");
 String event = maReservation.getEvent();
@@ -153,7 +150,7 @@ function AddAttachment() {
           <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%> :</td>
           <td width="100%"><%
           for(Resource maResource : listResourcesofReservation){
-            String resourceId = maResource.getId();
+            Long resourceId = maResource.getId();
             String resourceName = maResource.getName();
             // afficher les icones de validation et refus si la ressource est en etat a valider
             // et si l'utilisateur est le responsable de cette ressource
