@@ -20,7 +20,7 @@
  */
 package com.silverpeas.processManager.ejb;
 
-import java.io.File;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +42,7 @@ import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericDataRecord;
 import com.silverpeas.processManager.ProcessManagerException;
 import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
@@ -53,30 +53,18 @@ import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.user.UserImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.*;
 
 public class ProcessManagerBmEJB implements SessionBean {
 
@@ -102,28 +90,20 @@ public class ProcessManagerBmEJB implements SessionBean {
    * @throws ProcessManagerException
    */
   public String createProcess(String componentId, String userId, String fileName,
-      byte[] fileContent)
-      throws ProcessManagerException {
-
-    Map<String, FileContent> metadata = new HashMap<String, FileContent>();
+      byte[] fileContent) throws ProcessManagerException {
+    Map<String, FileContent> metadata = new HashMap<String, FileContent>(1);
     metadata.put(null, new FileContent(fileName, fileContent));
-
     return createProcess(componentId, userId, DEFAULT_ROLE, metadata);
   }
 
   /**
    * Create a process instance for a specific workflow component, by a specific user using one role
-   * of thoose defined in a given workflow definition.
-   * <p>
-   * Some information may be specified that will fill in the creation form of the new process
-   * instance. Such data should be placed into a map structure of key-value pairs where keys are the
-   * name of the intended fields of the creation form and values are strins (text fields), dates
-   * (date fields), colelctions of strings, collections of dates, or a single {@link FileContent}
-   * object.
-   * </p>
-   * <p> {@link FileContent} are used to pass in as an argument a complete file of binary data,
-   * loaded into memory.
-   * </p>
+   * of thoose defined in a given workflow definition. <p> Some information may be specified that
+   * will fill in the creation form of the new process instance. Such data should be placed into a
+   * map structure of key-value pairs where keys are the name of the intended fields of the creation
+   * form and values are strins (text fields), dates (date fields), colelctions of strings,
+   * collections of dates, or a single {@link FileContent} object. </p> <p> {@link FileContent} are
+   * used to pass in as an argument a complete file of binary data, loaded into memory. </p>
    *
    * @param componentId the ID of the component which defines the workflow (must be a workflow
    * component).
@@ -138,27 +118,25 @@ public class ProcessManagerBmEJB implements SessionBean {
    * @throws ProcessManagerException
    */
   public String createProcess(String componentId, String userId, String userRole,
-      Map<String, ? extends Serializable> metadata)
-      throws ProcessManagerException {
-
+      Map<String, ? extends Serializable> metadata) throws ProcessManagerException {
     // Default map for metadata is an empty map
     if (metadata == null) {
       metadata = Collections.emptyMap();
     }
-
     // Default instance ID
     String instanceId = "unknown";
 
     try {
       ProcessModel processModel = getProcessModel(componentId);
       XmlForm form = (XmlForm) getCreationForm(processModel);
-      GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(processModel, userRole);
+      GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(
+          processModel, userRole);
       PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
           componentId, userId);
 
       // Versioning in use ?
-      String paramVersion = OrganisationControllerFactory.getOrganisationController().
-          getComponentParameterValue(componentId, "versionControl");
+      OrganizationController controller = new OrganizationController();
+      String paramVersion = controller.getComponentParameterValue(componentId, "versionControl");
       boolean versioningUsed = (StringUtil.isDefined(paramVersion) && !("no").equalsIgnoreCase(
           paramVersion));
       pagesContext.setVersioningUsed(versioningUsed);
@@ -177,12 +155,10 @@ public class ProcessManagerBmEJB implements SessionBean {
         if (fieldValue == null) {
           populateSimpleField(field, fieldName, null, fieldType);
         } else if (fieldValue instanceof Collection<?>) {
-          populateListField(field, fieldName, (Collection<?>) fieldValue,
-              fieldType);
-        } else if (fieldType == FileField.TYPE) {
-          attachmentIds.add(populateFileField(form, data, (FileField) field,
-              fieldName, (FileContent) fieldValue,
-              pagesContext));
+          populateListField(field, fieldName, (Collection<?>) fieldValue, fieldType);
+        } else if (FileField.TYPE.equals(fieldType)) {
+          attachmentIds.add(populateFileField(form, data, (FileField) field, fieldName,
+              (FileContent) fieldValue, pagesContext));
         } else {
           populateSimpleField(field, fieldName, fieldValue, fieldType);
         }
@@ -193,32 +169,22 @@ public class ProcessManagerBmEJB implements SessionBean {
       instanceId = createProcessInstance(processModel, userId, userRole, data);
 
       // 3 - Update attachment foreignkey
-      // Attachment's foreignkey must be set with the just created
-      // instanceId
-      VersioningUtil versioningUtil = null;
-      if (versioningUsed) {
-        versioningUtil = new VersioningUtil();
-      }
-
+      // Attachment's foreignkey must be set with the just created instanceId
       for (String attachmentId : attachmentIds) {
-        if (versioningUsed) {
-          DocumentPK documentPK = new DocumentPK(Integer.parseInt(attachmentId),
-              "useless", componentId);
-          versioningUtil.updateDocumentForeignKey(documentPK, instanceId);
-        } else {
-          AttachmentPK attachmentPK = new AttachmentPK(attachmentId, "useless",
-              componentId);
-          AttachmentController.updateAttachmentForeignKey(attachmentPK,
-              instanceId);
-        }
+        SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, componentId);
+        SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+            searchDocumentById(pk, null);
+        document.setForeignId(instanceId);
+        AttachmentServiceFactory.getAttachmentService().lock(attachmentId, userId, null);
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, false, false);
+        AttachmentServiceFactory.getAttachmentService().unlock(new UnlockContext(attachmentId,
+            userId, null));
       }
-
     } catch (ProcessManagerException e) {
       SilverTrace.error("processManager", "ProcessManagerBmEJB.createProcess()",
           "root.MSG_GEN_ERROR", e);
       throw e;
     }
-
     return instanceId;
   }
 
@@ -232,9 +198,7 @@ public class ProcessManagerBmEJB implements SessionBean {
    * of field may match).
    * @throws ProcessManagerException if no matching data type exists for the given value.
    */
-  private String retrieveMatchingFieldTypeName(Object value) throws
-      ProcessManagerException {
-
+  private String retrieveMatchingFieldTypeName(Object value) throws ProcessManagerException {
     if (value == null) {
       return null;
     } else if (value instanceof String) {
@@ -247,17 +211,13 @@ public class ProcessManagerBmEJB implements SessionBean {
       Collection<?> col = (Collection<?>) value;
       if (col.isEmpty()) {
         return null;
-      } else {
-        return retrieveMatchingFieldTypeName(col.iterator().next());
       }
+      return retrieveMatchingFieldTypeName(col.iterator().next());
     } else {
-      SilverTrace.error("processManager",
-          "ProcessManagerBmEJB.retrieveMatchingFieldTypeName()",
-          "processManager.FORM_FIELD_BAD_TYPE", "type: " + value.getClass().
-          getName());
-      throw new ProcessManagerException("ProcessManagerBmEJB",
-          "processManager.FORM_FIELD_BAD_TYPE", "type: "
-          + value.getClass().getName());
+      SilverTrace.error("processManager", "ProcessManagerBmEJB.retrieveMatchingFieldTypeName()",
+          "processManager.FORM_FIELD_BAD_TYPE", "type: " + value.getClass().getName());
+      throw new ProcessManagerException("ProcessManagerBmEJB", "processManager.FORM_FIELD_BAD_TYPE",
+          "type: " + value.getClass().getName());
     }
   }
 
@@ -274,13 +234,10 @@ public class ProcessManagerBmEJB implements SessionBean {
    * @return the found field (never return <code>null</code>).
    * @throws ProcessManagerException if no field exists for the given name and type.
    */
-  private Field findMatchingField(XmlForm form, GenericDataRecord data,
-      String name, String typeName)
+  private Field findMatchingField(XmlForm form, GenericDataRecord data, String name, String typeName)
       throws ProcessManagerException {
 
-    for (FieldTemplate fieldTemplate : (List<FieldTemplate>) form.
-        getFieldTemplates()) {
-
+    for (FieldTemplate fieldTemplate : form.getFieldTemplates()) {
       String fieldType = fieldTemplate.getTypeName();
       // special case : pdc is inserted as a text value
       if ("pdc".equals(fieldType)) {
@@ -288,31 +245,26 @@ public class ProcessManagerBmEJB implements SessionBean {
       }
       String fieldName = fieldTemplate.getFieldName();
 
-      if (((typeName == null) || fieldType.equals(typeName))
-          && (fieldName.equals(name) || ((name == null) && fieldTemplate.
-          isMandatory()))) {
+      if (((typeName == null) || fieldType.equals(typeName)) && (fieldName.equals(name) || ((name
+          == null) && fieldTemplate.isMandatory()))) {
 
         try {
           return data.getField(fieldName);
         } catch (FormException e) {
-          SilverTrace.error("processManager",
-              "ProcessManagerBmEJB.findMatchingField()",
-              "processManager.FORM_FIELD_NOT_FOUND",
-              "field name: " + name + ", field type: " + typeName, e);
+          SilverTrace.error("processManager", "ProcessManagerBmEJB.findMatchingField()",
+              "processManager.FORM_FIELD_NOT_FOUND", "field name: " + name + ", field type: "
+              + typeName, e);
           throw new ProcessManagerException("ProcessManagerBmEJB",
-              "processManager.FORM_FIELD_BAD_TYPE", "field name: "
-              + name + ", field type: " + typeName, e);
+              "processManager.FORM_FIELD_BAD_TYPE", "field name: " + name + ", field type: "
+              + typeName, e);
         }
       }
     }
 
-    SilverTrace.error("processManager",
-        "ProcessManagerBmEJB.findMatchingField()",
-        "processManager.FORM_FIELD_NOT_FOUND",
+    SilverTrace.error("processManager", "ProcessManagerBmEJB.findMatchingField()",
+        "processManager.FORM_FIELD_NOT_FOUND", "field name: " + name + ", field type: " + typeName);
+    throw new ProcessManagerException("ProcessManagerBmEJB", "processManager.FORM_FIELD_NOT_FOUND",
         "field name: " + name + ", field type: " + typeName);
-    throw new ProcessManagerException("ProcessManagerBmEJB",
-        "processManager.FORM_FIELD_NOT_FOUND", "field name: " + name
-        + ", field type: " + typeName);
   }
 
   /**
@@ -324,16 +276,14 @@ public class ProcessManagerBmEJB implements SessionBean {
    * @return the converetd string value.
    */
   private String getSimpleFieldValueString(Object value, String type) {
-    if (value == null) {
-      return null;
-    } else if (type.equals(TextField.TYPE)) {
-      return value.toString();
-    } else if (type.equals(DateField.TYPE)) {
-      return (value instanceof Date) ? DateUtil.date2SQLDate((Date) value) : value.
-          toString();
-    } else {
-      return null;
+    if (value != null) {
+      if (TextField.TYPE.equals(type)) {
+        return value.toString();
+      } else if (DateField.TYPE.equals(type)) {
+        return (value instanceof Date) ? DateUtil.date2SQLDate((Date) value) : value.toString();
+      }
     }
+    return null;
   }
 
   /**
@@ -357,19 +307,15 @@ public class ProcessManagerBmEJB implements SessionBean {
       }
 
     } catch (FormException e) {
-      SilverTrace.error("processManager",
-          "ProcessManagerBmEJB.populateSimpleField()",
-          "processManager.FORM_FIELD_ERROR",
+      SilverTrace.error("processManager", "ProcessManagerBmEJB.populateSimpleField()",
+          "processManager.FORM_FIELD_ERROR", "field name: " + name + ", field type: " + type, e);
+      throw new ProcessManagerException("ProcessManagerBmEJB", "processManager.FORM_FIELD_ERROR",
           "field name: " + name + ", field type: " + type, e);
-      throw new ProcessManagerException("ProcessManagerBmEJB",
-          "processManager.FORM_FIELD_ERROR", "field name: " + name
-          + ", field type: " + type, e);
     }
   }
 
-  private String populateFileField(XmlForm form, GenericDataRecord data,
-      FileField field, String name, FileContent content,
-      PagesContext pagesContext) throws ProcessManagerException {
+  private String populateFileField(XmlForm form, GenericDataRecord data, FileField field,
+      String name, FileContent content, PagesContext pagesContext) throws ProcessManagerException {
 
     // If metadata name is null, then look for a null-named text field in
     // order to set it with the file name, which is the default behavior of
@@ -377,62 +323,48 @@ public class ProcessManagerBmEJB implements SessionBean {
     // -> Ascending compatibility
     if (name == null) {
       Field fileNameField;
-
       try {
         fileNameField = findMatchingField(form, data, null, TextField.TYPE);
       } catch (ProcessManagerException e) {
         // Ignore it in this case
         fileNameField = null;
       }
-
       if (fileNameField != null) {
-        populateSimpleField(fileNameField, null, content.getName(),
-            TextField.TYPE);
+        populateSimpleField(fileNameField, null, content.getName(), TextField.TYPE);
       }
     }
-
     // Then store the file content and attach it to the field
-    String attachmentId = processUploadedFile(content.getContent(), content.
-        getName(), pagesContext);
+    String attachmentId = processUploadedFile(content.getContent(), content.getName(), pagesContext);
     field.setAttachmentId(attachmentId);
-
     return attachmentId;
   }
 
-  private void populateListField(Field field, String name, Collection<?> values,
-      String type) throws ProcessManagerException {
-
+  private void populateListField(Field field, String name, Collection<?> values, String type) throws
+      ProcessManagerException {
     try {
-      String valuesStr = "";
+      StringBuilder valuesStr = new StringBuilder(512);
       for (Object value : values) {
         if (valuesStr.length() > 0) {
-          valuesStr += ',';
+          valuesStr.append(',');
         }
-
         String str = getSimpleFieldValueString(value, type);
         if (str == null) {
-          SilverTrace.error("processManager",
-              "ProcessManagerBmEJB.populateListField()",
-              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED",
-              "field name: " + name + ", field type: " + type);
+          SilverTrace.error("processManager", "ProcessManagerBmEJB.populateListField()",
+              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED", "field name: " + name
+              + ", field type: " + type);
           throw new ProcessManagerException("ProcessManagerBmEJB",
-              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED",
-              "field name: " + name + ", field type: " + type);
+              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED", "field name: " + name
+              + ", field type: " + type);
         }
-
-        valuesStr += str;
+        valuesStr.append(str);
       }
-
-      field.setStringValue(valuesStr);
+      field.setStringValue(valuesStr.toString());
 
     } catch (FormException e) {
-      SilverTrace.error("processManager",
-          "ProcessManagerBmEJB.populateListField()",
-          "processManager.FORM_FIELD_ERROR",
+      SilverTrace.error("processManager", "ProcessManagerBmEJB.populateListField()",
+          "processManager.FORM_FIELD_ERROR", "field name: " + name + ", field type: " + type, e);
+      throw new ProcessManagerException("ProcessManagerBmEJB", "processManager.FORM_FIELD_ERROR",
           "field name: " + name + ", field type: " + type, e);
-      throw new ProcessManagerException("ProcessManagerBmEJB",
-          "processManager.FORM_FIELD_ERROR", "field name: " + name
-          + ", field type: " + type, e);
     }
   }
 
@@ -440,16 +372,13 @@ public class ProcessManagerBmEJB implements SessionBean {
    * Create a new process instance with the filled form.
    */
   private String createProcessInstance(ProcessModel processModel, String userId,
-      String currentRole, DataRecord data)
-      throws ProcessManagerException {
-
+      String currentRole, DataRecord data) throws ProcessManagerException {
     try {
       Action creation = processModel.getCreateAction(currentRole);
       TaskDoneEvent event = getCreationTask(processModel, userId, currentRole).
           buildTaskDoneEvent(creation.getName(), data);
       Workflow.getWorkflowEngine().process(event);
       return event.getProcessInstance().getInstanceId();
-
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.CREATION_PROCESSING_FAILED", e);
@@ -459,47 +388,40 @@ public class ProcessManagerBmEJB implements SessionBean {
   /**
    * Returns the form which starts a new instance.
    */
-  private Form getCreationForm(ProcessModel processModel) throws
-      ProcessManagerException {
-
+  private Form getCreationForm(ProcessModel processModel) throws ProcessManagerException {
     try {
       Action creation = processModel.getCreateAction("administrateur");
-      return processModel.getPublicationForm(creation.getName(),
-          "administrateur", getLanguage());
-
+      return processModel.getPublicationForm(creation.getName(), "administrateur", getLanguage());
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("SessionController",
-          "processManager.NO_CREATION_FORM", e);
+      throw new ProcessManagerException("SessionController", "processManager.NO_CREATION_FORM", e);
     }
   }
 
   /**
    * Returns the an empty creation record which will be filled in with the creation form.
    */
-  private DataRecord getEmptyCreationRecord(ProcessModel processModel,
-      String currentRole) throws ProcessManagerException {
-
+  private DataRecord getEmptyCreationRecord(ProcessModel processModel, String currentRole) throws
+      ProcessManagerException {
     try {
       Action creation = processModel.getCreateAction(currentRole);
-      return processModel.getNewActionRecord(creation.getName(), currentRole,
-          getLanguage(), null);
-
+      return processModel.getNewActionRecord(creation.getName(), currentRole, getLanguage(), null);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("ProcessManagerBmEJB",
-          "processManager.UNKNOWN_ACTION", e);
+      throw new ProcessManagerException("ProcessManagerBmEJB", "processManager.UNKNOWN_ACTION", e);
     }
   }
 
   /**
    * Returns the creation task.
    */
-  private Task getCreationTask(ProcessModel processModel, String userId, String currentRole) throws
-      ProcessManagerException {
+  private Task getCreationTask(ProcessModel processModel, String userId,
+      String currentRole) throws ProcessManagerException {
+
     try {
-      User user = new UserImpl(OrganisationControllerFactory.getOrganisationController().
-          getUserDetail(userId));
+      OrganizationController controller = new OrganizationController();
+      User user = new UserImpl(controller.getUserDetail(userId));
       Task creationTask = Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
       return creationTask;
+
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerBmEJB",
           "processManager.CREATION_TASK_UNAVAILABLE", e);
@@ -509,9 +431,7 @@ public class ProcessManagerBmEJB implements SessionBean {
   /**
    * Returns the process model having the given id.
    */
-  private ProcessModel getProcessModel(String modelId) throws
-      ProcessManagerException {
-
+  private ProcessModel getProcessModel(String modelId) throws ProcessManagerException {
     try {
       return Workflow.getProcessModelManager().getProcessModel(modelId);
     } catch (WorkflowException e) {
@@ -520,150 +440,43 @@ public class ProcessManagerBmEJB implements SessionBean {
     }
   }
 
-  private String processUploadedFile(byte[] fileContent, String fileName,
-      PagesContext pagesContext) throws ProcessManagerException {
-
+  private String processUploadedFile(byte[] fileContent, String fileName, PagesContext pagesContext)
+      throws ProcessManagerException {
     String attachmentId = null;
-
-    String componentId = pagesContext.getComponentId();
-    String userId = pagesContext.getUserId();
-    String objectId = pagesContext.getObjectId();
+    String foreignId = pagesContext.getObjectId();
     String logicalName = fileName;
-    String physicalName = null;
-    String mimeType = null;
-    String context = "Images";
-    File dir = null;
-    long size = 0;
-    VersioningUtil versioningUtil = new VersioningUtil();
-
-    try {
-      if (StringUtil.isDefined(logicalName)) {
-        logicalName = logicalName.substring(
-            logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
-        String type = FileRepositoryManager.getFileExtension(logicalName);
-        mimeType = FileUtil.getMimeType(logicalName);
-        if (mimeType.equals("application/x-zip-compressed")) {
-          if (type.equalsIgnoreCase("jar") || type.equalsIgnoreCase("ear")
-              || type.equalsIgnoreCase("war")) {
-            mimeType = "application/java-archive";
-          } else if (type.equalsIgnoreCase("3D")) {
-            mimeType = "application/xview3d-3d";
-          }
-        }
-        physicalName = new Long(new Date().getTime()).toString() + "." + type;
-
-        String path = "";
-        if (pagesContext.isVersioningUsed()) {
-          path = versioningUtil.createPath("useless", componentId, "useless");
-        } else {
-          path = AttachmentController.createPath(componentId, context);
-        }
-        dir = new File(path + physicalName);
-
-        if (fileContent != null && fileContent.length > 0) {
-          FileOutputStream fos = null;
-
-          try {
-            fos = new FileOutputStream(dir);
-            fos.write(fileContent);
-          } finally {
-            if (fos != null) {
-              fos.close();
-            }
-          }
-
-          size = dir.length();
-
-          AttachmentDetail ad = createAttachmentDetail(objectId, componentId,
-              physicalName, logicalName, mimeType, size, context, userId);
-
-          if (pagesContext.isVersioningUsed()) {
-            // mode versioning
-            attachmentId = createDocument(objectId, ad);
-          } else {
-            // mode classique
-            ad = AttachmentController.createAttachment(ad, true);
-            attachmentId = ad.getPK().getId();
-          }
+    if (StringUtil.isDefined(logicalName)) {
+      logicalName = FileUtil.getFilename(fileName);
+      String extension = FileRepositoryManager.getFileExtension(logicalName);
+      String mimeType = FileUtil.getMimeType(logicalName);
+      if (mimeType.equals("application/x-zip-compressed")) {
+        if (MimeTypes.JAR_EXTENSION.equalsIgnoreCase(extension) || MimeTypes.WAR_EXTENSION.
+            equalsIgnoreCase(extension) || MimeTypes.EAR_EXTENSION.equalsIgnoreCase(extension)) {
+          mimeType = MimeTypes.JAVA_ARCHIVE_MIME_TYPE;
+        } else if ("3D".equalsIgnoreCase(extension)) {
+          mimeType = MimeTypes.SPINFIRE_MIME_TYPE;
         }
       }
-
-      return attachmentId;
-
-    } catch (IOException e) {
-      SilverTrace.error("processManager",
-          "ProcessManagerBmEJB.processUploadedFile()",
-          "processManager.UPLOAD_FILE_FAILED",
-          "File name: " + fileName, e);
-      throw new ProcessManagerException("ProcessManagerBmEJB",
-          "processManager.UPLOAD_FILE_FAILED", "File name: " + fileName,
-          e);
+      SimpleDocument ad = createSimpleDocument(foreignId, pagesContext.getComponentId(),
+          logicalName, mimeType, fileContent, DocumentType.attachment, pagesContext.getUserId(),
+          pagesContext.isVersioningUsed());
+      attachmentId = ad.getId();
     }
+    return attachmentId;
   }
 
-  private AttachmentDetail createAttachmentDetail(String objectId,
-      String componentId, String physicalName, String logicalName,
-      String mimeType, long size, String context, String userId) {
+  private SimpleDocument createSimpleDocument(String foreignId, String componentId,
+      String fileName, String mimeType, byte[] content, DocumentType context,
+      String userId, boolean versioned) {
 
     // create AttachmentPK with spaceId and componentId
-    AttachmentPK atPK = new AttachmentPK(null, "useless", componentId);
-
-    // create foreignKey with spaceId, componentId and id
-    // use AttachmentPK to build the foreign key of customer object.
-    AttachmentPK foreignKey = new AttachmentPK("-1", "useless", componentId);
-    if (objectId != null) {
-      foreignKey.setId(objectId);
-    }
-
-    // create AttachmentDetail Object
-    AttachmentDetail ad = new AttachmentDetail(atPK, physicalName, logicalName,
-        null, mimeType, size, context, new Date(), foreignKey);
-    ad.setAuthor(userId);
-
-    return ad;
-  }
-
-  private String createDocument(String objectId, AttachmentDetail attachment)
-      throws RemoteException {
-    String componentId = attachment.getPK().getInstanceId();
-    int userId = Integer.parseInt(attachment.getAuthor());
-    ForeignPK pubPK = new ForeignPK("-1", componentId);
-    if (objectId != null) {
-      pubPK.setId(objectId);
-    }
-
-    // Création d'un nouveau document
-    DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
-    Document document = new Document(docPK, pubPK, attachment.getLogicalName(),
-        "", -1, userId, new Date(), null, null, null, null, 0, 0);
-
-    // document.setWorkList(getWorkers(componentId, userId));
-
-    DocumentVersion version = new DocumentVersion(attachment);
-    version.setAuthorId(userId);
-
-    // et on y ajoute la première version
-    version.setMajorNumber(1);
-    version.setMinorNumber(0);
-    version.setType(DocumentVersion.TYPE_PUBLIC_VERSION);
-    version.setStatus(DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-    version.setCreationDate(new Date());
-
-    docPK = getVersioningBm().createDocument(document, version);
-    document.setPk(docPK);
-
-    return docPK.getId();
-  }
-
-  private VersioningBm getVersioningBm() {
-    VersioningBm versioningBm = null;
-    try {
-      VersioningBmHome vscEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
-          VersioningBmHome.class);
-      versioningBm = vscEjbHome.create();
-    } catch (Exception e) {
-    }
-    return versioningBm;
+    SimpleDocumentPK simpleDocPk = new SimpleDocumentPK(null, componentId);
+    SimpleDocument doc = new SimpleDocument(simpleDocPk, foreignId, 0, versioned, userId,
+        new SimpleAttachment(fileName, getLanguage(), fileName, "", content.length, mimeType,
+        userId, new Date(), null));
+    doc.setDocumentType(context);
+    return AttachmentServiceFactory.getAttachmentService().createAttachment(doc,
+        new ByteArrayInputStream(content));
   }
 
   private String getLanguage() {

@@ -24,8 +24,6 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
-import static com.silverpeas.util.StringUtil.isDefined;
-import static com.silverpeas.util.StringUtil.isInteger;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -34,12 +32,22 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.control.CalendarViewType;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;
-import com.stratelia.webactiv.util.*;
-import java.net.URLEncoder;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.upload.FileUploadManager;
+import org.silverpeas.upload.UploadedFile;
+
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
+
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.silverpeas.util.StringUtil.isInteger;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 
 public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessionController> {
 
@@ -196,10 +204,10 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         if (flag.equals("publisher") || flag.equals("admin")) {
           destination = "/almanach/jsp/createEvent.jsp";
         } else {
-          destination = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                  "sessionTimeout");
+          destination = GeneralPropertiesManager.getString("sessionTimeout");
         }
       } else if (function.equals("ReallyAddEvent")) {
+
         EventDetail event = new EventDetail();
 
         String title = request.getParameter("Title");
@@ -287,12 +295,13 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         event.setPeriodicity(periodicity);
 
         // Ajoute l'événement
+        Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request);
         String positions = request.getParameter("Positions");
         if (StringUtil.isDefined(positions)) {
           PdcClassificationEntity withClassification = PdcClassificationEntity.fromJSON(positions);
-          almanach.addEvent(event, withClassification);
+          almanach.addEvent(event, uploadedFiles, withClassification);
         } else {
-          almanach.addEvent(event);
+          almanach.addEvent(event, uploadedFiles);
         }
 
         destination = getDestination("almanach", almanach, request);
@@ -316,8 +325,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         if (flag.equals("publisher") || flag.equals("admin")) {
           destination = "/almanach/jsp/editEvent.jsp";
         } else {
-          destination = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                  "sessionTimeout");
+          destination = GeneralPropertiesManager.getString("sessionTimeout");
         }
       } else if (function.equals("ReallyUpdateEvent")) {
         String action = request.getParameter("Action");// ReallyUpdateOccurence
@@ -449,22 +457,6 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
 
         destination = getDestination("almanach", almanach, request);
 
-      } else if (function.startsWith("editAttFiles")) {
-        String id = request.getParameter("Id");
-        String startDate = request.getParameter("Date");
-
-        // récupère l'Event
-        EventDetail event = almanach.getEventDetail(id);
-
-        request.setAttribute("EventStartDate", startDate);
-        request.setAttribute("Event", event);
-        request.setAttribute("PdcUsed", almanach.isPdcUsed());
-
-        String componentUrl = almanach.getComponentUrl() + "editAttFiles.jsp?Id=" + event.getPK().
-                getId() + "&Date=" + startDate;
-        request.setAttribute("ComponentURL", URLEncoder.encode(componentUrl, "UTF-8"));
-
-        destination = "/almanach/jsp/editAttFiles.jsp";
       } else if (function.startsWith("Pdf")) {
         // Recuperation des parametres
         String fileName = almanach.buildPdf(function);
@@ -476,9 +468,6 @@ public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessio
         request.setAttribute("Id", id);
 
         destination = getDestination("viewEventContent", almanach, request);
-      } else if (function.startsWith("GoToFilesTab")) { // ??
-        destination = "/almanach/jsp/editAttFiles.jsp?Id="
-                + request.getParameter("Id");
       } else if (function.equals("RemoveEvent")) {
         String startDate = request.getParameter("EventStartDate"); // format
         // client

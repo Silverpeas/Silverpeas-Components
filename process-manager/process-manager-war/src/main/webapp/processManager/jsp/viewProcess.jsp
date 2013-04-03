@@ -232,9 +232,9 @@ function printProcess() {
 <%
 	out.flush();
 	if (!isVersionControlled) {
-  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=Images").include(request, response);
+  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=attachment").include(request, response);
 	} else {
-		getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=Images").include(request, response);
+		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=attachment").include(request, response);
 	}
 %>
 </td></tr></table>

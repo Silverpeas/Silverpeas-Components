@@ -1,6 +1,6 @@
 <%@ page import="com.stratelia.webactiv.newsEdito.NewsEditoException"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-
+<%@page import="com.stratelia.webactiv.util.FileServerUtils" %>
 <%!
 
 void displayEditorial(JspWriter out, Collection pubList,String modelId,NewsEditoSessionController news , boolean displayTitle,String publicationTitleAction ,String titleClass,String descriptionClass)
@@ -45,7 +45,7 @@ void displayEditorialModel1(JspWriter out, Collection pubList,NewsEditoSessionCo
 				String mimeType = pub.getImageMimeType();//st.nextToken();
 
 				//String imgSrc=m_context+"/FileServer?SourceFile="+physicalName+"&MimeType="+mimeType+"&Directory="+directory;
-				String imgSrc= FileServer.getUrl(news.getSpaceId(), news.getComponentId(), physicalName, physicalName, mimeType,directory);
+				String imgSrc= FileServerUtils.getUrl(news.getComponentId(), physicalName, physicalName, mimeType,directory);
 				out.print("<img src=\""+imgSrc+"\" align=\""+align[indiceAlign]+"\"> ");
 				indiceAlign = (indiceAlign +1) % 2;
 			}
@@ -107,7 +107,7 @@ void displayEditorialModel2(JspWriter out, Collection pubList,NewsEditoSessionCo
 						String mimeType = pub.getImageMimeType();//st.nextToken();
 
 						//String imgSrc=m_context+"/FileServer?SourceFile="+physicalName+"&MimeType="+mimeType+"&Directory="+directory;
-						String imgSrc= FileServer.getUrl(news.getSpaceId(), news.getComponentId(), physicalName, physicalName, mimeType,directory);
+						String imgSrc= FileServerUtils.getUrl(news.getComponentId(), physicalName, physicalName, mimeType,directory);
 
 						out.print("<img src=\""+imgSrc+"\" align=\"left\"> ");
 				}
@@ -353,8 +353,7 @@ void displayPublication(JspWriter out, NewsEditoSessionController news, Complete
 						String mimeType = pubComplete.getPublicationDetail().getImageMimeType();//st.nextToken();
 
 						//String imgSrc=m_context+"/FileServer?SourceFile="+physicalName+"&MimeType="+mimeType+"&Directory="+directory;
-						String imgSrc= FileServer.getUrl(news.getSpaceId(), news.getComponentId(), physicalName, physicalName, mimeType,directory);
-
+						String imgSrc= FileServerUtils.getUrl(news.getComponentId(), physicalName, physicalName, mimeType,directory);
 						out.print("<TD valign=top ><img src=\""+imgSrc+"\" ></TD> ");
 					}
 

@@ -125,6 +125,8 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         Collection<Event> events = getEvents(blogSC, postsByMonth);
         request.setAttribute("Events", events);
 
+        request.setAttribute("IsUserSubscribed", blogSC.isUserSubscribed());
+
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
         request.setAttribute("NbPostDisplayed", Integer.valueOf(10));
         
@@ -379,7 +381,11 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         destination = rootDest + "portlet.jsp";
       } else if (function.equals("AddSubscription")) {
         // ajout aux abonnements
-        blogSC.addSubscription("0");
+        blogSC.addUserSubscription();
+        destination = getDestination("Main", blogSC, request);
+      } else if (function.equals("RemoveSubscription")) {
+        // ajout aux abonnements
+        blogSC.removeUserSubscription();
         destination = getDestination("Main", blogSC, request);
       } else if (function.equals("UpdateFooter")) {
         // mise à jour du pied de page

@@ -48,10 +48,6 @@
         <ejb-ref-name>FavoritBm</ejb-ref-name>
         <jndi-name>ejb/FavoritBm</jndi-name>
       </ejb-ref>
-      <ejb-ref>
-        <ejb-ref-name>Versioning</ejb-ref-name>
-        <jndi-name>ejb/Versioning</jndi-name>
-      </ejb-ref>
       <resource-ref>
         <res-ref-name>jdbc/Silverpeas</res-ref-name>
         <jndi-name>Silverpeas</jndi-name>

@@ -7,5 +7,5 @@
         validationDate timestamp(0) null,
         beginDate timestamp(0) null,
         endDate timestamp(0) null,
-        newsOrder int not null DEFAULT (0)
+        newsOrder int DEFAULT (0) not null 
     );

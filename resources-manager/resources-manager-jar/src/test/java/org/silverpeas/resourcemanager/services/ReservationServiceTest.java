@@ -23,18 +23,8 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import org.silverpeas.resourcemanager.model.ResourceStatus;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.DBUtil;
-import edu.emory.mathcs.backport.java.util.Arrays;
-import edu.emory.mathcs.backport.java.util.Collections;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
+import com.stratelia.webactiv.util.DateUtil;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -47,13 +37,19 @@ import org.junit.runner.RunWith;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcemanager.model.ResourceStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.sql.DataSource;
+import java.util.*;
+
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -104,7 +100,7 @@ public class ReservationServiceTest {
     Reservation reservation = new Reservation("Test de la Toussaint", new Date(1320134400000L),
         new Date(1320163200000L), "To test", "at work");
     reservation.setInstanceId(instanceId);
-    long id = Long.parseLong(service.createReservation(reservation, Collections.emptyList()));
+    long id = Long.parseLong(service.createReservation(reservation, Collections.<Long>emptyList()));
     Reservation createdReservation = service.getReservation(id);
     reservation.setId(String.valueOf(id));
     assertThat(reservation, is(createdReservation));

@@ -1042,7 +1042,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     String view = "";
 
     String surveyImageDirectory =
-        FileServerUtils.getUrl(this.getSpaceId(), this.getComponentId(), "REPLACE_FILE_NAME",
+        FileServerUtils.getUrl(this.getComponentId(), "REPLACE_FILE_NAME",
             "REPLACE_FILE_NAME", "image/gif", getSettings().getString("imagesSubDirectory"));
 
     request.setAttribute("ImageDirectory", surveyImageDirectory);

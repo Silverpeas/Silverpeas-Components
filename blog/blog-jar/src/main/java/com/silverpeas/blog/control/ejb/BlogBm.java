@@ -89,7 +89,7 @@ public interface BlogBm extends EJBObject {
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId)
       throws RemoteException;
 
-  public void addSubscription(NodePK topicPK, String userId) throws RemoteException;
+  public void addSubscription(String userId, String instanceId) throws RemoteException;
 
   public void sendSubscriptionsNotification(NodePK fatherPK, PostDetail post, Comment comment, 
       String type, String senderId) throws RemoteException;

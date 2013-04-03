@@ -336,9 +336,16 @@ public class BlogSessionController extends AbstractComponentSessionController {
     return getBlogService().getResultSearch(word, getUserId(), getSpaceId(), getComponentId());
   }
 
-  public synchronized void addSubscription(String topicId) throws RemoteException {
-    getBlogService().addSubscription(new NodePK(topicId, getSpaceId(), getComponentId()),
-            getUserId());
+  public synchronized void addUserSubscription() throws RemoteException {
+    getBlogService().addSubscription(getUserId(), getComponentId());
+  }
+
+  public synchronized void removeUserSubscription() throws RemoteException {
+    getBlogService().removeSubscription(getUserId(), getComponentId());
+  }
+
+  public synchronized boolean isUserSubscribed() throws RemoteException {
+    return getBlogService().isSubscribed(getUserId(), getComponentId());
   }
 
   private boolean isUseRss() {
