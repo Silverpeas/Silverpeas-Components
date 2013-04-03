@@ -95,12 +95,18 @@ if ("SendSurveyHeader".equals(action)) {
           else
             endDate = null;
       }
-      int resultModeInt = Integer.parseInt(resultMode);
-      int resultViewInt = Integer.parseInt(resultView);
-      if(resultModeInt == QuestionContainerHeader.IMMEDIATE_RESULTS) {
-        resultViewInt = QuestionContainerHeader.TWICE_DISPLAY_RESULTS;
-      } else if (resultModeInt == QuestionContainerHeader.DELAYED_RESULTS) {
-        resultViewInt = QuestionContainerHeader.NOTHING_DISPLAY_RESULTS;
+      
+      int resultModeInt = QuestionContainerHeader.IMMEDIATE_RESULTS;
+      int resultViewInt = QuestionContainerHeader.TWICE_DISPLAY_RESULTS;
+      
+      if (! surveyScc.isPollingStationMode()) { 
+	      resultModeInt = Integer.parseInt(resultMode);
+	      resultViewInt = Integer.parseInt(resultView);
+	      if(resultModeInt == QuestionContainerHeader.IMMEDIATE_RESULTS) {
+	        resultViewInt = QuestionContainerHeader.TWICE_DISPLAY_RESULTS;
+	      } else if (resultModeInt == QuestionContainerHeader.DELAYED_RESULTS) {
+	        resultViewInt = QuestionContainerHeader.NOTHING_DISPLAY_RESULTS;
+	      }
       }
       QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate, false, 0, new Integer(nbQuestions).intValue(), anonymous, resultModeInt, resultViewInt);
       surveyScc.updateSurveyHeader(surveyHeader, surveyId);
@@ -321,6 +327,7 @@ function isCorrectForm() {
 				<input type="checkbox" name="anonymous" <%=anonymousCheck%> <%=anonymousDisabled%>/>
 			</div>
 		</div>
+		<% if (! surveyScc.isPollingStationMode()) { %>
 		<div class="field" id="resultModeArea">
         <label class="txtlibform" for="resultMode"><%=resources.getString("survey.creation.resultMode")%></label>
         <div class="champs">
@@ -342,6 +349,7 @@ function isCorrectForm() {
           </select>
         </div>
     </div>
+    <%} %>
 		<input type="hidden" name="Action" value="SendSurveyHeader"/>
     <input type="hidden" name="NextAction"/>
     <input type="hidden" name="SurveyId" value="<%=surveyId%>"/>

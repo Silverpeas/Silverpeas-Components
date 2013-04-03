@@ -503,7 +503,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 	                        out.println("<input type=\"hidden\" id=\"valueImageGallery"+i+"\" name=\"valueImageGallery"+i+"\" >");
 
 	                        List<ComponentInstLight> galleries = surveyScc.getGalleries();
-	                        if (galleries != null)
+	                        if (galleries.size() > 0)
 	    					{
 	    						out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this, '"+i+"');this.selectedIndex=0;\"> ");
 	    						out.println(" <option selected>"+resources.getString("survey.galleries")+"</option> ");

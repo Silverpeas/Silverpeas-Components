@@ -51,8 +51,10 @@
 
 <c:set var="isPolling" value="${requestScope['PollingStationMode']}" />
 <fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdateSurvey" />
+<fmt:message var="surveyConfirmDeleteLabel" key="ConfirmDeleteSurvey" />
 <c:if test="${isPolling}">
   <fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdatePoll"/>
+  <fmt:message var="surveyConfirmDeleteLabel" key="ConfirmDeletePollingStation"/>
 </c:if>
 
 <%!String lockSrc = "";
@@ -385,7 +387,7 @@ function createPollingStation() {
 	}
 
 function deleteSurvey(surveyId, name) {
-  if(window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("ConfirmDeleteSurvey"))%> '" + name + "' ?")){
+  if(window.confirm("<view:encodeJs string="${surveyConfirmDeleteLabel}" /> '" + name + "' ?")){
       document.surveysForm.Action.value = "DeleteSurvey";
       document.surveysForm.SurveyId.value = surveyId;
       document.surveysForm.submit();

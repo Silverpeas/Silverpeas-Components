@@ -175,6 +175,8 @@
     surveyScc.recordReply(surveyId, hash, comment, iAC);
 
     surveyScc.removeSessionResponses();
+    
+    survey = surveyScc.getSurvey(surveyId);
 
     //Record participation in cookie
     if (surveyScc.isAnonymousModeAuthorized()) {
@@ -724,13 +726,19 @@ out.println(surveyPart);
     %>
     <span class="champs-ui-dialog"><input name="checkedView" type="checkbox" value="C" <%=checked%>/><b>${classicMsg}</b><br />${classicDescMsg}</span>
     <% 
+    //Si Mode anonyme ou Enquete anonyme -> le mode détaillé n'a pas lieu d'être
+    String disabled = "";
+    if(surveyScc.isAnonymousModeEnabled() || survey.getHeader().isAnonymous()) {
+      disabled = "disabled=\"disabled\"";
+    }
+    
     checked = "";
     if(QuestionContainerHeader.DETAILED_DISPLAY_RESULTS == resultView || 
-        QuestionContainerHeader.TWICE_DISPLAY_RESULTS == resultView) {
+      QuestionContainerHeader.TWICE_DISPLAY_RESULTS == resultView) {
       checked = "checked=\"checked\"";
     }
     %>
-    <span class="champs-ui-dialog"><input name="checkedView" type="checkbox" value="D" <%=checked%>/><b>${detailedMsg}</b><br />${detailedDescMsg}</span>
+    <span class="champs-ui-dialog"><input name="checkedView" type="checkbox" value="D" <%=checked%> <%=disabled%>/><b>${detailedMsg}</b><br />${detailedDescMsg}</span>
   </div>
   <div id="synthesisFile-publishResultDialog">
     <label class="label-ui-dialog" for="synthesisFile">${synthesisFileMsg}</label>
