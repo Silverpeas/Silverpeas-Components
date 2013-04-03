@@ -29,9 +29,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
-
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
@@ -40,29 +37,20 @@
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <%
-Map<String, List<Resource>> resourcesReservables = (Map<String, List<Resource>> ) request.getAttribute("mapResourcesReservable");
 Reservation reservation = (Reservation) request.getAttribute("reservation");
-List<Resource> listResourcesProblem = (List<Resource>) request.getAttribute("listResourcesProblem");
 List<Resource> listResourceEverReserved = (List<Resource>) request.getAttribute("listResourceEverReserved");
-String idModifiedReservation = (String)request.getAttribute("idReservation");
+Long modifiedReservationId = (Long) request.getAttribute("idReservation");
 
 String evenement = reservation.getEvent();
 String raison = EncodeHelper.javaStringToHtmlParagraphe(reservation.getReason());
 String lieu = reservation.getPlace();
 
 // boutons de validation du formulaire
-Board	board		 = gef.getBoard();
 ButtonPane buttonPane = gef.getButtonPane();
 Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
 Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Main",false);
 buttonPane.addButton(validateButton);
 buttonPane.addButton(cancelButton);
-
-//String qui permet de recuperer la liste des ids des ressources reservees
-boolean noResource = true;
-
-// Permet de recuperer l'id de la categorie courante
-String idTemoin="";
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
@@ -195,17 +183,16 @@ String idTemoin="";
         out.println(window.printBefore());
         out.println(tabbedPane.print());
         out.println(frame.printBefore());
-		
-        if(listResourcesProblem != null) {
-            out.println(board.printBefore());
-            out.println("<h4>"+resource.getString("resourcesManager.resourceUnReservable")+"</h4>");
-            for(Resource resourceProblem : listResourcesProblem) { 
-                out.println(resource.getString("resourcesManager.ressourceNom")+" : "+resourceProblem.getName()+"<br/>");
-            }
-            out.println(board.printAfter());
-            out.println("<br />");
-        }
     %>
+    <c:if test="${not empty requestScope.unavailableReservationResources}">
+      <div class="inlineMessage-nok" style="text-align: left">
+        <h4><fmt:message key="resourcesManager.resourceUnReservable"/></h4>
+        <c:forEach items="${requestScope.unavailableReservationResources}" var="unavailableResource">
+          <span><fmt:message key="resourcesManager.ressourceNom"/> : ${unavailableResource.name}</span><br/>
+        </c:forEach>
+      </div>
+      <br clear="all"/>
+    </c:if>
     <view:board>
 
       <table align="center" cellpadding="3" cellspacing="0" border="0" width="100%">
@@ -274,14 +261,14 @@ String idTemoin="";
                   // la suppression ayant ete faite, cette boucle permet d'afficher les resources qui n'ont pas pose probleme
                   for (Resource maRessourceAlreadyReserved : listResourceEverReserved) {
                               String NomResource = maRessourceAlreadyReserved.getName();
-                              String resourceId = maRessourceAlreadyReserved.getId();
-                              String categoryId = maRessourceAlreadyReserved.getCategoryId();
+                              Long resourceId = maRessourceAlreadyReserved.getId();
+                              Long categoryId = maRessourceAlreadyReserved.getCategoryId();
             %>
             <div id="<%=resourceId%>" onClick="switchResource(<%=resourceId%>,'categ<%=categoryId%>');" style="cursor: pointer;">
               <table width="100%" cellspacing="0" cellpadding="0" border="0">
                 <tr>
                   <td width="80%" nowrap>&nbsp;-&nbsp;<%=NomResource%> </td>
-                  <td><img src="<c:url value="/util/icons/delete.gif" />" id="image<%=resourceId%>" align="middle"/></td>
+                  <td><img src="<c:url value="/util/icons/delete.gif" />" id="image<%=resourceId%>" align="middle" alt=""/></td>
                 </tr>
               </table>
             </div>
@@ -294,13 +281,13 @@ String idTemoin="";
         <%
         out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
         out.println(frame.printAfter());
-        out.println(window.printAfter());		
+        out.println(window.printAfter());
         %>
     <form name="frmResa" method="post" action="FinalReservation">
       <input type="hidden" name="listeResa" value=""/>
       <input type="hidden" name="newResourceReservation" value=""/>
-      <%if(idModifiedReservation != null){ %>	
-      <input type="hidden" name="idModifiedReservation" value="<%=idModifiedReservation%>"/>
+      <%if(modifiedReservationId != null){ %>	
+      <input type="hidden" name="modifiedReservationId" value="<%=modifiedReservationId%>"/>
       <%}%>
     </form>	
     <div id="dialog-message" title="<fmt:message key="resourcesManager.form.validation.error.title" />">

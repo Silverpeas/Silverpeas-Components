@@ -42,8 +42,8 @@ public interface ReservedResourceRepository extends
   @Query("SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
   "WHERE reservedResource.reservation.id != :currentReservationId AND reservedResource.status != 'R'" +
   "AND reservedResource.resource.id IN :futureReservedResourceIds " +
-  "AND (( reservedResource.reservation.endDate > :startPeriod AND  reservedResource.reservation.beginDate <= :startPeriod)" +
-  "OR ( reservedResource.reservation.endDate >= :endPeriod  AND  reservedResource.reservation.beginDate < :endPeriod))")
+  "AND reservedResource.reservation.beginDate < :endPeriod " +
+  "AND reservedResource.reservation.endDate > :startPeriod ")
   public List<ReservedResource> findAllReservedResourcesWithProblem(
       @Param("currentReservationId") Long currentReservationId,
       @Param("futureReservedResourceIds") List<Long> futureReservedResourceIds,

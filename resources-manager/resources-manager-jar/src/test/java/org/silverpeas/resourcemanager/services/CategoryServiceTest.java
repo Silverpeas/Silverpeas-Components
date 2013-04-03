@@ -24,19 +24,11 @@
 package org.silverpeas.resourcemanager.services;
 
 import com.stratelia.webactiv.util.DBUtil;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,6 +38,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -104,19 +104,17 @@ public class CategoryServiceTest {
   public void testCreateCategory() throws Exception {
     Category category = new Category("Vidéoprojecteurs ", true, "my_form.xml",
             "Vidéoprojecteurs pour les salles de réunion");
-    Date now = new Date();
-    category.setCreationDate(now);
-    category.setUpdateDate(now);
     category.setInstanceId("resourcesManager42");
     category.setCreaterId("10");
     category.setUpdaterId("10");
-
-    String result = service.createCategory(category);
-    assertThat(result, is("5"));
-    category.setId("5");
-    Category savedCategory = service.getCategory("5");
+    assertThat(category.getCreationDate(), nullValue());
+    assertThat(category.getUpdateDate(), nullValue());
+    service.createCategory(category);
+    assertThat(category.getCreationDate(), notNullValue());
+    assertThat(category.getUpdateDate(), is(category.getCreationDate()));
+    assertThat(category.getId(), is(5L));
+    Category savedCategory = service.getCategory(5L);
     assertThat(savedCategory, is(category));
-
   }
 
   /**
@@ -124,22 +122,20 @@ public class CategoryServiceTest {
    */
   @Test
   public void testUpdateCategory() throws Exception {
-    String id = "1";
-    Category expResult = new Category(id, "resourcesManager42", "Salles", new Date(
-            1315232752398L), new Date(1315232752398L), true, "model1.xml", "5", "5",
+    Long id = 1L;
+    Category expResult = new Category(id, "resourcesManager42", "Salles", true, "model1.xml", "5", "5",
             "Salles de réunion");
     Category result = service.getCategory(id);
     assertThat(result, is(expResult));
-    Date now = new Date();
-    result.setUpdateDate(now);
     result.setName("Véhicules");
     result.setForm("car_form.xml");
     result.setUpdaterId("1");
     result.setDescription("This is a test");
     result.setBookable(false);
+    Date oldUpdateDate = result.getUpdateDate();
     service.updateCategory(result);
-    expResult = new Category(id, "resourcesManager42", "Véhicules", new Date(
-            1315232752398L), now, false, "car_form.xml", "5", "1", "This is a test");
+    assertThat(result.getUpdateDate(), greaterThan(oldUpdateDate));
+    expResult = new Category(id, "resourcesManager42", "Véhicules", false, "car_form.xml", "5", "1", "This is a test");
     result = service.getCategory(id);
     assertThat(result, is(new CategoryMatcher(expResult)));
   }
@@ -153,10 +149,9 @@ public class CategoryServiceTest {
     List<Category> result = service.getCategories(instanceId);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));
-    assertThat(result, contains(new Category("1", "resourcesManager42", "Salles", new Date(
-            1315232752398L), new Date(1315232752398L), true, "model1.xml", "5", "5",
-            "Salles de réunion"), new Category("2", "resourcesManager42", "Voitures",
-            new Date(1315232752398L), new Date(1315232752398L), true, null,  "6", "6",
+    assertThat(result, contains(new Category(1L, "resourcesManager42", "Salles", true, "model1.xml", "5", "5",
+            "Salles de réunion"), new Category(2L, "resourcesManager42", "Voitures", true, null,
+        "6", "6",
             "Véhicules utilitaires")));
   }
 
@@ -165,9 +160,8 @@ public class CategoryServiceTest {
    */
   @Test
   public void testGetCategory() throws Exception {
-    String id = "1";
-    Category expResult = new Category("1", "resourcesManager42", "Salles", new Date(
-            1315232752398L), new Date(1315232752398L), true, "model1.xml", "5", "5",
+    Long id = 1L;
+    Category expResult = new Category(1L, "resourcesManager42", "Salles", true, "model1.xml", "5", "5",
             "Salles de réunion");
     Category result = service.getCategory(id);
     assertThat(result, is(expResult));
@@ -178,7 +172,7 @@ public class CategoryServiceTest {
    */
   @Test
   public void testDeleteCategory() throws Exception {
-    String id = "1";
+    Long id = 1L;
     service.deleteCategory(id);
     Category result = service.getCategory(id);
     assertThat(result, is(nullValue()));

@@ -23,20 +23,19 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
+import com.silverpeas.annotation.Service;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.ReservedResourcePk;
 import org.silverpeas.resourcemanager.repository.ReservedResourceRepository;
-import com.silverpeas.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  *
  * @author ehugonnet
  */
-@Named
 @Service
 @Transactional
 public class ReservedResourceService {

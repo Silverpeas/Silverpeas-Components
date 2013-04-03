@@ -32,5 +32,4 @@ public interface ResourceStatus {
   public static final String STATUS_FOR_VALIDATION = "A";
   public static final String STATUS_REFUSED = "R";
   public static final String STATUS_VALIDATE = "V";
-  
 }
