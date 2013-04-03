@@ -27,17 +27,22 @@ package com.stratelia.webactiv.survey.servlets;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItem;
+
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.survey.SurveyException;
 import com.stratelia.webactiv.survey.control.SurveySessionController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -255,14 +260,36 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       destination = rootDest + view;
     } else if (function.equals("PublishResult")) {
       // récupération des paramètres
-      String[] tabResultView = request.getParameterValues("checkedView");
-      String notification = request.getParameter("notification");
-      String destinationUser = request.getParameter("destination");
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
+
+      String checkedViewC = FileUploadUtil.getParameter(items, "checkedViewC");
+      String checkedViewD = FileUploadUtil.getParameter(items, "checkedViewD");
+      String notification = FileUploadUtil.getParameter(items, "notification");
+      String destinationUser = FileUploadUtil.getParameter(items, "destination");
+      String removeSynthesisFile = FileUploadUtil.getParameter(items, "removeSynthesisFile");
+      FileItem fileSynthesis = FileUploadUtil.getFile(items);
+      if (fileSynthesis != null && StringUtil.isDefined(fileSynthesis.getName())) {//Update
+        try {
+          surveySC.saveSynthesisFile(fileSynthesis);
+        } catch (Exception e) {
+          SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
+              "root.EX_PROBLEM_TO_UPDATE_SURVEY", "function = " + function, e);
+        }
+      } else if ("yes".equals(removeSynthesisFile)) {//Remove
+        try {
+          surveySC.removeSynthesisFile();
+        } catch (SurveyException e) {
+          SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
+              "root.EX_PROBLEM_TO_UPDATE_SURVEY", "function = " + function, e);
+        }
+      }
+      
       
       QuestionContainerDetail survey = surveySC.getSessionSurvey();
       String surveyId = survey.getId();
       QuestionContainerHeader surveyHeader = survey.getHeader();
-      if (tabResultView == null || tabResultView.length==0) {
+      
+      /*if (tabResultView == null || tabResultView.length==0) {
         surveyHeader.setResultView(QuestionContainerHeader.NOTHING_DISPLAY_RESULTS);
       } else if(tabResultView != null && tabResultView.length==1) {//C || D
         String resultView = tabResultView[0];
@@ -273,7 +300,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         }
       } else if(tabResultView != null && tabResultView.length==2) {//C && D
         surveyHeader.setResultView(QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
-      }
+      }*/
       try {
         surveySC.updateSurveyHeader(surveyHeader, surveyId);
       } catch (Exception e) {

@@ -55,6 +55,7 @@ import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
@@ -83,7 +84,9 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.answer.model.Answer;
+import org.silverpeas.attachment.AttachmentServiceFactory;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.question.model.Question;
 import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm;
@@ -96,6 +99,9 @@ import com.stratelia.webactiv.util.questionResult.control.QuestionResultBm;
 import com.stratelia.webactiv.util.questionResult.control.QuestionResultBmHome;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * This class contains business layer of survey component
@@ -1270,5 +1276,35 @@ public class SurveySessionController extends AbstractComponentSessionController 
    UserDetail[] participants = getOrganisationController().getAllUsers(getComponentId());
    String htmlPath = getQuestionContainerBm().getHTMLQuestionPath(surveyDetail);
    UserNotificationHelper.buildAndSend(new SurveyUserNotification(getComponentId(), surveyDetail, htmlPath, getUserDetail(), participants));
+ }
+ 
+ public void saveSynthesisFile(FileItem fileSynthesis) throws SurveyException {
+   SilverTrace.info("Survey", "SurveySessionController.saveSynthesisFile",
+       "Survey.MSG_ENTRY_METHOD");
+   QuestionContainerDetail survey = this.getSessionSurvey();
+   try {
+     Date creationDate = new Date();
+     String filename = fileSynthesis.getName();
+     SimpleAttachment file = new SimpleAttachment(FileUtil.getFilename(filename),
+         I18NHelper.defaultLanguage, filename, "", fileSynthesis.getSize(), FileUtil.getMimeType(filename),
+         this.getUserId(), creationDate, null);
+     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, survey.getComponentInstanceId()), survey.getId(), 0, false, file);
+     AttachmentServiceFactory.getAttachmentService().createAttachment(document, fileSynthesis.getInputStream(), true); 
+   } catch (IOException e) {
+     throw new SurveyException("SurveySessionController.saveSynthesisFile", SurveyException.WARNING,
+         "Survey.EX_PROBLEM_TO_UPDATE_SURVEY", "id = " + survey.getId(), e);
+   } 
+ }
+ 
+ public void removeSynthesisFile() throws SurveyException {
+   SilverTrace.info("Survey", "SurveySessionController.removeSynthesisFile",
+       "Survey.MSG_ENTRY_METHOD");
+   QuestionContainerDetail survey = this.getSessionSurvey();
+   SimpleDocumentPK pubForeignKey = new SimpleDocumentPK(survey.getId(), this.getComponentId()); 
+   List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+       listAllDocumentsByForeignKey(pubForeignKey, null);
+   for (SimpleDocument doc : documents) {
+     AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
+   }
  }
 }

@@ -704,7 +704,7 @@ out.println(surveyPart);
 </view:window>
 
 <div id="publishResultDialog" style="display: none;">
-  <form name="publishResultForm" action="PublishResult" method="post">
+  <form name="publishResultForm" action="PublishResult" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
   <input type="hidden" name="destination" value="<%=destinationPath%>" />
   <div id="view-publishResultDialog">
     <fmt:message key="survey.resultView" var="resultViewMsg" />
@@ -724,7 +724,7 @@ out.println(surveyPart);
       checked = "checked=\"checked\"";
     }
     %>
-    <span class="champs-ui-dialog"><input name="checkedView" type="checkbox" value="C" <%=checked%>/><b>${classicMsg}</b><br />${classicDescMsg}</span>
+    <span class="champs-ui-dialog"><input name="checkedViewC" type="checkbox" <%=checked%>/><b>${classicMsg}</b><br />${classicDescMsg}</span>
     <% 
     //Si Mode anonyme ou Enquete anonyme -> le mode détaillé n'a pas lieu d'être
     String disabled = "";
@@ -738,11 +738,17 @@ out.println(surveyPart);
       checked = "checked=\"checked\"";
     }
     %>
-    <span class="champs-ui-dialog"><input name="checkedView" type="checkbox" value="D" <%=checked%> <%=disabled%>/><b>${detailedMsg}</b><br />${detailedDescMsg}</span>
+    <span class="champs-ui-dialog"><input name="checkedViewD" type="checkbox" <%=checked%> <%=disabled%>/><b>${detailedMsg}</b><br />${detailedDescMsg}</span>
   </div>
   <div id="synthesisFile-publishResultDialog">
     <label class="label-ui-dialog" for="synthesisFile">${synthesisFileMsg}</label>
-    <span class="champs-ui-dialog"><input name="synthesisFile" type="file" /></span>
+    <% if(wallPaper != null) { %>
+    <a href="<%=wallPaper.getUrl()%>" target="_blank"><%=wallPaper.getName()%></a>
+    <%=wallPaper.getSize()%>    
+    <a href="javascript:onclick=hideWallPaperFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"/></a>
+    <% } %>
+    <span class="champs-ui-dialog"><input name="synthesisFile" type="file" id="synthesisFileNewFile" /></span>
+    <input type="hidden" name="removeSynthesisFile" value="no"/>
   </div>
   <div id="notification-publishResultDialog"> 
   <label class="label-ui-dialog" for="notification">${notificationMsg}</label>
