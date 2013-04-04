@@ -21,7 +21,6 @@
 package com.stratelia.webactiv.kmelia.control.ejb;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -810,7 +809,7 @@ public interface KmeliaBmBusinessSkeleton {
    * @param coordinatePK
    * @param coordinates
    */
-  public void deleteCoordinates(CoordinatePK coordinatePK, ArrayList<?> coordinates)
+  public void deleteCoordinates(CoordinatePK coordinatePK, List<String> coordinates)
       throws RemoteException;
 
   public Collection<Alias> getAlias(PublicationPK pubPK) throws RemoteException;
