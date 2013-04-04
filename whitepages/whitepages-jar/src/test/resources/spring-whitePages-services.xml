@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -25,15 +25,26 @@
 
 -->
 
-<!DOCTYPE hibernate-mapping PUBLIC
-	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<hibernate-mapping package="com.silverpeas.whitePages.model">
-  <class name="SearchField" table="sc_whitepages_searchfields">
-  	<id name="id" column="id" type="string">
-      <generator class="uuid" />
-    </id>
-    <property name="instanceId" column="instanceid" type="string"/>
-  	<property name="fieldId" column="fieldid" type="string"/>
-  </class>
-</hibernate-mapping>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+  <context:annotation-config/>
+
+  <context:component-scan base-package="com.silverpeas.whitePages"/>
+
+  <bean id="whitePagesServicesFactory" name="whitePagesServicesFactory"
+        class="com.silverpeas.whitePages.service.ServicesFactory"
+        factory-method="getFactory" />
+
+  <import resource="spring-jpa.xml"/>
+
+  <util:list id="entities">
+    <value>com.silverpeas.whitePages.model</value>
+  </util:list>
+</beans>
