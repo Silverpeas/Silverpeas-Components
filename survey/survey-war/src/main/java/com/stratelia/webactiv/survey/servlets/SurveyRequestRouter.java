@@ -33,6 +33,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
@@ -196,6 +197,8 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
     } else if (function.startsWith("searchResult")) {
       String id = request.getParameter("Id");
       request.setAttribute("Profile", flag);
+      List<SimpleDocument> listDocument = surveySC.getAllSynthesisFile(id);
+      request.setAttribute("ListDocument", listDocument);
       destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" + id;
     } else if (function.equals("ToAlertUser")) {
       SilverTrace.debug(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
@@ -266,41 +269,42 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       String checkedViewD = FileUploadUtil.getParameter(items, "checkedViewD");
       String notification = FileUploadUtil.getParameter(items, "notification");
       String destinationUser = FileUploadUtil.getParameter(items, "destination");
-      String removeSynthesisFile = FileUploadUtil.getParameter(items, "removeSynthesisFile");
-      FileItem fileSynthesis = FileUploadUtil.getFile(items);
-      if (fileSynthesis != null && StringUtil.isDefined(fileSynthesis.getName())) {//Update
+      String idSynthesisFile = FileUploadUtil.getParameter(items, "idSynthesisFile"); 
+      String removeSynthesisFile = FileUploadUtil.getParameter(items, "removeSynthesisFile");  //yes | no 
+      FileItem fileSynthesis = FileUploadUtil.getFile(items, "synthesisNewFile"); 
+      if(idSynthesisFile == null && fileSynthesis != null && StringUtil.isDefined(fileSynthesis.getName())) {//Create Document
         try {
           surveySC.saveSynthesisFile(fileSynthesis);
-        } catch (Exception e) {
-          SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
-              "root.EX_PROBLEM_TO_UPDATE_SURVEY", "function = " + function, e);
-        }
-      } else if ("yes".equals(removeSynthesisFile)) {//Remove
-        try {
-          surveySC.removeSynthesisFile();
         } catch (SurveyException e) {
           SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
-              "root.EX_PROBLEM_TO_UPDATE_SURVEY", "function = " + function, e);
+              "Survey.EX_PROBLEM_TO_UPDATE_SURVEY", "function = " + function+", saveSynthesisFile", e);
         }
-      }
-      
-      
+      } else if(idSynthesisFile != null && fileSynthesis != null && StringUtil.isDefined(fileSynthesis.getName())) {//Update Document
+        try {
+          surveySC.updateSynthesisFile(fileSynthesis, idSynthesisFile);
+        } catch (SurveyException e) {
+          SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
+              "Survey.EX_PROBLEM_TO_UPDATE_SURVEY", "function = " + function+", updateSynthesisFile", e);
+        }
+      } else if(idSynthesisFile != null && fileSynthesis != null && ! StringUtil.isDefined(fileSynthesis.getName()) && "yes".equals(removeSynthesisFile)) {//Delete Document
+        surveySC.removeSynthesisFile(idSynthesisFile);
+      } 
+
       QuestionContainerDetail survey = surveySC.getSessionSurvey();
       String surveyId = survey.getId();
       QuestionContainerHeader surveyHeader = survey.getHeader();
       
-      /*if (tabResultView == null || tabResultView.length==0) {
+      if (checkedViewC == null && checkedViewD == null) {
         surveyHeader.setResultView(QuestionContainerHeader.NOTHING_DISPLAY_RESULTS);
-      } else if(tabResultView != null && tabResultView.length==1) {//C || D
-        String resultView = tabResultView[0];
-        if("C".equals(resultView)) {
+      } else if(checkedViewC != null && checkedViewD != null && "on".equals(checkedViewC) && "on".equals(checkedViewD)) {//C && D
+        surveyHeader.setResultView(QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
+      } else {//C || D
+        if(checkedViewC != null && "on".equals(checkedViewC)) {
           surveyHeader.setResultView(QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS);
-        } else if("D".equals(resultView)) {
+        } else if(checkedViewD != null && "on".equals(checkedViewD)) {
           surveyHeader.setResultView(QuestionContainerHeader.DETAILED_DISPLAY_RESULTS);
         }
-      } else if(tabResultView != null && tabResultView.length==2) {//C && D
-        surveyHeader.setResultView(QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
-      }*/
+      } 
       try {
         surveySC.updateSurveyHeader(surveyHeader, surveyId);
       } catch (Exception e) {
@@ -309,17 +313,32 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       }
       
       if("1".equals(notification)) {
-        //notifier tous les utilisateurs
+        //notifier uniquement les utilisateurs ayant participé
         try {
-          surveySC.initAlertResultUser(survey);
+          surveySC.initAlertResultParticipants(survey);
+        } catch (Exception e) {
+          SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
+              "root.EX_NOTIFY_USERS_FAILED", "function = " + function, e);
+        }
+      } else if("2".equals(notification)) {
+        //notifier tous les utilisateurs qui pouvaient participer
+        try {
+          surveySC.initAlertResultUsers(survey);
         } catch (Exception e) {
           SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
               "root.EX_NOTIFY_USERS_FAILED", "function = " + function, e);
         }
       }
-      
       request.setAttribute("Profile", flag);
+      List<SimpleDocument> listDocument = surveySC.getAllSynthesisFile(surveyId);
+      request.setAttribute("ListDocument", listDocument);
       destination = rootDest + destinationUser;
+    } else if (function.startsWith("surveyDetail")) {
+      String surveyId = request.getParameter("SurveyId");
+      request.setAttribute("Profile", flag);
+      List<SimpleDocument> listDocument = surveySC.getAllSynthesisFile(surveyId);
+      request.setAttribute("ListDocument", listDocument);
+      destination = rootDest + function;
     } else {
       request.setAttribute("Profile", flag);
       destination = rootDest + function;

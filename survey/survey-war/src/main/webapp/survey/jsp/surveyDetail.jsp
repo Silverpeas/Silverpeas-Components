@@ -58,6 +58,7 @@
   String surveyId = request.getParameter("SurveyId");
   String roundId = request.getParameter("RoundId");
   String profile = (String) request.getAttribute("Profile");
+  List listDocument = (List) request.getAttribute("ListDocument");
   String choice = request.getParameter("Choice");
   if (!StringUtil.isDefined(choice)) {
     choice = "D";
@@ -88,16 +89,15 @@
 
 
   //Icons
-  String topicAddSrc = m_context + "/util/icons/folderAdd.gif";
   String alertSrc = m_context + "/util/icons/alert.gif";
   String exportSrc = m_context + "/util/icons/export.gif";
   String copySrc = m_context + "util/icons/copy.gif";
+  String deleteSrc = m_context + "/util/icons/delete.gif";
 %>
 <c:url value="/util/icons/alert.gif" var="alertSrc"></c:url>
 <c:url value="/util/icons/export.gif" var="exportSrc"></c:url>
 <c:url value="/util/icons/publish.gif" var="publishSrc"></c:url>
 <c:url value="/util/icons/copy.gif" var="copySrc"></c:url>
-
 <%
   QuestionContainerDetail survey = null;
   boolean isClosed = false;
@@ -640,14 +640,16 @@ function clipboardCopy() {
     }
     
     function PublishResult(title) {
-    	  /*var name = $("#categ-"+id+" .categ-title").text();
-    	  var desc = $("#categ-"+id+" .categ-desc").text();
     	  
-    	  $("#categoryManager #CategoryId").val(id);
-    	  $("#categoryManager #Name").val(name);
-    	  $("#categoryManager #Description").val(desc);*/
-    	  
+    	  $("#publishResultDialog #SynthesisFile").show();
+        document.publishResultForm.removeSynthesisFile.value = "no";
+          
     	  showDialog(title)
+    }
+    
+    function hideSynthesisFile() {
+    	  $("#publishResultDialog #SynthesisFile").hide();
+    	  document.publishResultForm.removeSynthesisFile.value = "yes";
     }
 
      	</script>
@@ -716,6 +718,7 @@ out.println(surveyPart);
     <fmt:message key="survey.notifications" var="notificationMsg" />
     <fmt:message key="survey.noNotification" var="noNotificationMsg" />
     <fmt:message key="survey.notificationParticipants" var="notificationParticipantsMsg" />
+    <fmt:message key="survey.notificationAllUsers" var="notificationAllUsersMsg" />
     <label class="label-ui-dialog" for="view">${resultViewMsg}</label>
     <%
     String checked = "";
@@ -742,12 +745,20 @@ out.println(surveyPart);
   </div>
   <div id="synthesisFile-publishResultDialog">
     <label class="label-ui-dialog" for="synthesisFile">${synthesisFileMsg}</label>
-    <% if(wallPaper != null) { %>
-    <a href="<%=wallPaper.getUrl()%>" target="_blank"><%=wallPaper.getName()%></a>
-    <%=wallPaper.getSize()%>    
-    <a href="javascript:onclick=hideWallPaperFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" border="0"/></a>
+    <% if(listDocument != null && listDocument.size() > 0) {
+      SimpleDocument simpleDocument = (SimpleDocument) listDocument.get(0);
+      String url = m_context +  simpleDocument.getAttachmentURL(); 
+    %>
+    <div id="SynthesisFile">
+    <span class="champs-ui-dialog">
+    <a href="<%=url%>" target="_blank"><%=simpleDocument.getFilename()%></a>
+    <%=simpleDocument.getSize()%>    
+    <a href="javascript:onclick=hideSynthesisFile();"><img src="<%=deleteSrc%>" border="0"/></a>
+    <input type="hidden" name="idSynthesisFile" value="<%=simpleDocument.getId()%>">
+    </span>  
+    </div>
     <% } %>
-    <span class="champs-ui-dialog"><input name="synthesisFile" type="file" id="synthesisFileNewFile" /></span>
+    <span class="champs-ui-dialog"><input name="synthesisNewFile" type="file" id="synthesisNewFile" /></span>
     <input type="hidden" name="removeSynthesisFile" value="no"/>
   </div>
   <div id="notification-publishResultDialog"> 
@@ -756,6 +767,7 @@ out.println(surveyPart);
     <select name="notification">
       <option value="0">${noNotificationMsg}</option>
       <option value="1">${notificationParticipantsMsg}</option>
+      <option value="2">${notificationAllUsersMsg}</option>
     </select>
   </span>
   </div>

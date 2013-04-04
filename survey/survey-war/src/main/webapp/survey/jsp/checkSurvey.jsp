@@ -50,9 +50,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.survey.control.SurveySessionController "%>
 <%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
 
-<%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
-
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
@@ -89,6 +86,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 
 <%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil"%>
+
+<%@ page import="org.silverpeas.attachment.model.SimpleDocument"%>
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

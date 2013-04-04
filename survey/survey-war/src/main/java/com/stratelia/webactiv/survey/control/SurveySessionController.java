@@ -84,7 +84,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.answer.model.Answer;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -1272,10 +1271,24 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
   
 //pour la notification des résultats
- public void initAlertResultUser(QuestionContainerDetail surveyDetail) throws RemoteException {
-   UserDetail[] participants = getOrganisationController().getAllUsers(getComponentId());
+ public void initAlertResultParticipants(QuestionContainerDetail surveyDetail) throws RemoteException, SurveyException {
+   Collection<String> users = getUsersBySurvey(surveyDetail.getId());
+   UserDetail[] participants = new UserDetail[users.size()];
+   UserDetail userDetail;
+   int i = 0;
+   for(String idUser : users) {
+     userDetail = getOrganisationController().getUserDetail(idUser);
+     participants[i++] = userDetail;
+   }
    String htmlPath = getQuestionContainerBm().getHTMLQuestionPath(surveyDetail);
    UserNotificationHelper.buildAndSend(new SurveyUserNotification(getComponentId(), surveyDetail, htmlPath, getUserDetail(), participants));
+ }
+  
+//pour la notification des résultats
+ public void initAlertResultUsers(QuestionContainerDetail surveyDetail) throws RemoteException {
+   UserDetail[] users = getOrganisationController().getAllUsers(getComponentId());
+   String htmlPath = getQuestionContainerBm().getHTMLQuestionPath(surveyDetail);
+   UserNotificationHelper.buildAndSend(new SurveyUserNotification(getComponentId(), surveyDetail, htmlPath, getUserDetail(), users));
  }
  
  public void saveSynthesisFile(FileItem fileSynthesis) throws SurveyException {
@@ -1296,15 +1309,25 @@ public class SurveySessionController extends AbstractComponentSessionController 
    } 
  }
  
- public void removeSynthesisFile() throws SurveyException {
+ public void updateSynthesisFile(FileItem newFileSynthesis, String idDocument) throws SurveyException {
+   SilverTrace.info("Survey", "SurveySessionController.updateSynthesisFile",
+       "Survey.MSG_ENTRY_METHOD");
+   removeSynthesisFile(idDocument);
+   saveSynthesisFile(newFileSynthesis);
+ }
+ 
+ public void removeSynthesisFile(String idDocument) {
    SilverTrace.info("Survey", "SurveySessionController.removeSynthesisFile",
        "Survey.MSG_ENTRY_METHOD");
-   QuestionContainerDetail survey = this.getSessionSurvey();
-   SimpleDocumentPK pubForeignKey = new SimpleDocumentPK(survey.getId(), this.getComponentId()); 
-   List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-       listAllDocumentsByForeignKey(pubForeignKey, null);
-   for (SimpleDocument doc : documents) {
-     AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
-   }
+   SimpleDocumentPK primaryKey = new SimpleDocumentPK(idDocument); 
+   SimpleDocument document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(primaryKey, I18NHelper.defaultLanguage);
+   AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
+ }
+ 
+ public List<SimpleDocument> getAllSynthesisFile(String surveyId) {
+   SilverTrace.info("Survey", "SurveySessionController.getAllSynthesisFile",
+       "Survey.MSG_ENTRY_METHOD");
+     SimpleDocumentPK surveyForeignKey = new SimpleDocumentPK(surveyId, this.getComponentId()); 
+     return AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(surveyForeignKey, I18NHelper.defaultLanguage);
  }
 }
