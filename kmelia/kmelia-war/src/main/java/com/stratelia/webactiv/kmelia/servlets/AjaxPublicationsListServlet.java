@@ -20,16 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
-<<<<<<< HEAD
-=======
-import static com.stratelia.webactiv.SilverpeasRole.admin;
-import static com.stratelia.webactiv.SilverpeasRole.publisher;
-import static com.stratelia.webactiv.SilverpeasRole.user;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.CLONE;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.DRAFT;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.TO_VALIDATE;
-
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -47,10 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-<<<<<<< HEAD
-=======
-import org.apache.commons.io.FilenameUtils;
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.component.kmelia.KmeliaPublicationHelper;
@@ -93,14 +79,12 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.UserNameGenerator;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
-<<<<<<< HEAD
 
 import org.apache.commons.io.FilenameUtils;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
-=======
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
+
 
 /**
  * @author ehugonnet
@@ -244,17 +228,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         writer.write("</tr>");
         writer.write("</table>");
         writer.write(board.printAfter());
-<<<<<<< HEAD
       } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) &&
           kmeliaSC.getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() &&
           !searchInProgress) {
         displayLastPublications(kmeliaSC, resources, gef, writer);
-=======
-      } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) && kmeliaSC.
-          getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure()) {
-        List<KmeliaPublication> publicationsToDisplay = kmeliaSC.getLatestPublications();
-        displayLastPublications(publicationsToDisplay, kmeliaSC, resources, gef, writer);
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
       } else {
         if (publications != null) {
           displayPublications(publications, sortAllowed, linksAllowed, seeAlso, searchInProgress,

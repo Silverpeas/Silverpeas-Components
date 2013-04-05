@@ -31,7 +31,6 @@ import org.silverpeas.process.util.ProcessList;
 
 import com.silverpeas.gallery.ImageType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
@@ -316,8 +315,7 @@ public class GalleryProcessManagement {
    */
   private static GalleryBm getGalleryBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class)
-          .create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryProcessBuilder.getGalleryBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

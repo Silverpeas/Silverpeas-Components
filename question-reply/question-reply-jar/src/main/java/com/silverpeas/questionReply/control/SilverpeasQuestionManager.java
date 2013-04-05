@@ -991,20 +991,10 @@ public class SilverpeasQuestionManager implements QuestionManager {
       QuestionReplyException {
     if (reply.getPublicReply() == 1) {
       UserDetail sender = reply.readAuthor();
-<<<<<<< HEAD
       SubscriptionNotifier notifier = new SubscriptionNotifier(sender, URLManager.getServerURL(null),
               question, reply);
-      Collection<String> subscribers =
-          SubscriptionServiceFactory.getFactory().getSubscribeService().
+      Collection<String> subscribers = SubscriptionServiceFactory.getFactory().getSubscribeService().
               getUserSubscribers(ComponentSubscriptionResource.from(question.getInstanceId()));
-=======
-      SubscriptionNotifier notifier =
-          new SubscriptionNotifier(sender, URLManager.getServerURL(null),
-          question, reply);
-      Collection<String> subscribers =
-          SubscriptionServiceFactory.getFactory().getSubscribeService().
-          getSubscribers(new ForeignPK("0", question.getInstanceId()));
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
       Set<UserRecipient> userRecipients = new HashSet<UserRecipient>();
       for (String subscriberId : subscribers) {
         userRecipients.add(new UserRecipient(subscriberId));

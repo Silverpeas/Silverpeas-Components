@@ -20,7 +20,6 @@
  */
 package com.silverpeas.kmelia.stats;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -43,11 +42,9 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
@@ -59,9 +56,6 @@ import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.E
 @Named("statisticService")
 public class StatisticServiceImpl implements StatisticService {
 
-  /**
-   * TODO inject all the statistics manager there like statistic
-   */
   private PublicationBm publicationBm;
   private NodeBm nodeBm;
   private StatisticBm statisticBm;
@@ -166,21 +160,16 @@ public class StatisticServiceImpl implements StatisticService {
         new NodePK(Integer.toString(statFilter.getTopicId()), statFilter.getInstanceId());
     Collection<PublicationDetail> validPubli = null;
     List<PublicationDetail> publis = new ArrayList<PublicationDetail>();
-    try {
-      List<NodeDetail> nodes = getNodeBm().getSubTree(fatherPK);
-      if (nodes != null) {
-        ArrayList<String> fatherIds = new ArrayList<String>();
-        for (NodeDetail node : nodes) {
-          fatherIds.add(Integer.toString(node.getId()));
-        }
-        validPubli =
-            getPublicationBm().getDetailsByFatherIdsAndStatus(fatherIds,
-            new PublicationPK("", statFilter.getInstanceId()), null, "Valid");
-        publis.addAll(validPubli);
+    List<NodeDetail> nodes = getNodeBm().getSubTree(fatherPK);
+    if (nodes != null) {
+      ArrayList<String> fatherIds = new ArrayList<String>();
+      for (NodeDetail node : nodes) {
+        fatherIds.add(Integer.toString(node.getId()));
       }
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", getClass().getSimpleName() + ".getStatisticActivityByPeriod",
-          "Error when loading the list of Node publications", e);
+      validPubli =
+          getPublicationBm().getDetailsByFatherIdsAndStatus(fatherIds,
+          new PublicationPK("", statFilter.getInstanceId()), null, "Valid");
+      publis.addAll(validPubli);
     }
     return publis;
   }
@@ -254,13 +243,11 @@ public class StatisticServiceImpl implements StatisticService {
   private PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-        this.publicationBm = publicationBmHome.create();
+        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
             e);
       }
     }
@@ -270,8 +257,7 @@ public class StatisticServiceImpl implements StatisticService {
   private NodeBm getNodeBm() {
     if (nodeBm == null) {
       try {
-        NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBmHome.class);
-        this.nodeBm = nodeBmHome.create();
+        nodeBm = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaBmEJB.getNodeBm()", ERROR,
             "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
@@ -283,7 +269,7 @@ public class StatisticServiceImpl implements StatisticService {
   private StatisticBm getStatisticBm() {
     if (statisticBm == null) {
       try {
-        statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, 
+        statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
             StatisticBm.class);
       } catch (Exception e) {
         throw new StatisticRuntimeException("PdcSearchSessionController.getStatisticBm()",

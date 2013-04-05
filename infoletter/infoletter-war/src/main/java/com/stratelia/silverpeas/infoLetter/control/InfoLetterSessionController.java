@@ -678,13 +678,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   /**
    * Replace /silverpeas/xxx by http(s)://server:port/silverpeas/xxx (Only in notifyExternals case)
    *
-<<<<<<< HEAD
-   * @param message
-   * @param server: http(s)://server:port
-=======
    * @param codeHtml
    * @param serveur: http(s)://server:port
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
    * @return codeHtml
    */
   private String replacePermalinkWithServer(String message, String server) {

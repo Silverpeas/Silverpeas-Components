@@ -143,15 +143,11 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
    * @return a list of publicationDetail
    */
   private List<PublicationDetail> getHeaders(List<PublicationPK> ids) {
-    List<PublicationDetail> headers = new ArrayList<PublicationDetail>();
-    try {
-      Collection<PublicationDetail> publicationDetails = getPublicationBm().getPublications(ids);
-      for (PublicationDetail pubDetail : publicationDetails) {
-        pubDetail.setIconUrl("blogSmall.gif");
-        headers.add(pubDetail);
-      }
-    } catch (Exception e) {
-      // skip unknown and ill formed id.
+    List<PublicationDetail> headers = new ArrayList<PublicationDetail>(ids.size());
+    Collection<PublicationDetail> publicationDetails = getPublicationBm().getPublications(ids);
+    for (PublicationDetail pubDetail : publicationDetails) {
+      pubDetail.setIconUrl("blogSmall.gif");
+      headers.add(pubDetail);
     }
     return headers;
   }
@@ -181,7 +177,6 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
     }
     return currentPublicationBm;
   }
-
   private ContentManager contentManager = null;
   private PublicationBm currentPublicationBm = null;
 }

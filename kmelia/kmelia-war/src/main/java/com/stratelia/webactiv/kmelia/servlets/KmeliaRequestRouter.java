@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -91,37 +92,12 @@ import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-<<<<<<< HEAD
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.importExport.versioning.DocumentVersion;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-import org.xml.sax.SAXException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-=======
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.xml.sax.SAXException;
 
->>>>>>> 54fb721... jboss7 :  Migration TagCloud and Forums EJB to EJB 3.1
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
   private static final long serialVersionUID = 1L;

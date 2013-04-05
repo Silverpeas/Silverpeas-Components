@@ -29,23 +29,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.search.searchEngine.model.ScoreComparator;
+
 import com.silverpeas.pdc.ejb.PdcBm;
-import com.silverpeas.pdc.ejb.PdcBmHome;
 import com.silverpeas.pdc.ejb.PdcBmRuntimeException;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContentI18N;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.search.searchEngine.model.ScoreComparator;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.search.indexEngine.model.FieldDescription;
-import org.silverpeas.search.SearchEngineFactory;
 
 public class MixedSearchServiceImpl implements MixedSearchService {
 
@@ -205,9 +205,7 @@ public class MixedSearchServiceImpl implements MixedSearchService {
   private PdcBm getPdcBm() {
     if (pdcBm == null) {
       try {
-        PdcBmHome pdcBmHome = EJBUtilitaire
-          .getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBmHome.class);
-        pdcBm = pdcBmHome.create();
+        pdcBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBm.class);
       } catch (Exception e) {
         throw new PdcBmRuntimeException("MixedSearchServiceImpl.getPdcBm",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

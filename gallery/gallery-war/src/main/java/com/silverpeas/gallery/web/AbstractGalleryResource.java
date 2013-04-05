@@ -23,29 +23,31 @@
  */
 package com.silverpeas.gallery.web;
 
-import com.silverpeas.gallery.ImageHelper;
-import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.GalleryBmHome;
-import com.silverpeas.gallery.model.AlbumDetail;
-import com.silverpeas.gallery.model.GalleryRuntimeException;
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import org.apache.commons.collections.CollectionUtils;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Date;
+import java.util.EnumSet;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Date;
-import java.util.EnumSet;
+
+import com.silverpeas.gallery.ImageHelper;
+import com.silverpeas.gallery.control.ejb.GalleryBm;
+import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.GalleryRuntimeException;
+import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.PhotoPK;
+import com.silverpeas.web.RESTWebService;
+
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.model.NodePK;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import static com.silverpeas.gallery.web.GalleryResourceURIs.*;
 
@@ -68,6 +70,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Converts the album into its corresponding web entity.
+   *
    * @param album the album.
    * @return the corresponding photo entity.
    */
@@ -85,6 +88,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Converts the photo into its corresponding web entity.
+   *
    * @param photo the photo to convert.
    * @param album the album of the photo.
    * @return the corresponding photo entity.
@@ -100,12 +104,14 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Converts the photo into an input stream.
+   *
    * @param photo the photo to convert.
    * @param album the album of the photo.
    * @param isOriginalRequired the original or preview content
    * @return the corresponding photo entity.
    */
-  protected InputStream asInputStream(PhotoDetail photo, AlbumDetail album, boolean isOriginalRequired) {
+  protected InputStream asInputStream(PhotoDetail photo, AlbumDetail album,
+      boolean isOriginalRequired) {
     checkNotFoundStatus(photo);
     checkNotFoundStatus(album);
     verifyPhotoInAlbum(photo, album);
@@ -114,6 +120,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Indicates if the current user is a privileged one.
+   *
    * @return
    */
   protected boolean isUserPrivileged() {
@@ -124,6 +131,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralized build of album URI.
+   *
    * @param album
    * @return album URI
    */
@@ -137,6 +145,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralized build of album URI.
+   *
    * @param photo
    * @param album
    * @return album URI
@@ -152,6 +161,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralization
+   *
    * @param object any object
    */
   private void checkNotFoundStatus(Object object) {
@@ -162,6 +172,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Centralization
+   *
    * @param photo
    * @return
    */
@@ -171,6 +182,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Verifying that the authenticated user is authorized to view the given photo.
+   *
    * @return
    */
   protected void verifyUserPhotoAccess(PhotoDetail photo) {
@@ -181,6 +193,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Checking if the authenticated user is authorized to view all photos.
+   *
    * @return
    */
   protected boolean isViewAllPhotoAuthorized() {
@@ -189,6 +202,7 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Verifying that the given photo is included in the given album.
+   *
    * @return
    */
   protected void verifyPhotoInAlbum(PhotoDetail photo, AlbumDetail album) {
@@ -199,18 +213,15 @@ public abstract class AbstractGalleryResource extends RESTWebService {
 
   /**
    * Gets Gallery EJB.
+   *
    * @return
    */
   protected GalleryBm getGalleryBm() {
-    GalleryBm galleryBm;
     try {
-      final GalleryBmHome galleryBmHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
-      galleryBm = galleryBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
     } catch (Exception e) {
       throw new GalleryRuntimeException("AbstractGalleryResource.getGalleryBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return galleryBm;
   }
 }

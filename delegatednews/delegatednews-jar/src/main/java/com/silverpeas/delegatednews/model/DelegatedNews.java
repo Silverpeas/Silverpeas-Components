@@ -35,7 +35,6 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
@@ -165,10 +164,8 @@ public class DelegatedNews implements java.io.Serializable {
 	
 	public PublicationDetail getPublicationDetail() {
 	  try {
-      PublicationBmHome publicationBmEjbHome =
-          (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-              PublicationBmHome.class);
-      PublicationBm publicationBm = publicationBmEjbHome.create();
+      PublicationBm publicationBm =EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+              PublicationBm.class);
       PublicationPK pubPk = new PublicationPK(Integer.toString(this.pubId), this.instanceId);
       return publicationBm.getDetail(pubPk);
     } catch (Exception e) {

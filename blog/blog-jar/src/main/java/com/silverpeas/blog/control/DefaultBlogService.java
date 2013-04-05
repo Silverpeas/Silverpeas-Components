@@ -88,7 +88,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 
 /**
  * Default implementation of the services provided by the Blog component. It is managed by the
@@ -127,13 +126,7 @@ public class DefaultBlogService implements BlogService {
 
   @Override
   public PostDetail getContentById(String contentId) {
-    PublicationDetail publication;
-    try {
-      publication = getPublicationBm().getDetail(new PublicationPK(contentId));
-    } catch (Exception e) {
-      throw new BlogRuntimeException(getClass().getSimpleName() + ".getContentById()",
-          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_NOT_FOUND", "id = " + contentId, e);
-    }
+    PublicationDetail publication = getPublicationBm().getDetail(new PublicationPK(contentId));
     return getPost(publication);
   }
 
@@ -156,7 +149,7 @@ public class DefaultBlogService implements BlogService {
       throw new BlogRuntimeException(getClass().getSimpleName() + ".getDateEvent()",
           SilverpeasRuntimeException.ERROR, "post.MSG_POST_NOT_CREATE", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -191,43 +184,35 @@ public class DefaultBlogService implements BlogService {
       throw new BlogRuntimeException("BlogBmEJB.createPost()", SilverpeasRuntimeException.ERROR,
           "post.MSG_POST_NOT_CREATE", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   @Override
   public void sendSubscriptionsNotification(final NodePK fatherPK, final PostDetail post,
-      final Comment comment,
-      final String type, final String senderId) {
-    // send email alerts
-    try {
-      Collection<String> subscriberIds = getSubscribeBm()
-          .getUserSubscribers(ComponentSubscriptionResource.from(fatherPK.getInstanceId()));
-      OrganisationController orgaController = new OrganizationController();
-      if (subscriberIds != null && !subscriberIds.isEmpty()) {
-        // get only subscribers who have sufficient rights to read pubDetail
-        NodeDetail node = getNodeBm().getHeader(fatherPK);
-        final List<String> newSubscribers = new ArrayList<String>(subscriberIds.size());
-        for (String userId : subscriberIds) {
-          if (orgaController.isComponentAvailable(fatherPK.getInstanceId(), userId)) {
-            if (!node.haveRights()
-                || orgaController.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
-                fatherPK.getInstanceId(), userId)) {
-              newSubscribers.add(userId);
-            }
+      final Comment comment, final String type, final String senderId) {
+    Collection<String> subscriberIds = getSubscribeBm()
+        .getUserSubscribers(ComponentSubscriptionResource.from(fatherPK.getInstanceId()));
+    OrganisationController orgaController = new OrganizationController();
+    if (subscriberIds != null && !subscriberIds.isEmpty()) {
+      // get only subscribers who have sufficient rights to read pubDetail
+      NodeDetail node = getNodeBm().getHeader(fatherPK);
+      final List<String> newSubscribers = new ArrayList<String>(subscriberIds.size());
+      for (String userId : subscriberIds) {
+        if (orgaController.isComponentAvailable(fatherPK.getInstanceId(), userId)) {
+          if (!node.haveRights()
+              || orgaController.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
+              fatherPK.getInstanceId(), userId)) {
+            newSubscribers.add(userId);
           }
         }
-
-        if (!newSubscribers.isEmpty()) {
-          UserNotificationHelper.buildAndSend(new BlogUserNotification(fatherPK.getInstanceId(),
-              post, comment, type,
-              senderId, newSubscribers));
-        }
       }
-    } catch (Exception e) {
-      SilverTrace.warn("blog", "BlogBmEJB.sendSubscriptionsNotification()",
-          "blog.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = " + fatherPK.getId()
-          + ", pubId = " + post.getPublication().getPK().getId(), e);
+
+      if (!newSubscribers.isEmpty()) {
+        UserNotificationHelper.buildAndSend(new BlogUserNotification(fatherPK.getInstanceId(),
+            post, comment, type,
+            senderId, newSubscribers));
+      }
     }
   }
 
@@ -260,18 +245,13 @@ public class DefaultBlogService implements BlogService {
       throw new BlogRuntimeException("BlogBmEJB.updatePost()", SilverpeasRuntimeException.ERROR,
           "post.MSG_POST_NOT_UPDATE", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   private void setCategory(PublicationPK pk, String categoryId) {
     NodePK nodePK = new NodePK(categoryId, pk.getInstanceId());
-    try {
-      getPublicationBm().addFather(pk, nodePK);
-    } catch (Exception e) {
-      throw new BlogRuntimeException("BlogBmEJB.setCategory()", SilverpeasRuntimeException.ERROR,
-          "post.MSG_CANT_SET_CATEGORY", e);
-    }
+    getPublicationBm().addFather(pk, nodePK);
   }
 
   @Override
@@ -303,7 +283,7 @@ public class DefaultBlogService implements BlogService {
           "post.MSG_POST_NOT_DELETE", e);
     } finally {
       // fermer la connexion
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -319,10 +299,6 @@ public class DefaultBlogService implements BlogService {
     }
     return con;
   }
-
-  private void closeConnection(Connection con) {
-    DBUtil.close(con);
-    }
 
   private PostDetail getPost(PublicationDetail publication) {
     try {
@@ -346,7 +322,7 @@ public class DefaultBlogService implements BlogService {
       try {
         dateEvent = com.silverpeas.blog.dao.PostDAO.getDateEvent(con, publication.getPK().getId());
       } finally {
-        closeConnection(con);
+        DBUtil.close(con);
       }
 
       PostDetail post = new PostDetail(publication, cat, comments.size(), dateEvent);
@@ -382,7 +358,7 @@ public class DefaultBlogService implements BlogService {
       throw new BlogRuntimeException("BlogBmEJB.getAllPosts()", SilverpeasRuntimeException.ERROR,
           "post.MSG_POST_NOT_CREATE", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -412,7 +388,7 @@ public class DefaultBlogService implements BlogService {
           SilverpeasRuntimeException.ERROR,
           "post.MSG_POST_NOT_CREATE", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -455,7 +431,7 @@ public class DefaultBlogService implements BlogService {
       throw new BlogRuntimeException("BlogBmEJB.getPostsByCategory()",
           SilverpeasRuntimeException.ERROR, "post.MSG_POST_NOT_CREATE", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -496,7 +472,7 @@ public class DefaultBlogService implements BlogService {
       throw new BlogRuntimeException("BlogBmEJB.getPostsByArchive()",
           SilverpeasRuntimeException.ERROR, "post.MSG_POST_NOT_CREATE", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -543,7 +519,7 @@ public class DefaultBlogService implements BlogService {
       throw new BlogRuntimeException("BlogSessionController.getResultSearch()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
     return posts;
   }
@@ -589,25 +565,15 @@ public class DefaultBlogService implements BlogService {
 
   @Override
   public Category getCategory(NodePK pk) {
-    try {
-      return new Category(getNodeBm().getDetail(pk));
-    } catch (Exception e) {
-      throw new BlogRuntimeException("BlogBmEJB.getCategory()", SilverpeasRuntimeException.ERROR,
-          "post.MSG_CATEGORY_NOT_EXIST", e);
-    }
+    return new Category(getNodeBm().getDetail(pk));
   }
 
   @Override
   public Collection<NodeDetail> getAllCategories(String instanceId) {
-    try {
-      NodePK nodePK = new NodePK("0", instanceId);
-      List<NodeDetail> result = new ArrayList<NodeDetail>(getNodeBm().getChildrenDetails(nodePK));
-      Collections.sort(result, new NodeOrderComparator());
-      return result;
-    } catch (Exception e) {
-      throw new BlogRuntimeException("BlogBmEJB.getAllCategories()",
-          SilverpeasRuntimeException.ERROR, "post.MSG_CATEGORIES_NOT_EXIST", e);
-    }
+    NodePK nodePK = new NodePK(NodePK.ROOT_NODE_ID, instanceId);
+    List<NodeDetail> result = new ArrayList<NodeDetail>(getNodeBm().getChildrenDetails(nodePK));
+    Collections.sort(result, new NodeOrderComparator());
+    return result;
   }
 
   @Override
@@ -633,7 +599,7 @@ public class DefaultBlogService implements BlogService {
       throw new BlogRuntimeException("BlogBmEJB.getAllArchives()",
           SilverpeasRuntimeException.ERROR, "post.MSG_CATEGORIES_NOT_EXIST", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -686,18 +652,13 @@ public class DefaultBlogService implements BlogService {
   }
 
   private void indexTopics(NodePK nodePK) {
-    try {
-       Collection<NodeDetail> nodes  = getNodeBm().getAllNodes(nodePK);
-      if (nodes != null) {
-        for (NodeDetail node : nodes) {
-          if (!node.getNodePK().isRoot() && !node.getNodePK().isTrash()) {
-            getNodeBm().createIndex(node);
-          }
+    Collection<NodeDetail> nodes = getNodeBm().getAllNodes(nodePK);
+    if (nodes != null) {
+      for (NodeDetail node : nodes) {
+        if (!node.getNodePK().isRoot() && !node.getNodePK().isTrash()) {
+          getNodeBm().createIndex(node);
         }
       }
-    } catch (Exception e) {
-      throw new BlogRuntimeException("BlogBmEJB.indexTopics()", SilverpeasRuntimeException.ERROR,
-          "kmelia.EX_IMPOSSIBLE_DINDEXER_LES_THEMES", e);
     }
   }
 
@@ -728,25 +689,17 @@ public class DefaultBlogService implements BlogService {
 
   @Override
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId) {
-    try {
-      PublicationDetail pubDetail = getPublicationBm().getDetail(pubPK);
-      pubDetail.setUpdaterId(userId);
-
-      if (PublicationDetail.DRAFT.equals(pubDetail.getStatus())) {
-        pubDetail.setIndexOperation(IndexManager.NONE);
-      }
-
-      getPublicationBm().setDetail(pubDetail);
-
-      // envoie notification si abonnement
-      if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
-        PostDetail post = getPost(pubDetail);
-        sendSubscriptionsNotification(new NodePK("0", pubPK.getSpaceId(), pubPK.getInstanceId()),
-            post, null, "update", pubDetail.getUpdaterId());
-      }
-    } catch (Exception e) {
-      SilverTrace.error("blog", getClass().getSimpleName()
-          + ".externalElementsOfPublicationHaveChanged", "root.EX_NO_MESSAGE", e);
+    PublicationDetail pubDetail = getPublicationBm().getDetail(pubPK);
+    pubDetail.setUpdaterId(userId);
+    if (PublicationDetail.DRAFT.equals(pubDetail.getStatus())) {
+      pubDetail.setIndexOperation(IndexManager.NONE);
+    }
+    getPublicationBm().setDetail(pubDetail);
+    // envoie notification si abonnement
+    if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
+      PostDetail post = getPost(pubDetail);
+      sendSubscriptionsNotification(new NodePK("0", pubPK.getSpaceId(), pubPK.getInstanceId()),
+          post, null, "update", pubDetail.getUpdaterId());
     }
   }
 
@@ -778,20 +731,16 @@ public class DefaultBlogService implements BlogService {
 
   @Override
   public void draftOutPost(PostDetail post) {
-    try {
-      PublicationDetail pub = post.getPublication();
-      pub.setStatus(PublicationDetail.VALID);
-      // Modification de la publi
-      getPublicationBm().setDetail(pub);
 
-      // envoie notification si abonnement
-      if (pub.getStatus().equals(PublicationDetail.VALID)) {
-        sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().
-            getInstanceId()), post, null, "create", pub.getUpdaterId());
-      }
-    } catch (Exception e) {
-      throw new BlogRuntimeException("BlogBmEJB.draftOutPost()",
-          SilverpeasRuntimeException.ERROR, "blog.EX_CAN_DRAFT_OUT", e);
+    PublicationDetail pub = post.getPublication();
+    pub.setStatus(PublicationDetail.VALID);
+    // Modification de la publi
+    getPublicationBm().setDetail(pub);
+
+    // envoie notification si abonnement
+    if (pub.getStatus().equals(PublicationDetail.VALID)) {
+      sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().
+          getInstanceId()), post, null, "create", pub.getUpdaterId());
     }
   }
 
@@ -800,21 +749,11 @@ public class DefaultBlogService implements BlogService {
   }
 
   private PublicationBm getPublicationBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("BlogBmEJB.getPublicationBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    } 
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
   }
 
   private NodeBm getNodeBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,NodeBm.class);
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("BlogBmEJB.getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    } 
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
   }
 
   /**

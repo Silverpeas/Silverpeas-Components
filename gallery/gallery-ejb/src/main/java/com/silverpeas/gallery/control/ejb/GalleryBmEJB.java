@@ -20,9 +20,31 @@
  */
 package com.silverpeas.gallery.control.ejb;
 
+import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
-import com.silverpeas.comment.CommentRuntimeException;
+import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.util.ProcessList;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.GalleryContentManager;
 import com.silverpeas.gallery.dao.OrderDAO;
@@ -51,7 +73,6 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -61,44 +82,20 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import org.silverpeas.process.ProcessFactory;
-import org.silverpeas.process.util.ProcessList;
-import org.silverpeas.search.SearchEngineFactory;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+@Stateless(name = "Gallery", description = "Stateless session bean to manage an image gallery")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class GalleryBmEJB implements GalleryBm {
 
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
-
-/**
- * @author
- */
-public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
-
+  @EJB
+  private NodeBm nodeBm;
   private static final long serialVersionUID = 8148021767416025104L;
   private final OrderDAO orderDao = new OrderDAO();
 
   @Override
   public AlbumDetail getAlbum(final NodePK nodePK, final boolean viewAllPhoto) {
     try {
-      final AlbumDetail album = new AlbumDetail(getNodeBm().getDetail(nodePK));
+      final AlbumDetail album = new AlbumDetail(nodeBm.getDetail(nodePK));
       // récupération des photos
       final Collection<PhotoDetail> photos = getAllPhoto(nodePK, viewAllPhoto);
       // ajout des photos à l'album
@@ -113,8 +110,8 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   @Override
   public Collection<AlbumDetail> getAllAlbums(final String instanceId) {
     try {
-      final NodePK nodePK = new NodePK("0", instanceId);
-      final Collection<NodeDetail> nodes = getNodeBm().getSubTree(nodePK);
+      final NodePK nodePK = new NodePK(NodePK.ROOT_NODE_ID, instanceId);
+      final Collection<NodeDetail> nodes = nodeBm.getSubTree(nodePK);
       final List<AlbumDetail> albums = new ArrayList<AlbumDetail>(nodes.size());
       for (final NodeDetail node : nodes) {
         albums.add(new AlbumDetail(node));
@@ -127,10 +124,11 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   @Override
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public NodePK createAlbum(final AlbumDetail album, final NodePK nodePK) {
     try {
       final AlbumDetail currentAlbum = getAlbum(nodePK, true);
-      return getNodeBm().createNode(album, currentAlbum);
+      return nodeBm.createNode(album, currentAlbum);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.createAlbum()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_CREATE", e);
@@ -138,9 +136,10 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   @Override
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void updateAlbum(final AlbumDetail album) {
     try {
-      getNodeBm().setDetail(album);
+      nodeBm.setDetail(album);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.updateAlbum()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_UPDATE", e);
@@ -148,28 +147,18 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   @Override
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void deleteAlbum(final UserDetail user, final String componentInstanceId,
       final NodePK nodePK) {
     try {
-      final GalleryProcessManagement processManagement =
-          new GalleryProcessManagement(user, componentInstanceId);
+      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
+          componentInstanceId);
       processManagement.addDeleteAlbumProcesses(nodePK);
       processManagement.execute();
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.deleteAlbum()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_DELETE", e);
     }
-  }
-
-  private NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
-    try {
-      nodeBm = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getNodeBM()",
-          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
-    }
-    return nodeBm;
   }
 
   @Override
@@ -248,6 +237,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   @Override
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void paste(final UserDetail user, final String componentInstanceId,
       final GalleryPasteDelegate delegate) {
     try {
@@ -273,6 +263,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   @Override
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void importFromRepository(final UserDetail user, final String componentInstanceId,
       final File repository, final boolean watermark, final String watermarkHD,
       final String watermarkOther, final PhotoDataCreateDelegate delegate) {
@@ -289,6 +280,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   @Override
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void createPhoto(final UserDetail user, final String componentInstanceId,
       final PhotoDetail photo, final boolean watermark, final String watermarkHD,
       final String watermarkOther, final PhotoDataCreateDelegate delegate) {
@@ -305,6 +297,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   @Override
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void updatePhoto(final UserDetail user, final String componentInstanceId,
       final Collection<String> photoIds, final String albumId,
       final PhotoDataUpdateDelegate delegate) {
@@ -323,6 +316,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   @Override
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void updatePhoto(final UserDetail user, final String componentInstanceId,
       final PhotoDetail photo, final boolean watermark, final String watermarkHD,
       final String watermarkOther, final PhotoDataUpdateDelegate delegate) {
@@ -339,6 +333,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   @Override
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void deletePhoto(final UserDetail user, final String componentInstanceId,
       final Collection<String> photoIds) {
     try {
@@ -388,7 +383,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   public Collection<NodeDetail> getPath(final NodePK nodePK) {
     Collection<NodeDetail> path;
     try {
-      path = getNodeBm().getPath(nodePK);
+      path = nodeBm.getPath(nodePK);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getPath()", SilverpeasRuntimeException.ERROR,
           "gallery.MSG_PATH", e);
@@ -552,7 +547,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
 
         // indexation de l'album
         try {
-          getNodeBm().createIndex(album);
+          nodeBm.createIndex(album);
         } catch (final Exception e) {
           throw new GalleryRuntimeException("GalleryBmEJB.indexGallery()",
               SilverpeasRuntimeException.ERROR, "gallery.MSG_INDEXALBUM", e);
@@ -831,43 +826,8 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
-  public PublicationBm getPublicationBm() {
-    PublicationBm publicationBm = null;
-    try {
-      publicationBm =EJBUtilitaire.getEJBObjectRef(PUBLICATIONBM_EJBHOME, PublicationBm.class);
-    } catch (final Exception e) {
-      throw new CommentRuntimeException("GallerySessionController.getPublicationBm()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return publicationBm;
-  }
-
   private GalleryContentManager getGalleryContentManager() {
     return new GalleryContentManager();
-  }
-
-  public void ejbCreate() {
-    // not implemented
-  }
-
-  @Override
-  public void setSessionContext(final SessionContext context) {
-    // not implemented
-  }
-
-  @Override
-  public void ejbRemove() {
-    // not implemented
-  }
-
-  @Override
-  public void ejbActivate() {
-    // not implemented
-  }
-
-  @Override
-  public void ejbPassivate() {
-    // not implemented
   }
 
   /**
@@ -973,6 +933,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
    * @throws Exception
    */
   @Override
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void executeProcessList(final ProcessList<GalleryProcessExecutionContext> processList,
       final GalleryProcessExecutionContext processExecutionContext) {
     final Connection connection = initCon();

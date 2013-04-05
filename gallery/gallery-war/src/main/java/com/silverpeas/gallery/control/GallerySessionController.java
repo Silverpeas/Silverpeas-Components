@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.gallery.control;
 
@@ -50,7 +47,6 @@ import com.silverpeas.gallery.GSCCreationDateComparatorDesc;
 import com.silverpeas.gallery.GSCSizeComparatorAsc;
 import com.silverpeas.gallery.GSCTitleComparatorAsc;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.delegate.GalleryPasteDelegate;
 import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
@@ -132,7 +128,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   static {
     try {
-      FileUtil.loadProperties(defaultSettings, "org/silverpeas/gallery/settings/metadataSettings.properties");
+      FileUtil.loadProperties(defaultSettings,
+          "org/silverpeas/gallery/settings/metadataSettings.properties");
     } catch (IOException e) {
       SilverTrace.fatal("gallery", "GallerySessionController()", "root.EX_CANT_GET_REMOTE_OBJECT",
           e);
@@ -143,6 +140,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   /**
    * Gets the business service of operations on comments
+   *
    * @return a DefaultCommentService instance.
    */
   private CommentService getCommentService() {
@@ -154,6 +152,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   /**
    * Standard Session Controller Constructeur
+   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -283,55 +282,35 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public void setPhotoPath(String photoId, String[] albums) {
-    try {
-      if (albums != null) {
-        SilverTrace.debug("gallery", "GallerySessionController.addAlbumPath()",
-            "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
-        getGalleryBm().setPhotoPath(photoId, getComponentId(), albums);
-      }
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.addAlbumPath()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_ERR_GENERAL", e);
+    if (albums != null) {
+      SilverTrace.debug("gallery", "GallerySessionController.addAlbumPath()",
+          "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
+      getGalleryBm().setPhotoPath(photoId, getComponentId(), albums);
     }
   }
 
   public void addPhotoPaths(String photoId, String[] albums) {
-    try {
-      if (albums != null) {
-        SilverTrace.debug("gallery", "GallerySessionController.addAlbumPath()",
-            "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
-        getGalleryBm().addPhotoPaths(photoId, getComponentId(), albums);
-      }
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.addAlbumPath()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_ERR_GENERAL", e);
+    if (albums != null) {
+      SilverTrace.debug("gallery", "GallerySessionController.addAlbumPath()",
+          "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
+      getGalleryBm().addPhotoPaths(photoId, getComponentId(), albums);
     }
   }
 
   public void createAlbum(AlbumDetail album) {
-    try {
-      album.setCreationDate(DateUtil.date2SQLDate(new Date()));
-      album.setCreatorId(getUserId());
-      album.getNodePK().setComponentName(getComponentId());
+    album.setCreationDate(DateUtil.date2SQLDate(new Date()));
+    album.setCreatorId(getUserId());
+    album.getNodePK().setComponentName(getComponentId());
 
-      getGalleryBm().createAlbum(album, new NodePK(currentAlbumId, getComponentId()));
-      // recharger l'album courant pour prendre en compte le nouvel album
-      loadCurrentAlbum();
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.createAlbum()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    getGalleryBm().createAlbum(album, new NodePK(currentAlbumId, getComponentId()));
+    // recharger l'album courant pour prendre en compte le nouvel album
+    loadCurrentAlbum();
   }
 
   public void updateAlbum(AlbumDetail album) {
-    try {
-      getGalleryBm().updateAlbum(album);
-      // recharger l'album courant pour prendre en compte la modification de l'album
-      loadCurrentAlbum();
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.updateAlbum()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    getGalleryBm().updateAlbum(album);
+    // recharger l'album courant pour prendre en compte la modification de l'album
+    loadCurrentAlbum();
   }
 
   public void deleteAlbum(String albumId) {
@@ -427,6 +406,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   /**
    * Creating one photo (just only one)
+   *
    * @param delegate
    * @return
    */
@@ -450,9 +430,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
   }
 
-
   /**
    * Updating one photo (just only one)
+   *
    * @param photoId
    * @param delegate
    * @throws Exception
@@ -473,37 +453,27 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   /**
    * Updating severals photos (no file have to be handled)
+   *
    * @param photoIds
    * @param delegate
    * @throws Exception
    */
   public void updatePhotoByUser(final Collection<String> photoIds,
       final PhotoDataUpdateDelegate delegate) throws Exception {
-    try {
-      if (photoIds != null) {
-
-        // Persisting data
-        getGalleryBm().updatePhoto(getUserDetail(), getComponentId(), photoIds,
-            getCurrentAlbumId(), delegate);
-      }
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.updatePhotoByUser()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    if (photoIds != null) {
+      // Persisting data
+      getGalleryBm().updatePhoto(getUserDetail(), getComponentId(), photoIds, getCurrentAlbumId(),
+          delegate);
     }
   }
 
   public void updatePhoto(final PhotoDetail photo) {
     try {
-
       getGalleryBm().updatePhoto(getUserDetail(), getComponentId(), photo, isMakeWatermark(),
           getWatermarkHD(), getWatermarkOther(), null);
-
       // recharger l'album courant pour prendre en comptes la modif sur la photo
       loadCurrentAlbum();
 
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.updatePhoto()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GallerySessionController.updatePhoto()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_METADATA", e);
@@ -563,26 +533,11 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   private static GalleryBm getGalleryBm() {
-    GalleryBm galleryBm;
-    try {
-      GalleryBmHome galleryBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME,
-          GalleryBmHome.class);
-      galleryBm = galleryBmHome.create();
-    } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.getGalleryBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return galleryBm;
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
   }
 
   public Collection<NodeDetail> getPath(NodePK nodePK) {
-    List<NodeDetail> path;
-    try {
-      path = (List<NodeDetail>) getGalleryBm().getPath(nodePK);
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.getPath()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    List<NodeDetail> path = (List<NodeDetail>) getGalleryBm().getPath(nodePK);
     Collections.reverse(path);
     return path;
   }
@@ -592,12 +547,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public synchronized Collection<String> getPathList(String photoId) {
-    try {
-      return getGalleryBm().getPathList(getComponentId(), photoId);
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.getPathList()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return getGalleryBm().getPathList(getComponentId(), photoId);
   }
 
   public int getNbPhotosPerPage() {
@@ -752,7 +702,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("gallery", "GallerySessionController.initAlertUser()",
         "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName + " componentId="
-            + getComponentId());
+        + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationMetaData(photoId)); // set
     // NotificationMetaData contenant les informations à notifier fin initialisation de
     // AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
@@ -760,39 +710,28 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public Collection<PhotoDetail> search(QueryDescription query) {
-    Collection<PhotoDetail> result;
-    try {
-      query.setSearchingUser(getUserId());
-      query.addComponent(getComponentId());
-
-      result = getGalleryBm().search(query);
-
-      // mise à jour de la liste
-      isSearchResult = true;
-
-      // sauvegarde de la recherche
-      setQuery(query);
-
-      return result;
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.getResultSearch()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    query.setSearchingUser(getUserId());
+    query.addComponent(getComponentId());
+    Collection<PhotoDetail> result = getGalleryBm().search(query);
+    // mise à jour de la liste
+    isSearchResult = true;
+    // sauvegarde de la recherche
+    setQuery(query);
+    return result;
   }
 
   public void sendAskPhoto(String order) {
     // envoyer une notification au gestionnaire de la photothèque concernant la
     // demande de photo
     // 1. création du message
-
     OrganisationController orga = getOrganisationController();
     UserDetail[] admins = orga.getUsers("useless", getComponentId(), "admin");
     String user = getUserDetail().getDisplayedName();
 
-    ResourceLocator message = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle",
+    ResourceLocator message = new ResourceLocator("org.silverpeas.gallery.multilang.galleryBundle",
         "fr");
     ResourceLocator message_en = new ResourceLocator(
-        "com.silverpeas.gallery.multilang.galleryBundle", "en");
+        "org.silverpeas.gallery.multilang.galleryBundle", "en");
 
     StringBuffer messageBody = new StringBuffer();
     StringBuffer messageBody_en = new StringBuffer();
@@ -806,11 +745,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     String subject_en = message_en.getString("gallery.notifAskSubject");
     messageBody_en = messageBody_en.append(user).append(" ").append(
         message.getString("gallery.notifBodyAsk")).append("\n").append(order);
-
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
         subject, messageBody.toString());
     notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
-
     for (UserDetail admin : admins) {
       notifMetaData.addUserRecipient(new UserRecipient(admin));
     }
@@ -828,10 +765,10 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     PhotoDetail photoDetail = getPhoto(photoPK.getId());
     String htmlPath = getGalleryBm().getHTMLNodePath(nodePK);
 
-    ResourceLocator message = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle",
+    ResourceLocator message = new ResourceLocator("org.silverpeas.gallery.multilang.galleryBundle",
         "fr");
     ResourceLocator message_en = new ResourceLocator(
-        "com.silverpeas.gallery.multilang.galleryBundle", "en");
+        "org.silverpeas.gallery.multilang.galleryBundle", "en");
 
     String subject = getNotificationSubject(message);
     String body = getNotificationBody(photoDetail, htmlPath, message, senderName);
@@ -944,13 +881,15 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         equals(userId)));
   }
 
-  public void copySelectedPhoto(Collection<String> photoIds) throws ClipboardException, RemoteException {
+  public void copySelectedPhoto(Collection<String> photoIds) throws ClipboardException,
+      RemoteException {
     for (String photoId : photoIds) {
       copyImage(photoId);
     }
   }
 
-  public void cutSelectedPhoto(Collection<String> photoIds) throws ClipboardException, RemoteException {
+  public void cutSelectedPhoto(Collection<String> photoIds) throws ClipboardException,
+      RemoteException {
     for (String photoId : photoIds) {
       cutImage(photoId);
     }
@@ -1000,7 +939,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           "clipboard = " + getClipboardName() + " count=" + getClipboardCount());
 
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
-      Map<Object, ClipboardSelection> clipObjectPerformed = new HashMap<Object, ClipboardSelection>();
+      Map<Object, ClipboardSelection> clipObjectPerformed =
+          new HashMap<Object, ClipboardSelection>();
       for (ClipboardSelection clipObject : clipObjects) {
         if (clipObject != null) {
           if (clipObject.isDataFlavorSupported(PhotoSelection.PhotoDetailFlavor)) {
@@ -1044,7 +984,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public Collection<PhotoDetail> getAllPhotos(AlbumDetail album) {
     try {
       return getGalleryBm().getAllPhoto(album.getNodePK(), viewAllPhoto);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       return null;
     }
   }
@@ -1095,8 +1035,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // demande
     // 1. création du message
     Order order = getOrder(orderId);
-    String user = getOrganisationController().getUserDetail(Integer.toString(order.getProcessUserId()))
-            .getDisplayedName();
+    String user = getOrganisationController().getUserDetail(Integer.toString(order.
+        getProcessUserId()))
+        .getDisplayedName();
 
     ResourceLocator message = new ResourceLocator("org.silverpeas.gallery.multilang.galleryBundle",
         "fr");
@@ -1134,7 +1075,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // remettre à blanc la liste des photos sélectionnées
     SilverTrace.debug("gallery", "GallerySessionController.addToBasket()",
         "root.MSG_GEN_PARAM_VALUE", "listSelected = " + listSelected.toString() + " basket = "
-            + basket.toString());
+        + basket.toString());
     clearListSelected();
   }
 
@@ -1379,6 +1320,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   /**
    * Gets an instance of PublicationTemplateManager.
+   *
    * @return an instance of PublicationTemplateManager.
    */
   private PublicationTemplateManager getPublicationTemplateManager() {

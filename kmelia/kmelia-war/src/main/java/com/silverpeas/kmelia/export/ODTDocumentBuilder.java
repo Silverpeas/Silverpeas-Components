@@ -29,21 +29,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.odftoolkit.odfdom.dom.element.text.TextAElement;
-import org.odftoolkit.simple.TextDocument;
-import org.odftoolkit.simple.meta.Meta;
-import org.odftoolkit.simple.table.Cell;
-import org.odftoolkit.simple.table.Row;
-import org.odftoolkit.simple.table.Table;
-import org.odftoolkit.simple.text.Paragraph;
-import org.odftoolkit.simple.text.Section;
-import org.odftoolkit.simple.text.list.ListItem;
-
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.util.UnitUtil;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
@@ -59,11 +48,9 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -73,6 +60,18 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.odftoolkit.odfdom.dom.element.text.TextAElement;
+import org.odftoolkit.simple.TextDocument;
+import org.odftoolkit.simple.meta.Meta;
+import org.odftoolkit.simple.table.Cell;
+import org.odftoolkit.simple.table.Row;
+import org.odftoolkit.simple.table.Table;
+import org.odftoolkit.simple.text.Paragraph;
+import org.odftoolkit.simple.text.Section;
+import org.odftoolkit.simple.text.list.ListItem;
 
 import static com.silverpeas.converter.DocumentFormat.inFormat;
 import static com.silverpeas.converter.DocumentFormat.odt;
@@ -546,10 +545,7 @@ public class ODTDocumentBuilder {
    */
   protected KmeliaBm getKmeliaService() {
     try {
-      KmeliaBmHome kscEjbHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME,
-          KmeliaBmHome.class);
-      return kscEjbHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getKmeliaService()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
