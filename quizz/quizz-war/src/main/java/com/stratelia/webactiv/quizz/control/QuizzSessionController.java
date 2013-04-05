@@ -866,7 +866,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
       QuestionContainerHeader questionContainerHeader =
           new QuestionContainerHeader(null, title, description, notice, null, null, beginDate,
           endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax),
-          Integer.parseInt(nbAnswersNeeded), 0);
+          Integer.parseInt(nbAnswersNeeded), 0, QuestionContainerHeader.IMMEDIATE_RESULTS, QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
       HttpSession session = request.getSession();
       QuestionContainerDetail questionContainerDetail = new QuestionContainerDetail();
       questionContainerDetail.setHeader(questionContainerHeader);

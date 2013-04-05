@@ -101,12 +101,13 @@ String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 String px = m_context + "/util/icons/colorPix/1px.gif";
 
 ResourceLocator surveySettings =
-  new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", surveyScc.getLanguage());
+  new ResourceLocator("org.silverpeas.survey.surveySettings", surveyScc.getLanguage());
 
 String nbMaxAnswers = surveySettings.getString("NbMaxAnswers");
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title></title>
 <view:looknfeel />
