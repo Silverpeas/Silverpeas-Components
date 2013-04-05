@@ -752,7 +752,7 @@ out.println(surveyPart);
     <div id="SynthesisFile">
     <span class="champs-ui-dialog">
     <a href="<%=url%>" target="_blank"><%=simpleDocument.getFilename()%></a>
-    <%=simpleDocument.getSize()%>    
+    <%=FileRepositoryManager.formatFileSize(simpleDocument.getSize())%>    
     <a href="javascript:onclick=hideSynthesisFile();"><img src="<%=deleteSrc%>" border="0"/></a>
     <input type="hidden" name="idSynthesisFile" value="<%=simpleDocument.getId()%>">
     </span>  

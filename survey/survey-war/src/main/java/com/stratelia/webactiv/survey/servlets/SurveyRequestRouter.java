@@ -336,7 +336,10 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
     } else if (function.startsWith("surveyDetail")) {
       String surveyId = request.getParameter("SurveyId");
       request.setAttribute("Profile", flag);
-      List<SimpleDocument> listDocument = surveySC.getAllSynthesisFile(surveyId);
+      List<SimpleDocument> listDocument = null;
+      if(surveyId != null) {
+        listDocument = surveySC.getAllSynthesisFile(surveyId);
+      }
       request.setAttribute("ListDocument", listDocument);
       destination = rootDest + function;
     } else {

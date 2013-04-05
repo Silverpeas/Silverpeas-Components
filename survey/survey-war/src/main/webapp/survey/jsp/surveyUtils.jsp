@@ -1,6 +1,7 @@
 <%@page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader"%>
 <%@ page import="java.text.ParseException"%>
 <%@ page import="com.stratelia.webactiv.SilverpeasRole"%>
+<%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 
 <%!
 
@@ -720,6 +721,61 @@ String displaySurveyResult(String userName, String userId, String styleView, Col
      	int resultView = surveyHeader.getResultView();
 
       if (!styleView.equals("user")) {
+        
+        if (resultMode == QuestionContainerHeader.DELAYED_RESULTS) {
+        
+	        List<SimpleDocument> listDocument = surveyScc.getAllSynthesisFile(surveyId);
+	        
+	        r += "<div class=\"rightContent\">";    
+	        r += "<div class=\"attachments bgDegradeGris\">";
+	        r += "  <div class=\"bgDegradeGris  header\">";
+	        r += "    <h4 class=\"clean\">"+resources.getString("survey.attachments")+"</h4>";
+	        r += "  </div>";
+	        r += "  <ul id=\"attachmentList\" class=\"ui-sortable\">";
+	        if(listDocument != null && listDocument.size() > 0) {
+	          for(SimpleDocument simpleDocument : listDocument) {
+	            String url = m_context +  simpleDocument.getAttachmentURL();
+	            String permalink = m_context + "/File/"+simpleDocument.getId();
+	            String dateDocument = "";
+	            if(simpleDocument.getUpdated() != null) {
+	              dateDocument = resources.getOutputDate(simpleDocument.getUpdated());
+	            } else {
+	              dateDocument = resources.getOutputDate(simpleDocument.getCreated());
+	            }
+	            
+	            r += "    <li style=\"cursor:move\" class=\"attachmentListItem\" id=\"attachment_"+simpleDocument.getId()+"\">";
+	            r += "       <div class=\"yuimenu yui-module yui-overlay\" id=\"basicmenu69\" style=\"z-index: 100; position: absolute; visibility: hidden;\">";
+			        r += "         <div class=\"bd\">";
+			        r += "         </div>";
+			        r += "       </div>";
+			        r += "       <span class=\"lineMain\">";
+			        r += "        <img class=\"icon\" src=\""+m_context+"/util/icons/fileType/texte.gif\" id=\"img_"+simpleDocument.getId()+"\">";
+			        r += "        <a target=\"_blank\" href=\""+url+"\" id=\"url"+simpleDocument.getId()+"\">"+simpleDocument.getFilename()+"</a>";
+			        r += "       </span>";
+			        r += "       <span class=\"lineSize\">";
+			        r += "        <a href=\""+permalink+"\"><img border=\"0\" title=\""+resources.getString("survey.attachmentPermalink")+"\" alt=\""+resources.getString("survey.attachmentPermalink")+"\" src=\""+m_context+"/util/icons/link.gif\"></a>";
+			        r +=            FileRepositoryManager.formatFileSize(simpleDocument.getSize())+" - "+dateDocument;
+			        r += "       </span>";
+			        r += "       <span class=\"fileName\">";
+			        r +=            simpleDocument.getFilename();
+			        r += "       </span>";
+			        r += "       <div style=\"visibility:hidden\" id=\"worker69\" class=\"workerInfo\"> </div>";
+			        r += "    </li>";
+	          }
+	        }
+	        r += "  </ul>";
+	        r += "</div>";
+	        r += "<div class=\"bgDegradeGris\" id=\"surveyInfoPublication\">";
+	        r += "  <p id=\"permalinkInfo\">";
+	        r += "    <a title=\""+resources.getString("survey.CopySurveyLink")+"\" href=\""+m_context+"/Survey/"+surveyId+"\">";
+	        r += "      <img border=\"0\" alt=\""+resources.getString("survey.CopySurveyLink")+"\" src=\""+m_context+"/util/icons/link.gif\">";
+	        r += "    </a>"+resources.getString("GML.permalink")+"<br/>";
+	        r += "    <input type=\"text\" value=\""+surveyHeader.getPermalink()+"\" onFocus=\"select();\" class=\"inputPermalink\">";
+	        r += "  </p>";
+	        r += "</div>";
+	        r += "</div>";
+        }
+        
         r += "<div class=\"principalContent\">";
         r += " <h2 class=\"eventName\">"+Encode.javaStringToHtmlString(title)+"</h2>";
         r += " <div class=\"eventInfo\">";
