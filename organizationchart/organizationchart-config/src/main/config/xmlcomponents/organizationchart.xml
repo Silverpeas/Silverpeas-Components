@@ -191,6 +191,7 @@
       <mandatory>true</mandatory>
       <value>organizationalPerson</value>
       <type>text</type>
+	  <size>30</size>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Classe LDAP des personnes</message>
