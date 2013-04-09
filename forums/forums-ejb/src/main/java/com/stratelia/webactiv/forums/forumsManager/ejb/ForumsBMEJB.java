@@ -782,7 +782,7 @@ public class ForumsBMEJB implements SessionBean {
    */
   public void deleteMessage(MessagePK messagePK) {
     Connection con = openConnection();
-    Vector v = new Vector();
+    Vector<String> v = new Vector<String>();
 
     try {
       v = ForumsDAO.getMessageSons(con, messagePK);
@@ -793,8 +793,8 @@ public class ForumsBMEJB implements SessionBean {
       DBUtil.close(con);
     }
     if (v.size() > 0) {
-      for (int i = 0; i < v.size(); i++) {
-        deleteMessage(new MessagePK(messagePK.getComponentName(), (String) v.elementAt(i)));
+      for (String messageId : v) {
+        deleteMessage(new MessagePK(messagePK.getComponentName(), messageId));
       }
     }
     con = openConnection();
@@ -912,7 +912,7 @@ public class ForumsBMEJB implements SessionBean {
    */
   public void moveMessage(MessagePK messagePK, ForumPK forumPK) {
     Connection con = openConnection();
-    Vector v = new Vector();
+    Vector<String> v = new Vector<String>();
 
     try {
       v = ForumsDAO.getMessageSons(con, messagePK);
@@ -923,8 +923,8 @@ public class ForumsBMEJB implements SessionBean {
       DBUtil.close(con);
     }
     if (v.size() > 0) {
-      for (int i = 0; i < v.size(); i++) {
-        moveMessage(new MessagePK(messagePK.getComponentName(), (String) v.elementAt(i)), forumPK);
+      for (String messageId : v) {
+        moveMessage(new MessagePK(messagePK.getComponentName(), messageId), forumPK);
       }
     }
     con = openConnection();
@@ -946,7 +946,7 @@ public class ForumsBMEJB implements SessionBean {
    * @author frageade
    * @since 11 Octobre 2000
    */
-  public Vector getMessageSons(MessagePK messagePK) {
+  public Vector<String> getMessageSons(MessagePK messagePK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getMessageSons(con, messagePK);
@@ -966,7 +966,7 @@ public class ForumsBMEJB implements SessionBean {
    * @author frageade
    * @since 11 Octobre 2000
    */
-  public Vector getAllMessageSons(MessagePK messagePK) {
+  public Vector<String> getAllMessageSons(MessagePK messagePK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getAllMessageSons(con, messagePK);
