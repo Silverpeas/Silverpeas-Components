@@ -43,6 +43,17 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.resourcemanager.model.Category;
+import org.silverpeas.resourcemanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcemanager.util.ResourceUtil;
+import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
+import org.silverpeas.servlet.HttpServletRequestWrapper;
+import org.silverpeas.servlet.ServletRequestWrapper;
+
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,12 +63,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.resourcemanager.model.Category;
-import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.Resource;
-import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
 
 public class ResourcesManagerRequestRouter extends ComponentRequestRouter<ResourcesManagerSessionController> {
 
@@ -88,10 +93,11 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
   }
 
   private Category request2CategoryDetail(ResourcesManagerSessionController controller,
-      HttpServletRequest request) {
+      ServletRequestWrapper request) {
     Category category;
-    if (StringUtil.isDefined(request.getParameter("id"))) {
-      category = controller.getCategory(request.getParameter("id"));
+    Long categoryId = request.getParameterAsLong("id");
+    if (categoryId != null) {
+      category = controller.getCategory(categoryId);
     } else {
       category = new Category();
     }
@@ -107,14 +113,13 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     String resourceId = FileUploadUtil.getParameter(items, "SPRM_resourceId");
     Resource resource;
     if (StringUtil.isDefined(resourceId)) {
-      resource = controller.getResource(resourceId);
+      resource = controller.getResource(Long.valueOf(resourceId));
     } else {
       resource = new Resource();
     }
     String categoryid = FileUploadUtil.getParameter(items, "SPRM_categoryChoice");
     if (StringUtil.isDefined(categoryid)) {
-      Category category = controller.getCategory(categoryid);
-      resource.setCategory(category);
+      resource.setCategory(controller.getCategory(Long.valueOf(categoryid)));
     }
     resource.setName(FileUploadUtil.getParameter(items, "SPRM_name"));
     resource.setBookable("on".equalsIgnoreCase(FileUploadUtil.getParameter(items, "SPRM_bookable")));
@@ -122,30 +127,24 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     return resource;
   }
 
-  private Reservation request2ReservationDetail(HttpServletRequest request,
-      ResourcesManagerSessionController sessionController) {
-    Reservation reservation = null;
+  private Reservation request2ReservationDetail(ServletRequestWrapper request) {
     try {
       String evenement = request.getParameter("evenement");
-      String startDate = request.getParameter("startDate");
-      String startHour = request.getParameter("startHour");
-      String endHour = request.getParameter("endHour");
-      String endDate = request.getParameter("endDate");
+      Date dateDebut = request.getParameterAsDate("startDate", "startHour");
+      Date dateFin = request.getParameterAsDate("endDate", "endHour");
       String raison = request.getParameter("raison");
       String lieu = request.getParameter("lieu");
-      Date dateDebut = DateUtil.stringToDate(startDate, startHour, sessionController.getLanguage());
-      Date dateFin = DateUtil.stringToDate(endDate, endHour, sessionController.getLanguage());
-      reservation = new Reservation(evenement, dateDebut, dateFin, raison, lieu);
-      SilverTrace.info("resourcesManager",
-          "ResourcesManagerRequestRouter.request2ReservationDetail()",
-          "root.MSG_GEN_PARAM_VALUE", "reservation=" + reservation);
+      Reservation reservation = new Reservation(evenement, dateDebut, dateFin, raison, lieu);
+      SilverTrace
+          .info("resourcesManager", "ResourcesManagerRequestRouter.request2ReservationDetail()",
+              "root.MSG_GEN_PARAM_VALUE", "reservation=" + reservation);
       return reservation;
     } catch (ParseException e) {
-      SilverTrace.error("resourcesManager",
-          "ResourcesManagerRequestRouter.request2ReservationDetail()",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverTrace
+          .error("resourcesManager", "ResourcesManagerRequestRouter.request2ReservationDetail()",
+              "root.MSG_GEN_PARAM_VALUE", e);
     }
-    return reservation;
+    return null;
   }
 
   /**
@@ -158,11 +157,25 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function, ResourcesManagerSessionController resourcesManagerSC,
-      HttpServletRequest request) {
-    String categoryId = "";
-    String reservationId;
-    String resourceId;
+  public String getDestination(String function,
+      ResourcesManagerSessionController resourcesManagerSC, HttpServletRequest request) {
+    return getDestination(function, resourcesManagerSC,
+        new HttpServletRequestWrapper(request, resourcesManagerSC.getLanguage()));
+  }
+
+  /**
+   * {@link #getDestination(String, com.stratelia.silverpeas.peasCore.ComponentSessionController,
+   * javax.servlet.http.HttpServletRequest)}
+   * @param function
+   * @param resourcesManagerSC
+   * @param request
+   * @return
+   */
+  public String getDestination(String function,
+      ResourcesManagerSessionController resourcesManagerSC, HttpServletRequestWrapper request) {
+    Long categoryId;
+    Long reservationId;
+    Long resourceId;
 
     String destination = "";
     request.setAttribute("rsc", resourcesManagerSC);
@@ -183,8 +196,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         resourcesManagerSC.createCategory(category);
         destination = getDestination("ViewCategories", resourcesManagerSC, request);
       } else if ("EditCategory".equals(function)) {
-        categoryId = request.getParameter("id");
-        Category category = resourcesManagerSC.getCategory(categoryId);
+        Category category = resourcesManagerSC.getCategory(request.getParameterAsLong("id"));
         List<PublicationTemplate> listTemplates = getPublicationTemplateManager().
             getPublicationTemplates();
         request.setAttribute("listTemplates", listTemplates);
@@ -199,40 +211,36 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         request.setAttribute("categories", list);
         destination = root + "categories.jsp";
       } else if ("DeleteCategory".equals(function)) {
-        categoryId = request.getParameter("id");
-        resourcesManagerSC.deleteCategory(categoryId);
+        resourcesManagerSC.deleteCategory(request.getParameterAsLong("id"));
         destination = getDestination("ViewCategories", resourcesManagerSC, request);
       } else if ("NewResource".equals(function)) {
+        resourcesManagerSC.setResourceIdForResource(null);
+        resourcesManagerSC.setCategoryIdForResource(request.getParameterAsLong("categoryId"));
         // categorie pré-séléctionnée
-        categoryId = request.getParameter("categoryId");
         List<Category> list = resourcesManagerSC.getCategories();
         request.setAttribute("listCategories", list);
-        request.setAttribute("categoryId", categoryId);
-
-        resourcesManagerSC.setResourceIdForResource(null);
-        resourcesManagerSC.setCategoryIdForResource(categoryId);
+        request.setAttribute("categoryId", resourcesManagerSC.getCategoryIdForResource());
         setXMLFormIntoRequest(request, resourcesManagerSC);
-
         destination = root + "resourceManager.jsp";
       } else if ("SaveResource".equals(function)) {
         // récupération des données saisies dans le formulaire
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = request.getFileItems();
 
         Resource resource = request2ResourceDetail(resourcesManagerSC, items);
-        String idResource = resourcesManagerSC.createResource(resource);
+        resourcesManagerSC.createResource(resource);
         List<Long> managers = getManagers(items);
         resourcesManagerSC.updateResource(resource, managers);
 
-        request.setAttribute("resourceId", idResource);
+        request.setAttribute("resourceId", resource.getId());
         request.setAttribute("provenance", "resources");
 
-        resourcesManagerSC.setResourceIdForResource(idResource);
+        resourcesManagerSC.setResourceIdForResource(resource.getId());
         updateXMLForm(resourcesManagerSC, items);
 
         destination = getDestination("ViewResource", resourcesManagerSC, request);
       } else if ("EditResource".equals(function)) {
-        resourceId = request.getParameter("resourceId");
-        if (!StringUtil.isDefined(resourceId)) {
+        resourceId = request.getParameterAsLong("resourceId");
+        if (resourceId == null) {
           resourceId = resourcesManagerSC.getCurrentResource();
         }
         Resource resource = resourcesManagerSC.getResource(resourceId);
@@ -256,7 +264,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         destination = root + "resourceManager.jsp";
       } else if ("ModifyResource".equals(function)) {
         // récupération des données saisies dans le formulaire
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = request.getFileItems();
 
         Resource resource = request2ResourceDetail(resourcesManagerSC, items);
         List<Long> managers = getManagers(items);
@@ -268,10 +276,9 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         request.setAttribute("id", resource.getCategoryId());
         destination = getDestination("ViewResources", resourcesManagerSC, request);
       } else if ("ViewResources".equals(function)) {
-        if (request.getAttribute("id") != null) {
-          categoryId = (String) request.getAttribute("id");
-        } else if (StringUtil.isDefined(request.getParameter("id"))) {
-          categoryId = request.getParameter("id");
+        categoryId = request.getAttributeAsLong("id");
+        if (categoryId == null) {
+          categoryId = request.getParameterAsLong("id");
         }
         List<Resource> list = resourcesManagerSC.getResourcesByCategory(categoryId);
         List<Category> listcategories = resourcesManagerSC.getCategories();
@@ -290,15 +297,15 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         } else {
           provenance = resourcesManagerSC.getProvenanceResource();
         }
-        String idReservation = request.getParameter("reservationId");
-        if (idReservation != null) {
-          resourcesManagerSC.setReservationIdForResource(idReservation);
+        reservationId = request.getParameterAsLong("reservationId");
+        if (reservationId != null) {
+          resourcesManagerSC.setReservationIdForResource(reservationId);
         }
-        if (request.getParameter("resourceId") != null) {
-          resourceId = request.getParameter("resourceId");
-          resourcesManagerSC.setResourceIdForResource(resourceId);
-        } else if (request.getAttribute("resourceId") != null) {
-          resourceId = (String) request.getAttribute("resourceId");
+        resourceId = request.getParameterAsLong("resourceId");
+        if (resourceId == null) {
+          resourceId = request.getAttributeAsLong("resourceId");
+        }
+        if (resourceId != null) {
           resourcesManagerSC.setResourceIdForResource(resourceId);
         } else {
           resourceId = resourcesManagerSC.getResourceIdForResource();
@@ -321,10 +328,8 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         request.setAttribute("ShowComments", resourcesManagerSC.areCommentsEnabled());
         destination = root + "resource.jsp";
       } else if ("DeleteRessource".equals(function)) {
-        resourceId = request.getParameter("resourceId");
-        categoryId = request.getParameter("categoryId");
-        resourcesManagerSC.deleteResource(resourceId);
-        request.setAttribute("id", categoryId);
+        resourcesManagerSC.deleteResource(request.getParameterAsLong("resourceId"));
+        request.setAttribute("id", request.getParameterAsLong("categoryId"));
         destination = getDestination("ViewResources", resourcesManagerSC, request);
       } else if ("NewReservation".equals(function)) {
         String date = request.getParameter("Day");
@@ -333,53 +338,50 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         }
         destination = root + "reservationManager.jsp";
       } else if ("GetAvailableResources".equals(function)) {
-        String idReservation = null;
-        if (request.getParameter("reservationId") != null) {
-          idReservation = request.getParameter("reservationId");
-        } else if (request.getAttribute("reservationId") != null) {
-          idReservation = (String) request.getAttribute("reservationId");
+        reservationId = request.getParameterAsLong("reservationId");
+        if (reservationId == null) {
+          reservationId = request.getAttributeAsLong("reservationId");
         }
         @SuppressWarnings("unchecked")
-        List<Resource> listResourcesProblem = (List<Resource>) request.getAttribute(
-            "listeResourcesProblem");
-        List<Resource> listResourceAlreadyReserved = null;
-        // si listResourcesProblem c'est qu'il n y a pas eu de problème d'enregistrement
-        if ((listResourcesProblem == null)) {
-          Reservation reservation = request2ReservationDetail(request, resourcesManagerSC);
+        List<Resource> unavailableReservationResources = (List<Resource>) request.getAttribute(
+            "unavailableReservationResources");
+        List<Resource> resourcesOfReservation = null;
+        // si unavailableReservationResources c'est qu'il n y a pas eu de problème d'enregistrement
+        if (unavailableReservationResources == null) {
+          Reservation reservation = request2ReservationDetail(request);
           resourcesManagerSC.createReservation(reservation);
           resourcesManagerSC.setBeginDateReservation(reservation.getBeginDate());
           resourcesManagerSC.setEndDateReservation(reservation.getEndDate());
         }
-        List<Category> categories = resourcesManagerSC.getCategories();
         Reservation reservation = resourcesManagerSC.getReservationCourante();
-        List<Resource> maListResourcesReservable = resourcesManagerSC.getResourcesReservable(
+        List<Resource> reservableResources = resourcesManagerSC.getResourcesReservable(
             reservation.getBeginDate(), reservation.getEndDate());
-        if (idReservation != null) {
-          maListResourcesReservable.removeAll(resourcesManagerSC.getResourcesofReservation(
-              idReservation));
+        if (reservationId != null) {
+          resourcesOfReservation = resourcesManagerSC.getResourcesofReservation(reservationId);
+          reservableResources.removeAll(resourcesOfReservation);
           SilverTrace.info("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "dans le if,idReservation=" +
-              idReservation);
-          listResourceAlreadyReserved = resourcesManagerSC.getResourcesofReservation(idReservation);
-          if (listResourceAlreadyReserved != null) {
-            // boucle permettant de supprimer les réservations déjà réservées
-            // qui posent problème, car elles ont déjà été réservées
-            for (int i = 0; i < listResourceAlreadyReserved.size(); i++) {
-              Resource resourceReserved = listResourceAlreadyReserved.get(i);
-              if (listResourcesProblem != null) {
-                for (Resource resourceProblem : listResourcesProblem) {
-                  if (resourceReserved.equals(resourceProblem)) {
-                    listResourceAlreadyReserved.remove(i);
-                    break;
-                  }
-                }
-              }
-            }
+              reservationId);
+
+          if (unavailableReservationResources == null) {
+            // When update process, verify resource collisions with other reservations to warn
+            // the user immediately if any
+            unavailableReservationResources = resourcesManagerSC
+                .verifyUnavailableResources(ResourceUtil.toIdList(resourcesOfReservation),
+                    resourcesManagerSC.getBeginDateReservation(),
+                    resourcesManagerSC.getEndDateReservation(), reservationId);
+          }
+
+          // Resources that are not available are removed from the list of resource reservation
+          if (CollectionUtils.isNotEmpty(resourcesOfReservation) &&
+              CollectionUtils.isNotEmpty(unavailableReservationResources)) {
+            resourcesOfReservation.removeAll(unavailableReservationResources);
           }
         }
-        Map<String, List<Resource>> resourcesAvailablePerCategory = new HashMap<String, List<Resource>>(categories.
-            size());
-        for (Resource resourceReservable : maListResourcesReservable) {
+        List<Category> categories = resourcesManagerSC.getCategories();
+        Map<Long, List<Resource>> resourcesAvailablePerCategory =
+            new HashMap<Long, List<Resource>>(categories.size());
+        for (Resource resourceReservable : reservableResources) {
           if (resourcesAvailablePerCategory.containsKey(resourceReservable.getCategoryId())) {
             resourcesAvailablePerCategory.get(resourceReservable.getCategoryId()).add(
                 resourceReservable);
@@ -391,95 +393,90 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
           }
         }
         SilverTrace.info("resourcesManager", "ResourcesManagerRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "listResourcesReservable=" +
-            maListResourcesReservable.size());
+            "root.MSG_GEN_PARAM_VALUE",
+            "listResourcesReservable=" + reservableResources.size());
         // on envoie l'id de la réservation et l'ensemble des resources
         // associées à celles -ci
-        request.setAttribute("idReservation", idReservation);
-        request.setAttribute("listResourceEverReserved", listResourceAlreadyReserved);
+        request.setAttribute("idReservation", reservationId);
+        request.setAttribute("listResourceEverReserved", resourcesOfReservation);
         request.setAttribute("mapResourcesReservable", resourcesAvailablePerCategory);
         request.setAttribute("reservation", reservation);
-        request.setAttribute("listResourcesProblem", listResourcesProblem);
+        request.setAttribute("unavailableReservationResources", unavailableReservationResources);
         request.setAttribute("categories", categories);
         destination = root + "cart.jsp";
       } else if ("FinalReservation".equals(function)) {
-        // listeReservation est la liste complète des ressources réservées lors
+        // resourceIds est la liste complète des ressources réservées lors
         // d'une création ou d'une édition de réservation
-        // idModifiedReservation est l'id de la réservation à modifié lors d'une
+        // modifiedReservationId est l'id de la réservation à modifié lors d'une
         // édition de réservation
         // on doit vérifier que celles-ci n'ont pas été prises avant de mettre à
         // jour la réservation.
-        String idModifiedReservation = request.getParameter("idModifiedReservation");
-        String listeReservation = request.getParameter("listeResa");
-        // si idModifiedReservation n'est pas nulle, on est en train de modifier
+        Long modifiedReservationId = request.getParameterAsLong("modifiedReservationId");
+        List<Long> resourceIds = ResourceUtil.toIdList(request.getParameter("listeResa"));
+        // si modifiedReservationId n'est pas nulle, on est en train de modifier
         // une réservation
         // sinon on est en train de créer une réservation
-        if (idModifiedReservation != null) {
+        if (modifiedReservationId != null) {
           // on vérifie que les nouvelles ressources que l'on veut réserver ne
           // sont pas déjà prises.
           List<Resource> listeResourcesProblemeReservationTotal =
-              resourcesManagerSC.getResourcesProblemDate(listeReservation,
-              resourcesManagerSC.getBeginDateReservation(),
-              resourcesManagerSC.getEndDateReservation(), idModifiedReservation);
+              resourcesManagerSC.verifyUnavailableResources(resourceIds,
+                  resourcesManagerSC.getBeginDateReservation(),
+                  resourcesManagerSC.getEndDateReservation(), modifiedReservationId);
           if (listeResourcesProblemeReservationTotal.isEmpty()) {
             // regarder si les dates ont été modifiées
-            Reservation resa = resourcesManagerSC.getReservation(idModifiedReservation);
+            Reservation resa = resourcesManagerSC.getReservation(modifiedReservationId);
             boolean updateDate = false;
             if (!resourcesManagerSC.getBeginDateReservation().equals(resa.getBeginDate()) ||
                 !resourcesManagerSC.getEndDateReservation().equals(resa.getEndDate())) {
               updateDate = true;
             }
-            resourcesManagerSC.updateReservation(idModifiedReservation,
-                listeReservation, updateDate);
+            resourcesManagerSC.updateReservation(resa, resourceIds, updateDate);
 
             // redirection vers la réservation
-            request.setAttribute("reservationId", idModifiedReservation);
+            request.setAttribute("reservationId", modifiedReservationId);
             destination = getDestination("ViewReservation", resourcesManagerSC, request);
           } else {
-            request.setAttribute("listeResourcesProblem",
+            request.setAttribute("unavailableReservationResources",
                 listeResourcesProblemeReservationTotal);
-            request.setAttribute("reservationId", idModifiedReservation);
+            request.setAttribute("reservationId", modifiedReservationId);
             destination = getDestination("GetAvailableResources", resourcesManagerSC, request);
           }
         } else {
-          resourcesManagerSC.setListReservationCurrent(listeReservation);
-          List<Resource> listeResourcesProblem = resourcesManagerSC.verificationReservation(
-              listeReservation);
+          resourcesManagerSC.setListReservationCurrent(resourceIds);
+          List<Resource> listeResourcesProblem = resourcesManagerSC.verifyUnavailableResources(
+              resourceIds);
           if (listeResourcesProblem.isEmpty()) {
             resourcesManagerSC.saveReservation();
             request.setAttribute("reservationId",
                 resourcesManagerSC.getReservationCourante().getId());
             destination = getDestination("ViewReservation", resourcesManagerSC, request);
           } else {
-            request.setAttribute("listeResourcesProblem", listeResourcesProblem);
+            request.setAttribute("unavailableReservationResources", listeResourcesProblem);
             destination = getDestination("GetAvailableResources", resourcesManagerSC, request);
           }
         }
       } else if ("EditReservation".equals(function)) {
-        String idReservation = "";
         // listResources est la liste des ressources qui peuvent poser problème
         // quand on change la date de réservation
         List listResourcesProblem = null;
-        if (request.getParameter("id") != null) {
-          idReservation = request.getParameter("id");
-        } else if (request.getAttribute("id") != null) {
-          idReservation = (String) request.getAttribute("id");
+        reservationId = request.getParameterAsLong("id");
+        if (reservationId == null) {
+          reservationId = request.getAttributeAsLong("id");
           listResourcesProblem = (List) request.getAttribute("listResources");
         }
-        Reservation reservation = resourcesManagerSC.getReservation(idReservation);
+        Reservation reservation = resourcesManagerSC.getReservation(reservationId);
         // on envoie la réservation de l'id et la liste des ressources associées
         // ainsi que la liste qui posent problème quand on change les dates
         request.setAttribute("reservation", reservation);
         request.setAttribute("listResourcesProblem", listResourcesProblem);
         destination = root + "reservationManager.jsp";
       } else if ("ViewReservation".equals(function)) {
-        reservationId = null;
-        if (request.getParameter("reservationId") != null) {
-          reservationId = request.getParameter("reservationId");
-        } else if (request.getAttribute("reservationId") != null) {
-          reservationId = (String) request.getAttribute("reservationId");
+        reservationId = request.getParameterAsLong("reservationId");
+        if (reservationId == null) {
+          reservationId = request.getAttributeAsLong("reservationId");
         }
-        String objectView = request.getParameter("objectView");
+        String objectView = getView(request);
         // si on vient de resource.jsp, reservationId a été stocké dans le
         // session controler
         if (reservationId == null) {
@@ -498,8 +495,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         request.setAttribute("listOfReservation", listOfReservation);
         destination = root + "viewReservations.jsp";
       } else if ("DeleteReservation".equals(function)) {
-        resourceId = request.getParameter("id");
-        resourcesManagerSC.deleteReservation(resourceId);
+        resourcesManagerSC.deleteReservation(request.getParameterAsLong("id"));
         destination = displayCalendarView(request, resourcesManagerSC);
       } else if ("Calendar".equals(function)) {
         destination = displayCalendarView(request, resourcesManagerSC);
@@ -514,8 +510,8 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         destination = displayCalendarView(request, resourcesManagerSC);
       } else if ("Comments".equals(function)) {
         String provenance = resourcesManagerSC.getProvenanceResource();
-        String idResource = resourcesManagerSC.getResourceIdForResource();
-        Resource myResource = resourcesManagerSC.getResource(idResource);
+        resourceId = resourcesManagerSC.getResourceIdForResource();
+        Resource myResource = resourcesManagerSC.getResource(resourceId);
         ResourcesWrapper resources = resourcesManagerSC.getResources();
         String chemin = "";
         if ("resources".equals(provenance)) {
@@ -534,7 +530,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
               "resourcesManager.recapitulatifReservation")) + "</a>";
         }
         request.setAttribute("Path", chemin);
-        request.setAttribute("resourceId", idResource);
+        request.setAttribute("resourceId", resourceId);
         request.setAttribute("resourceName", myResource.getName());
         request.setAttribute("resourceType", getSessionControlBeanName());
 
@@ -546,16 +542,18 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
       } else if (function.startsWith("ViewOtherPlanning")) {
         // userPanel return
         UserDetail selectedUser = resourcesManagerSC.getSelectedUser();
-        String idUser = selectedUser.getId();
-        String firstNameUser = selectedUser.getFirstName();
-        String lastName = selectedUser.getLastName();
-        request.setAttribute("firstNameUser", firstNameUser);
-        request.setAttribute("lastName", lastName);
-        resourcesManagerSC.setFirstNameUserCalandar(firstNameUser);
-        resourcesManagerSC.setLastNameUserCalandar(lastName);
-        request.setAttribute("userId", idUser);
-        // on indique au rooter qu'on regarde le calandrier de quelqu un
-        request.setAttribute("objectView", "PlanningOtherUser");
+        if (selectedUser != null) {
+          String idUser = selectedUser.getId();
+          String firstNameUser = selectedUser.getFirstName();
+          String lastName = selectedUser.getLastName();
+          request.setAttribute("firstNameUser", firstNameUser);
+          request.setAttribute("lastName", lastName);
+          resourcesManagerSC.setFirstNameUserCalandar(firstNameUser);
+          resourcesManagerSC.setLastNameUserCalandar(lastName);
+          request.setAttribute("userId", idUser);
+          // on indique au rooter qu'on regarde le calandrier de quelqu un
+          request.setAttribute("objectView", "PlanningOtherUser");
+        }
         destination = displayCalendarView(request, resourcesManagerSC);
       } else if (function.startsWith("searchResult")) {
         // traitement des recherches
@@ -610,17 +608,16 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         }
         destination = root + "refreshFromUserSelect.jsp";
       } else if ("ValidateResource".equals(function)) {
-        resourceId = request.getParameter("ResourceId");
-        reservationId = request.getParameter("reservationId");
+        resourceId = request.getParameterAsLong("ResourceId");
+        reservationId = request.getParameterAsLong("reservationId");
         String objectView = request.getParameter("objectView");
-        resourcesManagerSC.validateResource(Integer.parseInt(resourceId), Integer.parseInt(
-            reservationId));
+        resourcesManagerSC.validateResource(resourceId, reservationId);
         request.setAttribute("reservationId", reservationId);
         request.setAttribute("objectView", objectView);
         destination = getDestination("ViewReservation", resourcesManagerSC, request);
       } else if ("ForRefuseResource".equals(function)) {
-        resourceId = request.getParameter("ResourceId");
-        reservationId = request.getParameter("reservationId");
+        resourceId = request.getParameterAsLong("ResourceId");
+        reservationId = request.getParameterAsLong("reservationId");
         String resourceName = request.getParameter("ResourceName");
         String objectView = request.getParameter("objectView");
         request.setAttribute("reservationId", reservationId);
@@ -629,12 +626,11 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         request.setAttribute("objectView", objectView);
         destination = root + "refuseResource.jsp";
       } else if ("RefuseResource".equals(function)) {
-        resourceId = request.getParameter("ResourceId");
-        reservationId = request.getParameter("reservationId");
+        resourceId = request.getParameterAsLong("ResourceId");
+        reservationId = request.getParameterAsLong("reservationId");
         String motive = request.getParameter("Motive");
         String objectView = request.getParameter("objectView");
-        resourcesManagerSC.refuseResource(Integer.parseInt(resourceId), Integer.parseInt(
-            reservationId), motive);
+        resourcesManagerSC.refuseResource(resourceId, reservationId, motive);
         request.setAttribute("reservationId", reservationId);
         request.setAttribute("objectView", objectView);
         destination = getDestination("ViewReservation", resourcesManagerSC, request);
@@ -664,20 +660,20 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
    * @param sessionController
    * @return
    */
-  private String displayCalendarView(HttpServletRequest request,
+  private String displayCalendarView(ServletRequestWrapper request,
       ResourcesManagerSessionController sessionController) {
     String myObjectView = getView(request);
     String idUser = (String) request.getAttribute("userId");
     List<Reservation> listOfReservation = null;
     List<Reservation> listReservationsOfCategory = null;
-    String currentResourceId = null;
+    Long currentResourceId = null;
     // on regarde le planning d'une catégorie ou d'une ressource
     if ((myObjectView != null) && isNotAnUserView(myObjectView)) {
-      listReservationsOfCategory = sessionController.getMonthReservationOfCategory(myObjectView);
-      List<Resource> listResourcesofCategory = sessionController.getResourcesByCategory(
-          myObjectView);
-      currentResourceId = request.getParameter("resourceId");
-      if (StringUtil.isDefined(currentResourceId)) {
+      Long categoryId = Long.valueOf(myObjectView);
+      listReservationsOfCategory = sessionController.getMonthReservationOfCategory(categoryId);
+      List<Resource> listResourcesofCategory = sessionController.getResourcesByCategory(categoryId);
+      currentResourceId = request.getParameterAsLong("resourceId");
+      if (currentResourceId != null) {
         request.setAttribute("resourceId", currentResourceId);
       }
       request.setAttribute("listResourcesofCategory", listResourcesofCategory);
@@ -717,11 +713,9 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     return root + "almanach.jsp";
   }
 
-  private String getView(HttpServletRequest request) {
-    String myObjectView = null;
-    if (StringUtil.isDefined(request.getParameter("objectView"))) {
-      myObjectView = request.getParameter("objectView");
-    } else if (StringUtil.isDefined((String) request.getAttribute("objectView"))) {
+  private String getView(ServletRequestWrapper request) {
+    String myObjectView = request.getParameter("objectView");
+    if (!StringUtil.isDefined(myObjectView)) {
       myObjectView = (String) request.getAttribute("objectView");
     }
     return myObjectView;
@@ -752,10 +746,10 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     return flag;
   }
 
-  private void setXMLFormIntoRequest(HttpServletRequest request,
+  private void setXMLFormIntoRequest(ServletRequestWrapper request,
       ResourcesManagerSessionController resourcesManagerSC) throws Exception {
-    String idResource = resourcesManagerSC.getResourceIdForResource();
-    String idCategory = resourcesManagerSC.getCategoryIdForResource();
+    String resourceIdAsString = String.valueOf(resourcesManagerSC.getResourceIdForResource());
+    Long idCategory = resourcesManagerSC.getCategoryIdForResource();
     Category category = resourcesManagerSC.getCategory(idCategory);
     String xmlFormName = category.getForm();
     if (StringUtil.isDefined(xmlFormName)) {
@@ -774,10 +768,10 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
       Form formUpdate = pubTemplate.getUpdateForm();
       RecordSet recordSet = pubTemplate.getRecordSet();
       // attention ici ce n est pas categoryId mais resourceId
-      DataRecord data = recordSet.getRecord(idResource);
+      DataRecord data = recordSet.getRecord(resourceIdAsString);
       if (data == null) {
         data = recordSet.getEmptyRecord();
-        data.setId(idResource);
+        data.setId(resourceIdAsString);
       }
       // appel de la jsp avec les paramètres
       request.setAttribute("Form", formUpdate);
@@ -787,12 +781,12 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
   }
 
   private void putXMLDisplayerIntoRequest(Resource resource,
-      HttpServletRequest request,
+      ServletRequestWrapper request,
       ResourcesManagerSessionController resourcesManagerSC)
       throws PublicationTemplateException, FormException {
     // récupération de l’Id de l’objet en fonction de l’objet "object"
-    String resourceId = resource.getId();
-    String categoryId = resource.getCategoryId();
+    String resouceIdAsString = resource.getIdAsString();
+    Long categoryId = resource.getCategoryId();
     Category category = resourcesManagerSC.getCategory(categoryId);
 
     String xmlFormName = category.getForm();
@@ -812,10 +806,10 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     // récupération des données
     Form formView = pubTemplate.getViewForm();
     RecordSet recordSet = pubTemplate.getRecordSet();
-    DataRecord data = recordSet.getRecord(resourceId);
+    DataRecord data = recordSet.getRecord(resouceIdAsString);
     if (data == null) {
       data = recordSet.getEmptyRecord();
-      data.setId(resourceId);
+      data.setId(resouceIdAsString);
     }
     // passage des paramètres à la request avec les données du formulaire
     request.setAttribute("XMLForm", formView);
@@ -824,7 +818,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     PagesContext context = new PagesContext("myForm", "0", resourcesManagerSC.getLanguage(), false,
         resourcesManagerSC.getComponentId(), resourcesManagerSC.getUserId());
     context.setBorderPrinted(false);
-    context.setObjectId(resourceId);
+    context.setObjectId(resouceIdAsString);
     request.setAttribute("context", context);
   }
 
@@ -832,8 +826,8 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
       ResourcesManagerSessionController resourcesManagerSC, List<FileItem> items)
       throws Exception {
     // récupération de l’objet et du nom du formulaire
-    String idResource = resourcesManagerSC.getResourceIdForResource();
-    String idCategory = resourcesManagerSC.getCategoryIdForResource();
+    String resourceIdAsString = String.valueOf(resourcesManagerSC.getResourceIdForResource());
+    Long idCategory = resourcesManagerSC.getCategoryIdForResource();
 
     Category category = resourcesManagerSC.getCategory(idCategory);
 
@@ -847,10 +841,10 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
           xmlFormShortName);
       RecordSet set = pub.getRecordSet();
       Form form = pub.getUpdateForm();
-      DataRecord data = set.getRecord(idResource);
+      DataRecord data = set.getRecord(resourceIdAsString);
       if (data == null) {
         data = set.getEmptyRecord();
-        data.setId(idResource);
+        data.setId(resourceIdAsString);
       }
 
       // sauvegarde des données du formulaire
@@ -858,13 +852,13 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
           new PagesContext("myForm", "0", resourcesManagerSC.getLanguage(), false,
           resourcesManagerSC.getComponentId(),
           resourcesManagerSC.getUserId());
-      context.setObjectId(idResource);
+      context.setObjectId(resourceIdAsString);
       form.update(items, data, context);
       set.save(data);
     }
   }
 
-  private List<String> request2Managers(HttpServletRequest request) {
+  private List<String> request2Managers(ServletRequestWrapper request) {
     List<String> managers = new ArrayList<String>();
     String managerIds = request.getParameter("ManagerIds");
     if (StringUtil.isDefined(managerIds)) {
@@ -900,7 +894,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
   private void setEvents(MonthCalendar monthC, List<Reservation> listOfReservation,
       List<Reservation> listReservationsOfCategory,
       ResourcesManagerSessionController resourcesManagerSC, String view,
-      String currentResourceId) {
+      Long currentResourceId) {
     String objectView = view;
     if (view == null) {
       objectView = "myReservation";
@@ -908,7 +902,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     // transformation des réservations (Reservation) en Event du MonthCalendar
     if (listOfReservation != null) {
       for (Reservation maReservation : listOfReservation) {
-        String reservationId = maReservation.getId();
+        Long reservationId = maReservation.getId();
         String event = maReservation.getEvent();
         Event evt = reservation2Event(maReservation, reservationId, event, resourcesManagerSC);
         String color = "black";
@@ -929,17 +923,17 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         // la categorie
         if (listResourcesReserved != null) {
           for (Resource myResource : listResourcesReserved) {
-            String categoryId = myResource.getCategoryId();
+            Long categoryId = myResource.getCategoryId();
             // on affiche les ressources de la réservation qui possèdent la même categoryId que la
             // catégorie sélectionnée
-            if (categoryId.equals(objectView)) {
+            if (categoryId.toString().equals(objectView)) {
               // si currentResourceId est nulle aucune ressource n'a été sélectionnée
               // donc on affiche toutes les ressources de la catégorie
-              String resourceId = myResource.getId();
-              if (!StringUtil.isDefined(currentResourceId) || currentResourceId.equals(resourceId)) {
+              Long resourceId = myResource.getId();
+              if (currentResourceId == null || currentResourceId.equals(resourceId)) {
                 String resourceName = myResource.getName();
-                Event evt = reservation2Event(maReservation, resourceId, resourceName,
-                    resourcesManagerSC);
+                Event evt =
+                    reservation2Event(maReservation, resourceId, resourceName, resourcesManagerSC);
                 monthC.addEvent(evt);
               }
             }
@@ -951,13 +945,13 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     monthC.setCurrentMonth(resourcesManagerSC.getCurrentDay().getTime());
   }
 
-  private Event reservation2Event(Reservation reservation, String id, String label,
+  private Event reservation2Event(Reservation reservation, Long id, String label,
       ResourcesManagerSessionController sc) {
     Date endDate = reservation.getEndDate();
     Date startDate = reservation.getBeginDate();
     String minuteHourDateBegin = DateUtil.getFormattedTime(reservation.getBeginDate());
     String minuteHourDateEnd = DateUtil.getFormattedTime(reservation.getEndDate());
-    Event evt = new Event(id, label, startDate, endDate, null, 0);
+    Event evt = new Event(String.valueOf(id), label, startDate, endDate, null, 0);
     evt.setStartHour(minuteHourDateBegin);
     evt.setEndHour(minuteHourDateEnd);
     evt.setPlace(reservation.getPlace());

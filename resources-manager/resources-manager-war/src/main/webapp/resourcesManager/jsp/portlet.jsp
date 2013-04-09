@@ -36,21 +36,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-List listResourcesofCategory = (List)request.getAttribute("listResourcesofCategory");
-List listOfCategories = (List)request.getAttribute("listOfCategories");
+  String firstNameUser = (String) request.getAttribute("firstNameUser");
+  String lastName = (String) request.getAttribute("lastName");
 
-String idUser = (String)request.getAttribute("idUser");
-String firstNameUser = (String)request.getAttribute("firstNameUser");
-String lastName = (String)request.getAttribute("lastName");
+  MonthCalendar monthC = (MonthCalendar) request.getAttribute("monthC");
+  String objectView = String.valueOf(request.getAttribute("idCategory"));
+  if (!StringUtil.isDefined(objectView)) {
+    objectView = "myReservation";
+  }
 
-MonthCalendar monthC = (MonthCalendar)request.getAttribute("monthC");
-String objectView = (String)request.getAttribute("idCategory");
-if(objectView == null){
-	objectView = "myReservation";
-}
-
-String idResourceFromRR = (String)request.getAttribute("resourceId");
-String personalReservation = "myReservation";
+  Long idResourceFromRR = (Long) request.getAttribute("resourceId");
+  String personalReservation = "myReservation";
 %>
 <c:set var="objectView"><%=objectView%></c:set>
 <html>
@@ -62,7 +58,7 @@ String personalReservation = "myReservation";
 function nextMonth(object)
 {
     document.almanachForm.action = "NextMonth";
-    <%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
+    <%if(idResourceFromRR != null){%>
 		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
 	<%}%>
     document.almanachForm.objectView.value = object;
@@ -72,7 +68,7 @@ function nextMonth(object)
 function previousMonth(object)
 {
 	document.almanachForm.action = "PreviousMonth";
-	<%if((idResourceFromRR != null) && (!idResourceFromRR.equals(""))){%>
+	<%if(idResourceFromRR != null){%>
 		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
 	<%}%>
 	document.almanachForm.objectView.value = object;
@@ -81,7 +77,7 @@ function previousMonth(object)
 function goToDay(object)
 {
 	document.almanachForm.action = "GoToday";
-	<%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
+	<%if(idResourceFromRR != null){%>
 		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
 	<%}%>
 	document.almanachForm.objectView.value = object;

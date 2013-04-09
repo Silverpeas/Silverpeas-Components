@@ -24,54 +24,50 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="org.silverpeas.resourcemanager.model.Category"%>
-<%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Date" %>
 
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-	Reservation reservation = (Reservation)request.getAttribute("reservation");
-	List<Resource> listResourcesProblem = (List<Resource>)request.getAttribute("listResourcesProblem");
-	String defaultDate = (String) request.getAttribute("DefaultDate");
+  Reservation reservation = (Reservation) request.getAttribute("reservation");
+  String defaultDate = (String) request.getAttribute("DefaultDate");
 
-	String dateBegin = "";
-	String dateEnd = "";
-	if (StringUtil.isDefined(defaultDate))
-	{
-		dateBegin 	= defaultDate;
-		dateEnd		= defaultDate;
-	}
+  String dateBegin = "";
+  String dateEnd = "";
+  if (StringUtil.isDefined(defaultDate)) {
+    dateBegin = defaultDate;
+    dateEnd = defaultDate;
+  }
 
-	String event = "";
-	String reason = "";
-	String place = "";
-	String minuteHourDateBegin = "";
-	String minuteHourDateEnd = "";
-	String reservationId="";
+  String event = "";
+  String reason = "";
+  String place = "";
+  String minuteHourDateBegin = "";
+  String minuteHourDateEnd = "";
+  Long reservationId = null;
 
-	if(reservation != null){
-		reservationId = reservation.getId();
-		event = reservation.getEvent();
-		reason = reservation.getReason();
-		if (reason == null)
-			reason = "";
-		place = reservation.getPlace();
-		if (place == null)
-			place = "";
-		dateEnd = resource.getOutputDate(reservation.getEndDate());
-		dateBegin = resource.getOutputDate(reservation.getBeginDate());
-		minuteHourDateBegin = DateUtil.getFormattedTime(reservation.getBeginDate());
-		minuteHourDateEnd = DateUtil.getFormattedTime(reservation.getEndDate());
-	}
-	//creation des boutons Valider et Annuler
-	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
-	Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Main",false);
-	%>
+  if (reservation != null) {
+    reservationId = reservation.getId();
+    event = reservation.getEvent();
+    reason = reservation.getReason();
+    if (reason == null) {
+      reason = "";
+    }
+    place = reservation.getPlace();
+    if (place == null) {
+      place = "";
+    }
+    dateEnd = resource.getOutputDate(reservation.getEndDate());
+    dateBegin = resource.getOutputDate(reservation.getBeginDate());
+    minuteHourDateBegin = DateUtil.getFormattedTime(reservation.getBeginDate());
+    minuteHourDateEnd = DateUtil.getFormattedTime(reservation.getEndDate());
+  }
+  //creation des boutons Valider et Annuler
+  Button validateButton =
+      gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
+  Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
+%>
 <html>
 <head>
   <view:looknfeel/>
@@ -233,7 +229,7 @@ buttonPane.addButton(cancelButton);
 
 
 	<tr>
-		<td colspan="2">( <img border="0" src=<%=resource.getIcon("resourcesManager.obligatoire")%> width="5" height="5"/> : <%=resource.getString("GML.requiredField")%> )</td>
+		<td colspan="2">( <img border="0" src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5" alt=""/> : <%=resource.getString("GML.requiredField")%> )</td>
 	</tr>
 	<!-- si le champs cache n est pas vide, cela signifie qu on est en train de modifier la reservation -->
 	<%if (reservation != null)

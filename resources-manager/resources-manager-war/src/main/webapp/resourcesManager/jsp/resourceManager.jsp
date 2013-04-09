@@ -33,8 +33,8 @@
 
 <%@ include file="check.jsp" %>
 <% 
-	String 			idcategory 	= (String) request.getAttribute("categoryId");
-	List 			list 		= (List) request.getAttribute("listCategories");
+	Long 			idcategory 	= (Long) request.getAttribute("categoryId");
+	List<Category> 			list 		= (List) request.getAttribute("listCategories");
 	Resource details 	= (Resource) request.getAttribute("resource");
 	List<UserDetail> managers  = (List<UserDetail>) request.getAttribute("Managers");
 	
@@ -59,7 +59,7 @@
 	String name = "";
 	String description = "";
 	boolean bookable = false;
-	String resourceId = "";
+	Long resourceId = null;
 	
 	if (details != null){
 		resourceId 		= details.getId();
@@ -71,7 +71,7 @@
 	//creation des boutons Valider et Annuler
 	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
 	Button cancelButton = null;
-	if(!"noCategory".equals(idcategory))
+	if(!"noCategory".equals(idcategory.toString()))
 		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "ViewResources?id="+idcategory,false);
 	else
 		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "ViewCategories",false);
@@ -168,7 +168,7 @@ buttonPane.addButton(cancelButton);
 		<TD width="100%">
 		<%for(int i=0;i< list.size();i++){
 			Category category = (Category)list.get(i);
-			String categoryId = category.getId();
+			Long categoryId = category.getId();
 		    String nameCategory = category.getName();
 			if (categoryId.equals(idcategory))
 			{
@@ -215,7 +215,7 @@ buttonPane.addButton(cancelButton);
   </tr>
 	
 	<tr>
-		<td colspan="2">( <img border="0" src=<%=resource.getIcon("resourcesManager.obligatoire")%> width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
+		<td colspan="2">( <img border="0" src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5" alt=""> : <%=resource.getString("GML.requiredField")%>)</td>
 	</tr>
 		<!-- <input type="HIDDEN" name="idcategory" value=<%=idcategory%> > -->
 		<%if (details != null){ %>

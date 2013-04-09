@@ -97,7 +97,7 @@ public class ResourceValidator implements Serializable {
 
   public void setResource(Resource resource) {
     this.resource = resource;
-    this.resourceValidatorPk.setResourceId(resource.getIntegerId());
+    this.resourceValidatorPk.setResourceId(resource.getId());
   }
 
   @Override
