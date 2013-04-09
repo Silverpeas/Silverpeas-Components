@@ -164,6 +164,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
             "root.MSG_GEN_PARAM_VALUE", "function = " + function, e);
       }
       request.setAttribute("Users", users);
+      request.setAttribute("Survey", surveySC.getSessionSurvey());
       destination = rootDest + "answerResult.jsp";
     } else if (function.equals("ViewAllUsers")) {
       QuestionContainerDetail survey = surveySC.getSessionSurvey();
@@ -348,8 +349,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
     }
 
     if (profileError) {
-      String sessionTimeout =
-          GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+      String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
       destination = sessionTimeout;
     }
     return destination;

@@ -29,36 +29,31 @@
 <%@ include file="checkSurvey.jsp" %>
 
 <%
-	Collection 	users 		= (Collection) request.getAttribute("Users");
-  QuestionContainerDetail survey = (QuestionContainerDetail) request.getAttribute("Survey");
+Collection<String> 	users 	= (Collection<String>) request.getAttribute("Users");
+QuestionContainerDetail survey = (QuestionContainerDetail) request.getAttribute("Survey");
 
-	// d�claration des boutons
-	Button close = (Button) gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
-	String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+Button close = gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
+String iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title></title>
-	<% out.println(gef.getLookStyleSheet()); %>
-	<script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
-	<script language="JavaScript1.2">
-
-	  function viewResultByUser(userId, userName)
-    {
-        url = "UserResult?UserId="+userId+"&UserName="+userName;
- 		    windowName = "resultByUser";
- 		    larg = "700";
- 		    haut = "500";
- 		    windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
- 		    suggestions = SP_openWindow(url, windowName, larg , haut, windowParams);
- 		    suggestions.focus();
-    }
- 				   
-     	</script>
+<title></title>
+<% out.println(gef.getLookStyleSheet()); %>
+<script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
+<script type="text/javascript">
+function viewResultByUser(userId, userName) {
+	url = "UserResult?UserId="+userId+"&UserName="+userName;
+ 	windowName = "resultByUser";
+ 	larg = "700";
+ 	haut = "500";
+ 	windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
+ 	suggestions = SP_openWindow(url, windowName, larg , haut, windowParams);
+ 	suggestions.focus();
+}
+</script>
 </head>
-
 <body>
 <% 
 	Window window = gef.getWindow();
@@ -73,25 +68,22 @@
 	ArrayPane arrayPane = gef.getArrayPane("SurveyParticipantsList", "ViewAllUsers?SurveyId="+survey.getId(), request, session);
 	arrayPane.addArrayColumn(resources.getString("GML.name"));
 	
-	if (users != null)
-	{	
+	if (users != null) {	
 	  	ArrayCellText cell = null; 
-	    Iterator it = users.iterator();
-	    while (it.hasNext()) {
-			 String userId = (String) it.next();
+	    for (String userId : users) {
 			 UserDetail user = surveyScc.getUserDetail(userId);	
 			 ArrayLine ligne = arrayPane.addArrayLine();
-			 String url = "<a href=\"javaScript:onClick=viewResultByUser('"+userId+"','"+EncodeHelper.javaStringToHtmlString(user.getDisplayedName())+"');\">"+EncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
+			 String url = "<a href=\"javaScript:onclick=viewResultByUser('"+userId+"','"+EncodeHelper.javaStringToHtmlString(user.getDisplayedName())+"');\">"+EncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
 			 cell = ligne.addArrayCellText(url);
 			 cell.setCompareOn(user.getLastName()+" "+user.getFirstName());
-      }
+      	}
 	}
 
 	out.println(arrayPane.print());
 	
 	ButtonPane buttonPane = gef.getButtonPane();
-  buttonPane.addButton(close);
-	out.print("<BR><center>"+buttonPane.print()+"</center>");
+  	buttonPane.addButton(close);
+	out.print("<br/>"+buttonPane.print());
 	out.print(frame.printAfter());
 	out.print(window.printAfter());
 %>

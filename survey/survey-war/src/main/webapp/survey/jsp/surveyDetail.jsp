@@ -337,7 +337,7 @@ function sendVote(roundId) {
 
 	 try
 	 {
- document.survey.anonymousComment.disabled = false;
+ 		document.survey.anonymousComment.disabled = false;
 		 if (document.survey.anonymousComment.checked)
 			 x = 1;
 		 else
@@ -502,8 +502,7 @@ function clipboardCopy() {
 </view:window>
 <%
   } else if (action.equals("ViewResult")) {
-    String iconsPath =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String iconsPath = GeneralPropertiesManager.getString("ApplicationURL");
     int resultView = survey.getHeader().getResultView();
 %>
 
@@ -689,20 +688,15 @@ function clipboardCopy() {
   
 </view:operationPane>
 <view:window>
-<view:frame>
 <%
-Frame frame = gef.getFrame();
 String surveyPart =
     displaySurveyResult(choice, survey, gef, m_context, surveyScc, resources, isClosed,
-        settings, frame, participated, profile);
+        settings, participated, profile, request);
 out.println(displayTabs(surveyScc, survey.getHeader().getPK().getId(), gef, action,
-    profile, resources, pollingStationMode, participated).print() +
-    frame.printBefore());
+    profile, resources, pollingStationMode, participated).print());
 out.println(surveyPart);
 %>
-
 <view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
-</view:frame>
 </view:window>
 
 <div id="publishResultDialog" style="display: none;">
@@ -754,7 +748,7 @@ out.println(surveyPart);
     <a href="<%=url%>" target="_blank"><%=simpleDocument.getFilename()%></a>
     <%=FileRepositoryManager.formatFileSize(simpleDocument.getSize())%>    
     <a href="javascript:onclick=hideSynthesisFile();"><img src="<%=deleteSrc%>" border="0"/></a>
-    <input type="hidden" name="idSynthesisFile" value="<%=simpleDocument.getId()%>">
+    <input type="hidden" name="idSynthesisFile" value="<%=simpleDocument.getId()%>"/>
     </span>  
     </div>
     <% } %>

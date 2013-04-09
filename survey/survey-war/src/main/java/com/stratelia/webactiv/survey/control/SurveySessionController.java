@@ -39,7 +39,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Vector;
 
 import javax.ejb.EJBException;
@@ -137,7 +136,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "org.silverpeas.survey.surveySettings");
     setQuestionContainerBm();
     setQuestionResultBm();
-
   }
 
   /**
@@ -791,7 +789,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
       if (StringUtil.isDefined(surveyDesc)) {
         template.setAttribute("surveyDesc", surveyDesc);
       }
-      // template.setAttribute("message", message);
       template.setAttribute("htmlPath", htmlPath);
       templates.put(language, template);
       notifMetaData.addLanguage(language, message.getString("survey.notifSubject", subject), "");
@@ -934,12 +931,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @return a SilverpeasTemplate
    */
   protected SilverpeasTemplate getNewTemplate() {
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings()
-        .getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings()
-        .getString("customersTemplatePath"));
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+    return SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents("survey");
   }
 
   /**

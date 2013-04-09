@@ -444,7 +444,9 @@ function openSPWindow(fonction, windowName){
   }
   
   out.println(window.printBefore());
-
+%>
+<view:areaOfOperationOfCreation/>
+<%
   int view = surveyScc.getViewType();
   Collection<QuestionContainerHeader> surveys = surveyScc.getSurveys();
 
@@ -462,8 +464,7 @@ function openSPWindow(fonction, windowName){
   out.println(tabbedPane.print());
 %>
 <view:frame>
-<view:areaOfOperationOfCreation/>
-<center><table cellpadding="0" cellspacing="0" border="0" width="98%"><tr><td>
+<table cellpadding="0" cellspacing="0" border="0" width="98%"><tr><td>
 <%
   ArrayPane arrayPane = null;
   if (SilverpeasRole.admin.toString().equals(profile) || 
@@ -476,7 +477,7 @@ function openSPWindow(fonction, windowName){
   }
   out.println(arrayPane.print());
 %>
-</td></tr></table></center>
+</td></tr></table>
 </view:frame>
 <%
   out.println(window.printAfter());

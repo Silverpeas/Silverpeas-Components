@@ -103,7 +103,7 @@ public class SurveyContentManager implements ContentInterface {
     List<QuestionContainerHeader> headers = new ArrayList<QuestionContainerHeader>();
     try {
       Collection<QuestionContainerHeader> questionContainerHeaders = getQuestionContainerBm()
-          .getQuestionContainerHeaders((ArrayList) pks);
+          .getQuestionContainerHeaders(pks);
       for (QuestionContainerHeader qC : questionContainerHeaders) {
         qC.setIconUrl("surveySmall.gif");
         if (qC.getPK().getInstanceId().startsWith("pollingStation")) {
