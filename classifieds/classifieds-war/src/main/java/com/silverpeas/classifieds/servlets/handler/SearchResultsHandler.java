@@ -27,7 +27,7 @@ public class SearchResultsHandler extends FunctionHandler {
             request);
       }
 
-      // CommentX
+      // Comment
       else if (type.startsWith("Comment")) {
         request.setAttribute("ClassifiedId", id);
         return HandlerProvider.getHandler("ViewClassified").computeDestination(classifiedsSC, request);
