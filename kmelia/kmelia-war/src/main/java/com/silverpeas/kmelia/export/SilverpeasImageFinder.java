@@ -31,10 +31,10 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import org.apache.commons.lang.SystemUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -122,9 +122,9 @@ public class SilverpeasImageFinder {
         break;
       }
     }
-    AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
-            attachmentId));
-    return attachment.getAttachmentPath(lang);
+    SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+        new SimpleDocumentPK(attachmentId), lang);
+    return attachment.getAttachmentPath();
   }
 
   private String findWithFileService(String href) {

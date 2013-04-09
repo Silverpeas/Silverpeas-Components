@@ -1,44 +1,42 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
 import java.rmi.RemoteException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.util.ForeignPK;
+
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.node.control.NodeBm;
@@ -51,35 +49,43 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 
 /**
  * @author sfariello
  */
 public interface KmeliaBmBusinessSkeleton {
-  /**************************************************************************************/
-  /* Interface - Gestion des thèmes */
-  /**************************************************************************************/
+
   /**
-   * Return a the detail of a topic
-   * @param id the id of the topic
-   * @return a TopicDetail
-   * @see com.stratelia.webactiv.kmelia.model.TopicDetail
-   * @since 1.0
+   * ***********************************************************************************
    */
-  public TopicDetail goTo(NodePK nodePK, String userId,
-      boolean isTreeStructureUsed, String userProfile,
+  /* Interface - Gestion des thèmes */
+  /**
+   * ***********************************************************************************
+   */
+  /**
+   * Return the detail of a topic.
+   *
+   * @param nodePK
+   * @param userId
+   * @param isTreeStructureUsed
+   * @param userProfile
+   * @param isRightsOnTopicsUsed
+   * @return the detail of a topic.
+   * @throws RemoteException
+   */
+  public TopicDetail goTo(NodePK nodePK, String userId, boolean isTreeStructureUsed,
+      String userProfile,
       boolean isRightsOnTopicsUsed) throws RemoteException;
-  
+
   public List<NodeDetail> getAllowedSubfolders(NodeDetail folder, String userId)
       throws RemoteException;
 
   /**
    * Add a subtopic to a topic - If a subtopic of same name already exists a NodePK with id=-1 is
    * returned else the new topic NodePK
-   * @param fatherId the topic Id of the future father
-   * @param subTopic the NodeDetail of the new sub topic
+   *
+   * @param fatherPK the topic Id of the future father
+   * @param subtopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
    * topic NodePK
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
@@ -92,7 +98,8 @@ public interface KmeliaBmBusinessSkeleton {
   /**
    * Add a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
-   * @param subTopic the NodeDetail of the new sub topic
+   *
+   * @param subtopic the NodeDetail of the new sub topic
    * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
    * "All"|"Publisher"|"None"
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
@@ -107,6 +114,7 @@ public interface KmeliaBmBusinessSkeleton {
   /**
    * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
+   *
    * @param topic the NodeDetail of the updated sub topic
    * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
    * "All"|"Publisher"|"None"
@@ -121,7 +129,8 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Return a subtopic to currentTopic
-   * @param subTopicId the id of the researched topic
+   *
+   * @param nodePK the id of the researched topic
    * @return the detail of the specified topic
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -132,7 +141,8 @@ public interface KmeliaBmBusinessSkeleton {
    * Delete a topic and all descendants. Delete all links between descendants and publications. This
    * publications will be visible in the Declassified zone. Delete All subscriptions and favorites
    * on this topics and all descendants
-   * @param topicId the id of the topic to delete
+   *
+   * @param nodePK the id of the topic to delete
    * @since 1.0
    */
   public void deleteTopic(NodePK nodePK) throws RemoteException;
@@ -153,11 +163,16 @@ public interface KmeliaBmBusinessSkeleton {
       String userId, boolean displayNb, boolean isRightsOnTopicsUsed)
       throws RemoteException;
 
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   /* Interface - Gestion des abonnements */
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   /**
    * Subscriptions - get the subscription list of the current user
+   *
    * @return a Path Collection - it's a Collection of NodeDetail collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -167,7 +182,8 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Subscriptions - remove a subscription to the subscription list of the current user
-   * @param topicId the subscribe topic Id to remove
+   *
+   * @param topicPK the subscribe topic Id to remove
    * @since 1.0
    */
   public void removeSubscriptionToCurrentUser(NodePK topicPK, String userId)
@@ -175,7 +191,8 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Subscriptions - add a subscription
-   * @param topicId the subscription topic Id to add
+   *
+   * @param topicPK the subscription topic Id to add
    * @since 1.0
    */
   public void addSubscription(NodePK topicPK, String userId)
@@ -183,28 +200,35 @@ public interface KmeliaBmBusinessSkeleton {
 
   public boolean checkSubscription(NodePK topicPK, String userId) throws RemoteException;
 
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   /* Interface - Gestion des publications */
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   /**
    * Return the detail of a publication (only the Header)
-   * @param pubId the id of the publication
+   *
+   * @param pubPK the id of the publication
    * @return a PublicationDetail
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @since 1.0
    */
   public PublicationDetail getPublicationDetail(PublicationPK pubPK)
       throws RemoteException;
-  
+
   public List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile,
-      String userId, boolean isTreeStructureUsed, boolean isRightsOnTopicsUsed) throws RemoteException;
-  
+      String userId, boolean isTreeStructureUsed, boolean isRightsOnTopicsUsed) throws
+      RemoteException;
+
   public List<KmeliaPublication> getLatestPublications(String instanceId, int nbPublisOnRoot,
       boolean isRightsOnTopicsUsed, String userId) throws RemoteException;
 
   /**
    * Return list of all path to this publication - it's a Collection of NodeDetail collection
-   * @param pubId the id of the publication
+   *
+   * @param pubPK the id of the publication
    * @return a Collection of NodeDetail collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -216,6 +240,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Create a new Publication (only the header - parameters) to the current Topic
+   *
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
@@ -223,10 +248,11 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public String createPublicationIntoTopic(PublicationDetail pubDetail,
       NodePK fatherPK) throws RemoteException;
-  
+
   /**
    * Creates a new publication into the specified topic and with the specified classification on the
    * PdC.
+   *
    * @param pubDetail the detail about the publication to create.
    * @param fatherPK the unique identifier of the topic into which the publication is published.
    * @param classification the classification on the PdC of the publication content.
@@ -238,7 +264,8 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Update a publication (only the header - parameters)
-   * @param pubDetail a PublicationDetail
+   *
+   * @param detail a PublicationDetail
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @since 1.0
    */
@@ -251,7 +278,8 @@ public interface KmeliaBmBusinessSkeleton {
   /**
    * Delete a publication If this publication is in the basket or in the DZ, it's deleted from the
    * database Else it only send to the basket
-   * @param pubId the id of the publication to delete
+   *
+   * @param pubPK the id of the publication to delete
    * @return a TopicDetail
    * @see com.stratelia.webactiv.kmelia.model.TopicDetail
    * @since 1.0
@@ -266,20 +294,22 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Add a publication to a topic and send email alerts to topic subscribers
-   * @param pubId the id of the publication
-   * @param fatherId the id of the topic
+   *
+   * @param pubPK the id of the publication
+   * @param fatherPK the id of the topic
    * @since 1.0
    */
   public void addPublicationToTopic(PublicationPK pubPK, NodePK fatherPK,
       boolean isACreation) throws RemoteException;
-  
+
   public void addPublicationToTopicWithoutNotifications(PublicationPK pubPK, NodePK fatherPK,
       boolean isACreation) throws RemoteException;
 
   /**
    * Delete a path between publication and topic
-   * @param pubId the id of the publication
-   * @param fatherId the id of the topic
+   *
+   * @param pubPK the id of the publication
+   * @param fatherPK the id of the topic
    * @since 1.0
    */
   public void deletePublicationFromTopic(PublicationPK pubPK, NodePK fatherPK)
@@ -287,7 +317,8 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Delete a path of publication
-   * @param pubId the id of the publication
+   *
+   * @param pubPK the id of the publication
    * @since 1.0
    */
   public void deletePublicationFromAllTopics(PublicationPK pubPK)
@@ -295,6 +326,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * get all available models
+   *
    * @return a Collection of ModelDetail
    * @see com.stratelia.webactiv.util.publication.info.model.ModelDetail
    * @since 1.0
@@ -303,49 +335,47 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Return the detail of a model
+   *
    * @param modelId the id of the model
    * @return a ModelDetail
-   * @see com.stratelia.webactiv.util.publication.Info.model.ModelDetail
    * @since 1.0
    */
   public ModelDetail getModelDetail(String modelId) throws RemoteException;
 
   /**
    * Create info attached to a publication
-   * @param pubId the id of the publication
+   *
+   * @param pubPK the id of the publication
    * @param modelId the id of the selected model
    * @param infos an InfoDetail containing info
-   * @see com.stratelia.webactiv.util.Publication.Info.model.InfoDetail
-   * @since 1.0
    */
   public void createInfoDetail(PublicationPK pubPK, String modelId,
       InfoDetail infos) throws RemoteException;
 
   /**
    * Create model info attached to a publication
-   * @param pubId the id of the publication
+   *
+   * @param pubPK the id of the publication
    * @param modelId the id of the selected model
    * @param infos an InfoDetail containing info
-   * @see com.stratelia.webactiv.util.Publication.Info.model.InfoDetail
-   * @since 1.0
    */
   public void createInfoModelDetail(PublicationPK pubPK, String modelId,
       InfoDetail infos) throws RemoteException;
 
   /**
    * get info attached to a publication
-   * @param pubId the id of the publication
+   *
+   * @param pubPK the id of the publication
    * @return an InfoDetail
-   * @see com.stratelia.webactiv.util.Publication.Info.model.InfoDetail
    * @since 1.0
    */
   public InfoDetail getInfoDetail(PublicationPK pubPK) throws RemoteException;
 
   /**
    * Update info attached to a publication
-   * @param pubId the id of the publication
+   *
+   * @param pubPK the id of the publication
    * @param infos an InfoDetail containing info to updated
-   * @see com.stratelia.webactiv.util.Publication.Info.model.InfoDetail
    * @since 1.0
    */
   public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos)
@@ -353,6 +383,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Updates the publication links
+   *
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
    */
@@ -360,6 +391,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Removes links between publications and the specified publication
+   *
    * @param pubPK
    * @param links list of links to remove
    * @throws RemoteException
@@ -375,7 +407,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   public TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed,
       String userId, boolean isRightsOnTopicsUsed) throws RemoteException;
-  
+
   public NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed,
       String userId, boolean isRightsOnTopicsUsed) throws RemoteException;
 
@@ -384,6 +416,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * gets a list of authorized publications
+   *
    * @param links list of publication defined by his id and component id
    * @param userId identifier User. allow to check if the publication is accessible for current user
    * @param isRightsOnTopicsUsed indicates if the right must be checked
@@ -394,36 +427,48 @@ public interface KmeliaBmBusinessSkeleton {
   public Collection<KmeliaPublication> getPublications(List<ForeignPK> links,
       String userId,
       boolean isRightsOnTopicsUsed) throws RemoteException;
-  
+
   /**
    * Gets the publications linked with the specified one and for which the specified user is
    * authorized to access.
+   *
    * @param publication the publication from which linked publications are get.
    * @param userId the unique identifier of a user. It allows to check if a linked publication is
    * accessible for the specified user.
    * @return a list of Kmelia publications.
-   * @throws RemoteException if an error occurs while communicating with the remote business service.
+   * @throws RemoteException if an error occurs while communicating with the remote business
+   * service.
    */
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication,
       String userId) throws RemoteException;
-  
+
   /**
    * Gets all the publications linked with the specified one.
+   *
    * @param publication the publication from which linked publications are get.
    * @return a list of Kmelia publications.
-   * @throws RemoteException if an error occurs while communicating with the remote business service.
+   * @throws RemoteException if an error occurs while communicating with the remote business
+   * service.
    */
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication)
       throws RemoteException;
 
   public List<KmeliaPublication> getPublicationsToValidate(String componentId, String userId)
       throws RemoteException;
-  
+
   public boolean isUserCanValidatePublication(PublicationPK pubPK, String userId)
       throws RemoteException;
 
   public List<String> getAllValidators(PublicationPK pubPK) throws RemoteException;
 
+  /**
+   * @param pubPK id of the publication to validate. If publication is always visible, clone is
+   * processed.
+   * @param userId id of the user who validate
+   * @param force if true, force to validate publication (bypass pending validations)
+   * @return true if the validation process is complete (ie all validators have validate)
+   * @throws RemoteException
+   */
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force)
       throws RemoteException;
 
@@ -435,40 +480,41 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Change publication status from draft to valid (for publisher) or toValidate (for redactor)
-   * @param publicationId the id of the publication
-   * @since 3.0
+   *
+   * @param pubPK the id of the publication
    */
-  public void draftOutPublication(PublicationPK pubPK, NodePK topicPK,
-      String userProfile) throws RemoteException;
-  
-  public PublicationDetail draftOutPublicationWithoutNotifications(PublicationPK pubPK, NodePK topicPK,
-      String userProfile) throws RemoteException;
+  public void draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile) throws
+      RemoteException;
+
+  public PublicationDetail draftOutPublicationWithoutNotifications(PublicationPK pubPK,
+      NodePK topicPK, String userProfile) throws RemoteException;
 
   public PublicationDetail draftOutPublication(PublicationPK pubPK, NodePK topicPK,
       String userProfile, boolean forceUpdateDate) throws RemoteException;
 
   /**
    * Change publication status from any state to draft
-   * @param publicationId the id of the publication
-   * @since 3.0
+   *
+   * @param pubPK the id of the publication
    */
   public void draftInPublication(PublicationPK pubPK) throws RemoteException;
-  
+
   public void draftInPublication(PublicationPK pubPK, String userId) throws RemoteException;
-  
-  public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to, String userId)
-      throws RemoteException;
-  
+
+  public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to,
+      String userId) throws RemoteException;
+
   public void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId)
       throws RemoteException;
-  
+
   public void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId)
       throws RemoteException;
 
   /**
    * alert that an external elements of publication (wysiwyg, attachment, versioning) has been
    * created, updated or removed
-   * @param pubId - id of the publication which contains this external elements
+   *
+   * @param pubPK - id of the publication which contains this external elements
    * @throws RemoteException
    */
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK,
@@ -485,40 +531,24 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Send an email to alert users of a publication creation
-   * @param pubId the publication Id
+   *
+   * @param pubPK the publication Id
    */
   public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
       NodePK topicPK, String senderName) throws RemoteException;
-  
+
   /**
    * Send an email to alert users of a attachment
-   * @param pubId the publication Id
+   *
+   * @param pubPK the publication Id
    */
-  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, AttachmentPK attachmentPk, 
-		  NodePK topicPK, String senderName) throws RemoteException;
-  
-  /**
-   * Send an email to alert users of a document
-   * @param pubId the publication Id
-   */
-  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, DocumentPK documentPk, 
-		  NodePK topicPK, String senderName) throws RemoteException;
-
-  /**************************************************************************************/
-  /* Interface - Controle de lecture */
-  /**************************************************************************************/
-  /**
-   * get reading control states to a publication
-   * @param pubId the id of a publication
-   * @return a Collection (Actor, reading date, nb)
-   * @since 1.0
-   */
-  // public Collection getReadingStates(PublicationPK pubPK) throws
-  // RemoteException;
+  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
+      SimpleDocumentPK documentPk, NodePK topicPK, String senderName) throws RemoteException;
 
   /**
    * delete reading controls to a publication
-   * @param pubId the id of a publication
+   *
+   * @param pubPK the id of a publication
    * @since 1.0
    */
   public void deleteAllReadingControlsByPublication(PublicationPK pubPK)
@@ -530,29 +560,43 @@ public interface KmeliaBmBusinessSkeleton {
 
   public void deleteSilverContent(PublicationPK pubPK) throws RemoteException;
 
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   /* Interface - Fichiers joints */
-  /**************************************************************************************/
-
-  public Collection<AttachmentDetail> getAttachments(PublicationPK pubPK) throws RemoteException;
-
-  public String getWysiwyg(PublicationPK pubPK) throws RemoteException;
+  /**
+   * ***********************************************************************************
+   */
+  public String getWysiwyg(PublicationPK pubPK, String language) throws RemoteException;
 
   public void addModelUsed(String[] models, String instanceId, String nodeId)
       throws RemoteException;
 
   public Collection<String> getModelUsed(String instanceId, String nodeId) throws RemoteException;
 
-  /**************************************************************************************/
-  /**************************************************************************************/
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
+  /**
+   * ***********************************************************************************
+   */
+  /**
+   * ***********************************************************************************
+   */
   /* Specific Kmax methods */
-  /**************************************************************************************/
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
+  /**
+   * ***********************************************************************************
+   */
   /* Interface - Axis */
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   /**
    * Get list of Axis
+   *
    * @param componentId
    * @return List of Axis
    * @throws RemoteException
@@ -561,6 +605,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Get list of Axis Headers
+   *
    * @param componentId
    * @return List of Axis Headers
    * @throws RemoteException
@@ -569,6 +614,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Add an axis
+   *
    * @param axis
    * @param componentId
    * @return
@@ -579,6 +625,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Update an axis
+   *
    * @param axis
    * @param componentId
    * @throws RemoteException
@@ -588,6 +635,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Delete axis
+   *
    * @param axisId
    * @param componentId
    * @throws RemoteException
@@ -597,6 +645,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Get Node Header
+   *
    * @param id
    * @param componentId
    * @return NodeDetail
@@ -607,6 +656,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Add position to a axis
+   *
    * @param fatherId
    * @param position
    * @param componentId
@@ -619,6 +669,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Update a position in an axis
+   *
    * @param position
    * @param componentId
    * @throws RemoteException
@@ -628,6 +679,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Delete a position in an axis
+   *
    * @param positionId
    * @param componentId
    * @throws RemoteException
@@ -637,6 +689,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Get path from a position
+   *
    * @param positionId
    * @param componentId
    * @return
@@ -645,12 +698,16 @@ public interface KmeliaBmBusinessSkeleton {
   public Collection<NodeDetail> getPath(String positionId, String componentId)
       throws RemoteException;
 
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   /* Interface - Recherche */
-  /**************************************************************************************/
-
+  /**
+   * ***********************************************************************************
+   */
   /**
    * Get publications in a combination
+   *
    * @param combination
    * @param componentId
    * @return Collection of publication
@@ -661,6 +718,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Get publications in a combination with time criteria
+   *
    * @param combination
    * @param componentId
    * @return Collection of publication
@@ -671,6 +729,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Get publications with no classement
+   *
    * @param componentId
    * @return Collection of publication
    * @throws RemoteException
@@ -678,18 +737,26 @@ public interface KmeliaBmBusinessSkeleton {
   public Collection<KmeliaPublication> getUnbalancedPublications(String componentId)
       throws RemoteException;
 
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   /* Interface - Indexation */
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   public void indexKmax(String componentId) throws RemoteException;
 
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   /* Interface - Publications */
-  /**************************************************************************************/
-
+  /**
+   * ***********************************************************************************
+   */
   /**
    * Get a publication of a user
-   * @param componentId , pubId
+   *
+   * @param pubId , pubId
    * @return a Kmelia publication
    * @throws RemoteException
    */
@@ -698,6 +765,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Get Collection of coordinates for a publication
+   *
    * @param pubId , componentId
    * @return a collection of coordinates
    * @throws RemoteException
@@ -707,6 +775,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Add a combination for this publication
+   *
    * @param pubId , combination, componentId
    * @return
    * @throws RemoteException
@@ -716,6 +785,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Remove a combination for this publication
+   *
    * @param pubId , combinationId, componentId
    * @return
    * @throws RemoteException
@@ -725,6 +795,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Create a new Publication (only the header - parameters)
+   *
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
@@ -735,6 +806,7 @@ public interface KmeliaBmBusinessSkeleton {
 
   /**
    * Delete coordinates of a publication (ie: when publication is deleted)
+   *
    * @param coordinatePK
    * @param coordinates
    */
@@ -746,15 +818,14 @@ public interface KmeliaBmBusinessSkeleton {
   public void setAlias(PublicationPK pubPK, List<Alias> alias) throws RemoteException;
 
   public void addAttachmentToPublication(PublicationPK pubPK, String userId,
-      String filename, String description, byte[] contents)
-      throws RemoteException;
+      String filename, String description, byte[] contents) throws RemoteException;
 
   public boolean importPublication(String componentId, String topicId,
       String spaceId, String userId, Map<String, String> publiParams,
       Map<String, String> formParams,
       String language, String xmlFormName, String discrimatingParameterName,
       String userProfile) throws RemoteException;
-  
+
   public boolean importPublication(String componentId, String topicId, String userId,
       Map<String, String> publiParams, Map<String, String> formParams, String language,
       String xmlFormName, String discriminantParameterName, String userProfile,
@@ -771,25 +842,16 @@ public interface KmeliaBmBusinessSkeleton {
       String discrimatingParameterName, String userProfile)
       throws RemoteException;
 
-  public List<XMLField> getPublicationXmlFields(String publicationId, String componentId, String spaceId,
+  public List<XMLField> getPublicationXmlFields(String publicationId, String componentId,
+      String spaceId,
       String userId) throws RemoteException;
 
-  public List<XMLField> getPublicationXmlFields(String publicationId, String componentId, String spaceId,
+  public List<XMLField> getPublicationXmlFields(String publicationId, String componentId,
+      String spaceId,
       String userId, String language) throws RemoteException;
 
   public String createTopic(String componentId, String topicId, String spaceId,
       String userId, String name, String description) throws RemoteException;
-
-  public void importAttachment(String publicationId, String componentId,
-      String userId, String filePath, String title, String info,
-      Date creationDate) throws RemoteException;
-
-  public void importAttachment(String publicationId, String componentId,
-      String userId, String filePath, String title, String info,
-      Date creationDate, String logicalName) throws RemoteException;
-
-  public void deleteAttachment(AttachmentDetail attachmentDetail)
-      throws RemoteException;
 
   public Collection<String> getPublicationsSpecificValues(String componentId,
       String xmlFormName, String fieldName) throws RemoteException;
@@ -811,26 +873,29 @@ public interface KmeliaBmBusinessSkeleton {
    * Clone CompletePublication. Create new publication based on pubDetail object if not null or
    * CompletePublication otherwise. Original publication will not be modified (except references to
    * clone : cloneId and cloneStatus).
+   *
    * @param pubDetail If not null, attribute values are set to the clone
    * @param nextStatus Draft or Clone
    * @return
    */
   public String clonePublication(CompletePublication refPubComplete, PublicationDetail pubDetail,
       String nextStatus) throws RemoteException;
-  
+
   public void removeContentOfPublication(PublicationPK pubPK) throws RemoteException;
-  
+
   public NodeDetail getRoot(String componentId, String userId) throws RemoteException;
-  
-  public Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId) throws RemoteException;
-  
+
+  public Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId) throws
+      RemoteException;
+
   public NodeDetail getExpandedPathToNode(NodePK pk, String userId) throws RemoteException;
-  
+
   public boolean isUserCanWrite(String componentId, String userId) throws RemoteException;
-  
+
   public boolean isUserCanValidate(String componentId, String userId) throws RemoteException;
-  
+
   public String getUserTopicProfile(NodePK pk, String userId) throws RemoteException;
-  
-  public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId) throws RemoteException;
+
+  public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId) throws
+      RemoteException;
 }

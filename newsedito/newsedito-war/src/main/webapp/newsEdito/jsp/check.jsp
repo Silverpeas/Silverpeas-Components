@@ -52,9 +52,6 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
-
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
@@ -79,8 +76,8 @@
 <%@ page import="com.stratelia.webactiv.util.publication.model.CompletePublication"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.ValidationStep"%>
 
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.WysiwygException"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="org.silverpeas.wysiwyg.WysiwygException"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 
 <%@ page import="com.silverpeas.util.ForeignPK"%>
@@ -89,8 +86,6 @@
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="com.stratelia.webactiv.util.statistic.model.HistoryByUser"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate" %>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplateException" %>
 <%@ page import="com.silverpeas.form.DataRecord" %>
 <%@ page import="com.silverpeas.form.Form" %>
@@ -109,7 +104,7 @@
 
 	if (newsSC == null) {
 	    // No session controller in the request -> security exception
-	    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+	    String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
 	    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
 	    return;
 	}
@@ -121,7 +116,6 @@
 	String componentId = browseContext[3];
 
 	String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("newsEdito", spaceId, componentId);
-
-	//R�cup�ration du contexte
-	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	//Recuperation du contexte
+	String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 %>

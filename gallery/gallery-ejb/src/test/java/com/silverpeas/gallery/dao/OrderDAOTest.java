@@ -48,6 +48,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.OrganisationController;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -90,7 +91,7 @@ public class OrderDAOTest {
     UserDetail bart = new UserDetail();
     bart.setFirstName("Bart");
     bart.setLastName("Simpson");
-    OrganizationController orga = mock(OrganizationController.class);
+    OrganisationController orga = mock(OrganizationController.class);
     when(orga.getUserDetail(userId)).thenReturn(bart);
     Connection con = getConnection();
     try {
@@ -118,7 +119,7 @@ public class OrderDAOTest {
     UserDetail bart = new UserDetail();
     bart.setFirstName("Bart");
     bart.setLastName("Simpson");
-    OrganizationController orga = mock(OrganizationController.class);
+    OrganisationController orga = mock(OrganizationController.class);
     when(orga.getUserDetail(userId)).thenReturn(bart);
     Connection con = getConnection();
     try {
@@ -168,7 +169,7 @@ public class OrderDAOTest {
     UserDetail bart = new UserDetail();
     bart.setFirstName("Bart");
     bart.setLastName("Simpson");
-    OrganizationController orga = mock(OrganizationController.class);
+    OrganisationController orga = mock(OrganizationController.class);
     when(orga.getUserDetail(userId)).thenReturn(bart);
     Connection con = getConnection();
     try {
@@ -192,7 +193,7 @@ public class OrderDAOTest {
     UserDetail bart = new UserDetail();
     bart.setFirstName("Bart");
     bart.setLastName("Simpson");
-    OrganizationController orga = mock(OrganizationController.class);
+    OrganisationController orga = mock(OrganizationController.class);
     when(orga.getUserDetail(userId)).thenReturn(bart);
     Connection con = getConnection();
     try {
@@ -219,7 +220,7 @@ public class OrderDAOTest {
     UserDetail bart = new UserDetail();
     bart.setFirstName("Bart");
     bart.setLastName("Simpson");
-    OrganizationController orga = mock(OrganizationController.class);
+    OrganisationController orga = mock(OrganizationController.class);
     when(orga.getUserDetail(userId)).thenReturn(bart);
     Connection con = getConnection();
     try {
@@ -244,7 +245,7 @@ public class OrderDAOTest {
     UserDetail bart = new UserDetail();
     bart.setFirstName("Bart");
     bart.setLastName("Simpson");
-    OrganizationController orga = mock(OrganizationController.class);
+    OrganisationController orga = mock(OrganizationController.class);
     when(orga.getUserDetail(userId)).thenReturn(bart);
     Connection con = getConnection();
     try {
@@ -269,7 +270,7 @@ public class OrderDAOTest {
     UserDetail bart = new UserDetail();
     bart.setFirstName("Bart");
     bart.setLastName("Simpson");
-    OrganizationController orga = mock(OrganizationController.class);
+    OrganisationController orga = mock(OrganizationController.class);
     when(orga.getUserDetail(userId)).thenReturn(bart);
     Connection con = getConnection();
     try {

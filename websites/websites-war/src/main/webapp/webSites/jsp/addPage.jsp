@@ -51,8 +51,7 @@
 
 <%
 
-
-//R�cup�ration des param�tres
+//Recuperation des parametres
 String nameSite = (String) request.getParameter("nameSite");
 String path = (String) request.getParameter("path");
 String action = (String) request.getParameter("Action");
@@ -86,16 +85,16 @@ function isCorrectName(nom) {
 /************************************************************************************/
 
 function isCorrect(nom) {
-    if (nom.indexOf("\\")>-1 || nom.indexOf("/")>-1 || nom.indexOf(":")>-1 || 
+    if (nom.indexOf("\\")>-1 || nom.indexOf("/")>-1 || nom.indexOf(":")>-1 ||
         nom.indexOf("*")>-1 || nom.indexOf("?")>-1 || nom.indexOf("\"")>-1 ||
         nom.indexOf("<")>-1 || nom.indexOf(">")>-1 || nom.indexOf("|")>-1 ||
         nom.indexOf("&")>-1 || nom.indexOf(";")>-1 || nom.indexOf("+")>-1 ||
-        nom.indexOf("%")>-1 || nom.indexOf("#")>-1 || 
+        nom.indexOf("%")>-1 || nom.indexOf("#")>-1 ||
 		nom.indexOf("'")>-1 ||
         nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
         nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("^")>-1 ||
-        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || 
-		nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || 
+        nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
+		nom.indexOf("�")>-1 || nom.indexOf("�")>-1 || nom.indexOf("�")>-1 ||
 		nom.indexOf(" ")>-1) {
         return false;
     }
@@ -107,11 +106,11 @@ function isCorrect(nom) {
 function isCorrectExtension(filename){
     var isCorrect = true;
     var indexPoint = filename.lastIndexOf(".");
-    // on v�rifie qu'il existe une extension au nom du fichier propos�
+    // on verifie qu'il existe une extension au nom du fichier propose
     if (indexPoint != -1){
-        // le fichier contient une extension. On r�cup�re l'extension
+        // le fichier contient une extension. On recupere l'extension
         var ext = filename.substring(indexPoint + 1);
-        // on v�rifie que c'est une extension HTML
+        // on verifie que c'est une extension HTML
         if ( (ext != "html") && (ext != "htm") && (ext != "HTML") && (ext != "HTM") ){
             isCorrect = false;
         }
@@ -125,22 +124,22 @@ function isCorrectForm() {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.topicForm.Name.value);
-  
+
      if (isWhitespace(title)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
+       errorNb++;
      }
-     
+
      if (! isCorrect(title)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=Encode.javaStringToJsString(resources.getString("Char5"))%>\n";
-       errorNb++; 
+       errorNb++;
      }
-     
+
      if (! isCorrectName(title)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustContainFileName")%>\n";
-       errorNb++; 
-     }          
-     
+       errorNb++;
+     }
+
      // verify the extension
     if ( ! isCorrectExtension(title) ){
         errorMsg += "<%=resources.getString("HTMLExtensionRequired")%>";
@@ -173,10 +172,10 @@ function sendData() {
       if (isCorrectForm()) {
             var nameFile = stripInitialWhitespace(document.topicForm.Name.value);
             var indexPoint = nameFile.lastIndexOf(".");
-            // on v�rifie qu'il existe une extension au nom du fichier propos�
+            // on verifie qu'il existe une extension au nom du fichier propos�
             if (indexPoint == -1){
                 nameFile += ".html" ; // le nom du fichier ne contient pas d'extension donc on ajoute l'extension html
-            } 
+            }
             document.topicDetailForm.nomPage.value = nameFile;
             document.topicDetailForm.submit();
       }
@@ -196,14 +195,14 @@ function sendData() {
 	//browseBar.setComponentName(scc.getComponentLabel());
 	browseBar.setComponentName(componentLabel);
     browseBar.setPath(resources.getString("NomPage"));
-    
+
     //Le cadre
     Frame frame = gef.getFrame();
 
 	//Le board
 	Board board = gef.getBoard();
 
-    //D�but code
+    //Debut code
     out.println(window.printBefore());
     out.println(frame.printBefore());
 	out.print(board.printBefore());
@@ -216,8 +215,8 @@ function sendData() {
         <TD class="txtlibform"><%=resources.getString("GML.name")+" "+resources.getString("Ex")%> : </TD>
             <TD valign="top"><input type="text" name="Name" value="" size="60" maxlength="50">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></TD>
         </TR>
-        <TR> 
-            <TD colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> 
+        <TR>
+            <TD colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">
               : <%=resources.getString("GML.requiredField")%>)</TD>
         </TR>
 	</FORM>
@@ -231,7 +230,7 @@ function sendData() {
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-    
+
 	out.println("<br><center>"+buttonPane.print()+"</center><br>");
 
     out.println(frame.printAfter());
@@ -248,7 +247,7 @@ function sendData() {
 </FORM>
 </BODY>
 </HTML>
-<% } //End View 
+<% } //End View
 
 else if (action.equals("verif")) { //vient de addPage
 
@@ -269,7 +268,7 @@ else if (action.equals("verif")) { //vient de addPage
       </BODY>
       </HTML>
 <%
-    
+
 }
 
 else if (action.equals("addPage")) { //vient de verifAjoutPage
@@ -301,7 +300,7 @@ else if (action.equals("addPage")) { //vient de verifAjoutPage
       </script>
       </HTML>
 <%
-    
+
 }
 
 %>

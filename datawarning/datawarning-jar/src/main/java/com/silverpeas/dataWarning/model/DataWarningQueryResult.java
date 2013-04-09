@@ -32,6 +32,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.WithNested;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class DataWarningQueryResult extends Object {
 
@@ -47,7 +48,7 @@ public class DataWarningQueryResult extends Object {
   protected HashMap valuesByUser = null;
   protected int persoColumnNumber = 0;
   protected String persoUID = "";
-  protected OrganizationController oc = new OrganizationController();
+  protected OrganisationController oc = new OrganizationController();
 
   public DataWarningQueryResult(DataWarningQuery qp, boolean pe, int colNum, String puid) {
     queryParent = qp;
@@ -83,7 +84,7 @@ public class DataWarningQueryResult extends Object {
 
   public void addError(Exception ex, String sqlQuery) {
     StringBuilder sb = new StringBuilder();
-    Exception nested;
+    Throwable nested;
     hasError = true;
     errEx = ex;
     errQuery = sqlQuery;

@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.resourcemanager.ResourcesManagerFactory;
 import org.silverpeas.resourcemanager.control.ResourcesManagerRuntimeException;
 import org.silverpeas.resourcemanager.model.Category;
@@ -358,7 +359,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
         resourceId, reservationId);
     if (STATUS_FOR_VALIDATION.equals(status)) {
       // envoyer une notification aux responsables de la ressource
-      OrganizationController orga = new OrganizationController();
+      OrganisationController orga = new OrganizationController();
       String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
       ResourceLocator message = new ResourceLocator(
@@ -695,7 +696,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public void sendNotificationValidateReservation(Reservation reservation)
       throws NotificationManagerException {
     // envoyer une notification au créateur de la réservation
-    OrganizationController orga = new OrganizationController();
+    OrganisationController orga = new OrganizationController();
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
     ResourceLocator message = new ResourceLocator(
@@ -734,7 +735,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public void sendNotificationRefuseReservation(Reservation reservation, String resourceId,
       String motive) throws NotificationManagerException {
     // envoyer une notification au créateur de la réservation
-    OrganizationController orga = new OrganizationController();
+    OrganisationController orga = new OrganizationController();
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
     ResourceLocator message =

@@ -24,6 +24,8 @@
 package com.silverpeas.kmelia.control;
 
 import com.silverpeas.SilverpeasComponentService;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
@@ -31,5 +33,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
  */
 public interface KmeliaService extends SilverpeasComponentService<PublicationDetail> {
 
- 
+  public void pasteAttachmentsAsDocuments(WAPrimaryKey from, WAPrimaryKey to, String lang);
+
+  public void pasteDocumentsAsAttachments(WAPrimaryKey from, WAPrimaryKey to, String lang,
+      String userId);
 }

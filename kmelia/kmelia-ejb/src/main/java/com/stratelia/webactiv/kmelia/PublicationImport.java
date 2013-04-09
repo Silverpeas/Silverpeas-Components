@@ -1,30 +1,42 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.kmelia;
 
-import com.silverpeas.attachment.importExport.AttachmentImportExport;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.fileupload.FileItem;
+
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.ParseException;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
@@ -34,32 +46,17 @@ import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmEJB;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.search.SearchEngineFactory;
 
 public class PublicationImport {
 
@@ -97,6 +94,7 @@ public class PublicationImport {
 
   /**
    * Creates or updates a publication.
+   *
    * @param publiParams The parameters of the publication.
    * @param formParams The parameters of the publication's form.
    * @param language The language of the publication.
@@ -113,16 +111,16 @@ public class PublicationImport {
     String publicationToUpdateId = null;
     if (discrimatingParameterName != null && discrimatingParameterName.length() > 0) {
       String discrimatingParameterValue = formParams.get(discrimatingParameterName);
-      publicationToUpdateId =
-          getPublicationId(xmlFormName, discrimatingParameterName, discrimatingParameterValue);
+      publicationToUpdateId = getPublicationId(xmlFormName, discrimatingParameterName,
+          discrimatingParameterValue);
     }
-    
-    return importPublication(
-      publicationToUpdateId, publiParams, formParams, language, xmlFormName, userProfile);
+    return importPublication(publicationToUpdateId, publiParams, formParams, language, xmlFormName,
+        userProfile);
   }
-  
+
   /**
    * Creates or updates a publication.
+   *
    * @param publicationToUpdateId The id of the publication to update.
    * @param publiParams The parameters of the publication.
    * @param formParams The parameters of the publication's form.
@@ -147,10 +145,8 @@ public class PublicationImport {
         updatePublicationDetail(pubDetail, publiParams, language);
         updatePublication(pubDetail, true);
       } catch (Exception e) {
-        throw new KmeliaRuntimeException(
-            "PublicationImport.importPublication()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
+        throw new KmeliaRuntimeException("PublicationImport.importPublication()",
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
       }
     } else {
       // Creation
@@ -164,10 +160,8 @@ public class PublicationImport {
 
         pubPK = pubDetail.getPK();
       } catch (Exception e) {
-        throw new KmeliaRuntimeException(
-            "PublicationImport.importPublication()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
+        throw new KmeliaRuntimeException("PublicationImport.importPublication()",
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
       }
     }
 
@@ -175,8 +169,8 @@ public class PublicationImport {
     try {
       String pubId = pubPK.getId();
 
-      PublicationTemplateManager publicationTemplateManager = 
-              PublicationTemplateManager.getInstance();
+      PublicationTemplateManager publicationTemplateManager =
+          PublicationTemplateManager.getInstance();
       publicationTemplateManager.addDynamicPublicationTemplate(componentId
           + ":" + xmlFormName, xmlFormName + ".xml");
 
@@ -201,25 +195,20 @@ public class PublicationImport {
       if (ignoreMissingFormFields) {
         context.setUpdatePolicy(PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES);
       }
-
-      List<FileItem> items = new ArrayList<FileItem>();
+      List< FileItem> items = new ArrayList<FileItem>();
       for (String fieldName : data.getFieldNames()) {
         String fieldValue = formParams.get(fieldName);
         fieldValue = (fieldValue == null ? "" : fieldValue);
         items.add(new InternalFileItem(fieldName, fieldValue));
       }
-
       form.update(items, data, context);
       set.save(data);
-
       updatePublication(pubDetail, true);
-
       NodePK nodePK = new NodePK(topicId, spaceId, componentId);
       kmeliaBm.draftOutPublication(pubPK, nodePK, userProfile, true);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("PublicationImport.importPublication()",
-          SilverpeasRuntimeException.ERROR,
-          "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
     }
 
     return resultStatus;
@@ -228,7 +217,7 @@ public class PublicationImport {
   public List<XMLField> getPublicationXmlFields(String publicationId) {
     return getPublicationXmlFields(publicationId, null);
   }
-  
+
   public List<XMLField> getPublicationXmlFields(String publicationId, String language) {
     PublicationPK pubPK = new PublicationPK(publicationId, spaceId, componentId);
     PublicationDetail pubDetail = kmeliaBm.getPublicationDetail(pubPK);
@@ -266,19 +255,19 @@ public class PublicationImport {
     Date jCreationDate = null;
     Date jUpdateDate = null;
 
-    if (beginDate != null && !beginDate.trim().equals("")) {
+    if (StringUtil.isDefined(beginDate)) {
       jBeginDate = DateUtil.stringToDate(beginDate, language);
     }
-    if (endDate != null && !endDate.trim().equals("")) {
+    if (StringUtil.isDefined(endDate)) {
       jEndDate = DateUtil.stringToDate(endDate, language);
     }
-    if (creationDate != null && !creationDate.trim().equals("")) {
+    if (StringUtil.isDefined(creationDate)) {
       jCreationDate = DateUtil.stringToDate(creationDate, language);
     }
-    if (updateDate != null && !updateDate.trim().equals("")) {
+    if (StringUtil.isDefined(updateDate)) {
       jUpdateDate = DateUtil.stringToDate(updateDate, language);
     }
-    
+
     if (!StringUtil.isInteger(importance)) {
       importance = "5";
     }
@@ -306,12 +295,12 @@ public class PublicationImport {
 
   /**
    * Creates the publication described by the detail given as a parameter.
+   *
    * @param pubDetail The publication detail.
    * @return The id of the newly created publication.
    * @throws RemoteException
    */
-  private String createPublication(PublicationDetail pubDetail)
-      throws RemoteException {
+  private String createPublication(PublicationDetail pubDetail) throws RemoteException {
     pubDetail.getPK().setSpace(spaceId);
     pubDetail.getPK().setComponentName(componentId);
     pubDetail.setCreatorId(userId);
@@ -327,6 +316,7 @@ public class PublicationImport {
 
   /**
    * Updates the publication detail given as a parameter.
+   *
    * @param pubDetail The publication detail.
    * @throws RemoteException
    */
@@ -347,27 +337,26 @@ public class PublicationImport {
    * @return The id of the publication corresponding to the XML form name and containing a field
    * named fieldName and valued to fieldValue. Returns null if no publication is found.
    */
-  public String getPublicationId(String xmlFormName, String fieldName,
-      String fieldValue) {
+  public String getPublicationId(String xmlFormName, String fieldName, String fieldValue) {
     QueryDescription query = new QueryDescription("*");
     query.setSearchingUser(userId);
     query.addSpaceComponentPair(spaceId, componentId);
 
-    Hashtable<String, String> newXmlQuery = new Hashtable<String, String>();
+    Map<String, String> newXmlQuery = new HashMap<String, String>();
     newXmlQuery.put(xmlFormName + "$$" + fieldName, fieldValue);
     query.setXmlQuery(newXmlQuery);
 
     try {
-      List<MatchingIndexEntry> result =SearchEngineFactory.getSearchEngine().search(query).getEntries();
+      List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).
+          getEntries();
       for (MatchingIndexEntry mie : result) {
         if ("Publication".equals(mie.getObjectType())) {
           return mie.getPK().getObjectId();
         }
       }
-    } catch (Exception e) {
+    } catch (ParseException e) {
       e.printStackTrace();
     }
-
     return null;
   }
 
@@ -377,8 +366,7 @@ public class PublicationImport {
    * @return The id of the newly created topic.
    */
   public String createTopic(String name, String description) {
-    NodeDetail topic = new NodeDetail("-1", name, description, null, null,
-        null, "0", "X");
+    NodeDetail topic = new NodeDetail("-1", name, description, null, null, null, "0", "X");
     topic.getNodePK().setSpace(spaceId);
     topic.getNodePK().setComponentName(componentId);
     topic.setCreatorId(userId);
@@ -393,23 +381,19 @@ public class PublicationImport {
   public Collection<String> getPublicationsSpecificValues(String componentId,
       String xmlFormName, String fieldName) throws RemoteException {
     PublicationBm publicationBm = kmeliaBm.getPublicationBm();
-    Collection<PublicationDetail> publications = publicationBm
-        .getAllPublications(new PublicationPK("useless", componentId));
+    Collection<PublicationDetail> publications = publicationBm.getAllPublications(new PublicationPK(
+        "useless", componentId));
     List<String> result = new ArrayList<String>();
     Iterator<PublicationDetail> iter = publications.iterator();
-    PublicationDetail publication = null;
-    String fieldValue;
-    Collection<NodePK> fatherPKs;
-    NodePK fatherPK;
     while (iter.hasNext()) {
-      publication = iter.next();
+      PublicationDetail publication = iter.next();
       if (publication.getInfoId().equals(xmlFormName)) {
-        fatherPKs = publicationBm.getAllFatherPK(publication.getPK());
+        Collection<NodePK> fatherPKs = publicationBm.getAllFatherPK(publication.getPK());
         if (!fatherPKs.isEmpty()) {
-          fatherPK = fatherPKs.iterator().next();
-          if (!fatherPK.getId().equals("1")) {
-            fieldValue = publication.getFieldValue(fieldName);
-            if (fieldValue != null && fieldValue.length() > 0) {
+          NodePK fatherPK = fatherPKs.iterator().next();
+          if (!fatherPK.isTrash()) {
+            String fieldValue = publication.getFieldValue(fieldName);
+            if (StringUtil.isDefined(fieldValue)) {
               result.add(fieldValue);
             }
           }
@@ -428,10 +412,9 @@ public class PublicationImport {
     }
   }
 
-  public void updatePublicationEndDate(String xmlFormName, String fieldName,
-      String fieldValue, Date endDate) throws RemoteException {
-    String publicationToUpdateId = getPublicationId(xmlFormName, fieldName,
-        fieldValue);
+  public void updatePublicationEndDate(String xmlFormName, String fieldName, String fieldValue,
+      Date endDate) throws RemoteException {
+    String publicationToUpdateId = getPublicationId(xmlFormName, fieldName, fieldValue);
     PublicationPK publicationPK = new PublicationPK(publicationToUpdateId,
         spaceId, componentId);
     PublicationDetail pubDetail = kmeliaBm.getPublicationDetail(publicationPK);
@@ -442,39 +425,6 @@ public class PublicationImport {
     }
   }
 
-  public void importAttachment(String publicationId, String userId, String filePath, String title,
-      String info, Date creationDate) throws RemoteException {
-    importAttachment(publicationId, userId, filePath, title, info, creationDate, null);
-
-  }
-
-  public void importAttachment(String publicationId, String userId, String filePath, String title,
-      String info, Date creationDate, String logicalName)
-      throws RemoteException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
-    PublicationPK pubPK = new PublicationPK(publicationId, componentId);
-    PublicationDetail pubDetail = kmeliaBm.getPublicationBm().getDetail(pubPK);
-    boolean isIndexable = KmeliaHelper.isIndexable(pubDetail);
-
-    AttachmentDetail attDetail = new AttachmentDetail();
-    AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
-    attDetail.setPhysicalName(filePath);
-    attDetail.setAuthor(userId);
-    attDetail.setPK(pk);
-    attDetail.setTitle(title);
-    attDetail.setInfo(info);
-    attDetail.setCreationDate(creationDate);
-    boolean updateLogicalName = true;
-    if (logicalName != null) {
-      // force
-      attDetail.setLogicalName(logicalName);
-      updateLogicalName=false;
-    }
-
-    attachmentIE.importAttachment(publicationId, componentId, attDetail,
-        isIndexable, updateLogicalName);
-  }
-
   /**
    * @param parameters The parameters defining the publication.
    * @param language The language used to create the publication.
@@ -482,8 +432,7 @@ public class PublicationImport {
    * @throws Exception
    */
   private void updatePublicationDetail(PublicationDetail pubDetail, Map<String, String> parameters,
-      String language)
-      throws Exception {
+      String language) throws Exception {
     String status = parameters.get("Status");
     String name = parameters.get("Name");
     String description = parameters.get("Description");
@@ -499,7 +448,7 @@ public class PublicationImport {
     String tempId = parameters.get("TempId");
     String infoId = parameters.get("InfoId");
     String updateDate = parameters.get("UpdateDate");
-    
+
     if (StringUtil.isDefined(updateDate)) {
       pubDetail.setUpdateDate(DateUtil.stringToDate(updateDate, language));
     }
@@ -556,5 +505,4 @@ public class PublicationImport {
   public void setIgnoreMissingFormFields(boolean ignore) {
     ignoreMissingFormFields = ignore;
   }
-
 }

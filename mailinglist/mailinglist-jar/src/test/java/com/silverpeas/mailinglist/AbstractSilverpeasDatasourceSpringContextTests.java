@@ -20,34 +20,37 @@
  */
 package com.silverpeas.mailinglist;
 
-import com.mockrunner.mock.jms.MockQueue;
+import java.sql.SQLException;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jms.QueueConnectionFactory;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
+
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+
+import com.mockrunner.mock.jms.MockQueue;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.operation.DatabaseOperation;
-
-import javax.jms.QueueConnectionFactory;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.StringTokenizer;
-import javax.inject.Inject;
-import javax.inject.Named;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class AbstractSilverpeasDatasourceSpringContextTests {
@@ -56,20 +59,9 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
   @Inject
   @Named("dataSource")
   private DataSource datasource;
-  
-  @Inject
-  private DataSourceConfiguration config;
 
   public DataSource getDataSource() {
     return datasource;
-  }
-
-  public void setDataSourceConfiguration(DataSourceConfiguration config) {
-    this.config = config;
-  }
-
-  public DataSourceConfiguration getDataSourceConfiguration(DataSourceConfiguration config) {
-    return this.config;
   }
 
   public void setDataSource(DataSource datasource) {
@@ -79,11 +71,8 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
   protected void registerDatasource() {
     try {
       InitialContext ic = new InitialContext();
-      rebind(ic, config.getJndiName(), datasource);
-      ic.rebind(config.getJndiName(), datasource);
-      rebind(ic, JNDINames.DATABASE_DATASOURCE, datasource);
+      ic.rebind("jdbc/Silverpeas", datasource);
       ic.rebind(JNDINames.DATABASE_DATASOURCE, datasource);
-      rebind(ic, JNDINames.ADMIN_DATASOURCE, datasource);
       ic.rebind(JNDINames.ADMIN_DATASOURCE, datasource);
       registerMockJMS(ic);
     } catch (Exception nex) {
@@ -93,8 +82,8 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
 
   protected void registerMockJMS(InitialContext ic) throws NamingException {
     QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
-    rebind(ic, JNDINames.JMS_FACTORY, refFactory);
-    rebind(ic, JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
+    ic.rebind(JNDINames.JMS_FACTORY, refFactory);
+    ic.rebind(JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
     QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
     assertThat(qconFactory, is(notNullValue()));
     MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
@@ -102,30 +91,18 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
   }
 
   public boolean isOracle() {
-    return (config.getSchema() != null && !"".equals(config.getSchema()));
+    return false;
   }
 
   protected IDatabaseConnection getConnection() throws SQLException, DatabaseUnitException {
     if (isOracle()) {
-      try {
-        Class.forName(config.getDriver()).newInstance();
-      } catch (Exception ex) {
-        logger.error("Can't load configuration", ex);
-      }
-      IDatabaseConnection connection = new DatabaseConnection(DriverManager.getConnection(config.
-          getUrl(), config.getUsername(), config.getPassword()));
-      connection.getConfig().setProperty(
-          "http://www.dbunit.org/features/qualifiedTableNames", true);
-      connection.getConfig().setProperty(
-          "http://www.dbunit.org/properties/datatypeFactory",
+      IDatabaseConnection connection = new DatabaseConnection(datasource.getConnection());
+      connection.getConfig().setProperty("http://www.dbunit.org/features/qualifiedTableNames", true);
+      connection.getConfig().setProperty("http://www.dbunit.org/properties/datatypeFactory",
           new org.dbunit.ext.oracle.OracleDataTypeFactory());
       return connection;
     } else {
-      IDatabaseConnection connection = new DatabaseConnection(datasource.getConnection());
-      connection.getConfig().setProperty(
-          "http://www.dbunit.org/properties/datatypeFactory",
-          new org.dbunit.ext.postgresql.PostgresqlDataTypeFactory());
-      return connection;
+      return new DatabaseConnection(datasource.getConnection());
     }
   }
 
@@ -134,6 +111,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
   @Before
   public void onSetUp() {
     SimpleMemoryContextFactory.setUpAsInitialContext();
+    DBUtil.clearTestInstance();
     registerDatasource();
     IDatabaseConnection connection = null;
     try {
@@ -170,31 +148,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests {
       }
     }
     MockObjectFactory.clearAll();
-    SimpleMemoryContextFactory.setUpAsInitialContext();
-  }
-
-  /**
-   * Workaround to be able to use Sun's JNDI file system provider on Unix
-   *
-   * @param ic : the JNDI initial context
-   * @param jndiName : the binding name
-   * @param ref : the reference to be bound
-   * @throws NamingException
-   */
-  protected void rebind(InitialContext ic, String jndiName, Object ref) throws NamingException {
-    Context currentContext = ic;
-    StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
-    while (tokenizer.hasMoreTokens()) {
-      String name = tokenizer.nextToken();
-      if (tokenizer.hasMoreTokens()) {
-        try {
-          currentContext = (Context) currentContext.lookup(name);
-        } catch (javax.naming.NameNotFoundException nnfex) {
-          currentContext = currentContext.createSubcontext(name);
-        }
-      } else {
-        currentContext.rebind(name, ref);
-      }
-    }
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+    DBUtil.clearTestInstance();
   }
 }

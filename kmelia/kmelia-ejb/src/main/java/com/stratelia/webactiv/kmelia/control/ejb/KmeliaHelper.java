@@ -1,39 +1,35 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 4 avr. 2005
- *
- */
+
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.webactiv.SilverpeasRole;
 import java.io.Serializable;
 
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.versioning.Document;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
@@ -45,7 +41,6 @@ public class KmeliaHelper implements Serializable {
   private static final long serialVersionUID = 1L;
   public static final int PUBLICATION_HEADER = 0;
   public static final int PUBLICATION_CONTENT = 1;
-
   public static final int VALIDATION_CLASSIC = 0;
   public static final int VALIDATION_TARGET_1 = 1;
   public static final int VALIDATION_TARGET_N = 2;
@@ -54,7 +49,6 @@ public class KmeliaHelper implements Serializable {
   public static final String ROLE_PUBLISHER = "publisher";
   public static final String ROLE_WRITER = "writer";
   public static final String ROLE_READER = "user";
-  
   public static final String SPECIALFOLDER_TOVALIDATE = "tovalidate";
 
   public KmeliaHelper() {
@@ -88,8 +82,7 @@ public class KmeliaHelper implements Serializable {
     // Only if it is valid
     if (isIndexable(pubDetail)) {
       pubDetail.setIndexOperation(IndexManager.ADD);
-    }
-    else {
+    } else {
       pubDetail.setIndexOperation(IndexManager.REMOVE);
     }
   }
@@ -115,15 +108,23 @@ public class KmeliaHelper implements Serializable {
     return "/Rkmelia/" + nodeDetail.getNodePK().getInstanceId()
         + "/searchResult?Type=Node&Id=" + nodeDetail.getNodePK().getId();
   }
-  
+
   public static String getAttachmentUrl(PublicationDetail pubDetail, AttachmentDetail attDetail) {
-	    return "/Rkmelia/" + attDetail.getPK().getInstanceId()
-	        + "/searchResult?Type=Attachment&Id=" + pubDetail.getPK().getId() + "&AttachmentId=" + attDetail.getPK().getId()+"&FileOpened=0";
+    return "/Rkmelia/" + attDetail.getPK().getInstanceId()
+        + "/searchResult?Type=Attachment&Id=" + pubDetail.getPK().getId() + "&AttachmentId="
+        + attDetail.getPK().getId() + "&FileOpened=0";
   }
-  
+
   public static String getDocumentUrl(PublicationDetail pubDetail, Document document) {
-	    return "/Rkmelia/" + document.getPk().getInstanceId()
-	        + "/searchResult?Type=Document&Id=" + pubDetail.getPK().getId() + "&DocumentId=" + document.getPk().getId()+"&FileOpened=0";
+    return "/Rkmelia/" + document.getPk().getInstanceId()
+        + "/searchResult?Type=Document&Id=" + pubDetail.getPK().getId() + "&DocumentId=" + document.
+        getPk().getId() + "&FileOpened=0";
+  }
+
+  public static String getDocumentUrl(PublicationDetail pubDetail, SimpleDocument document) {
+    return "/Rkmelia/" + document.getPk().getInstanceId()
+        + "/searchResult?Type=Document&Id=" + pubDetail.getPK().getId() + "&DocumentId=" + document.
+        getId() + "&FileOpened=0";
   }
 
   public static boolean isToolbox(String componentId) {
@@ -133,11 +134,11 @@ public class KmeliaHelper implements Serializable {
   public static boolean isKmax(String componentId) {
     return componentId.startsWith("kmax");
   }
-  
+
   public static boolean isKmelia(String componentId) {
     return componentId.startsWith("kmelia");
   }
-  
+
   public static boolean isToValidateFolder(String id) {
     return SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id);
   }

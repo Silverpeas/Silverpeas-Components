@@ -24,12 +24,6 @@
 package org.silverpeas.resourcemanager.services;
 
 import com.stratelia.webactiv.util.DBUtil;
-import edu.emory.mathcs.backport.java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -46,6 +40,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -201,8 +202,8 @@ public class ResourceServiceTest {
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(1));
     assertThat(result, containsInAnyOrder(new ResourceValidator(id, 0)));
-    service.addManagers(id, Arrays.asList(new ResourceValidator[]{new ResourceValidator(id, 1),
-          new ResourceValidator(id, 5), new ResourceValidator(id, 10)}));
+    service.addManagers(id, Arrays.asList(new ResourceValidator(id, 1),
+        new ResourceValidator(id, 5), new ResourceValidator(id, 10)));
     result = service.getResource(id).getManagers();
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(4));

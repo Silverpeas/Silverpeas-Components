@@ -26,6 +26,7 @@ import com.silverpeas.questionReply.model.Category;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -139,8 +140,9 @@ public class QuestionReplyRequestRouter extends
         request.setAttribute("Flag", flag);
         request.setAttribute("UserId", scc.getUserId());
         request.setAttribute("Categories", scc.getAllCategories());
-        request.setAttribute("userAlreadySubscribed", SubscriptionServiceFactory.getFactory().
-            getSubscribeService().isSubscribedToComponent(scc.getUserId(), scc.getComponentId()));
+        request.setAttribute("userAlreadySubscribed",
+            SubscriptionServiceFactory.getFactory().getSubscribeService().existsSubscription(
+                new ComponentSubscription(scc.getUserId(), scc.getComponentId())));
         if (request.getAttribute("QuestionId") != null) {
           Question question =
               scc.getQuestion(Long.parseLong((String) request.getAttribute("QuestionId")));
@@ -354,9 +356,11 @@ public class QuestionReplyRequestRouter extends
             0);
         // Get classification positions
         String positions = request.getParameter("Positions");
-        long id = scc.saveNewFAQ();
-        scc.classifyQuestionReply(id, positions);
-        scc.getQuestion(id);
+        long questionId = scc.saveNewFAQ();
+        String id = Long.toString(questionId);
+        scc.classifyQuestionReply(questionId, positions);
+        scc.getQuestion(questionId);
+        request.setAttribute("QuestionId", id);
         request.setAttribute("contentId", scc.getCurrentQuestionContentId());
         destination = getDestination("Main", scc, request);
       } else if (function.equals("CreateQQuery")) {

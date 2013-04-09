@@ -42,6 +42,7 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.SearchEngineFactory;
 
 import com.silverpeas.classifieds.dao.ClassifiedsDAO;
@@ -78,15 +79,15 @@ import org.silverpeas.search.indexEngine.model.IndexEntryPK;
  */
 @Named("classifiedService")
 public class DefaultClassifiedService implements ClassifiedService {
-  
+
   public static final String COMPONENT_NAME = "classifieds";
   private static final String MESSAGES_PATH = "com.silverpeas.classifieds.multilang.classifiedsBundle";
   private static final String SETTINGS_PATH = "com.silverpeas.classifieds.settings.classifiedsSettings";
   private static final ResourceLocator settings = new ResourceLocator(SETTINGS_PATH, "");
-  
+
   @Inject
   private CommentUserNotificationService commentUserNotificationService;
-  
+
   /**
    * Initializes this service by registering itself among Silverpeas core services as interested
    * by events.
@@ -95,7 +96,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   public void initialize() {
     commentUserNotificationService.register(COMPONENT_NAME, this);
   }
-  
+
   /**
    * Releases all the resources required by this service. For instance, it unregisters from the
    * Silverpeas core services.
@@ -127,7 +128,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   public ResourceLocator getComponentMessages(String language) {
     return new ResourceLocator(MESSAGES_PATH, language);
   }
-  
+
   @Override
   public String createClassified(ClassifiedDetail classified) {
     Connection con = openConnection();
@@ -386,7 +387,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   @Override
   public Collection<ClassifiedDetail> search(QueryDescription query) {
     List<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    OrganizationController orga = new OrganizationController();
+    OrganisationController orga = new OrganizationController();
     try {
       List<MatchingIndexEntry> result = SearchEngineFactory.getSearchEngine().search(query).getEntries();
       // création des petites annonces à partir des resultats
@@ -438,7 +439,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       indexEntry.setCreationUser(classified.getCreatorId());
 
       // indéxation du contenu du formulaire XML
-      OrganizationController orga = new OrganizationController();
+      OrganisationController orga = new OrganizationController();
       String xmlFormName =
           orga.getComponentParameterValue(classified.getInstanceId(), "XMLFormName");
       if (StringUtil.isDefined(xmlFormName)) {

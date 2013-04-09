@@ -32,10 +32,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@ page import="com.stratelia.webactiv.util.coordinates.model.Coordinate"%>
 <%@ page import="com.stratelia.webactiv.util.coordinates.model.CoordinatePoint"%>
+<%@ page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
+
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="kmax_axisReport.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%!
 CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String translation, KmeliaSessionController kmeliaScc) {
@@ -93,7 +94,7 @@ out.println(gef.getLookStyleSheet());
 	        }
 	    }
 	    if (nbSelectedAxis != 1) {
-	            window.alert("Vous devez s�lectionnez au moins un axe !");
+	            window.alert("Vous devez sélectionnez au moins un axe !");
 	    } else {
 	            document.managerForm.action = "KmaxAddCoordinate";
 	            document.managerForm.SearchCombination.value = z;
@@ -120,16 +121,17 @@ out.println(gef.getLookStyleSheet());
 	browseBar.setDomainName(kmeliaScc.getSpaceLabel());
 	browseBar.setComponentName(kmeliaScc.getComponentLabel(), "KmaxMain");
 	String pubName = kmeliaScc.getSessionPublication().getDetail().getName(currentLang);
-	browseBar.setExtraInformation(Encode.encodeSpecialChar(pubName));
+	browseBar.setExtraInformation(EncodeHelper.javaStringToHtmlString(pubName));
 	String id = kmeliaScc.getSessionPublication().getDetail().getId();
 	browseBar.setI18N(action, currentLang);
 	
     out.println(window.printBefore());
 
 	if ("progress".equals(wizard)) {
-		displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources, out, kmaxMode);
+		KmeliaDisplayHelper.displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources,
+          out, kmaxMode);
 	} else {
-		displayAllOperations(id, kmeliaScc, gef, action, resources, out, true);
+		KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out, true);
 	}
     	
     out.println(frame.printBefore());
@@ -138,8 +140,8 @@ out.println(gef.getLookStyleSheet());
     	<!-- cadre d'aide -->
 		<div class="inlineMessage">
 			<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-			<%=Encode.javaStringToHtmlParagraphe(resources.getString("kmelia.HelpKmaxClassification")) %>
-		</div>
+      <%=EncodeHelper.javaStringToHtmlParagraphe(resources.getString("kmelia.HelpKmaxClassification"))%>
+    </div>
 		<br clear="all"/>
     <%
 	}
@@ -164,7 +166,8 @@ out.println(gef.getLookStyleSheet());
           nodeDetail = (NodeDetail) headersIt.next();
 		  //Do not get hidden nodes (Basket and unclassified)
 		  if (!NodeDetail.STATUS_INVISIBLE.equals(nodeDetail.getStatus()))
-			  out.println("<td align=\"center\"><b>"+Encode.javaStringToHtmlString(nodeDetail.getName(currentLang))+"</b></td>");
+			  out.println("<td align=\"center\"><b>" + EncodeHelper.javaStringToHtmlString(nodeDetail
+                .getName(currentLang)) + "</b></td>");
       }
      out.println("<td align=\"center\"><b>"+kmeliaScc.getString("Del")+"</b></td></tr>");
 	 out.println("<tr><td colspan=\"15\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></td></tr>");
@@ -194,7 +197,8 @@ out.println(gef.getLookStyleSheet());
 	              	if (pointLevel == 2)
 	                	out.println("<td align=\"center\">"+kmeliaScc.getString("All")+"</td>");
 	              	else
-	                	out.println("<td align=\"center\">"+Encode.javaStringToHtmlString(pointName)+"</td>");
+	                	out.println("<td align=\"center\">" + EncodeHelper.javaStringToHtmlSt
+                            ring(point N ame)+"</td>");
 	          	}
 	          	else
 	          		out.println("<td align=\"center\">"+kmeliaScc.getString("All")+"</td>");

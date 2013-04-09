@@ -55,6 +55,7 @@ import com.stratelia.webactiv.util.contact.model.ContactPK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -77,7 +78,7 @@ import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
 public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
   private SessionContext sc;
@@ -86,7 +87,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   private String componentId = null;
   private String space; // prefixTableName
   private UserDetail currentUser;
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
   private NodePK basketPK;
   private NodeBm currentNodeBm = null;
   private ContactBm currentContactBm = null;
@@ -110,7 +111,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     this.componentId = componentId;
   }
 
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     if (this.organizationController == null) {
       this.organizationController = new OrganizationController();
     }
@@ -175,7 +176,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       List<String> groupIds = getGroupIds(nodeDetail.getNodePK().getId());
       for (int g = 0; g < groupIds.size(); g++) {
         String groupId = groupIds.get(g);
-        Group group = getOrganizationController().getGroup(groupId);
+        Group group = getOrganisationController().getGroup(groupId);
         if (group != null) {
           NodeDetail nodeGroup = new NodeDetail();
           nodeGroup.getNodePK().setId("group_" + group.getId());
@@ -204,7 +205,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         } else { // groupe
           String groupId = childPK.getId().substring(childPK.getId().indexOf("_") + 1,
               childPK.getId().length());
-          nbContacts = getOrganizationController().getAllSubUsersNumber(groupId);
+          nbContacts = getOrganisationController().getAllSubUsersNumber(groupId);
         }
         nbContactsByTopic.add(Integer.valueOf(nbContacts));
       }
@@ -247,7 +248,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       }
 
       if (contactDetails != null) {
-        OrganizationController orga = getOrganizationController();
+        OrganisationController orga = getOrganisationController();
        for( ContactDetail contactDetail : contactDetails) {
           if (contactDetail.getUserId() != null) {// contact de type user Silverpeas
             try {
@@ -420,7 +421,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         Iterator<String> gIterator = groupIds.iterator();
         while (gIterator.hasNext()) {
           groupId = gIterator.next();
-          group = getOrganizationController().getGroup(groupId);
+          group = getOrganisationController().getGroup(groupId);
           result = addGroup(result, group, node.getLevel() + 1);
         }
       }
@@ -444,7 +445,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       nGroup.setLevel(level);
       tree.add(nGroup);
 
-      Group[] subGroups = getOrganizationController().getAllSubGroups(
+      Group[] subGroups = getOrganisationController().getAllSubGroups(
           group.getId());
       Group subGroup = null;
       for (int g = 0; g < subGroups.length; g++) {
@@ -722,7 +723,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       users[i] = ((ContactDetail) iterator.next()).getCreatorId();
       i++;
     }
-    OrganizationController orga = getOrganizationController();
+    OrganisationController orga = getOrganisationController();
     UserDetail[] userDetails = orga.getUserDetails(users);
     ArrayList<UserContact> list = new ArrayList<UserContact>();
     iterator = contactDetails.iterator();
@@ -758,7 +759,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       contactDetail = getContactBm().getDetail(pk);
       if (contactDetail.getUserId() != null) // contact de type user Silverpeas
       {
-        OrganizationController orga = getOrganizationController();
+        OrganisationController orga = getOrganisationController();
         UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
         if (userDetail != null) {
           setContactAttributes(contactDetail, userDetail, orga, false);
@@ -780,7 +781,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   }
 
   private void setContactAttributes(ContactDetail contactDetail,
-      UserDetail userDetail, OrganizationController orga,
+      UserDetail userDetail, OrganisationController orga,
       boolean filterExtraInfos) {
     contactDetail.setFirstName(userDetail.getFirstName());
     contactDetail.setLastName(userDetail.getLastName());
@@ -875,7 +876,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
           // Silverpeas
           {
             try {
-              OrganizationController orga = getOrganizationController();
+              OrganisationController orga = getOrganisationController();
               UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
               if (userDetail != null) {
                 setContactAttributes(contactDetail, userDetail, orga, true);
@@ -1277,7 +1278,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     if (contactDetail.getUserId() != null) // contact de type user Silverpeas
     {
       try {
-        OrganizationController orga = getOrganizationController();
+        OrganisationController orga = getOrganisationController();
         UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
         if (userDetail != null) {
           setContactAttributes(contactDetail, userDetail, orga, false);
@@ -1293,7 +1294,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
             "ContactId = " + ContactId, e);
       }
     }
-    OrganizationController orga = getOrganizationController();
+    OrganisationController orga = getOrganisationController();
     UserDetail userDetail = orga.getUserDetail(contactDetail.getCreatorId());
     UserCompleteContact userCompleteContact = new UserCompleteContact(
         userDetail, completeContact);
@@ -1344,7 +1345,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     if (contactDetail.getUserId() != null) // contact de type user Silverpeas
     {
       try {
-        OrganizationController orga = getOrganizationController();
+        OrganisationController orga = getOrganisationController();
         UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
         if (userDetail != null) {
           setContactAttributes(contactDetail, userDetail, orga, false);
@@ -1360,7 +1361,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
             "ContactId = " + ContactId, e);
       }
     }
-    OrganizationController orga = getOrganizationController();
+    OrganisationController orga = getOrganisationController();
     UserDetail userDetail = orga.getUserDetail(contactDetail.getCreatorId());
     UserCompleteContact userCompleteContact = new UserCompleteContact(
         userDetail, completeContact);
@@ -1434,7 +1435,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
           // Silverpeas
           {
             try {
-              OrganizationController orga = getOrganizationController();
+              OrganisationController orga = getOrganisationController();
               UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
               if (userDetail != null) {
                 setContactAttributes(contactDetail, userDetail, orga, true);

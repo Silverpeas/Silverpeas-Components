@@ -35,6 +35,9 @@ import java.util.Locale;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import org.silverpeas.core.admin.OrganisationController;
+import com.silverpeas.subscribe.service.ComponentSubscription;
+import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import org.silverpeas.search.SearchEngineFactory;
 
 import com.silverpeas.blog.BlogContentManager;
@@ -57,7 +60,7 @@ import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
@@ -128,8 +131,9 @@ public class BlogBmEJB implements SessionBean {
       final String type, final String senderId) {
     // send email alerts
     try {
-      Collection<String> subscriberIds = getSubscribeBm().getSubscribers(fatherPK);
-      OrganizationController orgaController = new OrganizationController();
+      Collection<String> subscriberIds =
+          getSubscribeBm().getUserSubscribers(NodeSubscriptionResource.from(fatherPK));
+      OrganisationController orgaController = new OrganizationController();
       if (subscriberIds != null && !subscriberIds.isEmpty()) {
         // get only subscribers who have sufficient rights to read pubDetail
         NodeDetail node = getNodeBm().getHeader(fatherPK);
@@ -265,7 +269,7 @@ public class BlogBmEJB implements SessionBean {
     return getPost(pub, new OrganizationController());
   }
 
-  private PostDetail getPost(PublicationDetail pub, OrganizationController orga) {
+  private PostDetail getPost(PublicationDetail pub, OrganisationController orga) {
     try {
       Collection<NodePK> allCat = getPublicationBm().getAllFatherPK(pub.getPK());
       // la collection des catégories contient en fait une seule catégorie, la récupérer
@@ -309,7 +313,7 @@ public class BlogBmEJB implements SessionBean {
       Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
       Collection<PublicationDetail> publications =
           getPublicationBm().getAllPublications(pubPK);
-      OrganizationController orgaController = new OrganizationController();
+      OrganisationController orgaController = new OrganizationController();
       for (String pubId : lastEvents) {
         for (PublicationDetail pub : publications) {
           if (pub.getPK().getId().equals(pubId)) {
@@ -426,7 +430,7 @@ public class BlogBmEJB implements SessionBean {
       // getPublicationBm().getDetailBetweenDate(beginDate, endDate, instanceId);
       Collection<PublicationDetail> publications =
           getPublicationBm().getPublicationsByStatus("Valid", pubPK);
-      OrganizationController orgaController = new OrganizationController();
+      OrganisationController orgaController = new OrganizationController();
       for (String pubId : lastEvents) {
         // pour chaque publication, créer le post correspondant
         SilverTrace.info("blog", "BlogBmEJB.getPostsByArchive()", "root.MSG_GEN_PARAM_VALUE",
@@ -647,29 +651,10 @@ public class BlogBmEJB implements SessionBean {
     }
   }
 
-  public void addSubscription(NodePK topicPK, String userId) {
+  public void addSubscription(String userId, String instanceId) {
     SilverTrace.info("blog", "BlogBmEJB.addSubscription()", "root.MSG_GEN_ENTER_METHOD");
-    if (!checkSubscription(topicPK, userId)) {
-      return;
-    }
-    getSubscribeBm().subscribe(new NodeSubscription(userId, topicPK));
+    getSubscribeBm().subscribe(new ComponentSubscription(userId, instanceId));
     SilverTrace.info("blog", "BlogBmEJB.addSubscription()", "root.MSG_GEN_EXIT_METHOD");
-  }
-
-  public boolean checkSubscription(NodePK topicPK, String userId) {
-    try {
-      Collection<? extends Subscription> subscriptions = getSubscribeBm()
-          .getUserSubscriptionsByComponent(userId, topicPK.getInstanceId());
-      for (Subscription subscription : subscriptions) {
-        if (topicPK.getId().equals(subscription.getTopic().getId())) {
-          return false;
-        }
-      }
-      return true;
-    } catch (Exception e) {
-      throw new BlogRuntimeException("BlogBmEJB.checkSubscription()",
-          SilverpeasRuntimeException.ERROR, "blog.EX_IMPOSSIBLE_DOBTENIR_LES_ABONNEMENTS", e);
-    }
   }
 
   private void indexExternalElementsOfPublication(PublicationPK pubPK) {

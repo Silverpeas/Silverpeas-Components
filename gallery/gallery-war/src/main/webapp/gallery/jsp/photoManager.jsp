@@ -24,7 +24,6 @@
 
 --%>
 
-<%@page import="com.silverpeas.gallery.ImageType"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -34,12 +33,12 @@
   String repertoire = (String) request.getAttribute("Repertoire");
   List path = (List) request.getAttribute("Path");
   String userName = (String) request.getAttribute("UserName");
-    
+
   Integer nbCom = (Integer) request.getAttribute("NbComments");
   Boolean isUsePdc = (Boolean) request.getAttribute("IsUsePdc");
   String XMLFormName = (String) request.getAttribute("XMLFormName");
   boolean showComments = ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
-    
+
   // déclaration des variables :
   String photoId = "";
   String title = "";
@@ -63,7 +62,7 @@
   String keyWord = "";
   String beginDate = "";
   String endDate = "";
-    
+
   // dans le cas d'une mise à jour, récupération des données :
   if (photo != null) {
     photoId = new Integer(photo.getPhotoPK().getId()).toString();
@@ -81,7 +80,7 @@
     nomRep = repertoire;
     nameFile = photo.getImageName();
     name = photo.getId() + "_66x50.jpg";
-    vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(),
+    vignette_url = FileServerUtils.getUrl(componentId, name, photo.getImageMimeType(),
         nomRep);
     action = "UpdatePhoto";
     creationDate = resource.getOutputDate(photo.getCreationDate());
@@ -98,7 +97,7 @@
     } else {
       endDownloadDate = "";
     }
-      
+
     if (title.equals(nameFile)) {
       title = "";
     }
@@ -117,7 +116,7 @@
       endDate = "";
     }
   }
-    
+
   // déclaration des boutons
   Button validateButton = gef.getFormButton(resource.getString("GML.validate"),
       "javascript:onClick=sendData();", false);
@@ -128,7 +127,7 @@
   } else {
     cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum", false);
   }
-    
+
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -139,14 +138,14 @@
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 		<script type="text/javascript">
-	
+
 			// fonctions de contrôle des zones du formulaire avant validation
 			function sendData() {
 				if (isCorrectForm()) {
 	        		document.photoForm.submit();
 	    		}
 			}
-		
+
 			function isCorrectForm() {
 		     	var errorMsg = "";
 		     	var errorNb = 0;
@@ -160,20 +159,20 @@
 		     	var langue = "<%=resource.getLanguage()%>";
      			var beginDownloadDateOK = true;
      			var beginDateOK = true;
-		     	
-		     	if (title.length > 255) { 
+
+		     	if (title.length > 255) {
 					errorMsg+="  - '<%=resource.getString("GML.title")%>'  <%=resource.getString("gallery.MsgTaille")%>\n";
 		           	errorNb++;
 		     	}
 		   		if (descr.length > 255) {
 		     		errorMsg+="  - '<%=resource.getString("GML.description")%>'  <%=resource.getString("gallery.MsgTaille")%>\n";
 		           	errorNb++;
-		     	}				
+		     	}
 		     	if (<%=(vignette_url == null)%> && file == "") {
 	           		errorMsg+="  - '<%=resource.getString("gallery.photo")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
 	           		errorNb++;
 		     	}
-		     	
+
 		     	// vérifier les dates de début et de fin de période
 		     	// les dates de téléchargements
 		     	if (!isWhitespace(beginDownloadDate)) {
@@ -211,9 +210,9 @@
 				   		beginDateOK = false;
 			   		}
 	     		 }
-			     if (!isWhitespace(endDate)) 
+			     if (!isWhitespace(endDate))
 			     {
-			    	   if (!isDateOK(endDate, langue)) { 
+			    	   if (!isDateOK(endDate, langue)) {
 			                 errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
 			                 errorNb++;
 			           } else {
@@ -232,7 +231,7 @@
 							}
 						}
 			     }
-		     	
+
 		     	// vérifier que le document est bien une image
 		     	if (file != "")	{
  					var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
@@ -255,21 +254,21 @@
 		            	window.alert(errorMsg);
 		            	result = false;
 		            	break;
-		     	} 
+		     	}
 		     	return result;
 			}
 		</script>
-		
+
 		</head>
 <body onload="javascript:document.photoForm.WAIMGVAR0.focus();">
 <%
-    
+
   browseBar.setDomainName(spaceLabel);
   browseBar.setComponentName(componentLabel, "Main");
   displayPath(path, browseBar);
-      
+
   Board board = gef.getBoard();
-      
+
   TabbedPane tabbedPane = gef.getTabbedPane();
   if (photo != null) {
     tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId=" + photoId, false);
@@ -288,12 +287,12 @@
       tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId=" + photoId, false);
     }
   }
-      
+
   out.println(window.printBefore());
   out.println(tabbedPane.print());
   out.println(frame.printBefore());
   out.println(board.printBefore());
-      
+
 %>
 <form name="photoForm" action="<%=action%>" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 
@@ -307,11 +306,10 @@
       	</td>
 	</tr>
 	<% if (vignette_url != null) { 
-		String type = nameFile.substring(nameFile.lastIndexOf(".") + 1, nameFile.length());
-		if (!ImageType.isPreviewable(nameFile)) {
+		if (!photo.isPreviewable()) {
 			vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_66x50.jpg";
 		}
-	%> 
+	%>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("gallery.vignette")%> : </td>
       		<td><img src="<%=vignette_url%>"/></td>
@@ -389,7 +387,7 @@
   	</tr>
 </table>
 </form>
-<% 
+<%
 	out.println(board.printAfter());
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);

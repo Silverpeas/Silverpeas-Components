@@ -23,8 +23,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -33,21 +34,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="modelUtils.jsp" %>
-<%@ include file="attachmentUtils.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
 
 
 <%!
  //Icons
 String folderSrc;
-
-void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServletRequest request, HttpServletResponse response) throws KmeliaException {
-    try {
-        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+id+"&SpaceId="+spaceId+"&ComponentId="+componentId).include(request, response);
-    } catch (Exception e) {
-	  throw new KmeliaException("JSPpublicationManager.displayViewWysiwyg()",SilverpeasException.ERROR,"root.EX_DISPLAY_WYSIWYG_FAILED", e);
-    }
-}
 
 void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDetail owner, KmeliaSessionController kmeliaScc, ResourceLocator settings, ResourceLocator uploadSettings, ResourceLocator publicationSettings, String m_context, JspWriter out, HttpServletRequest request, HttpServletResponse response, String user_id, String profile, ResourcesWrapper resources) throws IOException, KmeliaException {
     InfoDetail infos = pubComplete.getInfoDetail();
@@ -62,9 +54,9 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
     out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
     out.println("<TR><TD align=\"left\">");
 
-	out.println("<span class=txtnav><b>"+Encode.javaStringToHtmlString(detail.getName(kmeliaScc.getCurrentLanguage()))+"</b></span><BR>");
+	out.println("<span class=txtnav><b>"+EncodeHelper.javaStringToHtmlString(detail.getName(kmeliaScc.getCurrentLanguage()))+"</b></span><BR>");
 
-    out.println("<b>"+Encode.javaStringToHtmlString(detail.getDescription(kmeliaScc.getCurrentLanguage()))+"<b><BR><BR>");
+    out.println("<b>"+EncodeHelper.javaStringToHtmlString(detail.getDescription(kmeliaScc.getCurrentLanguage()))+"<b><BR><BR>");
 
 	String userId = detail.getUpdaterId();
 	if (userId == null || userId.length() == 0)
@@ -76,22 +68,24 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
 		if (user != null) {
 			out.println("</td><td valign=top align=right>");
 			out.println(user.getFirstName()+" "+user.getLastName()+"<br><i>"+resources.getOutputDate(detail.getUpdateDate()));
-			out.println("</i><BR>");
+			out.println("</i><br/>");
 		}
 	}
 
     out.println("</TD></TR></table>");
 	out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
-    if (WysiwygController.haveGotWysiwyg(detail.getPK().getSpace(), detail.getPK().getComponentName(), detail.getPK().getId())) {
+    if (WysiwygController.haveGotWysiwygToDisplay(detail.getPK().getComponentName(), detail.getPK().getId(), kmeliaScc.getCurrentLanguage())) {
         out.println("<TR><TD>");
-        out.flush();
-        displayViewWysiwyg(detail.getPK().getId(), detail.getPK().getSpace(), detail.getPK().getComponentName(), request, response);
+%>
+		<view:displayWysiwyg objectId="<%=detail.getPK().getId()%>" componentId="<%=detail.getPK().getComponentName() %>" language="<%=kmeliaScc.getCurrentLanguage() %>" />
+<%
         out.println("</TD>");
         if (! ("bottom".equals(settings.getString("attachmentPosition") ) ) ) {
 	        if (infos != null) {
 				out.println("<TD width=\"25%\" valign=\"top\" align=\"center\">");
 	            out.println("<A NAME=attachments></a>");
-	            displayUserAttachmentsView(detail, m_context, out, type, user_id, true, resources);
+	            KmeliaDisplayHelper.displayUserAttachmentsView(detail, m_context, out, kmeliaScc
+                    .getLanguage(), true, resources);
 				out.println("</TD>");
 	        }
 	    } else {
@@ -99,7 +93,8 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
 		        out.println("</TR><TR>");
 				out.println("<TD valign=\"top\">");
 	            out.println("<A NAME=attachments></a>");
-	            displayUserAttachmentsView(detail, m_context, out, type, user_id, false, resources);
+	            KmeliaDisplayHelper.displayUserAttachmentsView(detail, m_context, out, kmeliaScc
+                    .getLanguage(), false, resources);
 				out.println("</TD>");
 	        }
 	    }
@@ -109,22 +104,19 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
             out.println("<TR><TD align=\"center\">");
             if (model != null) {
             	displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
-                //displayViewInfoModel(out, model, infos, settings, publicationSettings, m_context, kmeliaScc);
             }
             out.println("</TD>");
 
 	        if (! ("bottom".equals(settings.getString("attachmentPosition") ) ) ) {
 				out.println("<TD width=\"25%\" valign=\"top\" align=\"center\">");
 				out.println("<A NAME=attachments></a>");
-				displayUserAttachmentsView(detail, m_context, out, type, user_id, true, resources);
-				//displayUserAttachmentsView(detail, m_context, out, type, user_id);
+				KmeliaDisplayHelper.displayUserAttachmentsView(detail, m_context, out,  kmeliaScc.getLanguage(), true, resources);
 				out.println("</TD>");
 		    } else {
 		        out.println("</TR><TR>");
 				out.println("<TD valign=\"top\">");
 	            out.println("<A NAME=attachments></a>");
-	            displayUserAttachmentsView(detail, m_context, out, type, user_id, false, resources);
-				//displayUserAttachmentsView(kmeliaScc, detail, m_context, out, type, user_id, false);
+	            KmeliaDisplayHelper.displayUserAttachmentsView(detail, m_context, out, kmeliaScc.getLanguage(), false, resources);
 				out.println("</TD>");
 		    }
             out.println("</TR>");
@@ -133,7 +125,7 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
     out.println("</TABLE>");
 }
 
-// Fin des d�clarations
+// Fin des declarations
 %>
 
 <%
@@ -143,8 +135,9 @@ void displayUserModelAndAttachmentsView(CompletePublication pubComplete, UserDet
   String topicId		= "";
   String pubName		= "";
 
-  ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", kmeliaScc.getLanguage());
-  ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
+  ResourceLocator uploadSettings = new
+          ResourceLocator("org.silverpeas.util.uploads.uploadSettings", kmeliaScc.getLanguage());
+  ResourceLocator publicationSettings = new ResourceLocator("org.silverpeas.util.publication.publicationSettings", kmeliaScc.getLanguage());
 
   KmeliaPublication kmeliaPublication = null;
   UserDetail ownerDetail = null;
@@ -159,8 +152,8 @@ String path = "";
 String profile = "user";
 String checkPath = "";
 
-String id 			= (String) request.getParameter("Id");
-String currentLang 	= (String) request.getAttribute("Language");
+String id 			=  request.getParameter("Id");
+String currentLang 	=  request.getAttribute("Language");
 
 //Vrai si le user connecte est le createur de cette publication ou si il est admin
 boolean isOwner = false;
@@ -208,7 +201,7 @@ out.println(gef.getLookStyleSheet());
 		out.println(frame.printBefore());
 
         displayUserModelAndAttachmentsView(pubComplete, ownerDetail, kmeliaScc, settings, uploadSettings, publicationSettings, m_context, out, request, response, user_id, profile, resources);
-        
+
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>

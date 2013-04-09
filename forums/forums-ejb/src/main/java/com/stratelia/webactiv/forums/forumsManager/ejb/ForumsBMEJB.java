@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
@@ -30,12 +27,17 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
+
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.notation.ejb.NotationBmHome;
@@ -49,38 +51,35 @@ import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.forums.ForumsContentManager;
+import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
+import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import com.stratelia.webactiv.forums.models.ForumPK;
-import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
-import com.stratelia.webactiv.forums.models.MessagePK;
-import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
+import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
+import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
+
 /**
  * Cette classe est le Business Manager qui gere les forums
- * @author frageade
- * @since September 2000
+ *
  */
 public class ForumsBMEJB implements SessionBean {
-  private static final long serialVersionUID = -6809840977338911593L;
 
-  private ForumsContentManager forumsContentManager = null;
+  private static final long serialVersionUID = -6809840977338911593L;
+  private final ForumsContentManager forumsContentManager = new ForumsContentManager();
 
   public Collection<ForumDetail> getForums(Collection<ForumPK> forumPKs) {
     Connection con = openConnection();
@@ -88,10 +87,9 @@ public class ForumsBMEJB implements SessionBean {
       return ForumsDAO.selectByForumPKs(con, forumPKs);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getForums()",
-          SilverpeasRuntimeException.ERROR,
-          "forums.EXE_GET_FORUMS_LIST_FAILED", e);
+          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUMS_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -103,7 +101,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getForum()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -115,7 +113,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getForumsList()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUMS_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -127,7 +125,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getThreadsList()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_THREADS_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -139,7 +137,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getForumName()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -151,7 +149,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.isForumActive()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -163,7 +161,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getForumParentId()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -175,7 +173,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getForumInstanceId()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -187,7 +185,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getForumCreatorId()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -203,7 +201,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getForums()", SilverpeasRuntimeException.ERROR,
           "forums.EXE_GET_FORUMS_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -215,7 +213,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getForumDetail",
           SilverpeasRuntimeException.ERROR, "problem to load forum detail pk=" + forumPK.getId(), e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -229,7 +227,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getForumsByCategory()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUMS_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -245,12 +243,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getForumSons()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUMS_SONS_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Verrouille recursivement l'arborescence d'un forum en ecriture a partir de sa primary key
+   *
    * @param ForumPK la primary key du forum
    * @param int le niveau de verrouillage
    * @author frageade
@@ -268,12 +267,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.lockForum()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_LOCK_FORUM_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Deverrouille recursivement un forum en ecriture a partir de sa primary key
+   *
    * @param ForumPK la primary key du forum
    * @param int le niveau de verrouillage
    * @return int le code d'erreur
@@ -294,13 +294,14 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.unlockForum()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_UNLOCK_FORUM_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
     return result;
   }
 
   /**
    * Supprime un forum et tous ses sous-forums a partir de sa primary key
+   *
    * @param ForumPK la primary key du forum
    * @author frageade
    * @since 3 Octobre 2000
@@ -326,20 +327,20 @@ public class ForumsBMEJB implements SessionBean {
       for (String messagesId : messagesIds) {
         deleteMessage(new MessagePK(forumPK.getComponentName(), messagesId));
       }
-
-      getForumsContentManager().deleteSilverContent(con, forumPK);
+      forumsContentManager.deleteSilverContent(con, forumPK);
       deleteTagCloud(forumPK);
       deleteNotation(forumPK);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.deleteForum()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_FORUM_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Cree un nouveau forum dans la datasource
+   *
    * @param ForumPK la primary key
    * @param String nom du forum
    * @param String description du forum
@@ -354,25 +355,24 @@ public class ForumsBMEJB implements SessionBean {
       String forumCreator, int forumParent, String categoryId, String keywords) {
     Connection con = openConnection();
     try {
-      int forumId =
-          ForumsDAO.createForum(con, forumPK, forumName, forumDescription, forumCreator,
-              forumParent, categoryId);
+      int forumId = ForumsDAO.createForum(con, forumPK, forumName, forumDescription, forumCreator,
+          forumParent, categoryId);
       forumPK.setId(String.valueOf(forumId));
       createIndex(forumPK);
-
-      getForumsContentManager().createSilverContent(con, forumPK, forumCreator);
+      forumsContentManager.createSilverContent(con, forumPK, forumCreator);
       createTagCloud(forumPK, keywords);
       return forumId;
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.createForum()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_FORUM_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Met a jour les informations sur un forum dans la datasource
+   *
    * @param ForumPK la primary key du forum
    * @param String nom du forum
    * @param String description du forum
@@ -401,7 +401,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.updateForum()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_UPDATE_FORUM_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -418,7 +418,7 @@ public class ForumsBMEJB implements SessionBean {
           SilverpeasRuntimeException.ERROR,
           "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -441,7 +441,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getSubjectsIds()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_IDS_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -453,7 +453,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getMessagesIds()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_IDS_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -469,7 +469,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getNbMessages()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -481,7 +481,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getAuthorNbMessages()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -493,12 +493,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getNbResponses()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Retourne le dernier message d'un forum
+   *
    * @param ForumPK la primary key du forum
    * @return Vector la liste des champs du dernier message
    * @author sfariello
@@ -512,7 +513,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getLastMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -536,7 +537,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getLastMessageRSS()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
     return messages;
   }
@@ -556,7 +557,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getLastMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -568,12 +569,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getLastMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Retourne vrai s'il y a des messages non lus sur ce forum depuis la dernière visite
+   *
    * @param forumId l'id du forum
    * @param userId l'id de l'utilisateur
    * @return String la date de la dernière visite
@@ -619,7 +621,7 @@ public class ForumsBMEJB implements SessionBean {
       if (dateLastMessageBySubject == null
           || dateLastVisit == null
           || (dateLastMessageBySubject != null && dateLastVisit != null && dateLastVisit
-              .before(dateLastMessageBySubject))) {
+          .before(dateLastMessageBySubject))) {
         // la date de dernière visite de ce message est antérieure à la date du
         // dernier
         // message, il y a donc des réponses non lues pour ce message
@@ -629,13 +631,14 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.isNewMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
     return false;
   }
 
   /**
    * enregistre la date de la dernière visite d'un utilisateur sur un forum
+   *
    * @param messageId l'id du message
    * @param userId l'id de l'utilisateur
    * @author sfariello
@@ -649,12 +652,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.setLastVisit()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Recupere les infos d'un message
+   *
    * @param MessagePK la primary key du message
    * @return Vector la liste des champs du message
    * @author frageade
@@ -668,7 +672,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getMessageInfos()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_MESSAGE_INFOS_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -683,7 +687,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_MESSAGE_INFOS_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -695,7 +699,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getMessageTitle()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_MESSAGE_INFOS_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -707,41 +711,40 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getMessageParentId()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_MESSAGE_INFOS_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
-   * Cree un nouveau message dans la datasource
-   * @param MessagePK la primary key du message
-   * @param String titre du message
-   * @param String id de l'auteur du message
-   * @param String date de creation
-   * @param Strinf id du forum
-   * @param String id du message parent
-   * @param String texte du message
-   * @return String l'id du nouveau message
-   * @author frageade
-   * @since 04 Octobre 2000
+   * Cree un nouveau message
+   *
+   * @param messagePK la primary key du message
+   * @param title titre du message
+   * @param authorId id de l'auteur du message
+   * @param creationDate date de creation
+   * @param forumId id du forum
+   * @param parentId id du message parent
+   * @param content texte du message
+   * @param keywords the message keywords
+   * @param status the message status
+   * @return l'id du nouveau
    */
-  public int createMessage(MessagePK messagePK, String messageTitle,
-      String messageAuthor, Date messageCreationdate, int messageForum,
-      int messageParent, String messageText, String keywords, String status) {
+  public int createMessage(MessagePK messagePK, String title, String authorId, Date creationDate,
+      int forumId, int parentId, String content, String keywords, String status) {
     Connection con = openConnection();
     try {
-      int messageId = ForumsDAO.createMessage(con, messageTitle, messageAuthor,
-          messageCreationdate, messageForum, messageParent, status);
+      int messageId = ForumsDAO.createMessage(con, title, authorId,
+          creationDate, forumId, parentId, status);
       messagePK.setId(String.valueOf(messageId));
       createIndex(messagePK);
       createTagCloud(messagePK, keywords);
-      createWysiwyg(messagePK, messageText);
+      createWysiwyg(messagePK, content, authorId);
       return messageId;
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.createMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_MESSAGE_FAILED",
-          e);
+          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_MESSAGE_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -755,10 +758,9 @@ public class ForumsBMEJB implements SessionBean {
       updateWysiwyg(messagePK, message, userId);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.updateMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_MESSAGE_FAILED",
-          e);
+          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_MESSAGE_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -767,13 +769,13 @@ public class ForumsBMEJB implements SessionBean {
       updateTagCloud(messagePK, keywords);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.updateMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_MESSAGE_FAILED",
-          e);
+          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_MESSAGE_FAILED", e);
     }
   }
 
   /**
    * Supprime un message et tous ses sous-messages a partir de sa primary key
+   *
    * @param MessagePK la primary key du message
    * @author frageade
    * @since 04 Octobre 2000
@@ -788,7 +790,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.deleteMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_MESSAGE_SONS_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
     if (v.size() > 0) {
       for (int i = 0; i < v.size(); i++) {
@@ -804,15 +806,15 @@ public class ForumsBMEJB implements SessionBean {
       deleteWysiwyg(messagePK);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.deleteMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_MESSAGE_FAILED",
-          e);
+          SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_MESSAGE_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param userId
    * @param forumPK
    * @return
@@ -827,7 +829,7 @@ public class ForumsBMEJB implements SessionBean {
         throw new ForumsRuntimeException("ForumsBmEJB.isModerator()",
             SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
       } finally {
-        closeConnection(con);
+        DBUtil.close(con);
       }
     }
     return false;
@@ -835,6 +837,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
+   *
    * @param forumPK
    * @param userId
    * @see
@@ -847,12 +850,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.addModerator()",
           SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param forumPK
    * @param userId
    * @see
@@ -865,12 +869,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.removeModerator()",
           SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param forumPK
    * @see
    */
@@ -882,7 +887,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.removeAllModerators()",
           SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -894,12 +899,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getModerators()",
           SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param messagePK
    * @param forumPK
    * @see
@@ -914,7 +920,7 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.moveMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_MESSAGE_SONS_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
     if (v.size() > 0) {
       for (int i = 0; i < v.size(); i++) {
@@ -928,12 +934,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.moveMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_MOVE_MESSAGE_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Liste tous les sous-messages d'un message
+   *
    * @param MessagePK la primary key du message pere
    * @return Vector liste des ids fils
    * @author frageade
@@ -947,12 +954,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getMessageSons()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_MESSAGE_SONS_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Liste tous les sous-messages d'un message récursivement
+   *
    * @param MessagePK la primary key du message pere
    * @return Vector liste des ids fils
    * @author frageade
@@ -966,12 +974,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getAllMessageSons()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_GET_ALL_MESSAGE_SONS_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param messagePK
    * @param userId
    * @see
@@ -984,12 +993,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.subscribeMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_SUBSCEIBE_MESSAGE_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param messagePK
    * @param userId
    * @see
@@ -1002,12 +1012,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.unsubscribeMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_UNSUBSCRIBE_MESSAGE_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param messagePK
    * @see
    */
@@ -1019,12 +1030,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.removeAllSubscribers()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_ALL_SUSCRIBER_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param messagePK
    * @return
    * @see
@@ -1037,12 +1049,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.listAllSubscribers()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_LIST_ALL_SUSCRIBER_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param messagePK
    * @param userId
    * @return
@@ -1058,13 +1071,14 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.isSubscriber()",
           SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
     return result;
   }
 
   /**
    * Method declaration
+   *
    * @param messagePK
    * @see
    */
@@ -1080,17 +1094,14 @@ public class ForumsBMEJB implements SessionBean {
       indexEntry.setTitle(message.getTitle());
       indexEntry.setCreationDate(message.getDate());
       indexEntry.setCreationUser(message.getAuthor());
-
-      String wysiwygPath = getWysiwygPath(componentId, messageId);
-      if (StringUtil.isDefined(wysiwygPath)) {
-        indexEntry.addFileContent(wysiwygPath, null, "text/html", null);
-      }
+      WysiwygController.index(componentId, messageId);
     }
     IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
   /**
    * Method declaration
+   *
    * @param messagePK
    * @see
    */
@@ -1101,6 +1112,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
+   *
    * @param forumPK
    * @see
    */
@@ -1117,6 +1129,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
+   *
    * @param forumPK
    * @see
    */
@@ -1126,56 +1139,57 @@ public class ForumsBMEJB implements SessionBean {
   }
 
   // Implementation des methodes de l'interface SessionBean
-
   /**
    * Method declaration
+   *
    * @see
    */
+  @Override
   public void ejbActivate() {
   }
 
   /**
    * Method declaration
+   *
    * @see
    */
+  @Override
   public void ejbPassivate() {
   }
 
   /**
    * Method declaration
+   *
    * @see
    */
+  @Override
   public void ejbRemove() {
   }
 
   /**
    * Method declaration
+   *
    * @param sc
    * @see
    */
+  @Override
   public void setSessionContext(SessionContext sc) {
   }
 
   // Implementation de l'interface Home
-
   /**
    * Method declaration
+   *
    * @throws CreateException
    * @see
    */
   public void ejbCreate() throws CreateException {
   }
 
-  // Methodes internes
-
   /**
    * Ouverture de la connection vers la source de donnees
+   *
    * @return Connection la connection
-   * @exception RemoteException
-   * @exception SQLException
-   * @exception NamingException
-   * @author frageade
-   * @since 28 Septembre 2000
    */
   public Connection openConnection() {
     try {
@@ -1184,24 +1198,6 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.openConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", ue);
     }
-  }
-
-  private void closeConnection(Connection con) {
-    try {
-      if (con != null) {
-        con.close();
-      }
-    } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.closeConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EXE_CONNECTION_CLOSE_FAILED", e);
-    }
-  }
-
-  private ForumsContentManager getForumsContentManager() {
-    if (forumsContentManager == null) {
-      forumsContentManager = new ForumsContentManager();
-    }
-    return forumsContentManager;
   }
 
   public int getSilverObjectId(ForumPK forumPK) {
@@ -1215,16 +1211,14 @@ public class ForumsBMEJB implements SessionBean {
         instanceId = getForumInstanceId(forumId);
         forumPK.setComponentName(instanceId);
       }
-      silverObjectId = getForumsContentManager().getSilverObjectId(
-          forumPK.getId(), instanceId);
+      silverObjectId = forumsContentManager.getSilverObjectId(forumPK.getId(), instanceId);
       if (silverObjectId == -1) {
         String creatorId = getForumCreatorId(forumId);
-        silverObjectId = getForumsContentManager().createSilverContent(null, forumPK, creatorId);
+        silverObjectId = forumsContentManager.createSilverContent(null, forumPK, creatorId);
       }
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getSilverObjectId()",
-          SilverpeasRuntimeException.ERROR,
-          "forums.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+          SilverpeasRuntimeException.ERROR, "forums.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
     }
     return silverObjectId;
   }
@@ -1296,8 +1290,8 @@ public class ForumsBMEJB implements SessionBean {
   private NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
+          NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getNodeBm()",
@@ -1330,7 +1324,7 @@ public class ForumsBMEJB implements SessionBean {
         }
       } else {
         // Derniers threads du forum.
-        forumPKs = new ForumPK[] { forumPK };
+        forumPKs = new ForumPK[]{forumPK};
       }
 
       if (notAnswered) {
@@ -1344,12 +1338,13 @@ public class ForumsBMEJB implements SessionBean {
       throw new ForumsRuntimeException("ForumsBmEJB.getLastTheads()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_LIST_ALL_SUSCRIBER_FAILED", e);
     } finally {
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Create the tagclouds corresponding to the forum detail.
+   *
    * @param forumDetail The detail of the forum.
    * @throws RemoteException
    */
@@ -1367,17 +1362,13 @@ public class ForumsBMEJB implements SessionBean {
     createTagCloud(tagCloud, keywords);
   }
 
-  private void createTagCloud(TagCloud tagCloud, String keywords)
-      throws RemoteException {
+  private void createTagCloud(TagCloud tagCloud, String keywords) throws RemoteException {
     if (keywords != null) {
       TagCloudBm tagCloudBm = getTagCloudBm();
-      StringTokenizer st = new StringTokenizer(keywords, " ");
-      String tag;
-      String tagKey;
-      ArrayList tagList = new ArrayList();
-      while (st.hasMoreElements()) {
-        tag = (String) st.nextElement();
-        tagKey = TagCloudUtil.getTag(tag);
+      String[] words = StringUtil.split(keywords, ' ');
+      List<String> tagList = new ArrayList<String>(words.length);
+      for (String tag : words) {
+        String tagKey = TagCloudUtil.getTag(tag);
         if (!tagList.contains(tagKey)) {
           tagCloud.setTag(tagKey);
           tagCloud.setLabel(tag.toLowerCase());
@@ -1390,21 +1381,23 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Delete the tagclouds corresponding to the publication key.
+   *
    * @param pubPK The primary key of the publication.
    * @throws RemoteException
    */
   private void deleteTagCloud(ForumPK forumPK) throws RemoteException {
-    getTagCloudBm().deleteTagCloud(
-        new TagCloudPK(forumPK.getId(), forumPK.getComponentName()), TagCloud.TYPE_FORUM);
+    getTagCloudBm().deleteTagCloud(new TagCloudPK(forumPK.getId(), forumPK.getComponentName()),
+        TagCloud.TYPE_FORUM);
   }
 
   private void deleteTagCloud(MessagePK messagePK) throws RemoteException {
-    getTagCloudBm().deleteTagCloud(
-        new TagCloudPK(messagePK.getId(), messagePK.getComponentName()), TagCloud.TYPE_MESSAGE);
+    getTagCloudBm().deleteTagCloud(new TagCloudPK(messagePK.getId(), messagePK.getComponentName()),
+        TagCloud.TYPE_MESSAGE);
   }
 
   /**
    * Update the tagclouds corresponding to the publication detail.
+   *
    * @param forumDetail The detail of the forum.
    * @throws RemoteException
    */
@@ -1421,25 +1414,22 @@ public class ForumsBMEJB implements SessionBean {
   }
 
   public String getForumTags(ForumPK forumPK) throws RemoteException {
-    Collection tagClouds = getTagCloudBm().getTagCloudsByElement(
+    Collection<TagCloud> tagClouds = getTagCloudBm().getTagCloudsByElement(
         forumPK.getComponentName(), forumPK.getId(), TagCloud.TYPE_FORUM);
     return getTags(tagClouds);
   }
 
   public String getMessageTags(MessagePK messagePK) throws RemoteException {
-    Collection tagClouds = getTagCloudBm().getTagCloudsByElement(
+    Collection<TagCloud> tagClouds = getTagCloudBm().getTagCloudsByElement(
         messagePK.getComponentName(), messagePK.getId(), TagCloud.TYPE_MESSAGE);
     return getTags(tagClouds);
   }
 
   private String getTags(Collection<TagCloud> tagClouds) {
-    Iterator<TagCloud> iter = tagClouds.iterator();
-    StringBuffer sb = new StringBuffer();
-    TagCloud tagCloud;
-    while (iter.hasNext()) {
-      tagCloud = (TagCloud) iter.next();
+    StringBuilder sb = new StringBuilder();
+    for (TagCloud tagCloud : tagClouds) {
       if (sb.length() > 0) {
-        sb.append(" ");
+        sb.append(' ');
       }
       sb.append(tagCloud.getLabel());
     }
@@ -1451,26 +1441,24 @@ public class ForumsBMEJB implements SessionBean {
    */
   private TagCloudBm getTagCloudBm() {
     try {
-      TagCloudBmHome tagCloudBmHome = (TagCloudBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.TAGCLOUDBM_EJBHOME, TagCloudBmHome.class);
+      TagCloudBmHome tagCloudBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.TAGCLOUDBM_EJBHOME,
+          TagCloudBmHome.class);
       TagCloudBm tagCloudBm = tagCloudBmHome.create();
       return tagCloudBm;
     } catch (Exception e) {
-      throw new TagCloudRuntimeException(
-          "KmeliaSessionController.getTagCloudBm()", SilverpeasException.ERROR,
-          "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new TagCloudRuntimeException("KmeliaSessionController.getTagCloudBm()",
+          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
 
   private void deleteNotation(ForumPK forumPK) throws RemoteException {
-    getNotationBm().deleteNotation(
-        new NotationPK(forumPK.getId(), forumPK.getComponentName(),
-            Notation.TYPE_FORUM));
+    getNotationBm().deleteNotation(new NotationPK(forumPK.getId(), forumPK.getComponentName(),
+        Notation.TYPE_FORUM));
   }
 
   private void deleteNotation(MessagePK messagePK) throws RemoteException {
-    getNotationBm().deleteNotation(
-        new NotationPK(messagePK.getId(), messagePK.getComponentName(), Notation.TYPE_MESSAGE));
+    getNotationBm().deleteNotation(new NotationPK(messagePK.getId(), messagePK.getComponentName(),
+        Notation.TYPE_MESSAGE));
   }
 
   /**
@@ -1478,8 +1466,8 @@ public class ForumsBMEJB implements SessionBean {
    */
   private NotationBm getNotationBm() {
     try {
-      NotationBmHome notationBmHome = (NotationBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBmHome.class);
+      NotationBmHome notationBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME,
+          NotationBmHome.class);
       NotationBm notationBm = notationBmHome.create();
       return notationBm;
     } catch (Exception e) {
@@ -1490,59 +1478,24 @@ public class ForumsBMEJB implements SessionBean {
 
   private String getWysiwygContent(String componentId, String messageId) {
     String text = "";
-    if (WysiwygController.haveGotWysiwyg(null, componentId, messageId)) {
-      try {
-        text = WysiwygController.loadFileAndAttachment(null, componentId, messageId);
-      } catch (WysiwygException e) {
-        SilverTrace.error("forums", "ForumsBMEJB.getWysiwygContent()", "componentId = " +
-            componentId + "messageId = " + messageId);
-      }
+    if (WysiwygController.haveGotWysiwyg(componentId, messageId, defaultLanguage)) {
+      text = WysiwygController.load(componentId, messageId, defaultLanguage);
     }
     return text;
   }
 
-  private String getWysiwygPath(String componentId, String messageId) {
-    String path = null;
-    try {
-      String wysiwygContent = WysiwygController.load(componentId, messageId, null);
-      if (StringUtil.isDefined(wysiwygContent)) {
-        path = WysiwygController.getWysiwygPath(componentId, messageId, null);
-      }
-    } catch (WysiwygException e) {
-      SilverTrace.error("forums", "ForumsBMEJB.getWysiwygContent()",
-          "componentId = " + componentId + " ; messageId = " + messageId);
-    }
-    return path;
-  }
-
-  private void createWysiwyg(MessagePK messagePK, String text) {
-    try {
-      WysiwygController.createFileAndAttachment(text, messagePK.getSpaceId(),
-          messagePK.getComponentName(), messagePK.getId());
-    } catch (WysiwygException e) {
-      SilverTrace.error("forums", "ForumsBMEJB.createWysiwyg()", "spaceId = "
-          + messagePK.getSpaceId() + " ; componentId = "
-          + messagePK.getComponentName() + " ; messageId = "
-          + messagePK.getId());
-    }
+  private void createWysiwyg(MessagePK messagePK, String text, String userId) {
+    WysiwygController.createFileAndAttachment(text, messagePK, userId, defaultLanguage);
   }
 
   private void updateWysiwyg(MessagePK messagePK, String text, String userId) {
-    String spaceId = messagePK.getSpaceId();
     String componentId = messagePK.getComponentName();
     String messageId = messagePK.getId();
-    try {
-      if (WysiwygController.haveGotWysiwyg(spaceId, componentId, messageId)) {
-        WysiwygController.updateFileAndAttachment(text, spaceId, componentId, messageId, userId);
-      } else {
-        WysiwygController.createFileAndAttachment(text, spaceId, componentId,
-            messageId);
-      }
-    } catch (WysiwygException e) {
-      SilverTrace.error("forums", "ForumsBMEJB.updateWysiwyg()", "spaceId = "
-          + messagePK.getSpaceId() + " ; componentId = "
-          + messagePK.getComponentName() + " ; messageId = "
-          + messagePK.getId());
+    if (WysiwygController.haveGotWysiwyg(componentId, messageId, defaultLanguage)) {
+      WysiwygController.updateFileAndAttachment(text, componentId, messageId, userId,
+          defaultLanguage);
+    } else {
+      WysiwygController.createFileAndAttachment(text, messagePK, userId, defaultLanguage);
     }
   }
 
@@ -1550,9 +1503,8 @@ public class ForumsBMEJB implements SessionBean {
     try {
       WysiwygController.deleteFileAndAttachment(messagePK.getComponentName(), messagePK.getId());
     } catch (WysiwygException e) {
-      SilverTrace.error("forums", "ForumsBMEJB.deleteWysiwyg()", "componentId = " +
-          messagePK.getComponentName() + " ; messageId = " + messagePK.getId());
+      SilverTrace.error("forums", "ForumsBMEJB.deleteWysiwyg()", "componentId = " + messagePK.
+          getComponentName() + " ; messageId = " + messagePK.getId());
     }
   }
-
 }

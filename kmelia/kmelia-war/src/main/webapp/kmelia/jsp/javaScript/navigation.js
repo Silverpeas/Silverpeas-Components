@@ -234,6 +234,12 @@ function initOperations(id, op) {
 		oMenu.addItem(menuItem, groupIndex);
 		groupEmpty = false;
 	}
+
+  if (op.manageSubscriptions) {
+    menuItem = new YAHOO.widget.MenuItem(getString('GML.manageSubscriptions'), {url: "ManageSubscriptions"});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
 	
 	if (op.exporting) {
 		if (id == "0") {
@@ -847,6 +853,7 @@ function doPagination(index) {
 								$('#pubList').html(data);
 								activateUserZoom();
 								showPublicationCheckedBoxes();
+								location.href = "#pubList";
 							},"html");
 }
 

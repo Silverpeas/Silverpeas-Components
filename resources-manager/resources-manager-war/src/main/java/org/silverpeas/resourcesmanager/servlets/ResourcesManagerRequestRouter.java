@@ -58,6 +58,7 @@ import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
 import org.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
+import org.silverpeas.util.GlobalContext;
 
 public class ResourcesManagerRequestRouter extends ComponentRequestRouter<ResourcesManagerSessionController> {
 
@@ -174,9 +175,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
       if (function.startsWith("Main")) {
         destination = displayCalendarView(request, resourcesManagerSC);
       } else if ("NewCategory".equals(function)) {
-        List<PublicationTemplate> listTemplates = getPublicationTemplateManager().
-            getPublicationTemplates();
-        request.setAttribute("listTemplates", listTemplates);
+        request.setAttribute("listTemplates", getForms(resourcesManagerSC));
         destination = root + "categoryManager.jsp";
       } else if ("SaveCategory".equals(function)) {
         Category category = request2CategoryDetail(resourcesManagerSC, request);
@@ -185,9 +184,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
       } else if ("EditCategory".equals(function)) {
         categoryId = request.getParameter("id");
         Category category = resourcesManagerSC.getCategory(categoryId);
-        List<PublicationTemplate> listTemplates = getPublicationTemplateManager().
-            getPublicationTemplates();
-        request.setAttribute("listTemplates", listTemplates);
+        request.setAttribute("listTemplates", getForms(resourcesManagerSC));
         request.setAttribute("category", category);
         destination = root + "categoryManager.jsp";
       } else if ("ModifyCategory".equals(function)) {
@@ -965,5 +962,11 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     evt.setTooltip(sc.getString("resourcesManager.bookedBy") +
         sc.getUserDetail(reservation.getUserId()).getDisplayedName());
     return evt;
+  }
+  
+  private List<PublicationTemplate> getForms(ResourcesManagerSessionController sc)
+      throws PublicationTemplateException {
+    GlobalContext gc = new GlobalContext(sc.getSpaceId(), sc.getComponentId());
+    return getPublicationTemplateManager().getPublicationTemplates(gc);
   }
 }

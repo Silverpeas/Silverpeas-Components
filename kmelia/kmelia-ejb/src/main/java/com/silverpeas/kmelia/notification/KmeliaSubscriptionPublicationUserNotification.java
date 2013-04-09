@@ -23,22 +23,25 @@
  */
 package com.silverpeas.kmelia.notification;
 
-import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
+import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.service.NodeSubscriptionResource;
+import com.silverpeas.subscribe.util.SubscriptionUtil;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.webactiv.beans.admin.ObjectType;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
-import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import static com.stratelia.webactiv.util.exception.SilverpeasRuntimeException.ERROR;
 
 /**
  * @author Yohann Chastagnier
@@ -50,6 +53,10 @@ public class KmeliaSubscriptionPublicationUserNotification extends AbstractKmeli
   private final String fileName;
   private final String subjectKey;
   private final String senderName;
+
+  private Map<SubscriberType, Collection<String>> subscriberIdsByTypes =
+      SubscriptionUtil.indexSubscriberIdsByType(null);
+  private Collection<String> userIdsToExcludeFromNotifying = new HashSet<String>();
 
   public KmeliaSubscriptionPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource,
       final NotifAction action) {
@@ -78,6 +85,58 @@ public class KmeliaSubscriptionPublicationUserNotification extends AbstractKmeli
   }
 
   @Override
+  protected void initialize() {
+    super.initialize();
+
+    // Subscribers
+    if (!NotifAction.REPORT.equals(action)) {
+
+      // In the report case, users that have to be notified can't be known at this level
+
+      Collection<NodeDetail> path = null;
+      if (!"kmax".equals(getResource().getInstanceId())) {
+        try {
+          path = getNodeBm().getPath(nodePK);
+        } catch (final RemoteException re) {
+          throw new KmeliaRuntimeException("KmeliaBmEJB.sendSubscriptionsNotification()", ERROR,
+              "kmelia.EX_IMPOSSIBLE_DE_PLACER_LA_PUBLICATION_DANS_LE_THEME", re);
+        }
+      }
+
+      // build a Collection of nodePK which are the ascendants of fatherPK
+      if (path != null) {
+        for (final NodeDetail descendant : path) {
+          SubscriptionUtil.indexSubscriberIdsByType(subscriberIdsByTypes, getSubscribeBm()
+              .getSubscribers(NodeSubscriptionResource.from(descendant.getNodePK())));
+        }
+      }
+
+      // Identifying users to be excluded from notifying
+      final OrganisationController orgaController = getOrganisationController();
+      final Collection<String> allUserSubscriberIds =
+          new ArrayList<String>(subscriberIdsByTypes.get(SubscriberType.USER));
+      for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP)) {
+        for (UserDetail user : orgaController.getAllUsersOfGroup(groupId)) {
+          allUserSubscriberIds.add(user.getId());
+        }
+      }
+
+      if (!allUserSubscriberIds.isEmpty()) {
+        // get only subscribers who have sufficient rights to read pubDetail
+        final NodeDetail node = getNodeHeader(nodePK);
+        for (final String userId : allUserSubscriberIds) {
+          if (!orgaController.isComponentAvailable(nodePK.getInstanceId(), userId) ||
+              (node.haveRights() && !orgaController
+                  .isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
+                      nodePK.getInstanceId(), userId))) {
+            userIdsToExcludeFromNotifying.add(userId);
+          }
+        }
+      }
+    }
+  }
+
+  @Override
   protected String getBundleSubjectKey() {
     return subjectKey;
   }
@@ -94,49 +153,17 @@ public class KmeliaSubscriptionPublicationUserNotification extends AbstractKmeli
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
+    return subscriberIdsByTypes.get(SubscriberType.USER);
+  }
 
-    if (NotifAction.REPORT.equals(action)) {
-      // In the report case, users that have to be notified can't be known at this level
-      return null;
-    }
+  @Override
+  protected Collection<String> getUserIdsToExcludeFromNotifying() {
+    return userIdsToExcludeFromNotifying;
+  }
 
-    final List<String> newSubscribers;
-
-    Collection<NodeDetail> path = null;
-    if (!"kmax".equals(getResource().getInstanceId())) {
-      try {
-        path = getNodeBm().getPath(nodePK);
-      } catch (final RemoteException re) {
-        throw new KmeliaRuntimeException("KmeliaBmEJB.sendSubscriptionsNotification()", ERROR,
-            "kmelia.EX_IMPOSSIBLE_DE_PLACER_LA_PUBLICATION_DANS_LE_THEME", re);
-      }
-    }
-
-    // build a Collection of nodePK which are the ascendants of fatherPK
-    final Set<String> subscriberIds = new HashSet<String>();
-    if (path != null) {
-      for (final NodeDetail descendant : path) {
-        subscriberIds.addAll(getSubscribeBm().getSubscribers(descendant.getNodePK()));
-      }
-    }
-    final OrganizationController orgaController = getOrganizationController();
-    if (subscriberIds != null && !subscriberIds.isEmpty()) {
-      // get only subscribers who have sufficient rights to read pubDetail
-      final NodeDetail node = getNodeHeader(nodePK);
-      newSubscribers = new ArrayList<String>(subscriberIds.size());
-      for (final String userId : subscriberIds) {
-        if (orgaController.isComponentAvailable(nodePK.getInstanceId(), userId)) {
-          if (!node.haveRights() || orgaController.isObjectAvailable(node.getRightsDependsOn(),
-              ObjectType.NODE, nodePK.getInstanceId(), userId)) {
-            newSubscribers.add(userId);
-          }
-        }
-      }
-    } else {
-      newSubscribers = null;
-    }
-
-    return newSubscribers;
+  @Override
+  protected Collection<String> getGroupIdsToNotify() {
+    return subscriberIdsByTypes.get(SubscriberType.GROUP);
   }
 
   @Override

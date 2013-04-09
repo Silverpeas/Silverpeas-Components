@@ -1,42 +1,31 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * webSiteSessionController.java
- *
- * Created on 9 Avril 2001, 11:25
- */
-
 package com.stratelia.webactiv.webSites.control;
 
 /**
- * This is the webSite manager main interface
- * It contains all of the methods to be accessible to the client
+ * This is the webSite manager main interface It contains all of the methods to be accessible to the
+ * client
+ *
  * @author Cécile BONIN
  */
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
 import java.io.File;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
@@ -55,6 +44,7 @@ import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -80,30 +70,28 @@ import com.stratelia.webactiv.webSites.siteManage.model.IconDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
 import com.stratelia.webactiv.webSites.siteManage.util.Expand;
 
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
 public class WebSiteSessionController extends AbstractComponentSessionController {
 
   /*-------------- Attributs ------------------*/
   private WebSiteBm webSiteEjb = null;
   private WebSiteBmHome webSiteEjbHome = null;
-
   // Session objects
   private FolderDetail sessionTopic = null;
   private NotificationSender notifSender = null;
   private SiteDetail sessionSite = null;
   private String siteName;
-
   public final static String TAB_PDC = "tabPdc";
 
   /*-------------- Methodes de la classe ------------------*/
-
   /**
    * new WebSiteSessionController
    */
   public WebSiteSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext,
-        "com.stratelia.webactiv.webSites.multilang.webSiteBundle", null,
-        "com.stratelia.webactiv.webSites.settings.webSiteSettings");
+    super(mainSessionCtrl, componentContext, "org.silverpeas.webSites.multilang.webSiteBundle", null,
+        "org.silverpeas.webSites.settings.webSiteSettings");
     initEJB();
   }
 
@@ -146,19 +134,20 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   }
 
   public boolean isBookmarkMode() {
-    if ("bookmark".equals(getComponentRootName())) {
-      return true;
-    }
-    return false;
+    return ("bookmark".equals(getComponentRootName()));
   }
 
   public boolean isSortedTopicsEnabled() {
     return "yes".equalsIgnoreCase(getComponentParameterValue("sortedTopics"));
   }
 
-  /************************************************************************************************/
+  /**
+   * *********************************************************************************************
+   */
   // Current Space operations
-  /************************************************************************************************/
+  /**
+   * *********************************************************************************************
+   */
   public synchronized void setSpaceLabel(String space) throws RemoteException {
     try {
       getWebSiteEJB().setSpaceName(space);
@@ -197,9 +186,13 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     }
   }
 
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   /* WebSite - Gestion des objets session */
-  /**************************************************************************************/
+  /**
+   * ***********************************************************************************
+   */
   public synchronized void setSessionTopic(FolderDetail topicDetail) {
     this.sessionTopic = topicDetail;
   }
@@ -267,7 +260,6 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   /*-------------- Methodes métier de l'interface WebSiteSessionController ------------------*/
 
   /* Gestion des thèmes */
-
   public synchronized FolderDetail getFolder(String id)
       throws WebSitesException {
     try {
@@ -344,7 +336,6 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   }
 
   /* ** gestion, des publi ** */
-
   public synchronized PublicationDetail getPublicationDetail(String pubId)
       throws WebSitesException {
     try {
@@ -380,8 +371,8 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       return getAllFatherPK(pubId);
     } catch (RemoteException re) {
       throw new WebSitesException("WebSiteSessionController.getPublicationFather()",
-          SilverpeasException.ERROR, "webSites.EX_GET_PUBLICATION_FATHER_FAILED", "pubId = " +
-              pubId, re);
+          SilverpeasException.ERROR, "webSites.EX_GET_PUBLICATION_FATHER_FAILED", "pubId = " + pubId,
+          re);
     }
   }
 
@@ -394,8 +385,8 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       addPublicationToFolder(pubId, folderId);
     } catch (RemoteException re) {
       throw new WebSitesException("WebSiteSessionController.addPublicationToFolder()",
-          SilverpeasException.ERROR, "webSites.EX_PUBLICATION_ADD_TO_NODE_FAILED", "pubId = " +
-              pubId + ", folderId = " + folderId, re);
+          SilverpeasException.ERROR, "webSites.EX_PUBLICATION_ADD_TO_NODE_FAILED", "pubId = "
+          + pubId + ", folderId = " + folderId, re);
     }
   }
 
@@ -408,8 +399,8 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       addPublicationToFolder(pubId, folderId);
     } catch (RemoteException re) {
       throw new WebSitesException("WebSiteSessionController.removePublicationToFolder()",
-          SilverpeasException.ERROR, "webSites.EX_PUBLICATION_DELETE_TO_NODE_FAILED", "pubId = " +
-              pubId + ", folderId = " + folderId, re);
+          SilverpeasException.ERROR, "webSites.EX_PUBLICATION_DELETE_TO_NODE_FAILED", "pubId = "
+          + pubId + ", folderId = " + folderId, re);
     }
   }
 
@@ -443,7 +434,6 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   }
 
   /* ** Gestion des sites ** */
-
   /**
    * setSiteName
    */
@@ -500,7 +490,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     } catch (RemoteException re) {
       throw new WebSitesException("WebSiteSessionController.getIcons(id)",
           SilverpeasException.ERROR, "webSites.EX_GET_ICONS_FAILED", "siteId ="
-              + id, re);
+          + id, re);
     }
   }
 
@@ -641,7 +631,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
         String siteId = siteDetail.getId();
         PdcClassification classification =
             aPdcClassificationOfContent(siteId, getComponentId())
-                .withPositions(pdcPositions);
+            .withPositions(pdcPositions);
         if (!classification.isEmpty()) {
           PdcClassificationService service =
               PdcServiceFactory.getFactory().getPdcClassificationService();
@@ -774,7 +764,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       String cheminFichierZip) throws WebSitesException {
     SilverTrace.debug("webSites", "WebSiteSessionController.unzip",
         "root.MSG_GEN_ENTER_METHOD", "cheminDirResultat = " + cheminDirResultat
-            + ", cheminFichierZip = " + cheminFichierZip);
+        + ", cheminFichierZip = " + cheminFichierZip);
     /*
      * cheminDirResultat = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
      */
@@ -833,8 +823,8 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       updateWebSite(description);
     } catch (RemoteException re) {
       throw new WebSitesException("WebSiteSessionController.updateWebSite(description)",
-          SilverpeasException.ERROR, "webSites.EX_UPDATE_WEBSITE_FAILED", "siteDetail =" +
-              description.toString(), re);
+          SilverpeasException.ERROR, "webSites.EX_UPDATE_WEBSITE_FAILED", "siteDetail ="
+          + description.toString(), re);
     }
   }
 
@@ -846,7 +836,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     /*
      * cheminDirResultat = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
      */
-    boolean result = false;
+    boolean result;
 
     File directory = new File(chemin);
     /* recupere la liste des fichiers et directory du chemin */
@@ -935,6 +925,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
 
   /**
    * verif
+   *
    * @param action
    * @param currentPath
    * @param name
@@ -989,6 +980,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
 
   /**
    * index web sites component
+   *
    * @throws RemoteException
    */
   public void index() throws RemoteException {
@@ -1013,7 +1005,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       List<String> profileNames = new ArrayList<String>();
       profileNames.add("Admin");
       profileNames.add("Publisher");
-      String[] users = getOrganizationController().getUsersIdsByRoleNames(
+      String[] users = getOrganisationController().getUsersIdsByRoleNames(
           getComponentId(), profileNames);
 
       List<UserRecipient> recipients = new ArrayList<UserRecipient>(users.length);
@@ -1047,6 +1039,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     return silverObjectId;
   }
 
+  @Override
   public void close() {
     try {
       if (webSiteEjb != null) {

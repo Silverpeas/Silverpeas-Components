@@ -718,7 +718,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     UserDetail user = null;
     String selUser = getSelection().getFirstSelectedElement();
     if (StringUtil.isDefined(selUser)) {
-      user = getOrganizationController().getUserDetail(selUser);
+      user = getOrganisationController().getUserDetail(selUser);
     }
     return user;
   }
@@ -811,7 +811,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private Collection<String> getUserInstanceIds() {
     if (userInstanceIds == null) {
       userInstanceIds = new ArrayList<String>();
-      CompoSpace[] instances = getOrganizationController().getCompoForUser(
+      CompoSpace[] instances = getOrganisationController().getCompoForUser(
               getUserId(), "whitePages");
       for (int i = 0; i < instances.length; i++) {
         userInstanceIds.add(instances[i].getComponentId());

@@ -23,6 +23,8 @@
  */
 package com.silverpeas.gallery.process;
 
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.process.management.AbstractFileProcess;
 import org.silverpeas.process.management.ProcessExecutionContext;
@@ -31,8 +33,6 @@ import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
@@ -45,7 +45,7 @@ public abstract class AbstractGalleryFileProcess extends
       "com.silverpeas.gallery.settings.gallerySettings", "");
 
   private final PhotoDetail photo;
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
 
   /**
    * Default constructor
@@ -74,10 +74,9 @@ public abstract class AbstractGalleryFileProcess extends
    * Access to the shared OrganizationController
    * @return
    */
-  protected OrganizationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     if (organizationController == null) {
-      organizationController =
-          OrganizationControllerFactory.getFactory().getOrganizationController();
+      organizationController = OrganisationControllerFactory.getOrganisationController();
     }
     return organizationController;
   }
@@ -87,14 +86,13 @@ public abstract class AbstractGalleryFileProcess extends
    * @return
    */
   protected String getXMLFormName(final ProcessExecutionContext context) {
-    String formName =
-        getOrganizationController().getComponentParameterValue(context.getComponentInstanceId(),
-            "XMLFormName");
+    String formName = getOrganisationController().getComponentParameterValue(
+        context.getComponentInstanceId(), "XMLFormName");
     // contrôle du formulaire et retour du nom si convenable
     if (StringUtil.isDefined(formName)) {
       try {
         final String xmlFormShortName =
-            formName.substring(formName.indexOf("/") + 1, formName.indexOf("."));
+            formName.substring(formName.indexOf('/') + 1, formName.indexOf('.'));
         getPublicationTemplateManager().getPublicationTemplate(
             context.getComponentInstanceId() + ":" + xmlFormShortName, formName);
       } catch (final PublicationTemplateException e) {

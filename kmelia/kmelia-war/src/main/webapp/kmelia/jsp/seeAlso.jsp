@@ -1,3 +1,4 @@
+<%@page import="org.silverpeas.kmelia.jstl.KmeliaDisplayHelper"%>
 <%@page import="org.silverpeas.search.SearchEngineFactory"%>
 <%@ page import="org.silverpeas.search.SearchEngine" %>
 <%--
@@ -35,7 +36,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="publicationsList.jsp.inc" %>
-<%@ include file="tabManager.jsp.inc" %>
 
 <%!
  //Icons
@@ -177,9 +177,9 @@ function closeWindows() {
         out.println(window.printBefore());
 
         if (isOwner) {
-            displayAllOperations(id, kmeliaScc, gef, action, resources, out);
+            KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out);
         } else {
-            displayUserOperations(id, kmeliaScc, gef, action, resources, out);
+            KmeliaDisplayHelper.displayUserOperations(id, kmeliaScc, gef, action, resources, out);
         }
 
         out.println(frame.printBefore());

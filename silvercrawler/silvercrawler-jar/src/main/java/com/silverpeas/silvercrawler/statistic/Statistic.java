@@ -40,6 +40,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class Statistic {
   private final static String historyTableName = "SC_SilverCrawler_Statistic";
@@ -133,7 +134,7 @@ public class Statistic {
         "root.MSG_GEN_ENTER_METHOD");
     Collection<HistoryDetail> list = getHistoryByAction(path, componentId);
 
-    OrganizationController orga = new OrganizationController();
+    OrganisationController orga = new OrganizationController();
     Collection<HistoryByUser> statByUser = new ArrayList<HistoryByUser>();
 
     Iterator<HistoryDetail> it = list.iterator();

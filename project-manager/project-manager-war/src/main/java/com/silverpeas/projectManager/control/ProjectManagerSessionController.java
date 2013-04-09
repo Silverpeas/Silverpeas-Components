@@ -1,49 +1,33 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.projectManager.control;
-
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
 
 import com.silverpeas.projectManager.control.ejb.ProjectManagerBm;
 import com.silverpeas.projectManager.control.ejb.ProjectManagerBmHome;
-import com.silverpeas.projectManager.model.Filtre;
-import com.silverpeas.projectManager.model.HolidayDetail;
-import com.silverpeas.projectManager.model.ProjectManagerRuntimeException;
-import com.silverpeas.projectManager.model.TaskDetail;
-import com.silverpeas.projectManager.model.TaskResourceDetail;
+import com.silverpeas.projectManager.model.*;
 import com.silverpeas.projectManager.vo.DayVO;
 import com.silverpeas.projectManager.vo.MonthVO;
 import com.silverpeas.projectManager.vo.WeekVO;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -52,21 +36,22 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.*;
 
 /**
  * This class contains all the business model for project manager component
  */
 public class ProjectManagerSessionController extends AbstractComponentSessionController {
+
   /**
    * Project manager EJB
    */
@@ -76,30 +61,24 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   private TaskDetail currentProject = null;
   // Current resource collection
   private Collection<TaskResourceDetail> currentResources = null;
-
   private boolean filtreActif = false;
   private Filtre filtre = null;
-
   private List<Integer> unfoldTasks = new ArrayList<Integer>();
   private Calendar calendar = null;
-
   public static int WORKING_DAY = 0;
   public static int HOLIDAY_DAY = 1;
 
   public ProjectManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.projectManager.multilang.projectManagerBundle",
-        "com.silverpeas.projectManager.settings.projectManagerIcons");
+        "org.silverpeas.projectManager.multilang.projectManagerBundle",
+        "org.silverpeas.projectManager.settings.projectManagerIcons");
   }
 
   public TaskDetail getCurrentTask() {
     return currentTask;
   }
 
-  /*********************************************************************/
-  /********** Gestion de l'arborescence des taches ********************/
-  /*********************************************************************/
   public void addUnfoldTask(String id) {
     unfoldTasks.add(Integer.parseInt(id));
   }
@@ -116,30 +95,20 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return unfoldTasks.contains(Integer.valueOf(actionId));
   }
 
-  /*********************************************************************/
-
   public List<TaskDetail> getAllTasks() throws RemoteException {
     List<TaskDetail> tasks = getProjectManagerBm().getAllTasks(getComponentId(), getFiltre());
-
     for (TaskDetail task : tasks) {
       enrichirTask(task);
     }
-
     return tasks;
   }
 
   public List<TaskDetail> getTasks() throws RemoteException {
     currentTask = null;
-
     List<TaskDetail> tasks = getProjectManagerBm().getTasksByMotherId(getComponentId(),
         getCurrentProject().getId(), getFiltre());
-
     List<TaskDetail> arbo = new ArrayList<TaskDetail>();
-
-    TaskDetail task = null;
-    for (int a = 0; a < tasks.size(); a++) {
-      task = (TaskDetail) tasks.get(a);
-
+    for (TaskDetail task : tasks) {
       arbo = buildArbo(arbo, task, null, 0);
     }
     return arbo;
@@ -147,11 +116,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   private List<TaskDetail> buildArbo(List<TaskDetail> arbo, TaskDetail task, TaskDetail actionMere,
       int level) throws RemoteException {
-    SilverTrace.info("projectManager",
-        "ProjectManagerSessionController.buildArbo()",
-        "root.MSG_GEN_ENTER_METHOD", "arbo.size()=" + arbo.size()
-            + ", actionId = " + task.getId() + ", level = " + level);
-
+    SilverTrace.info("projectManager", "ProjectManagerSessionController.buildArbo()",
+        "root.MSG_GEN_ENTER_METHOD", "arbo.size()=" + arbo.size() + ", actionId = " + task.getId()
+        + ", level = " + level);
     enrichirTask(task);
 
     // fichiers joint à la tâche
@@ -159,16 +126,15 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
     task.setLevel(level);
 
-    if (getRole().equals("admin")) {
+    if (SilverpeasRole.admin.isInRole(getRole())) {
       task.setDeletionAvailable(true);
       task.setUpdateAvailable(true);
     } else {
-      if (actionMere != null
-          && getRole().equals("responsable")
+      if (actionMere != null && "responsable".equals(getRole())
           && actionMere.getResponsableId() == Integer.parseInt(getUserId())) {
         task.setDeletionAvailable(true);
         task.setUpdateAvailable(true);
-      } else if (getRole().equals("responsable")
+      } else if ("responsable".equals(getRole())
           && task.getResponsableId() == Integer.parseInt(getUserId())) {
         task.setUpdateAvailable(true);
       }
@@ -182,9 +148,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       List<TaskDetail> sousActions = getProjectManagerBm().getTasksByMotherId(
           getComponentId(), task.getId(), getFiltre());
       level++;
-      TaskDetail sousAction = null;
-      for (int a = 0; a < sousActions.size(); a++) {
-        sousAction = (TaskDetail) sousActions.get(a);
+      for (TaskDetail sousAction : sousActions) {
         buildArbo(arbo, sousAction, task, level);
       }
     } else {
@@ -205,6 +169,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Retrieve the list of tasks which are not cancelled
+   *
    * @param id the current root task identifier
    * @return the list of tasks which are not cancelled
    * @throws RemoteException
@@ -212,9 +177,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   public List<TaskDetail> getTasksNotCancelled(String id) throws RemoteException {
     List<TaskDetail> tasks = getProjectManagerBm().getTasksNotCancelledByMotherId(
         getComponentId(), Integer.parseInt(id), getFiltre());
-    TaskDetail task = null;
-    for (int a = 0; a < tasks.size(); a++) {
-      task = (TaskDetail) tasks.get(a);
+    for (TaskDetail task : tasks) {
       enrichirTask(task);
     }
     return tasks;
@@ -224,8 +187,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return getPotentialPreviousTasks(false);
   }
 
-  public List<TaskDetail> getPotentialPreviousTasks(boolean onCreation)
-      throws RemoteException {
+  public List<TaskDetail> getPotentialPreviousTasks(boolean onCreation) throws RemoteException {
     List<TaskDetail> previousTasks = null;
     int motherId = getCurrentProject().getId(); // par défaut, on est au niveau
     // du projet
@@ -271,22 +233,20 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public Date processEndDate(String charge, Date dateDebut, String instanceId)
       throws RemoteException {
-    return getProjectManagerBm().processEndDate(Float.parseFloat(charge),
-        instanceId, dateDebut);
+    return getProjectManagerBm().processEndDate(Float.parseFloat(charge), instanceId, dateDebut);
   }
 
   /**
    * Vérifie la date de début d'une tâche. Si la date de début est un jour non travaillé, la date de
    * début sera le prochain jour travaillé.
+   *
    * @param task la tâche dont la date de début doit être vérifiée
    * @throws RemoteException
    */
   public void checkBeginDate(TaskDetail task) throws RemoteException {
     getCalendar().setTime(task.getDateDebut());
-
     // récupère les jours non travaillés
     List<Date> holidayDates = getProjectManagerBm().getHolidayDates(getComponentId());
-
     while (holidayDates.contains(getCalendar().getTime())) {
       getCalendar().add(Calendar.DATE, 1);
     }
@@ -315,7 +275,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       UserDetail user = getUserDetail(userId);
       resource.setUserName(getUserFullName(user));
     }
-
     updateOccupation(task);
   }
 
@@ -323,8 +282,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return getTask(id, true);
   }
 
-  public TaskDetail getTask(String id, boolean getAttachments)
-      throws RemoteException {
+  public TaskDetail getTask(String id, boolean getAttachments) throws RemoteException {
     currentTask = getProjectManagerBm().getTask(Integer.parseInt(id));
 
     enrichirTask(currentTask);
@@ -333,8 +291,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     int previousTaskId = currentTask.getPreviousTaskId();
     if (previousTaskId != -1) {
       TaskDetail previousTask = getProjectManagerBm().getTask(previousTaskId);
-      if (previousTask != null)
+      if (previousTask != null) {
         currentTask.setPreviousTaskName(previousTask.getNom());
+      }
     }
 
     if (getAttachments) {
@@ -347,12 +306,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public TaskDetail getTaskByTodoId(String todoId) throws RemoteException {
     currentTask = getProjectManagerBm().getTaskByTodoId(todoId);
-
     enrichirTask(currentTask);
-
     // fichiers joint à la tâche
-    currentTask.setAttachments(getAttachments(currentTask.getId()));
-
+    currentTask.setAttachments(getAttachments(String.valueOf(currentTask.getId())));
     return currentTask;
   }
 
@@ -370,14 +326,10 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return actionMere;
   }
 
-  public List<AttachmentDetail> getAttachments(int id) {
-    return getAttachments(Integer.toString(id));
-  }
-
-  private List<AttachmentDetail> getAttachments(String id) {
-    AttachmentPK foreignKey = new AttachmentPK(id, "useless", getComponentId());
-    return AttachmentController
-        .searchAttachmentByPKAndContext(foreignKey, null);
+  public List<SimpleDocument> getAttachments(String id) {
+    ForeignPK foreignKey = new ForeignPK(id, getComponentId());
+    return AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(foreignKey,
+        null);
   }
 
   public int addTask(TaskDetail task) throws RemoteException {
@@ -430,10 +382,13 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     getProjectManagerBm().updateTask(getCurrentTask(), getUserId());
   }
 
-  /******************************************************************************************************************/
+  /**
+   * ***************************************************************************************************************
+   */
   /**
    * UserPanel methods /
-   ******************************************************************************************************************/
+   * ****************************************************************************************************************
+   */
   public String initUserPanel() throws RemoteException {
     String urlContext =
         GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
@@ -512,10 +467,12 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
-  /****************************************************************************/
   /**
-   * GESTION du Filtre /
-   ****************************************************************************/
+   * *************************************************************************
+   */
+  /**
+   * GESTION du Filtre / **************************************************************************
+   */
   public boolean isFiltreActif() {
     return filtreActif;
   }
@@ -541,24 +498,28 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     this.filtre = filtre;
   }
 
-  /****************************************************************************/
   /**
-   * GESTION du projet /
-   ****************************************************************************/
+   * *************************************************************************
+   */
+  /**
+   * GESTION du projet / **************************************************************************
+   */
   public boolean isProjectDefined() throws RemoteException {
     if (projectDefined == null) {
       List<TaskDetail> projects = getProjectManagerBm().getProjects(getComponentId());
       if (projects.size() > 0) {
         projectDefined = Boolean.TRUE;
         currentProject = projects.get(0);
-      } else
+      } else {
         projectDefined = Boolean.FALSE;
+      }
     }
     return projectDefined.booleanValue();
   }
 
   /**
    * Create a new project
+   *
    * @param project the new TaskDetail project
    * @throws RemoteException
    */
@@ -598,13 +559,16 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     getProjectManagerBm().updateTask(getCurrentProject(), getUserId());
   }
 
-  /****************************************************************************/
+  /**
+   * *************************************************************************
+   */
   /**
    * Gestion des jours non travaillés /
-   ****************************************************************************/
-
+   * **************************************************************************
+   */
   /**
    * Change le statut de la date
+   *
    * @param date la date
    * @param nextStatus le nouveau statut de la date
    */
@@ -678,10 +642,13 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         getCurrentProject().getId(), getUserId());
   }
 
-  /****************************************************************************/
+  /**
+   * *************************************************************************
+   */
   /**
    * Méthodes utilitaires /
-   ****************************************************************************/
+   * **************************************************************************
+   */
   public Date uiDate2Date(String uiDate) throws ParseException {
     if (uiDate != null && uiDate.length() > 0) {
       return DateUtil.stringToDate(uiDate, getLanguage());
@@ -720,15 +687,13 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   private ProjectManagerBm getProjectManagerBm() {
     if (projectManagerBm == null) {
       try {
-        ProjectManagerBmHome projectManagerBmHome = (ProjectManagerBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.PROJECTMANAGERBM_EJBHOME,
-                ProjectManagerBmHome.class);
+        ProjectManagerBmHome projectManagerBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames
+            .PROJECTMANAGERBM_EJBHOME, ProjectManagerBmHome.class);
         projectManagerBm = projectManagerBmHome.create();
       } catch (Exception e) {
         throw new ProjectManagerRuntimeException(
             "ProjectManagerSessionController.getProjectManagerBm()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
-            e);
+            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
     return projectManagerBm;
@@ -739,15 +704,14 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    */
   public String getRole() {
     String[] roles = getUserRoles();
-    String role = null;
     String higherRole = "lecteur";
     for (int i = 0; i < roles.length; i++) {
-      role = roles[i];
+      String role = roles[i];
       // if admin, return it, we won't find a better profile
-      if (role.equals("admin")) {
+      if ("admin".equals(role)) {
         return role;
       }
-      if (role.equals("responsable")) {
+      if ("responsable".equals(role)) {
         higherRole = role;
       }
     }
@@ -850,8 +814,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     // Building Month ValueObject in order to prepare view
     Calendar curDayCal = new GregorianCalendar();
     curDayCal.setTime(startDate);
-    ResourceLocator resource =
-        new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", this.getLanguage());
+    ResourceLocator resource = new ResourceLocator("org.silverpeas.multilang.generalMultilang",
+        this.getLanguage());
     int nbDaysDisplayed = curDayCal.getActualMaximum(Calendar.DAY_OF_MONTH);
     int currentWeek = -1;
     int numWeekInYear = curDayCal.get(Calendar.WEEK_OF_YEAR);
@@ -865,7 +829,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       // GML.jour || GML.shortJour
       DayVO curDay =
           new DayVO(Integer.toString(i), resource.getString("GML.jour" + numDayinWeek, "?"),
-              curDayCal.getTime());
+          curDayCal.getTime());
       if (numWeekInYear != currentWeek && currentWeek != -1) {
         WeekVO week = new WeekVO(curDays, Integer.toString(oldNumWeekInYear));
         weeks.add(week);
@@ -881,13 +845,13 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       }
       oldNumWeekInYear = numWeekInYear;
     }
-    MonthVO curMonth =
-        new MonthVO(weeks, Integer.toString(curDayCal.get(Calendar.MONTH)), nbDaysDisplayed);
+    MonthVO curMonth = new MonthVO(weeks, Integer.toString(curDayCal.get(Calendar.MONTH)),
+        nbDaysDisplayed);
     return curMonth;
   }
 
   /**
-   * @param startDate If null parameter we get the current month system.
+   * @param curDate If null parameter we get the current month system.
    * @return a quarter which contains 3 month value object starting from start date month
    * @throws ParseException
    */
@@ -896,7 +860,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * @param startDate If null parameter we get the current month system.
+   * @param curDate If null parameter we get the current month system.
    * @return a quarter which contains 3 month value object starting from start date month
    * @throws ParseException
    */
@@ -935,16 +899,16 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Retrieve the most relevant date if the current date parameter is null.<br/>
+   *
    * @param startDate the string representation of the date. If null we will retrieve the most
    * relevant date in order to display current tasks
    * @return the most relevant date
    * @throws ParseException
-   * @see getProjectManagerRelevantDate method
    */
   public Date getMostRelevantDate(String startDate) throws ParseException {
     Date curDate;
     if (startDate != null) {
-      curDate = DateUtil.stringToDate(startDate, "fr");
+      curDate = DateUtil.stringToDate(startDate, I18NHelper.defaultLanguage);
     } else {
       // Search for the most relevant date
       curDate = getProjectManagerRelevantDate();
@@ -953,14 +917,15 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Here is a method which uses existing service to retrieve the most relevant date.
-   * We already uses this algorithm :<br/>
+   * Here is a method which uses existing service to retrieve the most relevant date. We already
+   * uses this algorithm :<br/>
    * <ol>
    * <li>if tasks exist in the current month we return current date</li>
    * <li>else if we display following months if contains tasks</li>
    * <li>else if we display preceding months if contains tasks</li>
    * <li>else if we dispay current month</li>
    * </ol>
+   *
    * @return the most relevant date.
    */
   private Date getProjectManagerRelevantDate() {
@@ -971,13 +936,13 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     Date firstDayMonth = cal.getTime();
     cal.add(Calendar.MONTH, 1);
     Date lastDayMonth = cal.getTime();
-    
+
     // Initialize loop variable
     Date nextDate = null;
-    Date precedingDate= null;
+    Date precedingDate = null;
     boolean isAfterCurrentMonth = false;
     boolean isBeforeCurrentMonth = false;
-    
+
     // Search for the most relevant date
     try {
       List<TaskDetail> tasks = this.getAllTasks();
@@ -1007,7 +972,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
           } else {
             //It's the current month so we return it and stop the algorithm
             return firstDayMonth;
-          }          
+          }
         }
       }
     } catch (RemoteException e) {
@@ -1021,5 +986,4 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     }
     return relevantDate;
   }
-
 }

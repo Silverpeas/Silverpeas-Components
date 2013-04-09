@@ -20,35 +20,34 @@
  */
 package com.stratelia.webactiv.kmelia;
 
-import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.importExport.control.MassiveDocumentImport;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MetaData;
 import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
-import com.silverpeas.versioning.importExport.VersioningImportExport;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.importExport.versioning.VersioningImportExport;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Class for unitary and massive import
@@ -59,7 +58,7 @@ public class FileImport {
 
   private AttachmentImportExport attachmentImportExport;
   private VersioningImportExport versioningImportExport;
-  private MetadataExtractor metadataExtractor;
+  private final MetadataExtractor metadataExtractor = new MetadataExtractor();
   /**
    * Private or Public (ie DocumentVersion)
    */
@@ -71,6 +70,13 @@ public class FileImport {
   private String topicId;
   private File fileUploaded;
   private KmeliaSessionController kmeliaScc;
+
+  public FileImport(KmeliaSessionController kmeliaScc, File uploadedFile) {
+    this.kmeliaScc = kmeliaScc;
+    attachmentImportExport = new AttachmentImportExport(kmeliaScc.getUserDetail());
+    versioningImportExport = new VersioningImportExport(kmeliaScc.getUserDetail());
+    this.fileUploaded = uploadedFile;
+  }
 
   public void setVersionType(int versionType) {
     this.versionType = versionType;
@@ -84,19 +90,6 @@ public class FileImport {
     this.topicId = topicId;
   }
 
-  public void setFileUploaded(File fileUploaded) {
-    this.fileUploaded = fileUploaded;
-  }
-
-  public void setKmeliaScc(KmeliaSessionController kmeliaScc) {
-    this.kmeliaScc = kmeliaScc;
-  }
-
-  public FileImport() {
-    attachmentImportExport = new AttachmentImportExport();
-    versioningImportExport = new VersioningImportExport();
-    metadataExtractor = new MetadataExtractor();
-  }
 
   /**
    * Import a single file for a unique publication
@@ -147,12 +140,12 @@ public class FileImport {
     int nbFiles = ZipManager.getNbFiles(fileUploaded);
     String tempFolderName = Long.toString(System.currentTimeMillis()) + '_' + kmeliaScc.getUserId();
     String tempFolderPath = FileRepositoryManager.getAbsolutePath(kmeliaScc.getComponentId()) +
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("RepositoryTypeTemp") +
+        GeneralPropertiesManager.getString("RepositoryTypeTemp") +
         File.separator + tempFolderName;
     File tempFolder = new File(tempFolderPath);
     if (!tempFolder.exists()) {
       FileRepositoryManager.createAbsolutePath(kmeliaScc.getComponentId(),
-          GeneralPropertiesManager.getGeneralResourceLocator().getString("RepositoryTypeTemp") +
+          GeneralPropertiesManager.getString("RepositoryTypeTemp") +
               File.separator + tempFolderName);
     }
     SilverTrace.info("kmelia", "FileImport.importFiles()", "root.MSG_GEN_PARAM_VALUE",
@@ -239,8 +232,7 @@ public class FileImport {
           attDetail.setPK(new AttachmentPK(componentId));
           // Copy the file on the server and enhance the AttachmentDetail
           SilverTrace.info("kmelia", "FileImport.processImportFile()", "root.MSG_GEN_PARAM_VALUE",
-              "versioningIE.getVersioningPath(componentId) = " + versioningIE.getVersioningPath(
-                  componentId));
+              "versioningIE.getVersioningPath(componentId) = " + filesToProces.getAbsolutePath());
 
           String filePath = filesToProces.getAbsolutePath();
           MetaData metadata = metadataExtractor.extractMetadata(filePath);
@@ -251,13 +243,11 @@ public class FileImport {
           }
           attachments.add(attDetail);
         }
-        List<AttachmentDetail> copiedAttachments = attachmentIE.copyFiles(componentId,
-            attachments, versioningIE.getVersioningPath(componentId));
         SilverTrace.info("kmelia", "FileImport.processImportFile()",
-            "root.MSG_GEN_PARAM_VALUE", "copiedAttachments.size() = " +
-            copiedAttachments);
+            "root.MSG_GEN_PARAM_VALUE", "attachments.size() = " +
+            attachments);
         versioningIE.importDocuments(pubDetailToCreate.getId(), componentId,
-            copiedAttachments, Integer.parseInt(userDetail.getId()),
+            attachments, Integer.parseInt(userDetail.getId()),
             versionType, KmeliaHelper.isIndexable(pubDetailToCreate));
       } else {
         // Add attachments

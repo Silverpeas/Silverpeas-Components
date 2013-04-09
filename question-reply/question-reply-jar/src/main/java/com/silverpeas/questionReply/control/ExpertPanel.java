@@ -34,11 +34,11 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +49,7 @@ public class ExpertPanel extends PanelProvider {
   protected static final int COL_LASTNAME = 0;
   protected static final int COL_FIRSTNAME = 1;
 
-  protected static final OrganizationController organizationController = new OrganizationController();
+  protected static final OrganisationController organizationController = new OrganizationController();
 
   protected Map<String, UserDetail> allUserDetails = new HashMap<String, UserDetail>();
 

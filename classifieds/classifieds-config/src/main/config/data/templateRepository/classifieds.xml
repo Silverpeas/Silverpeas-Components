@@ -4,6 +4,9 @@
     <description>Données complémentaires pour les petites annonces</description>
 	<image>/weblib/xmlForms/model1.gif</image>
     <visible>true</visible>
+	<applications>
+        <application>classifieds</application>
+    </applications>
     <viewFileName>classifieds/view.xml</viewFileName>
     <viewTypeFile></viewTypeFile>
     <updateFileName>classifieds/update.xml</updateFileName>
