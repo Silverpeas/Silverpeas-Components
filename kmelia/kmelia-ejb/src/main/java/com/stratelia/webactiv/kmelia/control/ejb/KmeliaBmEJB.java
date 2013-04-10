@@ -155,7 +155,7 @@ import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganis
  *
  * @author Nicolas Eysseric
  */
-@Stateless(name="kmelia", description="Stateless session bean to manage Kmelia and Kmax.")
+@Stateless(name="Kmelia", description="Stateless session bean to manage Kmelia and Kmax.")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class KmeliaBmEJB implements KmeliaBm {
 
