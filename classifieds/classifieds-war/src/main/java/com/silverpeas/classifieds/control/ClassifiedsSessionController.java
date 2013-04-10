@@ -23,11 +23,11 @@
  */
 package com.silverpeas.classifieds.control;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
@@ -39,6 +39,7 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -49,17 +50,25 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
 
-  private int indexOfFirstItemToDisplay = 0;
-  //private Map<String, String> fields1 = createListField(getSearchFields1());
-  //private Map<String, String> fields2 = createListField(getSearchFields2());
+  private int currentPage = 0;
   private Map<String, String> fields1 = null;
   private Map<String, String> fields2 = null;
   private CommentService commentService = null;
@@ -76,8 +85,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
           ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
             "com.silverpeas.classifieds.multilang.classifiedsBundle",
-            "com.silverpeas.classifieds.settings.classifiedsIcons");
+            "com.silverpeas.classifieds.settings.classifiedsIcons",
+            "com.silverpeas.classifieds.settings.classifiedsSettings");
 
+    
     // affectation du formulaire
     String xmlFormName = getXMLFormName();
     String xmlFormShortName = null;
@@ -88,7 +99,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
         getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
                 + xmlFormShortName, xmlFormName);
       } catch (PublicationTemplateException e) {
-        throw new ClassifiedsRuntimeException("GallerySessionController.super()",
+        throw new ClassifiedsRuntimeException("ClassifiedsSessionController.super()",
                 SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
@@ -123,16 +134,6 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   }
 
   /**
-   * get all classifieds for this instance
-   * @return a collection of ClassifiedDetail
-   */
-  public Collection<ClassifiedDetail> getAllClassifieds() {
-    Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    classifieds = getClassifiedService().getAllClassifieds(getComponentId());
-    return classifieds;
-  }
-
-  /**
    * get the number of classifieds for this instance
    * @return number : String
    */
@@ -158,9 +159,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return a collection of ClassifiedDetail
    */
   public Collection<ClassifiedDetail> getClassifiedsByUser() {
-    Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    classifieds = getClassifiedService().getClassifiedsByUser(getComponentId(), getUserId());
-    return classifieds;
+    return getClassifiedService().getClassifiedsByUser(getComponentId(), getUserId());
   }
 
   /**
@@ -188,12 +187,11 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * take out draft mode the classified corresponding to classified
    * @param classifiedId : String
    * @param profile : String
-   * @throws RemoteException
    * @throws PublicationTemplateException
    * @throws FormException
    */
   public synchronized void draftOutClassified(String classifiedId, ClassifiedsRole highestRole)
-          throws RemoteException, PublicationTemplateException, FormException {
+          throws PublicationTemplateException, FormException {
     getClassifiedService().draftOutClassified(classifiedId, highestRole.toString());
     if (highestRole == ClassifiedsRole.MANAGER) {
       sendSubscriptionsNotification(classifiedId);
@@ -203,9 +201,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   /**
    * pass the classified corresponding to classifiedId in draft mode
    * @param classifiedId : String
-   * @throws RemoteException
    */
-  public synchronized void draftInClassified(String classifiedId) throws RemoteException {
+  public synchronized void draftInClassified(String classifiedId) {
     getClassifiedService().draftInClassified(classifiedId);
   }
 
@@ -213,12 +210,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * pass to status validate because the user corresponding to userId validated the classified
    * corresponding to classifiedId
    * @param classifiedId : String
-   * @throws RemoteException
    * @throws PublicationTemplateException
    * @throws FormException
    */
-  public synchronized void validateClassified(String classifiedId) throws RemoteException,
-          PublicationTemplateException, FormException {
+  public synchronized void validateClassified(String classifiedId) throws PublicationTemplateException, FormException {
     getClassifiedService().validateClassified(classifiedId, getUserId());
     sendSubscriptionsNotification(classifiedId);
   }
@@ -228,10 +223,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * corresponding to classifiedId for the motive ResusalMotive
    * @param classifiedId : String
    * @param motive : String
-   * @throws RemoteException
    */
-  public synchronized void refusedClassified(String classifiedId, String motive)
-          throws RemoteException {
+  public synchronized void refusedClassified(String classifiedId, String motive) {
     getClassifiedService().refusedClassified(classifiedId, getUserId(), motive);
   }
 
@@ -265,7 +258,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param profile : String
    * @return classifiedId : String
    */
-  public synchronized String createClassified(ClassifiedDetail classified, ClassifiedsRole profile) {
+  public synchronized String createClassified(ClassifiedDetail classified, Collection<FileItem> listImage, ClassifiedsRole profile) {
     UserDetail user = getUserDetail();
     classified.setCreatorId(getUserId());
     classified.setCreationDate(new Date());
@@ -282,7 +275,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
         classified.setStatus(ClassifiedDetail.TO_VALIDATE);
       }
     }
-    return getClassifiedService().createClassified(classified);
+    String classifiedId = getClassifiedService().createClassified(classified);
+    createClassifiedImages(listImage, classifiedId);
+    return classifiedId;
   }
 
   /**
@@ -290,14 +285,13 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param classifiedId : String
    */
   public void deleteClassified(String classifiedId) {
-    getClassifiedService().deleteClassified(classifiedId);
-    // supprimer les commentaires
+    //supprime la petite annonce et ses images
+    getClassifiedService().deleteClassified(this.getComponentId(), classifiedId);
+    
+    //supprime les commentaires
     Collection<Comment> comments = getAllComments(classifiedId);
-    Iterator<Comment> it = comments.iterator();
-    while (it.hasNext()) {
-      Comment comment = it.next();
-      CommentPK commentPK = comment.getCommentPK();
-      getCommentService().deleteComment(commentPK);
+    for(Comment comment : comments) {
+      getCommentService().deleteComment(comment.getCommentPK());
     }
   }
 
@@ -477,12 +471,12 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     return subscribes;
   }
 
-  public void setIndexOfFirstItemToDisplay(String index) {
-    this.indexOfFirstItemToDisplay = new Integer(index).intValue();
+  public void setCurrentPage(int currentPage) {
+    this.currentPage = currentPage;
   }
 
-  public int getIndexOfFirstItemToDisplay() {
-    return indexOfFirstItemToDisplay;
+  public int getCurrentPage() {
+    return this.currentPage;
   }
 
   /**
@@ -549,5 +543,173 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
         return WysiwygController.load(getComponentId(), "Node_0", getLanguage());
     }
     return "";
+  }
+  
+  /**
+   * create classified image
+   * @param fileImage : FileItem
+   * @param classifiedId : String
+   */
+  public synchronized void createClassifiedImage(FileItem fileImage, String classifiedId) {
+    
+    try {
+      // create SimpleDocumentPK with componentId
+      SimpleDocumentPK sdPK = new SimpleDocumentPK(null, getComponentId());
+  
+      // create SimpleDocument Object
+      Date creationDate = new Date();
+      String fileName = FileUtil.getFilename(fileImage.getName());
+      long size = fileImage.getSize();
+      String mimeType = FileUtil.getMimeType(fileName);
+      
+      SimpleDocument sd = new SimpleDocument(sdPK, classifiedId, 0, false, new SimpleAttachment(fileName, getLanguage(), "", "", size 
+              , mimeType, getUserId(), creationDate, null));
+      sd.setDocumentType(DocumentType.attachment);
+  
+      AttachmentServiceFactory.getAttachmentService().createAttachment(sd, fileImage.getInputStream(), true);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.createClassifiedImage()",
+            SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_CREATE", e);
+    }
+  }
+  
+  /**
+   * create classified images
+   * @param listImage : Collection de FileItem
+   * @param classifiedId : String
+   */
+  private synchronized void createClassifiedImages(Collection<FileItem> listImage, String classifiedId) {
+    for(FileItem fileImage : listImage) {
+      createClassifiedImage(fileImage, classifiedId);
+    }    
+  }
+
+  /**
+   * get classified corresponding to classifiedId including images
+   * @param classifiedId : String
+   * @return classified : ClassifiedDetail
+   */
+  public ClassifiedDetail getClassifiedWithImages(String classifiedId) {
+    ClassifiedDetail classified = getClassified(classifiedId);
+    try {
+      WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, getComponentId());
+      List<SimpleDocument> listSimpleDocument = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
+      classified.setImages(listSimpleDocument);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.getClassifiedWithImages()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGES", e);
+    }
+    return classified;
+  }
+  
+  /**
+   * update classified image 
+   * @param fileImage : FileItem
+   * @param imageId : String
+   * @param classifiedId : String
+   */
+  public void updateClassifiedImage(FileItem fileImage, String imageId, String classifiedId) {
+    SimpleDocument classifiedImage = null;
+    try {
+      SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
+      classifiedImage = AttachmentServiceFactory.getAttachmentService().searchDocumentById(sdPK, null);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.updateClassifiedImage()",
+        SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGE", e);
+    }
+    
+    if(classifiedImage != null) {
+      Date updateDate = new Date();
+      String fileName = FileUtil.getFilename(fileImage.getName());
+      long size = fileImage.getSize();
+      String mimeType = FileUtil.getMimeType(fileName);
+      
+      classifiedImage.setDocumentType(DocumentType.attachment);
+      classifiedImage.setFilename(fileName);
+      classifiedImage.setLanguage(null);
+      classifiedImage.setTitle("");
+      classifiedImage.setDescription("");
+      classifiedImage.setSize(size);
+      classifiedImage.setContentType(mimeType);
+      classifiedImage.setUpdatedBy(getUserId());
+      classifiedImage.setUpdated(updateDate);
+      
+      try {
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(classifiedImage, fileImage.getInputStream(), true, false);
+      } catch (Exception e) {
+          throw new ClassifiedsRuntimeException("ClassifiedsSessionController.updateClassifiedImage()",
+            SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_UPDATE", e);
+      }
+      
+    } else {
+      createClassifiedImage(fileImage, classifiedId);
+    }
+  }
+  
+  /**
+   * delete classified image 
+   * @param imageId : String
+   */
+  public void deleteClassifiedImage(String imageId) {
+    SimpleDocument classifiedImage = null;
+    try {
+      SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
+      classifiedImage = AttachmentServiceFactory.getAttachmentService().searchDocumentById(sdPK, null);
+    } catch (Exception e) {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.deleteClassifiedImage()",
+        SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGE", e);
+    }
+    
+    if(classifiedImage != null) {
+      //delete the actual picture file in the file server and database
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(classifiedImage);
+    } else {
+      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.deleteClassifiedImage()",
+          SilverpeasRuntimeException.ERROR, "classifieds.MSG_CLASSIFIED_IMAGE_NOT_DELETE", imageId+" does not exist");
+    }
+  }
+  
+  /**
+   * return true if Home page displays classifieds organized by category
+   * @return boolean
+   */
+  public boolean isHomePageDisplayCategorized() {
+    String parameterHomePage = getComponentParameterValue("homePage");
+    if(StringUtil.isDefined(parameterHomePage)) {
+      return "0".equalsIgnoreCase(getComponentParameterValue("homePage"));
+    }
+    return true;
+  }
+  
+  /**
+   * get all valid classifieds
+   * @param currentPage
+   * @return a collection of ClassifiedDetail
+   */
+  public Collection<ClassifiedDetail> getAllValidClassifieds(int currentPage) {
+    if (fields1 == null) {
+      fields1 = createListField(getSearchFields1());
+    }
+    if (fields2 == null) {
+      fields2 = createListField(getSearchFields2());
+    }
+    int nbElementsPerPage = Integer.parseInt(getResources().getSetting("nbElementsPerPage"));
+    Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
+    classifieds = getClassifiedService().getAllValidClassifieds(getComponentId(), fields1, fields2, getSearchFields1(), getSearchFields2(), currentPage, nbElementsPerPage);
+    return classifieds;
+  }
+  
+  /**
+   * get the number of pages to display
+   * @return number : String
+   */
+  public String getNbPages(String nbClassifieds) {
+    int nbClassifiedsInt = Integer.parseInt(nbClassifieds);
+    int nbElementsPerPage = Integer.parseInt(getResources().getSetting("nbElementsPerPage"));
+    int nbPages = nbClassifiedsInt / nbElementsPerPage;
+    if (nbClassifiedsInt % nbElementsPerPage != 0) {
+      nbPages = nbPages + 1;
+    }
+    return Integer.toString(nbPages);
   }
 }

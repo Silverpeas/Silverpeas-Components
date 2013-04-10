@@ -37,8 +37,8 @@
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+	response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+	response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -98,9 +98,9 @@
 								DataRecord data = (DataRecord) pageContext.getAttribute("data");
 
 								PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
-							    context.setIgnoreDefaultValues(true);
-							    context.setUseMandatory(false);
-							    context.setBorderPrinted(false);
+							  context.setIgnoreDefaultValues(true);
+							  context.setUseMandatory(false);
+							  context.setBorderPrinted(false);
 								formSearch.display(out, context, data);
 								%>
 								<br/>
@@ -125,15 +125,32 @@
 					<c:if test="${not empty classifieds}">
 						<ul class="list_result_classifieds">
 						<c:forEach items="${classifieds}" var="classified">
+						<c:set var="title" value="${classified.title}" />
+            <c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
 							<li>
-								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
-								<span class="creatorName_result_classifieds">${classified.creatorName}</span><span class="sep_creatorName_result_classifieds"> - </span>
-								<c:if test="${not empty classified.updateDate}">
-									<span class="date_result_classifieds updateDate"><view:formatDateTime value="${classified.updateDate}" language="${language}"/></span>
-								</c:if>
-								<c:if test="${empty classified.updateDate}">
-									<span class="date_result_classifieds creationDate"><view:formatDateTime value="${classified.creationDate}" language="${language}"/></span>
-								</c:if>
+								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${displayedTitle}</a>
+								<c:if test="${classified.price > 0}">
+                  ${classified.price} &euro; - 
+                 </c:if>
+								<span class="creatorName_result_classifieds">
+									<script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-profile.js" type="text/javascript"></script>
+	                <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-messageme.js" type="text/javascript"></script>
+	                <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-invitme.js" type="text/javascript"></script>
+	                <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-userZoom.js" type="text/javascript"></script>
+	                <span class="userToZoom" rel="${classified.creatorId}">${classified.creatorName}</span>
+								</span>
+								<span class="sep_creatorName_result_classifieds"> - </span>
+								<c:if test="${not empty classified.validateDate}">
+                  <span class="date_result_classifieds validationDate"><view:formatDateTime value="${classified.validateDate}" language="${language}"/></span>
+                </c:if>
+                <c:if test="${empty classified.validateDate}">
+									<c:if test="${not empty classified.updateDate}">
+										<span class="date_result_classifieds updateDate"><view:formatDateTime value="${classified.updateDate}" language="${language}"/></span>
+									</c:if>
+									<c:if test="${empty classified.updateDate}">
+										<span class="date_result_classifieds creationDate"><view:formatDateTime value="${classified.creationDate}" language="${language}"/></span>
+									</c:if>
+								</c:if>	
 							</li>
 						</c:forEach>
 						</ul>

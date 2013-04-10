@@ -1,31 +1,29 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2012 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #classifieds #search {
-	width: 50%;
-	margin: auto;
-	text-align:center;
+	margin: 1em;
 }
 
 #classifieds #categories {
@@ -209,3 +207,364 @@ div.tableBoard {
 .emptyCategory {
 	color:#444;
 }
+
+#classifieds_rich_list {
+	clear:left;	
+	margin:1em 0;
+	padding:0;
+	list-style-type:none;
+}
+
+#classifieds_rich_list li{
+	border:1px solid #eaeaea;
+	margin:0.5em;
+	width:48%;
+	float:left;
+	max-width:525px;
+	height:86px;
+	position:relative;
+	z-index:1;
+	cursor:pointer;
+	overflow:hidden;
+}
+#classifieds_rich_list li:hover{
+	background-color:#EFEFEF;
+}
+
+
+#classifieds_rich_list li .classified_thumb{
+	width:92px;
+	border:3px solid #e4e4e4;
+	overflow:hidden;
+	height:68px;
+	position:relative;
+	margin:0.5em;
+}
+
+#classifieds_rich_list li .classified_thumb img{
+	width:92px;
+	position:absolute;
+	top:0;
+	left:0;
+}
+
+#classifieds_rich_list .classified_info{
+	position:absolute;
+	top:0.5em;
+	left:112px;
+}
+
+#classifieds_rich_list h4{
+	margin:0 80px 0.5em 0;
+	padding:0;
+	font-size:1.25em;
+	font-weight:100;
+}
+
+#classifieds_rich_list h4 a{
+	font-size:1em;
+}
+
+#classifieds_rich_list .classified_type a{
+	margin:0 0.25em 0.15em 0; 
+	background-color:#acacac;
+	color:#FFF;
+	padding:0.35em 0.5em;
+	line-height:1em;
+	font-size:0.9em;
+	display:block;
+	float:left;
+	border:1px solid #acacac;
+	border-radius:3px;
+	position:relative;
+	z-index:10;
+}
+
+#classifieds_rich_list .classified_type a:hover{
+	background-color:#5c5c5c;
+	border:1px solid #5c5c5c;
+}
+
+#classifieds_rich_list .classified_creationInfo {
+	position:absolute;
+	bottom:0.5em;
+	right:0.5em;
+	color:#777;
+}
+
+#classifieds_rich_list .classified_price {
+	position:absolute;
+	top:0.5em;
+	right:0.5em;
+	color:#FFF;
+	font-size:1.15em;
+	font-weight:bold;
+	padding:0.15em 0.5em;
+	background-color:#56a3d9;
+	float:left;
+	border:1px solid #56a3d9;
+	border-radius:3px;
+}
+
+#pagination {
+	clear:left
+}
+
+/*** fiche nouvelle presentation ***/
+.classified_fiche {
+	position:relative;
+	}
+.principalContent .classified_title {
+	color: #333333;
+    font-size: 130%;
+    font-weight: bold;
+	padding:0;
+	margin:0 0 2em;
+	
+}
+
+
+.principalContent .classified_price {
+	position:absolute;
+	top:0.5em;
+	right:0.5em;
+	color:#FFF;
+	font-size:1.25em;
+	font-weight:bold;
+	padding: 0.5em;
+	background-color:#56a3d9;
+	float:left;
+	border:1px solid #56a3d9;
+	border-radius:3px;
+}
+
+.principalContent .classified_photos {
+	float:left;
+	width:260px;
+}
+
+.principalContent .classified_thumbs{
+	height:38px;
+}
+
+.principalContent .classified_thumbs a.selected{
+	border:1px solid #f1790f;
+}
+
+.principalContent .classified_thumbs a{
+	width:52px;
+	height:36px;
+	background-color:#e4e4e4;
+	float:left;
+	display:block;
+	overflow:hidden;
+	border:1px solid #56a3d9;
+	text-align:center;
+	margin-right:11px;
+}
+
+.principalContent .classified_selected_photo {
+	width:244px;
+	border:3px solid #e4e4e4;
+	margin-top:1em;
+	text-align:center;
+	height:auto;
+	clear:left;
+}
+.principalContent .classified_selected_photo img{
+	width:244px;
+	height:auto;
+	border:0;
+}
+
+.principalContent .classified_thumbs a img{
+	height:36px;
+	width:auto;
+	border:0;
+}
+
+.principalContent .classified_description {
+	border-left:6px solid #e4e4e4;
+	padding-left:11px;
+	margin-left:260px;
+	color:#666;	
+	font-size:1.15em;
+	line-height:1.5em;
+	text-align:justify;
+}
+
+.principalContent #classified_content_form td{
+	font-size:1.15em;
+	line-height:1.5em;
+	color:#333
+}
+.principalContent #classified_content_form .txtlibform{
+	font-size:1.05em;
+	line-height:1.5em;
+	color:#666
+}
+
+#classified_contact_link {
+	border-radius:8px;
+	padding:0.5em;
+	display:inline-block;
+	width:140px;
+	margin:11px 17px 0;
+}
+
+#classified_contact_link a{
+	background:transparent url("/silverpeas/util/icons/email.gif") 2px -2px no-repeat;
+	padding:0 10px 0 22px;
+	display:inline-block;
+	color:#333;
+}
+
+#classified_info #permalinkInfo {
+	margin-bottom:1em;
+}
+
+#classified_info #permalinkInfo img{
+	border:0;
+}
+
+
+#classified_info #permalinkInfo input {
+	width:100%;
+}
+
+
+.rightContent .other_classified h4 {
+    background: url("/silverpeas/util/icons/component/classifiedsSmall.gif") no-repeat scroll right top transparent;
+    height: 16px;
+}
+
+.rightContent .other_classified .classifieds_other_list h4{
+	background:url();
+	padding:0 56px 0;
+	margin:0;
+}
+
+.rightContent .classifieds_other_list h4 a{
+	color:#333;
+}
+
+.rightContent .classifieds_other_list {
+	list-style-type:none;
+	padding:0;
+	margin:11px 0 5px;
+}
+
+.rightContent .classifieds_other_list li{
+	padding:0px 17px 6px;
+	margin:0;
+	min-height:40px;
+	position:relative;
+	cursor:pointer;
+}
+
+.rightContent .classifieds_other_list .classified_price{
+	position:absolute;
+	top:0;
+	right:17px;
+	color:#FFF;
+	font-size:1.15em;
+	font-weight:bold;
+	padding:0.15em 0.5em;
+	background-color:#56a3d9;
+	float:left;
+	border:1px solid #56a3d9;
+	border-radius:3px;
+}
+.rightContent .classifieds_other_list .classified_thumb{
+	width:48px;
+	height:36px;
+	overflow:hidden;
+	border:1px solid #e4e4e4;
+	position:absolute;
+	top:0;
+	left:17px;
+}
+.rightContent .classifieds_other_list .classified_thumb img{
+	width:48px;
+}
+
+
+
+.rightContent .other_classified {
+	paddin-bottom:11px;
+}
+
+/**  formulaire de creation **/
+#classifiedInfo legend{
+    background:transparent url(../../../kmelia/jsp/icons/mini_publi.gif) 11px 0px no-repeat; /*icone présente dans kmelia */
+}
+
+#pubThumb legend {
+    background: url("../../../util/icons/images.png") no-repeat scroll 11px 0 transparent;
+}
+
+#specifiedInfo legend {
+    background: url("../../../util/icons/component/formsOnlineSmall.gif") no-repeat scroll 11px 0 transparent;
+}
+#classifiedNumberArea, #classifiedNameArea, #descriptionArea, #creationDateArea, #updateDateArea, #validationDateArea, #mandatoryArea, .field.thumb {
+    clear: both;
+    display: block;
+    float: none;
+    width: 98%;
+}
+#descriptionArea textarea, #classifiedNameArea input{
+    width:94%;
+}
+
+.thumbnailInputs {
+    clear: both;
+}
+
+.thumbnailInputs img, .thumbnailInputs input, .thumbnailInputs select {
+    vertical-align: middle;
+}
+.thumbnailPreviewAndActions {
+    background-color:#EEEEEE;
+    border:1px solid #DDDDDD;
+    float:left;
+    margin-left:0;
+    padding:3px;
+    margin-bottom: 3px;
+}
+
+.thumbnailPreview {
+    float: left;
+}
+
+
+#thumbnailActions {
+    float: left;
+    margin-left: 4px;
+}
+
+#thumbnailActions a {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#thumbnailActions img {
+    vertical-align: middle;
+}
+
+.thumbnailPreview .thumbnail {
+    height: 50px;
+    border:1px solid #DDDDDD;
+}
+
+#pubThumb {
+    height: 90%;
+}
+
+#specifiedInfo {
+    height: 90%;
+}
+
+.classifiedForm .table {
+	margin-bottom:15px
+}
+

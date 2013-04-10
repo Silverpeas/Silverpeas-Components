@@ -39,6 +39,7 @@
 
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="componentLabel" value="${browseContext[1]}" />
+
 <c:set var="classifieds" value="${requestScope.Classifieds}" />
 <c:set var="title" value="${requestScope.TitlePath}" />
 <c:set var="extra" value="${requestScope.Extra}" />
@@ -82,8 +83,13 @@
 					<c:if test="${not empty classifieds}">
 					<ul class="list_result_classifieds">
 						<c:forEach items="${classifieds}" var="classified">
+						<c:set var="title" value="${classified.title}" />
+						<c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
 						<li class="status_${classified.status}">
-								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
+								<a class="title_result_classifieds" href="ViewClassified?ClassifiedId=${classified.classifiedId}">${displayedTitle}</a>
+								<c:if test="${classified.price > 0}">
+                  ${classified.price} &euro; - 
+                 </c:if>
 									<span class="status_result_classifieds">
 										<c:choose>
 											<c:when test="${classified.status == 'Draft'}">
@@ -100,13 +106,18 @@
 												<fmt:message key="classifieds.unpublished" /><span class="sep_status"> - </span>
 											</c:when>
 										</c:choose>
-									</span>
-									<span class="creatorName_result_classifieds">${classified.creatorName}</span><span class="sep_creatorName_result_classifieds"> - </span>
+										<span class="creatorName_result_classifieds">
+									   <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-profile.js" type="text/javascript"></script>
+								     <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-messageme.js" type="text/javascript"></script>
+								     <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-invitme.js" type="text/javascript"></script>
+								     <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-userZoom.js" type="text/javascript"></script>
+								     <span class="userToZoom" rel="${classified.creatorId}">${classified.creatorName}</span>
+										</span>
+										<span class="sep_creatorName_result_classifieds"> - </span>
 									<c:if test="${not empty classified.validateDate}">
 										<span class="date_result_classifieds"><view:formatDateTime value="${classified.validateDate}" language="${language}"/></span>
 									</c:if>
 									<c:if test="${empty classified.validateDate}">
-										
 										<c:if test="${not empty classified.updateDate}">
 										<span class="date_result_classifieds updateDate"><view:formatDateTime value="${classified.updateDate}" language="${language}"/></span>
 										</c:if>

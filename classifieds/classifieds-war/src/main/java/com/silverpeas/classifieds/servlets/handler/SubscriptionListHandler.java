@@ -45,7 +45,7 @@ public class SubscriptionListHandler extends FunctionHandler {
       return "subscriptions.jsp";
     } catch (Exception e) {
       // form error for subscriptions
-      request.setAttribute("ErrorType", "labelErrorSubscriptions");
+      request.setAttribute("ErrorType", classifiedsSC.getResources().getString("classifieds.labelErrorSubscriptions"));
       return "error.jsp";
     }
   }
