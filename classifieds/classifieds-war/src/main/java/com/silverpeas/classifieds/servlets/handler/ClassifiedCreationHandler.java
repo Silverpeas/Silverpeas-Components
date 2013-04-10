@@ -1,5 +1,7 @@
 package com.silverpeas.classifieds.servlets.handler;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +17,7 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 
 /**
@@ -33,11 +36,35 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       // Retrieves parameters
       List<FileItem> items = FileUploadUtil.parseRequest(request);
       String title = FileUploadUtil.getParameter(items, "Title");
-
-      // Create classified
-      ClassifiedDetail classified = new ClassifiedDetail(title);
-      String classifiedId = classifiedsSC.createClassified(classified, highestRole);
-
+      String description = FileUploadUtil.getParameter(items, "Description");
+      String price = FileUploadUtil.getParameter(items, "Price");
+      FileItem fileImage1 = FileUploadUtil.getFile(items, "Image1");
+      FileItem fileImage2 = FileUploadUtil.getFile(items, "Image2");
+      FileItem fileImage3 = FileUploadUtil.getFile(items, "Image3");
+      FileItem fileImage4 = FileUploadUtil.getFile(items, "Image4");
+      
+      //Classified
+      ClassifiedDetail classified = new ClassifiedDetail(title, description);
+      if (price != null && ! price.isEmpty()) {
+        classified.setPrice(Integer.parseInt(price));
+      }
+      
+      //Images of the classified
+      Collection<FileItem> listImage = new ArrayList<FileItem>();
+      if (fileImage1 != null && StringUtil.isDefined(fileImage1.getName())) {
+        listImage.add(fileImage1);
+      }
+      if (fileImage2 != null && StringUtil.isDefined(fileImage2.getName())) {
+        listImage.add(fileImage2);
+      }
+      if (fileImage3 != null && StringUtil.isDefined(fileImage3.getName())) {
+        listImage.add(fileImage3);
+      }
+      if (fileImage4 != null && StringUtil.isDefined(fileImage4.getName())) {
+        listImage.add(fileImage4);
+      }
+      String classifiedId = classifiedsSC.createClassified(classified, listImage, highestRole);
+      
       PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
       if (pubTemplate != null) {
         // populate data record
