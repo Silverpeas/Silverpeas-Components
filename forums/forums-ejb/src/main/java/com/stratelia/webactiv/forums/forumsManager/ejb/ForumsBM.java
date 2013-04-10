@@ -25,7 +25,6 @@ package com.stratelia.webactiv.forums.forumsManager.ejb;
 
 import com.stratelia.webactiv.forums.models.ForumDetail;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -189,9 +188,9 @@ public interface ForumsBM extends EJBObject {
 
   public String getMessageTags(MessagePK messagePK) throws RemoteException;
 
-  public Collection getLastThreads(ForumPK forumPK, int count)
+  public Collection<Message> getLastThreads(ForumPK forumPK, int count)
       throws RemoteException;
 
-  public Collection getNotAnsweredLastThreads(ForumPK forumPK, int count)
+  public Collection<Message> getNotAnsweredLastThreads(ForumPK forumPK, int count)
       throws RemoteException;
 }

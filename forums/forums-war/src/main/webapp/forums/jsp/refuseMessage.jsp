@@ -31,6 +31,7 @@
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="checkForums.jsp"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
     int messageId = getIntParameter(request, "params");
     Message message = fsc.getMessage(messageId);
@@ -38,23 +39,17 @@
     String text = message.getText();
     String title = message.getTitle();
 
-    ResourceLocator settings = fsc.getSettings();
-    String configFile = settings.getString("configFile",
-        URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
-
     //Icons
     String mandatoryField = context + "/util/icons/mandatoryField.gif";
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><%
-    out.println(graphicFactory.getLookStyleSheet());
-%>
-    <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
-    <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-    <script type="text/javascript">
-
+<title></title>
+<view:looknfeel/>
+<script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
+<script type="text/javascript">
     function validateMessage() {
     	document.refusalForm.submit();
     }
@@ -62,10 +57,8 @@
     function cancelMessage() {
 
     }
-
-    </script>
+</script>
 </head>
-
 <body>
 <%
     Window window = graphicFactory.getWindow();
@@ -79,32 +72,30 @@
 
     out.println(window.printBefore());
     out.println(frame.printBefore());
-    out.println(board.printBefore());
-
-    %>
-
-    <FORM NAME="refusalForm" Action="RefuseMessage" Method="POST">
-	    <TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
-	      <TR>
-	         <TD></TD>
-	         <TD valign="top"><%=EncodeHelper.javaStringToHtmlString(message.getTitle())%></TD>
-	      <TR>
-	         <TD class="txtlibform" valign=top><%=resource.getString("RefusalMotive")%> :</TD>
-	         <TD>
-	            <textarea name="Motive" rows="5" cols="60"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5">
-	            <input type="hidden" name="params" value="<%=messageId%>">
-	         </TD>
-	      </TR>
-	      <TR>
-	         <TD colspan="2">
-	           ( <img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%> )
-	         </TD>
-	      </TR>
-	   </TABLE>
-    </FORM>
+%>
+	<view:board>
+    <form name="refusalForm" action="RefuseMessage" method="post">
+	    <table cellpadding="5" cellspacing="0" border="0" width="100%">
+	      <tr>
+	         <td></td>
+	         <td valign="top"><%=EncodeHelper.javaStringToHtmlString(message.getTitle())%></td>
+	      </tr>
+	      <tr>
+	         <td class="txtlibform" valign=top><%=resource.getString("RefusalMotive")%> :</td>
+	         <td>
+	            <textarea name="Motive" rows="5" cols="60"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/>
+	            <input type="hidden" name="params" value="<%=messageId%>"/>
+	         </td>
+	      </tr>
+	      <tr>
+	         <td colspan="2">
+	           <img border="0" src="<%=mandatoryField%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%>
+	         </td>
+	      </tr>
+	   </table>
+    </form>
+    </view:board>
     <%
-
- 	  out.println(board.printAfter());
 	  out.println("<br/>");
 
 	  ButtonPane msgButtonPane = graphicFactory.getButtonPane();
@@ -113,8 +104,7 @@
     String backUrl = ActionUrl.getUrl("viewMessage", "viewForum", 1, messageId, forumId);
     msgButtonPane.addButton(graphicFactory.getFormButton(resource.getString("annuler"), backUrl, false));
     msgButtonPane.setHorizontalPosition();
-    out.println("<center>" + msgButtonPane.print()+ "</center>");
-
+    out.println(msgButtonPane.print());
 
     out.println(frame.printAfter());
     out.println(window.printAfter());

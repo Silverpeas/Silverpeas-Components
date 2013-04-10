@@ -33,10 +33,11 @@ import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.notation.ejb.NotationBm;
@@ -50,6 +51,7 @@ import com.silverpeas.tagcloud.ejb.TagCloudRuntimeException;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -782,7 +784,7 @@ public class ForumsBMEJB implements SessionBean {
    */
   public void deleteMessage(MessagePK messagePK) {
     Connection con = openConnection();
-    Vector v = new Vector();
+    Vector<String> v = new Vector<String>();
 
     try {
       v = ForumsDAO.getMessageSons(con, messagePK);
@@ -793,8 +795,8 @@ public class ForumsBMEJB implements SessionBean {
       DBUtil.close(con);
     }
     if (v.size() > 0) {
-      for (int i = 0; i < v.size(); i++) {
-        deleteMessage(new MessagePK(messagePK.getComponentName(), (String) v.elementAt(i)));
+      for (String messageId : v) {
+        deleteMessage(new MessagePK(messagePK.getComponentName(), messageId));
       }
     }
     con = openConnection();
@@ -803,7 +805,7 @@ public class ForumsBMEJB implements SessionBean {
       deleteIndex(messagePK);
       deleteTagCloud(messagePK);
       deleteNotation(messagePK);
-      deleteWysiwyg(messagePK);
+      deleteAllAttachments(messagePK);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.deleteMessage()",
           SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_MESSAGE_FAILED", e);
@@ -912,7 +914,7 @@ public class ForumsBMEJB implements SessionBean {
    */
   public void moveMessage(MessagePK messagePK, ForumPK forumPK) {
     Connection con = openConnection();
-    Vector v = new Vector();
+    Vector<String> v = new Vector<String>();
 
     try {
       v = ForumsDAO.getMessageSons(con, messagePK);
@@ -923,8 +925,8 @@ public class ForumsBMEJB implements SessionBean {
       DBUtil.close(con);
     }
     if (v.size() > 0) {
-      for (int i = 0; i < v.size(); i++) {
-        moveMessage(new MessagePK(messagePK.getComponentName(), (String) v.elementAt(i)), forumPK);
+      for (String messageId : v) {
+        moveMessage(new MessagePK(messagePK.getComponentName(), messageId), forumPK);
       }
     }
     con = openConnection();
@@ -946,7 +948,7 @@ public class ForumsBMEJB implements SessionBean {
    * @author frageade
    * @since 11 Octobre 2000
    */
-  public Vector getMessageSons(MessagePK messagePK) {
+  public Vector<String> getMessageSons(MessagePK messagePK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getMessageSons(con, messagePK);
@@ -966,7 +968,7 @@ public class ForumsBMEJB implements SessionBean {
    * @author frageade
    * @since 11 Octobre 2000
    */
-  public Vector getAllMessageSons(MessagePK messagePK) {
+  public Vector<String> getAllMessageSons(MessagePK messagePK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getAllMessageSons(con, messagePK);
@@ -1499,12 +1501,12 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  private void deleteWysiwyg(MessagePK messagePK) {
-    try {
-      WysiwygController.deleteFileAndAttachment(messagePK.getComponentName(), messagePK.getId());
-    } catch (WysiwygException e) {
-      SilverTrace.error("forums", "ForumsBMEJB.deleteWysiwyg()", "componentId = " + messagePK.
-          getComponentName() + " ; messageId = " + messagePK.getId());
+  private void deleteAllAttachments(MessagePK messagePK) {
+    ForeignPK foreignKey = new ForeignPK(messagePK);
+    List<SimpleDocument> documents =
+        AttachmentServiceFactory.getAttachmentService().listAllDocumentsByForeignKey(foreignKey, null);
+    for (SimpleDocument doc : documents) {
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
     }
   }
 }

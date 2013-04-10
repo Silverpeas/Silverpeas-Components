@@ -1597,34 +1597,34 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   @Override
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId,
       int action) {
-    PublicationDetail pubDetail = null;
-    try {
-      pubDetail = getPublicationDetail(pubPK);
-    } catch (Exception e) {
-      // publication no longer exists
-      // do not throw exception because this method is called by JMS layer
-      // if exception is throw, JMS will attempt to execute it again and again...
-      SilverTrace.info("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
-    }
+    // check if related contribution is managed by kmelia
+    if (pubPK != null && StringUtil.isDefined(pubPK.getInstanceId()) &&
+        (pubPK.getInstanceId().startsWith("kmelia") || 
+         pubPK.getInstanceId().startsWith("toolbox") || 
+         pubPK.getInstanceId().startsWith("kmax"))) {
 
-    // The treatment is stopped if publication is not found or if publication doesn't correspond
-    // with parameter of given publication pk. The second condition could happen, for now,
-    // with applications dealing with wysiwyg without using publication for their storage
-    // (infoletter for example).
-    if (pubDetail == null || (StringUtil.isDefined(pubPK.getInstanceId()) &&
-        !pubDetail.getInstanceId().equals(pubPK.getInstanceId()))) {
-      return;
-    }
-    if (isDefined(userId)) {
-      pubDetail.setUpdaterId(userId);
-    }
+      PublicationDetail pubDetail = null;
+      try {
+        pubDetail = getPublicationDetail(pubPK);
+      } catch (Exception e) {
+        // publication no longer exists
+        // do not throw exception because this method is called by JMS layer
+        // if exception is throw, JMS will attempt to execute it again and again...
+        SilverTrace.info("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
+            "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "pubPK = " + pubPK.toString(), e);
+      }
 
-    // check if related publication is managed by kmelia
-    // test due to really hazardous abusive notifications
-    if (pubDetail.getPK().getInstanceId().startsWith("kmelia")
-        || pubDetail.getPK().getInstanceId().startsWith("toolbox")
-        || pubDetail.getPK().getInstanceId().startsWith("kmax")) {
+      // The treatment is stopped if publication is not found or if publication doesn't correspond
+      // with parameter of given publication pk. The second condition could happen, for now,
+      // with applications dealing with wysiwyg without using publication for their storage
+      // (infoletter for example).
+      if (pubDetail == null || (StringUtil.isDefined(pubPK.getInstanceId()) &&
+          !pubDetail.getInstanceId().equals(pubPK.getInstanceId()))) {
+        return;
+      }
+      if (isDefined(userId)) {
+        pubDetail.setUpdaterId(userId);
+      }
 
       // update publication header to store last modifier and update date
       if (!isDefined(userId)) {
@@ -1638,12 +1638,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         } else {
           SilverTrace.warn("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
               "kmelia.PROBLEM_DETECTED", "user " + userId
-              + " is not allowed to update publication " + pubDetail.getPK().toString());
+                  + " is not allowed to update publication " + pubDetail.getPK().toString());
         }
       }
       // index all attached files to taking into account visibility period
       indexExternalElementsOfPublication(pubDetail);
-
     }
   }
 

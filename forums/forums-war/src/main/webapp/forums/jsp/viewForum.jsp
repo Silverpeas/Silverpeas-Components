@@ -56,7 +56,7 @@
         "forumsSessionClientController");
     ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
     ResourceLocator resource = new ResourceLocator(
-        "com.stratelia.webactiv.forums.multilang.forumsBundle", fsc.getLanguage());
+        "org.silverpeas.forums.multilang.forumsBundle", fsc.getLanguage());
     if (fsc == null) {
         // No forums session controller in the request -> security exception
         String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator()
@@ -79,7 +79,8 @@
 <c:set var="isActive"  value="${requestScope.currentForum.active}" />
 <c:set var="globalNote" value="${requestScope.notation.roundGlobalNote}" />
 <c:set var="userNote" value="${requestScope.notation.userNote}" />
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title><c:out value="${currentForum.name}" /></title>
     <view:looknfeel />
@@ -212,10 +213,10 @@
                 </table>
               </td>
             </tr>
-          </c:if>
             <tr>
               <td><br/><br/></td>
             </tr>
+          </c:if>
           <tr class="notationLine">
             <td align="right">
               <c:url var="starIcon" value="/util/icons/shim.gif"/>
