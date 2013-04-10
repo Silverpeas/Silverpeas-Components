@@ -67,7 +67,6 @@ public class ForumsDAO {
   private static final String FORUM_COLUMN_FORUM_CREATION_DATE = "forumCreationDate";
   private static final String FORUM_COLUMN_FORUM_CREATOR = "forumCreator";
   private static final String FORUM_COLUMN_FORUM_LOCK_LEVEL = "forumLockLevel";
-  private static final String FORUM_COLUMN_FORUM_CLOSE_DATE = "forumCloseDate";
   private static final String FORUM_COLUMNS = FORUM_COLUMN_FORUM_ID + ", "
       + FORUM_COLUMN_FORUM_NAME + ", " + FORUM_COLUMN_FORUM_DESCRIPTION + ", "
       + FORUM_COLUMN_FORUM_ACTIVE + ", " + FORUM_COLUMN_FORUM_PARENT + ", "
@@ -1543,12 +1542,12 @@ public class ForumsDAO {
    * primary key.
    * @throws SQLException An SQL exception.
    */
-  public static Vector getMessageSons(Connection con, MessagePK messagePK)
+  public static Vector<String> getMessageSons(Connection con, MessagePK messagePK)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getMessageSons()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = " + QUERY_GET_MESSAGE_SONS);
 
-    Vector messagesIds = new Vector();
+    Vector<String> messagesIds = new Vector<String>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -1741,13 +1740,11 @@ public class ForumsDAO {
    * key.
    * @throws SQLException An SQL exception.
    */
-  public static Vector getAllMessageSons(Connection con, MessagePK messagePK)
+  public static Vector<String> getAllMessageSons(Connection con, MessagePK messagePK)
       throws SQLException {
-    Vector messagesIds = new Vector();
-    Vector currentMessagesIds = getMessageSons(con, messagePK);
-    String messageId;
-    for (int i = 0; i < currentMessagesIds.size(); i++) {
-      messageId = (String) currentMessagesIds.elementAt(i);
+    Vector<String> messagesIds = new Vector<String>();
+    Vector<String> currentMessagesIds = getMessageSons(con, messagePK);
+    for (String messageId : currentMessagesIds) {
       messagesIds.add(messageId);
       messagesIds
           .addAll(getAllMessageSons(con, new MessagePK(messagePK.getInstanceId(), messageId)));

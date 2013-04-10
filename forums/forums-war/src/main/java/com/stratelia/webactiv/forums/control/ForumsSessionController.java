@@ -45,6 +45,8 @@ import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
 import javax.xml.bind.JAXBException;
 
+import org.silverpeas.upload.UploadedFile;
+
 import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.notation.ejb.NotationBmHome;
 import com.silverpeas.notation.ejb.NotationRuntimeException;
@@ -58,6 +60,7 @@ import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -521,7 +524,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * @since 04 Octobre 2000
    */
   public int createMessage(String title, String author, int forumId, int parentId, String text,
-      String keywords) {
+      String keywords, Collection<UploadedFile> uploadedFiles) {
     String status = STATUS_FOR_VALIDATION;
 
     MessagePK messagePK = new MessagePK(getComponentId(), getSpaceId());
@@ -556,6 +559,16 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       SilverTrace.warn("forums", "ForumsSessionController.createMessage()",
           "forums.MSG_NOTIFY_USERS_FAILED", null, e);
     }
+    
+    // Attach uploaded files
+    if (com.silverpeas.util.CollectionUtil.isNotEmpty(uploadedFiles)) {
+      for (UploadedFile uploadedFile : uploadedFiles) {
+        // Register attachment
+        uploadedFile.registerAttachment(String.valueOf(messageId), getComponentId(),
+            getUserDetail(), I18NHelper.defaultLanguage, false);
+      }
+    }
+    
     return messageId;
   }
 
