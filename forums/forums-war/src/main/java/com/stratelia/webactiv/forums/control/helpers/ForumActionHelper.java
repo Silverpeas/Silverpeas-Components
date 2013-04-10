@@ -92,10 +92,13 @@ public class ForumActionHelper {
                 fsc.addModerator(forumId, moderator.trim());
               }
             }
+            request.setAttribute("nbChildrens", fsc.getForumSonsNb(forumParent));
             break;
           }
           case DELETE_FORUM: {
             fsc.deleteForum(params);
+            int forumId = ForumHelper.getIntParameter(request, "forumId");
+            request.setAttribute("nbChildrens", fsc.getForumSonsNb(forumId));
             break;
           }
           case LOCK_FORUM: {
