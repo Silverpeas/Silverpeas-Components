@@ -36,4 +36,8 @@
     <servlet-name>OrganizationChartRequestRouter</servlet-name>
     <url-pattern>/Rorganizationchart/*</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>OrganizationChartRequestRouter</servlet-name>
+    <url-pattern>/RorgchartGroup/*</url-pattern>
+  </servlet-mapping>
 </web-app>

@@ -37,6 +37,7 @@ import com.silverpeas.components.organizationchart.model.OrganizationalRole;
 import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import com.silverpeas.components.organizationchart.model.PersonCategory;
 import com.silverpeas.components.organizationchart.service.OrganizationChartConfiguration;
+import com.silverpeas.components.organizationchart.service.OrganizationChartLDAPConfiguration;
 import com.silverpeas.components.organizationchart.service.OrganizationChartService;
 import com.silverpeas.components.organizationchart.service.ServicesFactory;
 import com.silverpeas.components.organizationchart.view.CategoryBox;
@@ -80,7 +81,9 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   private static final String PARAM_LDAP_ATT_ACTIF = "ldapAttActif";
   private static final String PARAM_DOMAIN_ID = "chartDomainSilverpeas";
 
-  private OrganizationChartConfiguration config =null;
+  private OrganizationChartConfiguration config = null;
+  private OrganizationChartLDAPConfiguration ldapConfig = null;
+  
   /**
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
@@ -90,12 +93,21 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   public OrganizationChartSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.components.organizationchart.multilang.OrganizationChartBundle",
-        "com.silverpeas.components.organizationchart.settings.OrganizationChartIcons",
-        "com.silverpeas.components.organizationchart.settings.OrganizationChartSettings");
+        "org.silverpeas.components.organizationchart.multilang.OrganizationChartBundle",
+        "org.silverpeas.components.organizationchart.settings.OrganizationChartIcons",
+        "org.silverpeas.components.organizationchart.settings.OrganizationChartSettings");
 
-    config = loadConfiguration();
-    service = ServicesFactory.getOrganizationChartService(config);
+    if (isLDAP()) {
+      ldapConfig = loadLDAPConfiguration();
+      service = ServicesFactory.getOrganizationChartService(ldapConfig);
+    } else {
+      config = loadGroupConfiguration();
+      service = ServicesFactory.getOrganizationChartService(config);
+    }
+  }
+  
+  public boolean isLDAP() {
+    return getComponentId().startsWith("organizationchart");
   }
 
   public ChartVO getChart(String baseDN, OrganizationalChartType chartType) {
@@ -127,8 +139,11 @@ public class OrganizationChartSessionController extends AbstractComponentSession
 
   private UserVO organizationalPerson2UserVO(OrganizationalPerson person, OrganizationalRole role) {
     String displayedRole = (role == null) ? "" : role.getLabel();
-    return new UserVO(person.getName(), person.getSilverpeasAccount(), displayedRole, person
-        .getDetail());
+    String loginOrId = person.getSilverpeasAccount();
+    if (!isLDAP()) {
+      loginOrId = String.valueOf(person.getId());
+    }
+    return new UserVO(person.getName(), loginOrId, displayedRole, person.getDetail());
   }
 
   private ChartVO buildChartUnitVO(OrganizationalChart chart) {
@@ -144,7 +159,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     rootOrganization.setDetails(chart.getRoot().getDetail());
 
     // Prevents user to go upper that the base DN
-    if (!config.getLdapRoot().equalsIgnoreCase( chart.getRoot().getCompleteName() )) {
+    if (!isRoot(chart)) {
       rootOrganization.setParentDn(chart.getRoot().getParentOu());
     }
 
@@ -213,6 +228,13 @@ public class OrganizationChartSessionController extends AbstractComponentSession
 
     return chartVO;
   }
+  
+  private boolean isRoot(OrganizationalChart chart) {
+    if (ldapConfig != null) {
+      return ldapConfig.getRoot().equalsIgnoreCase(chart.getRoot().getCompleteName());
+    }
+    return config.getRoot().equalsIgnoreCase(chart.getRoot().getCompleteName());
+  }
 
   private ChartVO buildChartPersonsVO(OrganizationalChart chart) {
     ChartPersonnVO chartVO = new ChartPersonnVO();
@@ -248,8 +270,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
           usersOfCurrentCategory = new ArrayList<UserVO>();
           usersByCategory.put(category.getName(), usersOfCurrentCategory);
         }
-        usersOfCurrentCategory.add(new UserVO(person.getName(), person.getSilverpeasAccount(),
-            person.getFonction(), person.getDetail()));
+        usersOfCurrentCategory.add(organizationalPerson2UserVO(person, null));
       }
     }
 
@@ -282,8 +303,8 @@ public class OrganizationChartSessionController extends AbstractComponentSession
 
   private OrganizationChartService service = null;
 
-  private OrganizationChartConfiguration loadConfiguration() {
-    OrganizationChartConfiguration config = new OrganizationChartConfiguration();
+  private OrganizationChartLDAPConfiguration loadLDAPConfiguration() {
+    OrganizationChartLDAPConfiguration config = new OrganizationChartLDAPConfiguration();
 
     config.setServerURL(getComponentParameterValue(PARAM_SERVERURL));
     config.setInitialContextFactory(getComponentParameterValue(PARAM_CTXFACTORY));
@@ -291,13 +312,13 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     config.setPrincipal(getComponentParameterValue(PARAM_PRINCIPAL));
     config.setCredentials(getComponentParameterValue(PARAM_CREDENTIAL));
 
-    config.setLdapRoot(getComponentParameterValue(PARAM_LDAP_ROOT));
+    config.setRoot(getComponentParameterValue(PARAM_LDAP_ROOT));
     config.setLdapClassPerson(getComponentParameterValue(PARAM_LDAP_CLASS_PERSON));
     config.setLdapClassUnit(getComponentParameterValue(PARAM_LDAP_CLASS_UNIT));
-    config.setLdapAttUnit(getComponentParameterValue(PARAM_LDAP_ATT_UNIT));
-    config.setLdapAttName(getComponentParameterValue(PARAM_LDAP_ATT_NAME));
-    config.setLdapAttTitle(getComponentParameterValue(PARAM_LDAP_ATT_TITLE)); // champ LDAP du titre
-    config.setLdapAttDesc(getComponentParameterValue(PARAM_LDAP_ATT_DESC)); // champ ldap de la
+    config.setAttUnit(getComponentParameterValue(PARAM_LDAP_ATT_UNIT));
+    config.setAttName(getComponentParameterValue(PARAM_LDAP_ATT_NAME));
+    config.setAttTitle(getComponentParameterValue(PARAM_LDAP_ATT_TITLE)); // champ LDAP du titre
+    config.setAttDesc(getComponentParameterValue(PARAM_LDAP_ATT_DESC)); // champ ldap de la
     // description
     config.setLdapAttAccount(getComponentParameterValue(PARAM_LDAP_ATT_ACCOUNT)); // champ ldap de
     // l'identifiant
@@ -323,6 +344,35 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     config.setLdapAttActif(getComponentParameterValue(PARAM_LDAP_ATT_ACTIF));
 
     config.setDomainId(getComponentParameterValue(PARAM_DOMAIN_ID));
+
+    return config;
+  }
+  
+  private OrganizationChartConfiguration loadGroupConfiguration() {
+    OrganizationChartConfiguration config = new OrganizationChartConfiguration();
+
+    config.setRoot(getComponentParameterValue(PARAM_LDAP_ROOT));
+    config.setAttUnit(getComponentParameterValue(PARAM_LDAP_ATT_UNIT));
+    config.setAttName(getComponentParameterValue(PARAM_LDAP_ATT_NAME));
+    config.setAttTitle(getComponentParameterValue(PARAM_LDAP_ATT_TITLE)); // champ LDAP du titre
+    config.setAttDesc(getComponentParameterValue(PARAM_LDAP_ATT_DESC)); // champ ldap de la
+    // description
+
+    config
+        .setUnitsChartCentralLabel(getRoles(getComponentParameterValue(PARAM_UNITSCHART_CENTRAL_LABEL)));
+    config
+        .setUnitsChartRightLabel(getRoles(getComponentParameterValue(PARAM_UNITSCHART_RIGHT_LABEL)));
+    config
+        .setUnitsChartLeftLabel(getRoles(getComponentParameterValue(PARAM_UNITSCHART_LEFT_LABEL)));
+
+    config
+        .setPersonnsChartCentralLabel(getRoles(getComponentParameterValue(PARAM_PERSONNSCHART_CENTRAL_LABEL)));
+    config
+        .setPersonnsChartCategoriesLabel(getRoles(getComponentParameterValue(PARAM_PERSONNSCHART_CATEGORIES_LABEL)));
+    config
+        .setUnitsChartOthersInfosKeys(getKeysAndLabel(getComponentParameterValue(PARAM_UNITSCHART_OTHERSINFOS_KEYS)));
+    config
+        .setPersonnsChartOthersInfosKeys(getKeysAndLabel(getComponentParameterValue(PARAM_PERSONNSCHART_OTHERSINFOS_KEYS)));
 
     return config;
   }

@@ -244,7 +244,7 @@ function buildCellDIV(jCell)
 					roleCell.className = "cellInfos";
 					roleCell.colSpan = 2;
 					roleCell.align = "center";
-					roleCell.innerHTML = jCell.roles[i]['role'] + " : <a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.roles[i]['login'] + "\">" + user + "</a>";
+					roleCell.innerHTML = "<span class=\"role\">"+jCell.roles[i]['role'] + " : </span><a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.roles[i]['login'] + "\">" + user + "</a>";
 				}
 			}
 
@@ -297,7 +297,7 @@ function buildCellDIV(jCell)
 							userAttributeCell.className = "celluserAttribute";
 							userAttributeCell.colSpan = 2;
 							userAttributeCell.align = "center";
-							userAttributeCell.innerHTML = jCell.innerUsers[i]['userAttributes'][j]['label'] + " : " + userAttribute;
+							userAttributeCell.innerHTML = "<span class=\"attribute\">"+jCell.innerUsers[i]['userAttributes'][j]['label'] + " : </span>" + userAttribute;
 						}
 					}
 					divMembers.appendChild(tableMembers);
