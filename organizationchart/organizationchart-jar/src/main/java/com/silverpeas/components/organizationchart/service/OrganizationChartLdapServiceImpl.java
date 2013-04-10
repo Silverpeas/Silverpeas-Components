@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.naming.InvalidNameException;
 import javax.naming.NamingEnumeration;
@@ -51,17 +50,22 @@ import com.google.common.collect.Ordering;
 import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
 import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
-import com.silverpeas.components.organizationchart.model.OrganizationalRole;
 import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import com.silverpeas.components.organizationchart.model.PersonCategory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class OrganizationChartLdapServiceImpl implements OrganizationChartService {
-  private OrganizationChartConfiguration config = null;
+public class OrganizationChartLdapServiceImpl extends AbstractOrganizationChartServiceImpl
+    implements OrganizationChartService {
+  private OrganizationChartLDAPConfiguration config = null;
 
-  public void configure(OrganizationChartConfiguration config) {
+  public void configure(OrganizationChartLDAPConfiguration config) {
     this.config = config;
+  }
+  
+  @Override
+  public void configure(OrganizationChartConfiguration config) {
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -76,13 +80,13 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     List<OrganizationalUnit> units = null;
 
     // beginning node of the search
-    String rootOu = (StringUtil.isDefined(baseOu)) ? baseOu : config.getLdapRoot();
+    String rootOu = (StringUtil.isDefined(baseOu)) ? baseOu : config.getRoot();
 
     // Parent definition = top of the chart
     String[] ous = rootOu.split(",");
     String[] firstOu = ous[0].split("=");
     OrganizationalUnit parent = new OrganizationalUnit(firstOu[1], rootOu);
-    setParents(parent, config.getLdapAttUnit(), rootOu);
+    setParents(parent, config.getAttUnit(), rootOu);
 
     DirContext ctx = null;
     try {
@@ -142,7 +146,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
   }
   
   private boolean isRoot(String ou) {
-    return !StringUtil.isDefined(ou) || ou.equalsIgnoreCase(config.getLdapRoot());
+    return !StringUtil.isDefined(ou) || ou.equalsIgnoreCase(config.getRoot());
   }
 
   private void setParents(OrganizationalUnit unit, String ou, String baseOu) {
@@ -254,10 +258,10 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     while (results != null && results.hasMore()) {
       SearchResult entry = (SearchResult) results.next();
       Attributes attrs = entry.getAttributes();
-      String ou = getFirstAttributeValue(attrs.get(config.getLdapAttUnit()));
+      String ou = getFirstAttributeValue(attrs.get(config.getAttUnit()));
       String completeOu = entry.getNameInNamespace();
       OrganizationalUnit unit = new OrganizationalUnit(ou, completeOu);
-      setParents(unit, config.getLdapAttUnit(), completeOu);
+      setParents(unit, config.getAttUnit(), completeOu);
       // build details map
       Map<String, String> attributesToReturn = config.getUnitsChartOthersInfosKeys();
       Map<String, String> details = getDetails(attributesToReturn, attrs);
@@ -310,7 +314,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
         "OrganizationChartLdapServiceImpl.getOrganizationalUnit()", "root.MSG_GEN_PARAM_VALUE",
         "OU retrieved !");
 
-    String ou = getFirstAttributeValue(attrs.get(config.getLdapAttUnit()));
+    String ou = getFirstAttributeValue(attrs.get(config.getAttUnit()));
     OrganizationalUnit unit = new OrganizationalUnit(ou, rootOu);
     SilverTrace.info("organizationchart",
         "OrganizationChartLdapServiceImpl.getOrganizationalUnit()", "root.MSG_GEN_PARAM_VALUE",
@@ -351,16 +355,6 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
         "OrganizationChartLdapServiceImpl.getSpecificCSSClass()", "root.MSG_GEN_EXIT_METHOD", "ou = "+unit.getCompleteName()+", cssClass = "+cssClass);
     return cssClass;
   }
-  
-  private List<OrganizationalPerson> getMainActors(List<OrganizationalPerson> users) {
-    List<OrganizationalPerson> mainActors = new ArrayList<OrganizationalPerson>();
-    for (OrganizationalPerson person : users) {
-      if (person.isVisibleOnCenter()) {
-        mainActors.add(person);
-      }
-    }
-    return mainActors;
-  }
 
   /**
    * Launch a search and return true if there are results.
@@ -383,38 +377,6 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
   }
 
   /**
-   * Get all distinct person categories represented by a given person list.
-   * @param personList the person list
-   * @return a Set of PersonCategory
-   */
-  private Set<PersonCategory> getCategories(List<OrganizationalPerson> personList) {
-    Set<PersonCategory> categories = new TreeSet<PersonCategory>();
-
-    for (OrganizationalPerson person : personList) {
-      // if person is a key Actor of organizationUnit, it will appear in main Cell, so ignore that
-      // actor's category
-      if (!person.isVisibleOnCenter() && person.getVisibleCategory() != null) {
-        categories.add(person.getVisibleCategory());
-      }
-    }
-
-    return categories;
-  }
-
-  /**
-   * Get Person details.
-   */
-  public Map<String, String> getOrganizationalPersonDetails(OrganizationalPerson[] org, int id) {
-    for (OrganizationalPerson pers : org) {
-      if (pers.getId() == id) {
-        Map<String, String> details = pers.getDetail();
-        return details;
-      }
-    }
-    return null;
-  }
-
-  /**
    * Build a OrganizationalPerson object by retrieving attributes values
    * @param id person Id
    * @param attrs ldap attributes
@@ -426,19 +388,19 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
       Attributes attrs, String dn, OrganizationalChartType type) {
 
     // Full Name
-    String fullName = getFirstAttributeValue(attrs.get(config.getLdapAttName()));
+    String fullName = getFirstAttributeValue(attrs.get(config.getAttName()));
 
     // Function
-    String function = getFirstAttributeValue(attrs.get(config.getLdapAttTitle()));
+    String function = getFirstAttributeValue(attrs.get(config.getAttTitle()));
 
     // Description
-    String description = getFirstAttributeValue(attrs.get(config.getLdapAttDesc()));
+    String description = getFirstAttributeValue(attrs.get(config.getAttDesc()));
 
     // login
     String login = getFirstAttributeValue(attrs.get(config.getLdapAttAccount()));
 
     // service
-    String service = getFirstAttributeValue(attrs.get(config.getLdapAttUnit()));
+    String service = getFirstAttributeValue(attrs.get(config.getAttUnit()));
     try {
       if (service == null) {
         LdapName ldapName = new LdapName(dn);
@@ -477,11 +439,11 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     if (function != null) {
       switch (type) {
         case TYPE_UNITCHART:
-          defineUnitChartRoles(person, function);
+          defineUnitChartRoles(person, function, config);
           break;
 
         default:
-          defineDetailledChartRoles(person, function);
+          defineDetailledChartRoles(person, function, config);
           break;
       }
     } else {
@@ -518,100 +480,6 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
       }
     }
     return details;
-  }
-
-  /**
-   * Determine if person has a specific Role in organization Chart.
-   * @param person person
-   * @param function person's function
-   */
-  private void defineUnitChartRoles(OrganizationalPerson person, String function) {
-
-    // Priority to avoid conflicted syntaxes : right, left and then central
-    boolean roleDefined = false;
-
-    // right
-    for (OrganizationalRole role : config.getUnitsChartRightLabel()) {
-      if (isFunctionMatchingRole(function, role)) {
-        person.setVisibleOnRight(true);
-        person.setVisibleRightRole(role);
-        roleDefined = true;
-        break;
-      }
-    }
-
-    // left
-    if (!roleDefined) {
-      for (OrganizationalRole role : config.getUnitsChartLeftLabel()) {
-        if (isFunctionMatchingRole(function, role)) {
-          person.setVisibleOnLeft(true);
-          person.setVisibleLeftRole(role);
-          roleDefined = true;
-          break;
-        }
-      }
-    }
-
-    // central
-    if (!roleDefined) {
-      for (OrganizationalRole role : config.getUnitsChartCentralLabel()) {
-        if (isFunctionMatchingRole(function, role)) {
-          person.setVisibleOnCenter(true);
-          person.setVisibleCenterRole(role);
-          break;
-        }
-      }
-    }
-  }
-
-  /**
-   * Determine if person has a specific Role in organization person Chart.
-   * @param person person
-   * @param function person's function
-   */
-  private void defineDetailledChartRoles(OrganizationalPerson pers, String function) {
-
-    // Priority to avoid conflicted syntaxes : central then categories
-    boolean roleDefined = false;
-
-    // central
-    for (OrganizationalRole role : config.getPersonnsChartCentralLabel()) {
-      if (isFunctionMatchingRole(function, role)) {
-        pers.setVisibleOnCenter(true);
-        pers.setVisibleCenterRole(role);
-        roleDefined = true;
-        break;
-      }
-    }
-
-    // categories
-    if (!roleDefined) {
-      int order = 0;
-      for (OrganizationalRole role : config.getPersonnsChartCategoriesLabel()) {
-        if (isFunctionMatchingRole(function, role)) {
-          pers.setVisibleCategory(new PersonCategory(role.getLabel(), role.getLdapKey(), order));
-          roleDefined = true;
-          break;
-        }
-        order++;
-      }
-    }
-
-    if (!roleDefined) {
-      pers.setVisibleCategory(new PersonCategory("Personnel"));
-    }
-  }
-
-  /**
-   * Checks if given function is matching given role
-   * @param function function to check
-   * @param role role
-   * @return true if function is matching given role
-   */
-  private boolean isFunctionMatchingRole(String function, OrganizationalRole role) {
-    return ((role != null)
-        && StringUtil.isDefined(role.getLdapKey()) && function.toLowerCase().indexOf(
-        role.getLdapKey().toLowerCase()) != -1);
   }
 
   /**

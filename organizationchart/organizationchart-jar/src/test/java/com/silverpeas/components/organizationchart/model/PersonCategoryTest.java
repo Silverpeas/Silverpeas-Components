@@ -2,7 +2,6 @@ package com.silverpeas.components.organizationchart.model;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;

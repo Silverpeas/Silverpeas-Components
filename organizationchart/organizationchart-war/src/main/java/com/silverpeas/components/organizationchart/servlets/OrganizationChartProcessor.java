@@ -51,13 +51,9 @@ public class OrganizationChartProcessor {
       OrganizationChartSessionController controller) {
     request.removeAttribute("error");
     String rootOu = request.getParameter("baseOu");
-
     String chartType = request.getParameter("chartType");
     ChartVO chart = controller.getChart(rootOu, OrganizationalChartType.fromString(chartType));
-
     request.getSession().setAttribute("organigramme", chart);
-    // request.getSession().setAttribute("organigramme", buildFakePersonUnit());
-
     return JSP_BASE + DESTINATION_DISPLAY_CHART;
   }
 
@@ -66,7 +62,10 @@ public class OrganizationChartProcessor {
     String login = request.getParameter("login");
 
     if (login != null) {
-      String userId = organizationchartSC.getUserIdFromLogin(login);
+      String userId = login;
+      if (organizationchartSC.isLDAP()) {
+        userId = organizationchartSC.getUserIdFromLogin(login);
+      }
 
       if (userId != null) {
         return "/Rprofil/jsp/Main?userId=" + userId;
