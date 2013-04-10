@@ -56,7 +56,7 @@
         "forumsSessionClientController");
     ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
     ResourceLocator resource = new ResourceLocator(
-        "com.stratelia.webactiv.forums.multilang.forumsBundle", fsc.getLanguage());
+        "org.silverpeas.forums.multilang.forumsBundle", fsc.getLanguage());
     if (fsc == null) {
         // No forums session controller in the request -> security exception
         String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator()
@@ -212,10 +212,10 @@
                 </table>
               </td>
             </tr>
-          </c:if>
             <tr>
               <td><br/><br/></td>
             </tr>
+          </c:if>
           <tr class="notationLine">
             <td align="right">
               <c:url var="starIcon" value="/util/icons/shim.gif"/>

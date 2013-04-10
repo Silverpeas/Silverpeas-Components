@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.silverpeas.upload.UploadedFile"%>
+<%@page import="org.silverpeas.upload.FileUploadManager"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -95,13 +97,10 @@
                 String messageText = request.getParameter("messageText").trim();
                 String subscribe = request.getParameter("subscribeMessage");
 
-                if ((messageTitle.length() > 0) && (messageText.length() > 0))
-                {
-                    if (params == -1)
-                    {
-                      
-                        int result = fsc.createMessage(
-                            messageTitle, userId, forumId, parentId, messageText, null);
+                if ((messageTitle.length() > 0) && (messageText.length() > 0)) {
+                    if (params == -1) {
+                      	Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request);
+                        int result = fsc.createMessage(messageTitle, userId, forumId, parentId, messageText, null, uploadedFiles);
                         messageId = result;
                     }
                     else
@@ -213,11 +212,16 @@
         int messagesCount = messages.length;
 %>
 
-<%@page import="java.util.List"%><html>
+<%@page import="java.util.List"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title><c:out value="${pageScope.title}" /></title>
     <view:looknfeel />
     <view:includePlugin name="wysiwyg"/>
+    <view:includePlugin name="popup"/>
+	<view:includePlugin name="notifier"/>
+	<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/viewMessage.js"></script>
@@ -234,17 +238,12 @@
 
         function validateMessage()
         {
-            if (document.forms["forumsForm"].elements["messageTitle"].value == "")
-            {
+            if ($("#messageTitle").val() == "") {
                 alert('<%=resource.getString("emptyMessageTitle")%>');
-            }
-            else if (!isTextFilled())
-            {
+            } else if (!isTextFilled()) {
                 alert('<%=resource.getString("emptyMessageText")%>');
-            }
-            else
-            {
-                document.forms["forumsForm"].submit();
+            } else {
+                document.forumsForm.submit();
             }
         }
 
@@ -336,8 +335,7 @@
 
     </script>
 </head>
-
-<body id="forum" <%addBodyOnload(out, fsc);%>>
+<body id="forum<%=forumId%>" class="forum" <%addBodyOnload(out, fsc);%>>
 <%
 
         Window window = graphicFactory.getWindow();
@@ -377,76 +375,38 @@
         String formAction = (reqForum > 0
             ? ActionUrl.getUrl("viewMessage", 8, forumId) : ActionUrl.getUrl("main", 8, -1));
 %>
-    <center>
-        <table class="intfdcolor4" border="0" cellpadding="0" cellspacing="0" width="98%">
-            <form name="forumsForm" action="<%=formAction%>" method="post">
-              <input type="hidden" name="type" value="sendNotif" />
-              <input type="hidden" name="forumId" value="<%=forumId%>" />
-            <tr class="notationLine">
-                <td align="right"><%
+            <div class="notationLine">
+                <%
         forumNotes = ForumHelper.displayMessageNotation(out, resources, currentMessageId, fsc, isReader);
-              %></td>
-            </tr>
-            <tr>
-                <td valign="top"><%
+              %></div>
+            <%
                 ForumHelper.displaySingleMessageList(out, resource, userId, isAdmin, isModerator, isReader, false, folderId, messageId, true, "viewForum", fsc, resources);
                 %>
-                </td>
-            </tr>
-        </table><%
+           <%
 
-        if (messagesCount > 1)
-        {
+        if (messagesCount > 1) {
 %>
-        <table class="intfdcolor4" border="0" cellpadding="0" cellspacing="0" width="98%">
-            <tr>
-                <td width="250">&nbsp;</td>
-                <td align="center" class="texteLabelForm">&nbsp;<%
-
-            if (!displayAllMessages)
-            {
-                if (previousMessageId != -1)
-                {
-%>
-                    <a href="<%=ActionUrl.getUrl("viewMessage", "viewForum", 1, previousMessageId, forumId)%>"><%=resource.getString("forums.previous")%></a><%
-
-                }
-                else
-                {
-%>
-                    <%=resource.getString("forums.previous")%><%
-
-                }
-%>
-                    &nbsp;<%
-
-                if (nextMessageId != -1)
-                {
-%>
-                    <a href="<%=ActionUrl.getUrl("viewMessage", "viewForum", 1, nextMessageId, forumId)%>"><%=resource.getString("forums.next")%></a><%
-
-                }
-                else
-                {
-%>
-                    <%=resource.getString("forums.next")%><%
-
-                }
-            }
-%>
-                </td>
-                <td align="right" class="texteLabelForm" width="250"><a href="<%=ActionUrl.getUrl("viewMessage", (StringUtil.isDefined(call)? call : "viewForum"), 1, messageId, forumId, false, true)%>"><%=resource.getString(displayAllMessages ? "forums.displayCurrentMessage" : "forums.displayAllMessages")%></a></td>
-            </tr>
-        </table><%
-
-        }
-%>
-    </center>
-    <br>
-    <center>
-        <table width="98%" border="0" cellspacing="0" cellpadding="0" class="intfdcolor4">
-            <tr>
-                <td valign="top"><%
+        <div class="sousNavBulle">
+		<p>
+		<%
+            if (!displayAllMessages) {
+                if (previousMessageId != -1) { %>
+                    <a href="<%=ActionUrl.getUrl("viewMessage", "viewForum", 1, previousMessageId, forumId)%>"><%=resource.getString("forums.previous")%></a>
+                <% } else { %>
+                    <%=resource.getString("forums.previous")%>
+                <% } %>
+                <% if (nextMessageId != -1) { %>
+                    <a href="<%=ActionUrl.getUrl("viewMessage", "viewForum", 1, nextMessageId, forumId)%>"><%=resource.getString("forums.next")%></a>
+                <% } else { %>
+                    <%=resource.getString("forums.next")%>
+                <% } %>
+            <% } %>
+            <a href="<%=ActionUrl.getUrl("viewMessage", (StringUtil.isDefined(call)? call : "viewForum"), 1, messageId, forumId, false, true)%>"><%=resource.getString(displayAllMessages ? "forums.displayCurrentMessage" : "forums.displayAllMessages")%></a>
+            </p>
+            </div>  
+        <% } %>
+    
+       	<%
 
 
         if (!displayAllMessages)
@@ -493,27 +453,37 @@
                             <div class="info">
                               <ul>
                                 <li class="userName"><%=authorLabel%></li>
-                                <li class="nbMessage"><%=resource.getString("forums.nbMessages")%> : <%=nbMessages%></li>
+                                <li class="nbMessage"><%=nbMessages%></li>
                               </ul>
                             </div>
                           </div>
                               <div class="message">
                                 <div class="messageHeader">
                                   <span class="txtnav"><%=currentMessage.getTitle()%></span>&nbsp;<span class="txtnote"><%=convertDate(currentMessage.getDate(), resources)%></span>
-                                      <%
-                                        if (displayAllMessages) {
-                                      %>
-                                          <a href="javascript:scrollTop()"><img src="<%=context%>/util/icons/arrow/arrowUp.gif" align="middle" border="0"></a><%
-                                        }
-                                      %>
+                                      <% if (displayAllMessages) { %>
+                                          <a href="javascript:scrollTop()"><img src="<%=context%>/util/icons/arrow/arrowUp.gif" align="middle" border="0"/></a>
+                                      <% } %>
                                 </div>
                                     <div class="messageContent">
-                                      <span class="txtnote"><%=text%></span>
+                                      <div class="messageAttachment">
+                                      <%
+                                      	out.flush();
+    									String profile = "user";
+    									if (userId.equals(authorId) || isAdmin || isModerator) {
+    									  profile = "admin";
+    									}
+									    getServletConfig().getServletContext().getRequestDispatcher(
+									        "/attachment/jsp/displayAttachedFiles.jsp?Id=" + currentMessage.getId() + "&Profile=" + profile +
+									            "&ComponentId=" + instanceId + "&Context=attachment&addFileMenu=true&dnd=false")
+									        .include(request, response);
+    								  %>
+                                      </div>
+                                      <%=text%>
                                     </div>
                                   
                                   <div class="messageFooter">
                                         <input name="checkbox" type="checkbox" <%if (isSubscriber) {%>checked<%}%>
-                                                onclick="javascript:window.location.href='viewMessage.jsp?action=<%=(isSubscriber ? 13 : 14)%>&params=<%=currentId%>&forumId=<%=forumId%>'">
+                                                onclick="javascript:window.location.href='viewMessage.jsp?action=<%=(isSubscriber ? 13 : 14)%>&params=<%=currentId%>&forumId=<%=forumId%>'"/>
                                                 <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span>                                             
                                              <% if (forumActive) { %>
                                               <div class="messageActions">
@@ -524,9 +494,9 @@
                                                   if (isModerator && STATUS_FOR_VALIDATION.equals(status)) {
                                             %>
                                                     <a href="javascript:valideMessage(<%=currentId%>)"><img 
-                                                        src="<%=context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"></a>&nbsp;
+                                                        src="<%=context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"/></a>&nbsp;
                                                     <a href="javascript:refuseMessage(<%=currentId%>)"><img
-                                                      src="<%=context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("refuseMessage")%>" title="<%=resource.getString("refuseMessage")%>"></a>&nbsp;
+                                                      src="<%=context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("refuseMessage")%>" title="<%=resource.getString("refuseMessage")%>"/></a>&nbsp;
                                             <% } %>
                                                <a href="javascript:editMessage(<%=currentId%>)"><img src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"/></a>&nbsp;
                                                <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"/></a>&nbsp;
@@ -540,37 +510,42 @@
 
         }
 
-        if (forumActive)
-        {
+        if (forumActive) {
 %>
                     <div id="responseTable">
-                        <table width="100%" border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor">
-                            <tr>
-                                <td valign="top">
-                                    <table border="0" cellspacing="0" cellpadding="5" width="100%">
-                                        <tr>
-                                            <td colspan="2"></td>
-                                        </tr>
-                                        <input type="hidden" name="forumId" value="<%=message.getForumId()%>"/>
-                                        <input type="hidden" name="parentId" value=""/>
-                                        <tr>
-                                            <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("messageTitle")%> :&nbsp;</span></td>
-                                            <td valign="top"><input type="text" name="messageTitle" value="" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
-                                        </tr>
-                                        <tr>
-                                            <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("messageText")%> :&nbsp;</span></td>
-                                            <td valign="top"><font size=1><textarea name="messageText" id="messageText"></textarea></font></td>
-                                        </tr>
-                                        <tr>
-                                            <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("subscribeMessage")%> :&nbsp;</span></td>
-                                            <td valign="top"><input type="checkbox" name="subscribeMessage"></td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                        </table>
-                        <br>
-                        <center>
+                    	<form name="forumsForm" action="<%=formAction%>" method="post">
+			              <input type="hidden" name="type" value="sendNotif" />
+			              <input type="hidden" name="forumId" value="<%=message.getForumId()%>"/>
+                          <input type="hidden" name="parentId" value=""/>
+                          
+                          <fieldset id="message" class="skinFieldset">
+							<legend><fmt:message key='message'/></legend>
+							<div class="fields">
+								<div class="field" id="messageTitleArea">
+									<label for="messageTitle" class="txtlibform"><fmt:message key='messageTitle'/></label>
+									<div class="champs">
+										<input type="text" id="messageTitle" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"/>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
+									</div>
+								</div>
+								<div class="field" id="messageTextArea">
+									<label for="messageText" class="txtlibform"><fmt:message key='messageText'/></label>
+									<div class="champs">
+										<textarea name="messageText" id="messageText"></textarea>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
+									</div>
+								</div>
+								<div class="field" id="messageSubscriptionArea">
+									<label for="subscribeMessage" class="txtlibform"><fmt:message key='subscribeMessage'/></label>
+									<div class="champs">
+										<input type="checkbox" id="subscribeMessage" name="subscribeMessage"/>
+									</div>
+								</div>
+							</div>
+						  </fieldset>
+						  
+						  <view:fileUpload fieldset="true" jqueryFormSelector="form[name='forumsForm']" />
+						  
+                        </form>
+                        <br/>
 <%
             ButtonPane msgButtonPane = graphicFactory.getButtonPane();
             msgButtonPane.addButton(graphicFactory.getFormButton(
@@ -580,29 +555,18 @@
             msgButtonPane.setHorizontalPosition();
             out.println(msgButtonPane.print());
 %>
-                        </center>
                     </div><%
-
         }
 %>
-                </td>
-            </tr>
-        </form>
-        </table>
-    </center>
-
     <br />
     <div id="backButton">
-        <center>
 <%
         ButtonPane backButtonPane = graphicFactory.getButtonPane();
         backButtonPane.addButton(graphicFactory.getFormButton("Retour", backURL, false));
         backButtonPane.setHorizontalPosition();
         out.println(backButtonPane.print());
 %>
-        </center>
     </div>
-    <br>
 <%
         out.println(frame.printAfter());
         out.println(window.printAfter());

@@ -24,9 +24,13 @@
 package com.stratelia.webactiv.forums.control.helpers;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
+
+import org.silverpeas.upload.FileUploadManager;
+import org.silverpeas.upload.UploadedFile;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -143,8 +147,9 @@ public class ForumActionHelper {
             String forumKeywords = request.getParameter("forumKeywords");
             String subscribe = request.getParameter("subscribeMessage");
             if (StringUtil.isDefined(messageTitle) && StringUtil.isDefined(messageText)) {
+              Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request);
               int result = fsc.createMessage(messageTitle, userId, forumId, parentId, messageText,
-                  forumKeywords);
+                  forumKeywords, uploadedFiles);
               if (subscribe == null) {
                 subscribe = "0";
               } else {
