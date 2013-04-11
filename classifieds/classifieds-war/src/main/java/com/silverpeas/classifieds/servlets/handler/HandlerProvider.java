@@ -21,9 +21,9 @@ public class HandlerProvider {
     handlerMap.put("Main", new DefaultHandler());
     handlerMap.put("ViewClassifiedToValidate", new ListToValidateHandler());
     handlerMap.put("ViewMyClassifieds", new MyClassifiedsHandler());
-    handlerMap.put("ViewAllClassifiedsByCategory", new ClassifiedsListByCategoryHandler());
 
     handlerMap.put("SearchClassifieds", new SearchHandler());
+    handlerMap.put("Pagination", new PaginationHandler());
     handlerMap.put("searchResult", new SearchResultsHandler());
 
     handlerMap.put("ViewClassified", new ViewClassifiedHandler());

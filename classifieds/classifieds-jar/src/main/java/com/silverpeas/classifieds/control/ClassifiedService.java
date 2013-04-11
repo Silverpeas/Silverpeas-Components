@@ -28,6 +28,7 @@ import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.Subscribe;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -143,7 +144,7 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
    * @return a collection of ClassifiedDetail
    * @
    */
-  public Collection<ClassifiedDetail> search(QueryDescription query) ;
+  public List<ClassifiedDetail> search(QueryDescription query) ;
 
   /**
    * index all the classifieds for the instance corresponding to instanceId
@@ -238,5 +239,7 @@ public interface ClassifiedService extends SilverpeasComponentService<Classified
   * @return a collection of ClassifiedDetail
   */
   public Collection<ClassifiedDetail> getAllValidClassifieds(String instanceId, Map<String, String> mapFields1, Map<String, String> mapFields2, String searchField1, String searchField2, int currentPage, int elementsPerPage);
+  
+  public void setClassification(ClassifiedDetail classified, String searchField1, String searchField2, String xmlFormName);
   
 }

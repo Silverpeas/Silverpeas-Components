@@ -79,7 +79,7 @@
 
 <div id="subscription-adding" style="display: none">
 	<br/>
-	<FORM Name="SubscriptionForm" action="AddSubscription" Method="POST" ENCTYPE="multipart/form-data">
+	<form name="SubscriptionForm" action="AddSubscription" method="post" enctype="multipart/form-data">
 	<c:if test="${not empty formSearch}">
 		<table border="0" width="100%" align="center">
 			<!-- AFFICHAGE du formulaire -->
@@ -101,5 +101,5 @@
 		</table>
 		<br/>
 	</c:if>
-	</FORM>
+	</form>
 </div>

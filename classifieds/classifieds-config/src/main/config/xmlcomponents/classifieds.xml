@@ -89,9 +89,9 @@
 	<parameter>
       <name>homePage</name>
       <label>
-        <message lang="fr">Type de page d'accueil</message>
-        <message lang="en">Type of home page</message>
-		<message lang="de">Art der home page</message>
+        <message lang="fr">Page d'accueil</message>
+        <message lang="en">Homepage</message>
+		<message lang="de">Home page</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -100,7 +100,7 @@
         <option>
           <name>
             <message lang="fr">Annonces par catégories</message>
-            <message lang="en">Classifieds by Category</message>
+            <message lang="en">Classifieds by category</message>
             <message lang="de">Anzeigen nach Kategorie</message>
           </name>
           <value>0</value>

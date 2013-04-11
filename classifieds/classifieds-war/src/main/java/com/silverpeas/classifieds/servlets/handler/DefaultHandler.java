@@ -130,7 +130,7 @@ public class DefaultHandler extends FunctionHandler {
       query.addFieldQuery(new FieldDescription(templateName + "$$" + label, keys[i], null));
       Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
       try {
-        classifieds = classifiedsSC.search(query);
+        classifieds = classifiedsSC.getClassifieds(query, 5);
       } catch (Exception e) {
         classifieds = new ArrayList<ClassifiedDetail>();
       }

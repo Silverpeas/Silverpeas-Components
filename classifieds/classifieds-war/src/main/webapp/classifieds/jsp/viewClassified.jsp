@@ -70,9 +70,9 @@
 <c:set var="title" value="${classified.title}" />
 <c:set var="description" value="${classified.description}" />
 <c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
-<c:set var="displayedDescription"><view:encodeHtml string="${description}" /></c:set>
+<c:set var="displayedDescription"><view:encodeHtmlParagraph string="${description}" /></c:set>
 <%
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
@@ -254,7 +254,7 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
               <div class="rightContent">
                 <div class="bgDegradeGris" id="classified_info">
                   <div class="paragraphe" id="classified_info_creation">
-                   <fmt:message key="classifieds.online" /></BR>
+                   <fmt:message key="classifieds.online" /><br/>
                    <c:if test="${fn:length(validationDate) > 0}">
                      <b><c:out value="${validationDate}" /></b>&nbsp;
                    </c:if>
@@ -262,15 +262,10 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
                       <b><c:out value="${creationDate}" /></b>&nbsp;
                    </c:if>
                    <fmt:message key="classifieds.by" />&nbsp;
-                    <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-profile.js" type="text/javascript"></script>
-                    <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-messageme.js" type="text/javascript"></script>
-                    <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-invitme.js" type="text/javascript"></script>
-                    <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-userZoom.js" type="text/javascript"></script>
-                    <span class="userToZoom" rel="${classified.creatorId}">${classified.creatorName}</span>
-                    <div class="profilPhoto"><img class="defaultAvatar" alt="" src="${pageContext.request.contextPath}${classified.creator.avatar}"></div></BR>
-
+                    <view:username userId="${classified.creatorId}" />
+                    <div class="profilPhoto"><img class="defaultAvatar" alt="" src="${pageContext.request.contextPath}${classified.creator.avatar}"/></div><br/>
 									 <c:if test="${fn:length(updateDate) > 0}">
-									   <fmt:message key="classifieds.updateDate" /> : <b><c:out value="${updateDate}" /></b></BR>
+									   <fmt:message key="classifieds.updateDate" /> : <b><c:out value="${updateDate}" /></b><br/>
 									 </c:if>
 									</div>
 									<div id="classified_contact_link" class="bgDegradeGris">
@@ -297,7 +292,7 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 		                  select = "class=\"selected\"";
 		                }
 		                %>
-		                  <a <%=select%> href="#"><img src="<%=url%>"></a>
+		                  <a <%=select%> href="#"><img src="<%=url%>"/></a>
 		                <%
 		                i++;
 		                %>
@@ -310,7 +305,7 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
                     SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
                     String url = m_context +  simpleDocument.getAttachmentURL();
                     %>
-                      <a href="javascript:onClick=openImage('<%=url%>')"><img src="<%=url%>"></a>
+                      <a href="javascript:onClick=openImage('<%=url%>')"><img src="<%=url%>"/></a>
                     </c:forEach>
                     </div>
                     </c:if>

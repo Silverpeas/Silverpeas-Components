@@ -23,16 +23,38 @@
  */
 package com.silverpeas.classifieds.servlets;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import com.silverpeas.classifieds.control.ClassifiedsRole;
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
+import com.silverpeas.classifieds.control.SearchContext;
+import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.servlets.handler.HandlerProvider;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.look.LookHelper;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 public class ClassifiedsRequestRouter extends ComponentRequestRouter<ClassifiedsSessionController> {
 
@@ -92,18 +114,53 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
     SilverTrace.debug("classifieds", "classifiedsRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Profile=" + highestRole);
 
-    // Delegate to specific Handler
-    FunctionHandler handler = HandlerProvider.getHandler(function);
-    if (handler != null) {
-      destination = handler.computeDestination(classifiedsSC, request);
-    } else {
-      destination = rootDest + function;
+    try {
+      // Delegate to specific Handler
+      FunctionHandler handler = HandlerProvider.getHandler(function);
+      if (handler != null) {
+        destination = handler.computeDestination(classifiedsSC, request);
+      }/* else if ("SearchClassifieds".equals(function)){
+        // Parse request to retrieve search parameters
+        QueryDescription query = buildQuery(classifiedsSC, request);
+        
+        GraphicElementFactory gef = (GraphicElementFactory) request.getSession().getAttribute(
+            GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+        classifiedsSC.setPagination(gef.getPagination());
+
+        // Performs search
+        classifiedsSC.search(query);
+
+        // Display first page
+        request.setAttribute("Index", "0");
+        
+        destination = getDestination("Pagination", classifiedsSC, request);
+      } else if ("Pagination".equals(function)) {
+        String index = request.getParameter("Index");
+        if (!StringUtil.isInteger(index)) {
+          index = (String) request.getAttribute("Index");
+        }
+        
+        // Stores objects in request
+        request.setAttribute("SearchContext", classifiedsSC.getSearchContext());
+        request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
+        request.setAttribute("Classifieds", classifiedsSC.getPage(Integer.valueOf(index)));
+        request.setAttribute("Pagination", classifiedsSC.getPagination());
+        
+        destination = rootDest + "classifiedsResult.jsp";
+      } */else {
+        destination = rootDest + function;
+      }
+    } catch (Exception e) {
+      request.setAttribute("javax.servlet.jsp.jspException", e);
+      return "/admin/jsp/errorpageMain.jsp";
     }
 
     SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
+  
+ 
 
   private boolean isAnonymousAccess(HttpServletRequest request) {
     LookHelper lookHelper = (LookHelper) request.getSession().getAttribute(LookHelper.SESSION_ATT);

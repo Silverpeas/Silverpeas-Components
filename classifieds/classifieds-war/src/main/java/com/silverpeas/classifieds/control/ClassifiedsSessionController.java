@@ -26,7 +26,6 @@ package com.silverpeas.classifieds.control;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import com.silverpeas.classifieds.model.ClassifiedDetail;
@@ -36,8 +35,9 @@ import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
@@ -61,6 +61,7 @@ import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -74,6 +75,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   private CommentService commentService = null;
   private ResourcesWrapper resources = null;
   private ClassifiedService classifiedService;
+  
+  private SearchContext searchContext = null;
+  private List<ClassifiedDetail> sessionClassifieds = null;
+  Pagination pagination = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -84,10 +89,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   public ClassifiedsSessionController(MainSessionController mainSessionCtrl,
           ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-            "com.silverpeas.classifieds.multilang.classifiedsBundle",
-            "com.silverpeas.classifieds.settings.classifiedsIcons",
-            "com.silverpeas.classifieds.settings.classifiedsSettings");
-
+            "org.silverpeas.classifieds.multilang.classifiedsBundle",
+            "org.silverpeas.classifieds.settings.classifiedsIcons",
+            "org.silverpeas.classifieds.settings.classifiedsSettings");
     
     // affectation du formulaire
     String xmlFormName = getXMLFormName();
@@ -103,6 +107,14 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
                 SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
+  }
+  
+  public void setPagination(Pagination pagination) {
+    this.pagination = pagination;
+  }
+  
+  public Pagination getPagination() {
+    return pagination;
   }
 
   /**
@@ -146,12 +158,50 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param query : QueryDescription
    * @return a collection of ClassifiedDetail
    */
-  public Collection<ClassifiedDetail> search(QueryDescription query) {
-    Collection<ClassifiedDetail> result = new ArrayList<ClassifiedDetail>();
+  public void search(QueryDescription query) {
+    sessionClassifieds = getClassifieds(query);
+  }
+  
+  private List<ClassifiedDetail> getClassifieds(QueryDescription query) {
     query.setSearchingUser(getUserId());
     query.addComponent(getComponentId());
-    result = getClassifiedService().search(query);
+    return getClassifiedService().search(query);
+  }
+  
+  public List<ClassifiedDetail> getClassifieds(QueryDescription query, int nb) {
+    List<ClassifiedDetail> classifieds = getClassifieds(query);
+    List<ClassifiedDetail> result = new ArrayList<ClassifiedDetail>();
+    for (int i = 0; i < nb && i < classifieds.size(); i++) {
+      ClassifiedDetail classified = classifieds.get(i);
+      enrichClassified(classified);
+      result.add(classified);
+    }
     return result;
+  }
+  
+  public Collection<ClassifiedDetail> getSessionClassifieds() {
+    return sessionClassifieds;
+  }
+  
+  public Collection<ClassifiedDetail> getPage(int itemIndex) {
+    pagination.init(sessionClassifieds.size(), getSettings().getInteger("nbElementsPerPage", 10), itemIndex);
+    List<ClassifiedDetail> classifieds = sessionClassifieds.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
+    
+    // enrich displayed classifieds
+    for (ClassifiedDetail classified : classifieds) {
+      enrichClassified(classified);
+    }
+    
+    return classifieds;
+  }
+  
+  private void enrichClassified(ClassifiedDetail classified) {
+    ClassifiedDetail fromDB = getClassifiedService().getContentById(classified.getId());
+    classified.setPrice(fromDB.getPrice());
+    classified.setCreationDate(fromDB.getCreationDate());
+    classified.setUpdateDate(fromDB.getUpdateDate());
+    setImagesToClassified(classified);
+    getClassifiedService().setClassification(classified, getSearchFields1(), getSearchFields2(), getXMLFormName());
   }
 
   /**
@@ -351,20 +401,13 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
           throws PublicationTemplateException, FormException {
     ClassifiedDetail classified = getClassified(classifiedId);
     DataRecord data = null;
-    String xmlFormName = getXMLFormName();
-    if (StringUtil.isDefined(xmlFormName)) {
-      String xmlFormShortName =
-              xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
-      PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-              getComponentId() + ":" + xmlFormShortName, xmlFormName);
-      if (pubTemplate != null) {
-        RecordSet recordSet = pubTemplate.getRecordSet();
-        data = recordSet.getRecord(classifiedId);
-      }
+    PublicationTemplate pubTemplate = getPublicationTemplate();
+    if (pubTemplate != null) {
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      data = recordSet.getRecord(classifiedId);
     }
-    String field1 = (data.getField(getSearchFields1())).getValue();
-    String field2 = (data.getField(getSearchFields2())).getValue();
+    String field1 = data.getField(getSearchFields1()).getValue();
+    String field2 = data.getField(getSearchFields2()).getValue();
 
     getClassifiedService().sendSubscriptionsNotification(field1, field2, classified);
   }
@@ -410,31 +453,14 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     Map<String, String> fields = Collections.synchronizedMap(new HashMap<String, String>());
     if (StringUtil.isDefined(listName)) {
       // création de la hashtable (key,value)
-      String xmlFormName = getXMLFormName();
-      if (StringUtil.isDefined(xmlFormName)) {
-        String xmlFormShortName =
-                xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
-        PublicationTemplateImpl pubTemplate;
-        try {
-          pubTemplate =
-                  (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-                  getComponentId() + ":" + xmlFormShortName, xmlFormName);
-          String key =
-                  pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
-                  getLanguage()).get("keys");
-          String value =
-                  pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
-                  getLanguage()).get("values");
-          String[] keys = key.split("##");
-          String[] values = value.split("##");
-          for (int i = 0; i < keys.length; i++) {
-            fields.put(keys[i], values[i]);
-          }
-        } catch (Exception e) {
-          // ERREUR : le champ de recherche renseigné n'est pas une liste déroulante
-          throw new ClassifiedsRuntimeException("ClassifedsSessionController.createListField()",
-                  SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-        }
+      try {
+        PublicationTemplate pubTemplate = getPublicationTemplate();
+        GenericFieldTemplate field = (GenericFieldTemplate) pubTemplate.getRecordTemplate().getFieldTemplate(listName);
+        return field.getKeyValuePairs(getLanguage());
+      } catch (Exception e) {
+        // ERREUR : le champ de recherche renseigné n'est pas une liste déroulante
+        throw new ClassifiedsRuntimeException("ClassifedsSessionController.createListField()",
+                SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     } else {
       // ERREUR : le champs de recherche n'est pas renseigné
@@ -451,15 +477,14 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     try {
       subscribes = getClassifiedService().getSubscribesByUser(getComponentId(), getUserId());
 
-      Iterator<Subscribe> it = subscribes.iterator();
       if (fields1 == null) {
         fields1 = createListField(getSearchFields1());
       }
       if (fields2 == null) {
         fields2 = createListField(getSearchFields2());
       }
-      while (it.hasNext()) {
-        Subscribe subscribe = it.next();
+      
+      for (Subscribe subscribe : subscribes) {
         // ajout des libellés
         subscribe.setFieldName1(fields1.get(subscribe.getField1()));
         subscribe.setFieldName2(fields2.get(subscribe.getField2()));
@@ -591,15 +616,25 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public ClassifiedDetail getClassifiedWithImages(String classifiedId) {
     ClassifiedDetail classified = getClassified(classifiedId);
-    try {
-      WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, getComponentId());
-      List<SimpleDocument> listSimpleDocument = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
-      classified.setImages(listSimpleDocument);
-    } catch (Exception e) {
-      throw new ClassifiedsRuntimeException("ClassifiedsSessionController.getClassifiedWithImages()",
-          SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGES", e);
-    }
+    setImagesToClassified(classified);
     return classified;
+  }
+  
+  private void setImagesToClassified(ClassifiedDetail classified) {
+    if (classified != null) {
+      try {
+        WAPrimaryKey classifiedForeignKey =
+            new SimpleDocumentPK(classified.getId(), getComponentId());
+        List<SimpleDocument> listSimpleDocument =
+            AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(
+                classifiedForeignKey, DocumentType.attachment, null);
+        classified.setImages(listSimpleDocument);
+      } catch (Exception e) {
+        throw new ClassifiedsRuntimeException(
+            "ClassifiedsSessionController.setImagesToClassified()",
+            SilverpeasRuntimeException.ERROR, "classifieds.MSG_ERR_GET_IMAGES", e);
+      }
+    }
   }
   
   /**
@@ -694,9 +729,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       fields2 = createListField(getSearchFields2());
     }
     int nbElementsPerPage = Integer.parseInt(getResources().getSetting("nbElementsPerPage"));
-    Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
-    classifieds = getClassifiedService().getAllValidClassifieds(getComponentId(), fields1, fields2, getSearchFields1(), getSearchFields2(), currentPage, nbElementsPerPage);
-    return classifieds;
+    return getClassifiedService().getAllValidClassifieds(getComponentId(), fields1, fields2,
+        getSearchFields1(), getSearchFields2(), currentPage, nbElementsPerPage);
   }
   
   /**
@@ -711,5 +745,32 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       nbPages = nbPages + 1;
     }
     return Integer.toString(nbPages);
+  }
+  
+  /**
+   * Gets the template of the publication based on the classified XML form.
+   * @param classifiedsSC the session controller.
+   * @return the publication template for classifieds.
+   * @throws PublicationTemplateException if an error occurs while getting the publication template.
+   */
+  public PublicationTemplate getPublicationTemplate() throws PublicationTemplateException {
+    PublicationTemplate pubTemplate = null;
+    String xmlFormName = getXMLFormName();
+    if (StringUtil.isDefined(xmlFormName)) {
+      String xmlFormShortName =
+          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+      pubTemplate =
+          getPublicationTemplateManager().getPublicationTemplate(
+              getComponentId() + ":" + xmlFormShortName, xmlFormName);
+    }
+    return pubTemplate;
+  }
+  
+  public void setSearchContext(SearchContext context) {
+    this.searchContext = context;
+  }
+  
+  public SearchContext getSearchContext() {
+    return searchContext;
   }
 }

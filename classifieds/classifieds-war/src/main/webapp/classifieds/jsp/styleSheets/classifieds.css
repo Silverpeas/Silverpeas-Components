@@ -23,7 +23,7 @@
 */
 
 #classifieds #search {
-	margin: 1em;
+	/*margin: 1em;*/
 }
 
 #classifieds #categories {
@@ -246,6 +246,7 @@ div.tableBoard {
 	position:absolute;
 	top:0;
 	left:0;
+	border:0px;
 }
 
 #classifieds_rich_list .classified_info{

@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
@@ -57,38 +58,28 @@
 <c:set var="nbPages" value="${requestScope.NbPages}" />
 <c:set var="currentPage" value="${requestScope.CurrentPage}" />
 
-<%
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-%>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
 <script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/checkForm.js"></script>
-
 <script type="text/javascript">
-	var subscriptionWindow = window;
+function doPagination(index) {
+	document.classifiedForm.action = "Pagination";
+    document.classifiedForm.submit();
+}
 
-	function doPagination(index) {
-     document.classifiedForm.action = "Pagination";
-     document.classifiedForm.submit();
-  }
-	
-	function openSPWindow(fonction, windowName) {
-		pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600',
-				'400', 'scrollbars=yes, resizable, alwaysRaised');
-	}
+function sendData() {
+	document.searchForm.submit();
+}
 
-	function sendData() {
-		document.searchForm.submit();
-	}
+function viewClassifieds(fieldNumber, fieldValue) {
+	var id = $("#searchForm select").get(fieldNumber).id;
+	$("#searchForm #"+id+" option[value='"+fieldValue+"']").attr('selected','selected');
+	sendData();
+}
 </script>
-
 </head>
-
 <body id="classifieds">
 		<div id="${componentInstanceId}">
 
@@ -142,7 +133,7 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 				<view:frame>
 					<view:areaOfOperationOfCreation/>
 					<jsp:include page="subscriptionManager.jsp"/>
-					<form name="searchForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
+					<form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
 						<c:if test="${not empty formSearch}">
 								<div id="search" >
 									<!-- Search Form -->
@@ -166,7 +157,7 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 												<fmt:param value="${nbTotal}" />
 											</fmt:message>
 											<view:button label="${searchLabel}"
-												action="javascript:onClick=sendData();" />
+												action="javascript:onclick=sendData();" />
 										</view:buttonPane>
 										</div>
 									</view:board>
@@ -180,15 +171,16 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
             <c:if test="${not empty classifieds}">
               <c:forEach items="${classifieds}" var="classified"
                 varStatus="loopStatus">
-                <li onclick="location.href='ViewClassified?ClassifiedId=${classified.classifiedId}'">
+                <!-- <li onclick="location.href='ViewClassified?ClassifiedId=${classified.classifiedId}'"> -->
+                <li>
                   <c:if test="${not empty classified.images}">
 		                <div class="classified_thumb">
 		                <c:forEach var="image" items="${classified.images}" begin="0" end="0">
 		                <%
 		                SimpleDocument simpleDocument = (SimpleDocument) pageContext.getAttribute("image");
-		                String url = m_context +  simpleDocument.getAttachmentURL();
+		                String url = URLManager.getApplicationURL() +  simpleDocument.getAttachmentURL();
 		                %>
-		                  <a href="#"><img src="<%=url%>"></a>
+		                  <a href="#"><img src="<%=url%>"/></a>
 		                </c:forEach>
 		                </div>
                   </c:if>
@@ -196,8 +188,8 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
                   <div class="classified_info">
                    <h4><a href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a></h4>
                    <div class="classified_type">
-                    <a href="ViewAllClassifiedsByCategory?CategoryName=${classified.searchValue1}&FieldKey=${classified.searchValueId1}">${classified.searchValue1}</a> 
-                    <a href="ViewAllClassifiedsByCategory?CategoryName=${classified.searchValue2}&FieldKey=${classified.searchValueId2}">${classified.searchValue2}</a>
+                    <a href="javascript:viewClassifieds(0, '${classified.searchValueId1}');">${classified.searchValue1}</a> 
+                    <a href="javascript:viewClassifieds(1, '${classified.searchValueId2}');">${classified.searchValue2}</a>
                    </div>
                   </div>
                     
@@ -232,15 +224,14 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
                 action="Main" pageParam="CurrentPage" altPreviousAction="${altPreviousLabel}" 
                 altNextAction="${altNextLabel}" altGoToAction="${altGoToLabel}"/>
             
-						<!-- legal notice -->
-						<div id="infos" class="tableBoard">
-							<fmt:message key="classifieds.infos" />
-						</div>
-						    
-            
-            
+			<!-- legal notice -->
+			<div id="infos" class="inlineMessage">
+				<fmt:message key="classifieds.infos" />
+			</div>
+			
         </form>      
-				</view:frame>
-			</view:window>
+	</view:frame>
+</view:window>
+</div>
 </body>
 </html>
