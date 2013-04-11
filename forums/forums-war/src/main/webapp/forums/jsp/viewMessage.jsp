@@ -61,31 +61,24 @@
     if (StringUtil.isDefined(nbModeratorsString)) {
       nbModerators = Integer.parseInt(nbModeratorsString);
     }
-
     boolean scrollToMessage = false;
     boolean displayAllMessages = true;
-
-    try
-    {
-        switch (action)
-        {
+    try {
+        switch (action) {
             case 1 :
                 // Affichage de la liste
                 messageId = params;
-                if ("true".equals(request.getParameter("addStat")))
-                {
+                if ("true".equals(request.getParameter("addStat"))) {
                     // depuis la page de forums ou de messages
                     int parentId = fsc.getMessageParentId(messageId);
-                    while (parentId > 0)
-                    {
+                    while (parentId > 0) {
                         messageId = parentId;
                         parentId = fsc.getMessageParentId(messageId);
                     }
                     fsc.addMessageStat(messageId, userId);
                     messageId = params;
                 }
-                if ("true".equals(request.getParameter("changeDisplay")))
-                {
+                if ("true".equals(request.getParameter("changeDisplay"))) {
                     // changement du type d'affichage
                     fsc.changeDisplayAllMessages();
                 }
@@ -102,27 +95,20 @@
                       	Collection<UploadedFile> uploadedFiles = FileUploadManager.getUploadedFiles(request);
                         int result = fsc.createMessage(messageTitle, userId, forumId, parentId, messageText, null, uploadedFiles);
                         messageId = result;
-                    }
-                    else
-                    {
+                    } else {
                         // Modification
                         messageId = params;
                         fsc.updateMessage(messageId, parentId, messageTitle, messageText);
                     }
-                    if (subscribe == null)
-                    {
+                    if (subscribe == null) {
                         subscribe = "0";
-                    }
-                    else
-                    {
+                    } else {
                         subscribe = "1";
-                        if (messageId != 0)
-                        {
+                        if (messageId != 0) {
                             fsc.subscribeMessage(messageId, userId);
                         }
                     }
-                    if (parentId > 0)
-                    {
+                    if (parentId > 0) {
                         fsc.deployMessage(parentId);
                     }
                 }
@@ -168,16 +154,13 @@
                 break;
         }
     }
-    catch (NumberFormatException nfe)
-    {
-        SilverTrace.info("forums", "JSPviewMessage", "root.EX_NO_MESSAGE", null, nfe);
+    catch (NumberFormatException nfe) {
+      SilverTrace.info("forums", "JSPviewMessage", "root.EX_NO_MESSAGE", null, nfe);
     }
-
     String backURL = ActionUrl.getUrl(call, -1, forumId);
 
     Message message = fsc.getMessage(messageId);
-    if (forumId == -1)
-    {
+    if (forumId == -1) {
         forumId = message.getForumId();
     }
 
@@ -188,7 +171,7 @@
         int reqForum = (forumId != -1 ? forumId : 0);
         int folderId = message.getForumId();
         boolean isModerator = fsc.isModerator(userId, folderId);
-
+        pageContext.setAttribute("isModerator", isModerator);
         displayAllMessages = fsc.isDisplayAllMessages();
 
         forumActive = fsc.isForumActive(folderId);
@@ -202,8 +185,7 @@
         // Messages
         currentMessageId = messageId;
         int parent = fsc.getMessageParentId(currentMessageId);
-        while (parent > 0)
-        {
+        while (parent > 0) {
             currentMessageId = parent;
             parent = fsc.getMessageParentId(currentMessageId);
         }
@@ -222,9 +204,9 @@
     <view:includePlugin name="popup"/>
 	<view:includePlugin name="notifier"/>
 	<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
-    <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
-    <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-    <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/viewMessage.js"></script>
+    <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>" ></script>
+    <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js'/>" ></script>
+    <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/viewMessage.js'/>" ></script>
     <script type="text/javascript">
       var wysiwygEditorInstance = null;
 
@@ -235,27 +217,21 @@
       function init() {
         parentMessageId = <%=currentMessageId%>;
       }
-
-        function validateMessage()
-        {
-            if ($("#messageTitle").val() == "") {
-                alert('<%=resource.getString("emptyMessageTitle")%>');
-            } else if (!isTextFilled()) {
-                alert('<%=resource.getString("emptyMessageText")%>');
-            } else {
-                document.forumsForm.submit();
-            }
+      
+      function validateMessage() {
+        if ($("#messageTitle").val() === "") {
+          alert('<%=resource.getString("emptyMessageTitle")%>');
+        } else if (!isTextFilled()) {
+          alert('<%=resource.getString("emptyMessageText")%>');
+        } else {
+          document.forumsForm.submit();
         }
+      }
 
-        function deleteMessage(messageId, parentId, scroll)
-        {
-            if (confirm('<%=resource.getString("confirmDeleteMessage")%>'))
-            {
-                window.location.href = (parentId == 0 ? "viewForum.jsp" : "viewMessage.jsp")
-                    + "?action=9"
-                    + "&params=" + messageId
-                    + "&forumId=<%=reqForum%>"
-                    + "&scroll=" + (scroll && parentId != 0);
+        function deleteMessage(messageId, parentId, scroll) {
+            if (confirm('<%=resource.getString("confirmDeleteMessage")%>')) {
+              window.location.href = (parentId == 0 ? "viewForum.jsp" : "viewMessage.jsp")
+                    + "?action=9"  + "&params=" + messageId  + "&forumId=<%=reqForum%>" + "&scroll=" + (scroll && parentId != 0);
             }
         }
 
@@ -265,29 +241,23 @@
           }
         }
 
-        function callResizeFrame()
-        {
+        function callResizeFrame() {
             <%addJsResizeFrameCall(out, fsc);%>
         }
 
-        function loadNotation()
-        {
-            if (document.getElementById(NOTATION_PREFIX + "1") == undefined)
-            {
+        function loadNotation() {
+            if (document.getElementById(NOTATION_PREFIX + "1") == undefined) {
                 setTimeout("loadNotation()", 200);
             }
-            else
-            {
+            else {
                 var img;
                 var i;
-                for (i = 1; i <= NOTATIONS_COUNT; i++)
-                {
+                for (i = 1; i <= NOTATIONS_COUNT; i++) {
                     notationFlags[i - 1] = false;
                     img = document.getElementById(NOTATION_PREFIX + i);
                     img.alt = "<%=resource.getString("forums.giveNote")%> " + i + "/" + NOTATIONS_COUNT;
                     img.title = "<%=resource.getString("forums.giveNote")%> " + i + "/" + NOTATIONS_COUNT;
-                    if (!readOnly)
-                    {
+                    if (!readOnly) {
                         img.onclick = function() {notationNote(this);};
                         img.onmouseover = function() {notationOver(this);};
                         img.onmouseout = function() {notationOut(this);};
@@ -414,18 +384,16 @@
             messages = new Message[] {message};
         }
 
-        Map authorNbMessages = new HashMap();
+        Map<String, Integer> authorNbMessages = new HashMap<String, Integer>();
         int nbMessages;
-        for (int i = 0, n = messages.length; i < n; i++)
-        {
+        for (int i = 0, n = messages.length; i < n; i++)  {
             Message currentMessage = messages[i];
             int currentId = currentMessage.getId();
             int parentId = currentMessage.getParentId();
             String authorId = currentMessage.getAuthor();
             String authorLabel = fsc.getAuthorName(authorId);
             String status = currentMessage.getStatus();
-            if (authorLabel == null)
-            {
+            if (authorLabel == null) {
                 authorLabel = resource.getString("inconnu");
             }
             com.stratelia.webactiv.beans.admin.UserDetail author = fsc.getAuthor(authorId);
@@ -435,14 +403,12 @@
             }              
             String text = currentMessage.getText();
             boolean isSubscriber = fsc.isSubscriber(currentId, userId);
-            if (!authorNbMessages.containsKey(authorId))
-            {
-                nbMessages = fsc.getAuthorNbMessages(authorId);
-                authorNbMessages.put(authorId,  Integer.valueOf(nbMessages));
+            if (!authorNbMessages.containsKey(authorId)) {
+              nbMessages = fsc.getAuthorNbMessages(authorId);
+              authorNbMessages.put(authorId, nbMessages);
             }
-            else
-            {
-                nbMessages = ((Integer)authorNbMessages.get(authorId)).intValue();
+            else {
+              nbMessages = authorNbMessages.get(authorId);
             }
 %>
 
@@ -466,21 +432,35 @@
                                 </div>
                                     <div class="messageContent">
                                       <div class="messageAttachment">
-                                      <%
+                                        <% 
                                       	out.flush();
-    									String profile = "user";
-    									if (userId.equals(authorId) || isAdmin || isModerator) {
-    									  profile = "admin";
-    									}
-									    getServletConfig().getServletContext().getRequestDispatcher(
-									        "/attachment/jsp/displayAttachedFiles.jsp?Id=" + currentMessage.getId() + "&Profile=" + profile +
-									            "&ComponentId=" + instanceId + "&Context=attachment&addFileMenu=true&dnd=false")
-									        .include(request, response);
-    								  %>
+                                        String profile = "user";
+                                        if (userId.equals(authorId) || isAdmin || isModerator) {
+                                          profile = "admin";
+                                        }
+                                        pageContext.setAttribute("profile", profile);
+                                        pageContext.setAttribute("baseCallbackUrl", "/Rforums/"+ instanceId +"/viewMessage.jsp");
+                                        %>
+                                        <c:url var="callBackUrl" value="${baseCallbackUrl}" context="/">
+                                          <c:param name="call" value="${'viewForum'}" />
+                                          <c:param name="action" value="1" />
+                                          <c:param name="addStat" value="true" />
+                                          <c:param name="params"><%=currentMessage.getId()%></c:param>
+                                          <c:param name="forumId"><%=currentMessage.getForumId()%></c:param>
+                                        </c:url>
+                                        <c:import url="/attachment/jsp/displayAttachedFiles.jsp">
+                                          <c:param name="Id"><%=currentMessage.getId()%></c:param>
+                                          <c:param name="Profile" value="${profile}" />
+                                          <c:param name="ComponentId"><%=instanceId%></c:param>
+                                          <c:param name="Context" value="${'attachment'}" />
+                                          <c:param name="addFileMenu" value="${'true'}" />
+                                          <c:param name="dnd" value="${'false'}" />
+                                          <c:param name="notI18n" value="${'true'}" />
+                                          <c:param name="CallbackUrl" value="${callBackUrl}" />
+                                        </c:import>                            
                                       </div>
                                       <%=text%>
-                                    </div>
-                                  
+                                    </div>                                  
                                   <div class="messageFooter">
                                         <input name="checkbox" type="checkbox" <%if (isSubscriber) {%>checked<%}%>
                                                 onclick="javascript:window.location.href='viewMessage.jsp?action=<%=(isSubscriber ? 13 : 14)%>&params=<%=currentId%>&forumId=<%=forumId%>'"/>
@@ -489,7 +469,7 @@
                                               <div class="messageActions">
                                               <% if ((isAdmin || isUser) && STATUS_VALIDATE.equals(status)) { %>
                                                   <a href="javascript:replyMessage(<%=currentId%>)"><img src="<%=context%>/util/icons/reply.gif" align="middle" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"/></a>&nbsp;
-				    						  <%  }
+                                              <%  }
                                                 if (userId.equals(authorId) || isAdmin || isModerator) {
                                                   if (isModerator && STATUS_FOR_VALIDATION.equals(status)) {
                                             %>
