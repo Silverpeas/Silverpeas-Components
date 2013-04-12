@@ -23,18 +23,8 @@
  */
 package org.silverpeas.resourcemanager.services;
 
-import org.silverpeas.resourcemanager.model.ResourceStatus;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.DBUtil;
-import edu.emory.mathcs.backport.java.util.Arrays;
-import edu.emory.mathcs.backport.java.util.Collections;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.sql.DataSource;
+import com.stratelia.webactiv.util.DateUtil;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -47,13 +37,23 @@ import org.junit.runner.RunWith;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.ReservedResource;
 import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcemanager.model.ResourceStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -104,9 +104,8 @@ public class ReservationServiceTest {
     Reservation reservation = new Reservation("Test de la Toussaint", new Date(1320134400000L),
         new Date(1320163200000L), "To test", "at work");
     reservation.setInstanceId(instanceId);
-    long id = Long.parseLong(service.createReservation(reservation, Collections.emptyList()));
-    Reservation createdReservation = service.getReservation(id);
-    reservation.setId(String.valueOf(id));
+    service.createReservation(reservation, new ArrayList<Long>(0));
+    Reservation createdReservation = service.getReservation(reservation.getId());
     assertThat(reservation, is(createdReservation));
   }
 
@@ -119,12 +118,11 @@ public class ReservationServiceTest {
     Reservation reservation = new Reservation("Test de la Toussaint", new Date(1320134400000L),
         new Date(1320163200000L), "To test", "at work");
     reservation.setInstanceId(instanceId);
-    long id = Long.parseLong(service.createReservation(reservation,
-        Arrays.asList(new Long[]{1L, 2L})));
-    Reservation createdReservation = service.getReservation(id);
-    reservation.setId(String.valueOf(id));
+    service.createReservation(reservation, Arrays.asList(1L, 2L));
+    Reservation createdReservation = service.getReservation(reservation.getId());
     assertThat(reservation, is(createdReservation));
-    List<Resource> resources = resourceService.listResourcesOfReservation(id);
+    List<Resource> resources =
+        resourceService.listResourcesOfReservation(reservation.getId());
     assertThat(resources, is(notNullValue()));
     assertThat(resources, hasSize(2));
   }
@@ -139,15 +137,15 @@ public class ReservationServiceTest {
         new Date(1320163200000L), "To test", "at work");
     reservation.setInstanceId(instanceId);
     reservation.setUserId("5");
-    long id = Long.parseLong(service.createReservation(reservation,
-        Arrays.asList(new Long[]{5L})));
-    Reservation createdReservation = service.getReservation(id);
-    reservation.setId(String.valueOf(id));
+    service.createReservation(reservation, Arrays.asList(5L));
+    Reservation createdReservation = service.getReservation(reservation.getId());
     assertThat(reservation, is(createdReservation));
-    List<Resource> resources = resourceService.listResourcesOfReservation(id);
+    List<Resource> resources =
+        resourceService.listResourcesOfReservation(reservation.getId());
     assertThat(resources, is(notNullValue()));
     assertThat(resources, hasSize(1));
-    List<ReservedResource> reservedResources = reservedResourceService.findAllReservedResourcesOfReservation(id);
+    List<ReservedResource> reservedResources =
+        reservedResourceService.findAllReservedResourcesOfReservation(reservation.getId());
     assertThat(reservedResources, is(notNullValue()));
     assertThat(reservedResources, hasSize(1));
     String status = reservedResources.get(0).getStatus();
@@ -165,15 +163,15 @@ public class ReservationServiceTest {
         new Date(1320163200000L), "To test", "at work");
     reservation.setInstanceId(instanceId);
     reservation.setUserId("3");
-    long id = Long.parseLong(service.createReservation(reservation,
-        Arrays.asList(new Long[]{5L})));
-    Reservation createdReservation = service.getReservation(id);
-    reservation.setId(String.valueOf(id));
+    service.createReservation(reservation, Arrays.asList(5L));
+    Reservation createdReservation = service.getReservation(reservation.getId());
     assertThat(reservation, is(createdReservation));
-    List<Resource> resources = resourceService.listResourcesOfReservation(id);
+    List<Resource> resources =
+        resourceService.listResourcesOfReservation(reservation.getId());
     assertThat(resources, is(notNullValue()));
     assertThat(resources, hasSize(1));
-    List<ReservedResource> reservedResources = reservedResourceService.findAllReservedResourcesOfReservation(id);
+    List<ReservedResource> reservedResources =
+        reservedResourceService.findAllReservedResourcesOfReservation(reservation.getId());
     assertThat(reservedResources, is(notNullValue()));
     assertThat(reservedResources, hasSize(1));
     String status = reservedResources.get(0).getStatus();
@@ -189,7 +187,7 @@ public class ReservationServiceTest {
     int reservationId = 3;
     Reservation reservation = service.getReservation(reservationId);
     String status = service.computeReservationStatus(reservation);
-    assertThat(status, is(ResourceStatus.STATUS_FOR_VALIDATION));
+    assertThat(status, is(ResourceStatus.STATUS_REFUSED));
   }
 
   /**
@@ -213,7 +211,7 @@ public class ReservationServiceTest {
     long reservationId = 3L;
     String instanceId = "resourcesManager42";
     Reservation reservation = service.getReservation(reservationId);
-    Reservation expectedResult = new Reservation("3", "Test de la Toussaint",
+    Reservation expectedResult = new Reservation(3L, "Test de la Toussaint",
         new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
         new Date(1319811924467L), new Date(1319811924467L), instanceId, "test");
     assertThat(reservation, is(expectedResult));
@@ -229,7 +227,7 @@ public class ReservationServiceTest {
   public void testDeleteReservation() {
     long reservationId = 3L;
     Reservation reservation = service.getReservation(reservationId);
-    Reservation expectedResult = new Reservation("3", "Test de la Toussaint",
+    Reservation expectedResult = new Reservation(3L, "Test de la Toussaint",
         new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2",
         new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42", "test");
     assertThat(reservation, is(expectedResult));
@@ -252,17 +250,17 @@ public class ReservationServiceTest {
     List<Reservation> reservations = service.findAllReservations("resourcesManager42");
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(4));
-    assertThat(reservations, containsInAnyOrder(new Reservation("3", "Test de la Toussaint",
+    assertThat(reservations, containsInAnyOrder(new Reservation(3L, "Test de la Toussaint",
         new Date(1320134400000L),
         new Date(1320163200000L), "To test", "at work", "2", new Date(1319811924467L), new Date(
         1319811924467L), "resourcesManager42"),
-        new Reservation("4", "Test réservation 20/12/2011", new Date(1324368000000L),
+        new Reservation(4L, "Test réservation 20/12/2011", new Date(1324368000000L),
         new Date(1324375200000L), "To test a reservzation", "at work", "9", new Date(1320225012008L),
         new Date(1320225012008L), "resourcesManager42"),
-        new Reservation("5", "Test réservation validée 20/12/2011", new Date(1324368000000L),
+        new Reservation(5L, "Test réservation validée 20/12/2011", new Date(1324368000000L),
         new Date(1324375200000L), "To test a reservzation validated", "at work", "2", new Date(
         1319811924467L), new Date(1319811924467L), "resourcesManager42"),
-        new Reservation("6", "Test réservation refusée 20/12/2011", new Date(1324375200000L),
+        new Reservation(6L, "Test réservation refusée 20/12/2011", new Date(1324375200000L),
         new Date(1324382400000L), "To test a reservzation refused", "at work", "2", new Date(
         1319811924467L), new Date(1319811924467L), "resourcesManager42")));
   }
@@ -275,14 +273,14 @@ public class ReservationServiceTest {
     List<Reservation> reservations = service.findAllReservationsForUser("resourcesManager42", 2);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(3));
-    assertThat(reservations, containsInAnyOrder(new Reservation("3", "Test de la Toussaint",
+    assertThat(reservations, containsInAnyOrder(new Reservation(3L, "Test de la Toussaint",
         new Date(1320134400000L),
         new Date(1320163200000L), "To test", "at work", "2", new Date(1319811924467L), new Date(
         1319811924467L), "resourcesManager42"),
-        new Reservation("5", "Test réservation validée 20/12/2011", new Date(1324368000000L),
+        new Reservation(5L, "Test réservation validée 20/12/2011", new Date(1324368000000L),
         new Date(1324375200000L), "To test a reservzation validated", "at work", "2", new Date(
         1319811924467L), new Date(1319811924467L), "resourcesManager42"),
-        new Reservation("6", "Test réservation refusée 20/12/2011", new Date(1324375200000L),
+        new Reservation(6L, "Test réservation refusée 20/12/2011", new Date(1324375200000L),
         new Date(1324382400000L), "To test a reservzation refused", "at work", "2", new Date(
         1319811924467L), new Date(1319811924467L), "resourcesManager42")));
   }
@@ -315,7 +313,7 @@ public class ReservationServiceTest {
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(1));
 
-    assertThat(reservations, containsInAnyOrder(new Reservation("4", "Test réservation 20/12/2011",
+    assertThat(reservations, containsInAnyOrder(new Reservation(4L, "Test réservation 20/12/2011",
         new Date(1324368000000L), new Date(1324375200000L), "To test a reservzation", "at work", "9",
         new Date(1320225012008L), new Date(1320225012008L), "resourcesManager42")));
     userId = 2L;
@@ -342,7 +340,7 @@ public class ReservationServiceTest {
         startPeriod, endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(1));
-    assertThat(reservations, containsInAnyOrder(new Reservation("3", "Test de la Toussaint",
+    assertThat(reservations, containsInAnyOrder(new Reservation(3L, "Test de la Toussaint",
         new Date(1320134400000L), new Date(1320163200000L), "To test", "at work", "2", new Date(
         1319811924467L), new Date(1319811924467L), "resourcesManager42")));
 
@@ -357,10 +355,10 @@ public class ReservationServiceTest {
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(2));
 
-    assertThat(reservations, containsInAnyOrder(new Reservation("5",
+    assertThat(reservations, containsInAnyOrder(new Reservation(5L,
         "Test réservation validée 20/12/2011", new Date(1324368000000L), new Date(1324375200000L),
         "To test a reservzation validated", "at work", "2", new Date(1319811924467L), new Date(
-        1319811924467L), "resourcesManager42"), new Reservation("6",
+        1319811924467L), "resourcesManager42"), new Reservation(6L,
         "Test réservation refusée 20/12/2011", new Date(1324375200000L), new Date(1324382400000L),
         "To test a reservzation refused", "at work", "2", new Date(1319811924467L), new Date(
         1319811924467L), "resourcesManager42")));
@@ -381,10 +379,10 @@ public class ReservationServiceTest {
         endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(2));
-    assertThat(reservations, containsInAnyOrder(new Reservation("5",
+    assertThat(reservations, containsInAnyOrder(new Reservation(5L,
         "Test réservation validée 20/12/2011", new Date(1324368000000L), new Date(1324375200000L),
         "To test a reservzation validated", "at work", "2", new Date(1319811924467L), new Date(
-        1319811924467L), "resourcesManager42"), new Reservation("6",
+        1319811924467L), "resourcesManager42"), new Reservation(6L,
         "Test réservation refusée 20/12/2011", new Date(
         1324375200000L), new Date(1324382400000L), "To test a reservzation refused", "at work",
         "2", new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42")));

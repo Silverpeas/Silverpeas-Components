@@ -40,46 +40,42 @@ public interface ResourcesManager {
 
   public void createCategory(Category category);
 
-  public void deleteCategory(String id, String componentId);
+  public void deleteCategory(Long id, String componentId);
 
-  public Category getCategory(String id);
+  public Category getCategory(Long id);
 
   public void updateCategory(Category category);
 
-  public String createResource(Resource resource);
+  public void createResource(Resource resource);
 
-  public List<Resource> getResourcesByCategory(String categoryId);
+  public List<Resource> getResourcesByCategory(Long categoryId);
 
-  public void deleteResource(String id, String componentId);
+  public void deleteResource(Long id, String componentId);
 
-  public Resource getResource(String id);
-
-  public void updateResource(Resource resource);
+  public Resource getResource(Long id);
   
   public void updateResource(Resource resource, List<Long> managerIds);
 
   public List<Resource> getResourcesReservable(String instanceId, Date startDate, Date endDate);
 
-  public List<Resource> verificationReservation(String instanceId, String listeReservation,
+  public List<Resource> getReservedResources(String instanceId, List<Long> resources,
       Date startDate, Date endDate);
 
-  public void saveReservation(Reservation reservation, String listReservationCurrent);
+  public void saveReservation(Reservation reservation, List<Long> resourceIds);
 
   public List<Reservation> getReservations(String instanceId);
 
-  public List<Resource> getResourcesofReservation(String instanceId, String reservationId);
+  public List<Resource> getResourcesofReservation(String instanceId, Long reservationId);
 
-  public void deleteReservation(String id, String componentId);
+  public void deleteReservation(Long id, String componentId);
 
-  public Reservation getReservation(String instanceId, String reservationId);
+  public Reservation getReservation(String instanceId, Long reservationId);
 
-  public void updateReservation(Reservation reservationCourante, String listReservation,
+  public void updateReservation(Reservation reservation, List<Long> resourceIds,
       boolean updateDate);
 
-  public List<Resource> verificationNewDateReservation(String instanceId, String listeReservation,
-      Date startDate, Date endDate, String reservationId);
-
-  public List<Reservation> getMonthReservation(String instanceId, Date monthDate, String userId);
+  public List<Resource> getReservedResources(String instanceId, List<Long> aimedResourceIds,
+      Date startDate, Date endDate, Long reservationIdToSkip);
 
   public List<Reservation> getUserReservations(String instanceId, String userId);
   
@@ -89,20 +85,14 @@ public interface ResourcesManager {
   public List<Reservation> getReservationForValidation(String instanceId, Date monthDate,
       String userId);
 
-  public List<Reservation> getMonthReservationOfCategory(Date monthDate, String idCategory);
-
   public List<Reservation> listReservationsOfMonthInCategoryForUser(Date monthDate,
-      String idCategory, String userId);
+      Long idCategory, String userId);
 
   public void indexResourceManager(String instanceId);
 
-  public void addManager(long resourceId, long managerId);
-
-  public void removeManager(long resourceId, long managerId);
-
   public List<ResourceValidator> getManagers(long resourceId);
 
-  public String getResourceOfReservationStatus(String resourceId, String reservationId);
+  public String getResourceOfReservationStatus(Long resourceId, Long reservationId);
 
   public void updateReservedResourceStatus(long reservationId, long resourceId, String status);
 
