@@ -40,39 +40,28 @@
     boolean isModerator = false;
     ForumActionHelper.actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><%
-
+<%
     out.println(graphicFactory.getLookStyleSheet());
-    if (!graphicFactory.hasExternalStylesheet())
-    {
+    if (!graphicFactory.hasExternalStylesheet()) {
 %>
-    <link rel="stylesheet" type="text/css" href="styleSheets/forums.css"><%
-
-    }
-%>
-    <script type="text/javascript"><%
-
-    if (isAdmin)
-    {
-%>
+    <link rel="stylesheet" type="text/css" href="styleSheets/forums.css"></link>
+<% } %>
+<script type="text/javascript">
+<% if (isAdmin) { %>
         function confirmDeleteForum(forumId, spaceId, instanceId) {
             window.open("../../Rforums/jsp/main.jsp?Space=" + spaceId + "&Component=" + instanceId, "MyMain");
-        }<%
-
-    }
-%>
-        function goto_jsp(url)
-        {
-            window.open(url, "MyMain");
         }
-    </script>
+<% } %>
+function goto_jsp(url) {
+    window.open(url, "MyMain");
+}
+</script>
 </head>
-
-<body id="forum" marginheight="2" marginwidth="2" leftmargin="2" topmargin="2">
-    <center>
+<body id="forum">
         <table width="95%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
             <tr class="enteteTableau">
                 <td colspan="2" nowrap="nowrap" align="center"><%=resources.getString("theme")%></td>
@@ -101,6 +90,5 @@
         null, "", "");
 %>
         </table>
-    </center>
 </body>
 </html>

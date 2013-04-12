@@ -34,7 +34,7 @@ public interface OrganizationChartService {
 
   public OrganizationalChart getOrganizationChart(String baseOu, OrganizationalChartType type);
 
-  public Map<String, String> getOrganizationalPersonDetails(OrganizationalPerson[] org, int id);
-
+  public void configure(OrganizationChartLDAPConfiguration config);
+  
   public void configure(OrganizationChartConfiguration config);
 }

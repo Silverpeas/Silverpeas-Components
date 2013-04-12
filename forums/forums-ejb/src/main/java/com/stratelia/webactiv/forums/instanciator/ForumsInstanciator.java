@@ -30,7 +30,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.wysiwyg.WysiwygInstanciator;
+
+import org.silverpeas.attachment.SimpleDocumentInstanciator;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
@@ -68,10 +69,9 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
     deleteDataOfInstance(con, componentId, "Rights");
     deleteDataOfInstance(con, componentId, "Message");
     deleteDataOfInstance(con, componentId, "Forum");
-    // delete wysiwyg stuff
-    WysiwygInstanciator wysiwygI = new WysiwygInstanciator("uselessButMandatory :)");
-    wysiwygI.delete(con, spaceId, componentId, userId);
-
+    
+    // delete all attachments (wysiwyg, files...)
+    new SimpleDocumentInstanciator().delete(componentId);
   }
 
   /**
