@@ -32,7 +32,7 @@ package com.silverpeas.gallery.socialNetwork;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.calendar.Date;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
@@ -40,7 +40,6 @@ import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialGalleryInterface;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -51,10 +50,9 @@ public class SocialGallery implements SocialGalleryInterface {
    * get the my SocialInformationGallery according to number of Item and the first Index
    *
    * @param userId
-   * @param limit
-   * @param offset
+   * @param begin 
+   * @param end 
    * @return List<SocialInformationGallery>
-   * @throws SilverpeasException
    */
   @Override
   public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end) {
@@ -67,8 +65,8 @@ public class SocialGallery implements SocialGalleryInterface {
    *
    * @param myId
    * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
+   * @param begin 
+   * @param end 
    * @return List
    * @throws SilverpeasException
    */
@@ -79,11 +77,6 @@ public class SocialGallery implements SocialGalleryInterface {
         getListAvailable(myId), begin, end);
   }
 
-  /**
-   * getEJB
-   *
-   * @return instance of CalendarBmHome
-   */
   private GalleryBm getGalleryBm() {
     return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
   }
@@ -97,10 +90,9 @@ public class SocialGallery implements SocialGalleryInterface {
    * @return List<String>
    */
   private List<String> getListAvailable(String userid) {
-    OrganisationController org = new OrganizationController();
-    List<ComponentInstLight> availableList = new ArrayList<ComponentInstLight>();
-    availableList = org.getAvailComponentInstLights(userid, "gallery");
-    List<String> idsList = new ArrayList<String>();
+    List<ComponentInstLight> availableList = OrganisationControllerFactory.
+        getOrganisationController().getAvailComponentInstLights(userid, "gallery");
+    List<String> idsList = new ArrayList<String>(availableList.size());
     for (ComponentInstLight comp : availableList) {
       idsList.add(comp.getId());
     }
