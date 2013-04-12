@@ -48,13 +48,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<c:set var="browseContext" value="${requestScope.browseContext}" />
-<c:set var="componentLabel" value="${browseContext[1]}" />
-
 <c:set var="classified" value="${requestScope.Classified}" />
-<c:set var="userName" value="${requestScope.UserName}" />
-<c:set var="userEmail" value="${requestScope.UserEmail}" />
-<c:set var="userId" value="${requestScope.UserId}" />
 
 <c:set var="formUpdate" value="${requestScope.Form}" />
 <c:set var="data" value="${requestScope.Data}" />
@@ -62,7 +56,6 @@
 <c:set var="fieldName" value="${requestScope.FieldName}" />
 
 <c:set var="action" value="${(not empty classified) ? 'UpdateClassified' : 'CreateClassified' }" />
-<c:set var="creatorName" value="${(not empty classified) ? classified.creatorName : userName }" />
 
 <c:if test="${not empty classified}">
 	<c:set var="classifiedId" value="${classified.classifiedId}" />
@@ -81,7 +74,7 @@
 </c:if>
 
 <%
-  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+  String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 	String language = (String) pageContext.getAttribute("language");
 	String instanceId = (String) pageContext.getAttribute("instanceId");
 	Form formUpdate = (Form) pageContext.getAttribute("formUpdate");
@@ -92,8 +85,7 @@
 	context.setBorderPrinted(false);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <link type="text/css" href="<%=m_context%>/util/styleSheets/fieldset.css" rel="stylesheet" />
@@ -252,6 +244,7 @@
       <label for="classifiedNumber" class="txtlibform"><fmt:message key="classifieds.number"/> :</label>
       <div class="champs">
         ${displayedId}
+      </div>
     </div>
 	</c:if>
 	
@@ -267,7 +260,7 @@
 	<div class="field" id="descriptionArea">
     <label for="classifiedDesc" class="txtlibform"><fmt:message key="GML.description"/> :</label>
     <div class="champs">
-      <textarea cols="100" rows="5" name="Description" id="classifiedDesc">${displayedDescription}</textarea>
+      <textarea cols="100" rows="8" name="Description" id="classifiedDesc">${displayedDescription}</textarea>
       &nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
     </div>
   </div>
@@ -284,11 +277,7 @@
       <label class="txtlibform"><fmt:message key="classifieds.creationDate"/> :</label>
       <div class="champs">
 	      <view:formatDateTime value="${creationDate}"/> <fmt:message key="classifieds.by"/>
-	      <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-profile.js" type="text/javascript"></script>
-	      <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-messageme.js" type="text/javascript"></script>
-	      <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-invitme.js" type="text/javascript"></script>
-	      <script language="Javascript" src="${pageContext.request.contextPath}/util/javaScript/silverpeas-userZoom.js" type="text/javascript"></script>
-	      <span class="userToZoom" rel="${creatorId}">${creatorName}</span>
+	      <view:username userId="${creatorId}" />
       </div>
     </div>
   </c:if>
@@ -310,10 +299,9 @@
   </c:if>
   
   <div class="field" id="mandatoryArea">
-    <label class="txtlibform">(<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>)</label>
+    <label class="txtlibform"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/></label>
   </div>
-    
-  
+      
   </div>    
 </fieldset>
 
@@ -334,8 +322,8 @@
           <img src="<%=url%>" class="thumbnail" id="actualImage1"/>
          </div>
          <div id="thumbnailActions">
-          <a href="javascript:onClick=hideImageFile('1');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-          <input type="hidden" name="IdImage1" value="${image.id}"> 
+          <a href="javascript:onClick=hideImageFile('1');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"/></a>
+          <input type="hidden" name="IdImage1" value="${image.id}"/> 
          </div>
        </div>
        </c:forEach>
@@ -357,8 +345,8 @@
           <img src="<%=url%>" class="thumbnail" id="actualImage2"/>
          </div>
          <div id="thumbnailActions">
-          <a href="javascript:onClick=hideImageFile('2');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-          <input type="hidden" name="IdImage2" value="${image.id}"> 
+          <a href="javascript:onClick=hideImageFile('2');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"/></a>
+          <input type="hidden" name="IdImage2" value="${image.id}"/> 
          </div>
        </div>
        </c:forEach>
@@ -380,8 +368,8 @@
           <img src="<%=url%>" class="thumbnail" id="actualImage3"/>
          </div>
          <div id="thumbnailActions">
-          <a href="javascript:onClick=hideImageFile('3');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-          <input type="hidden" name="IdImage3" value="${image.id}"> 
+          <a href="javascript:onClick=hideImageFile('3');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"/></a>
+          <input type="hidden" name="IdImage3" value="${image.id}"/> 
          </div>
        </div>
        </c:forEach>
@@ -403,8 +391,8 @@
           <img src="<%=url%>" class="thumbnail" id="actualImage4"/>
          </div>
          <div id="thumbnailActions">
-          <a href="javascript:onClick=hideImageFile('4');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"></a>
-          <input type="hidden" name="IdImage4" value="${image.id}"> 
+          <a href="javascript:onClick=hideImageFile('4');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" border="0"/></a>
+          <input type="hidden" name="IdImage4" value="${image.id}"/> 
          </div>
        </div>
        </c:forEach>
@@ -428,18 +416,17 @@
 			%>
 			</c:if>
 		</div>
+	</fieldset>
   </div>
 </div>			
 </form>
-<center>
 <view:buttonPane>
 	<fmt:message var="validateLabel" key="GML.validate"/>
 	<fmt:message var="cancelLabel" key="GML.cancel"/>
 
-	<view:button label="${validateLabel}" action="javascript:onClick=sendData();" />
+	<view:button label="${validateLabel}" action="javascript:onclick=sendData();" />
 	<view:button label="${cancelLabel}" action="Main" />
 </view:buttonPane>
-</center>
 </view:frame>
 </view:window>
 </body>
