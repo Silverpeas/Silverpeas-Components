@@ -14,6 +14,8 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.util.StringUtil;
+
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 
@@ -26,13 +28,42 @@ public class DefaultHandler extends FunctionHandler {
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
       HttpServletRequest request) throws Exception {
-
-    Collection<Category> categories = null;
+    
     Form formUpdate = null;
     DataRecord data = null;
+    String nbTotalClassifieds = null;
 
     PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
     try {
+      if (pubTemplate != null) {
+
+        // Update form
+        formUpdate = pubTemplate.getSearchForm();
+
+        // Empty data record
+        RecordSet recordSet = pubTemplate.getRecordSet();
+        data = recordSet.getEmptyRecord();
+      }
+
+      // Stores objects in request
+      nbTotalClassifieds = classifiedsSC.getNbTotalClassifieds();
+      request.setAttribute("Form", formUpdate);
+      request.setAttribute("Data", data);
+      request.setAttribute("NbTotal", nbTotalClassifieds);
+      request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
+      request.setAttribute("wysiwygHeader", classifiedsSC.getWysiwygHeader());
+
+    } catch (Exception e) {
+      // form error
+      request.setAttribute("ErrorType", classifiedsSC.getResources().getString("classifieds.labelErrorForm"));      
+      return "error.jsp";
+    }
+
+    //Affichage page d'accueil annonces par catégorie
+    if(classifiedsSC.isHomePageDisplayCategorized()) {
+      
+      Collection<Category> categories = null;
+      
       if (pubTemplate != null) {
         // Template Name
         String templateFileName = pubTemplate.getFileName();
@@ -45,30 +76,29 @@ public class DefaultHandler extends FunctionHandler {
         String values = fieldTemplate.getParameters(classifiedsSC.getLanguage()).get("values");
         String label = fieldTemplate.getFieldName();
         categories = createCategory(templateName, label, keys, values, classifiedsSC);
-
-        // Update form
-        formUpdate = pubTemplate.getSearchForm();
-
-        // Empty data record
-        RecordSet recordSet = pubTemplate.getRecordSet();
-        data = recordSet.getEmptyRecord();
       }
-
-      // Stores objects in request
-      request.setAttribute("Form", formUpdate);
-      request.setAttribute("Data", data);
-      request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
-      request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
       request.setAttribute("Categories", categories);
-      request.setAttribute("wysiwygHeader", classifiedsSC.getWysiwygHeader());
-
+        
       // Returns jsp to redirect to
       return "accueil.jsp";
-    } catch (Exception e) {
-      // form error
-      request.setAttribute("ErrorType", "labelErrorForm");
-      return "error.jsp";
-    }
+        
+     } else { //Affichage page d'accueil annonces listées
+       
+       String currentPage = request.getParameter("CurrentPage");
+       if (!StringUtil.isDefined(currentPage)) {
+         currentPage = "0";
+       }
+       int currentPageInt = Integer.parseInt(currentPage);
+       classifiedsSC.setCurrentPage(currentPageInt);
+       
+       request.setAttribute("CurrentPage", currentPage);
+       request.setAttribute("NbPages", classifiedsSC.getNbPages(nbTotalClassifieds));
+       request.setAttribute("Classifieds", classifiedsSC.getAllValidClassifieds(currentPageInt));
+       
+       // Returns jsp to redirect to
+       return "accueilNotCategorized.jsp";
+     }
+    
   }
 
   /**
@@ -100,7 +130,7 @@ public class DefaultHandler extends FunctionHandler {
       query.addFieldQuery(new FieldDescription(templateName + "$$" + label, keys[i], null));
       Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
       try {
-        classifieds = classifiedsSC.search(query);
+        classifieds = classifiedsSC.getClassifieds(query, 5);
       } catch (Exception e) {
         classifieds = new ArrayList<ClassifiedDetail>();
       }
