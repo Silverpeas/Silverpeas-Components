@@ -24,7 +24,6 @@
 
 package com.silverpeas.mailinglist.service.model;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -36,8 +35,9 @@ import com.silverpeas.mailinglist.service.model.beans.MailingListActivity;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.model.dao.MessageDao;
 import com.silverpeas.mailinglist.service.util.OrderBy;
-import com.stratelia.webactiv.calendar.control.CalendarBm;
+
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 
 public class MessageServiceImpl implements MessageService {
@@ -45,7 +45,7 @@ public class MessageServiceImpl implements MessageService {
 
   private int elementsPerPage = 10;
 
-  private CalendarBm calendarBm;
+  private SilverpeasCalendar calendarBm;
 
   private static final int MSG_PER_ACTIVITY = 5;
 
@@ -207,8 +207,6 @@ public class MessageServiceImpl implements MessageService {
             }
           }
         }
-      } catch (RemoteException e) {
-        e.printStackTrace();
       } catch (CalendarRuntimeException e) {
         e.printStackTrace();
       }
@@ -236,8 +234,6 @@ public class MessageServiceImpl implements MessageService {
           }
         }
       }
-    } catch (RemoteException e) {
-      e.printStackTrace();
     } catch (CalendarRuntimeException e) {
       e.printStackTrace();
     }
@@ -249,11 +245,11 @@ public class MessageServiceImpl implements MessageService {
         .getComponentId(), -1, -1, 0, number, orderBy);
   }
 
-  public CalendarBm getCalendarBm() {
+  public SilverpeasCalendar getCalendarBm() {
     return calendarBm;
   }
 
-  public void setCalendarBm(CalendarBm calendarBm) {
+  public void setCalendarBm(SilverpeasCalendar calendarBm) {
     this.calendarBm = calendarBm;
   }
 

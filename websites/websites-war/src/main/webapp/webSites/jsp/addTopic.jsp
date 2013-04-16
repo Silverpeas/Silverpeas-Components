@@ -61,7 +61,6 @@ String fatherId = (String) request.getParameter("Id");
 String path = (String) request.getParameter("Path");
 String action = (String) request.getParameter("Action");
 
-String m_context = GeneralPropertiesManager.getString("ApplicationURL");
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";

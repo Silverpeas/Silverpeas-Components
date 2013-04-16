@@ -1,34 +1,25 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/**
- * User: Aliaksei_Budnikau
- * Date: Nov 26, 2002
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.quickinfo;
 
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,7 +35,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
@@ -57,37 +47,35 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
+   *
    * @param ids list of silverContentId to retrieve
    * @param componentId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
    * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
+  @Override
   public List<SilverContentInterface> getSilverContentById(List<Integer> ids,
       String componentId, String sUserId, List<String> alContentUserRoles) {
     if (getContentManager() == null) {
       return new ArrayList<SilverContentInterface>();
     }
-
     return getHeaders(makePKArray(ids, componentId));
   }
 
   public int getSilverObjectId(String pubId, String peasId) {
-    SilverTrace.info("quickinfo",
-        "QuickInfoContentManager.getSilverObjectId()",
+    SilverTrace.info("quickinfo", "QuickInfoContentManager.getSilverObjectId()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId);
     try {
       return getContentManager().getSilverContentId(pubId, peasId);
     } catch (Exception e) {
-      // throw new
-      // KmeliaRuntimeException("KmeliaContentManager.getSilverObjectId()",SilverpeasRuntimeException.ERROR,"kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID",
-      // e);
       return 0;
     }
   }
 
   /**
    * add a new content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param pubDetail the content to register
    * @param userId the creator of the content
@@ -107,6 +95,7 @@ public class QuickInfoContentManager implements ContentInterface {
   /**
    * update the visibility attributes of the content. Here, the type of content is a
    * PublicationDetail
+   *
    * @param pubDetail the content
    */
   public void updateSilverContentVisibility(PublicationDetail pubDetail,
@@ -128,6 +117,7 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * delete a content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param pubPK the identifiant of the content to unregister
    */
@@ -143,6 +133,7 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * return a list of publicationPK according to a list of silverContentId
+   *
    * @param idList a list of silverContentId
    * @param peasId the id of the instance
    * @return a list of publicationPK
@@ -170,22 +161,17 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of publicationPK
+   *
    * @param pubPKs a list of publicationPK
    * @return a list of publicationDetail
    */
   private List getHeaders(List<PublicationPK> pubPKs) {
-    PublicationDetail pubDetail = null;
-    List<PublicationDetail> headers = new ArrayList<PublicationDetail>();
-    try {
-      List<PublicationDetail> publicationDetails =
-          new ArrayList<PublicationDetail>(getPublicationBm().getPublications(pubPKs));
-      for (int i = 0; i < publicationDetails.size(); i++) {
-        pubDetail = (PublicationDetail) publicationDetails.get(i);
-        pubDetail.setIconUrl(CONTENT_ICON);
-        headers.add(pubDetail);
-      }
-    } catch (RemoteException e) {
-      ;// skip unknown and ill formed id.
+    List<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>(
+        getPublicationBm().getPublications(pubPKs));
+    List<PublicationDetail> headers = new ArrayList<PublicationDetail>(publicationDetails.size());
+    for (PublicationDetail pubDetail : publicationDetails) {
+      pubDetail.setIconUrl(CONTENT_ICON);
+      headers.add(pubDetail);
     }
     return headers;
   }
@@ -193,9 +179,8 @@ public class QuickInfoContentManager implements ContentInterface {
   private PublicationBm getPublicationBm() {
     if (currentPublicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-        currentPublicationBm = publicationBmHome.create();
+        currentPublicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
         throw new PublicationRuntimeException("QuickInfoContentManager.getPublicationBm()",
             PublicationRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -215,5 +200,4 @@ public class QuickInfoContentManager implements ContentInterface {
     }
     return contentManager;
   }
-
 }

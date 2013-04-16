@@ -88,7 +88,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
             SiteDetail site = (SiteDetail) l.next();
             String id = site.getSitePK().getId();
             SilverTrace.info("websites", "JSPclassifyDeclassify", "root.MSG_GEN_PARAM_VALUE",
-                             "deja publie compar� a : id = "+id);
+                             "deja publie compare a : id = "+id);
             if (id.equals(siteId))
                 return true;
           }

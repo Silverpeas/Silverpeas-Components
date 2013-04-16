@@ -85,6 +85,7 @@ import org.apache.commons.io.FilenameUtils;
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 
+
 /**
  * @author ehugonnet
  */
