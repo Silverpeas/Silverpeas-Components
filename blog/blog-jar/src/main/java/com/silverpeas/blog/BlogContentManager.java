@@ -1,34 +1,32 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.blog;
 
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.silverpeas.blog.model.BlogRuntimeException;
+
 import com.stratelia.silverpeas.contentManager.ContentInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -37,10 +35,8 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.util.Collection;
 
 /**
  * The blog implementation of ContentInterface.
@@ -48,8 +44,10 @@ import java.util.Collection;
 public class BlogContentManager implements ContentInterface, java.io.Serializable {
 
   private static final long serialVersionUID = 8619139224896358447L;
+
   /**
    * Find all the SilverContent with the given list of SilverContentId
+   *
    * @param ids list of silverContentId to retrieve
    * @param peasId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
@@ -59,8 +57,9 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
   @Override
   public List getSilverContentById(List<Integer> ids, String peasId, String userId,
       List<String> userRoles) {
-    if (getContentManager() == null)
+    if (getContentManager() == null) {
       return new ArrayList();
+    }
 
     return getHeaders(makePKArray(ids, peasId));
   }
@@ -79,6 +78,7 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
 
   /**
    * add a new content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param pubDetail the content to register
    * @param userId the creator of the content
@@ -95,6 +95,7 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
 
   /**
    * delete a content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param pubPK the identifiant of the content to unregister
    */
@@ -113,6 +114,7 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
 
   /**
    * return a list of publicationPK according to a list of silverContentId
+   *
    * @param idList a list of silverContentId
    * @param peasId the id of the instance
    * @return a list of publicationPK
@@ -136,19 +138,16 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
 
   /**
    * return a list of silverContent according to a list of publicationPK
+   *
    * @param ids a list of publicationPK
    * @return a list of publicationDetail
    */
   private List<PublicationDetail> getHeaders(List<PublicationPK> ids) {
-    ArrayList<PublicationDetail> headers = new ArrayList<PublicationDetail>();
-    try {
-      Collection<PublicationDetail> publicationDetails = getPublicationBm().getPublications(ids);
-      for (PublicationDetail pubDetail : publicationDetails) {
-        pubDetail.setIconUrl("blogSmall.gif");
-        headers.add(pubDetail);
-      }
-    } catch (RemoteException e) {
-      // skip unknown and ill formed id.
+    List<PublicationDetail> headers = new ArrayList<PublicationDetail>(ids.size());
+    Collection<PublicationDetail> publicationDetails = getPublicationBm().getPublications(ids);
+    for (PublicationDetail pubDetail : publicationDetails) {
+      pubDetail.setIconUrl("blogSmall.gif");
+      headers.add(pubDetail);
     }
     return headers;
   }
@@ -168,19 +167,16 @@ public class BlogContentManager implements ContentInterface, java.io.Serializabl
   private PublicationBm getPublicationBm() {
     if (currentPublicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class);
-        currentPublicationBm = publicationBmHome.create();
+        currentPublicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
         throw new BlogRuntimeException("BlogContentManager.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR,
-            "blog.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME", e);
+            SilverpeasRuntimeException.ERROR, "blog.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
+            e);
       }
     }
     return currentPublicationBm;
   }
-
   private ContentManager contentManager = null;
   private PublicationBm currentPublicationBm = null;
 }

@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.servlets.ajax;
 
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.BindToPubliHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.CopyPublicationsHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.CutPublicationsHandler;
@@ -42,6 +41,8 @@ import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.UnbindToPubliHandler
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.UnsubscribeHandler;
 import com.stratelia.webactiv.kmelia.servlets.ajax.handlers.UpdateTopicStatusHandler;
 import javax.servlet.http.HttpServletRequest;
+
+import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 
 public enum AjaxOperation {
 
@@ -75,7 +76,7 @@ public enum AjaxOperation {
     return this.controllerRequired;
   }
 
-  public String handleRequest(HttpServletRequest request, ComponentSessionController controller) {
+  public String handleRequest(HttpServletRequest request, KmeliaSessionController controller) {
     return this.handler.handleRequest(request, controller);
   }
 }

@@ -29,11 +29,11 @@ import java.util.Date;
 import java.util.Vector;
 
 import com.silverpeas.peasUtil.RssServlet;
+
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
-import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBMHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -125,9 +125,7 @@ public class ForumsRssServlet extends RssServlet {
   private ForumsBM getForumsBM() {
     ForumsBM forumsBM = null;
     try {
-      ForumsBMHome forumsBMHome = (ForumsBMHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.FORUMSBM_EJBHOME, ForumsBMHome.class);
-      forumsBM = forumsBMHome.create();
+      forumsBM = EJBUtilitaire.getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBM.class);
     } catch (Exception e) {
       throw new ForumsRuntimeException("RssServlet.getForumsBM()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

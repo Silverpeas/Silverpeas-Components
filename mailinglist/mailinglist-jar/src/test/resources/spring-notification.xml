@@ -58,7 +58,7 @@
     <property name="authenticate" value="${SMTPAuthentication}" />
   </bean>
 
-  <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubCalendarBm" />
+  <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubSilverpeasCalendarBm" />
 
   <bean id="notificationFormatter" name="notificationFormatter"
         class="com.silverpeas.mailinglist.service.notification.SimpleNotificationFormatter">

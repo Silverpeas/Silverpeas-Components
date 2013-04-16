@@ -20,14 +20,15 @@
  */
 package com.silverpeas.projectManager.control.ejb;
 
-import java.rmi.RemoteException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -45,6 +46,7 @@ import com.silverpeas.projectManager.model.ProjectManagerRuntimeException;
 import com.silverpeas.projectManager.model.TaskDetail;
 import com.silverpeas.projectManager.model.TaskPK;
 
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -57,13 +59,11 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-/**
- * @author
- */
-public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, SessionBean {
+@Stateless(name = "ProjectManager", description = "Stateless session bean to manage a project.")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class ProjectManagerBmEJB implements ProjectManagerBm {
 
   private static final long serialVersionUID = -1707326539051696107L;
-  private String dbName = JNDINames.SILVERPEAS_DATASOURCE;
   private CommentService commentController = null;
 
   /**
@@ -79,83 +79,72 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   }
 
   @Override
-  public List<TaskDetail> getProjects(String instanceId) throws RemoteException {
+  public List<TaskDetail> getProjects(String instanceId) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.getProjects()",
         "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
     Connection con = getConnection();
-    List<TaskDetail> projects = null;
     try {
-      projects = ProjectManagerDAO.getTasksByMotherId(con, instanceId, -1, null);
-    } catch (Exception re) {
+      return ProjectManagerDAO.getTasksByMotherId(con, instanceId, -1, null);
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getProjects()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_PROJECTS_FAILED",
           "instanceId = " + instanceId, re);
     } finally {
       DBUtil.close(con);
     }
-    return projects;
   }
 
   @Override
-  public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId)
-      throws RemoteException {
-    SilverTrace.info("projectManager",
-        "ProjectManagerBmEJB.getTasksByMotherId()",
+  public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId) {
+    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTasksByMotherId()",
         "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
     return getTasksByMotherId(instanceId, motherId, null);
   }
 
   @Override
-  public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId, Filtre filtre)
-      throws RemoteException {
-    SilverTrace.info("projectManager",
-        "ProjectManagerBmEJB.getTasksByMotherId()",
+  public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId, Filtre filtre) {
+    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTasksByMotherId()",
         "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
     Connection con = getConnection();
-    List<TaskDetail> tasks = null;
     try {
-      tasks = ProjectManagerDAO.getTasksByMotherId(con, instanceId, motherId, filtre);
-    } catch (Exception re) {
+      return ProjectManagerDAO.getTasksByMotherId(con, instanceId, motherId, filtre);
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getTasksByMotherId()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
           + instanceId, re);
     } finally {
       DBUtil.close(con);
     }
-    return tasks;
   }
 
   @Override
   public List<TaskDetail> getTasksNotCancelledByMotherId(String instanceId, int motherId,
-      Filtre filtre) throws RemoteException {
+      Filtre filtre) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTasksNotCancelledByMotherId()",
         "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
     Connection con = getConnection();
-    List<TaskDetail> tasks = null;
     try {
-      tasks = ProjectManagerDAO.getTasksNotCancelledByMotherId(con, instanceId, motherId, filtre);
-    } catch (Exception re) {
+      return ProjectManagerDAO.getTasksNotCancelledByMotherId(con, instanceId, motherId, filtre);
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getTasksByMotherId()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
           + instanceId, re);
     } finally {
       DBUtil.close(con);
     }
-    return tasks;
   }
 
   @Override
   public List<TaskDetail> getTasksByMotherIdAndPreviousId(String instanceId, int motherId,
-      int previousId) throws RemoteException {
+      int previousId) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTasksByMotherIdAndPreviousId()",
-        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId + ", motherId="
-        + motherId + ", previousId=" + previousId);
+        "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId + ", motherId=" + motherId
+        + ", previousId=" + previousId);
     Connection con = getConnection();
-    List<TaskDetail> tasks = null;
     try {
-      tasks =
-          ProjectManagerDAO.getTasksByMotherIdAndPreviousId(con, instanceId, motherId, previousId);
-    } catch (Exception re) {
+      return ProjectManagerDAO.
+          getTasksByMotherIdAndPreviousId(con, instanceId, motherId, previousId);
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException(
           "ProjectManagerBmEJB.getTasksByMotherIdAndPreviousId()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
@@ -163,53 +152,47 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     } finally {
       DBUtil.close(con);
     }
-    return tasks;
   }
 
   @Override
-  public List<TaskDetail> getAllTasks(String instanceId, Filtre filtre) throws RemoteException {
+  public List<TaskDetail> getAllTasks(String instanceId, Filtre filtre) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.getAllTasks()",
         "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
     Connection con = getConnection();
-    List<TaskDetail> tasks = null;
     try {
-      tasks = ProjectManagerDAO.getAllTasks(con, instanceId, filtre);
-    } catch (Exception re) {
+      return ProjectManagerDAO.getAllTasks(con, instanceId, filtre);
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getAllTasks()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
           + instanceId, re);
     } finally {
       DBUtil.close(con);
     }
-    return tasks;
   }
 
   @Override
-  public TaskDetail getTask(int id) throws RemoteException {
+  public TaskDetail getTask(int id) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTask()",
         "root.MSG_GEN_ENTER_METHOD", "id = " + id);
     Connection con = getConnection();
     try {
       return ProjectManagerDAO.getTask(con, id);
-    } catch (Exception re) {
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getTask()",
-          SilverpeasRuntimeException.ERROR,
-          "projectManager.GETTING_TASK_FAILED", "id = " + id, re);
+          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASK_FAILED", "id = " + id, re);
     } finally {
       DBUtil.close(con);
     }
   }
 
   @Override
-  public TaskDetail getTaskByTodoId(String todoId) throws RemoteException {
+  public TaskDetail getTaskByTodoId(String todoId) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTaskByTodoId()",
         "root.MSG_GEN_ENTER_METHOD", "todoId = " + todoId);
     Connection con = getConnection();
     String actionId = null;
     try {
-      // get todo
       TodoDetail todo = getTodo(todoId);
-      // get task associated to it
       actionId = todo.getExternalId();
       return ProjectManagerDAO.getTask(con, actionId);
     } catch (Exception re) {
@@ -222,8 +205,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   }
 
   @Override
-  public TaskDetail getMostDistantTask(String instanceId, int taskId)
-      throws RemoteException {
+  public TaskDetail getMostDistantTask(String instanceId, int taskId) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.getMostDistantTask()",
         "root.MSG_GEN_ENTER_METHOD", "taskId = " + taskId);
     Connection con = getConnection();
@@ -231,25 +213,24 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
       return ProjectManagerDAO.getMostDistantTask(con, instanceId, taskId);
     } catch (Exception re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getMostDistantTask()",
-          SilverpeasRuntimeException.ERROR,
-          "projectManager.GETTING_TASK_FAILED", "taskId = " + taskId, re);
+          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASK_FAILED", "taskId = "
+          + taskId, re);
     } finally {
       DBUtil.close(con);
     }
   }
 
   @Override
-  public int addTask(TaskDetail task) throws RemoteException {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.addTask()",
-        "root.MSG_GEN_ENTER_METHOD", "task=" + task.toString());
+  public int addTask(TaskDetail task) {
+    SilverTrace.info("projectManager", "ProjectManagerBmEJB.addTask()", "root.MSG_GEN_ENTER_METHOD",
+        "task=" + task);
     Connection con = getConnection();
-    int id = -1;
     try {
       // insertion de la task en BdD
       if (task.getAvancement() == 100) {
         task.setStatut(TaskDetail.COMPLETE);
       }
-      id = ProjectManagerDAO.addTask(con, task);
+      int id = ProjectManagerDAO.addTask(con, task);
       task.setId(id);
 
       if (task.getMereId() != -1) {
@@ -259,36 +240,31 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
 
       // modification de sa tache mère s'il en existe une
       updateChargesMotherTask(con, task);
-
-      // insertion de la tache correspondante dans le gestionnaire de taches du
-      // responsable
+      // insertion de la tache correspondante dans le gestionnaire de taches du responsable
       addTodo(task);
-
       // indexation de la task
       createIndex(task);
-
       if (task.getMereId() != -1) {
         // alerte du responsable
         alertResource(task, true);
       }
-    } catch (Exception re) {
+      return id;
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.addTask()",
           SilverpeasRuntimeException.ERROR, "projectManager.CREATING_TASK_FAILED", "task = " + task,
           re);
     } finally {
       DBUtil.close(con);
     }
-    return id;
   }
 
   @Override
-  public void removeTask(int id, String instanceId) throws RemoteException {
+  public void removeTask(int id, String instanceId) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeTask()",
         "root.MSG_GEN_ENTER_METHOD", "id = " + id + ", instanceId=" + instanceId);
     Connection con = getConnection();
     try {
       TaskDetail actionASupprimer = ProjectManagerDAO.getTask(con, id);
-
       // Supprime toutes les sous taches (à n'importe quel niveau)
       List<TaskDetail> tree = ProjectManagerDAO.getTree(con, id);
       TaskDetail task = null;
@@ -296,16 +272,13 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
         task = tree.get(t);
         removeTask(con, task.getId(), task.getInstanceId());
       }
-
-      // La tâche mère a t-elle d'autres taches filles. Est-elle toujours
-      // décomposée ?
+      // La tâche mère a t-elle d'autres taches filles. Est-elle toujours décomposée ?
       List<TaskDetail> actionsSoeur = ProjectManagerDAO.getTree(con, actionASupprimer.getMereId());
       if (actionsSoeur.size() == 1) {
         // La task mère n'a qu'une sous task. Celle que l'on va supprimer.
         // Elle ne va donc plus être décomposée
         ProjectManagerDAO.actionEstDecomposee(con, actionASupprimer.getMereId(), 0);
       }
-
       // Cette tâche est-elle la tâche précédente d'autres tâches
       List<TaskDetail> nextTasks = ProjectManagerDAO.getNextTasks(con, id);
       TaskDetail nextTask = null;
@@ -314,7 +287,6 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
         nextTask.setPreviousTaskId(-1);
         ProjectManagerDAO.updateTask(con, nextTask);
       }
-
       // modification de sa tache mère s'il en existe une
       updateChargesMotherTask(con, task);
     } catch (Exception re) {
@@ -328,13 +300,10 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   private void removeTask(Connection con, int id, String instanceId) throws Exception {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeTask(Connection)",
         "root.MSG_GEN_ENTER_METHOD", "id = " + id + ", instanceId=" + instanceId);
-
     // suppression de la tâche en BdD
     ProjectManagerDAO.removeTask(con, id);
-
     // suppression de la tâche associée
     removeTodo(id, instanceId);
-
     // supprime les fichiers joint à la tâche
     TaskPK taskPK = new TaskPK(id, instanceId);
     List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
@@ -342,16 +311,14 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     for (SimpleDocument attachment : attachments) {
       AttachmentServiceFactory.getAttachmentService().deleteAttachment(attachment);
     }
-
     // supprime les commentaires de la tâche
     getCommentService().deleteAllCommentsOnPublication(TaskDetail.getResourceType(), taskPK);
-
     // suppression de l'index
     removeIndex(id, instanceId);
   }
 
   @Override
-  public void updateTask(TaskDetail task, String userId) throws RemoteException {
+  public void updateTask(TaskDetail task, String userId) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.updateTask()",
         "root.MSG_GEN_ENTER_METHOD", "taskId=" + task.getId());
     Connection con = getConnection();
@@ -376,27 +343,18 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
       // détecte les tâches qui doivent être décalées
       TaskDetail linkedTask = null;
       TaskDetail motherTask = null;
-
-      Date beginDateLinked = null;
-      Date endDateLinked = null;
-
       float charge = 0;
       Calendar calendar2 = Calendar.getInstance();
       boolean updateMother = false;
 
-      boolean isModifBeginDate = false;
-      boolean isModifEndDate = false;
-      Date saveBeginDate = null;
-      Date saveEndDate = null;
-
       for (int t = 0; t < nextTasks.size(); t++) {
-        isModifBeginDate = false;
-        isModifEndDate = false;
+        boolean isModifBeginDate = false;
+        boolean isModifEndDate = false;
 
         linkedTask = nextTasks.get(t);
 
-        beginDateLinked = linkedTask.getDateDebut();
-        saveBeginDate = beginDateLinked;
+        Date beginDateLinked = linkedTask.getDateDebut();
+        Date saveBeginDate = beginDateLinked;
 
         // vérifie si la date de début n'est pas
         // un jour travaillé
@@ -407,8 +365,8 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
           linkedTask.setDateDebut(beginDateLinked);
         }
 
-        endDateLinked = linkedTask.getDateFin();
-        saveEndDate = endDateLinked;
+        Date endDateLinked = linkedTask.getDateFin();
+        Date saveEndDate = endDateLinked;
 
         if (endDate.equals(endDateLinked) || endDate.after(endDateLinked)) {
           // La date de fin de la tâche précédente est supérieure ou égale à la
@@ -454,10 +412,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
           }
 
           if (endDateLinked.after(motherTask.getDateFin())) {
-            // La date de fin de la tâche fille est supérieure à celle de la
-            // mère
-            // cette tâche doit être décalée
-
+            // La date de fin de la tâche fille est supérieure à celle de la mère cette tâche doit être décalée
             // nouvelle date de fin de la mère = date fin fille
             motherTask.setDateFin(endDateLinked);
             updateMother = true;
@@ -487,23 +442,20 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
       }
 
       // on traite maintenant les sous tâches
-      List<TaskDetail> subTasks =
-          ProjectManagerDAO.getTasksByMotherIdAndPreviousId(con, task.getInstanceId(),
-          task.getId(), -1);
+      List<TaskDetail> subTasks = ProjectManagerDAO.getTasksByMotherIdAndPreviousId(con, task.
+          getInstanceId(), task.getId(), -1);
 
-      saveBeginDate = null;
-      saveEndDate = null;
 
       // détecte les tâches qui doivent être décalées
       TaskDetail subTask = null;
       for (int t = 0; t < subTasks.size(); t++) {
-        isModifBeginDate = false;
-        isModifEndDate = false;
+        boolean isModifBeginDate = false;
+        boolean isModifEndDate = false;
 
         subTask = subTasks.get(t);
 
         Date beginDateSub = subTask.getDateDebut();
-        saveBeginDate = beginDateSub;
+        Date saveBeginDate = beginDateSub;
 
         // vérifie si la date de début n'est pas un jour travaillé
         calendar.setTime(beginDateSub);
@@ -514,16 +466,14 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
         }
 
         if (beginDate.after(beginDateSub)) {
-          // La date de début de la tâche mêre est supérieure à la sous tâche
-          // cette tâche doit être décalée
-
+          // La date de début de la tâche mêre est supérieure à la sous tâche cette tâche doit être décalée
           // nouvelle date de début = date début mère
           beginDateSub = beginDate;
           subTask.setDateDebut(beginDate);
         }
 
         Date endDateSub = subTask.getDateFin();
-        saveEndDate = endDateSub;
+        Date saveEndDate = endDateSub;
 
         // calcul la date de fin
         endDateSub = processEndDate(subTask, calendar, holidays);
@@ -559,7 +509,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
       if (task.getMereId() != -1 && !userId.equals(Integer.toString(task.getResponsableId()))) {
         alertResource(task, false);
       }
-    } catch (Exception re) {
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.updateTask()",
           SilverpeasRuntimeException.ERROR, "projectManager.UPDATING_TASK_FAILED", "task = " + task,
           re);
@@ -594,7 +544,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
 
     try {
       notifSender.notifyUser(notifMetaData);
-    } catch (Exception e) {
+    } catch (NotificationManagerException e) {
       SilverTrace.warn("projectManager", "ProjectManagerBmEJB.alertResource()",
           "projectManager.EX_CANT_SEND_NOTIFICATIONS", "taskId = " + task.getId(), e);
     }
@@ -612,22 +562,18 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   }
 
   @Override
-  public Date processEndDate(TaskDetail task) throws RemoteException {
+  public Date processEndDate(TaskDetail task) {
     return processEndDate(task, null, null);
   }
 
-  private Date processEndDate(TaskDetail task, Calendar theCalendar, List<Date> theHolidays)
-      throws RemoteException {
-    float toRound = new Float(0.49).floatValue();
+  private Date processEndDate(TaskDetail task, Calendar theCalendar, List<Date> theHolidays) {
+    float toRound = 0.49F;
     int charge = Math.round(task.getCharge() + toRound) - 1;
-    Date currentDate = null;
     Calendar calendar = theCalendar;
     List<Date> holidays = theHolidays;
-
     if (calendar == null) {
       calendar = Calendar.getInstance();
     }
-
     if (holidays == null) {
       // Récupération des jours non travaillés
       holidays = getHolidayDates(task.getInstanceId());
@@ -637,7 +583,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
 
     while (charge != 0) {
       calendar.add(Calendar.DATE, 1);
-      currentDate = calendar.getTime();
+      Date currentDate = calendar.getTime();
       if (!holidays.contains(currentDate)) {
         charge--;
       }
@@ -646,21 +592,15 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   }
 
   @Override
-  public Date processEndDate(float fCharge, String instanceId, Date dateDebut)
-      throws RemoteException {
-    float toRound = new Float(0.49).floatValue();
+  public Date processEndDate(float fCharge, String instanceId, Date dateDebut) {
+    float toRound = 0.49F;
     int charge = Math.round(fCharge + toRound) - 1;
-    Date currentDate = null;
-
     Calendar calendar = Calendar.getInstance();
-
     List<Date> holidays = getHolidayDates(instanceId);
-
     calendar.setTime(dateDebut);
-
     while (charge != 0) {
       calendar.add(Calendar.DATE, 1);
-      currentDate = calendar.getTime();
+      Date currentDate = calendar.getTime();
       if (!holidays.contains(currentDate)) {
         charge--;
       }
@@ -670,7 +610,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
 
   @Override
   public void calculateAllTasksDates(String instanceId, int projectId,
-      String userId) throws RemoteException {
+      String userId) {
     // récupère toutes les tâches de premier niveau sans précédence
     List<TaskDetail> tasks = getTasksByMotherIdAndPreviousId(instanceId, projectId, -1);
 
@@ -721,8 +661,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     }
   }
 
-  private void updateChargesMotherTask(Connection con, TaskDetail task)
-      throws RemoteException {
+  private void updateChargesMotherTask(Connection con, TaskDetail task) {
     try {
       // la tache est une sous-tache -> on recalcule les montants de charges de
       // la tache mère
@@ -748,7 +687,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
 
         ProjectManagerDAO.updateTask(con, motherTask);
       }
-    } catch (Exception re) {
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.updateChargesMotherTask()",
           SilverpeasRuntimeException.ERROR, "projectManager.UPDATING_TASK_FAILED", "task = " + task,
           re);
@@ -757,12 +696,8 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     }
   }
 
-  /*
-   * Gestion du calendrier des jours non travaillés /
-   * ********************************************************************************
-   */
   @Override
-  public List<Date> getHolidayDates(String instanceId) throws RemoteException {
+  public List<Date> getHolidayDates(String instanceId) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.getHolidayDates()",
         "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
     Connection con = getConnection();
@@ -778,15 +713,13 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   }
 
   @Override
-  public List<Date> getHolidayDates(String instanceId, Date beginDate, Date endDate)
-      throws RemoteException {
+  public List<Date> getHolidayDates(String instanceId, Date beginDate, Date endDate) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.getHolidayDates()",
         "root.MSG_GEN_ENTER_METHOD", "instanceId=" + instanceId);
     Connection con = getConnection();
     try {
-      return ProjectManagerCalendarDAO.getHolidayDates(con, instanceId,
-          beginDate, endDate);
-    } catch (Exception re) {
+      return ProjectManagerCalendarDAO.getHolidayDates(con, instanceId, beginDate, endDate);
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getHolidayDates()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATES_FAILED",
           "instanceId = " + instanceId, re);
@@ -796,32 +729,31 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   }
 
   @Override
-  public void addHolidayDate(HolidayDetail holiday) throws RemoteException {
+  public void addHolidayDate(HolidayDetail holiday) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.addHolidayDate()",
-        "root.MSG_GEN_ENTER_METHOD", "holidayDate=" + holiday.getDate().toString());
+        "root.MSG_GEN_ENTER_METHOD", "holidayDate=" + holiday.getDate());
     Connection con = getConnection();
     try {
       ProjectManagerCalendarDAO.addHolidayDate(con, holiday);
-    } catch (Exception re) {
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.addHolidayDate()",
           SilverpeasRuntimeException.ERROR, "projectManager.ADDING_HOLIDAYDATE_FAILED", "date = "
-          + holiday.getDate().toString(), re);
+          + holiday.getDate(), re);
     } finally {
       DBUtil.close(con);
     }
   }
 
   @Override
-  public void addHolidayDates(List<HolidayDetail> holidayDates) throws RemoteException {
+  public void addHolidayDates(List<HolidayDetail> holidayDates) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.addHolidayDates()",
-        "root.MSG_GEN_ENTER_METHOD", "holidayDates.size()="
-        + holidayDates.size());
+        "root.MSG_GEN_ENTER_METHOD", "holidayDates.size()=" + holidayDates.size());
     Connection con = getConnection();
     try {
       for (HolidayDetail holiday : holidayDates) {
         ProjectManagerCalendarDAO.addHolidayDate(con, holiday);
       }
-    } catch (Exception re) {
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.addHolidayDates()",
           SilverpeasRuntimeException.ERROR, "projectManager.ADDING_HOLIDAYDATES_FAILED", re);
     } finally {
@@ -830,23 +762,23 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   }
 
   @Override
-  public void removeHolidayDate(HolidayDetail holiday) throws RemoteException {
+  public void removeHolidayDate(HolidayDetail holiday) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeHolidayDate()",
-        "root.MSG_GEN_ENTER_METHOD", "holidayDate=" + holiday.getDate().toString());
+        "root.MSG_GEN_ENTER_METHOD", "holidayDate=" + holiday.getDate());
     Connection con = getConnection();
     try {
       ProjectManagerCalendarDAO.removeHolidayDate(con, holiday);
-    } catch (Exception re) {
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.removeHolidayDate()",
           SilverpeasRuntimeException.ERROR, "projectManager.REMOVING_HOLIDAYDATE_FAILED", "date = "
-          + holiday.getDate().toString(), re);
+          + holiday.getDate(), re);
     } finally {
       DBUtil.close(con);
     }
   }
 
   @Override
-  public void removeHolidayDates(List<HolidayDetail> holidayDates) throws RemoteException {
+  public void removeHolidayDates(List<HolidayDetail> holidayDates) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeHolidayDates()",
         "root.MSG_GEN_ENTER_METHOD", "holidayDates.size()=" + holidayDates.size());
     Connection con = getConnection();
@@ -854,7 +786,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
       for (HolidayDetail holiday : holidayDates) {
         ProjectManagerCalendarDAO.removeHolidayDate(con, holiday);
       }
-    } catch (Exception re) {
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.removeHolidayDates()",
           SilverpeasRuntimeException.ERROR, "projectManager.REMOVING_HOLIDAYDATES_FAILED", re);
     } finally {
@@ -863,11 +795,11 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   }
 
   @Override
-  public boolean isHolidayDate(HolidayDetail date) throws RemoteException {
+  public boolean isHolidayDate(HolidayDetail date) {
     Connection con = getConnection();
     try {
       return ProjectManagerCalendarDAO.isHolidayDate(con, date);
-    } catch (Exception re) {
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.isHolidayDate()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATE_FAILED", re);
     } finally {
@@ -875,23 +807,16 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     }
   }
 
-  /**
-   * *******************************************************************************
-   */
-  /**
-   * Gestion des todos /
-   * ********************************************************************************
-   */
   private TodoDetail getTodo(String todoId) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTodo()",
-        "root.MSG_GEN_ENTER_METHOD", "todoId=" + todoId);
+    SilverTrace.info("projectManager", "ProjectManagerBmEJB.getTodo()", "root.MSG_GEN_ENTER_METHOD",
+        "todoId=" + todoId);
     TodoBackboneAccess todoBBA = new TodoBackboneAccess();
     return todoBBA.getEntry(todoId);
   }
 
   private void addTodo(TaskDetail task) {
-    SilverTrace.info("projectManager", "ProjectManagerBmEJB.addTodo()",
-        "root.MSG_GEN_ENTER_METHOD", "actionId=" + task.getId());
+    SilverTrace.info("projectManager", "ProjectManagerBmEJB.addTodo()", "root.MSG_GEN_ENTER_METHOD",
+        "actionId=" + task.getId());
     TodoBackboneAccess todoBBA = new TodoBackboneAccess();
     TodoDetail todo = task.toTodoDetail();
     todoBBA.addEntry(todo);
@@ -913,13 +838,6 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     todoBBA.addEntry(task.toTodoDetail());
   }
 
-  /**
-   * *******************************************************************************
-   */
-  /**
-   * Gestion des index /
-   * ********************************************************************************
-   */
   private void createIndex(TaskDetail task) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.createIndex()",
         "root.MSG_GEN_ENTER_METHOD", "actionId=" + task.getId());
@@ -939,14 +857,14 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   }
 
   @Override
-  public void index(String instanceId) throws RemoteException {
+  public void index(String instanceId) {
     List<TaskDetail> tasks = getAllTasks(instanceId, null);
     for (TaskDetail task : tasks) {
       indexTask(task);
     }
   }
 
-  private void indexTask(TaskDetail task) throws RemoteException {
+  private void indexTask(TaskDetail task) {
     // index task itself
     createIndex(task);
     TaskPK taskPK = new TaskPK(task.getId(), task.getInstanceId());
@@ -957,7 +875,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
 
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(dbName);
+      return DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
     } catch (Exception e) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
@@ -969,7 +887,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     Connection con = getConnection();
     try {
       return ProjectManagerDAO.getOccupationByUser(con, userId, dateDeb, dateFin);
-    } catch (Exception re) {
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.isHolidayDate()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATE_FAILED", re);
     } finally {
@@ -982,35 +900,11 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     Connection con = getConnection();
     try {
       return ProjectManagerDAO.getOccupationByUser(con, userId, dateDeb, dateFin, excludedTaskId);
-    } catch (Exception re) {
+    } catch (SQLException re) {
       throw new ProjectManagerRuntimeException("ProjectManagerBmEJB.isHolidayDate()",
           SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATE_FAILED", re);
     } finally {
       DBUtil.close(con);
     }
-  }
-
-  public void ejbCreate() {
-    // not implemented
-  }
-
-  @Override
-  public void setSessionContext(SessionContext context) {
-    // not implemented
-  }
-
-  @Override
-  public void ejbRemove() {
-    // not implemented
-  }
-
-  @Override
-  public void ejbActivate() {
-    // not implemented
-  }
-
-  @Override
-  public void ejbPassivate() {
-    // not implemented
   }
 }

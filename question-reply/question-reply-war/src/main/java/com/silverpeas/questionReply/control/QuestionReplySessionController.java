@@ -20,9 +20,6 @@
  */
 package com.silverpeas.questionReply.control;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,7 +35,6 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.importExport.report.ExportReport;
@@ -60,6 +56,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
+
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -88,9 +85,13 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
+import org.apache.commons.io.IOUtils;
+
+import static com.google.common.base.Charsets.UTF_8;
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
@@ -1007,9 +1008,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private NodeBm getNodeBm() throws QuestionReplyException {
     NodeBm nodeBm;
     try {
-      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
+      nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.getNodeBm()",
           SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_NODEBM_NOT_EXIST", e);

@@ -18,11 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * Created on 4 avr. 2005
- *
- */
 package com.stratelia.webactiv.kmelia.control;
 
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -35,7 +30,6 @@ import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -104,7 +98,7 @@ public class KmeliaCallBack implements CallBack {
             pubId = document.getForeignId();
           }
           if (isPublicationModified(pubId, action)) {
-            getKmeliaBm().externalElementsOfPublicationHaveChanged(new PublicationPK(pubId, 
+            getKmeliaBm().externalElementsOfPublicationHaveChanged(new PublicationPK(pubId,
                 componentId), sUserId, action);
           }
         }
@@ -146,8 +140,7 @@ public class KmeliaCallBack implements CallBack {
   private KmeliaBm getKmeliaBm() {
     KmeliaBm kmeliaBm = null;
     try {
-      kmeliaBm = EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, 
-          KmeliaBmHome.class).create();
+      kmeliaBm = EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.setKmeliaBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

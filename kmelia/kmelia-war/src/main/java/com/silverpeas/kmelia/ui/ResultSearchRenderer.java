@@ -20,7 +20,6 @@
  */
 package com.silverpeas.kmelia.ui;
 
-import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -94,7 +93,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
     PublicationDetail pubDetail = null;
     try {
       pubDetail = getPublicationBm().getDetail(pubPK);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       SilverTrace.warn("kmelia", ResultSearchRenderer.class.getName() + ".getResultContent",
           "Unable to load publication " + pubPK.getId() + " from EJB", e);
     }

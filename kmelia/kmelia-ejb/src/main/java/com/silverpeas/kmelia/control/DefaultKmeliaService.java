@@ -24,8 +24,6 @@
 package com.silverpeas.kmelia.control;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
@@ -34,14 +32,12 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.notification.CommentUserNotificationService;
 import com.silverpeas.util.ForeignPK;
@@ -56,9 +52,11 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 /**
  * Default implementation of the services provided by the Blog component. It is managed by the
@@ -98,14 +96,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public PublicationDetail getContentById(String contentId) {
-    PublicationDetail publication;
-    try {
-      publication = getPublicationBm().getDetail(new PublicationPK(contentId));
-    } catch (RemoteException e) {
-      throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getContentById()",
-          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_NOT_FOUND", "id = " + contentId, e);
-    }
-    return publication;
+    return getPublicationBm().getDetail(new PublicationPK(contentId));
   }
 
   @Override
@@ -119,16 +110,12 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private PublicationBm getPublicationBm() {
-    PublicationBm publicationBm = null;
     try {
-      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-      publicationBm = publicationBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getPublicationBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return publicationBm;
   }
 
   /**

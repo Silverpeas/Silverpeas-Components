@@ -43,6 +43,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.silverpeas.core.admin.OrganisationController;
+
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
 import com.silverpeas.mailinglist.service.model.beans.InternalGroupSubscriber;
@@ -52,17 +54,17 @@ import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.MailSender;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.calendar.control.CalendarBm;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * Utility class to send notifications.
@@ -76,7 +78,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
   private Session session;
   private SmtpConfiguration smtpConfig;
   private boolean externalThread = true;
-  private CalendarBm calendarBm;
+  private SilverpeasCalendar calendarBm;
   private OrganisationController controller;
 
   public void notifyModerators(Message message, MailingList list)
@@ -266,11 +268,11 @@ public class SimpleNotificationHelper implements NotificationHelper {
     this.controller = controller;
   }
 
-  public CalendarBm getCalendarBm() {
+  public SilverpeasCalendar getCalendarBm() {
     return calendarBm;
   }
 
-  public void setCalendarBm(CalendarBm calendarBm) {
+  public void setCalendarBm(SilverpeasCalendar calendarBm) {
     this.calendarBm = calendarBm;
   }
 

@@ -29,7 +29,6 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxHandler;
@@ -38,9 +37,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 public class SortTopicsHandler implements AjaxHandler {
 
   @Override
-  public String handleRequest(HttpServletRequest request, ComponentSessionController controller) {
-    KmeliaSessionController kmelia = ((KmeliaSessionController) controller);
-
+  public String handleRequest(HttpServletRequest request, KmeliaSessionController kmelia) {
     String orderedList = request.getParameter("OrderedList");
     String componentId = kmelia.getComponentId();
 
@@ -49,7 +46,6 @@ public class SortTopicsHandler implements AjaxHandler {
     while (tokenizer.hasMoreTokens()) {
       pks.add(new NodePK(tokenizer.nextToken(), componentId));
     }
-
     // Save order
     try {
       kmelia.getNodeBm().sortNodes(pks);

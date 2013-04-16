@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.subscribe.constant.SubscriberType;
+
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;

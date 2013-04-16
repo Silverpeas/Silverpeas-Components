@@ -25,21 +25,22 @@
 package com.stratelia.webactiv.kmelia.control;
 
 
+import javax.inject.Named;
+
+import org.silverpeas.attachment.notification.AttachmentDeletionNotification;
+import org.silverpeas.attachment.notification.AttachmentRef;
+
 import com.silverpeas.notification.DefaultNotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.silverpeas.attachment.notification.AttachmentDeletionNotification;
-import org.silverpeas.attachment.notification.AttachmentRef;
-
-import javax.inject.Named;
 
 import static com.silverpeas.notification.NotificationTopic.onTopic;
 import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;
@@ -67,8 +68,7 @@ public class AttachmentKmeliaListener extends DefaultNotificationSubscriber {
       AttachmentDeletionNotification deletion = (AttachmentDeletionNotification) notification;
       AttachmentRef attachment = deletion.getAttachment();
       if (attachment != null) {
-        PublicationPK pubPK =
-            new PublicationPK(attachment.getForeignId(), attachment.getInstanceId());
+        PublicationPK pubPK =  new PublicationPK(attachment.getForeignId(), attachment.getInstanceId());
         anExternalPublicationElementHaveChanged(pubPK);
 
       }
@@ -87,7 +87,7 @@ public class AttachmentKmeliaListener extends DefaultNotificationSubscriber {
 
   private KmeliaBm getKmeliaBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBmHome.class).create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("AttachmentKmeliaListener.getKmeliaBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

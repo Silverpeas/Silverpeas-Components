@@ -1,30 +1,25 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.kmelia;
 
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +36,6 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
@@ -49,9 +43,12 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  * The kmelia implementation of ContentInterface.
  */
 public class KmeliaContentManager implements ContentInterface, java.io.Serializable {
+
   private static final long serialVersionUID = 3525407153404515235L;
+
   /**
    * Find all the SilverContent with the given list of SilverContentId
+   *
    * @param ids list of silverContentId to retrieve
    * @param peasId the id of the instance
    * @param userId the id of the user who wants to retrieve silverContent
@@ -61,8 +58,9 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
   @Override
   public List getSilverContentById(List ids, String peasId, String userId,
       List userRoles) {
-    if (getContentManager() == null)
+    if (getContentManager() == null) {
       return new ArrayList();
+    }
 
     return getHeaders(makePKArray(ids, peasId), peasId, userId);
   }
@@ -82,6 +80,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
 
   /**
    * add a new content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param pubDetail the content to register
    * @param userId the creator of the content
@@ -101,6 +100,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
   /**
    * update the visibility attributes of the content. Here, the type of content is a
    * PublicationDetail
+   *
    * @param pubDetail the content
    * @param silverObjectId the unique identifier of the content
    */
@@ -124,6 +124,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
   /**
    * update the visibility attributes of the content. Here, the type of content is a
    * PublicationDetail
+   *
    * @param pubDetail the content
    * @param silverObjectId the unique identifier of the content
    */
@@ -142,6 +143,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
 
   /**
    * delete a content. It is registered to contentManager service
+   *
    * @param con a Connection
    * @param pubPK the identifiant of the content to unregister
    */
@@ -164,6 +166,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
 
   /**
    * return a list of publicationPK according to a list of silverContentId
+   *
    * @param idList a list of silverContentId
    * @param peasId the id of the instance
    * @return a list of publicationPK
@@ -187,24 +190,22 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
 
   /**
    * return a list of silverContent according to a list of publicationPK
+   *
    * @param ids a list of publicationPK
    * @return a list of publicationDetail
    */
-  private List<PublicationDetail> getHeaders(List<PublicationPK> ids, String componentId, String userId) {
+  private List<PublicationDetail> getHeaders(List<PublicationPK> ids, String componentId,
+      String userId) {
     List<PublicationDetail> headers = new ArrayList<PublicationDetail>();
-    try {
-      KmeliaSecurity security = new KmeliaSecurity();
-      boolean checkRights = security.isRightsOnTopicsEnabled(componentId);
+    KmeliaSecurity security = new KmeliaSecurity();
+    boolean checkRights = security.isRightsOnTopicsEnabled(componentId);
 
-      Collection<PublicationDetail> publicationDetails = getPublicationBm().getPublications(ids);
-      for (PublicationDetail pubDetail : publicationDetails) {
-        if (!checkRights || security.isPublicationAvailable(pubDetail.getPK(), userId)) {
-          pubDetail.setIconUrl("kmeliaSmall.gif");
-          headers.add(pubDetail);
-        }
+    Collection<PublicationDetail> publicationDetails = getPublicationBm().getPublications(ids);
+    for (PublicationDetail pubDetail : publicationDetails) {
+      if (!checkRights || security.isPublicationAvailable(pubDetail.getPK(), userId)) {
+        pubDetail.setIconUrl("kmeliaSmall.gif");
+        headers.add(pubDetail);
       }
-    } catch (RemoteException e) {
-      // skip unknown and ill formed id.
     }
     return headers;
   }
@@ -224,20 +225,16 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
   private PublicationBm getPublicationBm() {
     if (currentPublicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = EJBUtilitaire
-            .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class);
-        currentPublicationBm = publicationBmHome.create();
+        currentPublicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
-        throw new KmeliaRuntimeException(
-            "KmeliaContentManager.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME", e);
+        throw new KmeliaRuntimeException("KmeliaContentManager.getPublicationBm()",
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
+            e);
       }
     }
     return currentPublicationBm;
   }
-
   private ContentManager contentManager = null;
   private PublicationBm currentPublicationBm = null;
 }
