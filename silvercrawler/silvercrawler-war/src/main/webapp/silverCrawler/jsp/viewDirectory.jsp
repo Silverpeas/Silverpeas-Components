@@ -56,10 +56,9 @@ boolean readWriteActivated = isReadWriteActivated.booleanValue();
 boolean userAllowedToSetRWAccess = isUserAllowedToSetRWAccess.booleanValue();
 boolean userAllowedToLANAccess = isUserAllowedToSetRWAccess.booleanValue();
 
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 String sRequestURL = request.getRequestURL().toString();
 String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
+String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
 
 int nbDirectories = 10;
 if (maxDirectories != null && Integer.parseInt(maxDirectories) != 0)
@@ -412,6 +411,11 @@ function processDnD() {
     document.folderDetailForm.submit();
 }
 
+function goToDirectory(path) {
+	$.progressMessage();
+	location.href = "SubDirectory?DirectoryPath="+encodeURIComponent(path);
+}
+
 $(document).ready(function(){
     var dialogOpts = {
             modal: true,
@@ -552,7 +556,7 @@ Button validateButton 	= gef.getFormButton("OK", "javascript:onClick=sendData();
 <div id="physical-path"><%=resource.getString("silverCrawler.physicalPath")%> : ${Folder.path}</div>
 <% } %>
 
-<FORM NAME="liste_dir" >
+<form name="liste_dir">
 <%
 
 // remplissage de l'ArrayPane avec la liste des sous répertoires
@@ -599,20 +603,16 @@ if (nav || (!nav && !isRootPath))
 	        boolean indexed = file.isIsIndexed();
 
 	        String nameCell = "";
-
-	        if (nav)
-	        {
-	        	nameCell = "<a href=\"SubDirectory?DirectoryPath="+encodedFileName + "\">" + EncodeHelper.javaStringToHtmlString(fileName)+"</a>";
-	        }
-	        else
-	        {
+	        if (nav) {
+	        	nameCell = "<a href=\"javascript:onclick=goToDirectory('"+fileName + "')\">" + EncodeHelper.javaStringToHtmlString(fileName)+"</a>";
+	        } else {
 	        	nameCell = EncodeHelper.javaStringToHtmlString(fileName);
 	        }
 	        //  permalien
 	        String filePath = file.getPath();
 	        filePath = filePath.substring(rootPath.length()+1);
 	        link = URLManager.getApplicationURL() + "/SubDir/" + componentId +"?Path="+URLEncoder.encode(filePath, "UTF-8");
-	        nameCell = nameCell + "&nbsp;<a href=\"" + link + "\">"+ "<img border=\"0\" src=\""+resource.getIcon("silverCrawler.permalien")+"\">" + "</a>";
+	        nameCell = nameCell + "&nbsp;<a href=\"" + link + "\"><img border=\"0\" src=\""+resource.getIcon("silverCrawler.permalien")+"\"/></a>";
 
 	        // affichage de la cellule
 	        arrayLine.addArrayCellText(nameCell);
