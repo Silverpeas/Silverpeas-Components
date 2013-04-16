@@ -130,10 +130,12 @@ if (action.equals("Delete") == false) {
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <view:includePlugin name="wysiwyg"/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 function contactDeleteConfirm(id) {
     if(window.confirm("<%=yellowpagesScc.getString("ConfirmDeleteContact")%> ?")){
           document.contactForm.Action.value = "Delete";
