@@ -27,7 +27,8 @@ import com.silverpeas.mailinglist.service.model.beans.MailingListActivity;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.model.dao.MessageDao;
 import com.silverpeas.mailinglist.service.util.OrderBy;
-import com.stratelia.webactiv.calendar.control.CalendarBm;
+import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,7 +47,7 @@ public class MessageServiceImpl implements MessageService {
   private MessageDao messageDao;
   private int elementsPerPage = 10;
   @Inject
-  private CalendarBm calendarBm;
+  private SilverpeasCalendar calendarBm;
   private static final int MSG_PER_ACTIVITY = 5;
 
   public int getElementsPerPage() {
@@ -197,7 +198,7 @@ public class MessageServiceImpl implements MessageService {
       messageDao.deleteMessage(message);
       MessageIndexer.unindexMessage(message);
       try {
-        Collection<ToDoHeader> todos = calendarBm.getOrganizerToDos(message
+        Collection<ToDoHeader> todos = getCalendarBm().getOrganizerToDos(message
             .getComponentId());
         if (todos != null && !todos.isEmpty()) {
           for (ToDoHeader todo : todos) {
@@ -209,7 +210,7 @@ public class MessageServiceImpl implements MessageService {
             }
           }
         }
-      } catch (Exception e) {
+      } catch (CalendarRuntimeException e) {
         Logger.getLogger(getClass().getSimpleName()).log(Level.FINER, e.getMessage(), e);
       }
     }
@@ -224,7 +225,7 @@ public class MessageServiceImpl implements MessageService {
       MessageIndexer.indexMessage(message);
     }
     try {
-      Collection<ToDoHeader> todos = calendarBm.getOrganizerToDos(message
+      Collection<ToDoHeader> todos = getCalendarBm().getOrganizerToDos(message
           .getComponentId());
       if (todos != null && !todos.isEmpty()) {
         for (ToDoHeader todo : todos) {
@@ -236,7 +237,7 @@ public class MessageServiceImpl implements MessageService {
           }
         }
       }
-    } catch (Exception e) {
+    } catch (CalendarRuntimeException e) {
       Logger.getLogger(getClass().getSimpleName()).log(Level.FINER, e.getMessage(), e);
     }
   }
@@ -248,7 +249,7 @@ public class MessageServiceImpl implements MessageService {
         .getComponentId(), -1, -1, 0, number, orderBy);
   }
 
-  public CalendarBm getCalendarBm() {
+  public SilverpeasCalendar getCalendarBm() {
     return calendarBm;
   }
 

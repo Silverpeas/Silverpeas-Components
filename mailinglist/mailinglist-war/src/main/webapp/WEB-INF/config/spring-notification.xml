@@ -25,9 +25,12 @@
 
 -->
 
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jee="http://www.springframework.org/schema/jee"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
 
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
@@ -60,15 +63,8 @@
     <property name="secure" value="${SMTPSecure}" />
   </bean>
 
-  <bean id="calendarBm" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
-    <property name="jndiName" value="${CALENDARBM_EJBHOME}" />
-    <property name="businessInterface" value="com.stratelia.webactiv.calendar.control.CalendarBm" />
-    <property name="cacheHome" value="true" />
-    <property name="lookupHomeOnStartup" value="true" />
-    <property name="resourceRef" value="false" />
-    <property name="homeInterface" value="com.stratelia.webactiv.calendar.control.CalendarBmHome" />
-    <property name="refreshHomeOnConnectFailure" value="true" />
-  </bean>
+  <jee:local-slsb id="calendarBm" jndi-name="${CALENDARBM_EJBHOME}"
+                  business-interface="com.stratelia.webactiv.calendar.control.SilverpeasCalendar" />
 
   <bean id="mailCheckerInitializer" name="mailCheckerInitializer"
         class="com.silverpeas.mailinglist.control.MailCheckerInitialize" init-method="registerAll">

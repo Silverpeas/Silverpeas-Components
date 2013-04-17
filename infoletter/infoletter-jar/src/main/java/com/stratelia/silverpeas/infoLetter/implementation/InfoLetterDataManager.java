@@ -54,6 +54,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -123,7 +124,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   @Override
   public List<InfoLetter> getInfoLetters(String instanceId) {
     String whereClause = "instanceId = '" + instanceId + "'";
-    List<InfoLetter> infoLetters;
     try {
       return new ArrayList<InfoLetter>(infoLetterDAO.findByWhereClause(new IdPK(),
           whereClause));
@@ -137,8 +137,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   // Recuperation de la liste des publications
   @Override
   public List<InfoLetterPublication> getInfoLetterPublications(WAPrimaryKey letterPK) {
-
-    List<InfoLetterPublication> publications;
     try {
       InfoLetter letter = getInfoLetter(letterPK);
       String whereClause = "instanceId = '" + letter.getInstanceId() + "' AND letterId = "

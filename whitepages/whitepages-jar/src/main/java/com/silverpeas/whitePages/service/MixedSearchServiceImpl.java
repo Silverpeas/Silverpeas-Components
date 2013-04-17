@@ -22,7 +22,6 @@ package com.silverpeas.whitePages.service;
 
 import com.silverpeas.annotation.Service;
 import com.silverpeas.pdc.ejb.PdcBm;
-import com.silverpeas.pdc.ejb.PdcBmHome;
 import com.silverpeas.pdc.ejb.PdcBmRuntimeException;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
@@ -210,9 +209,7 @@ public class MixedSearchServiceImpl implements MixedSearchService {
   private PdcBm getPdcBm() {
     if (pdcBm == null) {
       try {
-        PdcBmHome pdcBmHome = EJBUtilitaire
-            .getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBmHome.class);
-        pdcBm = pdcBmHome.create();
+        pdcBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBm.class);
       } catch (Exception e) {
         throw new PdcBmRuntimeException("MixedSearchServiceImpl.getPdcBm",
             SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

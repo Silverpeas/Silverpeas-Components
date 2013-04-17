@@ -993,8 +993,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       UserDetail sender = reply.readAuthor();
       SubscriptionNotifier notifier = new SubscriptionNotifier(sender, URLManager.getServerURL(null),
               question, reply);
-      Collection<String> subscribers =
-          SubscriptionServiceFactory.getFactory().getSubscribeService().
+      Collection<String> subscribers = SubscriptionServiceFactory.getFactory().getSubscribeService().
               getUserSubscribers(ComponentSubscriptionResource.from(question.getInstanceId()));
       Set<UserRecipient> userRecipients = new HashSet<UserRecipient>();
       for (String subscriberId : subscribers) {

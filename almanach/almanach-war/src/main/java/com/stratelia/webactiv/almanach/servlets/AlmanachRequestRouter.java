@@ -20,10 +20,18 @@
  */
 package com.stratelia.webactiv.almanach.servlets;
 
+import java.util.Collection;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.silverpeas.upload.FileUploadManager;
+import org.silverpeas.upload.UploadedFile;
+
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -39,15 +47,11 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.silverpeas.upload.FileUploadManager;
-import org.silverpeas.upload.UploadedFile;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 import static com.silverpeas.util.StringUtil.isInteger;
 import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
+
 
 public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessionController> {
 

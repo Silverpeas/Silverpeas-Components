@@ -27,9 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.EJBException;
-import javax.ejb.RemoveException;
-
-import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -43,6 +40,7 @@ import com.silverpeas.thumbnail.service.ThumbnailService;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -55,13 +53,10 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.favorit.control.FavoritBm;
-import com.stratelia.webactiv.util.favorit.control.FavoritBmHome;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
@@ -69,63 +64,10 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticResultDetail;
 
-/*
- * CVS Informations
- *
- * $Id$
- *
- * $Log: NewsEditoSessionController.java,v $
- * Revision 1.9.4.1  2009/06/03 15:08:58  sfariello
- * Remplacer formulaires BdD par formulaires XML
- *
- * Revision 1.9  2008/07/11 14:05:29  ehugonnet
- * Suppression méthode non utilisée
- *
- * Revision 1.8  2007/06/25 09:10:52  sfariello
- * no message
- *
- * Revision 1.7  2007/06/14 08:40:52  neysseri
- * no message
- *
- * Revision 1.6.6.2  2007/06/14 08:22:03  neysseri
- * no message
- *
- * Revision 1.6.6.1  2007/05/24 15:33:56  sfariello
- * no message
- *
- * Revision 1.6  2005/09/30 14:19:21  neysseri
- * Centralisation de la gestion des dates
- *
- * Revision 1.5  2005/04/14 18:30:48  neysseri
- * no message
- *
- * Revision 1.4  2004/10/05 13:21:54  dlesimple
- * Couper/Coller composant
- *
- * Revision 1.3  2004/09/28 09:25:37  neysseri
- * Utilisation de la bibliothèque iText au lieu de Libraries/lowagie + nettoyage sources
- *
- * Revision 1.2  2003/12/05 15:01:54  svuillet
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:57  nchaix
- * no message
- *
- * Revision 1.1  2002/01/18 09:07:24  lbertin
- * Stabilisation lot 2 : Request routers et sessioncontrollers
- *
- * Revision 1.10  2002/01/08 12:00:32  santonio
- * SilverTrace & SilverException
- *
- */
-/**
- * Class declaration
- *
- * @author
- */
+import org.apache.commons.fileupload.FileItem;
+
 public class NewsEditoSessionController extends AbstractComponentSessionController {
 
   private String archiveId = null;
@@ -149,20 +91,18 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
    *
    * @see
    */
-  public NewsEditoSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext context) {
+  public NewsEditoSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.newsEdito.multilang.newsEditoBundle");
     SilverTrace.info("NewsEdito", "NewsEditoSessionControl.constructor",
         "NewsEdito.MSG_ENTRY_METHOD");
 
     try {
-      nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class).create();
+      nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
       publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-          PublicationBmHome.class).create();
-      favoritBm = EJBUtilitaire.getEJBObjectRef(JNDINames.FAVORITBM_EJBHOME, FavoritBmHome.class).
-          create();
-      statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-          StatisticBmHome.class).create();
+          PublicationBm.class);
+      favoritBm = EJBUtilitaire.getEJBObjectRef(JNDINames.FAVORITBM_EJBHOME, FavoritBm.class);
+      statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
+
     } catch (Exception e) {
       throw new EJBException("NewsEditoSessionControl() : Exception : " + e);
     }
@@ -1338,54 +1278,23 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
     isConsulting = val;
   }
 
+  @Override
   public void close() {
-    try {
-      if (favoritBm != null) {
-        favoritBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
+    if (favoritBm != null) {
+      favoritBm = null;
     }
-    try {
-      if (nodeBm != null) {
-        nodeBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
+    if (nodeBm != null) {
+      nodeBm = null;
     }
-    try {
-      if (publicationBm != null) {
-        publicationBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
+    if (publicationBm != null) {
+      publicationBm = null;
     }
-    try {
-      if (statisticBm != null) {
-        statisticBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("newsEditoSession", "NewsEditoSessionController.close",
-          "", e);
+    if (statisticBm != null) {
+      statisticBm = null;
     }
   }
 
-  public void index() throws RemoteException, NewsEditoException {
+  public void index() throws NewsEditoException {
     // recuperation des archives
     Collection<NodeDetail> archives = getArchiveList();
     NodeDetail archive = null;

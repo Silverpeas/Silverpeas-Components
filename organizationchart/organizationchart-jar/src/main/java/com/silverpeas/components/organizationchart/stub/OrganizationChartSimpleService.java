@@ -1,10 +1,33 @@
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.silverpeas.components.organizationchart.stub;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -17,12 +40,13 @@ import com.silverpeas.components.organizationchart.model.OrganizationalRole;
 import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import com.silverpeas.components.organizationchart.model.PersonCategory;
 import com.silverpeas.components.organizationchart.service.OrganizationChartConfiguration;
+import com.silverpeas.components.organizationchart.service.OrganizationChartLDAPConfiguration;
 import com.silverpeas.components.organizationchart.service.OrganizationChartService;
 import com.silverpeas.util.StringUtil;
 
 public class OrganizationChartSimpleService implements OrganizationChartService {
 
-  private OrganizationChartConfiguration config = null;
+  private OrganizationChartLDAPConfiguration config = null;
 
   @Override
   public OrganizationalChart getOrganizationChart(String baseOu, OrganizationalChartType type) {
@@ -31,7 +55,7 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
     List<OrganizationalUnit> units = null;
 
     // beginning node of the search
-    String rootOu = (StringUtil.isDefined(baseOu)) ? baseOu : config.getLdapRoot();
+    String rootOu = (StringUtil.isDefined(baseOu)) ? baseOu : config.getRoot();
 
     // Parent definition = top of the chart
     String[] ous = rootOu.split(",");
@@ -39,7 +63,7 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
     OrganizationalUnit root = new OrganizationalUnit(firstOu[1], rootOu);
     if (StringUtil.isDefined(baseOu)) {
       root.setParentName("Racine");
-      root.setParentOu(config.getLdapRoot());
+      root.setParentOu(config.getRoot());
     }
     
     // get members
@@ -69,15 +93,9 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
   }
 
   @Override
-  public Map<String, String> getOrganizationalPersonDetails(OrganizationalPerson[] org, int id) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public void configure(OrganizationChartConfiguration config) {
-    config.setLdapRoot("OU=Bands,dc=mondomain,dc=com");
-    config.setLdapAttUnit("");
+  public void configure(OrganizationChartLDAPConfiguration config) {
+    config.setRoot("OU=Bands,dc=mondomain,dc=com");
+    config.setAttUnit("");
     List<OrganizationalRole> rightRoles = new ArrayList<OrganizationalRole>();
     rightRoles.add(new OrganizationalRole("Chanteurs", "chanteur"));
     config.setUnitsChartRightLabel(rightRoles);
@@ -95,6 +113,11 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
     config.setPersonnsChartCategoriesLabel(categories);
     
     this.config = config;
+  }
+  
+  @Override
+  public void configure(OrganizationChartConfiguration config) {
+    throw new UnsupportedOperationException();
   }
 
   private List<OrganizationalPerson> getOUMembers(String rootOu, OrganizationalChartType type) {

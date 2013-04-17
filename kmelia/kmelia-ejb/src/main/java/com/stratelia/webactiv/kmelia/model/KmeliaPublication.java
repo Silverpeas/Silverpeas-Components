@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.kmelia.model;
 
-import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +31,7 @@ import com.silverpeas.SilverpeasContent;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.util.ForeignPK;
 
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -40,7 +40,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
@@ -50,7 +49,6 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /**
@@ -68,6 +66,7 @@ public class KmeliaPublication implements SilverpeasContent {
   private final PublicationPK pk;
   private int rank;
   public boolean read = false;
+
   /**
    * Gets the Kmelia publication with the specified primary key identifying it uniquely. If no such
    * publication exists with the specified key, then the runtime exception
@@ -188,12 +187,7 @@ public class KmeliaPublication implements SilverpeasContent {
    */
   public PublicationDetail getDetail() {
     if (detail == null) {
-      try {
-        setPublicationDetail(getKmeliaService().getPublicationDetail(pk));
-      } catch (RemoteException ex) {
-        throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getDetail()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", ex);
-      }
+      setPublicationDetail(getKmeliaService().getPublicationDetail(pk));
     }
     return detail;
   }
@@ -205,12 +199,7 @@ public class KmeliaPublication implements SilverpeasContent {
    */
   public CompletePublication getCompleteDetail() {
     if (completeDetail == null) {
-      try {
-        setPublicationCompleteDetail(getKmeliaService().getCompletePublication(pk));
-      } catch (RemoteException ex) {
-        throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getCompleteDetail()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", ex);
-      }
+      setPublicationCompleteDetail(getKmeliaService().getCompletePublication(pk));
     }
     return completeDetail;
   }
@@ -254,27 +243,21 @@ public class KmeliaPublication implements SilverpeasContent {
         PublicationDetail.getResourceType(), pk));
   }
 
-
   /**
    * Gets the positions in the PDC of this publication.
    *
    * @return an unmodifiable list with the PDC positions of this publication.
    */
   public List<ClassifyPosition> getPDCPositions() {
-    try {
-      int silverObjectId = getKmeliaService().getSilverObjectId(pk);
-      return getKmeliaService().getPdcBm().getPositions(silverObjectId, pk.getInstanceId());
-    } catch (RemoteException ex) {
-      throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getPDCPositions()",
-          SilverpeasRuntimeException.ERROR,
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_POSTIONSPDC", ex);
-    }
+    int silverObjectId = getKmeliaService().getSilverObjectId(pk);
+    return getPdcBm().getPositions(silverObjectId, pk.getInstanceId());
+
   }
 
   public int getNbAccess() {
     try {
       return getStatisticService().getCount(new ForeignPK(pk), 1, "Publication");
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaPublication.getNbAccess", "kmelia.CANT_GET_NB_ACCESS",
           "pubId = " + pk.getId(), e);
     }
@@ -322,30 +305,21 @@ public class KmeliaPublication implements SilverpeasContent {
   }
 
   private KmeliaBm getKmeliaService() {
-    KmeliaBm KmeliaBm = null;
     try {
-      KmeliaBmHome KmeliaBmHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBmHome.class);
-      KmeliaBm = KmeliaBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaPublication.getKmeliaService()",
-          SilverpeasRuntimeException.ERROR,
-          "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KmeliaBm_HOME", e);
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KmeliaBm_HOME", e);
     }
-    return KmeliaBm;
   }
 
   private StatisticBm getStatisticService() {
-    StatisticBm statisticBm = null;
     try {
-      StatisticBmHome statisticHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
-      statisticBm = statisticHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
     } catch (Exception e) {
       throw new StatisticRuntimeException("KmeliaPublication.getStatisticService()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return statisticBm;
   }
 
   private CommentService getCommentService() {
@@ -392,5 +366,14 @@ public class KmeliaPublication implements SilverpeasContent {
 
   public int getRank() {
     return rank;
+  }
+
+   private PdcBm getPdcBm() {
+    try {
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBm.class);
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException("KmeliaPublication.getPdcBm()",
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KmeliaBm_HOME", e);
+    }
   }
 }

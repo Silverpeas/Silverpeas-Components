@@ -304,6 +304,10 @@ function removeAllUsers()
     if (isAdmin || isModerator)
     {
         String formAction = ActionUrl.getUrl("main", (update ? 7 : 3), (forumId > 0 ? forumId : -1));
+        if (!update && forumId > 0) {
+          // case of the creation of a sub forum, stay in current forum
+          formAction = ActionUrl.getUrl("viewForum", (update ? 7 : 3), (forumId > 0 ? forumId : -1));
+        }
 %>
 
   <form name="forumsForm" action="<%=formAction%>" method="post">
@@ -321,24 +325,18 @@ function removeAllUsers()
         <input type="text" name="forumName" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" <%if (update) {%>value="<%=EncodeHelper.javaStringToHtmlString(forum.getName())%>"<%}%> />&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
       </div>
     </div>
+    <% if (forumId == 0) { %>
     <!-- Display category list -->
     <div class="field" id="categoryArea">
       <label class="txtlibform" for="CategoryId"><fmt:message key="forums.category" /> :&nbsp;</label>
       <div class="champs">
         <select name="CategoryId">
-            <option value=""></option><%
-
-      if (allCategories != null)
-      {
-          Iterator<NodeDetail> it = allCategories.iterator();
-          NodeDetail currentCategory;
-          String currentCategoryId;
-          String selected;
-          while (it.hasNext())
-          {
-              currentCategory = (NodeDetail) it.next();
-              currentCategoryId = currentCategory.getNodePK().getId();
-              selected = ((categoryId != null && categoryId.equals(currentCategoryId))
+            <option value=""></option>
+<%
+      if (allCategories != null) {
+          for (NodeDetail currentCategory : allCategories) {
+              String currentCategoryId = currentCategory.getNodePK().getId();
+              String selected = ((categoryId != null && categoryId.equals(currentCategoryId))
                   ? "selected" : "");
 %>
             <option value=<%=currentCategoryId%> <%=selected%>><%=currentCategory.getName()%></option>
@@ -349,30 +347,31 @@ function removeAllUsers()
           </select>
       </div>
     </div>
+    <% } else { %>
+    	<input type="hidden" name="CategoryId" value="" />
+    <% } %>
 
-<%
-        if (fsc.isForumInsideForum()) {
-%>
+<% if (fsc.isForumInsideForum()) { %>
     <!-- Forum folder inside  -->
+    <% if (update) { %>
     <div class="field" id="folderArea">
       <label class="txtlibform" for="forumFolder"><fmt:message key="forumFolder" /> :&nbsp;</label>
       <div class="champs">
-        <span class="selectNS">
           <select name="forumFolder">
-            <option <%if (parentId == 0) {%>selected <%}%> value="0"><%=resource.getString("racine")%></option><%
-
-            listFolders(out, 0, forumId, parentId, "", fsc);
-%>
+            <option <%if (parentId == 0) {%>selected <%}%> value="0"><%=resource.getString("racine")%></option>
+            <%
+            	listFolders(out, 0, forumId, parentId, "", fsc);
+			%>
           </select>
-        </span>
         &nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
       </div>
     </div>
-<%
-        } else {
-%>
+    <% } else { %>
+    	<input type="hidden" name="forumFolder" value="<%=forumId%>"/>
+    <% } %>
+<% } else { %>
       <input type="hidden" name="forumFolder" value="0" />
-<%     } %>
+<% } %>
 
     <!-- Forum description  -->
     <div class="field" id="descriptionArea">

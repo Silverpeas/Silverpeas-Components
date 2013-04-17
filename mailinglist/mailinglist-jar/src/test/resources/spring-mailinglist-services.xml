@@ -40,7 +40,7 @@
     <property name="elementsPerPage" value="10" />
   </bean>
 
-  <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubCalendarBm" />
+  <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubSilverpeasCalendarBm" />
 
   <bean id="organizationController" name="organizationController"
         class="com.stratelia.webactiv.beans.admin.OrganizationController" />

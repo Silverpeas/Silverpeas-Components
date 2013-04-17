@@ -20,13 +20,20 @@
  */
 package com.silverpeas.kmelia.workflowextensions;
 
-import au.id.jericho.lib.html.Source;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
 import com.silverpeas.form.*;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.ExplorerField;
@@ -47,11 +54,11 @@ import com.silverpeas.workflow.api.model.Action;
 import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.external.impl.ExternalActionImpl;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
-import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -60,20 +67,14 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.rmi.RemoteException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import au.id.jericho.lib.html.Source;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 
 public class SendInKmelia extends ExternalActionImpl {
 
@@ -171,12 +172,8 @@ public class SendInKmelia extends ExternalActionImpl {
     }
 
     KmeliaBm kmelia = getKmeliaBm();
-    String pubId = null;
-    try {
-      pubId = kmelia.createPublicationIntoTopic(pubDetail, new NodePK(getTopicId(), getTargetId()));
-    } catch (RemoteException e) {
-      SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
-    }
+    String pubId = kmelia.createPublicationIntoTopic(pubDetail, new NodePK(getTopicId(),
+        getTargetId()));
     pubPK.setId(pubId);
 
     // 2 - Attach history as pdf file
@@ -195,20 +192,14 @@ public class SendInKmelia extends ExternalActionImpl {
     }
 
     // force the update
-    try {
-      PublicationDetail newPubli = getKmeliaBm().getPublicationDetail(pubPK);
-      newPubli.setStatusMustBeChecked(false);
-      getKmeliaBm().updatePublication(newPubli);
-    } catch (RemoteException e) {
-      SilverTrace.error("workflowEngine", "SendInKmelia.execute()",
-          "workflowEngine.CANNOT_UPDATE_PUBLICATION", e);
-    }
+    PublicationDetail newPubli = getKmeliaBm().getPublicationDetail(pubPK);
+    newPubli.setStatusMustBeChecked(false);
+    getKmeliaBm().updatePublication(newPubli);
 
     // Populate the fields
     if (StringUtil.isDefined(xmlFormName)) {
       populateFields(pubId);
     }
-
     orga = null;
   }
 
@@ -513,9 +504,7 @@ public class SendInKmelia extends ExternalActionImpl {
 
   private KmeliaBm getKmeliaBm() {
     try {
-      KmeliaBmHome kscEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME,
-          KmeliaBmHome.class);
-      return kscEjbHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME, KmeliaBm.class);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("SendInKmelia.getKmeliaBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -545,11 +534,6 @@ public class SendInKmelia extends ExternalActionImpl {
       }
     }
     byte[] pdf = generatePDF(getProcessInstance());
-    try {
-      getKmeliaBm().addAttachmentToPublication(pubPK, userId, fileName, "", pdf);
-    } catch (RemoteException e) {
-      SilverTrace.error("workflowEngine", "SendInKmelia.addPdfHistory()", "root.MSG_GEN_ERROR", e);
-    }
-
+    getKmeliaBm().addAttachmentToPublication(pubPK, userId, fileName, "", pdf);
   }
 }

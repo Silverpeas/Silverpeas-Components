@@ -41,27 +41,26 @@
 
 <%@ include file="check.jsp"%>
 
-<% 
-List listResourcesofCategory = (List)request.getAttribute("listResourcesofCategory");
-List listOfCategories = (List)request.getAttribute("listOfCategories");
+<%
+  List<Resource> listResourcesofCategory = (List) request.getAttribute("listResourcesofCategory");
+  List<Category> listOfCategories = (List) request.getAttribute("listOfCategories");
 
-//identifiant de l'utilisateur dont on regarde le planning
-String idUser = (String)request.getAttribute("idUser");
-String firstNameUser = (String)request.getAttribute("firstNameUser");
-String lastName = (String)request.getAttribute("lastName");
+  //identifiant de l'utilisateur dont on regarde le planning
+  String firstNameUser = (String) request.getAttribute("firstNameUser");
+  String lastName = (String) request.getAttribute("lastName");
 
-MonthCalendar monthC = (MonthCalendar)request.getAttribute("monthC");
-String objectView = (String)request.getAttribute("idCategory");
-if(objectView == null){
-	objectView = "myReservation";
-}
+  MonthCalendar monthC = (MonthCalendar) request.getAttribute("monthC");
+  String objectView = String.valueOf(request.getAttribute("idCategory"));
+  if (!StringUtil.isDefined(objectView)) {
+    objectView = "myReservation";
+  }
 
-String idResourceFromRR = (String)request.getAttribute("resourceId");
-String personalReservation = "myReservation";
+  Long idResourceFromRR = (Long) request.getAttribute("resourceId");
+  String personalReservation = "myReservation";
 
 // identifiant du role de l'utilisateur en cours
-String flag = (String)request.getAttribute("Profile");
-boolean isResponsible = ((Boolean) request.getAttribute("IsResponsible")).booleanValue();
+  String flag = (String) request.getAttribute("Profile");
+  boolean isResponsible = (Boolean) request.getAttribute("IsResponsible");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -75,7 +74,7 @@ boolean isResponsible = ((Boolean) request.getAttribute("IsResponsible")).boolea
 function nextMonth(object)
 {
     document.almanachForm.action = "NextMonth";
-    <%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
+    <%if(idResourceFromRR != null){%>
 		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
 	<%}%>
     document.almanachForm.objectView.value = object;
@@ -85,7 +84,7 @@ function nextMonth(object)
 function previousMonth(object)
 {
 	document.almanachForm.action = "PreviousMonth";
-	<%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
+	<%if(idResourceFromRR != null){%>
 		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
 	<%}%>
 	document.almanachForm.objectView.value = object;
@@ -94,7 +93,7 @@ function previousMonth(object)
 function goToDay(object)
 {
 	document.almanachForm.action = "GoToday";
-	<%if((idResourceFromRR != null) && (!"".equals(idResourceFromRR))){%>
+	<%if(idResourceFromRR != null){%>
 		document.almanachForm.resourceId.value = <%=idResourceFromRR%>;
 	<%}%>
 	document.almanachForm.objectView.value = object;
@@ -155,10 +154,7 @@ function viewOtherPlanning()
 </head>
 <body id="resourcesManager">
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
-<% 
-	String selectUserLab = resource.getString("resourcesManager.selectUser");
-	String link = "javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');";
-	
+<%
   	browseBar.setPath(resource.getString("resourcesManager.accueil"));
 	if(!"user".equals(flag)){
 		operationPane.addOperationOfCreation(resource.getIcon("resourcesManager.createReservation"), resource.getString("resourcesManager.creerReservation"),"NewReservation");
@@ -193,11 +189,12 @@ function viewOtherPlanning()
                         	%><option value=""><%=resource.getString("resourcesManager.categories")%></option>
                         	<option value="">-----------------</option>
                         	<%
-                        	for(int i=0; i<listOfCategories.size(); i++){
-                        		Category myCategory = (Category)listOfCategories.get(i);
-                        		String categoryName = myCategory.getName();%>
-                        		<option value="<%=myCategory.getId()%>" <%if((myCategory.getId()).equals(objectView)){%>selected="selected"<%}%> ><%=categoryName%></option>
-                        	<%}
+                            for (Category category : listOfCategories) {
+                              String categoryName = category.getName();%>
+                        <option value="<%=category.getId()%>" <%if((category.getId().toString()).equals(objectView)){%>selected="selected"<%}%> ><%=categoryName%>
+                        </option>
+                        <%
+                            }
                         }%>
                       </select>
                     </td>
@@ -218,11 +215,11 @@ function viewOtherPlanning()
                       <select name="selectResource" onchange="getReservationsOfResource(this)">
                       <option value=""><%=resource.getString("resourcesManager.allResources")%></option>
                       	<option value="">-----------------</option>
-                      	<% for(int i=0; i<listResourcesofCategory.size(); i++){
-                      			Resource myReservation = (Resource)listResourcesofCategory.get(i);
-                      			String resourceName = myReservation.getName();%>
-                      			<option value="<%=myReservation.getId()%>" <%if((myReservation.getId() != null) && (myReservation.getId()).equals(idResourceFromRR)){%>selected="selected"<%}%> ><%=resourceName%></option>
-                      	<% } %>
+                      	<% for (Resource reservation : listResourcesofCategory) {
+                          String resourceName = reservation.getName();%>
+                        <option value="<%=reservation.getId()%>" <%if((reservation.getId() != null) && reservation.getId().equals(idResourceFromRR)){%>selected="selected"<%}%> ><%=resourceName%>
+                        </option>
+                        <% } %>
                        </select>
                     </td>
                   </tr>
@@ -255,9 +252,9 @@ function viewOtherPlanning()
             <td> 
               <table cellpadding=0 cellspacing=1 border=0 width="100%" >
                 <tr> 
-                  <td class=intfdcolor><a href="javascript:onClick=previousMonth('<%=objectView%>')" onfocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrLeft")%>" border="0"/></a></td>
+                  <td class=intfdcolor><a href="javascript:onClick=previousMonth('<%=objectView%>')" onfocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrLeft")%>" border="0" alt=""/></a></td>
                   <td class=intfdcolor align=center nowrap="nowrap" width="100%" height="24"><span class="txtnav"><%=resource.getString("GML.mois" + resourcesManagerSC.getCurrentDay().get(Calendar.MONTH))%> <%=String.valueOf(resourcesManagerSC.getCurrentDay().get(Calendar.YEAR))%></span></td>
-                  <td class=intfdcolor><a href="javascript:onClick=nextMonth('<%=objectView%>')" onfocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrRight")%>" border="0"/></a></td>
+                  <td class=intfdcolor><a href="javascript:onClick=nextMonth('<%=objectView%>')" onfocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrRight")%>" border="0" alt=""/></a></td>
                 </tr>
               </table>
             </td>

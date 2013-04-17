@@ -35,8 +35,8 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.calendar.control.CalendarBm;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.io.UnsupportedEncodingException;
@@ -72,7 +72,7 @@ public class SimpleNotificationHelper implements NotificationHelper {
   private Session session;
   private SmtpConfiguration smtpConfig;
   private boolean externalThread = true;
-  private CalendarBm calendarBm;
+  private SilverpeasCalendar calendarBm;
   private OrganisationController controller;
 
   public void notifyModerators(Message message, MailingList list)
@@ -258,11 +258,11 @@ public class SimpleNotificationHelper implements NotificationHelper {
     return controller;
   }
 
-  public CalendarBm getCalendarBm() {
+  public SilverpeasCalendar getCalendarBm() {
     return calendarBm;
   }
 
-  public void setCalendarBm(CalendarBm calendarBm) {
+  public void setCalendarBm(SilverpeasCalendar calendarBm) {
     this.calendarBm = calendarBm;
   }
 

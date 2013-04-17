@@ -20,8 +20,13 @@
  */
 package com.stratelia.silverpeas.infoLetter.servlets;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+
 import com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
@@ -33,11 +38,8 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
+
 import org.apache.commons.fileupload.FileItem;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-
 /**
  * Class declaration
  *
@@ -232,7 +234,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         }
       } else if (function.startsWith("Preview")) {
         String parution = param(request, "parution");
-
         if (StringUtil.isDefined(parution)) {
           IdPK publiPK = new IdPK();
           publiPK.setId(parution);

@@ -20,11 +20,7 @@
  */
 package com.stratelia.webactiv.quizz.control;
 
-import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
-
 import java.io.File;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,13 +30,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
 import javax.ejb.EJBException;
-import javax.ejb.RemoveException;
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.JAXBException;
+
+import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
@@ -48,7 +43,9 @@ import com.silverpeas.pdc.model.PdcPosition;
 import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.pdc.web.PdcClassificationEntity;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -64,7 +61,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.answer.model.Answer;
 import com.stratelia.webactiv.util.question.model.Question;
 import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm;
-import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBmHome;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
@@ -72,12 +68,9 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerSele
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.util.score.control.ScoreBm;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
-import org.silverpeas.core.admin.OrganisationController;
 
-/**
- * @author dle&sco
- * @version
- */
+import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
+
 public class QuizzSessionController extends AbstractComponentSessionController {
 
   private QuestionContainerBm questionContainerBm = null;
@@ -123,9 +116,8 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   private void setQuestionContainerBm() {
     if (questionContainerBm == null) {
       try {
-        QuestionContainerBmHome questionContainerBmHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBmHome.class);
-        this.questionContainerBm = questionContainerBmHome.create();
+        this.questionContainerBm = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBm.class);
       } catch (Exception e) {
         throw new EJBException(e.getMessage(), e);
       }
@@ -693,14 +685,10 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   }
 
   public boolean isPdcUsed() {
-    String value = getComponentParameterValue("usePdc");
-    if (value != null) {
-      return "yes".equals(value.toLowerCase());
-    }
-    return false;
+    return "yes".equalsIgnoreCase(getComponentParameterValue("usePdc"));
   }
 
-  public void copySurvey(String quizzId) throws RemoteException, QuizzException {
+  public void copySurvey(String quizzId) throws ClipboardException, QuizzException {
     QuestionContainerDetail quizz = getQuizzDetail(quizzId);
     QuestionContainerSelection questionContainerSelect = new QuestionContainerSelection(quizz);
     getClipboardObjects().add((ClipboardSelection) questionContainerSelect);
@@ -708,14 +696,12 @@ public class QuizzSessionController extends AbstractComponentSessionController {
 
   public void paste() throws Exception {
     Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
-    Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
-    while (clipObjectIterator.hasNext()) {
-      ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator.next();
+    for (ClipboardSelection clipObject : clipObjects) {
       if (clipObject != null) {
-        if (clipObject
-            .isDataFlavorSupported(QuestionContainerSelection.QuestionContainerDetailFlavor)) {
-          QuestionContainerDetail quizz = (QuestionContainerDetail) clipObject
-              .getTransferData(QuestionContainerSelection.QuestionContainerDetailFlavor);
+        if (clipObject.isDataFlavorSupported(
+            QuestionContainerSelection.QuestionContainerDetailFlavor)) {
+          QuestionContainerDetail quizz = (QuestionContainerDetail) clipObject.getTransferData(
+              QuestionContainerSelection.QuestionContainerDetailFlavor);
           pasteQuizz(quizz);
         }
       }
@@ -819,23 +805,11 @@ public class QuizzSessionController extends AbstractComponentSessionController {
   }
 
   public void close() {
-    try {
-      if (questionContainerBm != null) {
-        questionContainerBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
+    if (questionContainerBm != null) {
+      questionContainerBm = null;
     }
-    try {
-      if (scoreBm != null) {
-        scoreBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("quizzSession", "QuizzSessionController.close", "", e);
+    if (scoreBm != null) {
+      scoreBm = null;
     }
   }
 
@@ -866,7 +840,7 @@ public class QuizzSessionController extends AbstractComponentSessionController {
       QuestionContainerHeader questionContainerHeader =
           new QuestionContainerHeader(null, title, description, notice, null, null, beginDate,
           endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax),
-          Integer.parseInt(nbAnswersNeeded), 0);
+          Integer.parseInt(nbAnswersNeeded), 0, QuestionContainerHeader.IMMEDIATE_RESULTS, QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
       HttpSession session = request.getSession();
       QuestionContainerDetail questionContainerDetail = new QuestionContainerDetail();
       questionContainerDetail.setHeader(questionContainerHeader);

@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.almanach.servlets;
 
@@ -32,8 +29,8 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 
 import com.silverpeas.peasUtil.RssServlet;
+
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
@@ -43,7 +40,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class AlmanachRssServlet extends RssServlet<EventDetail> {
-  
+
   private static final long serialVersionUID = -2142983612465351228L;
 
   /*
@@ -52,6 +49,7 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String,
    * int)
    */
+  @Override
   public Collection<EventDetail> getListElements(String instanceId, int nbReturned)
       throws RemoteException {
     // récupération de la liste des 10 prochains événements de l'Almanach
@@ -86,6 +84,7 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
    * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object,
    * java.lang.String)
    */
+  @Override
   public String getElementTitle(EventDetail event, String userId) {
     return event.getName();
   }
@@ -96,6 +95,7 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
    * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object,
    * java.lang.String)
    */
+  @Override
   public String getElementLink(EventDetail event, String userId) {
     return event.getPermalink();
   }
@@ -107,6 +107,7 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
    * com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
    */
+  @Override
   public String getElementDescription(EventDetail event, String userId) {
     return event.getDescription();
   }
@@ -116,6 +117,7 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
    *
    * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
    */
+  @Override
   public Date getElementDate(EventDetail event) {
     Calendar calElement = GregorianCalendar.getInstance();
     calElement.setTime(event.getStartDate());
@@ -140,20 +142,17 @@ public class AlmanachRssServlet extends RssServlet<EventDetail> {
     return calElement.getTime();
   }
 
+  @Override
   public String getElementCreatorId(EventDetail event) {
     return event.getCreatorId();
   }
 
   private AlmanachBm getAlmanachBm() {
-    AlmanachBm almanachBm = null;
     try {
-      AlmanachBmHome almanachBmHome = (AlmanachBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class);
-      almanachBm = almanachBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBm.class);
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachRssServlet.getAlmanachBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return almanachBm;
   }
 }

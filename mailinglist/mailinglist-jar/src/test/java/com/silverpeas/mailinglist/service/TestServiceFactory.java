@@ -39,8 +39,8 @@ public class TestServiceFactory {
   @BeforeClass
   public static void loadSpringContext() {
     context = new ClassPathXmlApplicationContext(new String[]{"/spring-checker.xml",
-      "/spring-notification.xml", "/spring-mailinglist-services.xml", "/spring-mailinglist-dao.xml",
-      "/spring-mailinglist-embbed-datasource.xml"});
+      "/spring-notification.xml", "/spring-mailinglist-services-factory.xml",
+      "/spring-mailinglist-dao.xml", "/spring-mailinglist-embbed-datasource.xml"});
   }
 
   @AfterClass

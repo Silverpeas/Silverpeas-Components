@@ -44,7 +44,7 @@
         class="com.silverpeas.mailinglist.service.ServicesFactory"
         factory-method="getFactory" />
 
-  <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubCalendarBm" />
+  <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubSilverpeasCalendarBm" />
 
   <bean id="organizationController" name="organizationController"
         class="com.stratelia.webactiv.beans.admin.OrganizationController" />

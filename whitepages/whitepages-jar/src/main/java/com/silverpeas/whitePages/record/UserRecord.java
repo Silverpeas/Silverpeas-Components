@@ -20,6 +20,9 @@
  */
 package com.silverpeas.whitePages.record;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
@@ -154,5 +157,10 @@ public class UserRecord implements DataRecord {
 
   @Override
   public void setLanguage(String language) {
+  }
+
+  @Override
+  public Map<String, String> getValues(String language) {
+    return new HashMap<String, String>();
   }
 }

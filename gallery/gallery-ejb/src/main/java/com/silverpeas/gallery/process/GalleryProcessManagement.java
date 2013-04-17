@@ -27,12 +27,10 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.util.ProcessList;
 
 import com.silverpeas.gallery.ImageType;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
 import com.silverpeas.gallery.model.AlbumDetail;
@@ -49,15 +47,17 @@ import com.silverpeas.gallery.process.photo.GalleryPastePhotoDataProcess;
 import com.silverpeas.gallery.process.photo.GalleryPastePhotoFileProcess;
 import com.silverpeas.gallery.process.photo.GalleryUpdatePhotoDataProcess;
 import com.silverpeas.gallery.process.photo.GalleryUpdatePhotoFileProcess;
+
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
+import org.apache.commons.fileupload.FileItem;
 
 /**
  * @author Yohann Chastagnier
@@ -315,8 +315,7 @@ public class GalleryProcessManagement {
    */
   private static GalleryBm getGalleryBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class)
-          .create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBm.class);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryProcessBuilder.getGalleryBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -329,7 +328,7 @@ public class GalleryProcessManagement {
    */
   private static NodeBm getNodeBm() {
     try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class).create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (final Exception e) {
       throw new GalleryRuntimeException("GalleryProcessBuilder.getNodeBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

@@ -20,14 +20,21 @@
  */
 package com.silverpeas.projectManager.control;
 
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.*;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.silverpeas.projectManager.control.ejb.ProjectManagerBm;
-import com.silverpeas.projectManager.control.ejb.ProjectManagerBmHome;
 import com.silverpeas.projectManager.model.*;
 import com.silverpeas.projectManager.vo.DayVO;
 import com.silverpeas.projectManager.vo.MonthVO;
 import com.silverpeas.projectManager.vo.WeekVO;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -40,12 +47,6 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.*;
 
 /**
  * This class contains all the business model for project manager component
@@ -687,9 +688,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   private ProjectManagerBm getProjectManagerBm() {
     if (projectManagerBm == null) {
       try {
-        ProjectManagerBmHome projectManagerBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames
-            .PROJECTMANAGERBM_EJBHOME, ProjectManagerBmHome.class);
-        projectManagerBm = projectManagerBmHome.create();
+        projectManagerBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PROJECTMANAGERBM_EJBHOME,
+            ProjectManagerBm.class);
       } catch (Exception e) {
         throw new ProjectManagerRuntimeException(
             "ProjectManagerSessionController.getProjectManagerBm()",
