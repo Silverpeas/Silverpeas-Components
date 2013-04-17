@@ -143,6 +143,7 @@ public class QuestionReplyRequestRouter extends
         request.setAttribute("userAlreadySubscribed",
             SubscriptionServiceFactory.getFactory().getSubscribeService().existsSubscription(
                 new ComponentSubscription(scc.getUserId(), scc.getComponentId())));
+        request.setAttribute("PDCUsed", scc.isPDCUsed());
         if (request.getAttribute("QuestionId") != null) {
           Question question =
               scc.getQuestion(Long.parseLong((String) request.getAttribute("QuestionId")));
