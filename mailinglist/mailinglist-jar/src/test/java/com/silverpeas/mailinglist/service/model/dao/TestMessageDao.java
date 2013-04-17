@@ -20,9 +20,13 @@
  */
 package com.silverpeas.mailinglist.service.model.dao;
 
+import com.silverpeas.mailinglist.service.job.TestMessageChecker;
+import com.silverpeas.mailinglist.service.model.beans.Activity;
+import com.silverpeas.mailinglist.service.model.beans.Attachment;
+import com.silverpeas.mailinglist.service.model.beans.Message;
+import com.silverpeas.mailinglist.service.util.OrderBy;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -32,38 +36,27 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.inject.Inject;
-
+import javax.sql.DataSource;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.dbunit.DataSourceDatabaseTester;
+import org.dbunit.IDatabaseTester;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.silverpeas.util.Charsets;
-import com.silverpeas.mailinglist.service.job.TestMessageChecker;
-import com.silverpeas.mailinglist.service.model.beans.Activity;
-import com.silverpeas.mailinglist.service.model.beans.Attachment;
-import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.silverpeas.mailinglist.service.util.OrderBy;
-
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.junit.Assert.*;
+
 import static java.io.File.separatorChar;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-  "/spring-hibernate.xml", "/spring-datasource.xml"})
-@Transactional
-@TransactionConfiguration(defaultRollback = true, transactionManager = "txManager")
-public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTests {
+public class TestMessageDao {
 
   private static final int ATT_SIZE = 86199;
   private static final OrderBy orderByDate = new OrderBy("sentDate", false);
@@ -77,8 +70,41 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
       + separatorChar + "test-classes" + separatorChar + "com" + separatorChar + "silverpeas"
       + separatorChar + "mailinglist" + separatorChar + "service" + separatorChar + "job"
       + separatorChar + "lemonde.html";
-  @Inject
-  private MessageDao messageDao;
+  private ConfigurableApplicationContext context;
+  private IDatabaseTester databaseTester;
+
+  @Before
+  public void setUpTest() throws Exception {
+    context = new ClassPathXmlApplicationContext(
+        "/spring-mailinglist-dao.xml", "/spring-mailinglist-embbed-datasource.xml");
+
+    databaseTester = new DataSourceDatabaseTester(getDataSource());
+    databaseTester.setDataSet(getDataSet());
+    databaseTester.onSetup();
+  }
+
+  @After
+  public void tearDownTest() throws Exception {
+    databaseTester.onTearDown();
+    FileFolderManager.deleteFolder(getUploadPath(), false);
+    context.close();
+  }
+
+  private IDataSet getDataSet() throws DataSetException {
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
+        MessageDao.class.getClassLoader().getResourceAsStream(
+        "com/silverpeas/mailinglist/service/model/dao/mailinglist-dataset.xml")));
+    dataSet.addReplacementObject("[NULL]", null);
+    return dataSet;
+  }
+
+  private MessageDao getMessageDAO() {
+    return context.getBean(MessageDao.class);
+  }
+
+  private DataSource getDataSource() {
+    return context.getBean("jpaDataSource", DataSource.class);
+  }
 
   protected String loadHtml() throws IOException {
     InputStream in = TestMessageChecker.class.getResourceAsStream("lemonde.html");
@@ -106,9 +132,9 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
     message.setSentDate(sentDate.getTime());
     message.setTitle("Simple text message");
     message.setContentType("text/plain");
-    String id = messageDao.saveMessage(message);
+    String id = getMessageDAO().saveMessage(message);
     assertNotNull(id);
-    Message savedMessage = messageDao.findMessageById(id);
+    Message savedMessage = getMessageDAO().findMessageById(id);
     assertNotNull(savedMessage);
     assertEquals(textEmailContent, savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
@@ -124,9 +150,10 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
     assertEquals(0, savedMessage.getVersion());
     assertEquals("text/plain", savedMessage.getContentType());
   }
-  
+
   @Test
   public void testCreateSimpleMessageWithCompleteId() {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -159,6 +186,7 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
 
   @Test
   public void testRecreateSimpleMessage() {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -204,6 +232,7 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
 
   @Test
   public void testCreateSimpleHtmlMessage() throws IOException {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     String html = loadHtml();
@@ -237,6 +266,7 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
 
   @Test
   public void testCreateMessageWithAttachments() {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -284,6 +314,7 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
 
   @Test
   public void testUpdateMessage() {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -329,6 +360,7 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
 
   @Test
   public void testUpdateMessageWithAttachment() {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -399,7 +431,8 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
   }
 
   @Test
-  public void testDeleteMessageWithAttachments() throws IOException {
+  public void testDeleteMessageWithAttachments() throws Exception {
+    MessageDao messageDao = getMessageDAO();
     copyFile(COPY_PATH, attachmentPath + "lemonde2.html");
     copyFile(COPY_PATH, attachmentPath + "lemonde.html");
 
@@ -457,7 +490,8 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
   }
 
   @Test
-  public void testDeleteMessageWithAttachmentShared() throws IOException {
+  public void testDeleteMessageWithAttachmentShared() throws Exception {
+    MessageDao messageDao = getMessageDAO();
     copyFile(COPY_PATH, attachmentPath + "lemonde2.html");
     copyFile(COPY_PATH, attachmentPath + "toto\\lemonde2.html");
     copyFile(COPY_PATH, attachmentPath + "lemonde.html");
@@ -511,7 +545,6 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
     assertEquals(3, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));
     messageDao.deleteMessage(savedMessage);
 
-    savedMessage = messageDao.findMessageById(id);
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));
     File deletedAttachement = new File(attachmentPath + "lemonde.html");
@@ -523,8 +556,8 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
   }
 
   @Test
-  public void testListMessagesOfMailingList() {
-
+  public void testListMessagesOfMailingList() throws Exception {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     sentDate.set(Calendar.YEAR, 2008);
     sentDate.set(Calendar.MONTH, Calendar.MARCH);
@@ -642,17 +675,18 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
     assertEquals(3, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));
 
-    int unmoderatedMessages = messageDao.listTotalNumberOfUnmoderatedMessages("componentId");
+    long unmoderatedMessages = messageDao.listTotalNumberOfUnmoderatedMessages("componentId");
     assertEquals(1, unmoderatedMessages);
-    int displayabledMessages = messageDao.listTotalNumberOfDisplayableMessages("componentId");
+    long displayabledMessages = messageDao.listTotalNumberOfDisplayableMessages("componentId");
     assertEquals(2, displayabledMessages);
-    int totalMessages = messageDao.listTotalNumberOfMessages("componentId");
+    long totalMessages = messageDao.listTotalNumberOfMessages("componentId");
     assertEquals(3, totalMessages);
 
   }
 
   @Test
-  public void testListActivityMessages() {
+  public void testListActivityMessages() throws Exception {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -734,6 +768,7 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
 
   @Test
   public void testListActivities() {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     sentDate.set(Calendar.MILLISECOND, 0);
     sentDate.set(Calendar.SECOND, 10);
@@ -819,6 +854,7 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
 
   @Test
   public void testCreateMessagesWithSameAttachments() throws IOException {
+    MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -910,11 +946,6 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
         attached.getPath());
   }
 
-  @After
-  public void onTearDown() throws Exception {
-    FileFolderManager.deleteFolder(getUploadPath(), false);
-  }
-
   private static String getAttachmentPath() {
     return getUploadPath() + File.separatorChar + "componentId" + File.separatorChar
         + "mailId@silverpeas.com" + File.separatorChar;
@@ -928,5 +959,9 @@ public class TestMessageDao extends AbstractTransactionalJUnit4SpringContextTest
       Logger.getLogger(TestMessageDao.class.getName()).log(Level.SEVERE, null, ex);
     }
     return props.getProperty("upload.dir", "c:\\tmp\\uploads");
+  }
+
+  private int countRowsInTable(String table) throws Exception {
+    return databaseTester.getConnection().getRowCount(table);
   }
 }

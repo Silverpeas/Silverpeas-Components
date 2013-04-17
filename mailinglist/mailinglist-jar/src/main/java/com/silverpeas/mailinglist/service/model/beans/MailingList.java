@@ -1,48 +1,73 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.model.beans;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
-public class MailingList extends IdentifiedObject {
+@Entity
+@Table(name = "sc_mailinglist_list")
+@NamedQueries({
+  @NamedQuery(name = "findByComponentId", query =
+      "from MailingList where componentId = :componentId"),
+  @NamedQuery(name = "findAll", query = "from MailingList")})
+public class MailingList extends IdentifiableObject {
 
-  public String componentId;
-  public String name;
-  public String subscribedAddress;
-  public String description;
-  public boolean open;
-  public boolean moderated;
-  public boolean notify;
-  public boolean supportRSS;
-
-  public Set<InternalUser> moderators = new HashSet<InternalUser>();
-  public Set<InternalUser> readers = new HashSet<InternalUser>();
-  public Set<ExternalUser> externalSubscribers = new HashSet<ExternalUser>();
-  public Set<InternalGroupSubscriber> groupSubscribers = new HashSet<InternalGroupSubscriber>();
-  public Set<InternalUserSubscriber> internalSubscribers = new HashSet<InternalUserSubscriber>();
+  private String componentId;
+  @Transient
+  private String name;
+  @Transient
+  private String subscribedAddress;
+  @Transient
+  private String description;
+  @Transient
+  private boolean open;
+  @Transient
+  private boolean moderated;
+  @Transient
+  private boolean notify;
+  @Transient
+  private boolean supportRSS;
+  @Transient
+  private Set<InternalUser> moderators = new HashSet<InternalUser>();
+  @Transient
+  private Set<InternalUser> readers = new HashSet<InternalUser>();
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "listId", nullable = false)
+  private Set<ExternalUser> externalSubscribers = new HashSet<ExternalUser>();
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "mailingListId", nullable = false)
+  private Set<InternalGroupSubscriber> groupSubscribers = new HashSet<InternalGroupSubscriber>();
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "mailingListId", nullable = false)
+  private Set<InternalUserSubscriber> internalSubscribers = new HashSet<InternalUserSubscriber>();
 
   public String getName() {
     return name;
@@ -104,10 +129,6 @@ public class MailingList extends IdentifiedObject {
     return externalSubscribers;
   }
 
-  public void setExternalSubscribers(Set<ExternalUser> externalSubscribers) {
-    this.externalSubscribers = externalSubscribers;
-  }
-
   public boolean isNotify() {
     return notify;
   }
@@ -163,16 +184,7 @@ public class MailingList extends IdentifiedObject {
     return groupSubscribers;
   }
 
-  public void setGroupSubscribers(Set<InternalGroupSubscriber> groupSubscribers) {
-    this.groupSubscribers = groupSubscribers;
-  }
-
   public Set<InternalUserSubscriber> getInternalSubscribers() {
     return internalSubscribers;
   }
-
-  public void setInternalSubscribers(Set<InternalUserSubscriber> internalSubscribers) {
-    this.internalSubscribers = internalSubscribers;
-  }
-
 }

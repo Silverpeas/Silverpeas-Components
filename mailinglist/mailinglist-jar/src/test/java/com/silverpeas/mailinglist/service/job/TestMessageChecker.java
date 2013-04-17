@@ -20,7 +20,12 @@
  */
 package com.silverpeas.mailinglist.service.job;
 
-import static com.silverpeas.mailinglist.PathTestUtil.*;
+import com.silverpeas.mailinglist.service.event.MessageEvent;
+import com.silverpeas.mailinglist.service.event.MessageListener;
+import com.silverpeas.mailinglist.service.model.beans.Attachment;
+import com.silverpeas.mailinglist.service.model.beans.Message;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.*;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -28,46 +33,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Transport;
-import javax.mail.Message.RecipientType;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
-import org.jvnet.mock_javamail.Mailbox;
-
-import com.silverpeas.mailinglist.service.event.MessageEvent;
-import com.silverpeas.mailinglist.service.event.MessageListener;
-import com.silverpeas.mailinglist.service.model.beans.Attachment;
-import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import java.io.*;
-import javax.inject.Inject;
-
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.junit.After;
-import org.junit.runner.RunWith;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
+import org.jvnet.mock_javamail.Mailbox;
 import org.silverpeas.util.Charsets;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-  "/spring-fake-services.xml"})
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import static com.silverpeas.mailinglist.PathTestUtil.BUILD_PATH;
+import static com.silverpeas.mailinglist.PathTestUtil.SEPARATOR;
+
 public class TestMessageChecker {
 
-  @Inject
   MessageChecker messageChecker;
   private static int ATT_SIZE = 84954;
   private static final String attachmentPath = BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR
@@ -80,6 +74,29 @@ public class TestMessageChecker {
   private static final String htmlEmailSummary = "Politique Recherchez depuis sur Le Monde.fr A "
       + "la Une Le Desk Vidéos International *Elections américaines Europe Politique "
       + "*Municipales & Cantonales 2008 Société Carnet Economie Médias Météo Rendez-vou";
+  private static ConfigurableApplicationContext context;
+
+  @BeforeClass
+  public static void bootstrapTestsContext() {
+    context = new ClassPathXmlApplicationContext("/spring-checker.xml", "/spring-notification.xml",
+        "/spring-fake-services.xml");
+  }
+
+  @AfterClass
+  public static void shutdownTestsContext() {
+    context.close();
+  }
+
+  @Before
+  public void setUpTest() throws Exception {
+    messageChecker = context.getBean(MessageChecker.class);
+  }
+
+  @After
+  public void tearDownTest() {
+    Mailbox.clearAll();
+    FileFolderManager.deleteFolder(BUILD_PATH + File.separatorChar + "uploads", false);
+  }
 
   protected String loadHtml() throws IOException {
     return IOUtils.toString(new InputStreamReader(
@@ -371,11 +388,5 @@ public class TestMessageChecker {
     assertNotNull(event.getMessages());
     assertEquals(0, event.getMessages().size());
     verify(mockListener1, atLeastOnce()).checkSender("bart.simpson@silverpeas.com");
-  }
-
-  @After
-  public void onTearDown() {
-    Mailbox.clearAll();
-    FileFolderManager.deleteFolder(BUILD_PATH + File.separatorChar + "uploads", false);
   }
 }
