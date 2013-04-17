@@ -161,7 +161,7 @@ public class QuestionReplyRequestRouter extends
         }
         destination = getDestination("Main", scc, request);
       } else if ("DeleteQuestions".equals(function)) {
-        if (admin == role || publisher == role) {
+        if (admin == role || writer == role) {
           String[] checkQuestions = request.getParameterValues("checkedQuestion");
           if (checkQuestions != null) {
             List<Long> listToDelete = new ArrayList<Long>(checkQuestions.length);
