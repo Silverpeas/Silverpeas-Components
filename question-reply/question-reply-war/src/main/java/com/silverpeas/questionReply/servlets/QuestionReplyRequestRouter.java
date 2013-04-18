@@ -141,6 +141,7 @@ public class QuestionReplyRequestRouter extends
         request.setAttribute("Categories", scc.getAllCategories());
         request.setAttribute("userAlreadySubscribed", SubscriptionServiceFactory.getFactory().
             getSubscribeService().isSubscribedToComponent(scc.getUserId(), scc.getComponentId()));
+        request.setAttribute("PDCUsed", scc.isPDCUsed());
         if (request.getAttribute("QuestionId") != null) {
           Question question =
               scc.getQuestion(Long.parseLong((String) request.getAttribute("QuestionId")));
@@ -160,7 +161,7 @@ public class QuestionReplyRequestRouter extends
         }
         destination = getDestination("Main", scc, request);
       } else if ("DeleteQuestions".equals(function)) {
-        if (admin == role || publisher == role) {
+        if (admin == role || writer == role) {
           String[] checkQuestions = request.getParameterValues("checkedQuestion");
           if (checkQuestions != null) {
             List<Long> listToDelete = new ArrayList<Long>(checkQuestions.length);

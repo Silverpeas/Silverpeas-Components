@@ -29,9 +29,9 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>questionReply</name>
   <label>
-    <message lang="fr">Questions/Réponses ( aux experts ) </message>
-    <message lang="en">Questions/Answers ( to experts )</message>
-    <message lang="de">Fragen/Antworten ( die Experten )</message>
+    <message lang="fr">Questions/Réponses (aux experts)</message>
+    <message lang="en">Questions/Answers (to experts)</message>
+    <message lang="de">Fragen/Antworten (die Experten)</message>
   </label>
   <description>
     <message lang="fr">Reprenant le principe bien connu d’une 
@@ -106,6 +106,24 @@
     </profile>
   </profiles>
   <parameters>
+	<parameter>
+      <name>usePdc</name>
+      <label>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
+        <message lang="de">Klassierungsplan</message>
+      </label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Les enquêtes créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
+        <message lang="en">The surveys created in this instance may be classified on the classification scheme.</message>
+        <message lang="de">Umfragen können auf dem KP klassifiziert werden</message>
+      </help>
+    </parameter>
     <parameter>
       <name>privateRepliesUsed</name>
       <label>
@@ -113,7 +131,7 @@
         <message lang="en">Private answers</message>
         <message lang="de">Private Antworten</message>
       </label>
-      <order>1</order>
+      <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -131,7 +149,7 @@
         <message lang="en">Alphabetical order of the questions</message>
         <message lang="de">Sortieren nach Fragen</message>
       </label>
-      <order>2</order>
+      <order>3</order>
       <mandatory>false</mandatory>
       <value>no</value>
       <type>checkbox</type>
