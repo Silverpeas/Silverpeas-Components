@@ -1741,7 +1741,7 @@ public class KmeliaBmEJB implements KmeliaBm {
   private NodePK sendSubscriptionsNotification(PublicationDetail pubDetail, boolean update) {
     NodePK oneFather = null;
     // We alert subscribers only if publication is Valid
-    if (!pubDetail.haveGotClone() && PublicationDetail.VALID.equals(pubDetail.getStatus())) {
+    if (!pubDetail.haveGotClone() && pubDetail.isValid()) {
       // topic subscriptions
       Collection<NodePK> fathers = getPublicationFathers(pubDetail.getPK());
       if (fathers != null) {
@@ -1750,7 +1750,10 @@ public class KmeliaBmEJB implements KmeliaBm {
           sendSubscriptionsNotification(oneFather, pubDetail, update);
         }
       }
-
+      
+      // Subscriptions relative to aliases
+      sendAliasSubscriptions(pubDetail);
+      
       // PDC subscriptions
       try {
         int silverObjectId = getSilverObjectId(pubDetail.getPK());
@@ -3935,16 +3938,24 @@ public class KmeliaBmEJB implements KmeliaBm {
     }
     publicationBm.addAlias(pubPK, newAliases);
     publicationBm.removeAlias(pubPK, remAliases);
+
     // Send subscriptions to aliases subscribers
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    String originalComponentId = pubPK.getInstanceId();
-    for (Alias a : newAliases) {
-      pubDetail.getPK().setComponentName(a.getInstanceId()); // Change the instanceId to make the
-      // right URL
-      sendSubscriptionsNotification(new NodePK(a.getId(), a.getInstanceId()), pubDetail, false);
+    sendAliasSubscriptions(pubDetail);
+  }
+  
+  private void sendAliasSubscriptions(PublicationDetail pubDetail) {
+    if (pubDetail != null && pubDetail.isValid()) {
+      List<Alias> aliases = (List<Alias>) getAlias(pubDetail.getPK());
+      String originalComponentId = pubDetail.getPK().getInstanceId();
+      for (Alias a : aliases) {
+        pubDetail.getPK().setComponentName(a.getInstanceId()); // Change the instanceId to make the
+        // right URL
+        sendSubscriptionsNotification(new NodePK(a.getId(), a.getInstanceId()), pubDetail, false);
+      }
+      // restore original primary key
+      pubDetail.getPK().setComponentName(originalComponentId);
     }
-    // restore original primary key
-    pubDetail.getPK().setComponentName(originalComponentId);
   }
 
   @Override
