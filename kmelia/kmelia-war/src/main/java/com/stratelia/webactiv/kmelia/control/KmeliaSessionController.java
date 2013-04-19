@@ -2228,6 +2228,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public void setCurrentFolderId(String id, boolean resetSessionPublication) {
     if (!id.equals(currentFolderId)) {
       indexOfFirstPubToDisplay = 0;
+      Collection<NodeDetail> pathColl = getTopicPath(id);
+      String linkedPathString = displayPath(pathColl, true, 3);
+      String pathString = displayPath(pathColl, false, 3);
+      setSessionPath(linkedPathString);
+      setSessionPathString(pathString);
     }
     if (resetSessionPublication) {
       setSessionPublication(null);
