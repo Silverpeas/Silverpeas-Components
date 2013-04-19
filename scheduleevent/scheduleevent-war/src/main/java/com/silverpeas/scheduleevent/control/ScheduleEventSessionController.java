@@ -1,35 +1,24 @@
 /**
  * Copyright (C) 2000 - 2009 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.scheduleevent.control;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.silverpeas.scheduleevent.notification.ScheduleEventUserNotification;
@@ -53,13 +42,21 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ScheduleEventSessionController extends AbstractComponentSessionController {
+
   private Selection sel = null;
   private ScheduleEvent currentScheduleEvent = null;
 
   /**
    * Standard Session Controller Constructeur
+   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -89,14 +86,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     setCurrentScheduleEvent(null);
   }
 
-  private Set<Contributor> getCurrentContributors() {
-    Set<Contributor> contributors = currentScheduleEvent.getContributors();
-    if (contributors == null) {
-      contributors = new HashSet<Contributor>();
-    }
-    return contributors;
-  }
-
   private void addContributor(Set<Contributor> contributors, String userId) {
     Contributor contributor = new Contributor();
     contributor.setScheduleEvent(currentScheduleEvent);
@@ -108,9 +97,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   public void createCurrentScheduleEvent() {
     setCurrentScheduleEvent(new ScheduleEvent());
     currentScheduleEvent.setAuthor(Integer.parseInt(getUserId()));
-    Set<Contributor> contributors = getCurrentContributors();
-    addContributor(contributors, getUserId());
-    currentScheduleEvent.setContributors(contributors);
+    addContributor(currentScheduleEvent.getContributors(), getUserId());
   }
 
   public boolean isCurrentScheduleEventDefined() {
@@ -139,12 +126,12 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
     // Contraintes
     String hostDirection, cancelDirection;
-    if (currentScheduleEvent.id == null) {
+    if (currentScheduleEvent.getId() == null) {
       hostDirection = "ConfirmUsers?popupMode=Yes";
       cancelDirection = "ConfirmScreen?popupMode=Yes";
     } else {
-      hostDirection = "ConfirmModifyUsers?scheduleEventId=" + currentScheduleEvent.id;
-      cancelDirection = "Detail?scheduleEventId=" + currentScheduleEvent.id;
+      hostDirection = "ConfirmModifyUsers?scheduleEventId=" + currentScheduleEvent.getId();
+      cancelDirection = "Detail?scheduleEventId=" + currentScheduleEvent.getId();
     }
 
     String hostUrl =
@@ -178,10 +165,9 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     if (usersId.length < 1) {
       return;
     }
-    Set<Contributor> recordedContributors = getCurrentContributors();
+    Set<Contributor> recordedContributors = currentScheduleEvent.getContributors();
     deleteRecordedContributors(usersId, recordedContributors);
     addContributors(usersId, recordedContributors);
-    currentScheduleEvent.setContributors(recordedContributors);
   }
 
   public void addContributors(String[] usersId, Set<Contributor> recordedContributors) {
@@ -191,7 +177,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(usersId);
     boolean foundCreator = false;
     for (UserDetail detail : userDetails) {
-      if (detail.getId().equals(String.valueOf(currentScheduleEvent.author))) {
+      if (detail.getId().equals(String.valueOf(currentScheduleEvent.getAuthor()))) {
         foundCreator = true;
       }
       boolean foundAlreadyCreated = false;
@@ -203,12 +189,12 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       if (!foundAlreadyCreated) {
         addContributor(recordedContributors, detail.getId());
         SilverTrace.debug("scheduleevent", "ScheduleEventSessionController.setIdUsersAndGroups()",
-            "Contributor '" + getUserDetail(detail.getId()).getDisplayedName() +
-                "' added to event '" + currentScheduleEvent.getTitle() + "'");
+            "Contributor '" + getUserDetail(detail.getId()).getDisplayedName()
+            + "' added to event '" + currentScheduleEvent.getTitle() + "'");
       }
     }
     if (!foundCreator) {
-      addContributor(recordedContributors, String.valueOf(currentScheduleEvent.author));
+      addContributor(recordedContributors, String.valueOf(currentScheduleEvent.getAuthor()));
     }
   }
 
@@ -238,8 +224,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         currentScheduleEvent.getContributors().remove(contrib[c]);
         // }
         SilverTrace.debug("scheduleevent", "ScheduleEventSessionController.setIdUsersAndGroups()",
-            "Contributor '" + contrib[c].getUserName() + "' deleted from event '" +
-                currentScheduleEvent.getTitle() + "'");
+            "Contributor '" + contrib[c].getUserName() + "' deleted from event '"
+            + currentScheduleEvent.getTitle() + "'");
       }
     }
   }
@@ -248,13 +234,9 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     String[] usersId =
         SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), sel.getSelectedSets());
 
-    Set<Contributor> recordedContributors = currentScheduleEvent.contributors;
-    if (recordedContributors == null)
-      recordedContributors = new HashSet<Contributor>();
-
+    Set<Contributor> recordedContributors = currentScheduleEvent.getContributors();
     deleteRecordedContributors(usersId, recordedContributors);
     addContributors(usersId, recordedContributors);
-    currentScheduleEvent.setContributors(recordedContributors);
     getScheduleEventService().updateScheduleEvent(currentScheduleEvent);
   }
 
@@ -284,7 +266,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     try {
 
       UserNotificationHelper
-          .buildAndSend(new ScheduleEventUserNotification(currentScheduleEvent, getUserDetail(), type));
+          .buildAndSend(new ScheduleEventUserNotification(currentScheduleEvent, getUserDetail(),
+          type));
 
     } catch (Exception e) {
       SilverTrace.warn("scheduleEvent",
@@ -294,7 +277,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   private ScheduleEventService getScheduleEventService() {
-    return ServicesFactory.getScheduleEventService();
+    return ServicesFactory.getFactory().getScheduleEventService();
   }
 
   public List<ScheduleEvent> getScheduleEventsByUserId() {
@@ -342,7 +325,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   private Contributor getContributor(ScheduleEvent scheduleEvent, String id) {
     try {
       int userId = Integer.parseInt(id);
-      for (Contributor contributor : scheduleEvent.contributors) {
+      for (Contributor contributor : scheduleEvent.getContributors()) {
         if (contributor.getUserId() == userId) {
           return contributor;
         }
@@ -377,5 +360,4 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     result.setOptionId(dateId);
     return result;
   }
-
 }

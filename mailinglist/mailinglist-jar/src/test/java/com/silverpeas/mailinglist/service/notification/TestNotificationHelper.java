@@ -20,6 +20,15 @@
  */
 package com.silverpeas.mailinglist.service.notification;
 
+import com.silverpeas.mailinglist.AbstractMailingListTest;
+import com.silverpeas.mailinglist.jms.MockObjectFactory;
+import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
+import com.silverpeas.mailinglist.service.model.beans.MailingList;
+import com.silverpeas.mailinglist.service.model.beans.Message;
+import com.stratelia.silverpeas.notificationserver.NotificationData;
+import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -27,93 +36,48 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.jms.QueueConnectionFactory;
 import javax.jms.TextMessage;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.mailinglist.jms.MockObjectFactory;
-import com.silverpeas.mailinglist.service.ServicesFactory;
-import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
-import com.silverpeas.mailinglist.service.model.beans.MailingList;
-import com.silverpeas.mailinglist.service.model.beans.Message;
-
-import com.stratelia.silverpeas.notificationserver.NotificationData;
-import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-
-import com.mockrunner.mock.jms.MockQueue;
 import org.apache.commons.io.IOUtils;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class TestNotificationHelper {
+public class TestNotificationHelper extends AbstractMailingListTest {
 
   private static final String textEmailContent =
       "Bonjour famille Simpson, j'espère que vous allez bien. "
       + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
       + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
       + "l'homme canon dans la prochaine émission.Bart";
-  private static SimpleNotificationHelper notificationHelper;
-  private static DataSource dataSource;
-  private static ClassPathXmlApplicationContext context;
+  private SimpleNotificationHelper notificationHelper;
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-    SimpleMemoryContextFactory.setUpAsInitialContext();
-    context = new ClassPathXmlApplicationContext(new String[]{"/spring-checker.xml",
-      "/spring-notification.xml", "/spring-hibernate.xml", "/spring-datasource.xml",
-      "/spring-personalization.xml"});
-    dataSource = context.getBean("jpaDataSource", DataSource.class);
-    notificationHelper = context.getBean("notificationHelper", SimpleNotificationHelper.class);
-    InitialContext ic = new InitialContext();
-    ic.rebind("jdbc/Silverpeas", dataSource);
-    DBUtil.getInstanceForTest(dataSource.getConnection());
+  @After
+  public void clearMailBox() throws Exception {
+    Mailbox.clearAll();
   }
 
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-    DBUtil.clearTestInstance();
-    SimpleMemoryContextFactory.tearDownAsInitialContext();
-    context.close();
-  }
-
-  protected void registerMockJMS() throws Exception {
-    InitialContext ic = new InitialContext();
-    QueueConnectionFactory refFactory = MockObjectFactory.getQueueConnectionFactory();
-    ic.rebind(JNDINames.JMS_FACTORY, refFactory);
-    ic.rebind(JNDINames.JMS_QUEUE, MockObjectFactory.createQueue(JNDINames.JMS_QUEUE));
-    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
-    assertThat(qconFactory, is(notNullValue()));
-    MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
-    queue.clear();
+  @Before
+  public void setupMailbox() throws Exception {
+    Mailbox.clearAll();
+    notificationHelper = getManagedService(SimpleNotificationHelper.class);
   }
 
   @Test
   public void testNotifyInternals() throws Exception {
-    Message message = ServicesFactory.getMessageService().getMessage("700");
+    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    Message message = servicesFactory.getMessageService().getMessage("700");
     assertThat(message, is(notNullValue()));
-    MailingList list = ServicesFactory.getMailingListService().findMailingList("100");
+    MailingList list = servicesFactory.getMailingListService().findMailingList("100");
     assertThat(list, is(notNullValue()));
     assertThat(list.getModerators(), is(notNullValue()));
     assertThat(list.getModerators().size(), is(3));
@@ -150,10 +114,11 @@ public class TestNotificationHelper {
 
   @Test
   public void testNotifyExternals() throws Exception {
-    Message message = ServicesFactory.getMessageService().getMessage("700");
+    ServicesFactory servicesFactory = ServicesFactory.getFactory();
+    Message message = servicesFactory.getMessageService().getMessage("700");
     message.setContentType("text/plain; charset=\"UTF-8\"");
     assertThat(message, is(notNullValue()));
-    MailingList list = ServicesFactory.getMailingListService().findMailingList("100");
+    MailingList list = servicesFactory.getMailingListService().findMailingList("100");
     assertThat(list, is(notNullValue()));
     assertThat(list.getExternalSubscribers(), is(notNullValue()));
     assertThat(list.getExternalSubscribers().size(), is(12));
@@ -272,39 +237,9 @@ public class TestNotificationHelper {
     assertThat(helper.getSmtpConfig().isAuthenticate(), is(false));
   }
 
-  @After
-  public void clearMailBox() throws Exception {
-    Mailbox.clearAll();
-    IDatabaseConnection connection = null;
-    try {
-      connection = new DatabaseConnection(dataSource.getConnection());
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    } finally {
-      if (connection != null) {
-        connection.close();
-      }
-    }
-  }
-
-  @Before
-  public void setupMailbox() throws Exception {
-    Mailbox.clearAll();
-    IDatabaseConnection connection = null;
-    try {
-      connection = new DatabaseConnection(dataSource.getConnection());
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } finally {
-      if (connection != null) {
-        connection.close();
-      }
-    }
-    registerMockJMS();
-  }
-
   @Test
   public void testGetUsersIds() {
-    MailingList list = ServicesFactory.getMailingListService().findMailingList("100");
+    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList("100");
     list.setModerated(false);
     Collection<String> userIds = notificationHelper.getUsersIds(list);
     assertThat(userIds.size(), is(2));
@@ -321,7 +256,7 @@ public class TestNotificationHelper {
 
   @Test
   public void testGetModeratorsIds() {
-    MailingList list = ServicesFactory.getMailingListService().findMailingList("100");
+    MailingList list = ServicesFactory.getFactory().getMailingListService().findMailingList("100");
     Collection<String> userIds = notificationHelper.getModeratorsIds(list);
     assertThat(userIds.size(), is(3));
     for (String userId : userIds) {
@@ -335,6 +270,7 @@ public class TestNotificationHelper {
     }
   }
 
+  @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
     FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
     InputStream in = TestNotificationHelper.class.getResourceAsStream(
@@ -344,5 +280,12 @@ public class TestNotificationHelper {
     } finally {
       IOUtils.closeQuietly(in);
     }
+  }
+
+  @Override
+  protected String[] getContextConfigurations() {
+    return new String[]{"/spring-checker.xml", "/spring-notification.xml",
+      "/spring-mailinglist-services-factory.xml", "/spring-mailinglist-personalization-dao.xml",
+      "/spring-mailinglist-embbed-datasource.xml"};
   }
 }

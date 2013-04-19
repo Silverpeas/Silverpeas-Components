@@ -1,36 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.notification;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.EJBHome;
-import javax.ejb.EJBObject;
-import javax.ejb.Handle;
 
 import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.Attendee;
@@ -39,311 +27,318 @@ import com.stratelia.webactiv.calendar.model.HolidayDetail;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import javax.ejb.EJBHome;
+import javax.ejb.EJBObject;
+import javax.ejb.Handle;
 
 public class StubSilverpeasCalendarBm implements SilverpeasCalendar {
 
-  public void addHolidayDate(HolidayDetail holiday)  {
+  @Override
+  public void addHolidayDate(HolidayDetail holiday) {
     // TODO Auto-generated method stub
-
   }
 
-  public void addHolidayDates(List holidayDates)  {
+  @Override
+  public void addHolidayDates(List holidayDates) {
     // TODO Auto-generated method stub
-
   }
 
-  public String addJournal(JournalHeader journal) 
-  {
+  @Override
+  public String addJournal(JournalHeader journal) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public void addJournalAttendee(String journalId, Attendee attendee)
-       {
+  @Override
+  public void addJournalAttendee(String journalId, Attendee attendee) {
     // TODO Auto-generated method stub
-
   }
 
-  public void addJournalCategory(String journalId, String categoryId)
-       {
+  @Override
+  public void addJournalCategory(String journalId, String categoryId) {
     // TODO Auto-generated method stub
-
   }
 
-  public String addToDo(ToDoHeader todo) 
-      {
+  @Override
+  public String addToDo(ToDoHeader todo) {
     return "" + todo.hashCode();
   }
 
-  public void addToDoAttendee(String todoId, Attendee attendee)
-       {
+  @Override
+  public void addToDoAttendee(String todoId, Attendee attendee) {
     // TODO Auto-generated method stub
-
   }
 
+  @Override
   public Collection countMonthSchedulablesForUser(String month, String userId,
-      String categoryId, String participation)  {
+      String categoryId, String participation) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getAllCategories()  {
+  @Override
+  public Collection getAllCategories() {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Category getCategory(String categoryId)  {
+  @Override
+  public Category getCategory(String categoryId) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getClosedToDos(String organizerId)  {
+  @Override
+  public Collection getClosedToDos(String organizerId) {
     // TODO Auto-generated method stub
     return null;
   }
 
+  @Override
   public Collection getDaySchedulablesForUser(String day, String userId,
-      String categoryId, String participation)  {
+      String categoryId, String participation) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getExternalJournalHeadersForUser(String userId)
-       {
+  @Override
+  public Collection getExternalJournalHeadersForUser(String userId) {
     // TODO Auto-generated method stub
     return null;
   }
 
+  @Override
   public Collection getExternalJournalHeadersForUserAfterDate(String userId,
-      Date startDate)  {
+      Date startDate) {
     // TODO Auto-generated method stub
     return null;
   }
 
+  @Override
   public Collection getExternalTodos(String spaceId, String componentId,
-      String externalId)  {
+      String externalId) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public List getHolidayDates(String userId)  {
+  @Override
+  public List getHolidayDates(String userId) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public List getHolidayDates(String userId, Date beginDate, Date endDate)
-       {
+  @Override
+  public List getHolidayDates(String userId, Date beginDate, Date endDate) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getJournalAttendees(String journalId)
-       {
+  @Override
+  public Collection getJournalAttendees(String journalId) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getJournalCategories(String journalId)
-       {
+  @Override
+  public Collection getJournalCategories(String journalId) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public JournalHeader getJournalHeader(String journalId)
-       {
+  @Override
+  public JournalHeader getJournalHeader(String journalId) {
     // TODO Auto-generated method stub
     return null;
   }
 
+  @Override
   public Collection getJournalHeadersForUserAfterDate(String userId,
-      Date startDate, int nbReturned)  {
+      Date startDate, int nbReturned) {
     // TODO Auto-generated method stub
     return null;
   }
 
+  @Override
   public Collection getNextDaySchedulablesForUser(String day, String userId,
-      String categoryId, String participation)  {
+      String categoryId, String participation) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getNotCompletedToDosForUser(String userId)
-       {
+  @Override
+  public Collection getNotCompletedToDosForUser(String userId) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getOrganizerToDos(String organizerId)
-       {
+  @Override
+  public Collection getOrganizerToDos(String organizerId) {
     // TODO Auto-generated method stub
     return null;
   }
 
+  @Override
   public Collection getPeriodSchedulablesForUser(String begin, String end,
-      String userId, String categoryId, String participation)
-       {
+      String userId, String categoryId, String participation) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getTentativeSchedulablesForUser(String userId)
-       {
+  @Override
+  public Collection getTentativeSchedulablesForUser(String userId) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Collection getToDoAttendees(String todoId)  {
+  @Override
+  public Collection getToDoAttendees(String todoId) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public ToDoHeader getToDoHeader(String todoId)  {
+  @Override
+  public ToDoHeader getToDoHeader(String todoId) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public boolean hasTentativeSchedulablesForUser(String userId)
-       {
+  @Override
+  public boolean hasTentativeSchedulablesForUser(String userId) {
     // TODO Auto-generated method stub
     return false;
   }
 
-  public void indexAllJournal()  {
+  @Override
+  public void indexAllJournal() {
     // TODO Auto-generated method stub
-
   }
 
-  public void indexAllTodo()  {
+  @Override
+  public void indexAllTodo() {
     // TODO Auto-generated method stub
-
   }
 
-  public boolean isHolidayDate(HolidayDetail date)  {
+  @Override
+  public boolean isHolidayDate(HolidayDetail date) {
     // TODO Auto-generated method stub
     return false;
   }
 
-  public void removeHolidayDate(HolidayDetail holiday)  {
+  @Override
+  public void removeHolidayDate(HolidayDetail holiday) {
     // TODO Auto-generated method stub
-
   }
 
-  public void removeHolidayDates(List holidayDates)  {
+  @Override
+  public void removeHolidayDates(List holidayDates) {
     // TODO Auto-generated method stub
-
   }
 
-  public void removeJournal(String journalId)  {
+  @Override
+  public void removeJournal(String journalId) {
     // TODO Auto-generated method stub
-
   }
 
-  public void removeJournalAttendee(String journalId, Attendee attendee)
-       {
+  @Override
+  public void removeJournalAttendee(String journalId, Attendee attendee) {
     // TODO Auto-generated method stub
-
   }
 
-  public void removeJournalCategory(String journalId, String categoryId)
-       {
+  @Override
+  public void removeJournalCategory(String journalId, String categoryId) {
     // TODO Auto-generated method stub
-
   }
 
-  public void removeToDo(String id)  {
+  @Override
+  public void removeToDo(String id) {
     // TODO Auto-generated method stub
-
   }
 
-  public void removeToDoAttendee(String todoId, Attendee attendee)
-       {
+  @Override
+  public void removeToDoAttendee(String todoId, Attendee attendee) {
     // TODO Auto-generated method stub
-
   }
 
-  public void removeToDoByInstanceId(String instanceId)  {
+  @Override
+  public void removeToDoByInstanceId(String instanceId) {
     // TODO Auto-generated method stub
-
   }
 
-  public void setJournalAttendees(String journalId, String[] userIds)
-       {
+  @Override
+  public void setJournalAttendees(String journalId, String[] userIds) {
     // TODO Auto-generated method stub
-
   }
 
-  public void setJournalCategories(String journalId, String[] categoryIds)
-       {
+  @Override
+  public void setJournalCategories(String journalId, String[] categoryIds) {
     // TODO Auto-generated method stub
-
   }
 
+  @Override
   public void setJournalParticipationStatus(String journalId, String userId,
-      String participation)  {
+      String participation) {
     // TODO Auto-generated method stub
-
   }
 
-  public void setToDoAttendees(String todoId, String[] userIds)
-       {
+  @Override
+  public void setToDoAttendees(String todoId, String[] userIds) {
     // TODO Auto-generated method stub
-
   }
 
-  public void updateJournal(JournalHeader journal) 
-  {
+  @Override
+  public void updateJournal(JournalHeader journal) {
     // TODO Auto-generated method stub
-
   }
 
-  public void updateToDo(ToDoHeader todo) 
-  {
+  @Override
+  public void updateToDo(ToDoHeader todo) {
     // TODO Auto-generated method stub
-
   }
 
-  public EJBHome getEJBHome()  {
+  public EJBHome getEJBHome() {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Handle getHandle()  {
+  public Handle getHandle() {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public Object getPrimaryKey()  {
+  public Object getPrimaryKey() {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public boolean isIdentical(EJBObject arg0)  {
+  public boolean isIdentical(EJBObject arg0) {
     // TODO Auto-generated method stub
     return false;
   }
-
 
   @Override
   public List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
-      Date begin, Date end)  {
+      Date begin, Date end) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
   public List<SocialInformationEvent> getNextEventsForMyContacts(String day, String myId,
-      List<String> myContactsIds, Date begin, Date end)  {
+      List<String> myContactsIds, Date begin, Date end) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
   public List<SocialInformationEvent> getLastEventsForMyContacts(String day, String myId,
-      List<String> myContactsIds, Date begin, Date end)  {
+      List<String> myContactsIds, Date begin, Date end) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
   public List<SocialInformationEvent> getMyLastEvents(String day, String myId, Date begin,
-      Date end)  {
+      Date end) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

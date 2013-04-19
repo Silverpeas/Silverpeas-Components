@@ -26,15 +26,15 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:jee="http://www.springframework.org/schema/jee"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd">
 
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
         <value>classpath:/org/silverpeas/notificationserver/channel/smtp/smtpSettings.properties</value>
-        <value>classpath:/org/silverpeas/mailinglist/notification_postgres.properties</value>
+        <value>classpath:/org/silverpeas/mailinglist/notification.properties</value>
       </list>
     </property>
     <property name="searchSystemEnvironment" value="true" />
@@ -45,7 +45,7 @@
     <property name="notificationSender" ref="notificationSender" />
     <property name="notificationFormatter" ref="notificationFormatter" />
     <property name="smtpConfig" ref="smtpConfiguration" />
-    <property name="controller" ref="organizationController" />
+    <property name="organisationController" ref="organizationController" />
     <property name="calendarBm" ref="calendarBm" />
     <property name="externalThread" value="false" />
   </bean>
@@ -61,10 +61,10 @@
   <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubSilverpeasCalendarBm" />
 
   <bean id="notificationFormatter" name="notificationFormatter"
-    class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationFormatter" />
+        class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationFormatter" />
 
   <bean id="notificationSender" name="notificationSender"
-    class="com.stratelia.silverpeas.notificationManager.NotificationSender">
+        class="com.stratelia.silverpeas.notificationManager.NotificationSender">
     <constructor-arg value="fr" type="java.lang.String" />
   </bean>
 </beans>

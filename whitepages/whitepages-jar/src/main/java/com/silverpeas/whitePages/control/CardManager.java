@@ -1,36 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.whitePages.control;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
@@ -61,12 +49,20 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
 public class CardManager {
-  private static CardManager instance;
+
+  private static CardManager instance = new CardManager();
   private WhitePagesContentManager contentManager = null;
 
   private CardManager() {
@@ -80,8 +76,6 @@ public class CardManager {
   }
 
   static public CardManager getInstance() {
-    if (instance == null)
-      instance = new CardManager();
     return instance;
   }
 
@@ -107,15 +101,16 @@ public class CardManager {
 
       indexCard(card);
       con.commit();
-      
+
       // classify the contribution on the PdC if its classification is defined
       if (classification != null && !classification.isEmpty()) {
-        PdcClassificationService service = PdcServiceFactory.getFactory().getPdcClassificationService();
+        PdcClassificationService service = PdcServiceFactory.getFactory().
+            getPdcClassificationService();
         SilverCard silverCard = new SilverCard(card, silverContentId);
         classification.ofContent(Long.toString(id));
         service.classifyContent(silverCard, classification);
       }
-      
+
     } catch (Exception e) {
       rollback(con, e);
     } finally {
@@ -145,9 +140,9 @@ public class CardManager {
           // le premier element donne l'id de l'instance.
           if (peasId == null) {
             Card card = getCard(new Long(pk.getId()).longValue());
-            if (card == null)
+            if (card == null) {
               continue;
-            else {
+            } else {
               peasId = card.getInstanceId();
             }
           }
@@ -202,13 +197,13 @@ public class CardManager {
 
   @SuppressWarnings("unchecked")
   public Collection<Card> getCardsByIds(List<String> ids) throws WhitePagesException {
-    StringBuffer where = new StringBuffer();
+    StringBuilder where = new StringBuilder();
     int sizeOfIds = ids.size();
     for (int i = 0; i < sizeOfIds - 1; i++) {
-      where.append(" id = " + ids.get(i) + " or ");
+      where.append(" id = ").append(ids.get(i)).append(" or ");
     }
     if (sizeOfIds != 0) {
-      where.append(" id = " + ids.get(sizeOfIds - 1));
+      where.append(" id = ").append(ids.get(sizeOfIds - 1));
     }
 
     Collection<Card> cards = new ArrayList<Card>();
@@ -396,8 +391,8 @@ public class CardManager {
 
   public boolean isPublicationClassifiedOnPDC(Card card)
       throws ContentManagerException, PdcException {
-    ContentManager contentManager = new ContentManager();
-    int contentId = contentManager.getSilverContentId(card.getPK().getId(),
+    ContentManager aContentManager = new ContentManager();
+    int contentId = aContentManager.getSilverContentId(card.getPK().getId(),
         card.getInstanceId());
     PdcBm pdcBm = new PdcBmImpl();
 
@@ -407,6 +402,7 @@ public class CardManager {
 
   /**
    * Get card for a user and instance.
+   *
    * @param userId user id
    * @param instanceId instance id
    * @return the card, null if not found
@@ -438,7 +434,6 @@ public class CardManager {
    * getVisibleCards(instanceId).iterator(); Card card = null; while (cards.hasNext()) { card =
    * (Card) cards.next(); indexCard(card); } }
    */
-
   public void indexCard(Card card) {
     WAPrimaryKey pk = card.getPK();
     String userName = extractUserName(card);
@@ -474,10 +469,10 @@ public class CardManager {
   }
 
   private String extractUserName(Card card) {
-    StringBuffer text = new StringBuffer("");
+    StringBuilder text = new StringBuilder("");
 
     UserRecord user = card.readUserRecord();
-    Field f = null;
+    Field f;
 
     if (user != null) {
       try {
@@ -497,10 +492,10 @@ public class CardManager {
   }
 
   private String extractUserMail(Card card) {
-    StringBuffer text = new StringBuffer("");
+    StringBuilder text = new StringBuilder("");
 
     UserRecord user = card.readUserRecord();
-    Field f = null;
+    Field f;
 
     if (user != null) {
       try {
@@ -527,7 +522,7 @@ public class CardManager {
   }
 
   private void closeConnection(Connection con) throws WhitePagesException {
-    if (con != null)
+    if (con != null) {
       try {
         con.close();
       } catch (SQLException e) {
@@ -535,6 +530,6 @@ public class CardManager {
             SilverpeasException.ERROR, "whitePages.EX_CREATE_CARD_FAILED", "",
             e);
       }
+    }
   }
-
 }

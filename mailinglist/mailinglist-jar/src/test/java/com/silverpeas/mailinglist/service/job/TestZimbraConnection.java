@@ -20,24 +20,20 @@
  */
 package com.silverpeas.mailinglist.service.job;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
-
 import javax.mail.FetchProfile;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
-
-import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 @Ignore
 public class TestZimbraConnection {

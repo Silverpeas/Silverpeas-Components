@@ -27,54 +27,89 @@ import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
-import static com.silverpeas.scheduleevent.service.model.dao.ScheduledEventMatcher.isEqualTo;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.inject.Inject;
 import javax.sql.DataSource;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.DataSourceDatabaseTester;
+import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
-import org.dbunit.operation.DatabaseOperation;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-scheduleevent.xml",
-  "/spring-scheduleevent-embbed-datasource.xml"})
-@TransactionConfiguration(defaultRollback = true, transactionManager = "txManager")
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+
+import static com.silverpeas.scheduleevent.service.model.dao.ScheduledEventMatcher.isEqualTo;
+
 public class ScheduleEventDaoTest {
 
-  @Inject
+  private ConfigurableApplicationContext context;
+  private DataSourceDatabaseTester databaseTester;
   private ScheduleEventDao scheduleEventDao;
-  @Inject
-  private DataSource dataSource;
 
   public ScheduleEventDaoTest() {
   }
 
   @Before
-  public void generalSetUp() throws Exception {
+  public void bootstrapTestContext() throws Exception {
+    context = new ClassPathXmlApplicationContext("/spring-scheduleevent.xml",
+        "/spring-scheduleevent-embbed-datasource.xml");
+    databaseTester = new DataSourceDatabaseTester(getDataSource());
+    databaseTester.setDataSet(getDataSet());
+    databaseTester.onSetup();
+    scheduleEventDao = context.getBean(ScheduleEventDao.class);
+  }
+
+  @After
+  public void shutdownTestContext() throws Exception {
+    databaseTester.onTearDown();
+    context.close();
+  }
+
+  protected IDataSet getDataSet() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-            ScheduleEventDaoTest.class.getClassLoader().getResourceAsStream(
-            "com/silverpeas/scheduleevent/service/model/dao/scheduleevent-dataset.xml")));
+        ScheduleEventDaoTest.class.getClassLoader().getResourceAsStream(
+        "com/silverpeas/scheduleevent/service/model/dao/scheduleevent-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
+    return dataSet;
+  }
+
+  protected DataSource getDataSource() {
+    return context.getBean(DataSource.class);
   }
 
   @Test
   public void emptyTest() {
+  }
+
+  @Test
+  public void createANewScheduleEvent() throws Exception {
+    ScheduleEvent event = new ScheduleEvent();
+    event.setAuthor(0);
+    event.setCreationDate(Timestamp.valueOf("2012-04-10 17:56:35.761"));
+    event.setTitle("A new event");
+    event.setDescription("test the persistence of the new event");
+    Contributor contributor = new Contributor();
+    contributor.setUserId(0);
+    contributor.setUserName("Bart Simpson");
+    contributor.setScheduleEvent(event);
+    event.getContributors().add(contributor);
+    scheduleEventDao.createScheduleEvent(event);
+
+    int rowCount = databaseTester.getConnection().getRowCount("sc_scheduleevent_list",
+        "where id = '" + event.getId() + "'");
+    assertThat(rowCount, is(1));
+    rowCount = databaseTester.getConnection().getRowCount("sc_scheduleevent_contributor",
+        "where id = '" + contributor.getId() + "'");
+    assertThat(rowCount, is(1));
   }
 
   @Test
@@ -86,12 +121,43 @@ public class ScheduleEventDaoTest {
     ScheduleEvent theEvent = events.iterator().next();
     assertThat(theEvent, isEqualTo(theScheduledEvent()));
   }
-  
+
   @Test
   public void listScheduleEventsForAnUnexistingContributor() {
     String contributorId = "100";
     Set<ScheduleEvent> events = scheduleEventDao.listScheduleEventsByContributorId(contributorId);
     assertThat(events.isEmpty(), is(true));
+  }
+
+  @Test
+  public void getAnExistingScheduleEvent() {
+    ScheduleEvent expected = theScheduledEvent();
+    ScheduleEvent actual = scheduleEventDao.getScheduleEvent(expected.getId());
+    assertThat(actual, isEqualTo(expected));
+  }
+
+  @Test
+  public void getAnUnexistingScheduleEvent() {
+    ScheduleEvent actual = scheduleEventDao.getScheduleEvent("toto");
+    assertThat(actual, nullValue());
+  }
+
+  @Test
+  public void deleteAScheduleEvent() throws Exception {
+    ScheduleEvent scheduleEvent = theScheduledEvent();
+    scheduleEventDao.deleteScheduleEvent(scheduleEvent);
+    int eventCount = databaseTester.getConnection().getRowCount("sc_scheduleevent_list",
+        "where id = '" + scheduleEvent.getId() + "'");
+    assertThat(eventCount, is(0));
+  }
+
+  @Test
+  public void removeResponsesOfAGivenUser() {
+    ScheduleEvent scheduleEvent = scheduleEventDao.getScheduleEvent(theScheduledEvent().getId());
+    assertThat(scheduleEvent.getResponses().size(), is(2));
+    scheduleEventDao.purgeResponseScheduleEvent(scheduleEvent, 0);
+    ScheduleEvent actual = scheduleEventDao.getScheduleEvent(scheduleEvent.getId());
+    assertThat(actual.getResponses().size(), is(1));
   }
 
   private ScheduleEvent theScheduledEvent() {
@@ -103,9 +169,9 @@ public class ScheduleEventDaoTest {
       event.setTitle("Toto");
       event.setDescription("");
       event.setStatus(1);
-      event.setContributors(theContributors());
-      event.setDates(theDateOptions());
-      event.setResponses(theResponses(event));
+      event.getContributors().addAll(theContributors());
+      event.getDates().addAll(theDateOptions());
+      event.getResponses().addAll(theResponses(event));
       return event;
 
     } catch (Exception ex) {
@@ -163,7 +229,7 @@ public class ScheduleEventDaoTest {
       throw new RuntimeException(ex);
     }
   }
-  
+
   private Set<Response> theResponses(final ScheduleEvent event) {
     Set<Response> responses = new HashSet<Response>(2);
     Response response = new Response();
@@ -172,15 +238,14 @@ public class ScheduleEventDaoTest {
     response.setUserId(0);
     response.setScheduleEvent(event);
     responses.add(response);
-    
+
     response = new Response();
     response.setId("ff808081369cf58901369cf90b410009");
     response.setOptionId("ff808081369cf58901369cf88a3d0001");
     response.setUserId(2);
     response.setScheduleEvent(event);
     responses.add(response);
-    
+
     return responses;
   }
-  
 }

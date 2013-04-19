@@ -4,37 +4,28 @@
  */
 package com.silverpeas.mailinglist.service.notification;
 
+import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.util.PathTestUtil;
+import com.silverpeas.util.template.SilverpeasTemplate;
 import java.io.File;
 import java.util.Properties;
-import com.silverpeas.mailinglist.service.model.beans.Message;
-import com.silverpeas.util.template.SilverpeasTemplate;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
  * @author ehugonnet
  */
-public class AdvancedNotificationFormatterTest  {
+public class AdvancedNotificationFormatterTest {
 
   private static String rootDir = PathTestUtil.TARGET_DIR
       + "test-classes" + File.separatorChar + "templates" + File.separatorChar;
   private static Properties configuration = new Properties();
 
   public AdvancedNotificationFormatterTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
   }
 
   @Before
@@ -46,7 +37,6 @@ public class AdvancedNotificationFormatterTest  {
   @After
   public void tearDown() {
   }
-
 
   /**
    * Test of formatTitle method, of class AdvancedNotificationFormatter.
@@ -82,31 +72,28 @@ public class AdvancedNotificationFormatterTest  {
    */
   @Test
   public void testFormatMessage() {
-   Message message = new Message();
+    Message message = new Message();
     message.setTitle("Hello World");
     message.setSummary("This world is really cool !!!");
-    message.setId("id");
     message.setComponentId("componentId");
     String lang = "en";
     boolean moderate = false;
     AdvancedNotificationFormatter instance = new AdvancedNotificationFormatter();
     String expResult = "<html><head/><body>p><b>Message [Hello World] :</b></p><p>This world is "
-        + "really cool !!! ...<br/><a href=\"/Rmailinglist/componentId/message/id\">Click "
-        + "here</a></p></body></html>";
+        + "really cool !!! ...<br/><a href=\"/Rmailinglist/componentId/message/" + message.getId()
+        + "\">Click here</a></p></body></html>";
     String result = instance.formatMessage(message, lang, moderate);
     assertEquals(expResult, result);
   }
-
 
   /**
    * Test of formatMessage method, of class AdvancedNotificationFormatter.
    */
   @Test
   public void testFormatModeratedMessage() {
-   Message message = new Message();
+    Message message = new Message();
     message.setTitle("Hello Moderated World");
     message.setSummary("This moderated world is really cool !!!");
-    message.setId("id");
     message.setComponentId("componentId");
     String lang = "en";
     boolean moderate = true;

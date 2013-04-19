@@ -730,17 +730,18 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public boolean isPrivateRepliesEnabled() {
     return "yes".equalsIgnoreCase(getComponentParameterValue("privateRepliesUsed"));
   }
+  
+  public boolean isPDCUsed() {
+    if (!StringUtil.isDefined(getComponentParameterValue("usePdc"))) {
+      return true;
+    }
+    return "yes".equalsIgnoreCase(getComponentParameterValue("usePdc"));
+  }
 
-  /*
-   *
-   */
   public void setContainerContext(ContainerContext containerContext) {
     this.containerContext = containerContext;
   }
 
-  /*
-   *
-   */
   public ContainerContext getContainerContext() {
     return containerContext;
   }

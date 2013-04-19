@@ -1,36 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.web;
-
-import java.sql.SQLException;
-
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
 
 import com.meterware.httpunit.ClientProperties;
 import com.meterware.httpunit.HttpUnitOptions;
@@ -39,22 +27,31 @@ import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.httpunit.WebTable;
-import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import com.silverpeas.mailinglist.AbstractMailingListTest;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.Message;
-import org.junit.After;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.Assert.*;
 
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-        "/spring-hibernate.xml", "/spring-datasource.xml"})
-public class TestMailingListModeration extends AbstractSilverpeasDatasourceSpringContextTests {
+public class TestMailingListModeration extends AbstractMailingListTest {
+
+  @Before
+  public void onSetUp() {
+    HttpUnitOptions.setExceptionsThrownOnErrorStatus(true);
+    HttpUnitOptions.setExceptionsThrownOnScriptError(false);
+    HttpUnitOptions.setScriptingEnabled(true);
+    ClientProperties.getDefaultProperties().setAcceptCookies(true);
+    ClientProperties.getDefaultProperties().setAutoRedirect(true);
+  }
 
   @Test
   public void testModerateMessage() throws Exception {
+    ServicesFactory servicesFactory = ServicesFactory.getFactory();
     WebConversation connection = new WebConversation();
     WebResponse loginPage = connection.getResponse(buildUrl("silverpeas/"));
     assertNotNull(loginPage);
@@ -114,30 +111,31 @@ public class TestMailingListModeration extends AbstractSilverpeasDatasourceSprin
     assertEquals(
         "/silverpeas/Rmailinglist/mailinglist45/destination/moderation/message/13",
         tableMessages.getTableCell(1, 1).getLinkWith(
-            "Simple database message 13").getURLString());
+        "Simple database message 13").getURLString());
     assertEquals("Simple database message 12", tableMessages
         .getCellAsText(3, 1));
     assertEquals(
         "/silverpeas/Rmailinglist/mailinglist45/destination/moderation/message/12",
         tableMessages.getTableCell(3, 1).getLinkWith(
-            "Simple database message 12").getURLString());
+        "Simple database message 12").getURLString());
     WebForm moderateForm = moderationPage.getFormWithID("moderate");
-    moderateForm.setParameter("message", new String[] { "12", "13" });
+    moderateForm.setParameter("message", new String[]{"12", "13"});
     String formSubmit = moderateForm.getAction() + "/message/put"
         + "?message=12&message=13";
     HttpUnitOptions.setScriptingEnabled(false);
     moderationPage = connection.getResponse(buildUrl(formSubmit));
     assertFalse(moderationPage.getText().indexOf("Simple database message") > 0);
-    Message message = ServicesFactory.getMessageService().getMessage("12");
+    Message message = servicesFactory.getMessageService().getMessage("12");
     assertNotNull(message);
     assertTrue(message.isModerated());
-    message = ServicesFactory.getMessageService().getMessage("13");
+    message = servicesFactory.getMessageService().getMessage("13");
     assertNotNull(message);
     assertTrue(message.isModerated());
   }
 
   @Test
   public void testDeleteMessage() throws Exception {
+    ServicesFactory servicesFactory = ServicesFactory.getFactory();
     WebConversation connection = new WebConversation();
     WebResponse loginPage = connection.getResponse(buildUrl("silverpeas/"));
     HttpUnitOptions.setScriptingEnabled(false);
@@ -197,23 +195,23 @@ public class TestMailingListModeration extends AbstractSilverpeasDatasourceSprin
     assertEquals(
         "/silverpeas/Rmailinglist/mailinglist45/destination/moderation/message/13",
         tableMessages.getTableCell(1, 1).getLinkWith(
-            "Simple database message 13").getURLString());
+        "Simple database message 13").getURLString());
     assertEquals("Simple database message 12", tableMessages
         .getCellAsText(3, 1));
     assertEquals(
         "/silverpeas/Rmailinglist/mailinglist45/destination/moderation/message/12",
         tableMessages.getTableCell(3, 1).getLinkWith(
-            "Simple database message 12").getURLString());
+        "Simple database message 12").getURLString());
     WebForm moderateForm = moderationPage.getFormWithID("moderate");
-    moderateForm.setParameter("message", new String[] { "12", "13" });
+    moderateForm.setParameter("message", new String[]{"12", "13"});
     String formSubmit = moderateForm.getAction()
         + "/destination/moderation/message/delete" + "?message=12&message=13";
     HttpUnitOptions.setScriptingEnabled(false);
     moderationPage = connection.getResponse(buildUrl(formSubmit));
     assertFalse(moderationPage.getText().indexOf("Simple database message") > 0);
-    Message message = ServicesFactory.getMessageService().getMessage("12");
+    Message message = servicesFactory.getMessageService().getMessage("12");
     assertNull(message);
-    message = ServicesFactory.getMessageService().getMessage("13");
+    message = servicesFactory.getMessageService().getMessage("13");
     assertNull(message);
   }
 
@@ -221,60 +219,19 @@ public class TestMailingListModeration extends AbstractSilverpeasDatasourceSprin
     return "http://localhost:8000/" + path;
   }
 
-
   @Override
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
         TestMailingListActivity.class
-            .getResourceAsStream("test-mailinglist-messages-dataset.xml")));
+        .getResourceAsStream("test-mailinglist-messages-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
 
-  @Before
-  public void onSetUp() {
-    super.onSetUp();
-    HttpUnitOptions.setExceptionsThrownOnErrorStatus(true);
-    HttpUnitOptions.setExceptionsThrownOnScriptError(false);
-    HttpUnitOptions.setScriptingEnabled(true);
-    ClientProperties.getDefaultProperties().setAcceptCookies(true);
-    ClientProperties.getDefaultProperties().setAutoRedirect(true);
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-  }
-
-  @After
   @Override
-  public void onTearDown() {
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
+  protected String[] getContextConfigurations() {
+    return new String[]{"/spring-checker.xml", "/spring-notification.xml",
+      "/spring-mailinglist-services-factory.xml", "/spring-mailinglist-dao.xml",
+      "/spring-mailinglist-embbed-datasource.xml"};
   }
-
 }
