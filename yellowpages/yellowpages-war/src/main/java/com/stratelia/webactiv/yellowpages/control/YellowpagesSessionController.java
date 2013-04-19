@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -83,6 +82,7 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.yellowpages.ImportReport;
 import com.stratelia.webactiv.yellowpages.YellowpagesException;
 
 import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBm;
@@ -773,8 +773,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @see
    */
   public String initUserPanel() {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-      "ApplicationURL");
+    String m_context = GeneralPropertiesManager.getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(), "");
     PairObject[] hostPath = new PairObject[1];
@@ -835,8 +834,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public String initGroupPanel() {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-      "ApplicationURL");
+    String m_context = GeneralPropertiesManager.getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(), "");
     PairObject[] hostPath = new PairObject[1];
@@ -1583,29 +1581,42 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @return HashMap<isError, messages>
    * @throws com.stratelia.webactiv.yellowpages.YellowpagesException
    */
-  public HashMap<Boolean, String> importCSV(FileItem filePart, String modelId) throws
-    YellowpagesException {
+  public ImportReport importCSV(FileItem filePart, String modelId) throws YellowpagesException {
     SilverTrace.info("yellowpages", "YellowpagesSessionController.importCSV()",
       "root.MSG_GEN_ENTER_METHOD");
-    HashMap<Boolean, String> result = new HashMap<Boolean, String>();
-    InputStream is;
-    int nbContactsAdded = 0;
-    Variant[][] csvHeaderValues;
+    
+    ImportReport report = new ImportReport();
     try {
-      is = filePart.getInputStream();
+      InputStream is = filePart.getInputStream();
       CSVReader csvReader = new CSVReader(getLanguage());
       csvReader.setColumnNumberControlEnabled(false);
       csvReader.setExtraColumnsControlEnabled(false);
-      csvReader.initCSVFormat("com.stratelia.webactiv.yellowpages.settings.yellowpagesSettings",
+      csvReader.initCSVFormat("org.silverpeas.yellowpages.settings.yellowpagesSettings",
         "User", ",");
 
       try {
-        csvHeaderValues = csvReader.parseStream(is);
+        Variant[][] csvHeaderValues = csvReader.parseStream(is);
 
-        StringBuilder listErrors = new StringBuilder("");
-        ContactDetail contactDetail;
         int nbColumns = csvReader.getM_nbCols() + csvReader.getM_specificNbCols();
+        
+        // load optional template
+        PublicationTemplate pubTemplate = null;
+        String xmlFormShortName = null;
+        try {
+          if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
+            xmlFormShortName = modelId.substring(modelId.indexOf("/") + 1, modelId.indexOf("."));
+            pubTemplate =
+                getPublicationTemplateManager().getPublicationTemplate(
+                    getComponentId() + ":" + xmlFormShortName);
+          }
+        } catch (PublicationTemplateException e) {
+          SilverTrace.error("yellowpages",
+              "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", e);
+            report.addError(e.getExtraInfos());
+        }
 
+        int currentLine = 1;
+        int nbContactsAdded = 0;
         for (Variant[] csvHeaderValue : csvHeaderValues) {
           String[] CSVRow = new String[csvHeaderValue.length];
           // Read all columns
@@ -1613,21 +1624,14 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
             CSVRow[column] = formatStringSeparator(csvHeaderValue[column].getValueString());
           }
           // Header columns (lastName, firstName, email, phone, fax)
-          contactDetail =
+          ContactDetail contactDetail =
             new ContactDetail("X", CSVRow[1], CSVRow[0], CSVRow[2], CSVRow[3], CSVRow[4], null,
             null, null);
 
           try {
             String contactId = createContact(contactDetail);
             // Extra columns from xml form ?
-            if (StringUtil.isDefined(modelId)) {
-              String xmlFormShortName = modelId.substring(modelId.indexOf("/") + 1, modelId.indexOf(
-                "."));
-
-              // récupération des données du formulaire (via le DataRecord)
-              PublicationTemplate pubTemplate = getPublicationTemplateManager()
-                .getPublicationTemplate(getComponentId() + ":"
-                + xmlFormShortName);
+            if (pubTemplate != null) {
               DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
               record.setId(contactId);
 
@@ -1657,34 +1661,30 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
                 new CompleteContact(contactDetail, xmlFormShortName));
               setCurrentContact(userContactComplete);
             }
+            nbContactsAdded++;
           } catch (Exception re) {
-            SilverTrace.error("yellowpagesSession",
+            report.addError("Erreur à la ligne #"+currentLine);
+            SilverTrace.error("yellowpages",
               "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", re);
           }
-          if (listErrors.length() > 0) {
-            result.put(Boolean.TRUE, listErrors.toString());
-          } else {
-            nbContactsAdded++;
-          }
-
+          currentLine++;
         }
+        report.setNbAdded(nbContactsAdded);
       } catch (UtilTrappedException ute) {
-        SilverTrace.error("yellowpagesSession",
+        SilverTrace.error("yellowpages",
           "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", ute);
-        result.put(Boolean.TRUE, ute.getExtraInfos());
+        report.addError(ute.getExtraInfos());
       }
-      result.put(Boolean.FALSE, Integer.toString(nbContactsAdded));
-
     } catch (IOException e) {
-      SilverTrace.error("yellowpagesSession",
-        "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", e);
-      result.put(Boolean.TRUE, e.getMessage());
+      SilverTrace.error("yellowpages", "YellowpagesSessionController.importCSV",
+          "yellowpages.EX_CSV_FILE", e);
+      report.addError(e.getMessage());
     }
 
     SilverTrace.info("yellowpages", "YellowpagesSessionController.importCSV()",
-      "root.MSG_GEN_EXIT_METHOD");
+        "root.MSG_GEN_EXIT_METHOD");
 
-    return result;
+    return report;
   }
 
   /**
