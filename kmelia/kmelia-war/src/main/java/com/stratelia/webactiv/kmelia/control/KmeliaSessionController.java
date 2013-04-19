@@ -3778,7 +3778,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         FileRepositoryManager.copyFile(pdf.getPath(), subDirPath + File.separator + pdf.getName());
       }
       // copy files
-      new AttachmentImportExport(getUserDetail()).getAttachments(pubPK, subDirPath, "useless", null);
+      new AttachmentImportExport().getAttachments(pubPK, subDirPath, "useless", null);
       new VersioningImportExport(getUserDetail()).
           exportDocuments(pubPK, subDirPath, "useless", null);
       String zipFileName = FileRepositoryManager.getTemporaryPath() + fileName + ".zip";

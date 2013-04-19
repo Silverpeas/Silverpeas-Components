@@ -73,7 +73,7 @@ public class FileImport {
 
   public FileImport(KmeliaSessionController kmeliaScc, File uploadedFile) {
     this.kmeliaScc = kmeliaScc;
-    attachmentImportExport = new AttachmentImportExport(kmeliaScc.getUserDetail());
+    attachmentImportExport = new AttachmentImportExport();
     versioningImportExport = new VersioningImportExport(kmeliaScc.getUserDetail());
     this.fileUploaded = uploadedFile;
   }
