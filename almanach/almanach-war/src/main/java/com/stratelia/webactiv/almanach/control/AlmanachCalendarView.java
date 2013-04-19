@@ -23,15 +23,20 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.calendar.CalendarDay;
+import org.silverpeas.calendar.CalendarViewContext;
+import org.silverpeas.calendar.CalendarViewType;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import static com.silverpeas.util.StringUtil.isDefined;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.MONTHLY;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.WEEKLY;
+import static org.silverpeas.calendar.CalendarViewType.MONTHLY;
 
 /**
  * It defines a window in time of the calendar belonging to a given almanach instance. The type of
@@ -40,13 +45,10 @@ import static com.stratelia.webactiv.almanach.control.CalendarViewType.WEEKLY;
  */
 public class AlmanachCalendarView {
 
+  private CalendarViewContext viewContext;
   private AlmanachDTO almanach;
-  private AlmanachDay currentDay;
   private List<DisplayableEventOccurrence> events = new ArrayList<DisplayableEventOccurrence>();
-  private CalendarViewType type = MONTHLY;
   private String label = "";
-  private boolean withWeekend = true;
-  private Locale locale = null;
 
   /**
    * Constructs a new calendar view of the specified almanach. By default, the week-end days are
@@ -55,12 +57,17 @@ public class AlmanachCalendarView {
    * @param almanach the DTO carrying information about the almanach instance this view is about.
    * @param currentDay the current day in this calendar view.
    * @param viewType the type of view the calendar should be rendered.
+   * @param locale the locale to take into account (fr for the french locale (fr_FR) for example).
    */
-  public AlmanachCalendarView(final AlmanachDTO almanach, final AlmanachDay currentDay,
-      final CalendarViewType viewType) {
+  public AlmanachCalendarView(final AlmanachDTO almanach, final Date currentDay,
+      final CalendarViewType viewType, final String locale) {
     this.almanach = almanach;
-    this.currentDay = currentDay;
-    this.type = viewType;
+    viewContext = new CalendarViewContext(null, locale);
+    viewContext.setReferenceDay(currentDay);
+    viewContext.setViewType(viewType);
+    if (!CalendarViewType.NEXT_EVENTS.equals(viewContext.getViewType())) {
+      label = viewContext.getReferencePeriodLabel();
+    }
   }
 
   /**
@@ -71,76 +78,14 @@ public class AlmanachCalendarView {
    * @return the first day of week.
    */
   public int getFirstDayOfWeek() {
-    Calendar calendar;
-    if (locale == null) {
-      calendar = Calendar.getInstance();
-    } else {
-      calendar = Calendar.getInstance(locale);
-    }
-    return calendar.getFirstDayOfWeek();
-  }
-
-  /**
-   * Gets the first day of this calendar view.
-   *
-   * @return the first day of the window in time.
-   */
-  public AlmanachDay getFirstDay() {
-    AlmanachDay firstDay = null;
-    Calendar calendar = Calendar.getInstance();
-    switch (type) {
-      case MONTHLY:
-        calendar.setTime(currentDay.getDate());
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        firstDay = new AlmanachDay(calendar.getTime());
-        break;
-      case WEEKLY:
-        calendar.setTime(currentDay.getDate());
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-        firstDay = new AlmanachDay(calendar.getTime());
-        break;
-      default:
-        throw new UnsupportedOperationException("The type " + type.toString()
-            + " is not yet supported");
-    }
-    return firstDay;
-  }
-
-  /**
-   * Gets the last day of this calendar view.
-   *
-   * @return the last day of the window in time.
-   */
-  public AlmanachDay getLastDay() {
-    AlmanachDay lastDay = null;
-    Calendar calendar = Calendar.getInstance();
-    switch (type) {
-      case MONTHLY:
-        calendar.setTime(currentDay.getDate());
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        calendar.add(Calendar.MONTH, 1);
-        calendar.add(Calendar.DAY_OF_YEAR, -1);
-        lastDay = new AlmanachDay(calendar.getTime());
-        break;
-      case WEEKLY:
-        calendar.setTime(currentDay.getDate());
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-        calendar.add(Calendar.WEEK_OF_YEAR, 1);
-        calendar.add(Calendar.DAY_OF_YEAR, -1);
-        lastDay = new AlmanachDay(calendar.getTime());
-        break;
-      default:
-        throw new UnsupportedOperationException("The type " + type.toString()
-            + " is not yet supported");
-    }
-    return lastDay;
+    return viewContext.getFirstDayOfWeek();
   }
 
   /**
    * Unset the rendering of the week-end days.
    */
   public void unsetWeekendVisible() {
-    withWeekend = false;
+    viewContext.setWithWeekend(false);
   }
 
   /**
@@ -149,7 +94,7 @@ public class AlmanachCalendarView {
    * @return true if the week-end days should be rendered, false otherwise.
    */
   public boolean isWeekendVisible() {
-    return withWeekend;
+    return viewContext.isWithWeekend();
   }
 
   /**
@@ -175,8 +120,8 @@ public class AlmanachCalendarView {
    *
    * @return the current day.
    */
-  public AlmanachDay getCurrentDay() {
-    return currentDay;
+  public CalendarDay getCurrentDay() {
+    return viewContext.getReferenceDay();
   }
 
   /**
@@ -203,7 +148,7 @@ public class AlmanachCalendarView {
    * @return the type of view.
    */
   public CalendarViewType getViewType() {
-    return type;
+    return viewContext.getViewType();
   }
 
   /**
@@ -223,17 +168,5 @@ public class AlmanachCalendarView {
    */
   public String getEventsInJSON() {
     return DisplayableEventOccurrence.toJSON(events);
-  }
-
-  /**
-   * Sets the locale of this calendar view. According to the locale, some calendar properties will
-   * be set (for example, the first day of the week).
-   *
-   * @param locale the locale to take into account (fr for the french locale (fr_FR) for example).
-   */
-  public void setLocale(final String locale) {
-    if (isDefined(locale)) {
-      this.locale = new Locale(locale);
-    }
   }
 }

@@ -64,6 +64,10 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.calendar.CalendarDay;
+import org.silverpeas.calendar.CalendarPeriod;
+import org.silverpeas.calendar.CalendarViewContext;
+import org.silverpeas.calendar.CalendarViewType;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -88,8 +92,8 @@ import static com.silverpeas.export.ExportDescriptor.withWriter;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static com.silverpeas.util.StringUtil.isDefined;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 import static com.stratelia.webactiv.util.DateUtil.parse;
+import static org.silverpeas.calendar.CalendarViewType.*;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events. A such
@@ -923,15 +927,12 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   public AlmanachCalendarView getYearlyAlmanachCalendarView() throws AlmanachException,
       AlmanachNoSuchFindEventException, RemoteException {
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
-    AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
-    AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, YEARLY);
-    view.setLocale(getLanguage());
+    AlmanachCalendarView view =
+        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), YEARLY, getLanguage());
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
-    String label = getString("year") + " " + String.valueOf(currentAlmanachDay.getYear());
     view.setEvents(listCurrentYearEvents(getAggregationAlmanachIds()));
-    view.setLabel(label);
     return view;
   }
 
@@ -948,16 +949,12 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       AlmanachNoSuchFindEventException, RemoteException {
 
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
-    AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
-    AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, MONTHLY);
-    view.setLocale(getLanguage());
+    AlmanachCalendarView view =
+        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), MONTHLY, getLanguage());
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
-    String label = getString("GML.mois" + currentAlmanachDay.getMonth())
-        + " " + String.valueOf(currentAlmanachDay.getYear());
     view.setEvents(listCurrentMonthEvents(getAggregationAlmanachIds()));
-    view.setLabel(label);
     return view;
   }
 
@@ -974,27 +971,12 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       AlmanachNoSuchFindEventException, RemoteException {
 
     AlmanachDTO almanachDTO = getAlmanachDTO(isAgregationUsed());
-    AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
-    AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, WEEKLY);
-    view.setLocale(getLanguage());
+    AlmanachCalendarView view =
+        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), WEEKLY, getLanguage());
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
-    String firstDayMonth = "";
-    String lastDayMonth = " " + getString("GML.mois" + view.getLastDay().getMonth()) + " "
-        + String.valueOf(view.getLastDay().getYear());
-
-    if (view.getFirstDay().getMonth() != view.getLastDay().getMonth()) {
-      firstDayMonth = " " + getString("GML.mois" + view.getFirstDay().getMonth());
-      if (view.getFirstDay().getYear() != view.getLastDay().getYear()) {
-        firstDayMonth += " " + String.valueOf(view.getFirstDay().getYear());
-      }
-    }
-    String label = view.getFirstDay().getDayOfMonth() + firstDayMonth + " - " + view.getLastDay().
-        getDayOfMonth() + lastDayMonth;
-
     view.setEvents(listCurrentWeekEvents(getAggregationAlmanachIds()));
-    view.setLabel(label);
     return view;
   }
 
@@ -1012,11 +994,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   public AlmanachCalendarView getAlmanachCalendarViewOnTheNextEvents(boolean aggregated) throws
       AlmanachException, AlmanachNoSuchFindEventException, RemoteException {
     AlmanachDTO almanachDTO = getAlmanachDTO(aggregated);
-    AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
-    AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay,
-        NEXT_EVENTS);
+    AlmanachCalendarView view =
+        new AlmanachCalendarView(almanachDTO, currentDay.getTime(), NEXT_EVENTS, getLanguage());
 
-    view.setLocale(getLanguage());
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }

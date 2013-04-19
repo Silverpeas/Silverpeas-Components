@@ -23,16 +23,17 @@
  */
 package org.silverpeas.resourcemanager.control;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
+import com.silverpeas.annotation.Service;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.date.Period;
 import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.ReservedResource;
@@ -46,19 +47,14 @@ import org.silverpeas.resourcemanager.services.ResourceService;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
-import com.silverpeas.annotation.Service;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author
@@ -79,7 +75,6 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   /**
    * Creating a new resource category.
-   *
    * @param category
    */
   @Override
@@ -117,8 +112,6 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   /**
-   *
-   *
    * @param resource
    * @return
    */
@@ -146,12 +139,12 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   @Override
   public List<Resource> getResourcesReservable(String instanceId, Date startDate, Date endDate) {
-    return resourceService.listAvailableResources(instanceId,
-        String.valueOf(startDate.getTime()), String.valueOf(endDate.getTime()));
+    return resourceService.listAvailableResources(instanceId, String.valueOf(startDate.getTime()),
+        String.valueOf(endDate.getTime()));
   }
 
   @Override
-  public List<Resource> getResourcesofReservation(String instanceId, Long reservationId) {
+  public List<Resource> getResourcesOfReservation(String instanceId, Long reservationId) {
     return resourceService.listResourcesOfReservation(reservationId);
   }
 
@@ -160,8 +153,9 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
       boolean updateDate) {
     List<ReservedResource> reservedResources = reservedResourceService.
         findAllReservedResourcesOfReservation(reservation.getId());
-    Map<Long, ReservedResource> oldReservedResources = new HashMap<Long, ReservedResource>(reservedResources.
-        size());
+    Map<Long, ReservedResource> oldReservedResources =
+        new HashMap<Long, ReservedResource>(reservedResources.
+            size());
     for (ReservedResource reservedResource : reservedResources) {
       oldReservedResources.put(reservedResource.getResourceId(), reservedResource);
     }
@@ -171,7 +165,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
     for (Long resourceId : resourceIds) {
       ReservedResource reservedResource = oldReservedResources.remove(resourceId);
       boolean isCreation = (reservedResource == null);
-      if (isCreation || updateDate) {        
+      if (isCreation || updateDate) {
         if (reservedResource == null) {
           reservedResource = new ReservedResource();
           reservedResource.setReservationId(reservation.getId());
@@ -229,9 +223,9 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   /**
    * Get from the given aimed resources those that are unavailable on the given period. Resources
-   * attached to reservationIdToSkip are excluded (but can still be returned if they are attached to
+   * attached to reservationIdToSkip are excluded (but can still be returned if they are attached
+   * to
    * another reservation on the given period).
-   *
    * @param instanceId
    * @param aimedResourceIds
    * @param startDate
@@ -276,29 +270,47 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   @Override
-  public List<Reservation> getReservationForValidation(String instanceId, Date monthDate,
-      String userId) {
-    String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
-    String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
-    return reservationService.findAllReservationsForValidation(instanceId,
-        Long.parseLong(userId), beginDate, endDate);
+  public List<Reservation> getReservationForValidation(String instanceId, String userId,
+      final Period period) {
+    String[] searchPeriod = buildSearchPeriod(period);
+    return reservationService
+        .findAllReservationsForValidation(instanceId, Long.parseLong(userId), searchPeriod[0],
+            searchPeriod[1]);
   }
 
   @Override
-  public List<Reservation> getMonthReservationOfUser(String instanceId, Date monthDate,
-      Integer userId) {
-    String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
-    String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
-    return reservationService.findAllReservationsForUserInRange(instanceId, userId,
-        beginDate, endDate);
+  public List<Reservation> getReservationOfUser(String instanceId, Integer userId,
+      final Period period) {
+    String[] searchPeriod = buildSearchPeriod(period);
+    return reservationService
+        .findAllReservationsInRange(instanceId, userId, searchPeriod[0], searchPeriod[1]);
   }
 
   @Override
-  public List<Reservation> listReservationsOfMonthInCategoryForUser(Date monthDate,
-      Long idCategory, String userId) {
-    String endDate = String.valueOf(DateUtil.getEndDateOfMonth(monthDate).getTime());
-    String beginDate = String.valueOf(DateUtil.getFirstDateOfMonth(monthDate).getTime());
-    return reservationService.findAllReservationsForCategoryInRange(idCategory, beginDate, endDate);
+  public List<Reservation> getReservationWithResourcesOfCategory(final String instanceId,
+      Integer userId, final Period period, Long categoryId) {
+    String[] searchPeriod = buildSearchPeriod(period);
+    return reservationService
+        .findAllReservationsForCategoryInRange(instanceId, userId, categoryId, searchPeriod[0],
+            searchPeriod[1]);
+  }
+
+  @Override
+  public List<Reservation> getReservationWithResource(final String instanceId, Integer userId,
+      final Period period, final Long resourceId) {
+    String[] searchPeriod = buildSearchPeriod(period);
+    return reservationService
+        .findAllReservationsForResourceInRange(instanceId, userId, resourceId, searchPeriod[0],
+            searchPeriod[1]);
+  }
+
+  /**
+   * Construct the period of search.
+   * @param period
+   */
+  private String[] buildSearchPeriod(Period period) {
+    return new String[]{String.valueOf(period.getBeginDate().getTime()),
+        String.valueOf(period.getEndDate().getTime())};
   }
 
   @Override
@@ -333,8 +345,8 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
       SilverTrace.info("resourceManager", "resourceManagerBmEJB.createIndex_Resource()",
           "root.MSG_GEN_ENTER_METHOD", "resource = " + resource.toString());
       // Index the Reservation
-      FullIndexEntry indexEntry = new FullIndexEntry(resource.getInstanceId(), "Resource",
-          resource.getIdAsString());
+      FullIndexEntry indexEntry =
+          new FullIndexEntry(resource.getInstanceId(), "Resource", resource.getIdAsString());
       indexEntry.setTitle(resource.getName());
       indexEntry.setPreView(resource.getDescription());
       if (resource.getUpdateDate() != null) {
@@ -358,10 +370,9 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
     }
   }
 
-  private void indexResourceForm(Resource resource, FullIndexEntry indexEntry,
-      String xmlFormName) {
-    String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1,
-        xmlFormName.indexOf('.'));
+  private void indexResourceForm(Resource resource, FullIndexEntry indexEntry, String xmlFormName) {
+    String xmlFormShortName =
+        xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
     PublicationTemplate pubTemplate;
     try {
       pubTemplate = PublicationTemplateManager.getInstance().getPublicationTemplate(resource.
@@ -369,15 +380,15 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
       RecordSet set = pubTemplate.getRecordSet();
       set.indexRecord(String.valueOf(resource.getId()), xmlFormName, indexEntry);
     } catch (Exception e) {
-      throw new ResourcesManagerRuntimeException(
-          "ResourceManagerBmEJB.createIndex_Resource()",
+      throw new ResourcesManagerRuntimeException("ResourceManagerBmEJB.createIndex_Resource()",
           SilverpeasRuntimeException.ERROR, "resourcesManager.EX_CREATE_INDEX_FAILED", e);
     }
   }
 
   private void createReservationIndex(Reservation reservation) {
-    SilverTrace.info("resourceManager", "resourceManagerBmEJB.createIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "reservation = " + reservation);
+    SilverTrace
+        .info("resourceManager", "resourceManagerBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
+            "reservation = " + reservation);
     if (reservation != null) {
       FullIndexEntry indexEntry = new FullIndexEntry(reservation.getInstanceId(), "Reservation",
           reservation.getIdAsString());

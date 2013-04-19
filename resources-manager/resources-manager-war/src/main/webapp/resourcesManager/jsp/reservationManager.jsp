@@ -66,7 +66,7 @@
   //creation des boutons Valider et Annuler
   Button validateButton =
       gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
-  Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
+  Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Calendar?objectView="+request.getAttribute("objectView"), false);
 %>
 <html>
 <head>
@@ -196,6 +196,7 @@ buttonPane.addButton(cancelButton);
 
 %>
 <form NAME="createForm" method="post" action="GetAvailableResources">
+<input type="hidden" name="objectView" value="${requestScope.objectView}"/>
 <TABLE ALIGN="CENTER" CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
 	<tr>
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.evenement"));%> : </TD>

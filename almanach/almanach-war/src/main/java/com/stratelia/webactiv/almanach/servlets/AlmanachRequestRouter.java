@@ -31,7 +31,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
-import com.stratelia.webactiv.almanach.control.CalendarViewType;
+import org.silverpeas.calendar.CalendarViewType;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import com.stratelia.webactiv.util.DBUtil;
@@ -47,7 +47,7 @@ import java.util.Collection;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 import static com.silverpeas.util.StringUtil.isInteger;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
+import static org.silverpeas.calendar.CalendarViewType.*;
 
 public class AlmanachRequestRouter extends ComponentRequestRouter<AlmanachSessionController> {
 

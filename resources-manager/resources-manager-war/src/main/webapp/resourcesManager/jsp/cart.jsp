@@ -48,7 +48,7 @@ String lieu = reservation.getPlace();
 // boutons de validation du formulaire
 ButtonPane buttonPane = gef.getButtonPane();
 Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
-Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Main",false);
+Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Calendar?objectView=" + request.getAttribute("objectView"),false);
 buttonPane.addButton(validateButton);
 buttonPane.addButton(cancelButton);
 %>

@@ -21,21 +21,6 @@
 package org.silverpeas.resourcesmanager.control;
 
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.resourcemanager.ResourcesManagerFactory;
-import org.silverpeas.resourcemanager.control.ResourcesManagerRuntimeException;
-import org.silverpeas.resourcemanager.model.Category;
-import org.silverpeas.resourcemanager.model.Reservation;
-import org.silverpeas.resourcemanager.model.Resource;
-import org.silverpeas.resourcemanager.model.ResourceValidator;
-
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -54,15 +39,27 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendarWA1;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.resourcemanager.ResourcesManagerFactory;
+import org.silverpeas.resourcemanager.control.ResourcesManagerRuntimeException;
+import org.silverpeas.resourcemanager.model.Category;
+import org.silverpeas.resourcemanager.model.Reservation;
+import org.silverpeas.resourcemanager.model.Resource;
+import org.silverpeas.resourcemanager.model.ResourceValidator;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 import static org.silverpeas.resourcemanager.model.ResourceStatus.*;
 
 public class ResourcesManagerSessionController extends AbstractComponentSessionController {
 
+  private ReservationViewContext viewContext = null;
+
   private Reservation reservationCourante;
-  private Calendar currentDay = Calendar.getInstance();
   private Date beginDateReservation;
   private Date endDateReservation;
   private List<Long> listReservationCurrent;
@@ -70,12 +67,17 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   private Long resourceIdForResource;
   private Long reservationIdForResource;
   private Long categoryIdForResource;
-  private String objectViewForCalandar;
-  private String firstNameUserCalandar;
-  private String lastNameUserCalandar;
   private Long currentResource;
   private NotificationSender notifSender;
   private ResourcesWrapper resources;
+
+  public ReservationViewContext getViewContext() {
+    if (viewContext == null) {
+      // Initialization
+      viewContext = new ReservationViewContext(getComponentId(), getUserDetail(), getLanguage());
+    }
+    return viewContext;
+  }
 
   public Long getCurrentResource() {
     return currentResource;
@@ -83,30 +85,6 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
   public void setCurrentResource(Long currentResource) {
     this.currentResource = currentResource;
-  }
-
-  public String getFirstNameUserCalandar() {
-    return firstNameUserCalandar;
-  }
-
-  public void setFirstNameUserCalandar(String firstNameUserCalandar) {
-    this.firstNameUserCalandar = firstNameUserCalandar;
-  }
-
-  public String getLastNameUserCalandar() {
-    return lastNameUserCalandar;
-  }
-
-  public void setLastNameUserCalandar(String lastNameUserCalandar) {
-    this.lastNameUserCalandar = lastNameUserCalandar;
-  }
-
-  public String getObjectViewForCalandar() {
-    return objectViewForCalandar;
-  }
-
-  public void setObjectViewForCalandar(String objectViewForCalandar) {
-    this.objectViewForCalandar = objectViewForCalandar;
   }
 
   public Long getCategoryIdForResource() {
@@ -233,7 +211,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
   public List<Resource> getResourcesofReservation(Long reservationId) {
     List<Resource> reservationResources = ResourcesManagerFactory.getResourcesManager().
-        getResourcesofReservation(getComponentId(), reservationId);
+        getResourcesOfReservation(getComponentId(), reservationId);
     for (Resource resource : reservationResources) {
       resource.setStatus(ResourcesManagerFactory.getResourcesManager().
           getResourceOfReservationStatus(resource.getId(), reservationId));
@@ -335,7 +313,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       List<ResourceValidator> validators = ResourcesManagerFactory.getResourcesManager().
           getManagers(resource.getId());
       List<UserRecipient> managers = new ArrayList<UserRecipient>(validators.size());
-      if (!ResourcesManagerFactory.getResourcesManager().isManager(Long.parseLong(getUserId()), 
+      if (!ResourcesManagerFactory.getResourcesManager().isManager(Long.parseLong(getUserId()),
           resourceId)) {
         // envoie de la notification seulement si le user courant n'est pas aussi responsable
         for (ResourceValidator validator : validators) {
@@ -462,58 +440,10 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     this.listReservationCurrent = listReservationCurrent;
   }
 
-  /**
-   * Gestion de l'almanach *
-   */
-  public MonthCalendar getMonthCalendar() {
-    int numbersDays = 7;
-    if (isWeekendNotVisible()) {
-      numbersDays = 5;
-    }
-    return (new MonthCalendarWA1(getLanguage(), numbersDays));
-  }
-
   // AJOUT : pour traiter l'affichage des semaines sur 5 ou 7 jours
   public boolean isWeekendNotVisible() {
     String parameterValue = getComponentParameterValue("weekendNotVisible");
     return "yes".equals(parameterValue.toLowerCase());
-  }
-
-  public Calendar getCurrentDay() {
-    return currentDay;
-  }
-
-  public void nextMonth() {
-    currentDay.add(Calendar.MONTH, 1);
-  }
-
-  public void previousMonth() {
-    currentDay.add(Calendar.MONTH, -1);
-  }
-
-  public void today() {
-    currentDay = Calendar.getInstance();
-  }
-
-  public List<Reservation> getReservationForValidation() {
-    return ResourcesManagerFactory.getResourcesManager().getReservationForValidation(
-        getComponentId(), getCurrentDay().getTime(), getUserId());
-  }
-
-  public List<Reservation> getMonthReservation() {
-    return ResourcesManagerFactory.getResourcesManager().getMonthReservationOfUser(getComponentId(),
-        getCurrentDay().getTime(),  Integer.parseInt(getUserId()));
-  }
-
-  public List<Reservation> getMonthReservation(String idUser) {
-    return ResourcesManagerFactory.getResourcesManager().getMonthReservationOfUser(getComponentId(),
-        this.getCurrentDay().getTime(), Integer.parseInt(idUser));
-  }
-
-  public List<Reservation> getMonthReservationOfCategory(Long idCategory) {
-    return ResourcesManagerFactory.getResourcesManager().
-        listReservationsOfMonthInCategoryForUser(getCurrentDay().getTime(), idCategory,
-            getUserId());
   }
 
   public String initUPToSelectManager(String pubId) {

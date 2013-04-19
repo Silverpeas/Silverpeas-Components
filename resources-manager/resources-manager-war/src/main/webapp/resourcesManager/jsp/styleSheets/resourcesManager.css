@@ -49,3 +49,109 @@ div.selected {
 	background-color: #FFFFFF;
 	border: 1px solid #CCCCCC;
 }
+
+.selectedDataView {
+  font-weight: bold;
+}
+
+.qtip  {
+  max-width: 400px;
+}
+
+.event-qtip {
+  display: table;
+}
+
+.event-qtip .row {
+  display: table-row;
+}
+
+.event-qtip .label,
+.event-qtip .value {
+  display: table-cell;
+}
+
+.event-qtip .label {
+  white-space: nowrap;
+  font-weight: bold;
+  padding-right: 5px;
+}
+
+.event-qtip ul, li {
+  margin: 0;
+  padding: 0 0 0 13px;
+}
+
+.event-qtip a:hover {
+  font-weight: bold;
+}
+
+.event-qtip .refused,
+.event-qtip .refused a {
+  color: gray;
+}
+
+.event-qtip .waitingForValidation,
+.event-qtip .waitingForValidation a {
+  color: red;
+}
+
+.event-qtip .validated {
+}
+
+.reservation-listing .week-separation {
+  margin: 10px 0 0 0;
+  padding: 5px;
+  border: 3px solid #F9E98E;
+  background-color: #FBF7AA;
+}
+
+.reservation-listing .reservation-separation {
+  margin: 2px 0 2px 0;
+  padding: 0;
+  border: 1px solid #000000;
+  background-color: #000000;
+}
+
+.reservation {
+  margin: 0;
+  padding: 5px;
+  display: table;
+}
+
+.reservation .row {
+  display: table-row;
+}
+
+.reservation .label,
+.reservation .value {
+  display: table-cell;
+}
+
+.reservation .label {
+  white-space: nowrap;
+  font-weight: bold;
+  padding-right: 5px;
+}
+
+.reservation ul, li {
+  margin: 0;
+  padding: 0 0 0 13px;
+}
+
+.reservation a:hover {
+  font-weight: bold;
+}
+
+.reservation .refused,
+.reservation .refused a {
+  color: gray;
+}
+
+.reservation .waitingForValidation,
+.reservation .waitingForValidation a {
+  color: red;
+}
+
+.reservation .validated {
+}
