@@ -1974,6 +1974,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       indexOfFirstPubToDisplay = 0;
       resetSelectedPublicationIds();
       setSearchContext(null);
+      Collection<NodeDetail> pathColl = getTopicPath(id);
+      String linkedPathString = displayPath(pathColl, true, 3);
+      String pathString = displayPath(pathColl, false, 3);
+      setSessionPath(linkedPathString);
+      setSessionPathString(pathString);
     }
     if (resetSessionPublication) {
       setSessionPublication(null);
