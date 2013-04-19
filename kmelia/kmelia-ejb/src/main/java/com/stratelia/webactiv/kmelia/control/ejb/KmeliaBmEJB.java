@@ -1204,7 +1204,8 @@ public class KmeliaBmEJB implements KmeliaBm {
         PdcClassificationService service = PdcServiceFactory.getFactory().
             getPdcClassificationService();
         classification.ofContent(pubPK.getId());
-        service.classifyContent(pubDetail, classification);
+        // subscribers are notified later (only if publication is valid)
+        service.classifyContent(pubDetail, classification, false);
       }
 
     } catch (Exception e) {
