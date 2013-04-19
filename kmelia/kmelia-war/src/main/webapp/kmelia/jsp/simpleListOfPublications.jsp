@@ -198,10 +198,10 @@ $(document).ready(function() {
 	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
 	        }
 	        if (kmeliaScc.isImportFileAllowed()) {
-	      		operationPane.addOperationOfCreation("useless", kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
+	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.importFile"), kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
 	        }
 	        if (kmeliaScc.isImportFilesAllowed()) {
-	        	operationPane.addOperationOfCreation("useless", kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
+	        	operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.importFiles"), kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
 	        }
 	        if (updateChain) {
 	        	operationPane.addOperation(resources.getIcon("kmelia.updateByChain"), kmeliaScc.getString("kmelia.updateByChain"), "javascript:onClick=updateChain()");
