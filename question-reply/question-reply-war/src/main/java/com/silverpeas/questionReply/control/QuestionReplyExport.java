@@ -150,7 +150,7 @@ public class QuestionReplyExport {
     sb.append(reply.readCurrentWysiwygContent());
     sb.append("</td>\n");
     // récupération des fichiers joints : copie de ces fichiers dans le dossier "files"
-    AttachmentImportExport attachmentIE = new AttachmentImportExport(currentUser);
+    AttachmentImportExport attachmentIE = new AttachmentImportExport();
     Collection<AttachmentDetail> attachments = null;
     try {
       String filePath = file.getParentFile().getPath() + File.separator + "files";
