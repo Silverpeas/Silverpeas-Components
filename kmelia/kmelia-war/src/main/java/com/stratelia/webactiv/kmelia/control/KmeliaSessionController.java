@@ -77,6 +77,10 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
+import com.silverpeas.importExport.control.ImportSettings;
+import com.silverpeas.importExport.control.MassiveDocumentImport;
+import com.silverpeas.importExport.model.ImportExportException;
+import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.kmelia.SearchContext;
 import com.silverpeas.kmelia.control.KmeliaServiceFactory;
 import com.silverpeas.kmelia.domain.TopicSearch;
@@ -2304,31 +2308,30 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @param draftMode
    * @param versionType
    * @return list of publications imported
+   * @throws ImportExportException 
    */
   public List<PublicationDetail> importFile(File fileUploaded, String fileType, String topicId,
-      String importMode, boolean draftMode, int versionType) {
+      String importMode, boolean draftMode, int versionType) throws ImportExportException {
     SilverTrace.debug("kmelia", "KmeliaSessionController.importFile()",
         "root.MSG_GEN_ENTER_METHOD", "fileUploaded = " + fileUploaded.getAbsolutePath()
         + " fileType=" + fileType + " importMode=" + importMode + " draftMode=" + draftMode
         + " versionType=" + versionType);
     List<PublicationDetail> publicationDetails = null;
     FileImport fileImport = new FileImport(this, fileUploaded);
-    fileImport.setTopicId(topicId);
+    boolean draft = draftMode;
     if (isDraftEnabled() && isPDCClassifyingMandatory()) {
       // classifying on PDC is mandatory, set publication in draft mode
-      fileImport.setDraftMode(true);
-    } else {
-      fileImport.setDraftMode(draftMode);
+      draft = true;
     }
     fileImport.setVersionType(versionType);
     if (UNITARY_IMPORT_MODE.equals(importMode)) {
-      publicationDetails = fileImport.importFile();
+      publicationDetails = fileImport.importFile(draft);
     } else if (MASSIVE_IMPORT_MODE_ONE_PUBLICATION.equals(importMode)
         && FileUtil.isArchive(fileUploaded.getName())) {
-      publicationDetails = fileImport.importFiles();
+      publicationDetails = fileImport.importFiles(draft);
     } else if (MASSIVE_IMPORT_MODE_MULTI_PUBLICATIONS.equals(importMode)
         && FileUtil.isArchive(fileUploaded.getName())) {
-      publicationDetails = fileImport.importFilesMultiPubli();
+      publicationDetails = fileImport.importFilesMultiPubli(draft);
     }
     return publicationDetails;
   }
