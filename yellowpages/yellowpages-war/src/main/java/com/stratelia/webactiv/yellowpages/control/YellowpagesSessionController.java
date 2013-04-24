@@ -138,7 +138,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   private void initEJB() {
     // 1 - Remove all data store by this SessionController (includes EJB)
     kscEjb = null;
-    removeSessionTopic();
     removeSessionPublication();
     removeSessionPath();
     removeSessionOwner();
@@ -162,6 +161,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         YellowpagesBmHome kscEjbHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.YELLOWPAGESBM_EJBHOME, YellowpagesBmHome.class);
         kscEjb = kscEjbHome.create();
+        kscEjb.setCurrentTopic(getCurrentTopic());
       } catch (Exception e) {
         throw new YellowpagesRuntimeException("YellowpagesSessionController.setYellowpagesBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -547,7 +547,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public synchronized String createContact(ContactDetail contactDetail)
     throws RemoteException {
     try {
-      String contactId = kscEjb.createContact(contactDetail);
+      String contactId = kscEjb.createContact(contactDetail, currentTopic.getNodePK().getId());
       resetCurrentFullCompleteUsers();
       return contactId;
     } catch (NoSuchObjectException nsoe) {

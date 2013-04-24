@@ -105,6 +105,10 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   public void setActor(UserDetail user) {
     this.currentUser = user;
   }
+  
+  public void setCurrentTopic(TopicDetail topicDetail) {
+    currentTopic = topicDetail;
+  }
 
   public void setComponentId(String componentId) {
     this.componentId = componentId;
@@ -965,7 +969,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public String createContact(ContactDetail contactDetail) {
+  public String createContact(ContactDetail contactDetail, String folderId) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.createContact()",
         "root.MSG_GEN_ENTER_METHOD");
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.createContact()",
@@ -982,7 +986,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       contactPK = getContactBm().createContact(contactDetail);
       contactDetail.getPK().setId(contactPK.getId());
       // add this contact to the current topic
-      addContactToTopic(contactPK.getId(), currentTopic.getNodePK().getId());
+      addContactToTopic(contactPK.getId(), folderId);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.createContact()",
           SilverpeasRuntimeException.ERROR,
