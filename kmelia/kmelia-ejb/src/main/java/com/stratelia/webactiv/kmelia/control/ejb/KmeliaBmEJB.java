@@ -1963,8 +1963,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         }
       }
       
-      // Subscriptions relative to aliases
-      sendAliasSubscriptions(pubDetail);
+      // Subscriptions relative to aliases into another apps
+      sendAliasSubscriptions(pubDetail, getAliasIntoAnotherApps(pubDetail.getPK()));
       
       // PDC subscriptions
       try {
@@ -4256,6 +4256,17 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
               "kmelia.EX_IMPOSSIBLE_DAVOIR_LES_ALIAS_DE_PUBLICATION", e);
     }
   }
+  
+  private List<Alias> getAliasIntoAnotherApps(PublicationPK pubPK) {
+    Collection<Alias> aliases = getAlias(pubPK);
+    List<Alias> distantAliases = new ArrayList<Alias>();
+    for (Alias alias : aliases) {
+      if (!alias.getInstanceId().equals(pubPK.getInstanceId())) {
+        distantAliases.add(alias);
+      }
+    }
+    return distantAliases;
+  }
 
   @Override
   public void setAlias(PublicationPK pubPK, List<Alias> alias) {
@@ -4290,12 +4301,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     // Send subscriptions to aliases subscribers
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    sendAliasSubscriptions(pubDetail);
+    sendAliasSubscriptions(pubDetail, newAliases);
   }
   
-  private void sendAliasSubscriptions(PublicationDetail pubDetail) {
+  private void sendAliasSubscriptions(PublicationDetail pubDetail, List<Alias> aliases) {
     if (pubDetail != null && pubDetail.isValid()) {
-      List<Alias> aliases = (List<Alias>) getAlias(pubDetail.getPK());
       String originalComponentId = pubDetail.getPK().getInstanceId();
       for (Alias a : aliases) {
         pubDetail.getPK().setComponentName(a.getInstanceId()); // Change the instanceId to make the
