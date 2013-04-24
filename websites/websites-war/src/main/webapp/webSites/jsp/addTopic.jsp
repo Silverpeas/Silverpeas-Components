@@ -57,10 +57,9 @@
 SilverTrace.info("websites", "JSPaddTopic", "root.MSG_GEN_ENTER_METHOD");
 
 //Recuperation des parametres
-String fatherId = (String) request.getParameter("Id");
-String path = (String) request.getParameter("Path");
-String action = (String) request.getParameter("Action");
-
+String fatherId = request.getParameter("Id");
+String path = request.getParameter("Path");
+String action = request.getParameter("Action");
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
@@ -114,13 +113,8 @@ function isCorrectForm() {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.topicForm.Name.value);
-     var description = stripInitialWhitespace(document.topicForm.Description.value);
      if (isWhitespace(title)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++;
-     }
-     if (isWhitespace(description)) {
-       errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
        errorNb++;
      }
      if (! isCorrect(title)) {
@@ -192,8 +186,7 @@ function isCorrectForm() {
     <TR>
         <TD class="txtlibform"><%=resources.getString("GML.description")%> : </TD>
             <TD valign="top">
-                <input type="text" name="Description" value="" size="60" maxlength="50">
-                &nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></TD>
+                <input type="text" name="Description" value="" size="60" maxlength="50"/></TD>
         </TR>
 
         <TR>
