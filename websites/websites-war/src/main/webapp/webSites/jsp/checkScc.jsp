@@ -95,21 +95,22 @@
 
 <view:timeout />
 <%
-    WebSiteSessionController 	scc 		= (WebSiteSessionController) request.getAttribute("webSites");
-    GraphicElementFactory 		gef 		= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-    ResourcesWrapper 			resources 	= (ResourcesWrapper)request.getAttribute("resources");
+  WebSiteSessionController scc = (WebSiteSessionController) request.getAttribute("webSites");
+  GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+      "SessionGraphicElementFactory");
+  ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
 
-	//CBO : ADD
-	String[] 						browseContext 	= (String[]) request.getAttribute("browseContext");
+  //CBO : ADD
+  String[] browseContext = (String[]) request.getAttribute("browseContext");
 
-	//CBO : ADD
-	String m_context = URLManager.getApplicationURL();
-    
-	String spaceLabel = browseContext[0];
-	String componentLabel = browseContext[1];
-	String spaceId = browseContext[2];
-	String componentId = browseContext[3];
-	
-	boolean bookmarkMode = componentId.startsWith("bookmark");
+  //CBO : ADD
+  String m_context = URLManager.getApplicationURL();
+
+  String spaceLabel = browseContext[0];
+  String componentLabel = browseContext[1];
+  String spaceId = browseContext[2];
+  String componentId = browseContext[3];
+
+  boolean bookmarkMode = componentId.startsWith("bookmark");
 %>
 
