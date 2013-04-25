@@ -144,15 +144,14 @@
 
     // Labels
     var labels = {
+      the : '<fmt:message key="GML.date.the" />',
+      hourFrom : '<fmt:message key="GML.date.hour.from" />',
+      from : '<fmt:message key="GML.date.from" />',
+      to : '<fmt:message key="GML.date.to" />',
+      hourTo : '<fmt:message key="GML.date.hour.to" />',
       close : '<fmt:message key="GML.close" />',
       week : '<fmt:message key="GML.week" />',
-      beginDate : '<fmt:message key="GML.dateBegin" />',
-      endDate : '<fmt:message key="GML.dateEnd" />',
       bookedBy : '<fmt:message key="resourcesManager.bookedBy" />',
-      event : '<fmt:message key="resourcesManager.evenement" />',
-      reason : '<fmt:message key="resourcesManager.raisonReservation" />',
-      place : '<fmt:message key="resourcesManager.lieuReservation" />',
-      reservedResources : '<fmt:message key="resourcesManager.resourcesReserved" />',
       reservationLink : '<fmt:message key="resourcesManager.reservationLink" />',
       resourceLink : '<fmt:message key="resourcesManager.resourceLink" />'
     };
@@ -170,7 +169,8 @@
       weeklyView : ${viewContext.viewType.weeklyView},
       language : '${language}',
       objectView : '${objectView}',
-      currentDay : new Date().setDay(${refDay.year}, ${refDay.month}, ${refDay.dayOfMonth})
+      currentDay : new Date().setDay(${refDay.year}, ${refDay.month}, ${refDay.dayOfMonth}),
+      planningOfUser : ${not empty viewContext.selectedUserId}
     };
 
     $(document).ready(function() {
@@ -215,161 +215,104 @@
 </view:tabs>
 
 <view:frame>
-  <table width="98%" border="0" cellspacing="0" cellpadding="1">
-    <tr>
-      <td>
-        <a class="<c:if test='${viewContext.dataViewType.reservationsDataView}'>selectedDataView</c:if>" href="javascript:onClick=viewReservationData()"><fmt:message key="resourcesManager.reservationsDataView"/></a>
-        <a class="<c:if test='${viewContext.dataViewType.resourcesDataView}'>selectedDataView</c:if>" href="javascript:onClick=viewResourceData()"><fmt:message key="resourcesManager.resourcesDataView"/></a>
-        <a class="<c:if test='${viewContext.dataViewType.reservationListingDataView}'>selectedDataView</c:if>" href="javascript:onClick=viewReservationListingData()"><fmt:message key="resourcesManager.reservationListingDataView"/></a>
-      </td>
-      <c:if test="${!viewContext.dataViewType.reservationListingDataView}">
-        <td>
-          <a href="javascript:onClick=displayQTip()"><fmt:message key="resourcesManager.showAllBookingDetails"/></a>
-          <a href="javascript:onClick=hideQTip()"><fmt:message key="resourcesManager.hideAllBookingDetails"/></a>
-        </td>
-      </c:if>
-      <td>
-        <table cellpadding="0" cellspacing="0" border="0" width="50%" bgcolor="000000">
-          <tr>
-            <td>
-              <table cellpadding="2" cellspacing="1" border="0" width="100%">
-                <tr>
-                  <td class="intfdcolor" align="center" nowrap="nowrap" width="100%" height="24">
-                    <select id="selectCategory" name="selectCategory" onchange="getReservationsOfCategory(this)" class="selectNS">
-                      <c:if test="${not empty allCategories}">
-                        <option value="">
-                          <fmt:message key="resourcesManager.categories"/></option>
-                        <option value="">-----------------</option>
-                        <c:forEach items="${allCategories}" var="category">
-                          <option value="${category.id}" <c:if
-                              test="${category.id eq categoryId}">selected="selected"</c:if>>${category.name}</option>
-                        </c:forEach>
-                      </c:if>
-                    </select>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-      <c:if test="${not empty allResources}">
-        <td>
-          <table cellpadding="0" cellspacing="0" border="0" width="50%" bgcolor="000000">
-            <tr>
-              <td>
-                <table cellpadding="2" cellspacing="1" border="0" width="100%">
-                  <tr>
-                    <td class="intfdcolor" align="center" nowrap="nowrap" width="100%" height="24">
-                      <select name="selectResource" onchange="getReservationsOfResource(this)">
-                        <option value="">
-                          <fmt:message key="resourcesManager.allResources"/></option>
-                        <option value="">-----------------</option>
-                        <c:forEach items="${allResources}" var="resource">
-                          <option value="${resource.id}" <c:if
-                              test="${resource.id eq resourceId}">selected="selected"</c:if>>${resource.name}</option>
-                        </c:forEach>
-                      </select>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </c:if>
+  <div class="sousNavBulle">
+    <div id="navigation">
 
-      <!-- affichage et traitement du bouton Aujourd hui -->
-      <td>
-        <table cellpadding=0 cellspacing=0 border=0 width=50% bgcolor=000000>
-          <tr>
-            <td>
-              <table cellpadding=2 cellspacing=1 border=0 width="100%">
-                <tr>
-                  <td class=intfdcolor align=center nowrap="nowrap" width="100%" height="24">
-                    <a href="javascript:onClick=goToDay()" onfocus="this.blur()" class=hrefComponentName><fmt:message key="resourcesManager.auJour"/></a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
+      <div id="others">
+        <h3 id="planning-context">
+          <c:choose>
+            <c:when test="${viewContext.forValidation}">
+              <fmt:message key="resourcesManager.viewReservationForValidation"/>
+            </c:when>
+            <c:when test="${empty viewContext.selectedUser}">
+              <fmt:message key="resourcesManager.allPlanning"/>
+            </c:when>
+            <c:when test="${viewContext.selectedUserId eq viewContext.currentUserId}">
+              <fmt:message key="resourcesManager.myPlanning"/>
+            </c:when>
+            <c:otherwise>
+              <fmt:message key="resourcesManager.planningFrom"/> ${viewContext.selectedUser.displayedName}
+            </c:otherwise>
+          </c:choose>
+        </h3>
 
-      <!-- affichage et traitement du bouton calendrier -->
-      <td>
-        <table cellpadding=0 cellspacing=0 border=0 width=50% bgcolor=000000>
-          <tr>
-            <td>
-              <table cellpadding=2 cellspacing=1 border=0 width="100%">
-                <tr>
-                  <td class=intfdcolor align=center nowrap="nowrap" width="100%" height="24">
-                    <input type="text" class="dateToPick" name="endDate" id="endDate" style="display: none; position: relative; z-index: 100000;" onchange="goToDay(this.value)" value="${viewContext.formattedReferenceDay}"/>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
+        <p><fmt:message key="GML.view.mode"/>
+          <c:set var="classTmp" value=""/>
+          <c:set var="hrefTmp" value="#"/>
+          <c:choose>
+            <c:when test="${viewContext.dataViewType.reservationListingDataView}">
+              <c:set var="classTmp" value=" active"/>
+            </c:when>
+            <c:otherwise>
+              <c:set var="hrefTmp" value="javascript:onClick=viewReservationListingData()"/>
+            </c:otherwise>
+          </c:choose>
+          <a class="list-mode${classTmp}" href="${hrefTmp}" title="<fmt:message key="resourcesManager.listViewType"/>"></a>
+          <c:choose>
+            <c:when test="${not viewContext.dataViewType.reservationListingDataView}">
+              <c:set var="hrefTmp" value="#"/>
+              <c:set var="classTmp" value=" active"/>
+            </c:when>
+            <c:otherwise>
+              <c:set var="classTmp" value=""/>
+              <c:set var="hrefTmp" value="javascript:onClick=viewReservationData()"/>
+            </c:otherwise>
+          </c:choose>
+          <a class="calendar-mode${classTmp}" href="${hrefTmp}" title="<fmt:message key="resourcesManager.calendarViewType"/>"></a>
+        </p>
+      </div>
 
-      <!-- affichage et traitement des boutons < et > -->
-      <td width="100%">
-        <table cellpadding=0 cellspacing=0 border=0 width=50% bgcolor=000000>
-          <tr>
-            <td>
-              <table cellpadding=0 cellspacing=1 border=0 width="100%">
-                <tr>
-                  <fmt:message key="resourcesManager.arrLeft" var="tmpIcon" bundle="${icons}"/>
-                  <c:url var="tmpIcon" value="${tmpIcon}"/>
-                  <td class=intfdcolor>
-                    <a href="javascript:onClick=previousPeriod()" onfocus="this.blur()"><img src="${tmpIcon}" border="0" alt=""/></a>
-                  </td>
-                  <td class=intfdcolor align=center nowrap="nowrap" width="100%" height="24">
-                    <span id="periodLabel" class="txtnav">${viewContext.referencePeriodLabel}</span>
-                  </td>
-                  <fmt:message key="resourcesManager.arrRight" var="tmpIcon" bundle="${icons}"/>
-                  <c:url var="tmpIcon" value="${tmpIcon}"/>
-                  <td class=intfdcolor>
-                    <a href="javascript:onClick=nextPeriod()" onfocus="this.blur()"><img src="${tmpIcon}" border="0" alt=""/></a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-      <c:if test="${not viewContext.forValidation}">
-        <td>
-          <table cellpadding=0 cellspacing=0 border=0 width=50%>
-            <tr>
-              <td>
-                <table cellpadding=2 cellspacing=1 border=0 width="100%">
-                  <tr>
-                    <td align=center nowrap="nowrap" width="100%" height="24">
-                      <c:choose>
-                        <c:when test="${empty viewContext.selectedUser}">
-                          <fmt:message key="resourcesManager.allPlanning"/>
-                        </c:when>
-                        <c:when test="${viewContext.selectedUserId eq viewContext.currentUserId}">
-                          <fmt:message key="resourcesManager.myPlanning"/>
-                        </c:when>
-                        <c:otherwise>
-                          <fmt:message key="resourcesManager.planningFrom"/> ${viewContext.selectedUser.displayedName}
-                        </c:otherwise>
-                      </c:choose>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </c:if>
-    </tr>
-  </table>
-  <br/>
+      <div id="currentScope">
+        <a href="javascript:onClick=previousPeriod()" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowLeft.gif"/>"></a>
+        <span class="txtnav">${viewContext.referencePeriodLabel}</span>
+        <a href="javascript:onClick=nextPeriod()" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowRight.gif"/>"></a>
+        -
+        <span id="today"> <a href="javascript:onClick=goToDay()" onfocus="this.blur()"><fmt:message key="resourcesManager.auJour"/></a></span>
+      </div>
 
+      <p>
+        <c:if test="${not viewContext.dataViewType.reservationListingDataView}">
+          <fmt:message key="GML.Show" var="tmp"/>
+          ${fn:replace(tmp, ':', '')}
+          <c:set var="classTmp" value=""/>
+          <c:if test="${viewContext.dataViewType.reservationsDataView}">
+            <c:set var="classTmp" value=" active"/>
+          </c:if>
+          <a class="${classTmp}" href="javascript:onClick=viewReservationData()"><fmt:message key="resourcesManager.reservationsDataView"/></a>
+          <c:set var="classTmp" value=""/>
+          <c:if test="${viewContext.dataViewType.resourcesDataView}">
+            <c:set var="classTmp" value=" active"/>
+          </c:if>
+          <a class="${classTmp}" href="javascript:onClick=viewResourceData()"><fmt:message key="resourcesManager.resourcesDataView"/></a>
+          -
+        </c:if>
+        <fmt:message key="GML.filterBy"/>
+        <select id="selectCategory" name="selectCategory" onchange="getReservationsOfCategory(this)" class="selectNS">
+          <c:if test="${not empty allCategories}">
+            <option value="">
+              <fmt:message key="resourcesManager.categories"/></option>
+            <option value="">-----------------</option>
+            <c:forEach items="${allCategories}" var="category">
+              <option value="${category.id}" <c:if
+                  test="${category.id eq categoryId}">selected="selected"</c:if>>${category.name}</option>
+            </c:forEach>
+          </c:if>
+        </select>
+        <c:if test="${not empty allResources}">
+          <select name="selectResource" onchange="getReservationsOfResource(this)">
+            <option value="">
+              <fmt:message key="resourcesManager.allResources"/></option>
+            <option value="">-----------------</option>
+            <c:forEach items="${allResources}" var="resource">
+              <option value="${resource.id}" <c:if
+                  test="${resource.id eq resourceId}">selected="selected"</c:if>>${resource.name}</option>
+            </c:forEach>
+          </select>
+        </c:if>
+      </p>
+
+    </div>
+  </div>
   <div id="reservationContent"></div>
 </view:frame>
 <form name="almanachForm" action="" method="post">

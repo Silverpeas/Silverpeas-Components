@@ -21,33 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-		
+
 .titrePanier {
-	margin: 3px;
-	font-size: 13px;
-	font-weight: bold;
-	text-align: center;	
+  margin: 3px;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
 }
 div.hover {
-	color: #666666;
-	cursor: pointer;
+  color: #666666;
+  cursor: pointer;
 }
 
 div.selected {
-	font-weight: bold; /* En gras */
+  font-weight: bold; /* En gras */
 }
 
 .noRessource{
-	font-style: italic;	
-	color: #666666;
+  font-style: italic;
+  color: #666666;
 }
 
 #listeReservation {
-	height: 200px;
-	overflow:auto;
-	padding: 10px;
-	background-color: #FFFFFF;
-	border: 1px solid #CCCCCC;
+  height: 200px;
+  overflow:auto;
+  padding: 10px;
+  background-color: #FFFFFF;
+  border: 1px solid #CCCCCC;
 }
 
 .selectedDataView {
@@ -58,100 +58,250 @@ div.selected {
   max-width: 400px;
 }
 
-.event-qtip {
-  display: table;
+
+.sousNavBulle #others {
+  position: absolute;
+  right: 2px;
+  top: 3px;
+  float:right;
+  margin-top: 7px;
+  padding: 0 30px;
+  text-align:right;
 }
 
-.event-qtip .row {
-  display: table-row;
+.sousNavBulle #planning-context {
+  background:#FFF url(../../../util/icons/user.png) 3px 3px no-repeat;
+  font-size:11px;
+  font-weight:100;
+  padding:4px 6px 4px 22px;
+  color:#3a3a3a;
+  display:inline-block;
+  margin:8px 0 6px;
 }
-
-.event-qtip .label,
-.event-qtip .value {
-  display: table-cell;
+.sousNavBulle #currentScope {
+  margin:4px 4px 12px;
 }
-
-.event-qtip .label {
-  white-space: nowrap;
-  font-weight: bold;
-  padding-right: 5px;
-}
-
-.event-qtip ul, li {
-  margin: 0;
-  padding: 0 0 0 13px;
-}
-
-.event-qtip a:hover {
-  font-weight: bold;
-}
-
-.event-qtip .refused,
-.event-qtip .refused a {
-  color: gray;
-}
-
-.event-qtip .waitingForValidation,
-.event-qtip .waitingForValidation a {
-  color: red;
-}
-
-.event-qtip .validated {
-}
-
-.reservation-listing .week-separation {
-  margin: 10px 0 0 0;
-  padding: 5px;
-  border: 3px solid #F9E98E;
-  background-color: #FBF7AA;
-}
-
-.reservation-listing .reservation-separation {
-  margin: 2px 0 2px 0;
+.sousNavBulle #currentScope a {
+  background-color: transparent;
+  border:0;
+  color: #AFAFAF;
+  font-size: 11px;
+  line-height: 100%;
+  margin-right: 3px;
   padding: 0;
-  border: 1px solid #000000;
-  background-color: #000000;
+  text-decoration: none;
+}
+.sousNavBulle #today a {
+  background-color: #FAD163;
+  color: #000000;
+  font-size: 11px;
+  font-weight: 100;
+  padding: 3px 11px;
+  border:0;
+}
+.sousNavBulle #today a:hover, .sousNavBulle #today a:focus {
+  background-color: #FFFFCC;
 }
 
-.reservation {
-  margin: 0;
-  padding: 5px;
+.sousNavBulle #others p {
+  padding:0;
+}
+
+.sousNavBulle .list-mode ,
+.sousNavBulle .calendar-mode  {
+  display:inline-block;
+  width:19px;
+  height:17px;
+  vertical-align:middle;
+}
+.sousNavBulle .list-mode span,
+.sousNavBulle .calendar-mode span {
+  display:none;
+}
+.sousNavBulle .list-mode  {
+  background-image: url(../icons/list-mode.png) ;
+  background-position:center center;
+  background-repeat:	no-repeat;
+}
+.sousNavBulle .calendar-mode  {
+  background-image: url(../icons/calendar-mode.png)  ;
+  background-position:center center;
+  background-repeat:	no-repeat;
+}
+.sousNavBulle .list-mode.active  {
+  background-image: url(../icons/list-mode-active.png) ;
+  background-position:center center;
+  background-repeat:	no-repeat;
+}
+.sousNavBulle .calendar-mode.active   {
+  background-image: url(../icons/calendar-mode-active.png)  ;
+  background-position:center center;
+  background-repeat:	no-repeat;
+}
+
+#reservationList {
+  clear:both;
+}
+#reservationList,
+#reservationList  ul,
+#reservationList  ul li {
+  list-style-type:none;
+  padding:0;
+  margin:0;
+  position:relative;
+}
+#reservationList   ul  li {
+  border-bottom: 1px solid #EAEAEA;
+  padding:8px;
+  z-index:10;
+  background-color:#FFF;
+  display:block;
+}
+#reservationList   ul ul li {
+  border-bottom:0;
+  padding:0;
+  z-index:auto;
+  background-color:transparent;
+}
+#reservationList  ul li:hover {
+  cursor:pointer;
+  background-color:#E8E8E8;
+}
+
+#reservationList  ul li:hover hr.clear {
+  color:#E8E8E8;
+}
+
+#reservationList .reservationPeriode {
+  color:#666666;
+  border-bottom:1px solid #eaeaea;
+  font-size:14px;
+  padding:12px 0;
+  margin:0;
+}
+
+hr.clear {
+  clear:both;
+  height:12px;
+  margin:0;
+  padding:0;
+  border:0;
+  background-color:transparent;
+  color:#FFF;
+}
+
+.reservationList h5 {
+  color:#747474;
+  font-size:13px;
+  margin:8px 0 0;
+  padding:0;
+}
+.reservationList h4,
+.event-qtip h4	{
+  margin:0 0 8px;
+  padding:0;
+}
+.reservationList h4 a,
+.event-qtip  h4 a {
+  color:#56a3d9;
+  font-size:13px;
+}
+
+.reservationDesc  {
+  color:#747474;
+  font-size:11px;
+  border-left:3px solid #ececec;
+  padding-left:4px;
+}
+
+.reservationInfo {
+  background-color: #EFEFEF;
+  border: 1px solid #CDCDCD;
+  border-radius: 15px 15px 15px 15px;
   display: table;
+  padding: 8px 0;
+  width: auto;
+  position:absolute;
+  top:8px;
+  right:8px;
 }
 
-.reservation .row {
-  display: table-row;
+.reservationPlace .bloc {
+  background:transparent url("../../../util/icons/marker.gif") 17px center no-repeat   ;
 }
 
-.reservation .label,
-.reservation .value {
-  display: table-cell;
+.reservationInfo div div.bloc {
+  color: #333333;
+  display: inline-block;
+  font-size: 110%;
+  padding: 0 22px 0 37px;
+  text-align: left;
+  width: auto;
+}
+#reservationList   .reservationRessources,
+#reservationList   .reservationRessources li ,
+.event-qtip  .reservationRessources li   ,
+.event-qtip  .reservationRessources  {
+  padding:0;
+  margin:0;
+}
+#reservationList   .reservationRessources li,
+.event-qtip .reservationRessources li {
+  display:inline;
+  margin-right:5px;
+}
+.reservationRessources li.validated a{
+  background-color:#747474;
+}
+.reservationRessources li.refused a{
+  background:#d1d0d0 url(../icons/state-refused.png) right 5px no-repeat;
+  padding-right:20px;
+  color:#FFF;
+}
+.reservationRessources li.waitingForValidation a{
+  background-color:#f15858;
+  color:#FFF;
+}
+.reservationRessources li a{
+  color:#FFF;
+  border-radius:5px;
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  padding:3px 5px;
+  z-index:100;
+  position:relative;
+}
+.reservationRessources li a:hover{
+  color:#FFF;
+  text-decoration:underline;
 }
 
-.reservation .label {
-  white-space: nowrap;
-  font-weight: bold;
-  padding-right: 5px;
+.event-qtip {
+  padding:0 3px 0 6px;
 }
 
-.reservation ul, li {
-  margin: 0;
-  padding: 0 0 0 13px;
+.event-qtip  h4 {
+  margin:0 0 2px;
+}
+.event-qtip  h4 a {
+  font-size:11px;
 }
 
-.reservation a:hover {
-  font-weight: bold;
+.event-qtip p.reservationPlace {
+  background: url("../../../util/icons/marker.gif") left  center no-repeat scroll  transparent;
+  padding:1px 0 3px 20px;
+  margin:0;
+}
+.event-qtip .reservationDesc {
+  margin:2px 0 8px 0 ;
+  padding:0 0 0 4px;
 }
 
-.reservation .refused,
-.reservation .refused a {
-  color: gray;
-}
-
-.reservation .waitingForValidation,
-.reservation .waitingForValidation a {
-  color: red;
-}
-
-.reservation .validated {
+.event-qtip .reservation-link {
+  display:block;
+  text-align:right;
+  padding-right:6px;
+  color:#56A3D9;
+  text-decoration:underline;
+  font-weight:bold;
 }

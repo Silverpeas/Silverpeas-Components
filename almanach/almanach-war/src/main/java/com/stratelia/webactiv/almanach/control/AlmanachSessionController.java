@@ -63,6 +63,8 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.calendar.CalendarViewType;
+import org.silverpeas.date.Period;
+import org.silverpeas.date.PeriodType;
 import org.silverpeas.upload.UploadedFile;
 import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
@@ -1024,8 +1026,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   private List<DisplayableEventOccurrence> listCurrentYearEvents(String... almanachIds) throws
       AlmanachException, AlmanachNoSuchFindEventException {
-    List<EventOccurrence> occurrencesInYear = getAlmanachBm().getEventOccurrencesInYear(currentDay,
-        almanachIds);
+    List<EventOccurrence> occurrencesInYear = getAlmanachBm().getEventOccurrencesInPeriod(
+        Period.from(currentDay.getTime(), PeriodType.year, getLanguage()), almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInYear);
   }
 
@@ -1041,7 +1043,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   private List<DisplayableEventOccurrence> listCurrentMonthEvents(String... almanachIds) throws
       AlmanachException, AlmanachNoSuchFindEventException {
     List<EventOccurrence> occurrencesInMonth = getAlmanachBm().
-        getEventOccurrencesInMonth(currentDay, almanachIds);
+        getEventOccurrencesInPeriod(
+            Period.from(currentDay.getTime(), PeriodType.month, getLanguage()), almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInMonth);
   }
 
@@ -1056,8 +1059,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   private List<DisplayableEventOccurrence> listCurrentWeekEvents(String... almanachIds) throws
       AlmanachException, AlmanachNoSuchFindEventException {
-    List<EventOccurrence> occurrencesInWeek = getAlmanachBm().getEventOccurrencesInWeek(currentDay,
-        almanachIds);
+    List<EventOccurrence> occurrencesInWeek = getAlmanachBm().getEventOccurrencesInPeriod(
+        Period.from(currentDay.getTime(), PeriodType.week, getLanguage()), almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInWeek);
   }
 

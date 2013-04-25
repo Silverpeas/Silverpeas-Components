@@ -68,6 +68,20 @@ if (typeof Date.prototype.setDay !== 'function') {
 }
 
 /**
+ * Useful date function.
+ */
+if (typeof Date.prototype.getHoursAndMinutes !== 'function') {
+  Date.prototype.getHoursAndMinutes = function() {
+    var result = this.getHours() + ':';
+    if (this.getMinutes() < 10) {
+      result += '0';
+    }
+    result += this.getMinutes();
+    return result;
+  };
+}
+
+/**
  * Prepare calendar event according to view parameters.
  * @param reservationEvents
  * @param labels
@@ -79,6 +93,7 @@ function prepareCalendarEvents(reservationEvents, labels, filters) {
 
   // Saving the title of the reservation to an unique attribute.
   $.each(reservationEvents, function(index, reservationEvent) {
+    reservationEvent.calendarViewMode = true;
     reservationEvent.reservationId = reservationEvent.id;
     reservationEvent.reservationTitle = reservationEvent.title;
     reservationEvent.reservationStatus = reservationEvent.status;
@@ -120,35 +135,8 @@ function prepareCalendarEvents(reservationEvents, labels, filters) {
     event.qtip.title = labels.bookedBy + event.bookedBy;
 
     // Content
-    var $content = $('<div>').addClass('event-qtip');
-    var $rowEvent = $('<div>').addClass('row').appendTo($content);
-    $('<div>').addClass('label').appendTo($rowEvent).append(labels.event + ' : ');
-    $('<div>').addClass('value ' +
-            resourceStatusColor.resourceClass[event.reservationStatus]).appendTo($rowEvent).append($('<a>',
-            {href : "javascript:onClick=goToReservation(" + event.reservationId + ", '" +
-                filters.objectView + "', " + filters.isPortlet +
-                ")", title : labels.reservationLink}).append(event.reservationTitle));
-    if (event.reason) {
-      var $rowReason = $('<div>').addClass('row').appendTo($content);
-      $('<div>').addClass('label').appendTo($rowReason).append(labels.reason + ' : ');
-      $('<div>').addClass('value').appendTo($rowReason).append(event.reason.replace(/\n/, "<br/>"));
-    }
-    if (event.place) {
-      var $rowPlace = $('<div>').addClass('row').appendTo($content);
-      $('<div>').addClass('label').appendTo($rowPlace).append(labels.place + ' : ');
-      $('<div>').addClass('value').appendTo($rowPlace).append(event.place);
-    }
-    if (event.resources && event.resources.length > 0) {
-      var $rowResources = $('<div>').addClass('row').appendTo($content);
-      $('<div>').addClass('label').appendTo($rowResources).append(labels.reservedResources + ' : ');
-      var $reservedResources = $('<ul>').appendTo($('<div>').addClass('value').appendTo($rowResources));
-      $.each(event.resources, function(index, resource) {
-        $('<li>').addClass(resourceStatusColor.resourceClass[resource.status]).appendTo($reservedResources).append($('<a>',
-            {href : "javascript:onClick=goToResource(" + resource.id + ", '" + filters.objectView +
-                "', " + filters.isPortlet +
-                ")", title : labels.resourceLink}).append(resource.name));
-      });
-    }
+    var $content = $('<div>').addClass('event-qtip').append(renderReservation(event, labels,
+        filters).html());
     event.qtip.content = $('<div>').append($content).html();
 
     // Style
@@ -197,8 +185,8 @@ function calendarEventRender(event, $event) {
     content : {
       title : {
         text : event.qtip.title,
-        button : $('<div>').append($('<img>',
-            {src : (webContext + '/util/icons/delete.gif'), alt : labels.close})).html()
+        button : $('<div>').append($('<img>', {src : (webContext +
+            '/util/icons/qtip-closed.gif'), alt : labels.close, style : 'margin-top: -2px;'})).html()
       },
       text : event.qtip.content
     },
@@ -279,7 +267,8 @@ function calendarEventRenderV2(event, $event) {
  * @param filters
  */
 function renderReservationListing(reservationEvents, labels, filters) {
-  var $listing = $('<div>').addClass('reservation-listing');
+  var $listing = $('<ul>', {id : 'reservationList'});
+  var $periodBloc;
   if (reservationEvents && reservationEvents.length > 0) {
     var oldDate;
     var isFirstReservationOfWeek;
@@ -290,11 +279,12 @@ function renderReservationListing(reservationEvents, labels, filters) {
         $listing.append(renderWeekSeparation(reservationBeginDate, labels));
         oldDate = reservationBeginDate;
         isFirstReservationOfWeek = true;
+        $periodBloc = $('<ul>').addClass('reservationList').appendTo($listing);
       }
       if (!isFirstReservationOfWeek) {
         $listing.append(renderReservationSeparation());
       }
-      $listing.append(renderReservation(reservationEvent, labels, filters));
+      $periodBloc.append(renderReservation(reservationEvent, labels, filters));
       isFirstReservationOfWeek = false;
     });
   }
@@ -307,9 +297,9 @@ function renderReservationListing(reservationEvents, labels, filters) {
  * @param labels
  */
 function renderWeekSeparation(date, labels) {
-  var $separation = $('<div>').addClass('week-separation');
+  var $separation = $('<h3>').addClass('reservationPeriode');
   $separation.append(labels.week + ' ' + $.datepicker.iso8601Week(date));
-  return $separation;
+  return $('<li>').append($separation);
 }
 
 /**
@@ -321,11 +311,11 @@ function renderReservationSeparation() {
 
 /**
  * Render the given reservation.
- * @param reservationEvent
+ * @param reservation
  * @param labels
  * @param filters
  */
-function renderReservation(reservationEvent, labels, filters) {
+function renderReservation(reservation, labels, filters) {
   if (!filters.dateFormat) {
     var dateFormat = $.datepicker.regional[filters.language];
     if (dateFormat) {
@@ -335,46 +325,138 @@ function renderReservation(reservationEvent, labels, filters) {
     }
   }
 
-  var reservationBeginDate = $.fullCalendar.parseISO8601(reservationEvent.start);
-  var reservationEndDate = $.fullCalendar.parseISO8601(reservationEvent.end);
-  var $reservation = $('<div>').addClass('reservation');
-  var $rowEvent = $('<div>').addClass('row').appendTo($reservation);
-  $('<div>').addClass('label').appendTo($rowEvent).append(labels.event + ' : ');
-  $('<div>').addClass('value ' +
-          resourceStatusColor.resourceClass[reservationEvent.status]).appendTo($rowEvent).append($('<a>',
-          {href : "javascript:onClick=goToReservation(" + reservationEvent.id + ", '" +
-              filters.objectView + "', " + filters.isPortlet +
-              ")", title : labels.reservationLink}).append(reservationEvent.title));
-  var $beginDate = $('<div>').addClass('row').appendTo($reservation);
-  $('<div>').addClass('label').appendTo($beginDate).append(labels.beginDate + ' : ');
-  $('<div>').addClass('value').appendTo($beginDate).append($.datepicker.formatDate(filters.dateFormat,
-      reservationBeginDate, null));
-  var $endDate = $('<div>').addClass('row').appendTo($reservation);
-  $('<div>').addClass('label').appendTo($endDate).append(labels.endDate + ' : ');
-  $('<div>').addClass('value').appendTo($endDate).append($.datepicker.formatDate(filters.dateFormat,
-      reservationEndDate, null));
-  if (reservationEvent.reason) {
-    var $rowReason = $('<div>').addClass('row').appendTo($reservation);
-    $('<div>').addClass('label').appendTo($rowReason).append(labels.reason + ' : ');
-    $('<div>').addClass('value').appendTo($rowReason).append(reservationEvent.reason.replace(/\n/,
-        "<br/>"));
-  }
-  if (reservationEvent.place) {
-    var $rowPlace = $('<div>').addClass('row').appendTo($reservation);
-    $('<div>').addClass('label').appendTo($rowPlace).append(labels.place + ' : ');
-    $('<div>').addClass('value').appendTo($rowPlace).append(reservationEvent.place);
-  }
-  if (reservationEvent.resources && reservationEvent.resources.length > 0) {
-    var $rowResources = $('<div>').addClass('row').appendTo($reservation);
-    $('<div>').addClass('label').appendTo($rowResources).append(labels.reservedResources + ' : ');
-    var $reservedResources = $('<ul>').appendTo($('<div>').addClass('value').appendTo($rowResources));
-    $.each(reservationEvent.resources, function(index, resource) {
-      $('<li>').addClass(resourceStatusColor.resourceClass[resource.status]).appendTo($reservedResources).append($('<a>',
-          {href : "javascript:onClick=goToResource(" + resource.id + ", '" + filters.objectView +
-              "', " + filters.isPortlet + ")", title : labels.resourceLink}).append(resource.name));
+  // Initialization
+  var $reservation = $('<li>').addClass('reservation');
+  if (!reservation.calendarViewMode) {
+    $reservation.click(function(event) {
+      goToReservation(reservation.id, filters.objectView, filters.isPortlet);
+      return false;
     });
   }
+
+  // Dates & Author
+  if (!reservation.calendarViewMode) {
+    $reservation.append(renderReservationAuthor(reservation, labels, filters).attr('title',
+        labels.reservationLink));
+  }
+
+  // Title
+  var goToReservationLink = "javascript:onClick=goToReservation(" + reservation.reservationId +
+      ", '" + filters.objectView + "', " + filters.isPortlet + ")";
+  if (reservation.calendarViewMode) {
+    $reservation.append($('<h4>').append($('<a>',
+        {href : goToReservationLink, title : labels.reservationLink}).append(reservation.reservationTitle)));
+  } else {
+    $reservation.append($('<h4>').append(reservation.title).attr('title', labels.reservationLink));
+  }
+
+  // Place
+  if (reservation.place) {
+    if (reservation.calendarViewMode) {
+      $reservation.append($('<p>').addClass('reservationPlace').append(reservation.place));
+    } else {
+      var $info = $('<div>').addClass('reservationInfo');
+      var $place = $('<div>').addClass('reservationPlace');
+      var $bloc = $('<div>').addClass('bloc').append($('<span>').append(reservation.place));
+      $reservation.append($info.append($place.append($bloc)));
+    }
+  }
+
+  // Reason
+  $reservation.append($('<p>').addClass('reservationDesc').append(reservation.reason.replace(/\n/,
+      "<br/>")));
+
+  // Resources
+  if (reservation.resources && reservation.resources.length > 0) {
+    var $resources = $('<ul>').addClass('reservationRessources').appendTo($reservation);
+    $.each(reservation.resources, function(index, resource) {
+      var $resource = $('<li>').addClass(resourceStatusColor.resourceClass[resource.status]).append($('<a>',
+          {href : '#', title : labels.resourceLink}).append(resource.name));
+      $resources.append($resource);
+      if (!reservation.calendarViewMode) {
+        $('a', $resource).click(function() {
+          goToResource(resource.id, filters.objectView, filters.isPortlet);
+          return false;
+        });
+      } else {
+        $('a', $resource).attr('href',
+            "javascript:onClick=goToResource(" + resource.id + ", '" + filters.objectView + "', " +
+                filters.isPortlet + ")");
+      }
+    });
+  }
+
+  // Clear
+  $reservation.append($('<hr>').addClass('clear'))
+
+  // Link
+  if (reservation.calendarViewMode) {
+    $reservation.append($('<a>',
+        {href : goToReservationLink}).addClass('reservation-link').append(labels.reservationLink));
+  }
+
+  // The reservation
   return $reservation;
+}
+
+/**
+ * Render the given reservation author.
+ * @param reservation
+ * @param labels
+ * @param filters
+ */
+function renderReservationAuthor(reservation, labels, filters) {
+  var $author = $('<h5>').append(renderReservationDates(reservation, labels, filters));
+  if (!filters.planningOfUser) {
+    $author.append(' - ').append($('<span>').addClass('reservationAuthor').append(labels.bookedBy));
+    $author.append(' ').append(reservation.bookedBy);
+  }
+  return $author;
+}
+
+/**
+ * Render the given reservation author.
+ * @param reservation
+ * @param labels
+ * @param filters
+ */
+function renderReservationDates(reservation, labels, filters) {
+  var $result = $('<span>').addClass('reservationDate');
+  var isReservationOnOneDay = true;
+  var beginDate = $.fullCalendar.parseISO8601(reservation.start);
+  var endDate = $.fullCalendar.parseISO8601(reservation.end);
+
+  // Is the reservation on one day ?
+  if (beginDate.getYear() != endDate.getYear() || beginDate.getMonth() != endDate.getMonth() ||
+      beginDate.getDate() != endDate.getDate()) {
+    $result.append(labels.from);
+    isReservationOnOneDay = false;
+  } else {
+    $result.append(labels.the);
+  }
+
+  // First date
+  $result.append(' ').append($.datepicker.formatDate(filters.dateFormat, beginDate, null));
+  if (isReservationOnOneDay) {
+    $result.append(' ').append(labels.hourFrom);
+  }
+
+  // First hour
+  $result.append(' ').append(beginDate.getHoursAndMinutes());
+
+  // Second date
+  if (isReservationOnOneDay) {
+    $result.append(' ').append(labels.hourTo);
+  } else {
+    $result.append(' ').append(labels.to);
+    $result.append(' ').append($.datepicker.formatDate(filters.dateFormat, endDate, null));
+  }
+
+  // Second hour
+  $result.append(' ').append(endDate.getHoursAndMinutes());
+
+  // Result
+  return $result;
 }
 
 /**
@@ -386,11 +468,7 @@ function renderReservation(reservationEvent, labels, filters) {
  */
 function goToReservation(id, objectView, isPortlet) {
   var link = "ViewReservation?reservationId=" + id + "&objectView=" + objectView;
-  if (isPortlet) {
-    top.bottomFrame.MyMain.location.href = link;
-  } else {
-    location.href = link;
-  }
+  goToLink(link, objectView, isPortlet);
 }
 
 /**
@@ -402,6 +480,16 @@ function goToReservation(id, objectView, isPortlet) {
  */
 function goToResource(id, objectView, isPortlet) {
   var link = "ViewResource?resourceId=" + id + "&provenance=calendar&objectView=" + objectView;
+  goToLink(link, objectView, isPortlet);
+}
+
+/**
+ * Please be careful, this function is compatible with portlet behaviour.
+ * @param link
+ * @param objectView
+ * @param isPortlet
+ */
+function goToLink(link, objectView, isPortlet) {
   if (isPortlet) {
     top.bottomFrame.MyMain.location.href = link;
   } else {
