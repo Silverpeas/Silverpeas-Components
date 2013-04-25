@@ -65,6 +65,8 @@ public interface YellowpagesBmSkeleton {
    * @since 1.0
    */
   public void setActor(UserDetail userDetail) throws RemoteException;
+  
+  public void setCurrentTopic(TopicDetail topicDetail) throws RemoteException;
 
   /**
    * Return a the detail of a topic
@@ -238,7 +240,7 @@ public interface YellowpagesBmSkeleton {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public String createContact(ContactDetail pubDetail) throws RemoteException;
+  public String createContact(ContactDetail pubDetail, String folderId) throws RemoteException;
 
   /**
    * Update a contact (only the header - parameters)
