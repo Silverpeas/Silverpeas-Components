@@ -24,7 +24,7 @@
       <version>${core.version}</version>
       <classifier>client</classifier>
       <scope>provided</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>

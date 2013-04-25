@@ -21,38 +21,60 @@
 package com.silverpeas.mailinglist.service.model.dao;
 
 import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
+import com.silverpeas.mailinglist.service.model.beans.InternalGroupSubscriber;
+import com.silverpeas.mailinglist.service.model.beans.InternalUserSubscriber;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
 import java.util.List;
+import javax.sql.DataSource;
+import org.dbunit.DataSourceDatabaseTester;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-checker.xml", "/spring-notification.xml",
-  "/spring-hibernate.xml", "/spring-datasource.xml"})
-@Transactional
-@TransactionConfiguration(defaultRollback=true,transactionManager="txManager")
-public class TestMailingListDao extends AbstractTransactionalJUnit4SpringContextTests {
+public class TestMailingListDao {
 
-  @Inject
-  private MailingListDao mailingListDao;
+  private DataSourceDatabaseTester databaseTester;
+  private ConfigurableApplicationContext context;
+
+  @Before
+  public void setUpTest() throws Exception {
+    context = new ClassPathXmlApplicationContext(
+        "/spring-mailinglist-dao.xml", "/spring-mailinglist-embbed-datasource.xml");
+
+    databaseTester = new DataSourceDatabaseTester(getDataSource());
+    databaseTester.setDataSet(getDataSet());
+    databaseTester.onSetup();
+  }
+
+  @After
+  public void tearDownTest() throws Exception {
+    databaseTester.onTearDown();
+    context.close();
+  }
 
   @Test
-  public void testCreateMailingList() {
+  public void testCreateMailingList() throws Exception {
+    MailingListDao mailingListDao = getMailingListDAO();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     ExternalUser user = new ExternalUser();
     user.setEmail("bart.simpson@gmail.com");
     user.setComponentId("componentId");
     mailingList.getExternalSubscribers().add(user);
+    InternalUserSubscriber bart = new InternalUserSubscriber();
+    bart.setExternalId("bart");
+    mailingList.getInternalSubscribers().add(bart);
+    InternalGroupSubscriber simpsonsFamily = new InternalGroupSubscriber();
+    simpsonsFamily.setExternalId("Simpsons");
+    mailingList.getGroupSubscribers().add(simpsonsFamily);
     String id = mailingListDao.createMailingList(mailingList);
     assertNotNull(id);
     MailingList saved = mailingListDao.findById(id);
@@ -62,13 +84,24 @@ public class TestMailingListDao extends AbstractTransactionalJUnit4SpringContext
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));
     assertNotNull(saved.getExternalSubscribers());
     assertEquals(1, saved.getExternalSubscribers().size());
-    ExternalUser savedUser = (ExternalUser) saved.getExternalSubscribers().iterator().next();
+    ExternalUser savedUser = saved.getExternalSubscribers().iterator().next();
     assertNotNull(savedUser.getId());
+    assertNotNull(saved.getInternalSubscribers());
+    assertEquals(1, saved.getInternalSubscribers().size());
+    InternalUserSubscriber userSubscriber = saved.getInternalSubscribers().iterator().next();
+    assertNotNull(userSubscriber.getId());
+    assertEquals("bart", userSubscriber.getExternalId());
+    assertNotNull(saved.getGroupSubscribers());
+    assertEquals(1, saved.getGroupSubscribers().size());
+    InternalGroupSubscriber groupSubscriber = saved.getGroupSubscribers().iterator().next();
+    assertNotNull(groupSubscriber.getId());
+    assertEquals("Simpsons", groupSubscriber.getExternalId());
     assertNotNull("componentId", savedUser.getComponentId());
   }
 
   @Test
-  public void testUpdateMailingList() {
+  public void testUpdateMailingList() throws Exception {
+    MailingListDao mailingListDao = getMailingListDAO();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     ExternalUser user = new ExternalUser();
@@ -113,7 +146,8 @@ public class TestMailingListDao extends AbstractTransactionalJUnit4SpringContext
   }
 
   @Test
-  public void testDeleteMailingList() {
+  public void testDeleteMailingList() throws Exception {
+    MailingListDao mailingListDao = getMailingListDAO();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     ExternalUser user = new ExternalUser();
@@ -141,7 +175,8 @@ public class TestMailingListDao extends AbstractTransactionalJUnit4SpringContext
   }
 
   @Test
-  public void testFindByComponentId() {
+  public void testFindByComponentId() throws Exception {
+    MailingListDao mailingListDao = getMailingListDAO();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     ExternalUser user = new ExternalUser();
@@ -164,7 +199,8 @@ public class TestMailingListDao extends AbstractTransactionalJUnit4SpringContext
   }
 
   @Test
-  public void testListMailingList() {
+  public void testListMailingList() throws Exception {
+    MailingListDao mailingListDao = getMailingListDAO();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId1");
     ExternalUser user = new ExternalUser();
@@ -181,10 +217,30 @@ public class TestMailingListDao extends AbstractTransactionalJUnit4SpringContext
     mailingList.getExternalSubscribers().add(user);
     String id2 = mailingListDao.createMailingList(mailingList);
     assertNotNull(id2);
-    List mailingLists = this.mailingListDao.listMailingLists();
+    List mailingLists = mailingListDao.listMailingLists();
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_LIST"));
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));
     assertNotNull(mailingLists);
     assertEquals(2, mailingLists.size());
+  }
+
+  private int countRowsInTable(String table) throws Exception {
+    return databaseTester.getConnection().getRowCount(table);
+  }
+
+  private IDataSet getDataSet() throws DataSetException {
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
+        MessageDao.class.getClassLoader().getResourceAsStream(
+        "com/silverpeas/mailinglist/service/model/dao/mailinglist-dataset.xml")));
+    dataSet.addReplacementObject("[NULL]", null);
+    return dataSet;
+  }
+
+  private MailingListDao getMailingListDAO() {
+    return context.getBean(MailingListDao.class);
+  }
+
+  private DataSource getDataSource() {
+    return context.getBean("jpaDataSource", DataSource.class);
   }
 }

@@ -62,11 +62,9 @@ public class SiteDAO {
   private static final String tableSiteIconsName = "SC_WebSites_SiteIcons";
   private static final String tablePublicationName = "SB_Publication_Publi";
 
-  private String prefixTableName;
   private String componentId;
 
-  public SiteDAO(String prefixTableName, String componentId) {
-    this.prefixTableName = prefixTableName;
+  public SiteDAO(String componentId) {
     this.componentId = componentId;
   }
 
@@ -729,7 +727,7 @@ public class SiteDAO {
       id = array.get(i);
       SilverTrace.info("webSites", "SiteDAO.DAOdeleteWebSites()",
           "root.MSG_GEN_PARAM_VALUE", "id = " + id);
-      SitePK s = new SitePK(id, prefixTableName, componentId);
+      SitePK s = new SitePK(id, componentId);
       daoDeleteWebSite(s);
       i++;
     }

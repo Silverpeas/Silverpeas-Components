@@ -1,38 +1,37 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.whitePages.record;
 
-import com.stratelia.webactiv.beans.admin.*;
-import com.stratelia.webactiv.util.*;
 import com.silverpeas.form.*;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.form.*;
 import com.silverpeas.form.record.*;
+import com.stratelia.webactiv.beans.admin.*;
+import com.stratelia.webactiv.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.silverpeas.core.admin.OrganisationController;
 
 public class UserTemplate implements RecordTemplate {
+
   private static ResourceLocator label = null;
   private HtmlForm viewForm;
 
@@ -45,8 +44,7 @@ public class UserTemplate implements RecordTemplate {
     try {
       this.viewForm = new HtmlForm(this);
     } catch (FormException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getLogger(getClass().getSimpleName()).log(Level.FINER, e.getMessage());
     }
     viewForm.setFileName(fileName);
   }
@@ -87,14 +85,14 @@ public class UserTemplate implements RecordTemplate {
       fieldTemplates[7] = getFieldTemplate("AccessLevel");
       fieldTemplates[8] = getFieldTemplate("SpecificDetails");
     } catch (FormException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getLogger(getClass().getSimpleName()).log(Level.FINER, e.getMessage());
     }
     return fieldTemplates;
   }
 
   /**
    * Returns the FieldTemplate of the named field.
+   *
    * @throw FormException if the field name is unknown.
    */
   @Override
@@ -115,6 +113,7 @@ public class UserTemplate implements RecordTemplate {
 
   /**
    * Returns the field index of the named field.
+   *
    * @throw FormException if the field name is unknown.
    */
   @Override
@@ -153,5 +152,4 @@ public class UserTemplate implements RecordTemplate {
     UserDetail userDetail = organisation.getUserFull(idUser);
     return new UserRecord(userDetail);
   }
-
 }

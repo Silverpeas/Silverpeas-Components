@@ -83,8 +83,7 @@ function clipboardCopy() {
 		}
 		st += "<br/>"+user.getDisplayedName()+" - "+date;
 		String description = WysiwygController.load(pub.getPK().getInstanceId(), pub.getPK().getId(), I18NHelper.defaultLanguage);
-		if (StringUtil.isDefined(description))
-		{
+		if (StringUtil.isDefined(description)) {
 		   st = st + "<br/>" + description;
 		}
 		line.addArrayCellText(st);

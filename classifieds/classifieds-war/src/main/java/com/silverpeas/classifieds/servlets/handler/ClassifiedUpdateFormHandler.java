@@ -22,7 +22,7 @@ public class ClassifiedUpdateFormHandler extends FunctionHandler {
 
     // Retrieves parameters
     String classifiedId = request.getParameter("ClassifiedId");
-    ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
+    ClassifiedDetail classified = classifiedsSC.getClassifiedWithImages(classifiedId);
 
     // Get form template and data
     Form formView = null;

@@ -28,7 +28,6 @@ import com.silverpeas.scheduleevent.service.model.beans.DateOption;
 import com.silverpeas.scheduleevent.service.model.beans.Response;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import java.util.Set;
-import java.util.SortedSet;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -36,10 +35,10 @@ import org.hamcrest.TypeSafeMatcher;
  * A matcher of scheduled events dedicated to tests.
  */
 public class ScheduledEventMatcher extends TypeSafeMatcher<ScheduleEvent> {
-  
+
   private ScheduleEvent expected;
   private String description = "";
-  
+
   public static ScheduledEventMatcher isEqualTo(final ScheduleEvent expected) {
     return new ScheduledEventMatcher(expected);
   }
@@ -53,19 +52,23 @@ public class ScheduledEventMatcher extends TypeSafeMatcher<ScheduleEvent> {
     }
     if (!actual.getTitle().equals(expected.getTitle())) {
       match = false;
-      description += "(actual description: " + actual.getDescription() + ", expected id: " + expected.getDescription() + ")";
+      description += "(actual description: " + actual.getDescription() + ", expected id: "
+          + expected.getDescription() + ")";
     }
     if (actual.getStatus() != expected.getStatus()) {
       match = false;
-      description += "(actual status: " + actual.getStatus() + ", expected status: " + expected.getStatus() + ")";
+      description += "(actual status: " + actual.getStatus() + ", expected status: " + expected.
+          getStatus() + ")";
     }
     if (actual.getAuthor() != expected.getAuthor()) {
       match = false;
-      description += "(actual author id: " + actual.getAuthor() + ", expected author id: " + expected.getAuthor() + ")";
+      description += "(actual author id: " + actual.getAuthor() + ", expected author id: "
+          + expected.getAuthor() + ")";
     }
     if (!actual.getCreationDate().equals(expected.getCreationDate())) {
       match = false;
-      description += "(actual creation date: " + actual.getCreationDate() + ", expected creation date: " + expected.getCreationDate() + ")";
+      description += "(actual creation date: " + actual.getCreationDate()
+          + ", expected creation date: " + expected.getCreationDate() + ")";
     }
     if (!contributorsMatched(actual.getContributors(), expected.getContributors())) {
       match = false;
@@ -86,26 +89,26 @@ public class ScheduledEventMatcher extends TypeSafeMatcher<ScheduleEvent> {
   public void describeTo(Description description) {
     description.appendText(this.description);
   }
-  
+
   private ScheduledEventMatcher(final ScheduleEvent expectedScheduledEvent) {
     this.expected = expectedScheduledEvent;
   }
 
   private boolean contributorsMatched(Set<Contributor> actualContributors,
-          Set<Contributor> expectedContributors) {
+      Set<Contributor> expectedContributors) {
     return areEqual(actualContributors, expectedContributors);
   }
 
-  private boolean dateOptionsMatched(SortedSet<DateOption> actualDates,
-          SortedSet<DateOption> expectedDates) {
+  private boolean dateOptionsMatched(Set<DateOption> actualDates,
+      Set<DateOption> expectedDates) {
     return areEqual(actualDates, expectedDates);
   }
 
   private boolean responsesMatched(Set<Response> actualResponses,
-          Set<Response> expectedResponses) {
+      Set<Response> expectedResponses) {
     return areEqual(actualResponses, expectedResponses);
   }
-  
+
   private <T> boolean areEqual(Set<T> actualSet, Set<T> expectedSet) {
     if (actualSet.size() != expectedSet.size()) {
       return false;
@@ -113,5 +116,4 @@ public class ScheduledEventMatcher extends TypeSafeMatcher<ScheduleEvent> {
       return actualSet.containsAll(expectedSet);
     }
   }
-  
 }

@@ -1,11 +1,12 @@
 package com.silverpeas.whitePages.model;
 
-import java.text.ParseException;
-import java.util.Date;
-
 import com.silverpeas.SilverpeasContent;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SilverCard implements SilverpeasContent {
 
@@ -15,7 +16,7 @@ public class SilverCard implements SilverpeasContent {
   private String creatorId;
   private Date creationDate;
   private String silverpeasContentId;
-  
+
   public SilverCard(Card card, int silverContentId) {
     id = card.getPK().getId();
     instanceId = card.getInstanceId();
@@ -23,12 +24,11 @@ public class SilverCard implements SilverpeasContent {
     try {
       creationDate = DateUtil.parse(card.getCreationDate());
     } catch (ParseException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING, e.getMessage());
     }
     silverpeasContentId = Integer.toString(silverContentId);
   }
-  
+
   @Override
   public String getId() {
     return id;
@@ -56,19 +56,16 @@ public class SilverCard implements SilverpeasContent {
 
   @Override
   public String getTitle() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public String getDescription() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public String getContributionType() {
-    // TODO Auto-generated method stub
     return null;
   }
 }

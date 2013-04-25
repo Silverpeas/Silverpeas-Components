@@ -43,6 +43,7 @@
 	Collection 	questions 	= (Collection) request.getAttribute("questions");
 	String		questionId	= (String) request.getAttribute("QuestionId");  // question en cours e ouvrir
 	Collection	categories	= (Collection) request.getAttribute("Categories");
+	boolean		pdcUsed		= (Boolean) request.getAttribute("PDCUsed");
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -479,11 +480,13 @@ function subscribe() {
   browseBar.setPath("");
 
   if (profil.equals("admin")) {
-    // gestion du plan de classement
-    operationPane.addOperation(resource.getIcon("questionReply.pdcUtilizationSrc"), resource.
-            getString("GML.PDCParam"),
-            "javascript:onClick=openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" + componentId + "','utilizationPdc1')");
-    operationPane.addLine();
+    if (pdcUsed) {
+	    // gestion du plan de classement
+	    operationPane.addOperation(resource.getIcon("questionReply.pdcUtilizationSrc"), resource.
+	            getString("GML.PDCParam"),
+	            "javascript:onClick=openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" + componentId + "','utilizationPdc1')");
+	    operationPane.addLine();
+    }
     // creation des categories
     operationPane.addOperationOfCreation(resource.getIcon("questionReply.createCategory"), resource.getString(
             "questionReply.createCategory"), "NewCategory");

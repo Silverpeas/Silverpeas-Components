@@ -20,14 +20,26 @@
  */
 package com.silverpeas.processManager.ejb;
 
-import java.io.*;
-import java.rmi.RemoteException;
+import java.io.ByteArrayInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.ejb.EJBException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -52,21 +64,15 @@ import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.user.UserImpl;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.*;
-
-public class ProcessManagerBmEJB implements SessionBean {
+@Stateless(name = "ProcessManager", description = "Stateless session bean to manage processes.")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class ProcessManagerBmEJB implements ProcessManagerBm {
 
   private static final long serialVersionUID = -3111458120777031058L;
   /**
@@ -89,8 +95,9 @@ public class ProcessManagerBmEJB implements SessionBean {
    * @return the instance ID of the newly started process
    * @throws ProcessManagerException
    */
-  public String createProcess(String componentId, String userId, String fileName,
-      byte[] fileContent) throws ProcessManagerException {
+  @Override
+  public String createProcess(String componentId, String userId, String fileName, byte[] fileContent)
+      throws ProcessManagerException {
     Map<String, FileContent> metadata = new HashMap<String, FileContent>(1);
     metadata.put(null, new FileContent(fileName, fileContent));
     return createProcess(componentId, userId, DEFAULT_ROLE, metadata);
@@ -117,6 +124,7 @@ public class ProcessManagerBmEJB implements SessionBean {
    * @return the instance ID of the newly started process
    * @throws ProcessManagerException
    */
+  @Override
   public String createProcess(String componentId, String userId, String userRole,
       Map<String, ? extends Serializable> metadata) throws ProcessManagerException {
     // Default map for metadata is an empty map
@@ -481,24 +489,5 @@ public class ProcessManagerBmEJB implements SessionBean {
 
   private String getLanguage() {
     return "fr";
-  }
-
-  public void ejbCreate() {
-  }
-
-  @Override
-  public void setSessionContext(SessionContext sc) throws EJBException {
-  }
-
-  @Override
-  public void ejbRemove() throws EJBException, RemoteException {
-  }
-
-  @Override
-  public void ejbActivate() throws EJBException, RemoteException {
-  }
-
-  @Override
-  public void ejbPassivate() throws EJBException, RemoteException {
   }
 }

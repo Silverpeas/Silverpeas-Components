@@ -33,7 +33,6 @@ import java.util.List;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
-import javax.ejb.RemoveException;
 import javax.xml.bind.JAXBException;
 
 import org.silverpeas.wysiwyg.WysiwygException;
@@ -52,7 +51,6 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.quickinfo.QuickInfoContentManager;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -60,7 +58,6 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
@@ -83,6 +80,9 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
   /**
    * Creates new QuickInfoSessionController
+   *
+   * @param mainSessionCtrl
+   * @param componentContext
    */
   public QuickInfoSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -94,8 +94,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   private PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = (EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class)).create();
+        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
         SilverTrace.error("quickinfo", "QuickInfoSessionController.getPublicationBm()",
             "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
@@ -103,13 +103,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       }
     }
     return publicationBm;
-  }
-
-  /**
-   * methods for Users
-   */
-  public UserDetail getUserDetail(String userId) {
-    return getOrganisationController().getUserDetail(userId);
   }
 
   // Metier
@@ -137,7 +130,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     }
 
     while (qi.hasNext()) {
-      PublicationDetail detail = (PublicationDetail) qi.next();
+      PublicationDetail detail = qi.next();
       if (detail.getEndDate() == null) {
         if (detail.getBeginDate() == null) {
           result.add(detail);
@@ -182,25 +175,18 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
     PublicationDetail detail = new PublicationDetail(new PublicationPK("unknown", getSpaceId(),
         getComponentId()), name, null, new Date(), begin, end, getUserId(), 1, "", "", "");
+    // Create the Publication
+    PublicationPK pubPK = getPublicationBm().createPublication(detail);
     try {
-      // Create the Publication
-      PublicationPK pubPK = getPublicationBm().createPublication(detail);
-
-      try {
-        getQuickInfoContentManager().createSilverContent(null, detail, getUserId(), true);
-      } catch (ContentManagerException e) {
-        SilverTrace.error("quickinfo", "QuickInfoSessionController.add()",
-            "root.ContentManagerException", e);
-      }
-      // Add the wysiwyg content
-      WysiwygController.createFileAndAttachment(description, pubPK, getUserId(),
-          I18NHelper.defaultLanguage);
-      classifyQuickInfo(detail, positions);
-    } catch (RemoteException e) {
+      getQuickInfoContentManager().createSilverContent(null, detail, getUserId(), true);
+    } catch (ContentManagerException e) {
       SilverTrace.error("quickinfo", "QuickInfoSessionController.add()",
-          "root.REMOTE_EXCEPTION", e);
-      throw e;
+          "root.ContentManagerException", e);
     }
+    // Add the wysiwyg content
+    WysiwygController.createFileAndAttachment(description, pubPK, getUserId(),
+        I18NHelper.defaultLanguage);
+    classifyQuickInfo(detail, positions);
   }
 
   public void update(String id, String name, String description, Date begin, Date end)
@@ -210,31 +196,22 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     PublicationDetail detail = new PublicationDetail(new PublicationPK(id, getSpaceId(),
         getComponentId()), name, null, new java.util.Date(), begin, end, getUserId(), 1, "",
         "", "");
-
+    // Update the Publication
+    getPublicationBm().setDetail(detail);
     try {
-      // Update the Publication
-      getPublicationBm().setDetail(detail);
-
-      try {
-        getQuickInfoContentManager().updateSilverContentVisibility(detail, true);
-      } catch (ContentManagerException e) {
-        SilverTrace.error("quickinfo", "QuickInfoSessionController.update()",
-            "root.ContentManagerException", e);
-      }
-
-      // Update the Wysiwyg if exists, create one otherwise
-      if (detail.getWysiwyg() != null && !"".equals(detail.getWysiwyg())) {
-        WysiwygController.updateFileAndAttachment(description, getComponentId(), id, getUserId(),
-            I18NHelper.defaultLanguage);
-      } else {
-        WysiwygController.createFileAndAttachment(description, detail.getPK(), getUserId(),
-            I18NHelper.defaultLanguage);
-      }
-
-    } catch (RemoteException e) {
+      getQuickInfoContentManager().updateSilverContentVisibility(detail, true);
+    } catch (ContentManagerException e) {
       SilverTrace.error("quickinfo", "QuickInfoSessionController.update()",
-          "root.REMOTE_EXCEPTION", e);
-      throw e;
+          "root.ContentManagerException", e);
+    }
+
+    // Update the Wysiwyg if exists, create one otherwise
+    if (detail.getWysiwyg() != null && !"".equals(detail.getWysiwyg())) {
+      WysiwygController.updateFileAndAttachment(description, getComponentId(), id, getUserId(),
+          I18NHelper.defaultLanguage);
+    } else {
+      WysiwygController.createFileAndAttachment(description, detail.getPK(), getUserId(),
+          I18NHelper.defaultLanguage);
     }
   }
 
@@ -252,33 +229,23 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   public void remove(String id) throws RemoteException, WysiwygException, UtilException {
-    Connection connection = null;
+    PublicationPK pubPK = new PublicationPK(id, getComponentId());
 
+    // Delete Publication
+    getPublicationBm().removePublication(pubPK);
+    Connection connection = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
     try {
-      PublicationPK pubPK = new PublicationPK(id, getComponentId());
-
-      // Delete Publication
-      getPublicationBm().removePublication(pubPK);
-
-      try {
-        connection = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
-
-        getQuickInfoContentManager().deleteSilverContent(connection, pubPK);
-      } catch (ContentManagerException e) {
-        SilverTrace.error("quickinfo", "QuickInfoSessionController.remove('" + id + "')",
-            "ContentManagerExceptino", e);
-      } finally {
-        DBUtil.close(connection);
-      }
-
-      // Delete the Wysiwyg if exists
-      if (WysiwygController.haveGotWysiwyg(getComponentId(), id, I18NHelper.defaultLanguage)) {
-        WysiwygController.deleteFileAndAttachment(getComponentId(), id);
-      }
-    } catch (RemoteException e) {
+      getQuickInfoContentManager().deleteSilverContent(connection, pubPK);
+    } catch (ContentManagerException e) {
       SilverTrace.error("quickinfo", "QuickInfoSessionController.remove('" + id + "')",
-          "root.REMOTE_EXCEPTION", e);
-      throw e;
+          "ContentManagerExceptino", e);
+    } finally {
+      DBUtil.close(connection);
+    }
+
+    // Delete the Wysiwyg if exists
+    if (WysiwygController.haveGotWysiwyg(getComponentId(), id, I18NHelper.defaultLanguage)) {
+      WysiwygController.deleteFileAndAttachment(getComponentId(), id);
     }
   }
 
@@ -320,15 +287,10 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     return getQuickInfoContentManager().getSilverObjectId(objectId, getComponentId());
   }
 
+  @Override
   public void close() {
-    try {
-      if (publicationBm != null) {
-        publicationBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("quickInfoSession", "QuickInfoSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("quickInfoSession", "QuickInfoSessionController.close", "", e);
+    if (publicationBm != null) {
+      publicationBm = null;
     }
   }
 

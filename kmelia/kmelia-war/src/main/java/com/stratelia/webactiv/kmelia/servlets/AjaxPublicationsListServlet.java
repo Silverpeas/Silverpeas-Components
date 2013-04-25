@@ -85,6 +85,7 @@ import org.apache.commons.io.FilenameUtils;
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 
+
 /**
  * @author ehugonnet
  */
@@ -315,7 +316,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     Pagination pagination = gef.getPagination(nbPubs, nbPubsPerPage, firstDisplayedItemIndex);
     List<KmeliaPublication> pubs = allPubs.subList(pagination.getFirstItemIndex(), pagination.
         getLastItemIndex());
-    out.write("<form name=\"publicationsForm\">");
+    out.write("<form name=\"publicationsForm\" onsubmit=\"return false;\">");
     if (!pubs.isEmpty()) {
       out.write(board.printBefore());
       displayPublicationsListHeader(nbPubs, sortAllowed, pagination, resources, kmeliaScc, out);

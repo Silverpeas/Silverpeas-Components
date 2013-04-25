@@ -1,49 +1,45 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.external.mailinglist.servlets;
 
+import com.silverpeas.mailinglist.service.ServicesFactory;
+import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
+import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
-
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 
-import com.silverpeas.mailinglist.service.ServicesFactory;
-import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
-import com.silverpeas.mailinglist.service.model.beans.MailingList;
-
 public class UsersProcessor implements MailingListRoutage {
+
   public static final int ELEMENTS_PER_PAGE = 10;
 
   public static String processUsers(RestRequest rest, HttpServletRequest request) {
     String id = (String) rest.getElements().get(DESTINATION_USERS);
+    ServicesFactory servicesFactory = ServicesFactory.getFactory();
     switch (rest.getAction()) {
       case RestRequest.DELETE:
         if (((Boolean) request.getAttribute(IS_USER_ADMIN_ATT)).booleanValue()) {
@@ -56,7 +52,7 @@ public class UsersProcessor implements MailingListRoutage {
               user.setEmail(emails[i]);
               users.add(user);
             }
-            ServicesFactory.getMailingListService().removeExternalUsers(
+            servicesFactory.getMailingListService().removeExternalUsers(
                 rest.getComponentId(), users);
           } else {
             if (id != null && !DELETE_ACTION.equalsIgnoreCase(id)
@@ -64,7 +60,7 @@ public class UsersProcessor implements MailingListRoutage {
               ExternalUser user = new ExternalUser();
               user.setComponentId(rest.getComponentId());
               user.setEmail(id);
-              ServicesFactory.getMailingListService().removeExternalUser(
+              servicesFactory.getMailingListService().removeExternalUser(
                   rest.getComponentId(), user);
             }
           }
@@ -90,7 +86,7 @@ public class UsersProcessor implements MailingListRoutage {
                 users.add(user);
               }
             }
-            ServicesFactory.getMailingListService().addExternalUsers(
+            servicesFactory.getMailingListService().addExternalUsers(
                 rest.getComponentId(), users);
           }
         }
@@ -106,7 +102,7 @@ public class UsersProcessor implements MailingListRoutage {
   protected static String prepareUsersList(HttpServletRequest request,
       RestRequest rest) {
     if (((Boolean) request.getAttribute(IS_USER_ADMIN_ATT)).booleanValue()) {
-      MailingList list = ServicesFactory.getMailingListService()
+      MailingList list = ServicesFactory.getFactory().getMailingListService()
           .findMailingList(rest.getComponentId());
       int page = 0;
       if (request.getParameter(CURRENT_PAGE_PARAM) != null) {
