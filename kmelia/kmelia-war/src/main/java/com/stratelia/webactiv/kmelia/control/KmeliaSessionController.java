@@ -77,10 +77,7 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
-import com.silverpeas.importExport.control.ImportSettings;
-import com.silverpeas.importExport.control.MassiveDocumentImport;
 import com.silverpeas.importExport.model.ImportExportException;
-import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.kmelia.SearchContext;
 import com.silverpeas.kmelia.control.KmeliaServiceFactory;
 import com.silverpeas.kmelia.domain.TopicSearch;
@@ -1631,8 +1628,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    */
   public boolean isPublicationTaxonomyOK() {
-    if (!isPdcUsed() || getSessionPublication() == null) {
-      // le PDC n'est pas utilisé
+    if (!isPdcUsed() || getSessionPublication() == null || !isPDCClassifyingMandatory()) {
+      // Classification is not used or mandatory so we don't care about the current classification of the content
       return true;
     }
     String pubId = getSessionPublication().getDetail().getPK().getId();
@@ -2215,7 +2212,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         int silverObjectId = getKmeliaBm().getSilverObjectId(getPublicationPK(pubId));
         List<ClassifyPosition> positions = getPdcBm().getPositions(silverObjectId,
             getComponentId());
-        return (positions.size() > 0);
+        return !positions.isEmpty();
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSessionController.isPublicationClassifiedOnPDC()",
             SilverpeasRuntimeException.ERROR, "kmelia.MSG_ERR_GENERAL", e);
