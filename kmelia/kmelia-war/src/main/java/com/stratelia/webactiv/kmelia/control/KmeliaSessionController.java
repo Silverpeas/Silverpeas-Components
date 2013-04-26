@@ -199,7 +199,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   private static final String[] AVAILABLE_EXPORT_FORMATS = {"zip", "pdf", "odt", "doc"};
 
-  /* EJBs used by sessionController */  private ThumbnailService thumbnailService = null;
+  /* EJBs used by sessionController */ private ThumbnailService thumbnailService = null;
   private CommentService commentService = null;
   private PdcBm pdcBm = null;
   private StatisticBm statisticBm = null;
@@ -1967,7 +1967,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public void setCurrentFolderId(String id, boolean resetSessionPublication) {
-    if (!id.equals(currentFolderId)) {
+    if (!id.equals(currentFolderId) && !KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id)) {
       indexOfFirstPubToDisplay = 0;
       resetSelectedPublicationIds();
       setSearchContext(null);
@@ -2310,7 +2310,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @param draftMode
    * @param versionType
    * @return list of publications imported
-   * @throws ImportExportException 
+   * @throws ImportExportException
    */
   public List<PublicationDetail> importFile(File fileUploaded, String fileType, String topicId,
       String importMode, boolean draftMode, int versionType) throws ImportExportException {
