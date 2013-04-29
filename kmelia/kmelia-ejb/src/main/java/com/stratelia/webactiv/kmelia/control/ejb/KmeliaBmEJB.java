@@ -44,6 +44,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
+import com.silverpeas.kmelia.notification.KmeliaNotifyPublicationUserNotification;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -2889,9 +2890,8 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
 
-    final NotificationMetaData notifMetaData =
-        UserNotificationHelper.build(new KmeliaSubscriptionPublicationUserNotification(topicPK,
-        pubDetail, NotifAction.REPORT, senderName));
+    final NotificationMetaData notifMetaData = UserNotificationHelper
+        .build(new KmeliaNotifyPublicationUserNotification(topicPK, pubDetail, senderName));
 
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData()",
         "root.MSG_GEN_EXIT_METHOD");

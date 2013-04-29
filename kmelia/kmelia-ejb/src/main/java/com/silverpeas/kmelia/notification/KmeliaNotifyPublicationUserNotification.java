@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,54 +23,36 @@
  */
 package com.silverpeas.kmelia.notification;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+
+import java.util.Collection;
 
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaSupervisorPublicationUserNotification extends AbstractKmeliaPublicationUserNotification {
+public class KmeliaNotifyPublicationUserNotification
+    extends AbstractKmeliaPublicationUserNotification {
 
-  public KmeliaSupervisorPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource) {
-    super(nodePK, resource, NotifAction.CREATE);
-  }
-
-  @Override
-  protected String getBundleSubjectKey() {
-    return "kmelia.SupervisorNotifSubject";
-  }
-
-  @Override
-  protected String getFileName() {
-    return "notificationSupervisor";
+  public KmeliaNotifyPublicationUserNotification(final NodePK nodePK,
+      final PublicationDetail resource, final String senderName) {
+    super(nodePK, resource, NotifAction.REPORT, senderName);
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    final List<String> roles = Collections.singletonList("supervisor");
-    final List<String> supervisors =
-        new ArrayList<String>(Arrays.asList(getOrganisationController().getUsersIdsByRoleNames(
-            getResource().getPK().getInstanceId(), roles)));
-    SilverTrace.debug("kmelia", "KmeliaSupervisorPublicationNotification.getUserIdToNotify()",
-        "root.MSG_GEN_PARAM_VALUE", supervisors.size() + " users in role supervisor !");
-    return supervisors;
+    // Users to notify are not handled here.
+    return null;
   }
 
   @Override
-  protected String getSender() {
-    return getResource().getUpdaterId();
+  protected String getBundleSubjectKey() {
+    return "Alert";
   }
 
   @Override
-  protected boolean isSendImmediatly() {
-    return true;
+  protected String getFileName() {
+    return "notification";
   }
 }
