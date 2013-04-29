@@ -24,12 +24,18 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
+
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
 <%
 //Recuperation des details de l'ulisateur
 List<Resource> listResourcesofReservation = (List<Resource>)request.getAttribute("listResourcesofReservation");
@@ -157,11 +163,11 @@ function AddAttachment() {
             String currentUser = resourcesManagerSC.getUserId() ;
             List<String> managers = resourcesManagerSC.getManagerIds(resourceId);
             if (maResource.isValidationRequired()) { %>
-             <a style="color:red" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
+             <a class="resource waitingForValidation" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
             <% } else if (maResource.isRefused()) { %>
-              <a style="color:grey" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
+              <a class="resource refused" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
             <% } else {%>
-              <a style="color:black" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
+              <a class="resource validated" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
              <% }
             if (maResource.isValidationRequired() &&  managers != null && !managers.isEmpty() && managers.contains(currentUser)) { %>
               <a href="javascript:valideResource(<%=resourceId%>, '<%=objectView%>')">
@@ -177,9 +183,14 @@ function AddAttachment() {
         </tr>
       </table>
       </view:board>
-      <div class="inlineMessage">
-            <%=resource.getString("resourcesManager.explain") %>
-	  </div>
+      <div class="inlineMessage" style="vertical-align: middle;">
+        <ul id="legende">
+          <li><div class="resource validated">&nbsp;</div><fmt:message key="resourcesManager.legend.resource.validated"/></li>
+          <li><div class="resource waitingForValidation">&nbsp;</div><fmt:message key="resourcesManager.legend.resource.waitingForValidation"/></li>
+          <li><div class="resource refused">&nbsp;</div><fmt:message key="resourcesManager.legend.resource.refused"/></li>
+        </ul>
+        <br/><fmt:message key="resourcesManager.explain"/>
+      </div>
 		</td>
 		<td valign="top">
     <%

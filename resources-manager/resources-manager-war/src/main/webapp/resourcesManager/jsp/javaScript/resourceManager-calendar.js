@@ -38,9 +38,9 @@ resourceStatusColor.qtip['R'] = 'light';
 resourceStatusColor.qtip['A'] = 'light';
 resourceStatusColor.qtip['V'] = 'light';
 resourceStatusColor.event = [];
-resourceStatusColor.event['R'] = 'gray';
-resourceStatusColor.event['A'] = 'red';
-resourceStatusColor.event['V'] = '';
+resourceStatusColor.event['R'] = '#f15858';
+resourceStatusColor.event['A'] = '#a7a7a7';
+resourceStatusColor.event['V'] = '#87bd41';
 resourceStatusColor.resourceClass = [];
 resourceStatusColor.resourceClass['R'] = 'refused';
 resourceStatusColor.resourceClass['A'] = 'waitingForValidation';
@@ -123,6 +123,7 @@ function prepareCalendarEvents(reservationEvents, labels, filters) {
      CALENDAR EVENT
      */
 
+    event.borderColor = resourceStatusColor.event[event.status];
     event.backgroundColor = resourceStatusColor.event[event.status];
 
     /*
@@ -347,7 +348,8 @@ function renderReservation(reservation, labels, filters) {
     $reservation.append($('<h4>').append($('<a>',
         {href : goToReservationLink, title : labels.reservationLink}).append(reservation.reservationTitle)));
   } else {
-    $reservation.append($('<h4>').append(reservation.title).attr('title', labels.reservationLink));
+    $reservation.append($('<h4>').append($('<a>').append(reservation.title).attr('title',
+        labels.reservationLink)));
   }
 
   // Place

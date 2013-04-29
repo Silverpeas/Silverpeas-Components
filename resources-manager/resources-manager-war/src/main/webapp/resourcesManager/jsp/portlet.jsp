@@ -237,28 +237,28 @@
         </h3>
 
         <p><fmt:message key="GML.view.mode"/>
-          <c:set var="classTmp" value=""/>
-          <c:set var="hrefTmp" value="#"/>
-          <c:choose>
-            <c:when test="${viewContext.dataViewType.reservationListingDataView}">
-              <c:set var="classTmp" value=" active"/>
-            </c:when>
-            <c:otherwise>
-              <c:set var="hrefTmp" value="javascript:onClick=viewReservationListingData()"/>
-            </c:otherwise>
-          </c:choose>
-          <a class="list-mode${classTmp}" href="${hrefTmp}" title="<fmt:message key="resourcesManager.listViewType"/>"></a>
           <c:choose>
             <c:when test="${not viewContext.dataViewType.reservationListingDataView}">
               <c:set var="hrefTmp" value="#"/>
               <c:set var="classTmp" value=" active"/>
             </c:when>
             <c:otherwise>
-              <c:set var="classTmp" value=""/>
               <c:set var="hrefTmp" value="javascript:onClick=viewReservationData()"/>
+              <c:set var="classTmp" value=""/>
             </c:otherwise>
           </c:choose>
           <a class="calendar-mode${classTmp}" href="${hrefTmp}" title="<fmt:message key="resourcesManager.calendarViewType"/>"></a>
+          <c:choose>
+            <c:when test="${viewContext.dataViewType.reservationListingDataView}">
+              <c:set var="hrefTmp" value="#"/>
+              <c:set var="classTmp" value=" active"/>
+            </c:when>
+            <c:otherwise>
+              <c:set var="hrefTmp" value="javascript:onClick=viewReservationListingData()"/>
+              <c:set var="classTmp" value=""/>
+            </c:otherwise>
+          </c:choose>
+          <a class="list-mode${classTmp}" href="${hrefTmp}" title="<fmt:message key="resourcesManager.listViewType"/>"></a>
         </p>
       </div>
 
@@ -266,7 +266,6 @@
         <a href="javascript:onClick=previousPeriod()" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowLeft.gif"/>"></a>
         <span class="txtnav">${viewContext.referencePeriodLabel}</span>
         <a href="javascript:onClick=nextPeriod()" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowRight.gif"/>"></a>
-        -
         <span id="today"> <a href="javascript:onClick=goToDay()" onfocus="this.blur()"><fmt:message key="resourcesManager.auJour"/></a></span>
       </div>
 

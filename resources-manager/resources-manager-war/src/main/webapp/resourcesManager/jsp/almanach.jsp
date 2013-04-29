@@ -64,6 +64,7 @@
   <view:includePlugin name="qtip"/>
   <view:includePlugin name="calendar"/>
   <view:includePlugin name="datepicker"/>
+  <link rel="stylesheet" media="print" type="text/css" href="<c:url value="/resourcesManager/jsp/styleSheets/print_resourcesManager.css"/>">
   <script type="text/javascript" src="<c:url value="/resourcesManager/jsp/javaScript/resourceManager-calendar.js" />"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
   <script type="text/javascript">
@@ -220,6 +221,7 @@
     <c:url var="tmpIcon" value="${tmpIcon}"/>
     <view:operationOfCreation altText="${tmp}" action="NewReservation?objectView=${objectView}" icon="${tmpIcon}"/>
 
+    <view:operationSeparator/>
     <fmt:message key="resourcesManager.Reservation" var="tmp"/>
     <fmt:message key="resourcesManager.viewMyReservations" var="tmpIcon" bundle="${icons}"/>
     <c:url var="tmpIcon" value="${tmpIcon}"/>
@@ -294,28 +296,28 @@
           </h3>
 
           <p><fmt:message key="GML.view.mode"/>
-            <c:set var="classTmp" value=""/>
-            <c:set var="hrefTmp" value="#"/>
-            <c:choose>
-              <c:when test="${viewContext.dataViewType.reservationListingDataView}">
-                <c:set var="classTmp" value=" active"/>
-              </c:when>
-              <c:otherwise>
-                <c:set var="hrefTmp" value="javascript:onClick=viewReservationListingData()"/>
-              </c:otherwise>
-            </c:choose>
-            <a class="list-mode${classTmp}" href="${hrefTmp}" title="<fmt:message key="resourcesManager.listViewType"/>"></a>
             <c:choose>
               <c:when test="${not viewContext.dataViewType.reservationListingDataView}">
                 <c:set var="hrefTmp" value="#"/>
                 <c:set var="classTmp" value=" active"/>
               </c:when>
               <c:otherwise>
-                <c:set var="classTmp" value=""/>
                 <c:set var="hrefTmp" value="javascript:onClick=viewReservationData()"/>
+                <c:set var="classTmp" value=""/>
               </c:otherwise>
             </c:choose>
             <a class="calendar-mode${classTmp}" href="${hrefTmp}" title="<fmt:message key="resourcesManager.calendarViewType"/>"></a>
+            <c:choose>
+              <c:when test="${viewContext.dataViewType.reservationListingDataView}">
+                <c:set var="hrefTmp" value="#"/>
+                <c:set var="classTmp" value=" active"/>
+              </c:when>
+              <c:otherwise>
+                <c:set var="hrefTmp" value="javascript:onClick=viewReservationListingData()"/>
+                <c:set var="classTmp" value=""/>
+              </c:otherwise>
+            </c:choose>
+            <a class="list-mode${classTmp}" href="${hrefTmp}" title="<fmt:message key="resourcesManager.listViewType"/>"></a>
           </p>
         </div>
 
@@ -323,7 +325,6 @@
           <a href="javascript:onClick=previousPeriod()" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowLeft.gif"/>"></a>
           <span class="txtnav">${viewContext.referencePeriodLabel}</span>
           <a href="javascript:onClick=nextPeriod()" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowRight.gif"/>"></a>
-          -
           <span id="today"> <a href="javascript:onClick=goToDay()" onfocus="this.blur()"><fmt:message key="resourcesManager.auJour"/></a></span>
         </div>
 
@@ -370,6 +371,21 @@
 
       </div>
     </div>
+    <a id="legendLabelId" class="txtlibform" onclick="$('#legende').toggle()"><fmt:message key="resourcesManager.legend"/></a>
+    <ul id="legende" style="display: none">
+      <c:choose>
+        <c:when test="${not viewContext.dataViewType.reservationListingDataView and viewContext.dataViewType.reservationsDataView}">
+          <li><div class="resource validated">&nbsp;</div><fmt:message key="resourcesManager.legend.reservation.validated"/></li>
+          <li><div class="resource waitingForValidation">&nbsp;</div><fmt:message key="resourcesManager.legend.reservation.waitingForValidation"/></li>
+          <li><div class="resource refused">&nbsp;</div><fmt:message key="resourcesManager.legend.reservation.refused"/></li>
+        </c:when>
+        <c:otherwise>
+          <li><div class="resource validated">&nbsp;</div><fmt:message key="resourcesManager.legend.resource.validated"/></li>
+          <li><div class="resource waitingForValidation">&nbsp;</div><fmt:message key="resourcesManager.legend.resource.waitingForValidation"/></li>
+          <li><div class="resource refused">&nbsp;</div><fmt:message key="resourcesManager.legend.resource.refused"/></li>
+        </c:otherwise>
+      </c:choose>
+    </ul>
     <div id="reservationContent"></div>
   </view:frame>
 </view:window>

@@ -250,19 +250,24 @@ hr.clear {
   display:inline;
   margin-right:5px;
 }
-.reservationRessources li.validated a{
-  background-color:#747474;
+.reservationRessources li.validated a,
+.resource.validated{
+  background-color: #87bd41;
 }
-.reservationRessources li.refused a{
-  background:#d1d0d0 url(../icons/state-refused.png) right 5px no-repeat;
-  padding-right:20px;
+.reservationRessources li.refused a,
+.resource.refused{
+  background-color: #f15858;
   color:#FFF;
 }
-.reservationRessources li.waitingForValidation a{
-  background-color:#f15858;
+.reservationRessources li.waitingForValidation a,
+.resource.waitingForValidation {
+  background-color: #a7a7a7;
   color:#FFF;
 }
-.reservationRessources li a{
+.reservationRessources li a,
+.resource {
+  display: inline-block;
+  margin-bottom: 3px;
   color:#FFF;
   border-radius:5px;
   -webkit-border-radius:5px;
@@ -304,4 +309,35 @@ hr.clear {
   color:#56A3D9;
   text-decoration:underline;
   font-weight:bold;
+}
+
+#legende {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  height: 24px;
+}
+
+#legende li {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  float: left;
+  margin-right: 18px;
+  line-height: 20px;
+}
+
+#legende li .resource {
+  width: 20px;
+  margin-right: 9px;
+  display: block;
+  float: left;
+  line-height: 14px;
+}
+
+#legendLabelId {
+  cursor: pointer;
+  float: right;
+  padding-right: 38px;
+  margin: -4px 0 4px;
 }
