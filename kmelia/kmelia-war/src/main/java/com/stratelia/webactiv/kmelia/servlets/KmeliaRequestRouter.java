@@ -269,8 +269,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           KmeliaSecurity security = new KmeliaSecurity(kmelia.getOrganisationController());
           try {
             boolean accessAuthorized = security.isAccessAuthorized(kmelia.getComponentId(), kmelia
-                .getUserId(), id,
-                "Publication");
+                .getUserId(), id, "Publication");
             if (accessAuthorized) {
               processPath(kmelia, id);
               if ("Attachment".equals(type)) {
@@ -1483,7 +1482,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
       } else if (function.startsWith("Wizard")) {
         destination = processWizard(function, kmelia, request, rootDestination);
-      } else if (function.equals("ViewTopicProfiles")) {
+      } else if ("ViewTopicProfiles".equals(function)) {
         String role = request.getParameter("Role");
         if (!StringUtil.isDefined(role)) {
           role = SilverpeasRole.admin.toString();
