@@ -80,7 +80,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 	//Vrai si le user connecte est le createur de cette publication ou si il est admin
 	boolean isOwner = false;
-	
+
 	//display message according to previous action
 	if (action.equals("ValidationComplete") || action.equals("ValidationInProgress") || action.equals("Unvalidate") || action.equals("Suspend")) {
 	  if (action.equals("ValidationComplete")) {
@@ -94,7 +94,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	  }
 	  action = "ViewPublication";
 	}
-	  
+
 	// display message according to current state of publication
 	if (!StringUtil.isDefined(screenMessage)) {
 	   if (pubDetail.isRefused()) {
@@ -107,7 +107,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	 	   screenMessage += "<a href=\"javascript:onclick=pubUnvalidate()\" class=\"button refuse\"><span>"+resources.getString("PubUnvalidate?")+"</span></a>";
 	     }
 	     screenMessage += "</div>";
-	   }	 
+	   }
 	}
 
 	if (action.equals("ValidateView")) {
@@ -218,7 +218,7 @@ $(function() {
           }
         }
       });
-    
+
     $("#publication-refusal-form").dialog({
         autoOpen: false,
         title: "<%=resources.getString("PubUnvalidate?")%>",
@@ -257,24 +257,24 @@ $(function() {
         OperationPane operationPane = window.getOperationPane();
         if (!"supervisor".equals(profile)) {
           if (attachmentsEnabled) {
-          	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
+          	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javascript:addAttachment('" +pubDetail.getId() + "')");
           }
           if (kmeliaScc.isDraftEnabled()) {
             if (pubDetail.isDraft()) {
               operationPane.addLine();
-              operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javaScript:pubDraftOut()");
+              operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javascript:pubDraftOut()");
             }
           }
-          operationPane.addOperation(deletePubliSrc, resources.getString("kmelia.DeleteClone"), "javaScript:deleteCloneConfirm();");
+          operationPane.addOperation(deletePubliSrc, resources.getString("kmelia.DeleteClone"), "javascript:deleteCloneConfirm();");
         }
         if (userCanValidate) {
 	      operationPane.addLine();
-	      operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate()");
-	      operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
+	      operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javascript:pubValidate()");
+	      operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javascript:pubUnvalidate()");
         }
         if (profile.equals("supervisor")) {
           operationPane.addLine();
-          operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javaScript:pubSuspend('"+id+"')");
+          operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javascript:pubSuspend('"+id+"')");
         }
         out.println(window.printBefore());
 
@@ -298,7 +298,7 @@ $(function() {
 			boolean showDownloadEstimation = resources.getSetting("showDownloadEstimation", true);
 			boolean showInfo = resources.getSetting("showInfo", true);
 			boolean showIcon = true;
-			          
+
 		    out.println("<a name=\"attachments\"></a>");
 			try {
 				out.flush();
@@ -324,17 +324,17 @@ $(function() {
 				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
 			}
     	}
-      
+
         /*********************************************************************************************************************/
         /** Affichage des Info de publication																		**/
         /*********************************************************************************************************************/
 		%>
 		<div id="infoPublication" class="bgDegradeGris">
-			         			
+
        		<% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) { %>
 				<p id="authorInfo"><%=resources.getString("GML.author")%> : <b><%=pubDetail.getAuthor()%></b></p>
 			<% }%>
-       	
+
        		<% if (updaterId != null) {%>
 			  	<div id="lastModificationInfo" class="paragraphe">
 			  		<%=resources.getString("PubDateUpdate")%>  <br />
@@ -342,7 +342,7 @@ $(function() {
 			  		<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 		  		</div>
 		  	<% }%>
-			
+
 			<div id="creationInfo" class="paragraphe">
 			 	<%=resources.getString("PubDateCreation")%> <br/>
 			 	<b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getCreator().getId()%>"/>
@@ -358,14 +358,14 @@ $(function() {
     	out.println("<div class=\"principalContent\">");
         if (StringUtil.isDefined(screenMessage)) {
 	      out.println(screenMessage);
-        } 
+        }
 	        /*********************************************************************************************************************/
 	        /** Affichage du header de la publication																			**/
 	        /*********************************************************************************************************************/
 	        out.print("<h2 class=\"publiName\">");
-	        
+
 	        out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName()));
-	     		   
+
 	     	if (!"user".equals(profile)) {
 	          if (pubDetail.isValidationRequired()) {
 	            out.println(" <img src=\"" + outDraftSrc + "\" alt=\"" + resources.getString(
@@ -380,19 +380,19 @@ $(function() {
 	            out.println(" <img src=\"" + refusedSrc + "\" alt=\"" + resources.getString(
 	                "PublicationRefused") + "\"  id=\"status\"/>");
 	          }
-			}	
+			}
 
-	        out.println("</h2>"); 
+	        out.println("</h2>");
 
-	        String description = EncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription());	
+	        String description = EncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription());
 	        if (StringUtil.isDefined(description)) {
 	        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
 	        }
-			
+
 	        /*********************************************************************************************************************/
 	        /** Affichage du contenu de la publication																			**/
 	        /*********************************************************************************************************************/
-	
+
 	        out.println("<div id=\"richContent\">");
 	        if (WysiwygController.haveGotWysiwygToDisplay(componentId, id, resources.getLanguage())) {
 	          %>
@@ -416,9 +416,9 @@ $(function() {
 			  }
 			}
 			out.println("</div>");
-		
+
 		out.println("</div>");
-       
+
 		out.flush();
 
         out.println(frame.printAfter());

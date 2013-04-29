@@ -81,9 +81,6 @@ function refuseResource(resourceId, resourceName, objectView) {
     window.location.href = "ForRefuseResource?ResourceId=" + resourceId + "&ResourceName=" + resourceName+ "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
 }
 
-function AddAttachment() {
-	SP_openWindow("/silverpeas/attachment/jsp/addAttFiles.jsp", "test", "600", "240","scrollbars=no, resizable, alwaysRaised");
-}
 </script>
 </head>
 	<body id="resourcesManager">
@@ -91,7 +88,7 @@ function AddAttachment() {
 	if (isOwner)
 	{
 		operationPane.addOperation(resource.getIcon("resourcesManager.updateBig"), resource.getString("resourcesManager.modifierReservation"),"EditReservation?id="+reservationId);
-		operationPane.addOperation("#", resource.getString("resourcesManager.addFile"), "javaScript:AddAttachment()");
+		operationPane.addOperation("#", resource.getString("resourcesManager.addFile"), "javascript:addAttachment('" + maReservation.getId() + "')");
 		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("resourcesManager.basketDelete"), resource.getString("resourcesManager.supprimerReservation"),"javascript:deleteReservation();");
 	}
