@@ -127,7 +127,7 @@ function getComponentId() {
 }
 
 function getComponentLabel() {
-	return "<%=componentLabel%>";
+	return "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
 }
 
 function getLanguage() {
@@ -829,7 +829,7 @@ $(document).ready(
 						} else {
 							if (n.data) {
 								// this is the root
-								n.data = "<%=componentLabel%>";
+								n.data = "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
 								if (n.attr['nbItems']) {
 									n.data = n.data + " ("+n.attr['nbItems']+")";
 								}

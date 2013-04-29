@@ -115,7 +115,7 @@ function getComponentId() {
 }
 
 function getComponentLabel() {
-	return "<%=componentLabel%>";
+	return "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
 }
 
 function getLanguage() {
