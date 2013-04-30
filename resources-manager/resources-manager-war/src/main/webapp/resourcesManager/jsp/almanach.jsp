@@ -46,14 +46,10 @@
 <c:set var="isResponsible" value="${requestScope.IsResponsible}"/>
 <c:set var="viewContext" value="${requestScope.viewContext}"/>
 <c:set var="componentInstanceId" value="${viewContext.componentInstanceId}"/>
-<c:set var="personalReservations" value="myReservation"/>
 <c:set var="allReservations" value="allReservations"/>
 <c:set var="categoryId" value="${viewContext.categoryId}"/>
 <c:set var="resourceId" value="${viewContext.resourceId}"/>
-<c:set var="objectView" value="${requestScope.idCategory}"/>
-<c:if test="${empty objectView}">
-  <c:set var="objectView" value="${personalReservations}"/>
-</c:if>
+<c:set var="objectView" value="${requestScope.objectView}"/>
 <c:set var="allCategories" value="${requestScope.listOfCategories}"/>
 <c:set var="allResources" value="${requestScope.listResourcesofCategory}"/>
 

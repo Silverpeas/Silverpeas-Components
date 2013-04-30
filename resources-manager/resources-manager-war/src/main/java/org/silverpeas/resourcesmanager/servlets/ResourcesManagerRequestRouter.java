@@ -486,7 +486,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         if (reservationId == null) {
           reservationId = request.getAttributeAsLong("reservationId");
         }
-        String objectView = getView(request);
+        String objectView = getView(request, resourcesManagerSC);
         // si on vient de resource.jsp, reservationId a été stocké dans le
         // session controler
         if (reservationId == null) {
@@ -701,9 +701,8 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
    */
   private String displayCalendarView(ServletRequestWrapper request,
       ResourcesManagerSessionController sessionController) {
-    String myObjectView = getView(request);
+    String myObjectView = getView(request, sessionController);
     String idUser = (String) request.getAttribute("userId");
-    Long currentResourceId = null;
     // on regarde le planning d'une catégorie ou d'une ressource
     Long categoryId = sessionController.getViewContext().getCategoryId() ;
     if (categoryId != null) {
@@ -735,7 +734,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     List<Category> listOfCategories = sessionController.getCategories();
     request.setAttribute("idUser", idUser);
     request.setAttribute("listOfCategories", listOfCategories);
-    request.setAttribute("idCategory", myObjectView);
+    request.setAttribute("objectView", myObjectView);
     request.setAttribute("IsResponsible", sessionController.isResponsible());
     if (StringUtil.getBooleanValue(request.getParameter("isPortlet"))) {
       return root + "portlet.jsp";
@@ -743,17 +742,16 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
     return root + "almanach.jsp";
   }
 
-  private String getView(ServletRequestWrapper request) {
+  private String getView(ServletRequestWrapper request,
+      ResourcesManagerSessionController sessionController) {
     String myObjectView = request.getParameter("objectView");
-    if (!StringUtil.isDefined(myObjectView)) {
+    if (StringUtil.isNotDefined(myObjectView)) {
       myObjectView = (String) request.getAttribute("objectView");
     }
+    if (StringUtil.isNotDefined(myObjectView)) {
+      myObjectView = sessionController.getDefaultView();
+    }
     return myObjectView;
-  }
-
-  private boolean isNotAnUserView(String myObjectView) {
-    return (!"myReservation".equals(myObjectView)) && (!"PlanningOtherUser".equals(myObjectView))
-        && (!"viewUser".equals(myObjectView)) && (!"viewForValidation".equals(myObjectView));
   }
 
   // recherche du profile de l'utilisateur

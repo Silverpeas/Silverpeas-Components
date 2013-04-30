@@ -21,6 +21,7 @@
 package org.silverpeas.resourcesmanager.control;
 
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -444,6 +445,14 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public boolean isWeekendNotVisible() {
     String parameterValue = getComponentParameterValue("weekendNotVisible");
     return "yes".equals(parameterValue.toLowerCase());
+  }
+
+  public String getDefaultView() {
+    String defaultView = getComponentParameterValue("defaultDisplay");
+    if (StringUtil.isNotDefined(defaultView)) {
+      defaultView = "allReservations";
+    }
+    return defaultView;
   }
 
   public String initUPToSelectManager(String pubId) {
