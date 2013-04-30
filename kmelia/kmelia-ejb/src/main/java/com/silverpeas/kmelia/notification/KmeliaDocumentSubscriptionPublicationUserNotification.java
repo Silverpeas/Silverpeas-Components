@@ -37,11 +37,13 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
+import java.util.Collection;
+
 /**
  * @author Yohann Chastagnier
  */
 public class KmeliaDocumentSubscriptionPublicationUserNotification extends
-    KmeliaSubscriptionPublicationUserNotification {
+    AbstractKmeliaPublicationUserNotification {
 
   private final SimpleDocument document;
 
@@ -59,6 +61,12 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
   @Override
   protected String getFileName() {
     return "notificationAttachment";
+  }
+
+  @Override
+  protected Collection<String> getUserIdsToNotify() {
+    // Users to notify are not handled here.
+    return null;
   }
 
   @Override
