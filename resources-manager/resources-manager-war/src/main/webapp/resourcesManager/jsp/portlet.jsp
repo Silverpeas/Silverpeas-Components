@@ -139,7 +139,9 @@
     }
 
     function clickDay(day) {
+      <c:if test="${profile != 'user'}">
       location.href = "NewReservation?objectView=${objectView}&Day=" + day;
+      </c:if>
     }
 
     // Labels
@@ -308,6 +310,7 @@
             </c:forEach>
           </select>
         </c:if>
+        <span style="line-height: 25px">&nbsp;</span>
       </p>
 
     </div>
