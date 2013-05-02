@@ -38,7 +38,6 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <%
 Reservation reservation = (Reservation) request.getAttribute("reservation");
-List<Resource> listResourceEverReserved = (List<Resource>) request.getAttribute("listResourceEverReserved");
 Long modifiedReservationId = (Long) request.getAttribute("idReservation");
 
 String evenement = reservation.getEvent();
@@ -48,7 +47,7 @@ String lieu = reservation.getPlace();
 // boutons de validation du formulaire
 ButtonPane buttonPane = gef.getButtonPane();
 Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
-Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Main",false);
+Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Calendar?objectView=" + request.getAttribute("objectView"),false);
 buttonPane.addButton(validateButton);
 buttonPane.addButton(cancelButton);
 %>
@@ -188,7 +187,7 @@ buttonPane.addButton(cancelButton);
       <div class="inlineMessage-nok" style="text-align: left">
         <h4><fmt:message key="resourcesManager.resourceUnReservable"/></h4>
         <c:forEach items="${requestScope.unavailableReservationResources}" var="unavailableResource">
-          <span><fmt:message key="resourcesManager.ressourceNom"/> : ${unavailableResource.name}</span><br/>
+          <span title="${unavailableResource.description}"><fmt:message key="resourcesManager.ressourceNom"/> : ${unavailableResource.name}</span><br/>
         </c:forEach>
       </div>
       <br clear="all"/>
@@ -237,7 +236,7 @@ buttonPane.addButton(cancelButton);
                       <div id="<c:out value ="${maResource.id}" />" onClick="switchResource(<c:out value ="${maResource.id}" />,'categ<c:out value ="${category.id}" />');" style="cursor: pointer;">
                       <table width="100%" cellspacing="0" cellpadding="0" border="0">
                         <tr>
-                          <td width="80%" nowrap>&nbsp;-&nbsp;<c:out value ="${maResource.name}" /></td>
+                          <td width="80%" nowrap><span title="${maResource.description}"> - ${maResource.name}</span></td>
                           <td><img src="<c:url value="/util/icons/ok.gif" />" id="image<c:out value ="${maResource.id}" />" align="middle"/></td>
                         </tr>
                       </table>
@@ -257,25 +256,20 @@ buttonPane.addButton(cancelButton);
         <td valign="top" width="50%">
           <div class="titrePanier"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%></div>
           <div id="listeReservation">
-            <%if (listResourceEverReserved != null){ 
-                  // la suppression ayant ete faite, cette boucle permet d'afficher les resources qui n'ont pas pose probleme
-                  for (Resource maRessourceAlreadyReserved : listResourceEverReserved) {
-                              String NomResource = maRessourceAlreadyReserved.getName();
-                              Long resourceId = maRessourceAlreadyReserved.getId();
-                              Long categoryId = maRessourceAlreadyReserved.getCategoryId();
-            %>
-            <div id="<%=resourceId%>" onClick="switchResource(<%=resourceId%>,'categ<%=categoryId%>');" style="cursor: pointer;">
-              <table width="100%" cellspacing="0" cellpadding="0" border="0">
-                <tr>
-                  <td width="80%" nowrap>&nbsp;-&nbsp;<%=NomResource%> </td>
-                  <td><img src="<c:url value="/util/icons/delete.gif" />" id="image<%=resourceId%>" align="middle" alt=""/></td>
-                </tr>
-              </table>
-            </div>
-            <%
-        }
-    }
-            %>
+            <c:if test="${not empty requestScope.listResourceEverReserved}">
+              <c:forEach items="${requestScope.listResourceEverReserved}" var="resource">
+                <div id="${resource.id}" onClick="switchResource(${resource.id},'categ${resource.categoryId}');" style="cursor: pointer;">
+                  <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                      <td width="80%" nowrap><span title="${resource.description}"> - ${resource.name}</span></td>
+                      <td>
+                        <img src="<c:url value="/util/icons/delete.gif" />" id="image${resource.id}" align="middle" alt=""/>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </c:forEach>
+            </c:if>
           </div>
         </td></tr></table>
         <%

@@ -24,27 +24,35 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
+
+<fmt:setLocale value="${requestScope.resources.language}"/>
 
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
   Reservation reservation = (Reservation) request.getAttribute("reservation");
-  String defaultDate = (String) request.getAttribute("DefaultDate");
+  String defaultDate = (String) request.getAttribute("defaultDate");
+  String defaultTime = (String) request.getAttribute("defaultTime");
+
 
   String dateBegin = "";
   String dateEnd = "";
+  String minuteHourDateBegin = "";
+  String minuteHourDateEnd = "";
   if (StringUtil.isDefined(defaultDate)) {
     dateBegin = defaultDate;
     dateEnd = defaultDate;
+    if (StringUtil.isDefined(defaultTime)) {
+      minuteHourDateBegin = defaultTime;
+    }
   }
 
   String event = "";
   String reason = "";
   String place = "";
-  String minuteHourDateBegin = "";
-  String minuteHourDateEnd = "";
   Long reservationId = null;
 
   if (reservation != null) {
@@ -66,7 +74,7 @@
   //creation des boutons Valider et Annuler
   Button validateButton =
       gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
-  Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
+  Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Calendar?objectView="+request.getAttribute("objectView"), false);
 %>
 <html>
 <head>
@@ -74,107 +82,66 @@
   <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-function validerNom(){
-	if(document.getElementById("evenement").value == 0){
-		document.getElementById('validationNom').innerHTML="Evenement obligatoire";
-	}
-	else {
-		document.getElementById('validationNom').style.display='none';
-	}
-}
-function isCorrectForm()
-{
-	var errorNb = 0;
-	var errorMsg = "";
-	var startDate = document.getElementById("startDate").value;
-	var startHour = document.getElementById("startHour").value;
-	var endDate = document.getElementById("endDate").value;
-	var endHour = document.getElementById("endHour").value;
-		
-	if(isWhitespace(document.getElementById("evenement").value)){
-		errorNb++;
-		errorMsg+="  - '<%=resource.getString("resourcesManager.evenement")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-	}
-	if (isWhitespace(startDate)) {
-		errorNb++;
-		errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-	} else {
-		if (!isDateOK(startDate, '<%=resource.getLanguage()%>')) {
-			errorNb++;
-			errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-		}
-	}
-	if (isWhitespace(startHour)) {
-		errorNb++;
-		errorMsg+="  - '<%=resource.getString("resourcesManager.beginHour")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-	} else {
-		if (!checkHour(startHour)) {
-			errorNb++;
-			errorMsg+="  - '<%=resource.getString("resourcesManager.beginHour")%>' <%=resource.getString("GML.MustContainsCorrectHour")%>\n";
-		}
-	}
-	if (isWhitespace(endDate)) {
-		errorNb++;
-		errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-	} else {
-		if (!isDateOK(endDate, '<%=resource.getLanguage()%>')) {
-			errorNb++;
-			errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-		}
-	}
-	if (isWhitespace(endHour)) {
-		errorNb++;
-		errorMsg+="  - '<%=resource.getString("resourcesManager.endHour")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-	} else {
-		if (!checkHour(endHour)) {
-			errorNb++;
-			errorMsg+="  - '<%=resource.getString("resourcesManager.endHour")%>' <%=resource.getString("GML.MustContainsCorrectHour")%>\n";
-		}
-	}
+  function validerNom() {
+    if (document.getElementById("evenement").value == 0) {
+      document.getElementById('validationNom').innerHTML = "Evenement obligatoire";
+    } else {
+      document.getElementById('validationNom').style.display = 'none';
+    }
+  }
+  function isCorrectForm() {
+    var errorNb = 0;
+    var errorMsg = "";
 
-	switch(errorNb)
- 	{
-    	case 0 :
-        	result = true;
-        	break;
-    	case 1 :
-        	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-        	window.alert(errorMsg);
-        	result = false;
-        	break;
-    	default :
-        	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-        	window.alert(errorMsg);
-        	result = false;
-        	break;
- 	}
-	return result;
-}
+    if (isWhitespace(document.getElementById("evenement").value)) {
+      errorNb++;
+      errorMsg +=
+          "  - '<%=resource.getString("resourcesManager.evenement")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+    }
 
-function verification(){
-	if (isCorrectForm()){
-		if(isCorrectDateOrder(document.getElementById("startDate").value,document.getElementById("startHour").value,document.getElementById("endDate").value,document.getElementById("endHour").value))
-			{
-        document.createForm.submit();
-      }
-	}
-}
+    var dateErrors = isPeriodValid({
+      dateId : 'startDate',
+      hourId : 'startHour',
+      isMandatory : true,
+      isMandatoryHour : true
+    }, {
+      dateId : 'endDate',
+      hourId : 'endHour',
+      isMandatory : true,
+      isMandatoryHour : true,
+      canBeEqualToAnother : false
+    });
+    $(dateErrors).each(function(index, error) {
+      errorMsg += "  - " + error.message + "\n";
+      errorNb++;
+    });
 
-/* fonction permettant de v�rifier que dateBegin,hourBegin est bien inf�rieur � dateEnd,hourEnd*/
-function renverseStrDate(dateIn, hourIn) { //procedure renverse date
-	 var sOut = "";
-	 sOut = dateIn.charAt(6) + dateIn.charAt(7) + dateIn.charAt(8)+ dateIn.charAt(9) + "/" + dateIn.charAt(3)+ dateIn.charAt(4) + "/" + dateIn.charAt(0)+ dateIn.charAt(1) + "/" + hourIn.charAt(0)+ hourIn.charAt(1)+ "/" + hourIn.charAt(3)+ hourIn.charAt(4);
-	 return(sOut);
-}
+    switch (errorNb) {
+      case 0 :
+        result = true;
+        break;
+      case 1 :
+        errorMsg =
+            "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error").toLowerCase()%> : \n" +
+                errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+      default :
+        errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb +
+            " <%=resource.getString("GML.errors").toLowerCase()%> :\n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+    }
+    return result;
+  }
 
-function isCorrectDateOrder(DateBegin, HourBegin, DateEnd, HourEnd) { // procedure du bouton v�rifier
-	if (renverseStrDate(DateBegin,HourBegin) < renverseStrDate(DateEnd,HourEnd)) {
-		return true;
-	} else {
-		alert("<%=resource.getString("resourcesManager.ordreDateReservation")%>");
-		return false;
-	}
-}
+  function verification() {
+    if (isCorrectForm()) {
+      document.createForm.submit();
+    }
+  }
 </script>
 </head>
 <body>
@@ -188,14 +155,12 @@ out.println(window.printBefore());
 out.println(frame.printBefore());
 out.println(board.printBefore());
 
-
 ButtonPane buttonPane = gef.getButtonPane();
 buttonPane.addButton(validateButton);
 buttonPane.addButton(cancelButton);
-
-
 %>
 <form NAME="createForm" method="post" action="GetAvailableResources">
+<input type="hidden" name="objectView" value="${requestScope.objectView}"/>
 <TABLE ALIGN="CENTER" CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
 	<tr>
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.evenement"));%> : </TD>
@@ -203,14 +168,14 @@ buttonPane.addButton(cancelButton);
 	</tr>
 
 	<tr>
-		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.dateBegin")%>&nbsp;:&nbsp;</td>
+		<td class="txtlibform" nowrap="nowrap"><label for="startDate"><%=resource.getString("GML.dateBegin")%> : </label></td>
 		<td valign="baseline">
 		<input type="text" class="dateToPick" name="startDate" size="14" id="startDate" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=dateBegin%>"/>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>
 		<span class="txtlibform">&nbsp;</span><input type="text" name="startHour" id="startHour" size="5" maxlength="5" value="<%=minuteHourDateBegin%>"/>&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5"/>
 	</tr>
 
 	<tr>
-		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.dateEnd")%>&nbsp;:&nbsp;</td>
+		<td class="txtlibform" nowrap="nowrap"><label for="endDate"><%=resource.getString("GML.dateEnd")%> : </label></td>
 		<td valign="baseline">
 		<input type="text" class="dateToPick" name="endDate" id="endDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=dateEnd%>"/>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>
 		<span class="txtlibform">&nbsp;</span><input type="text" name="endHour" id="endHour" size="5" maxlength="5" value="<%=minuteHourDateEnd%>"/>&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5"/>

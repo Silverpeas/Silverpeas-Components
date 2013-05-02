@@ -65,7 +65,7 @@
 	}
 	else if ("calendar".equals(provenance)){
 		// on vient de l'almanach
-		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeReservation"), "Calendar?objectView="+idcategory+"&resourceId="+resourceId,false);
+		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeReservation"), "Calendar?objectView="+objectView,false);
 		
 	}
 	else if ("reservation".equals(provenance)){

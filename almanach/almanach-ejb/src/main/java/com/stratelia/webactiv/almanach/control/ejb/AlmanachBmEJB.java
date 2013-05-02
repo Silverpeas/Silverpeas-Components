@@ -28,8 +28,10 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import net.fortuna.ical4j.model.Period;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.date.*;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -77,68 +79,6 @@ public class AlmanachBmEJB implements AlmanachBm {
   private SilverpeasBeanDAO<Periodicity> eventPeriodicityDAO = null;
   private SilverpeasBeanDAO<PeriodicityException> periodicityExceptionDAO = null;
   private EventDAO eventDAO = new EventDAO();
-
-  /**
-   * Get the events of the month
-   *
-   * @author dlesimple
-   * @param pk
-   * @param date
-   * @param instanceIds array of instanceIds
-   * @return Collection of Events
-   */
-  @Override
-  public Collection<EventDetail> getMonthEvents(EventPK pk, Date date,
-      String[] instanceIds) {
-    SilverTrace.info("almanach", "AlmanachBmEJB.getMonthsEvents()",
-        "root.MSG_GEN_ENTER_METHOD");
-    try {
-      List<EventDetail> monthEvents = new ArrayList<EventDetail>();
-
-      String[] almanachIds = Arrays.copyOf(instanceIds, instanceIds.length + 1);
-      almanachIds[instanceIds.length] = pk.getInstanceId();
-
-      // getting events without periodicity
-      Collection<EventDetail> events = getEventDAO().findAllEventsInMonth(date, almanachIds);
-      List<EventDetail> periodicEvents = new ArrayList<EventDetail>();
-      for (EventDetail event : events) {
-        if (event.isPeriodic()) {
-          periodicEvents.add(event);
-        } else {
-          monthEvents.add(event);
-        }
-      }
-      if (!periodicEvents.isEmpty()) {
-        // transform event occurrences to events (!)
-        net.fortuna.ical4j.model.Calendar calendarAlmanach =
-            getICal4jCalendar(periodicEvents, null);
-        Collection<EventDetail> occurrences =
-            getListRecurrentEvent(calendarAlmanach, null, "", "useless", false);
-
-        // adding event occurrences to non periodic events
-        monthEvents.addAll(occurrences);
-      }
-
-      return monthEvents;
-    } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachBmEJB.getMonthEvents()",
-          SilverpeasRuntimeException.ERROR,
-          "almanach.EXE_GET_MONTH_EVENTS_FAIL", e);
-    }
-  }
-
-  /**
-   * Get the events of the month
-   *
-   * @author dlesimple
-   * @param pk
-   * @param date
-   * @return Collection of Events
-   */
-  @Override
-  public Collection<EventDetail> getMonthEvents(EventPK pk, Date date) {
-    return getMonthEvents(pk, date, null);
-  }
 
   /*
    * (non-Javadoc)
@@ -880,60 +820,21 @@ public class AlmanachBmEJB implements AlmanachBm {
    * @return
    */
   private OrganizationController getOrganizationController() {
-    OrganizationController orga = new OrganizationController();
-    return orga;
+    return new OrganizationController();
   }
 
   @Override
-  public List<EventOccurrence> getEventOccurrencesInYear(java.util.Calendar year,
+  public List<EventOccurrence> getEventOccurrencesInPeriod(org.silverpeas.date.Period period,
       String... almanachIds) {
     try {
-      Collection<EventDetail> events = getEventDAO().findAllEventsInYear(year.getTime(),
-          almanachIds);
+      Collection<EventDetail> events = getEventDAO().findAllEventsInPeriod(period, almanachIds);
       EventOccurrenceGenerator occurrenceGenerator = EventOccurrenceGeneratorFactory.getFactory().
           getEventOccurrenceGenerator();
-      return occurrenceGenerator.generateOccurrencesInYear(year,
-          new ArrayList<EventDetail>(events));
+      return occurrenceGenerator
+          .generateOccurrencesInPeriod(period, new ArrayList<EventDetail>(events));
     } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInYear()",
-          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
-          e);
-    }
-
-  }
-
-  @Override
-  public List<EventOccurrence> getEventOccurrencesInMonth(java.util.Calendar month,
-      String... almanachIds) {
-    try {
-      Collection<EventDetail> events = getEventDAO().findAllEventsInMonth(month.getTime(),
-          almanachIds);
-      EventOccurrenceGenerator occurrenceGenerator = EventOccurrenceGeneratorFactory.getFactory().
-          getEventOccurrenceGenerator();
-      return occurrenceGenerator.generateOccurrencesInMonth(month,
-          new ArrayList<EventDetail>(events));
-    } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInMonth()",
-          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
-          e);
-    }
-
-  }
-
-  @Override
-  public List<EventOccurrence> getEventOccurrencesInWeek(java.util.Calendar week,
-      String... almanachIds) {
-    try {
-      Collection<EventDetail> events = getEventDAO().findAllEventsInWeek(week.getTime(),
-          almanachIds);
-      EventOccurrenceGenerator occurrenceGenerator = EventOccurrenceGeneratorFactory.getFactory().
-          getEventOccurrenceGenerator();
-      return occurrenceGenerator.generateOccurrencesInWeek(week,
-          new ArrayList<EventDetail>(events));
-    } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInWeek()",
-          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
-          e);
+      throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInPeriod()",
+          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL", e);
     }
   }
 
