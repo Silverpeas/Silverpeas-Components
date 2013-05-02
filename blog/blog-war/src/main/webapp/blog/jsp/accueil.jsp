@@ -39,14 +39,14 @@ Collection<PostDetail>  posts   = (Collection<PostDetail>) request.getAttribute(
 Collection<NodeDetail>  categories  = (Collection<NodeDetail>) request.getAttribute("Categories");
 Collection<Archive>   archives  = (Collection<Archive>) request.getAttribute("Archives");
 Collection<LinkDetail>  links   = (Collection<LinkDetail>) request.getAttribute("Links");
-boolean  isUserSubscribed   = (Boolean) request.getAttribute("IsUserSubscribed");
+Boolean  isUserSubscribed   = (Boolean) request.getAttribute("IsUserSubscribed");
 String    profile   = (String) request.getAttribute("Profile");
 String    blogUrl   = (String) request.getAttribute("Url");
 String    rssURL    = (String) request.getAttribute("RSSUrl");
 List    events    = (List) request.getAttribute("Events");
 String    dateCal   = (String) request.getAttribute("DateCalendar");
-boolean   isPdcUsed = (Boolean) request.getAttribute("IsUsePdc");
-boolean   isDraftVisible  = (Boolean) request.getAttribute("IsDraftVisible");
+Boolean   isPdcUsed = (Boolean) request.getAttribute("IsUsePdc");
+Boolean   isDraftVisible  = (Boolean) request.getAttribute("IsDraftVisible");
 int nbPostDisplayed   = (Integer) request.getAttribute("NbPostDisplayed");
 WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
 StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
@@ -70,7 +70,7 @@ if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRo
   }
 }
 
-if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest()) {
+if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribed != null) {
   if (!isUserSubscribed) {
     operationPane.addOperation("useless", resource.getString("blog.addSubscription"), "javascript:onClick=addSubscription()");
   } else {

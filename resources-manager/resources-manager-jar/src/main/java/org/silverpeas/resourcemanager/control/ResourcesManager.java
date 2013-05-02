@@ -25,6 +25,9 @@ package org.silverpeas.resourcemanager.control;
 
 import java.util.Date;
 import java.util.List;
+
+import org.silverpeas.date.Period;
+import org.silverpeas.date.PeriodType;
 import org.silverpeas.resourcemanager.model.Category;
 import org.silverpeas.resourcemanager.model.Reservation;
 import org.silverpeas.resourcemanager.model.Resource;
@@ -65,7 +68,7 @@ public interface ResourcesManager {
 
   public List<Reservation> getReservations(String instanceId);
 
-  public List<Resource> getResourcesofReservation(String instanceId, Long reservationId);
+  public List<Resource> getResourcesOfReservation(String instanceId, Long reservationId);
 
   public void deleteReservation(Long id, String componentId);
 
@@ -79,14 +82,17 @@ public interface ResourcesManager {
 
   public List<Reservation> getUserReservations(String instanceId, String userId);
   
-  public List<Reservation> getMonthReservationOfUser(String instanceId, Date monthDate,
-      Integer userId);
+  public List<Reservation> getReservationOfUser(String instanceId, Integer userId,
+      final Period period);
 
-  public List<Reservation> getReservationForValidation(String instanceId, Date monthDate,
-      String userId);
+  public List<Reservation> getReservationForValidation(String instanceId, String userId,
+      final Period period);
 
-  public List<Reservation> listReservationsOfMonthInCategoryForUser(Date monthDate,
-      Long idCategory, String userId);
+  public List<Reservation> getReservationWithResourcesOfCategory(final String instanceId,
+      Integer userId, final Period period, Long categoryId);
+
+  public List<Reservation> getReservationWithResource(final String instanceId, Integer userId,
+      Period period, Long resourceId);
 
   public void indexResourceManager(String instanceId);
 

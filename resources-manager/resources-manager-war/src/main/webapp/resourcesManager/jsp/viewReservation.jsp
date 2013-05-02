@@ -24,12 +24,21 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page import="org.silverpeas.resourcemanager.model.Resource"%>
 <%@ page import="org.silverpeas.resourcemanager.model.Reservation"%>
 <%@ page import="java.util.List" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
+
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
+<c:set var="reservation" value="${requestScope.reservation}"/>
+
 <%
 //Recuperation des details de l'ulisateur
 List<Resource> listResourcesofReservation = (List<Resource>)request.getAttribute("listResourcesofReservation");
@@ -43,7 +52,6 @@ String dateEnd = resource.getOutputDateAndHour(maReservation.getEndDate());
 String dateBegin = resource.getOutputDateAndHour(maReservation.getBeginDate());
 String flag = (String)request.getAttribute("Profile");
 
-Board	board		 = gef.getBoard();
 Button cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeReservation"), "Calendar?objectView="+objectView,false);
 ButtonPane buttonPane = gef.getButtonPane();
 buttonPane.addButton(cancelButton);
@@ -154,11 +162,11 @@ function refuseResource(resourceId, resourceName, objectView) {
             String currentUser = resourcesManagerSC.getUserId() ;
             List<String> managers = resourcesManagerSC.getManagerIds(resourceId);
             if (maResource.isValidationRequired()) { %>
-             <a style="color:red" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
+             <a class="resource waitingForValidation" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
             <% } else if (maResource.isRefused()) { %>
-              <a style="color:grey" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
+              <a class="resource refused" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
             <% } else {%>
-              <a style="color:black" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
+              <a class="resource validated" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
              <% }
             if (maResource.isValidationRequired() &&  managers != null && !managers.isEmpty() && managers.contains(currentUser)) { %>
               <a href="javascript:valideResource(<%=resourceId%>, '<%=objectView%>')">
@@ -174,9 +182,29 @@ function refuseResource(resourceId, resourceName, objectView) {
         </tr>
       </table>
       </view:board>
-      <div class="inlineMessage">
-            <%=resource.getString("resourcesManager.explain") %>
-	  </div>
+      <c:choose>
+        <c:when test="${reservation.validated}">
+          <div class="inlineMessage-ok" style="vertical-align: middle;">
+            <fmt:message key="resourcesManager.reservation.valid"/>
+          </div>
+        </c:when>
+        <c:otherwise>
+          <div class="inlineMessage" style="vertical-align: middle;">
+            <ul id="legende">
+              <li>
+                <div class="resource validated">&nbsp;</div>
+                <fmt:message key="resourcesManager.legend.resource.validated"/></li>
+              <li>
+                <div class="resource waitingForValidation">&nbsp;</div>
+                <fmt:message key="resourcesManager.legend.resource.waitingForValidation"/></li>
+              <li>
+                <div class="resource refused">&nbsp;</div>
+                <fmt:message key="resourcesManager.legend.resource.refused"/></li>
+            </ul>
+            <br/><fmt:message key="resourcesManager.reservation.explain"/>
+          </div>
+        </c:otherwise>
+      </c:choose>
 		</td>
 		<td valign="top">
     <%

@@ -42,6 +42,25 @@
       <scope>provided</scope>
       <classifier>client</classifier>
     </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- TESTS -->
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>ws-test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.components.gallery</groupId>
+      <artifactId>gallery-ejb</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

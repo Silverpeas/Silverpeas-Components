@@ -36,6 +36,12 @@ import java.util.List;
  */
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
+  @Query("from Reservation reservation WHERE reservation.instanceId = :instanceId " +
+      "AND reservation.beginDate < :endPeriod " +
+      "AND reservation.endDate > :startPeriod ")
+  public List<Reservation> findAllReservationsInRange(@Param("instanceId") String instanceId,
+      @Param("startPeriod") String startPeriod, @Param("endPeriod") String endPeriod);
+
   @Query("from Reservation reservation WHERE reservation.instanceId = :instanceId AND reservation.userId= :userId " +
   "AND reservation.beginDate < :endPeriod " +
   "AND reservation.endDate > :startPeriod ")
@@ -66,10 +72,40 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
   @Query("SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
   "WHERE reservedResource.resource.category.id = :categoryId " +
+  "AND reservedResource.reservation.instanceId = :instanceId " +
   "AND reservedResource.reservation.beginDate < :endPeriod " +
   "AND reservedResource.reservation.endDate > :startPeriod ")
   public List<Reservation> findAllReservationsForCategoryInRange(
+      @Param("instanceId") String instanceId, @Param("categoryId") Long categoryId,
+      @Param("startPeriod") String startPeriod, @Param("endPeriod") String endPeriod);
+
+  @Query("SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+      "WHERE reservedResource.resource.category.id = :categoryId " +
+      "AND reservedResource.reservation.instanceId = :instanceId AND reservedResource.reservation.userId = :userId " +
+      "AND reservedResource.reservation.beginDate < :endPeriod " +
+      "AND reservedResource.reservation.endDate > :startPeriod ")
+  public List<Reservation> findAllReservationsForUserAndCategoryInRange(
+      @Param("instanceId") String instanceId, @Param("userId") Integer userId,
       @Param("categoryId") Long categoryId, @Param("startPeriod") String startPeriod,
+      @Param("endPeriod") String endPeriod);
+
+  @Query("SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+      "WHERE reservedResource.resource.id = :resourceId " +
+      "AND reservedResource.reservation.instanceId = :instanceId " +
+      "AND reservedResource.reservation.beginDate < :endPeriod " +
+      "AND reservedResource.reservation.endDate > :startPeriod ")
+  public List<Reservation> findAllReservationsForResourceInRange(
+      @Param("instanceId") String instanceId, @Param("resourceId") Long resourceId,
+      @Param("startPeriod") String startPeriod, @Param("endPeriod") String endPeriod);
+
+  @Query("SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+      "WHERE reservedResource.resource.id = :resourceId " +
+      "AND reservedResource.reservation.instanceId = :instanceId AND reservedResource.reservation.userId = :userId " +
+      "AND reservedResource.reservation.beginDate < :endPeriod " +
+      "AND reservedResource.reservation.endDate > :startPeriod ")
+  public List<Reservation> findAllReservationsForUserAndResourceInRange(
+      @Param("instanceId") String instanceId, @Param("userId") Integer userId,
+      @Param("resourceId") Long resourceId, @Param("startPeriod") String startPeriod,
       @Param("endPeriod") String endPeriod);
 
   @Query(value = "SELECT DISTINCT reservation FROM Reservation reservation WHERE reservation.instanceId = :instanceId")

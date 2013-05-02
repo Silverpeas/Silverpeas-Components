@@ -35,70 +35,21 @@ import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.almanach.model.PeriodicityException;
 
 import net.fortuna.ical4j.model.Calendar;
+import org.silverpeas.date.Period;
 
 @Local
 public interface AlmanachBm {
 
   /**
-   * Get the events of the month
-   *
-   * @author dlesimple
-   * @param pk
-   * @param date
-   * @param String [] of instanceIds
-   * @return Collection of Events
-   * @deprecated
-   */
-  @Deprecated
-  public Collection<EventDetail> getMonthEvents(EventPK pk, java.util.Date date,
-      String[] instanceIds);
-
-  /**
-   * Get the events of the month
-   *
-   * @author dlesimple
-   * @param pk
-   * @param date
-   * @return Collection of Events
-   */
-  @Deprecated
-  public Collection<EventDetail> getMonthEvents(EventPK pk, java.util.Date date);
-
-  /**
-   * Gets the event occurrences that occur in the specified year and that are defined in the
+   * Gets the event occurrences that occur in the specified period and that are defined in the
    * specified almanachs.
    *
-   * @param year the year in which the events occur.
+   * @param period the period in which the events occur.
    * @param almanachIds the identifier of the almanachs in which the events are defined.
    * @return a list of event occurrences.
    * @ if an error occurs with the remote business service.
    */
-  public List<EventOccurrence> getEventOccurrencesInYear(java.util.Calendar year,
-      String... almanachIds);
-
-  /**
-   * Gets the event occurrences that occur in the specified month and that are defined in the
-   * specified almanachs.
-   *
-   * @param month the month in which the events occur.
-   * @param almanachIds the identifier of the almanachs in which the events are defined.
-   * @return a list of event occurrences.
-   * @ if an error occurs with the remote business service.
-   */
-  public List<EventOccurrence> getEventOccurrencesInMonth(java.util.Calendar month,
-      String... almanachIds);
-
-  /**
-   * Gets the event occurrences that occur in the specified week and that are defined in the
-   * specified almanachs.
-   *
-   * @param week the week in which the events occur.
-   * @param almanachIds the identifier of the almanachs in which the events are defined.
-   * @return a list of event occurrences.
-   * @ if an error occurs with the remote business service.
-   */
-  public List<EventOccurrence> getEventOccurrencesInWeek(java.util.Calendar week,
-      String... almanachIds);
+  public List<EventOccurrence> getEventOccurrencesInPeriod(Period period, String... almanachIds);
 
   /**
    * Gets the next event occurrences that will occur andd that are defined in the specified
@@ -122,7 +73,7 @@ public interface AlmanachBm {
    * Get all events of instanceId Almanachs
    *
    * @param pk
-   * @param String [] of instanceIds
+   * @param instanceIds String[] of instanceIds
    * @return Collection of Events
    */
   public Collection<EventDetail> getAllEvents(EventPK pk, String[] instanceIds);

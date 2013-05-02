@@ -206,6 +206,21 @@
               clickEvent(event.id, eventDate, event.instanceId);
             }
           });
+
+          $(window).keydown(function(e){
+            var keyCode = eval(e.keyCode);
+            if (37 == keyCode || keyCode == 39) {
+              e.preventDefault();
+              if (37 == keyCode) {
+                // Previous
+                previousView();
+              } else if (39 == keyCode) {
+                // Next
+                nextView();
+              }
+              return false;
+            }
+          });
         </c:if>
         });
         

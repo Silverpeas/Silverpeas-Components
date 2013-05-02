@@ -34,7 +34,6 @@ import org.silverpeas.resourcemanager.repository.ResourceRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,8 +62,7 @@ public class ReservationService {
       Resource resource = resourceRepository.findOne(resourceId);
       if (!resource.getManagers().isEmpty()) {
         if (resourceRepository
-            .getResourceValidator(resourceId, Long.parseLong(reservation.getUserId())) ==
-            null) {
+            .getResourceValidator(resourceId, Long.parseLong(reservation.getUserId())) == null) {
           reservedResource.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
         } else {
           reservedResource.setStatus(ResourceStatus.STATUS_VALIDATE);
@@ -123,14 +121,66 @@ public class ReservationService {
       String startPeriod, String endPeriod) {
     return repository.findAllReservationsForValidation(instanceId, userId, startPeriod, endPeriod);
   }
-  
-  public List<Reservation> findAllReservationsForUserInRange(String instanceId, Integer userId,
+
+  /**
+   * Finds all reservations related to the given user on the given period.
+   * If user parameter (userId) is not defined, the reservations returned are not filtered by user.
+   * @param instanceId
+   * @param userId
+   * @param startPeriod
+   * @param endPeriod
+   * @return
+   */
+  public List<Reservation> findAllReservationsInRange(String instanceId, Integer userId,
       String startPeriod, String endPeriod) {
+    if (userId == null) {
+      return repository.findAllReservationsInRange(instanceId, startPeriod, endPeriod);
+    }
     return repository.findAllReservationsForUserInRange(instanceId, userId, startPeriod, endPeriod);
   }
 
-  public List<Reservation> findAllReservationsForCategoryInRange(Long categoryId,
-      String startPeriod, String endPeriod) {
-    return repository.findAllReservationsForCategoryInRange(categoryId, startPeriod, endPeriod);
+  /**
+   * Finds all reservations related to the given user on the given period and for which at least
+   * one
+   * resource of the given category is attached.
+   * If user parameter (userId) is not defined, the reservations returned are not filtered by user.
+   * @param instanceId
+   * @param userId
+   * @param categoryId
+   * @param startPeriod
+   * @param endPeriod
+   * @return
+   */
+  public List<Reservation> findAllReservationsForCategoryInRange(final String instanceId,
+      Integer userId, Long categoryId, String startPeriod, String endPeriod) {
+    if (userId == null) {
+      return repository
+          .findAllReservationsForCategoryInRange(instanceId, categoryId, startPeriod, endPeriod);
+    }
+    return repository
+        .findAllReservationsForUserAndCategoryInRange(instanceId, userId, categoryId, startPeriod,
+            endPeriod);
+  }
+
+  /**
+   * Finds all reservations related to the given user on the given period and for which the given
+   * resource is attached.
+   * If user parameter (userId) is not defined, the reservations returned are not filtered by user.
+   * @param instanceId
+   * @param userId
+   * @param resourceId
+   * @param startPeriod
+   * @param endPeriod
+   * @return
+   */
+  public List<Reservation> findAllReservationsForResourceInRange(final String instanceId,
+      Integer userId, Long resourceId, String startPeriod, String endPeriod) {
+    if (userId == null) {
+      return repository
+          .findAllReservationsForResourceInRange(instanceId, resourceId, startPeriod, endPeriod);
+    }
+    return repository
+        .findAllReservationsForUserAndResourceInRange(instanceId, userId, resourceId, startPeriod,
+            endPeriod);
   }
 }
