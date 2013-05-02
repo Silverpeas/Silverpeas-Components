@@ -34,20 +34,25 @@
 
 <%
   Reservation reservation = (Reservation) request.getAttribute("reservation");
-  String defaultDate = (String) request.getAttribute("DefaultDate");
+  String defaultDate = (String) request.getAttribute("defaultDate");
+  String defaultTime = (String) request.getAttribute("defaultTime");
+
 
   String dateBegin = "";
   String dateEnd = "";
+  String minuteHourDateBegin = "";
+  String minuteHourDateEnd = "";
   if (StringUtil.isDefined(defaultDate)) {
     dateBegin = defaultDate;
     dateEnd = defaultDate;
+    if (StringUtil.isDefined(defaultTime)) {
+      minuteHourDateBegin = defaultTime;
+    }
   }
 
   String event = "";
   String reason = "";
   String place = "";
-  String minuteHourDateBegin = "";
-  String minuteHourDateEnd = "";
   Long reservationId = null;
 
   if (reservation != null) {

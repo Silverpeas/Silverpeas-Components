@@ -339,10 +339,16 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter<Resour
         destination = getDestination("ViewResources", resourcesManagerSC, request);
       } else if ("NewReservation".equals(function)) {
         request.setAttribute("objectView", request.getParameter("objectView"));
-        String date = request.getParameter("Day");
-        if (StringUtil.isDefined(date)) {
-          request.setAttribute("DefaultDate", DateUtil
-              .dateToString(DateUtil.parseISO8601Date(date), resourcesManagerSC.getLanguage()));
+        String iso8601Date = request.getParameter("Day");
+        if (StringUtil.isDefined(iso8601Date)) {
+          Date date = DateUtil.parseISO8601Date(iso8601Date);
+          request.setAttribute("defaultDate",
+              DateUtil.dateToString(date, resourcesManagerSC.getLanguage()));
+          if (DateUtil.resetHour(date).compareTo(date) != 0) {
+            // Time is defined
+            request.setAttribute("defaultTime",
+                DateUtil.getOutputHour(date, resourcesManagerSC.getLanguage()));
+          }
         }
         destination = root + "reservationManager.jsp";
       } else if ("GetAvailableResources".equals(function)) {

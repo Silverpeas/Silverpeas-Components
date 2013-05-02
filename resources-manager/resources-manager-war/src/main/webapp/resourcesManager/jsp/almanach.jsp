@@ -180,29 +180,51 @@
     $(document).ready(function() {
 
       // Calendar
-      $.getJSON('${viewContext.reservationEventUrl}', function(data) {
-        <c:choose>
-        <c:when test="${viewContext.dataViewType.reservationListingDataView}">
-        $("#reservationContent").append(renderReservationListing(data, labels, filters));
-        </c:when>
-        <c:otherwise>
-        // Loading calendar
-        $("#reservationContent").calendar({
-          allDaySlot : false,
-          view : '${fn:toLowerCase(viewContext.viewType.name)}',
-          weekends : ${viewContext.withWeekend},
-          firstDayOfWeek : ${viewContext.firstDayOfWeek},
-          currentDate : filters.currentDay,
-          events : prepareCalendarEvents(data, labels, filters),
-          onday : clickDay,
-          onevent : function(event) {
-            displayQTip(event);
-          },
-          eventrender : calendarEventRender
-        });
-        </c:otherwise>
-        </c:choose>
-      });
+      $.ajax({
+        url : '${viewContext.reservationEventUrl}',
+        cache : false,
+        type : 'GET',
+        dataType : 'json'
+      }).success(function(data) {
+            <c:choose>
+            <c:when test="${viewContext.dataViewType.reservationListingDataView}">
+            $("#reservationContent").append(renderReservationListing(data, labels, filters));
+            </c:when>
+            <c:otherwise>
+            // Loading calendar
+            $("#reservationContent").calendar({
+              allDaySlot : false,
+              view : '${fn:toLowerCase(viewContext.viewType.name)}',
+              weekends : ${viewContext.withWeekend},
+              firstDayOfWeek : ${viewContext.firstDayOfWeek},
+              currentDate : filters.currentDay,
+              events : prepareCalendarEvents(data, labels, filters),
+              onday : clickDay,
+              onevent : function(event) {
+                displayQTip(event);
+              },
+              eventrender : calendarEventRender
+            });
+            </c:otherwise>
+            </c:choose>
+          }).error(function(jqXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+          });
+    });
+
+    $(window).keydown(function(e){
+      var keyCode = eval(e.keyCode);
+      if (37 == keyCode || keyCode == 39) {
+        e.preventDefault();
+        if (37 == keyCode) {
+          // Previous
+          previousPeriod();
+        } else if (39 == keyCode) {
+          // Next
+          nextPeriod();
+        }
+        return false;
+      }
     });
 
   </script>
