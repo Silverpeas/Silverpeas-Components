@@ -59,7 +59,11 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.silverpeas.util.*;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 
@@ -80,7 +84,12 @@ import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.kmelia.servlets.handlers.StatisticRequestHandler;
-import com.stratelia.webactiv.util.*;
+import com.stratelia.webactiv.util.ClientBrowserUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -209,10 +218,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if ("GoToTopic".equals(function)) {
         String topicId = (String) request.getAttribute("Id");
         if (!StringUtil.isDefined(topicId)) {
-          topicId = (String) request.getAttribute("Id");
-          if (!StringUtil.isDefined(topicId)) {
-            topicId = NodePK.ROOT_NODE_ID;
-          }
+          topicId = NodePK.ROOT_NODE_ID;
         }
         kmelia.setCurrentFolderId(topicId, true);
         resetWizard(kmelia);
@@ -236,7 +242,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         } else {
           destination = rootDestination + "simpleListOfPublications.jsp";
         }
-      } else if (function.equals("GoToCurrentTopic")) {
+      } else if ("GoToCurrentTopic".equals(function)) {
         if (!NodePK.ROOT_NODE_ID.equals(kmelia.getCurrentFolderId())) {
           request.setAttribute("Id", kmelia.getCurrentFolderId());
           destination = getDestination("GoToTopic", kmelia, request);
@@ -335,14 +341,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           }
         } else if ("Wysiwyg".equals(type)) {
           if (id.startsWith("Node")) {
-            id = id.substring(5, id.length());
+            id = id.substring("Node_".length(), id.length());
             request.setAttribute("Id", id);
             destination = getDestination("GoToTopic", kmelia, request);
           } else {
             destination = getDestination("ViewPublication", kmelia, request);
           }
         } else {
-          request.setAttribute("Id", "0");
+          request.setAttribute("Id", NodePK.ROOT_NODE_ID);
           destination = getDestination("GoToTopic", kmelia, request);
         }
       } else if (function.startsWith("GoToFilesTab")) {
@@ -2410,7 +2416,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       String function, KmeliaSessionController kmelia,
       HttpServletRequest request) throws IOException, ClassNotFoundException,
       SAXException, ParserConfigurationException {
-    if (function.equals("UpdateChainInit")) {
+    if ("UpdateChainInit".equals(function)) {
       // récupération du descripteur
       kmelia.initUpdateChainDescriptor();
 
@@ -2418,12 +2424,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       // positionnement sur la première publi
       String pubId = kmelia.getFirst();
       request.setAttribute("PubId", pubId);
-
       // initialiser le topic en cours
       kmelia.initUpdateChainTopicChoice(pubId);
 
       return getDestination("UpdateChainPublications", kmelia, request);
-    } else if (function.equals("UpdateChainPublications")) {
+    } else if ("UpdateChainPublications".equals(function)) {
       String id = (String) request.getAttribute("PubId");
 
       request.setAttribute("Action", "UpdateChain");
@@ -2451,7 +2456,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("FileUrl", kmelia.getFirstAttachmentURLOfCurrentPublication());
         return rootDestination + "updateByChain.jsp";
       }
-    } else if (function.equals("UpdateChainNextUpdate")) {
+    } else if ("UpdateChainNextUpdate".equals(function)) {
       String id = request.getParameter("PubId");
       updatePubliDuringUpdateChain(id, request, kmelia);
 
@@ -2460,23 +2465,23 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       request.setAttribute("PubId", nextPubId);
 
       return getDestination("UpdateChainPublications", kmelia, request);
-    } else if (function.equals("UpdateChainLastUpdate")) {
+    } else if ("UpdateChainLastUpdate".equals(function)) {
       String id = request.getParameter("PubId");
       updatePubliDuringUpdateChain(id, request, kmelia);
 
       // mise à jour du theme pour le retour
       request.setAttribute("Id", kmelia.getCurrentFolderId());
       return getDestination("GoToTopic", kmelia, request);
-    } else if (function.equals("UpdateChainSkipUpdate")) {
+    } else if ("UpdateChainSkipUpdate".equals(function)) {
       // récupération de la publication suivante
       String pubId = kmelia.getNext();
       request.setAttribute("PubId", pubId);
       return getDestination("UpdateChainPublications", kmelia, request);
-    } else if (function.equals("UpdateChainEndUpdate")) {
+    } else if ("UpdateChainEndUpdate".equals(function)) {
       // mise à jour du theme pour le retour
       request.setAttribute("Id", kmelia.getCurrentFolderId());
       return getDestination("GoToTopic", kmelia, request);
-    } else if (function.equals("UpdateChainUpdateAll")) {
+    } else if ("UpdateChainUpdateAll".equals(function)) {
       // mise à jour du theme pour le retour
       request.setAttribute("Id", kmelia.getCurrentFolderId());
 
