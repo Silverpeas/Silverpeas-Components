@@ -84,7 +84,7 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements 
    *
    * @return Latest version number in the repository, or -1, if there is no page in the repository.
    */
-  private int findLatestVersion(String page) throws ProviderException {
+  private int findLatestVersion(String page) {
     int version = -1;
 
     try {

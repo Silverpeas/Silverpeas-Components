@@ -168,7 +168,7 @@ public class ImageHelper {
       }
     }
   }
-  
+
 
   private static void createImage(final String name, final HandledFile handledImageFile,
       final PhotoDetail photo, final boolean watermark, final String watermarkHD,
@@ -231,8 +231,7 @@ public class ImageHelper {
     }
   }
 
-  private static void getDimension(final BufferedImage image, final PhotoDetail photo)
-      throws IOException {
+  private static void getDimension(final BufferedImage image, final PhotoDetail photo) {
     if (image == null) {
       photo.setSizeL(0);
       photo.setSizeH(0);

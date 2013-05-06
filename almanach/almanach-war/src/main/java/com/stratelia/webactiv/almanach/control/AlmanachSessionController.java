@@ -745,7 +745,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   private synchronized NotificationMetaData getAlertNotificationEvent(final String eventId)
-      throws AlmanachException, AlmanachNoSuchFindEventException {
+      throws AlmanachException {
     // création des données ...
     EventPK eventPK = new EventPK(eventId, getSpaceId(), getComponentId());
     String senderName = getUserDetail().getDisplayedName();
@@ -1025,7 +1025,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
    */
   private List<DisplayableEventOccurrence> listCurrentYearEvents(String... almanachIds) throws
-      AlmanachException, AlmanachNoSuchFindEventException {
+      AlmanachException {
     List<EventOccurrence> occurrencesInYear = getAlmanachBm().getEventOccurrencesInPeriod(
         Period.from(currentDay.getTime(), PeriodType.year, getLanguage()), almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInYear);
@@ -1041,7 +1041,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
    */
   private List<DisplayableEventOccurrence> listCurrentMonthEvents(String... almanachIds) throws
-      AlmanachException, AlmanachNoSuchFindEventException {
+      AlmanachException {
     List<EventOccurrence> occurrencesInMonth = getAlmanachBm().
         getEventOccurrencesInPeriod(
             Period.from(currentDay.getTime(), PeriodType.month, getLanguage()), almanachIds);
@@ -1058,7 +1058,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
    */
   private List<DisplayableEventOccurrence> listCurrentWeekEvents(String... almanachIds) throws
-      AlmanachException, AlmanachNoSuchFindEventException {
+      AlmanachException {
     List<EventOccurrence> occurrencesInWeek = getAlmanachBm().getEventOccurrencesInPeriod(
         Period.from(currentDay.getTime(), PeriodType.week, getLanguage()), almanachIds);
     return DisplayableEventOccurrence.decorate(occurrencesInWeek);
@@ -1073,7 +1073,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
    */
   private List<DisplayableEventOccurrence> listNextEvents(String... almanachIds) throws
-      AlmanachException, AlmanachNoSuchFindEventException {
+      AlmanachException {
     List<EventOccurrence> nextOccurrences = getAlmanachBm().getNextEventOccurrences(almanachIds);
     return DisplayableEventOccurrence.decorate(nextOccurrences);
   }

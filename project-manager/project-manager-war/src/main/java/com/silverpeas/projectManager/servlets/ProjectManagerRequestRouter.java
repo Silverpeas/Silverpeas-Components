@@ -477,8 +477,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
   }
 
   private void updateActionCourante(HttpServletRequest request,
-      ProjectManagerSessionController projectManagerSC) throws RemoteException,
-      ParseException {
+      ProjectManagerSessionController projectManagerSC) throws ParseException {
     TaskDetail task = projectManagerSC.getCurrentTask();
     SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.updateActionCourante()",
         "root.MSG_GEN_PARAM_VALUE", "Consomme = " + request.getParameter("Consomme") + " Raf = "

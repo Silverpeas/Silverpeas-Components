@@ -20,29 +20,23 @@
  */
 package com.silverpeas.gallery.servlets;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
-
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
-
+import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
 import com.silverpeas.gallery.ParameterNames;
 import com.silverpeas.gallery.control.GallerySessionController;
 import com.silverpeas.gallery.delegate.PhotoDataCreateDelegate;
 import com.silverpeas.gallery.delegate.PhotoDataUpdateDelegate;
-import com.silverpeas.gallery.model.*;
+import com.silverpeas.gallery.model.AlbumDetail;
+import com.silverpeas.gallery.model.MetaData;
+import com.silverpeas.gallery.model.Order;
+import com.silverpeas.gallery.model.OrderRow;
+import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
@@ -51,7 +45,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
@@ -65,14 +58,18 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 import org.silverpeas.search.indexEngine.model.FieldDescription;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import javax.servlet.http.HttpServletRequest;
-import java.rmi.RemoteException;
-
-import com.silverpeas.form.RecordTemplate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
 
@@ -1497,12 +1494,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           photoId = contentManager.getInternalContentId(cId);
           photo = gallerySC.getPhoto(photoId);
           result.add(photo);
-        } catch (ClassCastException ignored) {
+        } catch (Exception ignored) {
           // ignore unknown item
-        } catch (ContentManagerException ignored) {
-          // ignore unknown item
-        } catch (RemoteException e) {
-          e.printStackTrace();
         }
       }
     }
@@ -1568,7 +1561,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
   private void updateOrder(HttpServletRequest request, GallerySessionController gallerySC,
       String orderId,
-      String userId) throws RemoteException, FileUploadException {
+      String userId) {
     // rechercher la demande
     Order order = gallerySC.getOrder(orderId);
 
