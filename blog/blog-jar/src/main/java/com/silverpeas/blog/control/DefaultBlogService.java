@@ -643,10 +643,9 @@ public class DefaultBlogService implements BlogService {
     }
   }
 
-  private void indexPublication(PublicationPK pubPK) throws RemoteException {
+  private void indexPublication(PublicationPK pubPK) {
     // index publication itself
     getPublicationBm().createIndex(pubPK);
-
     // index external elements
     indexExternalElementsOfPublication(pubPK);
   }

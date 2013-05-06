@@ -897,7 +897,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return getKmeliaBm().getPublicationDetail(getPublicationPK(pubId));
   }
 
-  private Collection<Collection<NodeDetail>> getPathList(PublicationPK pk) throws RemoteException {
+  private Collection<Collection<NodeDetail>> getPathList(PublicationPK pk) {
     return getKmeliaBm().getPathList(pk);
   }
 
@@ -1104,7 +1104,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
 
-  private void removeXMLContentOfPublication(PublicationPK pubPK) throws RemoteException {
+  private void removeXMLContentOfPublication(PublicationPK pubPK) {
     try {
       PublicationDetail pubDetail = getKmeliaBm().getPublicationDetail(pubPK);
       String infoId = pubDetail.getInfoId();
@@ -1754,8 +1754,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     refreshSessionPubliAndClone();
   }
 
-  private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId)
-      throws RemoteException {
+  private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId) {
     NotificationMetaData metaData = null;
     if (isKmaxMode) {
       metaData = getKmeliaBm().getAlertNotificationMetaData(getPublicationPK(pubId), null,
@@ -1769,7 +1768,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId,
-      String attachmentId) throws RemoteException {
+      String attachmentId) {
     NodePK nodePK = null;
     if (!isKmaxMode) {
       nodePK = getCurrentFolderPK();
@@ -2998,7 +2997,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return paste(getNodeHeader(nodeId));
   }
 
-  private List<Object> paste(NodeDetail folder) throws ClipboardException, RemoteException {
+  private List<Object> paste(NodeDetail folder) throws ClipboardException {
     List<Object> pastedItems = new ArrayList<Object>();
     try {
       SilverTrace.info("kmelia", "KmeliaRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
@@ -3074,17 +3073,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                 "KmeliaSessionController.pastePublication()",
                 "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
           }
-
           // change images path in wysiwyg
-          try {
-            WysiwygController.wysiwygPlaceHaveChanged(fromNode.getNodePK().getInstanceId(),
-                "Node_" + fromNode.getNodePK().getId(), getComponentId(), "Node_"
-                + toNodePK.getId());
-          } catch (WysiwygException e) {
-            SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
-                "root.MSG_GEN_PARAM_VALUE", e);
-          }
-
+          WysiwygController.wysiwygPlaceHaveChanged(fromNode.getNodePK().getInstanceId(),
+              "Node_" + fromNode.getNodePK().getId(), getComponentId(), "Node_" + toNodePK.getId());
           // move publications of topics
           pastePublicationsOfTopic(fromNode.getNodePK(), toNodePK, true, null);
         }
@@ -3134,7 +3125,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private void pastePublicationsOfTopic(NodePK fromPK, NodePK toPK, boolean isCutted,
-      List<NodePK> nodePKsToPaste) throws RemoteException {
+      List<NodePK> nodePKsToPaste) {
     Collection<PublicationDetail> publications = getPublicationBm().getDetailsByFatherPK(fromPK);
     CompletePublication completePubli = null;
     for (PublicationDetail publi : publications) {
@@ -3347,8 +3338,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       PublicationDetail publi, String fromId, String fromComponentId, ForeignPK fromForeignPK,
       PublicationPK fromPubPK, ForeignPK toForeignPK, PublicationPK toPubPK,
       String imagesSubDirectory, String thumbnailsSubDirectory, String toAbsolutePath,
-      String fromAbsolutePath) throws RemoteException, ThumbnailException,
-      PublicationTemplateException, PdcException, IOException {
+      String fromAbsolutePath) throws RemoteException, PublicationTemplateException, PdcException,
+      IOException {
     boolean indexIt = false;
     // move Vignette on disk
     int[] thumbnailSize = getThumbnailWidthAndHeight();
@@ -4385,14 +4376,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
           "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
     }
-    try {
-      // change images path in wysiwyg
-      WysiwygController.wysiwygPlaceHaveChanged(fromComponentId, publi.getPK().getId(),
-          getComponentId(), publi.getPK().getId());
-    } catch (WysiwygException e) {
-      SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
-          "root.MSG_GEN_PARAM_VALUE", e);
-    }
+    // change images path in wysiwyg
+    WysiwygController.wysiwygPlaceHaveChanged(fromComponentId, publi.getPK().getId(),
+        getComponentId(), publi.getPK().getId());
   }
 
   private void movePublicationDocuments(String fromComponentId, ForeignPK fromForeignPK,

@@ -23,7 +23,14 @@
  */
 package com.stratelia.webactiv.hyperlink.servlets;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -31,11 +38,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.hyperlink.control.HyperlinkSessionController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSessionController> {
 
@@ -62,7 +64,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   * @return 
+   * @return
    */
   @Override
   public String getSessionControlBeanName() {
@@ -122,7 +124,6 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
           request.setAttribute("Method", methodType);
           destination = "/RwebConnections/jsp/Connection";
         } else {
-          try {
             destination = getParsedDestination(destination, USER_LOGIN, encode(userDetail.getLogin()));
             destination =
                 getParsedDestination(destination, USER_EMAIL, encode(userDetail.geteMail()));
@@ -154,11 +155,6 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
               destination = getParsedDestination(destination, USER_PASSWORD, encode("??????"));
             }
             destination = getParsedDestinationWithExtraInfos(destination, hyperlinkSCC);
-          } catch (UnsupportedEncodingException e) {
-            SilverTrace.error("hyperlink",
-                "HyperlinkRequestRooter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
-          }
         }
       } else {
         SilverTrace.error("hyperlink", "HyperlinkRequestRooter.getDestination()",
@@ -220,7 +216,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   }
 
   private String getParsedDestinationWithExtraInfos(String sDestination,
-      HyperlinkSessionController hyperlinkSC) throws UnsupportedEncodingException {
+      HyperlinkSessionController hyperlinkSC) {
     int i = sDestination.indexOf(USER_PROPERTY_PREFIX);
     String destination = sDestination;
     while (i != -1) {
@@ -235,7 +231,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   private String extractPropertyName(String str) {
     return str.substring(USER_PROPERTY_PREFIX.length(), str.length() - 1);
   }
-  
+
   private String encode(String str) {
     if (!StringUtil.isDefined(str)) {
       return "";

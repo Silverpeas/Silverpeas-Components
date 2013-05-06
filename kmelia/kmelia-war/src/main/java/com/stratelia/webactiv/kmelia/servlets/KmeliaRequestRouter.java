@@ -2110,8 +2110,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
   private String processWizard(String function,
       KmeliaSessionController kmeliaSC, HttpServletRequest request,
-      String rootDestination) throws RemoteException,
-      PublicationTemplateException, FormException {
+      String rootDestination) throws RemoteException {
     String destination = "";
     if (function.equals("WizardStart")) {
       // récupération de l'id du thème dans lequel on veux mettre la
@@ -2415,7 +2414,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   private String processUpdateChainOperation(String rootDestination,
       String function, KmeliaSessionController kmelia,
       HttpServletRequest request) throws IOException, ClassNotFoundException,
-      SAXException, ParserConfigurationException {
+      ParserConfigurationException {
     if ("UpdateChainInit".equals(function)) {
       // récupération du descripteur
       kmelia.initUpdateChainDescriptor();

@@ -390,7 +390,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
    * @throws MyDBException
    */
   private String getUpdateTableColumnDestination(HttpServletRequest request,
-      MyDBSessionController myDBSC) throws MyDBException {
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayColumn")) {
@@ -452,9 +452,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
    * @throws MyDBException
    */
   @SuppressWarnings("unchecked")
-  private String getUpdateTablePrimaryKeyDestination(
-      HttpServletRequest request, MyDBSessionController myDBSC)
-      throws MyDBException {
+  private String getUpdateTablePrimaryKeyDestination(HttpServletRequest request,
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayPK")) {
@@ -487,9 +486,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
    * @throws MyDBException
    */
   @SuppressWarnings("unchecked")
-  private String getUpdateTableUnicityKeyDestination(
-      HttpServletRequest request, MyDBSessionController myDBSC)
-      throws MyDBException {
+  private String getUpdateTableUnicityKeyDestination(HttpServletRequest request,
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayUK")) {
@@ -526,9 +524,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter<MyDBSessionControl
    * @return The destination corresponding to the current foreign key operation.
    * @throws MyDBException
    */
-  private String getUpdateTableForeignKeyDestination(
-      HttpServletRequest request, MyDBSessionController myDBSC)
-      throws MyDBException {
+  private String getUpdateTableForeignKeyDestination(HttpServletRequest request,
+      MyDBSessionController myDBSC) {
     String command = request.getParameter("command");
     TableManager tableManager = myDBSC.getTableManager();
     if (command.equals("displayFK")) {

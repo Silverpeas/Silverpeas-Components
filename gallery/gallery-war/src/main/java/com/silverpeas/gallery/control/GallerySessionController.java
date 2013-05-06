@@ -332,7 +332,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return metadataResources;
   }
 
-  public PhotoDetail getPhoto(String photoId) throws RemoteException {
+  public PhotoDetail getPhoto(String photoId) {
     PhotoPK photoPK = new PhotoPK(photoId, getComponentId());
     PhotoDetail photo = getGalleryBm().getPhoto(photoPK);
     photo.setCreatorName(getUserDetail(photo.getCreatorId()).getDisplayedName());
@@ -439,16 +439,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
    */
   public void updatePhotoByUser(final String photoId, final PhotoDataUpdateDelegate delegate)
       throws Exception {
-    try {
-
       // Persisting data
       getGalleryBm().updatePhoto(getUserDetail(), getComponentId(), getPhoto(photoId),
           isMakeWatermark(), getWatermarkHD(), getWatermarkOther(), delegate);
-
-    } catch (RemoteException e) {
-      throw new GalleryRuntimeException("GallerySessionController.updatePhotoByUser()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
   }
 
   /**
@@ -687,7 +680,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     indexOfFirstItemToDisplay = 0;
   }
 
-  public String initAlertUser(String photoId) throws RemoteException {
+  public String initAlertUser(String photoId) {
     AlertUser sel = getAlertUser();
     // Initialisation de AlertUser
     sel.resetAll();
@@ -757,8 +750,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     notifyUsers(notifMetaData);
   }
 
-  private synchronized NotificationMetaData getAlertNotificationMetaData(String photoId)
-      throws RemoteException {
+  private synchronized NotificationMetaData getAlertNotificationMetaData(String photoId) {
     PhotoPK photoPK = new PhotoPK(photoId, getSpaceId(), getComponentId());
     NodePK nodePK = currentAlbum.getNodePK();
     String senderName = getUserDetail().getDisplayedName();
@@ -871,7 +863,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         userId)));
   }
 
-  public boolean isPhotoAdmin(String profile, String photoId, String userId) throws RemoteException {
+  public boolean isPhotoAdmin(String profile, String photoId, String userId) {
     if (photoId == null) {
       return (isAdminOrPublisher(profile) || "writer".equals(profile));
     }
@@ -881,21 +873,19 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         equals(userId)));
   }
 
-  public void copySelectedPhoto(Collection<String> photoIds) throws ClipboardException,
-      RemoteException {
+  public void copySelectedPhoto(Collection<String> photoIds) throws ClipboardException {
     for (String photoId : photoIds) {
       copyImage(photoId);
     }
   }
 
-  public void cutSelectedPhoto(Collection<String> photoIds) throws ClipboardException,
-      RemoteException {
+  public void cutSelectedPhoto(Collection<String> photoIds) throws ClipboardException {
     for (String photoId : photoIds) {
       cutImage(photoId);
     }
   }
 
-  public void copyImage(String photoId) throws ClipboardException, RemoteException {
+  public void copyImage(String photoId) throws ClipboardException {
     PhotoDetail photo = getPhoto(photoId);
     PhotoSelection photoSelect = new PhotoSelection(photo);
     SilverTrace.info("gallery", "GallerySessionController.copyImage()", "root.MSG_GEN_PARAM_VALUE",
@@ -903,7 +893,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     addClipboardSelection(photoSelect);
   }
 
-  public void cutImage(String photoId) throws ClipboardException, RemoteException {
+  public void cutImage(String photoId) throws ClipboardException {
     PhotoDetail photo = getPhoto(photoId);
     PhotoSelection photoSelect = new PhotoSelection(photo);
     photoSelect.setCutted(true);
@@ -1030,7 +1020,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     notifyUsers(notifMetaData);
   }
 
-  public void sendAskOrderUser(String orderId) throws RemoteException {
+  public void sendAskOrderUser(String orderId) {
     // envoyer une notification au lecteur pour le prévenir du traitement de sa
     // demande
     // 1. création du message
@@ -1109,7 +1099,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return basket;
   }
 
-  public Order getOrder(String orderId) throws RemoteException {
+  public Order getOrder(String orderId) {
     Order order = getGalleryBm().getOrder(orderId, getComponentId());
     List<OrderRow> rows = order.getRows();
     List<OrderRow> newRows = new ArrayList<OrderRow>();
@@ -1131,7 +1121,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     currentOrderId = orderId;
   }
 
-  public String addOrder() throws RemoteException {
+  public String addOrder() {
     // transformer le panier en demande
     String orderId = getGalleryBm().createOrder(basket, getUserId(), getComponentId());
     // vider le panier
@@ -1139,7 +1129,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return orderId;
   }
 
-  public void updateOrderRow(String orderId, String photoId) throws RemoteException {
+  public void updateOrderRow(String orderId, String photoId) {
     Order order = getOrder(orderId);
     List<OrderRow> rows = order.getRows();
     for (OrderRow row : rows) {
@@ -1151,7 +1141,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
   }
 
-  public String getUrl(String orderId, String photoId) throws RemoteException {
+  public String getUrl(String orderId, String photoId) {
     String url = "";
     Order order = getOrder(orderId);
     List<OrderRow> rows = order.getRows();
@@ -1186,7 +1176,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return url;
   }
 
-  public boolean isAccessAuthorized(String orderId) throws RemoteException {
+  public boolean isAccessAuthorized(String orderId) {
     return Integer.toString(getOrder(orderId).getUserId()).equals(getUserId());
   }
 
@@ -1231,15 +1221,15 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return metaDatas;
   }
 
-  public void updateOrder(Order order) throws RemoteException {
+  public void updateOrder(Order order) {
     getGalleryBm().updateOrder(order);
   }
 
-  public List<Order> getAllOrders() throws RemoteException {
+  public List<Order> getAllOrders() {
     return getGalleryBm().getAllOrders("-1", getComponentId());
   }
 
-  public List<Order> getOrdersByUser() throws RemoteException {
+  public List<Order> getOrdersByUser() {
     return getGalleryBm().getAllOrders(getUserId(), getComponentId());
   }
 

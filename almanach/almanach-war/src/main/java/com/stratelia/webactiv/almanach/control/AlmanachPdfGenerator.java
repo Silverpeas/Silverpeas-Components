@@ -173,7 +173,7 @@ public class AlmanachPdfGenerator {
 
   private static void generateAlmanach(Chapter chapter,
       AlmanachSessionController almanach, List<DisplayableEventOccurrence> occurrences,
-      String mode) throws AlmanachException {
+      String mode) {
 
     boolean monthScope =
         AlmanachPdfGenerator.PDF_MONTH_EVENTSONLY.equals(mode) ||

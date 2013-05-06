@@ -448,8 +448,7 @@ public class ProcessManagerBmEJB implements ProcessManagerBm {
     }
   }
 
-  private String processUploadedFile(byte[] fileContent, String fileName, PagesContext pagesContext)
-      throws ProcessManagerException {
+  private String processUploadedFile(byte[] fileContent, String fileName, PagesContext pagesContext) {
     String attachmentId = null;
     String foreignId = pagesContext.getObjectId();
     String logicalName = fileName;
