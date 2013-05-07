@@ -29,11 +29,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.naming.NamingException;
+
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
 import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
+import com.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
 import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import com.silverpeas.components.organizationchart.model.PersonCategory;
 import com.silverpeas.util.StringUtil;
@@ -41,9 +44,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserFull;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Ordering;
 
 public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChartServiceImpl
     implements OrganizationChartService {
@@ -98,17 +98,7 @@ public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChart
     for (String userId : userIds) {
       personList.add(loadOrganizationalPerson(userId, type));
     }
-
-    Function<OrganizationalPerson, String> personToSortedValue =
-        new Function<OrganizationalPerson, String>() {
-          @Override
-          public String apply(OrganizationalPerson obj) {
-            return obj.getName() + obj.getId();
-          }
-        };
-    Collections.sort(personList,
-        Ordering.from(String.CASE_INSENSITIVE_ORDER).onResultOf(personToSortedValue));
-
+    Collections.sort(personList, new OrganizationalPersonComparator());
     return personList;
   }
 
@@ -119,8 +109,8 @@ public class OrganizationChartGroupServiceImpl extends AbstractOrganizationChart
     String userDescription = user.getValue(config.getAttDesc());
     String userService = user.getValue(config.getAttUnit());
 
-    OrganizationalPerson person =
-        new OrganizationalPerson(Integer.parseInt(id), -1, user.getDisplayedName(), userFunction,
+    OrganizationalPerson person = new OrganizationalPerson(Integer.parseInt(id), -1, user
+        .getDisplayedName(), userFunction,
         userDescription, userService, null);
 
     // Determines attributes to be returned

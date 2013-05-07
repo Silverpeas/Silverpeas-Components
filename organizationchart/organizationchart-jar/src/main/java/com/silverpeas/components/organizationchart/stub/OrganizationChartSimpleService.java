@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.components.organizationchart.stub;
@@ -28,14 +25,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Ordering;
 import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
 import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
+import com.silverpeas.components.organizationchart.model.OrganizationalPersonComparator;
 import com.silverpeas.components.organizationchart.model.OrganizationalRole;
 import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import com.silverpeas.components.organizationchart.model.PersonCategory;
@@ -65,7 +62,7 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
       root.setParentName("Racine");
       root.setParentOu(config.getRoot());
     }
-    
+
     // get members
     ouMembers = getOUMembers(rootOu, type);
     root.setHasMembers(!ouMembers.isEmpty());
@@ -103,18 +100,18 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
     List<OrganizationalRole> leftRoles = new ArrayList<OrganizationalRole>();
     leftRoles.add(new OrganizationalRole("Musiciens", "musicien"));
     config.setUnitsChartLeftLabel(leftRoles);
-    
+
     List<OrganizationalRole> centralCategory = new ArrayList<OrganizationalRole>();
     centralCategory.add(new OrganizationalRole("Leader", "leader"));
     config.setPersonnsChartCentralLabel(centralCategory);
-    
+
     List<OrganizationalRole> categories = new ArrayList<OrganizationalRole>();
     categories.add(new OrganizationalRole("Musiciens", "musicien"));
     config.setPersonnsChartCategoriesLabel(categories);
-    
+
     this.config = config;
   }
-  
+
   @Override
   public void configure(OrganizationChartConfiguration config) {
     throw new UnsupportedOperationException();
@@ -126,49 +123,38 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
 
     if (rootOu.equalsIgnoreCase("ou=Metallica,ou=Bands,dc=mondomain,dc=com")) {
 
-      OrganizationalPerson person1 =
-          new OrganizationalPerson(0, -1, "James Hetfield", "leader", "Une description",
-              "Metallica", "hetfield");
+      OrganizationalPerson person1 = new OrganizationalPerson(0, -1, "James Hetfield", "leader",
+          "Une description",
+          "Metallica", "hetfield");
       HashMap<String, String> person1Detail = new HashMap<String, String>();
       person1Detail.put("Instrument", "Chant & guitare");
       person1.setDetail(person1Detail);
       defineChartRoles(person1, type);
       personList.add(person1);
 
-      OrganizationalPerson person2 =
-          new OrganizationalPerson(1, -1, "Kirk Hammett", "musicien", "Une autre description",
-              "Metallica", "hammett");
-      HashMap<String, String> person2Detail = new HashMap<String, String>();
+      OrganizationalPerson person2 = new OrganizationalPerson(1, -1, "Kirk Hammett", "musicien",
+          "Une autre description", "Metallica", "hammett");
+      Map<String, String> person2Detail = new HashMap<String, String>(1);
       person2Detail.put("Instrument", "Guitare");
       person2.setDetail(person2Detail);
       defineChartRoles(person2, type);
       personList.add(person2);
 
-      OrganizationalPerson person21 =
-          new OrganizationalPerson(2, -1, "Lars Ulrich", "musicien", "Une autre description",
-              "Metallica", "ulrich");
-      HashMap<String, String> person21Detail = new HashMap<String, String>();
+      OrganizationalPerson person21 = new OrganizationalPerson(2, -1, "Lars Ulrich", "musicien",
+          "Une autre description", "Metallica", "ulrich");
+      Map<String, String> person21Detail = new HashMap<String, String>(1);
       person21Detail.put("Instrument", "Batterie");
       person21.setDetail(person21Detail);
       defineChartRoles(person21, type);
       personList.add(person21);
     }
-
-    Function<OrganizationalPerson, String> personToSortedValue =
-        new Function<OrganizationalPerson, String>() {
-          @Override
-          public String apply(OrganizationalPerson obj) {
-            return obj.getName() + obj.getId();
-          }
-        };
-    Collections.sort(personList,
-        Ordering.from(String.CASE_INSENSITIVE_ORDER).onResultOf(personToSortedValue));
-
+    Collections.sort(personList, new OrganizationalPersonComparator());
     return personList;
   }
-  
+
   /**
    * Get all distinct person categories represented by a given person list.
+   *
    * @param personList the person list
    * @return a Set of PersonCategory
    */
@@ -191,16 +177,16 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
     ArrayList<OrganizationalUnit> units = new ArrayList<OrganizationalUnit>();
 
     if (rootOu.equalsIgnoreCase("OU=Bands,dc=mondomain,dc=com")) {
-      OrganizationalUnit unit =
-          new OrganizationalUnit("Metallica", "ou=Metallica,OU=Bands,dc=mondomain,dc=com");
+      OrganizationalUnit unit = new OrganizationalUnit("Metallica",
+          "ou=Metallica,OU=Bands,dc=mondomain,dc=com");
       unit.setParentName("Bands");
       unit.setParentOu(rootOu);
       unit.setHasSubUnits(false);
       unit.setHasMembers(true);
       units.add(unit);
 
-      OrganizationalUnit unit1 =
-          new OrganizationalUnit("Slayer", "ou=Slayer,OU=Bands,dc=mondomain,dc=com");
+      OrganizationalUnit unit1 = new OrganizationalUnit("Slayer",
+          "ou=Slayer,OU=Bands,dc=mondomain,dc=com");
       unit1.setParentName("Bands");
       unit1.setParentOu(rootOu);
       unit1.setHasSubUnits(false);
@@ -210,7 +196,7 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
 
     return units;
   }
-  
+
   private void defineChartRoles(OrganizationalPerson person, OrganizationalChartType type) {
     // defined the boxes with persons inside
     if (StringUtil.isDefined(person.getFonction())) {
@@ -230,6 +216,7 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
 
   /**
    * Determine if person has a specific Role in organization Chart.
+   *
    * @param person person
    * @param function person's function
    */
@@ -272,9 +259,10 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
       }
     }
   }
-  
+
   /**
    * Determine if person has a specific Role in organization person Chart.
+   *
    * @param person person
    * @param function person's function
    */
@@ -311,9 +299,9 @@ public class OrganizationChartSimpleService implements OrganizationChartService 
     }
   }
 
-
   /**
    * Checks if given function is matching given role
+   *
    * @param function function to check
    * @param role role
    * @return true if function is matching given role

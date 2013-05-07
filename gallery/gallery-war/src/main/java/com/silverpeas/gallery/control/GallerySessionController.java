@@ -94,8 +94,6 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeSelection;
 
-import com.google.common.base.Splitter;
-
 public final class GallerySessionController extends AbstractComponentSessionController {
   // déclaration des variables
 
@@ -136,7 +134,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
   }
   Properties settings = new Properties(defaultSettings);
-  final Splitter COMMA_SPLITTER = Splitter.on(',');
 
   /**
    * Gets the business service of operations on comments
@@ -672,8 +669,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // contrôle du formulaire et retour du nom si convenable
     if (isDefined(formName)) {
       try {
-        String xmlFormShortName =
-            formName.substring(formName.indexOf("/") + 1, formName.indexOf("."));
+        String xmlFormShortName = formName.substring(formName.indexOf("/") + 1, formName
+            .indexOf("."));
         getPublicationTemplateManager().getPublicationTemplate(getComponentId()
             + ":" + xmlFormShortName, formName);
       } catch (PublicationTemplateException e) {
@@ -939,8 +936,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           "clipboard = " + getClipboardName() + " count=" + getClipboardCount());
 
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
-      Map<Object, ClipboardSelection> clipObjectPerformed =
-          new HashMap<Object, ClipboardSelection>();
+      Map<Object, ClipboardSelection> clipObjectPerformed
+          = new HashMap<Object, ClipboardSelection>();
       for (ClipboardSelection clipObject : clipObjects) {
         if (clipObject != null) {
           if (clipObject.isDataFlavorSupported(PhotoSelection.PhotoDetailFlavor)) {
@@ -1199,7 +1196,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       settings = defaultSettings;
     }
     String display = settings.getProperty("display");
-    Iterable<String> propertyNames = COMMA_SPLITTER.split(display);
+    Iterable<String> propertyNames = StringUtil.splitString(display, ',');
 
     for (String value : propertyNames) {
       if (value.startsWith("IPTC_")) {

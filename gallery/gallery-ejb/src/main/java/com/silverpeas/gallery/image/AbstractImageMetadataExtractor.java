@@ -105,7 +105,7 @@ public abstract class AbstractImageMetadataExtractor implements ImageMetadataExt
           "org.silverpeas.gallery.multilang.metadataBundle", lang));
     }
     String display = settings.getProperty("display");
-    Iterable<String> propertyNames = COMMA_SPLITTER.split(display);
+    Iterable<String> propertyNames = StringUtil.splitString(display, ',');
     this.imageProperties = defineImageProperties(propertyNames);
     this.imageIptcProperties = defineImageIptcProperties(propertyNames);
   }
