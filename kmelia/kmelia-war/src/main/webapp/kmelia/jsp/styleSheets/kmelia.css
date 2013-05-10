@@ -562,8 +562,6 @@ a.button.refuse span {
 
 .kmax .sousNavBulle, .kmaxManager .sousNavBull{
 	position:relative;
-	margin:0 2% 0 1%;
-	width:97%;
 }
 
 .kmax .sousNavBulle #btnForm .milieuBoutonV5 a {
