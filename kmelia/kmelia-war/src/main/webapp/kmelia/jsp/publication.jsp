@@ -313,6 +313,7 @@
         suspendMotiveWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
       }
 
+      <% if (!"1".equals(alias)) { %>
       function pubDraftIn() {
         location.href = "<%=routerUrl%>DraftIn?From=ViewPublication";
       }
@@ -324,6 +325,7 @@
           window.alert("<%=resources.getString("kmelia.PdcClassificationMandatory")%>");
         }
       }
+      <% } %>
 
       function topicGoTo(id) {
         closeWindows();
