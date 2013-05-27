@@ -218,7 +218,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if ("GoToTopic".equals(function)) {
         String topicId = (String) request.getAttribute("Id");
         if (!StringUtil.isDefined(topicId)) {
-          topicId = NodePK.ROOT_NODE_ID;
+          topicId = request.getParameter("Id");
+          if (!StringUtil.isDefined(topicId)) {
+            topicId = NodePK.ROOT_NODE_ID;
+          }
         }
         kmelia.setCurrentFolderId(topicId, true);
         resetWizard(kmelia);
@@ -307,7 +310,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                   int ipage = pubIndex / nbPubliPerPage;
                   kmelia.setIndexOfFirstPubToDisplay(Integer.toString(ipage * nbPubliPerPage));
                   request.setAttribute("PubIdToHighlight", id);
-                  destination = getDestination("GoToCurrentTopic", kmelia, request);
+                  request.setAttribute("Id", kmelia.getCurrentFolderId());
+                  destination = getDestination("GoToTopic", kmelia, request);
                 } else {
                   request.setAttribute("FileAlreadyOpened", fileAlreadyOpened);
                   destination = getDestination("ViewPublication", kmelia, request);

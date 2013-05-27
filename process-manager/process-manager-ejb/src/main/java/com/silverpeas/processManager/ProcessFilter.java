@@ -88,7 +88,7 @@ public class ProcessFilter {
         Map<String, String> parameters = folderField.getParameters(lang);
         if (parameters != null
             && (parameters.containsKey("values") || parameters
-            .containsKey("keys"))) {
+            .containsKey("keys") || folderField.getTypeName().equals("jdbc"))) {
           filter.addFieldParameter(field.getFieldName(), folderField);
         }
       }
