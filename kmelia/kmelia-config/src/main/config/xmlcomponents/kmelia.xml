@@ -26,7 +26,7 @@
 -->
 
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>kmelia</name>
   <label>
     <message lang="fr">Gestion documentaire I</message>
@@ -35,20 +35,20 @@
   </label>
   <description>
     <message lang="fr">Les publications offrent la possibilité de regrouper en
-		une seule et même page des méta-données, des fichiers joints (avec suivi des
-		modifications) ainsi qu’un contenu libre (Wysiwyg) ou structuré (formulaire).
-		Elles sont organisées dans une arborescence de dossiers. Les utilisateurs peuvent
-		commenter les publications, s’abonner aux dossiers, notifier...
-		Les différents rôles et de nombreux paramètres permettent de s’adapter à tous
-		vos besoins. Application phare de Silverpeas, elle est digne d’un « pure player »
-		de la GED. Elle est interfacée avec le moteur de workflow de la plate-forme.
+      une seule et même page des méta-données, des fichiers joints (avec suivi des
+      modifications) ainsi qu’un contenu libre (Wysiwyg) ou structuré (formulaire).
+      Elles sont organisées dans une arborescence de dossiers. Les utilisateurs peuvent
+      commenter les publications, s’abonner aux dossiers, notifier...
+      Les différents rôles et de nombreux paramètres permettent de s’adapter à tous
+      vos besoins. Application phare de Silverpeas, elle est digne d’un « pure player »
+      de la GED. Elle est interfacée avec le moteur de workflow de la plate-forme.
     </message>
     <message lang="en">This application organizes documentation in hierarchical folders. You have many options : XML
       form for metadata, attachments versioned or not, workflows with many steps for validation / acceptation,
       classification on the classification scheme, readers list, comments, subscription to a folder ,
       a publication or a file.
     </message>
-	<message lang="de">Diese Komponente organisiert Dokumentation in hierarchischen Themen.
+    <message lang="de">Diese Komponente organisiert Dokumentation in hierarchischen Themen.
       Sie haben viele Möglichkeiten: XML-Formen für Metadaten, versionierte
       oder nicht versionierte Anhänge, Workflows mit vielen Schritten
       zur Validierung / Annahme, Klassifizierung auf dem Klassierungsplan,
@@ -136,12 +136,12 @@
           les dernières publications ne sont pas affichées sur la page d'accueil.
         </message>
         <message lang="en">Defines the number of publications displayed on the home page of the application. If not set to 0
-        you can't create publications in the root directory. When set to 0 you can create
-        publications on the root directory but the last publications are no longer displayed on the home page.
+          you can't create publications in the root directory. When set to 0 you can create
+          publications on the root directory but the last publications are no longer displayed on the home page.
         </message>
         <message lang="de">Definiert die Anzahl der Veröffentlichungen auf der Homepage des component. Falls nicht auf 0 gesetzt,
-        können Sie keine Veröffentlichungen im Root-Verzeichnis machen. Wenn auf 0 gesetzt, können Sie Veröffentlichungen
-        in das Root-Verzeichnis machen, aber die letzten Publikationen werden nicht mehr angezeigt angezeigt.
+          können Sie keine Veröffentlichungen im Root-Verzeichnis machen. Wenn auf 0 gesetzt, können Sie Veröffentlichungen
+          in das Root-Verzeichnis machen, aber die letzten Publikationen werden nicht mehr angezeigt angezeigt.
         </message>
       </help>
     </parameter>
@@ -799,13 +799,13 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Cette option permet de choisir un délais de réservation des fichiers joints et d'en gérer les retards.
-        Ce délais est exprimé en jours et ne tiens pas compte des samedis et dimanches.
+          Ce délais est exprimé en jours et ne tiens pas compte des samedis et dimanches.
         </message>
         <message lang="en">This option defines a maximum duration for booking a file and managing the backlog.
-        This duration is expressed in days, and week-ends are not taken into account.
+          This duration is expressed in days, and week-ends are not taken into account.
         </message>
         <message lang="de">Diese Option erlaubt, ein Buchungsfristen der verbundenen Dateien zu wählen und die Verspätungen zu verwalten.
-        Die Frist ist in den Tagen ausgedrückt und berücksichtige keine Samstage und Sonntage.
+          Die Frist ist in den Tagen ausgedrückt und berücksichtige keine Samstage und Sonntage.
         </message>
       </help>
     </parameter>
@@ -1018,7 +1018,7 @@
           By checking this box, attached files to publications of this application will be available for use (regardless of rights) by other applications.
         </message>
         <message lang="de">
-		  By checking this box, attached files to publications of this application will be available for use (regardless of rights) by other applications.
+          By checking this box, attached files to publications of this application will be available for use (regardless of rights) by other applications.
         </message>
       </warning>
     </parameter>
@@ -1150,14 +1150,14 @@
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
-      <updatable>hidden</updatable>
+      <updatable>never</updatable>
       <help>
         <message lang="fr">Permet de gérer les actualités soumises à validation dans l'application Actualités déléguées.</message>
         <message lang="en">Activates the news manage option. The news are valided in the application Delegated news.</message>
         <message lang="de">Diese Funktion erlaubt es Nachrichten zu verwalten die die Valiedierung in der Nachrichtenkomponente unterliegen, </message>
       </help>
     </parameter>
-	<parameter>
+    <parameter>
       <name>publicationSort</name>
       <label>
         <message lang="fr">Ordre des publications</message>
