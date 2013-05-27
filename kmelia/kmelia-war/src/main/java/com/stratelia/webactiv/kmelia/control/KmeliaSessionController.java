@@ -134,6 +134,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.FileImport;
+import com.stratelia.webactiv.kmelia.KmeliaSecurity;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
@@ -4015,7 +4016,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       nodeIDs.addAll(nodePKs);
 
       List<String> pubIds = new ArrayList<String>();
-
+      KmeliaSecurity security = new KmeliaSecurity();
+      security.enableCache();
       for (MatchingIndexEntry result : results) {
         try {
           if ("Publication".equals(result.getObjectType())) {
@@ -4026,9 +4028,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
             // Add the alias which have a link to the targets topics
             for (Alias alias : pubAliases) {
-              if (nodeIDs.contains(new NodePK(alias.getId(), alias.getInstanceId()))) {
-                if (!pubIds.contains(pubDetail.getId())) {
-                  pubIds.add(pubDetail.getId());
+              if (!alias.getInstanceId().equals(pubPK.getInstanceId())) {
+                if (nodeIDs.contains(new NodePK(alias.getId(), alias.getInstanceId()))) {
+                  if (!pubIds.contains(pubDetail.getId())) {
+                    pubIds.add(pubDetail.getId());
+                  }
                 }
               }
             }
@@ -4040,7 +4044,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             if (index != -1) {
               // Add only if not yet in the returned results
               if (!pubIds.contains(pubDetail.getId())) {
-                pubIds.add(pubDetail.getId());
+                // return publication if user can consult it only (check rights on folder)
+                if (security.isObjectAvailable(getComponentId(), getUserId(), pubDetail.getPK()
+                    .getId(), "Publication")) {
+                  pubIds.add(pubDetail.getId());
+                }
               }
             }
           }
