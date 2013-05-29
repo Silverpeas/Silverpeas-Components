@@ -64,6 +64,10 @@
 	function valid() {
 		document.reponseForm.submit();
 	}
+	
+	function exportICal() {
+    SP_openWindow('ExportToICal','iCalExport','500','230','scrollbars=no, noresize, alwaysRaised');
+  }
 </script>
 <link rel='stylesheet' type='text/css' href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
 </head>
@@ -91,10 +95,13 @@
 	</c:if>
 	<fmt:message key="scheduleevent.icons.users" var="usersIcon" bundle="${icons}" />
 	<fmt:message key="scheduleevent.icons.users.alt" var="usersIconAlt" />
+	<fmt:message key="scheduleevent.icons.export.alt" var="exportScheduleEventAlt" />
+	<fmt:message key="scheduleevent.icons.exportToICal" var="exportScheduleEventIconPath" bundle="${icons}" />
 	<view:operationPane>
 		<view:operation altText="${deleteIconAlt}" icon="${deleteIcon}" action="${'javascript:deleteScheduleEvent();'}" />
 		<view:operation altText="${modifyStateIconAlt}" icon="${modifyStateIcon}" action="${'javascript:modifyState();'}" />
 		<view:operation altText="${usersIconAlt}" icon="${usersIcon}" action="${'javascript:setUsers();'}" />
+    <view:operation altText="${exportScheduleEventAlt}" icon="${exportScheduleEventIconPath}" action="${'javascript: exportICal();'}" />
 	</view:operationPane>
 </c:if>
 
